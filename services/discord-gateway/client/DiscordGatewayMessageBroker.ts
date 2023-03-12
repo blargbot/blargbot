@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 
-import Discord from '@blargbot/discord-types';
-import type { MessageHandle, MessageHub } from '@blargbot/message-hub';
-import { blobToJson, jsonToBlob } from '@blargbot/message-hub';
+import type Discord from '@blargbot/discord-types';
+import type { MessageHandle } from '@blargbot/message-hub';
+import { blobToJson, jsonToBlob, MessageHub } from '@blargbot/message-hub';
 
 import type { DiscordGatewayMessage } from './DiscordGatewayMessage.js';
 import type { DispatchHandler, DispatchHandlerArgs, DispatchHandlerName, DispatchMap } from './dispatch.js';
@@ -45,7 +45,7 @@ export class DiscordGatewayMessageBroker implements PartialDiscordGatewayMessage
         return await this.#messages.handleMessage({
             ...amqpOptions,
             exchange: eventExchange,
-            queue: `${name}[${this.#serviceName}]`,
+            queue: MessageHub.makeQueueName(this.#serviceName, eventExchange, name),
             filter: opCodes.map(c => `${shardFilter}.${c}.*`),
             handle: async (data, msg) => {
                 const { payload, shard, lastShard } = await blobToJson<DiscordGatewayMessage<OpCodeMap[OpCode]>>(data);
@@ -60,8 +60,8 @@ export class DiscordGatewayMessageBroker implements PartialDiscordGatewayMessage
         return await this.#messages.handleMessage({
             ...amqpOptions,
             exchange: eventExchange,
-            queue: `${name}[${this.#serviceName}]`,
-            filter: events.map(e => `${shardFilter}.${Discord.GatewayOpcodes.Dispatch}.${e}`),
+            queue: MessageHub.makeQueueName(this.#serviceName, eventExchange, name),
+            filter: events.map(e => `${shardFilter}.0.${e}`),
             handle: async (data, msg) => {
                 const { payload, shard, lastShard } = await blobToJson<DiscordGatewayMessage<DispatchMap[Dispatch]>>(data);
                 await handler(payload.d, [shard, lastShard], payload, msg);

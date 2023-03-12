@@ -1,4 +1,4 @@
-import Discord from '@blargbot/discord-types';
+import type Discord from '@blargbot/discord-types';
 import type { ConsumeMessage, MessageHandle } from '@blargbot/message-hub';
 
 import type { DispatchMap } from './dispatch.js';
@@ -6,17 +6,17 @@ import type { HandleGatewayEventOptions, SnakeCaseToPascalCase } from './types.j
 
 type OpCodeToNameMap = { [P in Discord.GatewayOpcodes]: typeof opCodeToNameMap[P] };
 const opCodeToNameMap = {
-    [Discord.GatewayOpcodes.Dispatch]: 'DISPATCH',
-    [Discord.GatewayOpcodes.Heartbeat]: 'HEARTBEAT',
-    [Discord.GatewayOpcodes.HeartbeatAck]: 'HEARTBEAT_ACK',
-    [Discord.GatewayOpcodes.Hello]: 'HELLO',
-    [Discord.GatewayOpcodes.Identify]: 'IDENTIFY',
-    [Discord.GatewayOpcodes.InvalidSession]: 'INVALID_SESSION',
-    [Discord.GatewayOpcodes.PresenceUpdate]: 'UPDATE_PRESENCE',
-    [Discord.GatewayOpcodes.Reconnect]: 'RECONNECT',
-    [Discord.GatewayOpcodes.RequestGuildMembers]: 'REQUEST_GUILD_MEMBERS',
-    [Discord.GatewayOpcodes.Resume]: 'RESUME',
-    [Discord.GatewayOpcodes.VoiceStateUpdate]: 'UPDATE_VOICE_STATE'
+    [0]: 'DISPATCH',
+    [1]: 'HEARTBEAT',
+    [11]: 'HEARTBEAT_ACK',
+    [10]: 'HELLO',
+    [2]: 'IDENTIFY',
+    [9]: 'INVALID_SESSION',
+    [3]: 'UPDATE_PRESENCE',
+    [7]: 'RECONNECT',
+    [8]: 'REQUEST_GUILD_MEMBERS',
+    [6]: 'RESUME',
+    [4]: 'UPDATE_VOICE_STATE'
 } as const satisfies { [P in Discord.GatewayOpcodes]: string };
 
 export type SendOpCode = OpCodeToNameMap[Discord.GatewaySendPayload['op']];

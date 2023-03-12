@@ -1,12 +1,12 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
+import { DiscordMessageStreamMessageBroker } from '@blargbot/discord-message-stream-client';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsClient } from '@blargbot/metrics-client';
 
-import { DiscordMessageStreamMessageBroker } from './DiscordMessageStreamMessageBroker.js';
 import { DiscordMessageStreamService } from './DiscordMessageStreamService.js';
 
 @hostIfEntrypoint(() => [{
@@ -32,7 +32,7 @@ export class DiscordMessageStreamApplication extends ServiceHost {
         const messages = new MessageHub(options.messages);
         const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
         const service = new DiscordMessageStreamService(
-            new DiscordMessageStreamMessageBroker(messages),
+            new DiscordMessageStreamMessageBroker(messages, serviceName),
             new DiscordGatewayMessageBroker(messages, serviceName),
             metrics,
             {

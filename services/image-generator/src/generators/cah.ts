@@ -1,4 +1,4 @@
-import type { CahOptions } from '@blargbot/image-types';
+import type { CahOptions } from '@blargbot/image-generator-client';
 import type { OverlayOptions } from 'sharp';
 import sharp from 'sharp';
 

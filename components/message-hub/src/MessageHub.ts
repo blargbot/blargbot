@@ -8,6 +8,12 @@ import type { HandleMessageOptions } from './HandleMessageOptions.js';
 import type { MessageHandle } from './MessageHandle.js';
 
 export class MessageHub {
+    public static makeQueueName(service: string, type: string, id?: string): string {
+        return id === undefined
+            ? `[${service}]${type}`
+            : `[${service}]${type}(${id})`;
+    }
+
     readonly #replies: Map<string, { res(value: amqplib.ConsumeMessage): void; rej(err: unknown): void; }>;
     readonly #options: ConnectionOptions;
     readonly #socketOptions: unknown;
@@ -174,7 +180,7 @@ export class MessageHub {
         const h = this.#handleMessage.bind(this, options.handle);
         const channel = await this.getChannel();
         await channel.assertQueue(options.queue, options.queueArgs);
-        if (options.exchange !== undefined) {
+        if ('exchange' in options) {
             const filters = typeof options.filter === 'string' ? [options.filter] : options.filter;
             for (const filter of filters)
                 await channel.bindQueue(options.queue, options.exchange, filter);

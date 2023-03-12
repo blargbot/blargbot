@@ -1,5 +1,6 @@
+import type { CommandMessageParserMessageBroker } from '@blargbot/command-message-parser-client';
 import type { ICurrentUserAccessor } from '@blargbot/current-user-accessor';
-import type { ExtendedMessage } from '@blargbot/discord-message-stream-contract';
+import type { DiscordMessageStreamMessageBroker, ExtendedMessage } from '@blargbot/discord-message-stream-client';
 import { markup } from '@blargbot/discord-util';
 import { hasValue } from '@blargbot/guards';
 import { GuildSettingsHttpClient } from '@blargbot/guild-settings-client';
@@ -7,10 +8,9 @@ import { splitInput } from '@blargbot/input';
 import type { MessageHandle } from '@blargbot/message-hub';
 import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
 
-import type { CommandMessageParserMessageBroker } from './CommandMessageParserMessageBroker.js';
-
 export class CommandMessageParserService {
-    readonly #messages: CommandMessageParserMessageBroker;
+    readonly #messages: DiscordMessageStreamMessageBroker;
+    readonly #commands: CommandMessageParserMessageBroker;
     readonly #handles: Set<MessageHandle>;
     readonly #guildSettings: GuildSettingsHttpClient;
     readonly #userSettings: UserSettingsHttpClient;
@@ -18,11 +18,13 @@ export class CommandMessageParserService {
     readonly #user: ICurrentUserAccessor;
 
     public constructor(
-        messages: CommandMessageParserMessageBroker,
+        messages: DiscordMessageStreamMessageBroker,
+        commands: CommandMessageParserMessageBroker,
         user: ICurrentUserAccessor,
         options: CommandMessageParserServiceOptions
     ) {
         this.#messages = messages;
+        this.#commands = commands;
         this.#user = user;
         this.#guildSettings = GuildSettingsHttpClient.from(options.guildSettingsClient ?? options.guildSettingsUrl);
         this.#userSettings = UserSettingsHttpClient.from(options.userSettingsClient ?? options.userSettingsUrl);
@@ -32,7 +34,7 @@ export class CommandMessageParserService {
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.#messages.handleMessageCreate(this.#handleMessageCreate.bind(this)).then(h => this.#handles.add(h))
+            this.#messages.handleMessage(this.#handleMessage.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 
@@ -41,7 +43,7 @@ export class CommandMessageParserService {
             .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
     }
 
-    async #handleMessageCreate(trigger: ExtendedMessage): Promise<void> {
+    async #handleMessage(trigger: ExtendedMessage): Promise<void> {
         if (trigger.author.bot === true || !hasValue(trigger.content) || trigger.content.length === 0)
             return;
 
@@ -53,7 +55,7 @@ export class CommandMessageParserService {
         const commandRaw = trigger.content.slice(prefix.length);
         const [commandNamePart, ...args] = splitInput(commandRaw);
 
-        await this.#messages.sendCommand(Object.assign(trigger, {
+        await this.#commands.sendCommand(Object.assign(trigger, {
             prefix,
             command: commandNamePart.value.toLowerCase(),
             args: args.map(a => ({

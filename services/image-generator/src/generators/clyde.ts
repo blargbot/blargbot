@@ -1,4 +1,4 @@
-import type { ClydeOptions } from '@blargbot/image-types';
+import type { ClydeOptions } from '@blargbot/image-generator-client';
 import sharp from 'sharp';
 
 import InProcessSharpGenerator from './base/InProcessSharpGenerator.js';

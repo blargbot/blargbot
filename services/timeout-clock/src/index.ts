@@ -4,8 +4,8 @@ import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsClient } from '@blargbot/metrics-client';
+import { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
 
-import { TimeoutMessageBroker } from './TimeoutMessageBroker.js';
 import { TimeoutService } from './TimeoutService.js';
 
 @hostIfEntrypoint(() => [{
@@ -28,7 +28,7 @@ export class TimeoutClockApplication extends ServiceHost {
             metrics,
             new TimeoutService(
                 options.cron,
-                new TimeoutMessageBroker(messages)
+                new TimeoutClockMessageBroker(messages, serviceName)
             )
         ]);
     }

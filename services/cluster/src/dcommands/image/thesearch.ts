@@ -21,6 +21,6 @@ export class TheSearchCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, text: string): Promise<CommandResult> {
         text = await context.util.resolveTags(text, context.channel);
-        return await this.renderImage(context, 'thesearch', { text });
+        return await this.renderImage(context, 'theSearch', { text });
     }
 }

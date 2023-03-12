@@ -103,12 +103,12 @@ export interface ImageOptionsMap {
     readonly emoji: EmojiOptions;
     readonly free: FreeOptions;
     readonly linus: LinusOptions;
-    readonly pccheck: PCCheckOptions;
+    readonly pcCheck: PCCheckOptions;
     readonly pixelate: PixelateOptions;
     readonly shit: ShitOptions;
-    readonly sonicsays: SonicSaysOptions;
-    readonly starvstheforcesof: StarVsTheForcesOfOptions;
+    readonly sonicSays: SonicSaysOptions;
+    readonly starVsTheForcesOf: StarVsTheForcesOfOptions;
     readonly stupid: StupidOptions;
-    readonly thesearch: TheSearchOptions;
+    readonly theSearch: TheSearchOptions;
     readonly truth: TruthOptions;
 }

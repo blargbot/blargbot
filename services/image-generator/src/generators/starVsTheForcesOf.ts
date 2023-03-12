@@ -1,4 +1,4 @@
-import type { StarVsTheForcesOfOptions } from '@blargbot/image-types';
+import type { StarVsTheForcesOfOptions } from '@blargbot/image-generator-client';
 import sharp from 'sharp';
 
 import InProcessSharpGenerator from './base/InProcessSharpGenerator.js';

@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import type { LinusOptions } from '@blargbot/image-types';
+import type { LinusOptions } from '@blargbot/image-generator-client';
 
 import type { ApiImageGeneratorConfig } from './base/ApiImageGenerator.js';
 import ApiImageGenerator from './base/ApiImageGenerator.js';

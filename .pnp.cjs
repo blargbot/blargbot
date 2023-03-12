@@ -116,10 +116,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/guards/test"\
       },\
       {\
-        "name": "@blargbot/image-types",\
-        "reference": "workspace:components/image-types/src"\
-      },\
-      {\
         "name": "@blargbot/input",\
         "reference": "workspace:components/input/src"\
       },\
@@ -168,10 +164,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/user-regex/src"\
       },\
       {\
-        "name": "@blargbot/discord-message-stream-contract",\
-        "reference": "workspace:contracts/discord-message-stream/src"\
-      },\
-      {\
         "name": "@blargbot/message-command-contract",\
         "reference": "workspace:contracts/message-command/src"\
       },\
@@ -210,6 +202,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@blargbot/cluster-tests",\
         "reference": "workspace:services/cluster/test"\
+      },\
+      {\
+        "name": "@blargbot/command-message-parser-client",\
+        "reference": "workspace:services/command-message-parser/client"\
       },\
       {\
         "name": "@blargbot/command-message-parser",\
@@ -256,6 +252,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-message-cache/src"\
       },\
       {\
+        "name": "@blargbot/discord-message-stream-client",\
+        "reference": "workspace:services/discord-message-stream/client"\
+      },\
+      {\
         "name": "@blargbot/discord-message-stream",\
         "reference": "workspace:services/discord-message-stream/src"\
       },\
@@ -300,6 +300,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/guild-settings/src"\
       },\
       {\
+        "name": "@blargbot/image-generator-client",\
+        "reference": "workspace:services/image-generator/client"\
+      },\
+      {\
         "name": "@blargbot/image-generator",\
         "reference": "workspace:services/image-generator/src"\
       },\
@@ -318,6 +322,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@blargbot/mod-log",\
         "reference": "workspace:services/mod-log/src"\
+      },\
+      {\
+        "name": "@blargbot/timeout-clock-client",\
+        "reference": "workspace:services/timeout-clock/client"\
       },\
       {\
         "name": "@blargbot/timeout-clock",\
@@ -360,6 +368,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/cluster-tests", ["workspace:services/cluster/test"]],\
       ["@blargbot/collections", ["workspace:components/collections/src"]],\
       ["@blargbot/command-message-parser", ["workspace:services/command-message-parser/src"]],\
+      ["@blargbot/command-message-parser-client", ["workspace:services/command-message-parser/client"]],\
       ["@blargbot/config", ["workspace:components/config/src"]],\
       ["@blargbot/container-id", ["workspace:components/container-id/src"]],\
       ["@blargbot/core", ["workspace:components/core/src"]],\
@@ -380,7 +389,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-member-cache", ["workspace:services/discord-member-cache/src"]],\
       ["@blargbot/discord-message-cache", ["workspace:services/discord-message-cache/src"]],\
       ["@blargbot/discord-message-stream", ["workspace:services/discord-message-stream/src"]],\
-      ["@blargbot/discord-message-stream-contract", ["workspace:contracts/discord-message-stream/src"]],\
+      ["@blargbot/discord-message-stream-client", ["workspace:services/discord-message-stream/client"]],\
       ["@blargbot/discord-presence-cache", ["workspace:services/discord-presence-cache/src"]],\
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
       ["@blargbot/discord-reaction-stream", ["workspace:services/discord-reaction-stream/src"]],\
@@ -400,7 +409,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/guild-settings", ["workspace:services/guild-settings/src"]],\
       ["@blargbot/guild-settings-client", ["workspace:services/guild-settings/client"]],\
       ["@blargbot/image-generator", ["workspace:services/image-generator/src"]],\
-      ["@blargbot/image-types", ["workspace:components/image-types/src"]],\
+      ["@blargbot/image-generator-client", ["workspace:services/image-generator/client"]],\
       ["@blargbot/input", ["virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src", "workspace:components/input/src"]],\
       ["@blargbot/logger", ["workspace:components/logger/src"]],\
       ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
@@ -417,6 +426,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/serialization", ["workspace:components/serialization/src"]],\
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
       ["@blargbot/timeout-clock", ["workspace:services/timeout-clock/src"]],\
+      ["@blargbot/timeout-clock-client", ["workspace:services/timeout-clock/client"]],\
       ["@blargbot/timeouts", ["workspace:services/timeouts/src"]],\
       ["@blargbot/timer", ["workspace:components/timer/src"]],\
       ["@blargbot/user-regex", ["workspace:components/user-regex/src"]],\
@@ -697,7 +707,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
-            ["@blargbot/image-types", "workspace:components/image-types/src"],\
+            ["@blargbot/image-generator-client", "workspace:services/image-generator/client"],\
             ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
@@ -765,9 +775,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/command-message-parser", "workspace:services/command-message-parser/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/command-message-parser-client", "workspace:services/command-message-parser/client"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/current-user-accessor", "workspace:components/current-user-accessor/src"],\
-            ["@blargbot/discord-message-stream-contract", "workspace:contracts/discord-message-stream/src"],\
+            ["@blargbot/discord-message-stream-client", "workspace:services/discord-message-stream/client"],\
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
@@ -780,6 +791,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/user-settings-client", "workspace:services/user-settings/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/command-message-parser-client", [\
+        ["workspace:services/command-message-parser/client", {\
+          "packageLocation": "./services/command-message-parser/client/",\
+          "packageDependencies": [\
+            ["@blargbot/command-message-parser-client", "workspace:services/command-message-parser/client"],\
+            ["@blargbot/discord-message-stream-client", "workspace:services/discord-message-stream/client"],\
+            ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1121,7 +1144,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-channel-cache-client", "workspace:services/discord-channel-cache/client"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
             ["@blargbot/discord-guild-cache-client", "workspace:services/discord-guild-cache/client"],\
-            ["@blargbot/discord-message-stream-contract", "workspace:contracts/discord-message-stream/src"],\
+            ["@blargbot/discord-message-stream-client", "workspace:services/discord-message-stream/client"],\
             ["@blargbot/discord-role-cache-client", "workspace:services/discord-role-cache/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
@@ -1134,12 +1157,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@blargbot/discord-message-stream-contract", [\
-        ["workspace:contracts/discord-message-stream/src", {\
-          "packageLocation": "./contracts/discord-message-stream/src/",\
+      ["@blargbot/discord-message-stream-client", [\
+        ["workspace:services/discord-message-stream/client", {\
+          "packageLocation": "./services/discord-message-stream/client/",\
           "packageDependencies": [\
-            ["@blargbot/discord-message-stream-contract", "workspace:contracts/discord-message-stream/src"],\
-            ["@blargbot/discord-types", "workspace:components/discord-types/src"]\
+            ["@blargbot/discord-message-stream-client", "workspace:services/discord-message-stream/client"],\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1410,7 +1434,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/image-types", "workspace:components/image-types/src"],\
+            ["@blargbot/image-generator-client", "workspace:services/image-generator/client"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
@@ -1429,11 +1453,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@blargbot/image-types", [\
-        ["workspace:components/image-types/src", {\
-          "packageLocation": "./components/image-types/src/",\
+      ["@blargbot/image-generator-client", [\
+        ["workspace:services/image-generator/client", {\
+          "packageLocation": "./services/image-generator/client/",\
           "packageDependencies": [\
-            ["@blargbot/image-types", "workspace:components/image-types/src"]\
+            ["@blargbot/image-generator-client", "workspace:services/image-generator/client"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1519,7 +1544,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./contracts/message-command/src/",\
           "packageDependencies": [\
             ["@blargbot/message-command-contract", "workspace:contracts/message-command/src"],\
-            ["@blargbot/discord-message-stream-contract", "workspace:contracts/discord-message-stream/src"],\
+            ["@blargbot/discord-message-stream-client", "workspace:services/discord-message-stream/client"],\
             ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"]\
           ],\
           "linkType": "SOFT"\
@@ -1660,10 +1685,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/timeout-clock-client", "workspace:services/timeout-clock/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["@types/cron", "npm:2.0.0"],\
             ["amqplib", "npm:0.10.3"],\
             ["cron", "npm:2.2.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/timeout-clock-client", [\
+        ["workspace:services/timeout-clock/client", {\
+          "packageLocation": "./services/timeout-clock/client/",\
+          "packageDependencies": [\
+            ["@blargbot/timeout-clock-client", "workspace:services/timeout-clock/client"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1681,6 +1717,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
+            ["@blargbot/timeout-clock-client", "workspace:services/timeout-clock/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"]\
           ],\

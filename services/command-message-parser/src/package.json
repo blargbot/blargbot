@@ -11,9 +11,10 @@
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
+        "@blargbot/command-message-parser-client": "workspace:^",
         "@blargbot/container-id": "workspace:^",
         "@blargbot/current-user-accessor": "workspace:^",
-        "@blargbot/discord-message-stream-contract": "workspace:^",
+        "@blargbot/discord-message-stream-client": "workspace:^",
         "@blargbot/discord-util": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/guards": "workspace:^",

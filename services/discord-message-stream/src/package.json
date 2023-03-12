@@ -15,7 +15,7 @@
         "@blargbot/discord-channel-cache-client": "workspace:^",
         "@blargbot/discord-gateway-client": "workspace:^",
         "@blargbot/discord-guild-cache-client": "workspace:^",
-        "@blargbot/discord-message-stream-contract": "workspace:^",
+        "@blargbot/discord-message-stream-client": "workspace:^",
         "@blargbot/discord-role-cache-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
         "@blargbot/env": "workspace:^",

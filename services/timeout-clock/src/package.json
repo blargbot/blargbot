@@ -15,6 +15,7 @@
         "@blargbot/env": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
+        "@blargbot/timeout-clock-client": "workspace:^",
         "amqplib": "^0.10.3",
         "cron": "^2.2.0"
     },

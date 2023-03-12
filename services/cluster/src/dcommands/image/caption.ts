@@ -1,6 +1,6 @@
 import { parse } from '@blargbot/core/utils/parse/index.js';
 import { isUrl } from '@blargbot/guards';
-import type { ValidFont } from '@blargbot/image-types';
+import type { ValidFont } from '@blargbot/image-generator-client';
 
 import type { CommandContext } from '../../command/index.js';
 import { GlobalImageCommand } from '../../command/index.js';

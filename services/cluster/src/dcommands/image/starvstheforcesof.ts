@@ -46,6 +46,6 @@ export class StarVsTheForcesOfCommand extends GlobalImageCommand {
         if (!isUrl(url))
             return cmd.default.invalidUrl({ url });
 
-        return await this.renderImage(context, 'starvstheforcesof', { avatar: url });
+        return await this.renderImage(context, 'starVsTheForcesOf', { avatar: url });
     }
 }

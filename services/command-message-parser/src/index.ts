@@ -1,12 +1,13 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { CommandMessageParserMessageBroker } from '@blargbot/command-message-parser-client';
 import { fullContainerId } from '@blargbot/container-id';
 import { CurrentUserAccessor } from '@blargbot/current-user-accessor';
+import { DiscordMessageStreamMessageBroker } from '@blargbot/discord-message-stream-client';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsClient } from '@blargbot/metrics-client';
 
-import { CommandMessageParserMessageBroker } from './CommandMessageParserMessageBroker.js';
 import { CommandMessageParserService } from './CommandMessageParserService.js';
 
 @hostIfEntrypoint(() => [{
@@ -37,7 +38,8 @@ export class CommandMessageParserApplication extends ServiceHost {
             connectionToService(messages, 'rabbitmq'),
             metrics,
             new CommandMessageParserService(
-                new CommandMessageParserMessageBroker(messages),
+                new DiscordMessageStreamMessageBroker(messages, serviceName),
+                new CommandMessageParserMessageBroker(messages, serviceName),
                 new CurrentUserAccessor({
                     userCacheUrl: options.discordUserCache.url,
                     refreshInterval: options.discordUserCache.refreshInterval,

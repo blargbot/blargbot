@@ -21,6 +21,6 @@ export class PCCheckCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, text: string): Promise<CommandResult> {
         text = await context.util.resolveTags(text, context.channel);
-        return await this.renderImage(context, 'pccheck', { text });
+        return await this.renderImage(context, 'pcCheck', { text });
     }
 }

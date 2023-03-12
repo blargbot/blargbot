@@ -1,12 +1,11 @@
 import { DiscordChannelCacheHttpClient } from '@blargbot/discord-channel-cache-client';
 import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import { DiscordGuildCacheHttpClient } from '@blargbot/discord-guild-cache-client';
+import type { DiscordMessageStreamMessageBroker } from '@blargbot/discord-message-stream-client';
 import { DiscordRoleCacheHttpClient } from '@blargbot/discord-role-cache-client';
 import type Discord from '@blargbot/discord-types';
 import type { MessageHandle } from '@blargbot/message-hub';
 import type { Counter, MetricsClient } from '@blargbot/metrics-client';
-
-import type { DiscordMessageStreamMessageBroker } from './DiscordMessageStreamMessageBroker.js';
 
 type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
     | 'MESSAGE_CREATE'

@@ -26,6 +26,7 @@
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/guards": "workspace:^",
+        "@blargbot/image-generator-client": "workspace:^",
         "@blargbot/input": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
@@ -47,7 +48,6 @@
     },
     "devDependencies": {
         "@blargbot/discord-types": "workspace:^",
-        "@blargbot/image-types": "workspace:^",
         "@types/brainfuck-node": "workspace:^",
         "@types/eris": "workspace:^",
         "@types/md5": "^2.3.2",

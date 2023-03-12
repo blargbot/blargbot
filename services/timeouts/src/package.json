@@ -18,6 +18,7 @@
         "@blargbot/metrics-client": "workspace:^",
         "@blargbot/sequelize": "workspace:^",
         "@blargbot/serialization": "workspace:^",
+        "@blargbot/timeout-clock-client": "workspace:^",
         "amqplib": "^0.10.3"
     },
     "devDependencies": {

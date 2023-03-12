@@ -6,6 +6,7 @@ import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsClient } from '@blargbot/metrics-client';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
+import { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
 
 import { createTimeoutRequestHandler } from './createTimeoutRequestHandler.js';
 import type { TimeoutRecord } from './TimeoutDetails.js';
@@ -50,7 +51,8 @@ export class GuildSettingsApplication extends ServiceHost {
         );
         const service = new TimeoutService(
             new TimeoutSequelizeDatabase(database),
-            new TimeoutMessageBroker(messages)
+            new TimeoutMessageBroker(messages),
+            new TimeoutClockMessageBroker(messages, serviceName)
         );
 
         super([

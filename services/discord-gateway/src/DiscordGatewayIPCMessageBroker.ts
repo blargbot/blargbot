@@ -1,7 +1,5 @@
-import { randomUUID } from 'node:crypto';
-
-import type { ConsumeMessage, MessageHandle, MessageHub } from '@blargbot/message-hub';
-import { blobToJson, jsonToBlob } from '@blargbot/message-hub';
+import type { ConsumeMessage, MessageHandle } from '@blargbot/message-hub';
+import { blobToJson, jsonToBlob, MessageHub } from '@blargbot/message-hub';
 
 const ipcExchange = 'discord-gateway-command';
 export class DiscordGatewayIPCMessageBroker {
@@ -26,7 +24,7 @@ export class DiscordGatewayIPCMessageBroker {
     public async handleWorkerCommand<Type extends keyof WorkerMessageTypes>(type: Type, workerId: number | '*', handler: (message: WorkerMessageTypes[Type], msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: ipcExchange,
-            queue: `${ipcExchange}-${type}-${randomUUID()}`,
+            queue: MessageHub.makeQueueName('discord-gateway-worker', type, `${this.managerId}_${workerId}`),
             queueArgs: { autoDelete: true },
             filter: `${this.managerId}.worker.${workerId}.${type}`,
             async handle(data, msg) {
@@ -39,7 +37,7 @@ export class DiscordGatewayIPCMessageBroker {
     public async handleManagerCommand<Type extends keyof ManagerMessageTypes>(type: Type, handler: (message: ManagerMessageTypes[Type], msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: ipcExchange,
-            queue: `${ipcExchange}-manager-${type}-${randomUUID()}`,
+            queue: MessageHub.makeQueueName('discord-gateway-manager', type, this.managerId),
             queueArgs: { autoDelete: true },
             filter: `${this.managerId}.manager.${type}`,
             async handle(data, msg) {

@@ -7,7 +7,6 @@ import { timeoutDetailsSerializer } from './TimeoutDetails.js';
 
 export class TimeoutMessageBroker {
     static readonly #pendingTimeouts = 'pending-timeouts';
-    static readonly #pollTimeouts = 'poll-timeouts';
 
     readonly #messages: MessageHub;
 
@@ -43,16 +42,6 @@ export class TimeoutMessageBroker {
             filter: '*',
             async handle(data, msg) {
                 return await handler(await blobToJson(data, timeoutDetailsSerializer), msg);
-            }
-        });
-    }
-
-    public async handlePollTimeouts(handler: (msg: amqplib.ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
-        return await this.#messages.handleMessage({
-            queue: TimeoutMessageBroker.#pollTimeouts,
-            filter: '*',
-            async handle(_, msg) {
-                return await handler(msg);
             }
         });
     }

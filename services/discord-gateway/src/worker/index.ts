@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 
 import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
-import { fullContainerId } from '@blargbot/container-id';
+import containerId, { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
@@ -20,7 +20,7 @@ export const workerPath = fileURLToPath(import.meta.url);
         password: env.rabbitPassword,
         username: env.rabbitUsername
     },
-    managerId: env.get(String, 'MANAGER_ID'),
+    managerId: containerId,
     lastShardId: env.get(Number, 'LAST_SHARD_ID'),
     workerId: env.get(Number, 'WORKER_ID'),
     token: env.discordToken

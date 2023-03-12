@@ -1,6 +1,6 @@
 import type { CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import type { ImageOptionsMap } from '@blargbot/image-types';
+import type { ImageOptionsMap } from '@blargbot/image-generator-client';
 import moment from 'moment-timezone';
 
 import templates from '../text.js';

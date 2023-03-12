@@ -21,6 +21,6 @@ export class SonicSaysCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, text: string): Promise<CommandResult> {
         text = await context.util.resolveTags(text, context.channel);
-        return await this.renderImage(context, 'sonicsays', { text });
+        return await this.renderImage(context, 'sonicSays', { text });
     }
 }

@@ -1,6 +1,7 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
+import { ImageGenerateMessageBroker } from '@blargbot/image-generator-client';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsClient } from '@blargbot/metrics-client';
@@ -27,7 +28,6 @@ import StupidGenerator from './generators/stupid.js';
 import TheSearchGenerator from './generators/thesearch.js';
 import TruthGenerator from './generators/truth.js';
 import ImageGeneratorManager from './ImageGeneratorManager.js';
-import { ImageMessageBroker } from './ImageMessageBroker.js';
 
 export interface ImageGeneratorApplicationOptions {
     readonly messages: ConnectionOptions;
@@ -56,7 +56,7 @@ export class ImageGeneratorApplication extends ServiceHost {
             connectionToService(messages, 'rabbitmq'),
             metrics,
             new ImageGeneratorManager(
-                new ImageMessageBroker(messages),
+                new ImageGenerateMessageBroker(messages, serviceName),
                 {
                     art: new ArtGenerator(),
                     cah: new CardsAgainstHumanityGenerator(),
@@ -70,13 +70,13 @@ export class ImageGeneratorApplication extends ServiceHost {
                     emoji: new EmojiGenerator(),
                     free: new FreeGenerator(),
                     linus: new LinusGenerator(options.api),
-                    pccheck: new PCCheckGenerator(options.api),
+                    pcCheck: new PCCheckGenerator(options.api),
                     pixelate: new PixelateGenerator(),
                     shit: new ShitGenerator(options.api),
-                    sonicsays: new SonicSaysGenerator(options.api),
-                    starvstheforcesof: new StarVsTheForcesOfGenerator(),
+                    sonicSays: new SonicSaysGenerator(options.api),
+                    starVsTheForcesOf: new StarVsTheForcesOfGenerator(),
                     stupid: new StupidGenerator(),
-                    thesearch: new TheSearchGenerator(options.api),
+                    theSearch: new TheSearchGenerator(options.api),
                     truth: new TruthGenerator()
                 }
             )

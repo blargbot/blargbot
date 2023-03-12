@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import type { DeleteOptions } from '@blargbot/image-types';
+import type { DeleteOptions } from '@blargbot/image-generator-client';
 
 import type { ApiImageGeneratorConfig } from './base/ApiImageGenerator.js';
 import ApiImageGenerator from './base/ApiImageGenerator.js';

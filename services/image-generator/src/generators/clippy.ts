@@ -1,4 +1,4 @@
-import type { ClippyOptions } from '@blargbot/image-types';
+import type { ClippyOptions } from '@blargbot/image-generator-client';
 import sharp from 'sharp';
 
 import InProcessSharpGenerator from './base/InProcessSharpGenerator.js';

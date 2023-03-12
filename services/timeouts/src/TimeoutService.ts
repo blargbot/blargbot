@@ -1,4 +1,5 @@
 import type { MessageHandle } from '@blargbot/message-hub';
+import type { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
 
 import type { ITimeoutRecordDatabase } from './ITimeoutRecordDatabase.js';
 import type { TimeoutDetails, TimeoutRecord } from './TimeoutDetails.js';
@@ -8,16 +9,21 @@ export class TimeoutService {
     readonly #database: ITimeoutRecordDatabase;
     readonly #handles: Set<MessageHandle>;
     readonly #messages: TimeoutMessageBroker;
+    readonly #clock: TimeoutClockMessageBroker;
 
-    public constructor(database: ITimeoutRecordDatabase, messages: TimeoutMessageBroker) {
+    public constructor(
+        database: ITimeoutRecordDatabase,
+        messages: TimeoutMessageBroker,
+        clock: TimeoutClockMessageBroker) {
         this.#database = database;
         this.#messages = messages;
+        this.#clock = clock;
         this.#handles = new Set();
     }
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.#messages.handlePollTimeouts(this.#handlePollTimeouts.bind(this)).then(h => this.#handles.add(h)),
+            this.#clock.handleTick(this.#handleTick.bind(this)).then(h => this.#handles.add(h)),
             this.#messages.handleProcessTimeout(this.#handleProcessTimeout.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
@@ -51,7 +57,7 @@ export class TimeoutService {
         return await this.#database.clear(ownerId);
     }
 
-    async #handlePollTimeouts(): Promise<void> {
+    async #handleTick(): Promise<void> {
         const pending = await this.#database.pending();
         if (pending.length === 0)
             return;

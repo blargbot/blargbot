@@ -13,6 +13,7 @@
         "@blargbot/application": "workspace:^",
         "@blargbot/container-id": "workspace:^",
         "@blargbot/env": "workspace:^",
+        "@blargbot/image-generator-client": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
         "amqplib": "^0.10.3",
@@ -24,7 +25,6 @@
         "twemoji": "^14.0.2"
     },
     "devDependencies": {
-        "@blargbot/image-types": "workspace:^",
         "@types/amqplib": "^0.10.1",
         "@types/gifencoder": "^2.0.1",
         "@types/gm": "^1.25.0",

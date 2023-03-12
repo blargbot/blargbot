@@ -239,7 +239,7 @@ __metadata:
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/guards": "workspace:^"
-    "@blargbot/image-types": "workspace:^"
+    "@blargbot/image-generator-client": "workspace:^"
     "@blargbot/input": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
@@ -274,14 +274,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/command-message-parser-client@workspace:^, @blargbot/command-message-parser-client@workspace:services/command-message-parser/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/command-message-parser-client@workspace:services/command-message-parser/client"
+  dependencies:
+    "@blargbot/discord-message-stream-client": "workspace:^"
+    "@blargbot/input": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/command-message-parser@workspace:services/command-message-parser/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/command-message-parser@workspace:services/command-message-parser/src"
   dependencies:
     "@blargbot/application": "workspace:^"
+    "@blargbot/command-message-parser-client": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/current-user-accessor": "workspace:^"
-    "@blargbot/discord-message-stream-contract": "workspace:^"
+    "@blargbot/discord-message-stream-client": "workspace:^"
     "@blargbot/discord-util": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/guards": "workspace:^"
@@ -584,11 +595,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/discord-message-stream-contract@workspace:^, @blargbot/discord-message-stream-contract@workspace:contracts/discord-message-stream/src":
+"@blargbot/discord-message-stream-client@workspace:^, @blargbot/discord-message-stream-client@workspace:services/discord-message-stream/client":
   version: 0.0.0-use.local
-  resolution: "@blargbot/discord-message-stream-contract@workspace:contracts/discord-message-stream/src"
+  resolution: "@blargbot/discord-message-stream-client@workspace:services/discord-message-stream/client"
   dependencies:
     "@blargbot/discord-types": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -601,7 +613,7 @@ __metadata:
     "@blargbot/discord-channel-cache-client": "workspace:^"
     "@blargbot/discord-gateway-client": "workspace:^"
     "@blargbot/discord-guild-cache-client": "workspace:^"
-    "@blargbot/discord-message-stream-contract": "workspace:^"
+    "@blargbot/discord-message-stream-client": "workspace:^"
     "@blargbot/discord-role-cache-client": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
@@ -831,6 +843,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/image-generator-client@workspace:^, @blargbot/image-generator-client@workspace:services/image-generator/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/image-generator-client@workspace:services/image-generator/client"
+  dependencies:
+    "@blargbot/message-hub": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/image-generator@workspace:services/image-generator/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/image-generator@workspace:services/image-generator/src"
@@ -838,7 +858,7 @@ __metadata:
     "@blargbot/application": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/env": "workspace:^"
-    "@blargbot/image-types": "workspace:^"
+    "@blargbot/image-generator-client": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@types/amqplib": ^0.10.1
@@ -853,12 +873,6 @@ __metadata:
     node-fetch: ^3.3.0
     sharp: ^0.31.3
     twemoji: ^14.0.2
-  languageName: unknown
-  linkType: soft
-
-"@blargbot/image-types@workspace:^, @blargbot/image-types@workspace:components/image-types/src":
-  version: 0.0.0-use.local
-  resolution: "@blargbot/image-types@workspace:components/image-types/src"
   languageName: unknown
   linkType: soft
 
@@ -922,7 +936,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/message-command-contract@workspace:contracts/message-command/src"
   dependencies:
-    "@blargbot/discord-message-stream-contract": "workspace:^"
+    "@blargbot/discord-message-stream-client": "workspace:^"
     "@blargbot/input": "workspace:^"
   languageName: unknown
   linkType: soft
@@ -1030,6 +1044,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/timeout-clock-client@workspace:^, @blargbot/timeout-clock-client@workspace:services/timeout-clock/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/timeout-clock-client@workspace:services/timeout-clock/client"
+  dependencies:
+    "@blargbot/message-hub": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/timeout-clock@workspace:services/timeout-clock/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/timeout-clock@workspace:services/timeout-clock/src"
@@ -1039,6 +1061,7 @@ __metadata:
     "@blargbot/env": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/timeout-clock-client": "workspace:^"
     "@types/amqplib": ^0.10.1
     "@types/cron": ^2.0.0
     amqplib: ^0.10.3
@@ -1058,6 +1081,7 @@ __metadata:
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
+    "@blargbot/timeout-clock-client": "workspace:^"
     "@types/amqplib": ^0.10.1
     amqplib: ^0.10.3
   languageName: unknown

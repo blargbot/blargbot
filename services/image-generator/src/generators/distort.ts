@@ -1,4 +1,4 @@
-import type { DistortOptions } from '@blargbot/image-types';
+import type { DistortOptions } from '@blargbot/image-generator-client';
 import type gm from 'gm';
 
 import InProcessMagickGenerator from './base/InProcessMagickGenerator.js';

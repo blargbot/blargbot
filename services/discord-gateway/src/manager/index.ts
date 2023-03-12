@@ -1,7 +1,5 @@
-import { randomUUID } from 'node:crypto';
-
 import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
-import { fullContainerId } from '@blargbot/container-id';
+import containerId, { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
@@ -18,7 +16,7 @@ import { createDiscordRestClient } from './DiscordRestClient.js';
         username: env.rabbitUsername,
         password: env.rabbitPassword
     },
-    managerId: randomUUID(),
+    managerId: containerId,
     rest: {
         url: env.discordProxyUrl,
         secret: env.discordProxySecret

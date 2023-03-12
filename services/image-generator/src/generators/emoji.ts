@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import type { EmojiOptions } from '@blargbot/image-types';
+import type { EmojiOptions } from '@blargbot/image-generator-client';
 import sharp from 'sharp';
 import twemoji from 'twemoji';
 

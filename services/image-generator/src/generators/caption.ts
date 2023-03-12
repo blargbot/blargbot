@@ -1,4 +1,4 @@
-import type { CaptionOptions } from '@blargbot/image-types';
+import type { CaptionOptions } from '@blargbot/image-generator-client';
 import type { OverlayOptions } from 'sharp';
 import sharp from 'sharp';
 

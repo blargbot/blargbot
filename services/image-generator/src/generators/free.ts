@@ -1,4 +1,4 @@
-import type { FreeOptions } from '@blargbot/image-types';
+import type { FreeOptions } from '@blargbot/image-generator-client';
 import sharp from 'sharp';
 
 import type { GifOptions } from './base/InProcessGifGenerator.js';

@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
 import { getCallerImportMeta } from '@blargbot/application';
-import type { ValidFont } from '@blargbot/image-types';
+import type { ValidFont } from '@blargbot/image-generator-client';
 import gm from 'gm';
 import fetch from 'node-fetch';
 import sharp from 'sharp';

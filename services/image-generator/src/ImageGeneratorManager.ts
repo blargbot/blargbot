@@ -1,17 +1,16 @@
 import { randomUUID } from 'node:crypto';
 
-import type { ImageOptionsMap } from '@blargbot/image-types';
+import type { ImageGenerateMessageBroker, ImageOptionsMap } from '@blargbot/image-generator-client';
 import type { MessageHandle } from '@blargbot/message-hub';
 
 import type ImageGenerator from './generators/base/ImageGenerator.js';
-import type { ImageMessageBroker } from './ImageMessageBroker.js';
 
 export default class ImageGeneratorManager {
-    readonly #messages: ImageMessageBroker;
+    readonly #messages: ImageGenerateMessageBroker;
     readonly #generators: Map<string, ImageGenerator<unknown>>;
     #handle?: Promise<MessageHandle>;
 
-    public constructor(messages: ImageMessageBroker, handlers: { [P in keyof ImageOptionsMap]: ImageGenerator<ImageOptionsMap[P]> }) {
+    public constructor(messages: ImageGenerateMessageBroker, handlers: { [P in keyof ImageOptionsMap]: ImageGenerator<ImageOptionsMap[P]> }) {
         this.#messages = messages;
         this.#generators = new Map(Object.entries(handlers));
     }
