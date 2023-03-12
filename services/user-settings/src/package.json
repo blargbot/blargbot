@@ -18,7 +18,6 @@
         "@blargbot/metrics-client": "workspace:^",
         "@blargbot/redis-cache": "workspace:^",
         "@blargbot/sequelize": "workspace:^",
-        "@blargbot/serialization": "workspace:^",
         "@blargbot/user-settings-client": "workspace:^",
         "redis": "^4.6.5"
     }

@@ -16,6 +16,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:."\
       },\
       {\
+        "name": "@bbtag/blargbot",\
+        "reference": "workspace:bbtag/blargbot/src"\
+      },\
+      {\
+        "name": "@bbtag/blargbot-tests",\
+        "reference": "workspace:bbtag/blargbot/test"\
+      },\
+      {\
+        "name": "@bbtag/language",\
+        "reference": "workspace:bbtag/language/src"\
+      },\
+      {\
         "name": "@blargbot/api-client",\
         "reference": "workspace:components/api-client/src"\
       },\
@@ -26,14 +38,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@blargbot/async-tools",\
         "reference": "workspace:components/async-tools/src"\
-      },\
-      {\
-        "name": "@bbtag/blargbot",\
-        "reference": "workspace:components/bbtag/src"\
-      },\
-      {\
-        "name": "@bbtag/blargbot-tests",\
-        "reference": "workspace:components/bbtag/test"\
       },\
       {\
         "name": "@blargbot/catch-decorators",\
@@ -363,8 +367,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "enableTopLevelFallback": true,\
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
-      ["@bbtag/blargbot", ["workspace:components/bbtag/src"]],\
-      ["@bbtag/blargbot-tests", ["workspace:components/bbtag/test"]],\
+      ["@bbtag/blargbot", ["workspace:bbtag/blargbot/src"]],\
+      ["@bbtag/blargbot-tests", ["workspace:bbtag/blargbot/test"]],\
+      ["@bbtag/language", ["workspace:bbtag/language/src"]],\
       ["@blargbot/api", ["workspace:services/api/src"]],\
       ["@blargbot/api-client", ["workspace:components/api-client/src"]],\
       ["@blargbot/application", ["workspace:components/application/src"]],\
@@ -419,7 +424,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/guild-settings-client", ["workspace:services/guild-settings/client"]],\
       ["@blargbot/image-generator", ["workspace:services/image-generator/src"]],\
       ["@blargbot/image-generator-client", ["workspace:services/image-generator/client"]],\
-      ["@blargbot/input", ["virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src", "workspace:components/input/src"]],\
+      ["@blargbot/input", ["virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src", "workspace:components/input/src"]],\
       ["@blargbot/logger", ["workspace:components/logger/src"]],\
       ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
       ["@blargbot/master", ["workspace:services/master/src"]],\
@@ -526,10 +531,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@bbtag/blargbot", [\
-        ["workspace:components/bbtag/src", {\
-          "packageLocation": "./components/bbtag/src/",\
+        ["workspace:bbtag/blargbot/src", {\
+          "packageLocation": "./bbtag/blargbot/src/",\
           "packageDependencies": [\
-            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
+            ["@bbtag/language", "workspace:bbtag/language/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
@@ -539,7 +545,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
-            ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"],\
+            ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@blargbot/user-regex", "workspace:components/user-regex/src"],\
@@ -556,11 +562,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@bbtag/blargbot-tests", [\
-        ["workspace:components/bbtag/test", {\
-          "packageLocation": "./components/bbtag/test/",\
+        ["workspace:bbtag/blargbot/test", {\
+          "packageLocation": "./bbtag/blargbot/test/",\
           "packageDependencies": [\
-            ["@bbtag/blargbot-tests", "workspace:components/bbtag/test"],\
-            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot-tests", "workspace:bbtag/blargbot/test"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
+            ["@bbtag/language", "workspace:bbtag/language/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
@@ -568,7 +575,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
-            ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"],\
+            ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/test-util", "workspace:components/test-util/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
@@ -577,14 +584,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express", "npm:4.17.17"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.1#./.yarn/patches/@types-mocha-npm-10.0.1-7c94e9e170.patch::version=10.0.1&hash=480b76&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.7"],\
-            ["chai-bytes", "virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:0.1.2"],\
+            ["chai-bytes", "virtual:e6aeaad380db906b19e865f983912ae96550f14294f158aa1d5d333edf816d29c715109d0a3cad211b8b60a107c5f760fafb62633b420a6cec96c45516951e0d#npm:0.1.2"],\
             ["chai-datetime", "npm:1.8.0"],\
-            ["chai-exclude", "virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:2.1.0"],\
+            ["chai-exclude", "virtual:e6aeaad380db906b19e865f983912ae96550f14294f158aa1d5d333edf816d29c715109d0a3cad211b8b60a107c5f760fafb62633b420a6cec96c45516951e0d#npm:2.1.0"],\
             ["cross-env", "npm:7.0.3"],\
             ["express", "npm:4.18.2"],\
             ["mocha", "npm:10.2.0"],\
             ["moment-timezone", "npm:0.5.41"],\
             ["ts-mockito", "npm:2.6.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@bbtag/language", [\
+        ["workspace:bbtag/language/src", {\
+          "packageLocation": "./bbtag/language/src/",\
+          "packageDependencies": [\
+            ["@bbtag/language", "workspace:bbtag/language/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -603,7 +619,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/api/src/",\
           "packageDependencies": [\
             ["@blargbot/api", "workspace:services/api/src"],\
-            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
@@ -663,7 +679,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/bbtag-runner/src/",\
           "packageDependencies": [\
             ["@blargbot/bbtag", "workspace:services/bbtag-runner/src"],\
-            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
+            ["@bbtag/language", "workspace:bbtag/language/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/bbtag-runner-client", "workspace:services/bbtag-runner/client"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
@@ -673,9 +690,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/timeouts-client", "workspace:services/timeouts/client"],\
             ["@blargbot/user-settings-client", "workspace:services/user-settings/client"],\
-            ["@blargbot/user-warnings-client", "workspace:services/user-warnings/client"],\
-            ["@types/amqplib", "npm:0.10.1"],\
-            ["amqplib", "npm:0.10.3"]\
+            ["@blargbot/user-warnings-client", "workspace:services/user-warnings/client"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -685,7 +700,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/bbtag-runner/client/",\
           "packageDependencies": [\
             ["@blargbot/bbtag-runner-client", "workspace:services/bbtag-runner/client"],\
-            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
           ],\
           "linkType": "SOFT"\
@@ -714,7 +729,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/cluster/src/",\
           "packageDependencies": [\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
-            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
+            ["@bbtag/language", "workspace:bbtag/language/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
@@ -731,7 +747,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/image-generator-client", "workspace:services/image-generator/client"],\
-            ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"],\
+            ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/modules", "workspace:components/modules/src"],\
@@ -765,7 +781,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/cluster/test/",\
           "packageDependencies": [\
             ["@blargbot/cluster-tests", "workspace:services/cluster/test"],\
-            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/domain", "workspace:components/domain/src"],\
@@ -806,14 +822,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/guild-settings-client", "workspace:services/guild-settings/client"],\
-            ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"],\
+            ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/message-command-contract", "workspace:contracts/message-command/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["@blargbot/user-settings-client", "workspace:services/user-settings/client"],\
-            ["@types/amqplib", "npm:0.10.1"],\
-            ["amqplib", "npm:0.10.3"]\
+            ["@blargbot/user-settings-client", "workspace:services/user-settings/client"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -824,7 +838,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/command-message-parser-client", "workspace:services/command-message-parser/client"],\
             ["@blargbot/discord-message-stream-client", "workspace:services/discord-message-stream/client"],\
-            ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"],\
+            ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
           ],\
           "linkType": "SOFT"\
@@ -853,7 +867,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/core/src/",\
           "packageDependencies": [\
             ["@blargbot/core", "workspace:components/core/src"],\
-            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/crowdin", "workspace:components/crowdin/src"],\
@@ -865,7 +879,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
-            ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"],\
+            ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
@@ -934,7 +948,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/database/src/",\
           "packageDependencies": [\
             ["@blargbot/database", "workspace:components/database/src"],\
-            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
@@ -986,7 +1000,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
-            ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
           ],\
           "linkType": "SOFT"\
@@ -1018,7 +1031,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["amqplib", "npm:0.10.3"],\
             ["cassandra-driver", "npm:4.6.4"]\
           ],\
           "linkType": "SOFT"\
@@ -1047,8 +1059,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["@types/amqplib", "npm:0.10.1"],\
-            ["amqplib", "npm:0.10.3"],\
             ["discordeno", "npm:18.0.1"]\
           ],\
           "linkType": "SOFT"\
@@ -1080,7 +1090,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
-            ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
           ],\
           "linkType": "SOFT"\
@@ -1109,9 +1118,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
-            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["@types/amqplib", "npm:0.10.1"],\
-            ["amqplib", "npm:0.10.3"]\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1130,7 +1137,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
-            ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
           ],\
           "linkType": "SOFT"\
@@ -1151,7 +1157,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
-            ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
           ],\
           "linkType": "SOFT"\
@@ -1173,9 +1178,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
-            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["@types/amqplib", "npm:0.10.1"],\
-            ["amqplib", "npm:0.10.3"]\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1205,7 +1208,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
-            ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
           ],\
           "linkType": "SOFT"\
@@ -1240,9 +1242,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
-            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["@types/amqplib", "npm:0.10.1"],\
-            ["amqplib", "npm:0.10.3"]\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1261,7 +1261,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
-            ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
           ],\
           "linkType": "SOFT"\
@@ -1304,7 +1303,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
-            ["amqplib", "npm:0.10.3"],\
             ["redis", "npm:4.6.5"]\
           ],\
           "linkType": "SOFT"\
@@ -1335,10 +1333,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/domain/src/",\
           "packageDependencies": [\
             ["@blargbot/domain", "workspace:components/domain/src"],\
-            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
-            ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"],\
+            ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["moment-timezone", "npm:0.5.41"]\
           ],\
           "linkType": "SOFT"\
@@ -1460,12 +1458,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/image-generator-client", "workspace:services/image-generator/client"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["@types/amqplib", "npm:0.10.1"],\
             ["@types/gifencoder", "npm:2.0.1"],\
             ["@types/gm", "npm:1.25.0"],\
             ["@types/node-fetch", "npm:2.6.2"],\
             ["@types/sharp", "npm:0.31.1"],\
-            ["amqplib", "npm:0.10.3"],\
             ["canvas", "npm:2.11.0"],\
             ["gifencoder", "npm:2.0.1"],\
             ["gm", "npm:1.25.0"],\
@@ -1487,10 +1483,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@blargbot/input", [\
-        ["virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src", {\
-          "packageLocation": "./.yarn/__virtual__/@blargbot-input-virtual-fb3869a6c0/1/components/input/src/",\
+        ["virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src", {\
+          "packageLocation": "./.yarn/__virtual__/@blargbot-input-virtual-99b2e8dc0f/1/components/input/src/",\
           "packageDependencies": [\
-            ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"],\
+            ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@types/moment-timezone", null],\
             ["moment-timezone", "npm:0.5.41"]\
@@ -1568,7 +1564,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/message-command-contract", "workspace:contracts/message-command/src"],\
             ["@blargbot/discord-message-stream-client", "workspace:services/discord-message-stream/client"],\
-            ["@blargbot/input", "virtual:f4a9db059d6edaa19d2946ede74bec7578d4a8749b112fa044c360de1d51dc65201709be81444d25f90353373cab974f11ec33effbceb3ea1f0490db1238e722#workspace:components/input/src"]\
+            ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1709,9 +1705,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/timeout-clock-client", "workspace:services/timeout-clock/client"],\
-            ["@types/amqplib", "npm:0.10.1"],\
             ["@types/cron", "npm:2.0.0"],\
-            ["amqplib", "npm:0.10.3"],\
             ["cron", "npm:2.2.0"]\
           ],\
           "linkType": "SOFT"\
@@ -1741,9 +1735,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["@blargbot/timeout-clock-client", "workspace:services/timeout-clock/client"],\
-            ["@blargbot/timeouts-client", "workspace:services/timeouts/client"],\
-            ["@types/amqplib", "npm:0.10.1"],\
-            ["amqplib", "npm:0.10.3"]\
+            ["@blargbot/timeouts-client", "workspace:services/timeouts/client"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1793,7 +1785,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
-            ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["@blargbot/user-settings-client", "workspace:services/user-settings/client"],\
             ["redis", "npm:4.6.5"]\
           ],\
@@ -4132,10 +4123,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:0.1.2", {\
-          "packageLocation": "./.yarn/__virtual__/chai-bytes-virtual-ba1d81e224/0/cache/chai-bytes-npm-0.1.2-0756b83d81-6fedd3a508.zip/node_modules/chai-bytes/",\
+        ["virtual:e6aeaad380db906b19e865f983912ae96550f14294f158aa1d5d333edf816d29c715109d0a3cad211b8b60a107c5f760fafb62633b420a6cec96c45516951e0d#npm:0.1.2", {\
+          "packageLocation": "./.yarn/__virtual__/chai-bytes-virtual-54574562bb/0/cache/chai-bytes-npm-0.1.2-0756b83d81-6fedd3a508.zip/node_modules/chai-bytes/",\
           "packageDependencies": [\
-            ["chai-bytes", "virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:0.1.2"],\
+            ["chai-bytes", "virtual:e6aeaad380db906b19e865f983912ae96550f14294f158aa1d5d333edf816d29c715109d0a3cad211b8b60a107c5f760fafb62633b420a6cec96c45516951e0d#npm:0.1.2"],\
             ["@types/chai", "npm:4.3.4"],\
             ["chai", "npm:4.3.7"]\
           ],\
@@ -4164,10 +4155,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:2.1.0", {\
-          "packageLocation": "./.yarn/__virtual__/chai-exclude-virtual-bb11d28d5a/0/cache/chai-exclude-npm-2.1.0-47ff9dee55-29d964d9f6.zip/node_modules/chai-exclude/",\
+        ["virtual:e6aeaad380db906b19e865f983912ae96550f14294f158aa1d5d333edf816d29c715109d0a3cad211b8b60a107c5f760fafb62633b420a6cec96c45516951e0d#npm:2.1.0", {\
+          "packageLocation": "./.yarn/__virtual__/chai-exclude-virtual-1a66dac49f/0/cache/chai-exclude-npm-2.1.0-47ff9dee55-29d964d9f6.zip/node_modules/chai-exclude/",\
           "packageDependencies": [\
-            ["chai-exclude", "virtual:46ef25479f059694cfec012b02ad4ed77ebd3d6a8c99c916fe0465551ca5f61094e1570a733c750aeb17061e1743cf5a3bbfe139d12466a3fa07da8412a9c186#npm:2.1.0"],\
+            ["chai-exclude", "virtual:e6aeaad380db906b19e865f983912ae96550f14294f158aa1d5d333edf816d29c715109d0a3cad211b8b60a107c5f760fafb62633b420a6cec96c45516951e0d#npm:2.1.0"],\
             ["@types/chai", "npm:4.3.4"],\
             ["chai", "npm:4.3.7"],\
             ["fclone", "npm:1.0.11"]\

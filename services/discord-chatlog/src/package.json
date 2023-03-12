@@ -20,7 +20,6 @@
         "@blargbot/mapping": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
-        "amqplib": "^0.10.3",
         "cassandra-driver": "^4.6.4"
     }
 }

@@ -24,10 +24,6 @@
         "@blargbot/message-command-contract": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
-        "@blargbot/user-settings-client": "workspace:^",
-        "amqplib": "^0.10.3"
-    },
-    "devDependencies": {
-        "@types/amqplib": "^0.10.1"
+        "@blargbot/user-settings-client": "workspace:^"
     }
 }

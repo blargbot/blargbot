@@ -19,7 +19,6 @@
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
         "@blargbot/redis-cache": "workspace:^",
-        "amqplib": "^0.10.3",
         "redis": "^4.6.5"
     }
 }

@@ -17,10 +17,6 @@
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
-        "@blargbot/metrics-client": "workspace:^",
-        "amqplib": "^0.10.3"
-    },
-    "devDependencies": {
-        "@types/amqplib": "^0.10.1"
+        "@blargbot/metrics-client": "workspace:^"
     }
 }

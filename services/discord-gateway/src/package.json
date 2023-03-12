@@ -18,10 +18,6 @@
         "@blargbot/env": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
-        "amqplib": "^0.10.3",
         "discordeno": "^18.0.1"
-    },
-    "devDependencies": {
-        "@types/amqplib": "^0.10.1"
     }
 }

@@ -52,11 +52,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bbtag/blargbot-tests@workspace:components/bbtag/test":
+"@bbtag/blargbot-tests@workspace:bbtag/blargbot/test":
   version: 0.0.0-use.local
-  resolution: "@bbtag/blargbot-tests@workspace:components/bbtag/test"
+  resolution: "@bbtag/blargbot-tests@workspace:bbtag/blargbot/test"
   dependencies:
     "@bbtag/blargbot": "workspace:^"
+    "@bbtag/language": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
@@ -84,10 +85,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bbtag/blargbot@workspace:^, @bbtag/blargbot@workspace:components/bbtag/src":
+"@bbtag/blargbot@workspace:^, @bbtag/blargbot@workspace:bbtag/blargbot/src":
   version: 0.0.0-use.local
-  resolution: "@bbtag/blargbot@workspace:components/bbtag/src"
+  resolution: "@bbtag/blargbot@workspace:bbtag/blargbot/src"
   dependencies:
+    "@bbtag/language": "workspace:^"
     "@blargbot/application": "workspace:^"
     "@blargbot/async-tools": "workspace:^"
     "@blargbot/catch-decorators": "workspace:^"
@@ -109,6 +111,12 @@ __metadata:
     html-entities: ^2.3.3
     moment-timezone: ^0.5.41
     node-fetch: ^3.3.0
+  languageName: unknown
+  linkType: soft
+
+"@bbtag/language@workspace:^, @bbtag/language@workspace:bbtag/language/src":
+  version: 0.0.0-use.local
+  resolution: "@bbtag/language@workspace:bbtag/language/src"
   languageName: unknown
   linkType: soft
 
@@ -182,6 +190,7 @@ __metadata:
   resolution: "@blargbot/bbtag@workspace:services/bbtag-runner/src"
   dependencies:
     "@bbtag/blargbot": "workspace:^"
+    "@bbtag/language": "workspace:^"
     "@blargbot/application": "workspace:^"
     "@blargbot/bbtag-runner-client": "workspace:^"
     "@blargbot/container-id": "workspace:^"
@@ -192,8 +201,6 @@ __metadata:
     "@blargbot/timeouts-client": "workspace:^"
     "@blargbot/user-settings-client": "workspace:^"
     "@blargbot/user-warnings-client": "workspace:^"
-    "@types/amqplib": ^0.10.1
-    amqplib: ^0.10.3
   languageName: unknown
   linkType: soft
 
@@ -235,6 +242,7 @@ __metadata:
   resolution: "@blargbot/cluster@workspace:services/cluster/src"
   dependencies:
     "@bbtag/blargbot": "workspace:^"
+    "@bbtag/language": "workspace:^"
     "@blargbot/application": "workspace:^"
     "@blargbot/async-tools": "workspace:^"
     "@blargbot/catch-decorators": "workspace:^"
@@ -314,8 +322,6 @@ __metadata:
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/user-settings-client": "workspace:^"
-    "@types/amqplib": ^0.10.1
-    amqplib: ^0.10.3
   languageName: unknown
   linkType: soft
 
@@ -465,7 +471,6 @@ __metadata:
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    amqplib: ^0.10.3
     redis: ^4.6.5
   languageName: unknown
   linkType: soft
@@ -484,7 +489,6 @@ __metadata:
     "@blargbot/mapping": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
-    amqplib: ^0.10.3
     cassandra-driver: ^4.6.4
   languageName: unknown
   linkType: soft
@@ -518,8 +522,6 @@ __metadata:
     "@blargbot/env": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
-    "@types/amqplib": ^0.10.1
-    amqplib: ^0.10.3
     discordeno: ^18.0.1
   languageName: unknown
   linkType: soft
@@ -547,7 +549,6 @@ __metadata:
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
-    amqplib: ^0.10.3
     redis: ^4.6.5
   languageName: unknown
   linkType: soft
@@ -564,8 +565,6 @@ __metadata:
     "@blargbot/express": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
-    "@types/amqplib": ^0.10.1
-    amqplib: ^0.10.3
   languageName: unknown
   linkType: soft
 
@@ -582,7 +581,6 @@ __metadata:
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
-    amqplib: ^0.10.3
     redis: ^4.6.5
   languageName: unknown
   linkType: soft
@@ -601,7 +599,6 @@ __metadata:
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    amqplib: ^0.10.3
     redis: ^4.6.5
   languageName: unknown
   linkType: soft
@@ -631,8 +628,6 @@ __metadata:
     "@blargbot/express": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
-    "@types/amqplib": ^0.10.1
-    amqplib: ^0.10.3
   languageName: unknown
   linkType: soft
 
@@ -649,7 +644,6 @@ __metadata:
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
-    amqplib: ^0.10.3
     redis: ^4.6.5
   languageName: unknown
   linkType: soft
@@ -681,8 +675,6 @@ __metadata:
     "@blargbot/express": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
-    "@types/amqplib": ^0.10.1
-    amqplib: ^0.10.3
   languageName: unknown
   linkType: soft
 
@@ -708,7 +700,6 @@ __metadata:
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
-    amqplib: ^0.10.3
     redis: ^4.6.5
   languageName: unknown
   linkType: soft
@@ -745,7 +736,6 @@ __metadata:
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    amqplib: ^0.10.3
     redis: ^4.6.5
   languageName: unknown
   linkType: soft
@@ -872,12 +862,10 @@ __metadata:
     "@blargbot/image-generator-client": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
-    "@types/amqplib": ^0.10.1
     "@types/gifencoder": ^2.0.1
     "@types/gm": ^1.25.0
     "@types/node-fetch": ^2.6.2
     "@types/sharp": ^0.31.1
-    amqplib: ^0.10.3
     canvas: ^2.11.0
     gifencoder: ^2.0.1
     gm: ^1.25.0
@@ -1073,9 +1061,7 @@ __metadata:
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/timeout-clock-client": "workspace:^"
-    "@types/amqplib": ^0.10.1
     "@types/cron": ^2.0.0
-    amqplib: ^0.10.3
     cron: ^2.2.0
   languageName: unknown
   linkType: soft
@@ -1104,8 +1090,6 @@ __metadata:
     "@blargbot/serialization": "workspace:^"
     "@blargbot/timeout-clock-client": "workspace:^"
     "@blargbot/timeouts-client": "workspace:^"
-    "@types/amqplib": ^0.10.1
-    amqplib: ^0.10.3
   languageName: unknown
   linkType: soft
 
@@ -1144,7 +1128,6 @@ __metadata:
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
-    "@blargbot/serialization": "workspace:^"
     "@blargbot/user-settings-client": "workspace:^"
     redis: ^4.6.5
   languageName: unknown

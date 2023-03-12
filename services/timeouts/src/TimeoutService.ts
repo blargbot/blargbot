@@ -1,4 +1,4 @@
-import type { MessageHandle } from '@blargbot/message-hub';
+import type { MessageHandle, MessageHub } from '@blargbot/message-hub';
 import type { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
 import type { TimeoutDetails } from '@blargbot/timeouts-client';
 
@@ -8,14 +8,17 @@ import type { TimeoutMessageBroker } from './TimeoutMessageBroker.js';
 export class TimeoutService {
     readonly #database: ITimeoutRecordDatabase;
     readonly #handles: Set<MessageHandle>;
-    readonly #messages: TimeoutMessageBroker;
+    readonly #timeouts: TimeoutMessageBroker;
     readonly #clock: TimeoutClockMessageBroker;
+    readonly #messages: MessageHub;
 
     public constructor(
         database: ITimeoutRecordDatabase,
-        messages: TimeoutMessageBroker,
-        clock: TimeoutClockMessageBroker) {
+        timeouts: TimeoutMessageBroker,
+        clock: TimeoutClockMessageBroker,
+        messages: MessageHub) {
         this.#database = database;
+        this.#timeouts = timeouts;
         this.#messages = messages;
         this.#clock = clock;
         this.#handles = new Set();
@@ -24,7 +27,7 @@ export class TimeoutService {
     public async start(): Promise<void> {
         await Promise.all([
             this.#clock.handleTick(this.#handleTick.bind(this)).then(h => this.#handles.add(h)),
-            this.#messages.handleProcessTimeout(this.#handleProcessTimeout.bind(this)).then(h => this.#handles.add(h))
+            this.#timeouts.handleProcessTimeout(this.#handleProcessTimeout.bind(this)).then(h => this.#handles.add(h))
         ]);
     }
 
@@ -65,7 +68,7 @@ export class TimeoutService {
         const deletePending = this.#database.deleteAll(pending);
         for (const timeout of pending) {
             try {
-                await this.#messages.requestProcessTimeout(timeout);
+                await this.#timeouts.requestProcessTimeout(timeout);
             } catch (error) {
                 const { data, ...debug } = timeout;
                 console.error('Failed to process timeout', debug, error);
@@ -76,7 +79,7 @@ export class TimeoutService {
 
     async #handleProcessTimeout(timeout: TimeoutDetails): Promise<void> {
         try {
-            await this.#messages.sendEvent(timeout.queue, new Blob([timeout.data], { type: timeout.dataType }), timeout.options);
+            await this.#messages.send(timeout.queue, new Blob([timeout.data], { type: timeout.dataType }), timeout.options);
         } catch (err) {
             const { data: _, ...slimTimeout } = timeout;
             console.error('Error while processing timeout', slimTimeout, err);

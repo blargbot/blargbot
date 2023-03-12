@@ -1,8 +1,7 @@
-import type { MessageHandle, MessageHub } from '@blargbot/message-hub';
+import type { ConsumeMessage, MessageHandle, MessageHub } from '@blargbot/message-hub';
 import { blobToJson } from '@blargbot/message-hub';
 import type { TimeoutDetails } from '@blargbot/timeouts-client';
 import { timeoutDetailsSerializer } from '@blargbot/timeouts-client';
-import type * as amqplib from 'amqplib';
 
 export class TimeoutMessageBroker {
     static readonly #pendingTimeouts = 'pending-timeouts';
@@ -31,11 +30,7 @@ export class TimeoutMessageBroker {
         });
     }
 
-    public async sendEvent(queue: string, content: Blob, options: amqplib.Options.Publish): Promise<void> {
-        await this.#messages.send(queue, content, options);
-    }
-
-    public async handleProcessTimeout(handler: (timeout: TimeoutDetails, msg: amqplib.ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
+    public async handleProcessTimeout(handler: (timeout: TimeoutDetails, msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             queue: TimeoutMessageBroker.#pendingTimeouts,
             filter: '*',

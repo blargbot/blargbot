@@ -47,7 +47,8 @@ export class GuildSettingsApplication extends ServiceHost {
         const service = new TimeoutService(
             new TimeoutSequelizeDatabase(database),
             new TimeoutMessageBroker(messages),
-            new TimeoutClockMessageBroker(messages, serviceName)
+            new TimeoutClockMessageBroker(messages, serviceName),
+            messages
         );
 
         super([
