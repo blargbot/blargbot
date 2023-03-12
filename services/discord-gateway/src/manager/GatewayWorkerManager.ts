@@ -1,11 +1,11 @@
-import type { GatewayMessageBroker } from '../GatewayMessageBroker.js';
+import type { DiscordGatewayIPCMessageBroker } from '../DiscordGatewayIPCMessageBroker.js';
 import { GatewayWorker } from './GatewayWorker.js';
 
 export class GatewayWorkerManager {
     readonly #workers: Map<`${number}|${number}`, GatewayWorker>;
-    readonly #messages: GatewayMessageBroker;
+    readonly #messages: DiscordGatewayIPCMessageBroker;
 
-    public constructor(messages: GatewayMessageBroker) {
+    public constructor(messages: DiscordGatewayIPCMessageBroker) {
         this.#messages = messages;
         this.#workers = new Map<`${number}|${number}`, GatewayWorker>();
     }

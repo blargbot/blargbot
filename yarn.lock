@@ -492,6 +492,7 @@ __metadata:
     "@blargbot/application": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/discord-gateway-client": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"

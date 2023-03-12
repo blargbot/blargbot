@@ -1,17 +1,17 @@
 import child_process from 'node:child_process';
 import stream from 'node:stream';
 
-import type { GatewayMessageBroker, WorkerMessageTypes } from '../GatewayMessageBroker.js';
+import type { DiscordGatewayIPCMessageBroker, WorkerMessageTypes } from '../DiscordGatewayIPCMessageBroker.js';
 import { workerPath } from '../worker/index.js';
 
 export class GatewayWorker {
     readonly #id: number;
-    readonly #messages: GatewayMessageBroker;
+    readonly #messages: DiscordGatewayIPCMessageBroker;
     readonly #worker: child_process.ChildProcess;
     #started: Promise<void>;
     #stopped: Promise<void>;
 
-    public constructor(id: number, lastShardId: number, messages: GatewayMessageBroker) {
+    public constructor(id: number, lastShardId: number, messages: DiscordGatewayIPCMessageBroker) {
         this.#id = id;
         this.#messages = messages;
         this.#worker = child_process.fork(workerPath, {

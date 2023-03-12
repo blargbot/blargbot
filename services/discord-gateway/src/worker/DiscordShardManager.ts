@@ -1,7 +1,9 @@
+import type { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
+import type Discord from '@blargbot/discord-types';
 import type { MessageHandle } from '@blargbot/message-hub';
 import * as discordeno from 'discordeno';
 
-import type { GatewayMessageBroker } from '../GatewayMessageBroker.js';
+import type { DiscordGatewayIPCMessageBroker } from '../DiscordGatewayIPCMessageBroker.js';
 
 export interface DiscordShardManager {
     start(): Promise<void>;
@@ -11,15 +13,17 @@ export interface DiscordShardManager {
 export interface DiscordShardManagerOptions {
     readonly token: string;
     readonly lastShardId: number;
-    readonly messages: GatewayMessageBroker;
+    readonly ipc: DiscordGatewayIPCMessageBroker;
+    readonly gateway: DiscordGatewayMessageBroker;
     readonly workerId: number;
 }
 
 export function createDiscordShardManager(options: DiscordShardManagerOptions): DiscordShardManager {
+    const { gateway, ipc, lastShardId, workerId, token } = options;
     const identifyPromises = new Map<number, () => void>();
     let allowIdentify: MessageHandle | undefined;
     let identifyShard: MessageHandle | undefined;
-    const gatewayRequests = new Set<MessageHandle>();
+    const gatewayRequests: MessageHandle[] = [];
 
     const manager = discordeno.createShardManager({
         gatewayConfig: {
@@ -33,16 +37,16 @@ export function createDiscordShardManager(options: DiscordShardManagerOptions): 
                 | discordeno.Intents.GuildEmojis
                 | discordeno.Intents.DirectMessages
                 | discordeno.Intents.DirectMessageReactions,
-            token: options.token
+            token: token
         },
         shardIds: [],
-        totalShards: options.lastShardId + 1,
+        totalShards: lastShardId + 1,
         async handleMessage(shard, message) {
-            await options.messages.sendGatewayEvent(shard.id, options.lastShardId, message);
+            await gateway.pushMessage(shard.id, lastShardId, message as Discord.GatewayReceivePayload);
         },
         async requestIdentify(shardId) {
             const waiter = new Promise<void>(res => identifyPromises.set(shardId, res));
-            await options.messages.sendManagerCommand('requestIdentify', { workerId: options.workerId, shardId });
+            await ipc.sendManagerCommand('requestIdentify', { workerId: workerId, shardId });
             console.info('Shard identify requested', shardId);
             await waiter;
             console.info('Identifying shard', shardId);
@@ -52,13 +56,16 @@ export function createDiscordShardManager(options: DiscordShardManagerOptions): 
     return {
         async start() {
             await Promise.all([
-                options.messages.handleWorkerCommand('identifyShard', options.workerId, async ({ shardId }) => {
+                ipc.handleWorkerCommand('identifyShard', workerId, async ({ shardId }) => {
                     await manager.identify(shardId);
-                    gatewayRequests.add(await options.messages.handleGatewayRequest(shardId, options.lastShardId, async msg => {
-                        await manager.shards.get(shardId)?.send(msg);
-                    }));
+                    gatewayRequests.push(await gateway.handleSend(
+                        (...[, , payload]) => manager.shards.get(shardId)?.send(payload as unknown as discordeno.ShardSocketRequest),
+                        {
+                            shard: [shardId, lastShardId]
+                        }
+                    ));
                 }).then(v => identifyShard = v),
-                options.messages.handleWorkerCommand('allowIdentify', options.workerId, ({ shardId }) => {
+                ipc.handleWorkerCommand('allowIdentify', workerId, ({ shardId }) => {
                     identifyPromises.get(shardId)?.();
                     identifyPromises.delete(shardId);
                 }).then(v => allowIdentify = v)
@@ -66,7 +73,7 @@ export function createDiscordShardManager(options: DiscordShardManagerOptions): 
         },
         async stop() {
             await Promise.all([
-                ...[...gatewayRequests].map(r => r.disconnect().finally(() => gatewayRequests.delete(r))),
+                ...gatewayRequests.splice(0, Infinity).map(r => r.disconnect()),
                 identifyShard?.disconnect().finally(() => identifyShard = undefined),
                 allowIdentify?.disconnect().finally(() => allowIdentify = undefined),
                 ...manager.shards.map(s => s.shutdown())

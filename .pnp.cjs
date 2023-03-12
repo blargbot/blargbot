@@ -997,6 +997,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
