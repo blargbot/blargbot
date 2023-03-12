@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { Subtag } from '@bbtag/blargbot';
 import { InjectSubtag, LbSubtag, RbSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
