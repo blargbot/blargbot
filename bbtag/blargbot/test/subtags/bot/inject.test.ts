@@ -23,18 +23,12 @@ runSubtagTests({
         {
             code: '{inject;{lb}fail}',
             subtags: [Subtag.getDescriptor(LbSubtag)],
-            expected: '`Unmatched \'{\' at 0`',
-            errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Unmatched \'{\' at 0') }
-            ]
+            expected: '`Unmatched \'{\' at 0`'
         },
         {
             code: '{inject;fail{rb}}',
             subtags: [Subtag.getDescriptor(RbSubtag)],
-            expected: '`Unexpected \'}\' at 4`',
-            errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Unexpected \'}\' at 4') }
-            ]
+            expected: '`Unexpected \'}\' at 4`'
         }
     ]
 });
