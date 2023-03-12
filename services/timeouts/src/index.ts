@@ -9,14 +9,9 @@ import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 import { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
 
 import { createTimeoutRequestHandler } from './createTimeoutRequestHandler.js';
-import type { TimeoutRecord } from './TimeoutDetails.js';
-import { timeoutRecordSerializer } from './TimeoutDetails.js';
 import { TimeoutMessageBroker } from './TimeoutMessageBroker.js';
 import TimeoutSequelizeDatabase from './TimeoutSequelizeDatabase.js';
 import { TimeoutService } from './TimeoutService.js';
-
-export type { TimeoutRecord as GuildSettings };
-export { timeoutRecordSerializer as timeoutSerializer };
 
 @hostIfEntrypoint(() => [{
     port: env.appPort,

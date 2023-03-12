@@ -1,8 +1,7 @@
 import express, { asyncHandler } from '@blargbot/express';
-import { json } from '@blargbot/serialization';
+import type { TimeoutCreateResponse, TimeoutGetResponse, TimeoutListResponse } from '@blargbot/timeouts-client';
+import { timeoutDetailsCreateSerializer } from '@blargbot/timeouts-client';
 
-import type { TimeoutRecord } from './TimeoutDetails.js';
-import { timeoutRecordSerializerOpts } from './TimeoutDetails.js';
 import type { TimeoutService } from './TimeoutService.js';
 
 export function createTimeoutRequestHandler(service: TimeoutService): express.RequestHandler {
@@ -21,10 +20,10 @@ export function createTimeoutRequestHandler(service: TimeoutService): express.Re
                 service.listTimeout(ownerId, offset, count),
                 service.countTimeout(ownerId)
             ]);
-            res.status(200).send({ timers, total });
+            res.status(200).send({ timers, total } satisfies TimeoutListResponse);
         }))
         .post(asyncHandler(async (req, res): Promise<void> => {
-            const body = mapCreate.fromJson(req.body as JToken | undefined);
+            const body = timeoutDetailsCreateSerializer.fromJson(req.body as JToken | undefined);
             if (!body.success)
                 return void res.status(400).send({ error: 'Invalid request body' });
 
@@ -32,7 +31,7 @@ export function createTimeoutRequestHandler(service: TimeoutService): express.Re
                 ...body.value,
                 ownerId: BigInt(req.params.ownerId)
             });
-            res.status(200).send({ id });
+            res.status(200).send({ id } satisfies TimeoutCreateResponse);
         }))
         .delete(asyncHandler(async (req, res) => {
             await service.clearTimeout(BigInt(req.params.ownerId));
@@ -44,7 +43,7 @@ export function createTimeoutRequestHandler(service: TimeoutService): express.Re
             const result = await service.getTimeout(BigInt(req.params.ownerId), req.params.timerId);
             if (result === undefined)
                 return void res.status(404).end();
-            res.status(200).send(result);
+            res.status(200).send(result satisfies TimeoutGetResponse);
         }))
         .delete(asyncHandler(async (req, res) => {
             await service.deleteTimeout(BigInt(req.params.ownerId), req.params.timerId);
@@ -53,6 +52,3 @@ export function createTimeoutRequestHandler(service: TimeoutService): express.Re
 
     return router;
 }
-
-const { id, ownerId, ...createSerializerOpts } = timeoutRecordSerializerOpts;
-const mapCreate = json.object<Omit<TimeoutRecord, 'id' | 'ownerId'>>(createSerializerOpts);

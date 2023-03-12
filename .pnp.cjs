@@ -192,6 +192,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/api/src"\
       },\
       {\
+        "name": "@blargbot/bbtag-runner-client",\
+        "reference": "workspace:services/bbtag-runner/client"\
+      },\
+      {\
         "name": "@blargbot/bbtag",\
         "reference": "workspace:services/bbtag-runner/src"\
       },\
@@ -332,6 +336,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/timeout-clock/src"\
       },\
       {\
+        "name": "@blargbot/timeouts-client",\
+        "reference": "workspace:services/timeouts/client"\
+      },\
+      {\
         "name": "@blargbot/timeouts",\
         "reference": "workspace:services/timeouts/src"\
       },\
@@ -362,6 +370,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/application", ["workspace:components/application/src"]],\
       ["@blargbot/async-tools", ["workspace:components/async-tools/src"]],\
       ["@blargbot/bbtag", ["workspace:services/bbtag-runner/src"]],\
+      ["@blargbot/bbtag-runner-client", ["workspace:services/bbtag-runner/client"]],\
       ["@blargbot/catch-decorators", ["workspace:components/catch-decorators/src"]],\
       ["@blargbot/chatlog-types", ["workspace:components/chatlog-types/src"]],\
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
@@ -428,6 +437,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/timeout-clock", ["workspace:services/timeout-clock/src"]],\
       ["@blargbot/timeout-clock-client", ["workspace:services/timeout-clock/client"]],\
       ["@blargbot/timeouts", ["workspace:services/timeouts/src"]],\
+      ["@blargbot/timeouts-client", ["workspace:services/timeouts/client"]],\
       ["@blargbot/timer", ["workspace:components/timer/src"]],\
       ["@blargbot/user-regex", ["workspace:components/user-regex/src"]],\
       ["@blargbot/user-settings", ["workspace:services/user-settings/src"]],\
@@ -655,15 +665,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag", "workspace:services/bbtag-runner/src"],\
             ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/bbtag-runner-client", "workspace:services/bbtag-runner/client"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/timeouts-client", "workspace:services/timeouts/client"],\
             ["@blargbot/user-settings-client", "workspace:services/user-settings/client"],\
             ["@blargbot/user-warnings-client", "workspace:services/user-warnings/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/bbtag-runner-client", [\
+        ["workspace:services/bbtag-runner/client", {\
+          "packageLocation": "./services/bbtag-runner/client/",\
+          "packageDependencies": [\
+            ["@blargbot/bbtag-runner-client", "workspace:services/bbtag-runner/client"],\
+            ["@bbtag/blargbot", "workspace:components/bbtag/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1718,8 +1741,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["@blargbot/timeout-clock-client", "workspace:services/timeout-clock/client"],\
+            ["@blargbot/timeouts-client", "workspace:services/timeouts/client"],\
             ["@types/amqplib", "npm:0.10.1"],\
             ["amqplib", "npm:0.10.3"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/timeouts-client", [\
+        ["workspace:services/timeouts/client", {\
+          "packageLocation": "./services/timeouts/client/",\
+          "packageDependencies": [\
+            ["@blargbot/timeouts-client", "workspace:services/timeouts/client"],\
+            ["@blargbot/api-client", "workspace:components/api-client/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"],\
+            ["@types/amqplib", "npm:0.10.1"]\
           ],\
           "linkType": "SOFT"\
         }]\

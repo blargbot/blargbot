@@ -27,6 +27,7 @@ export interface ApiClientEndpointRootBuilder<Config> {
 }
 
 export interface ApiClientEndpointBuilder<Config, Request = void, Response = never> {
+    query(value: ValueOrFactory<Record<string, QueryValue | QueryValue[]>, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response>;
     validate(validator: (request: Request, config: Config) => void): ApiClientEndpointBuilder<Config, Request, Response>;
     header(name: string, value: string, ...values: string[]): ApiClientEndpointBuilder<Config, Request, Response>;
     headers(headers: ValueOrFactory<HttpHeaders, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response>;
@@ -113,6 +114,7 @@ export function defineApiClient<Config, Methods extends ApiClientEndpointFactori
 }
 
 type ValueOrFactory<T, Args extends readonly unknown[]> = T | ((...args: Args) => T)
+type QueryValue = string | number | boolean | bigint | null | undefined
 
 class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClientEndpointBuilder<Config, Request, Response> {
     readonly #method: string;
@@ -120,11 +122,17 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
     readonly #headers: Array<(request: Request, config: Config) => HttpHeaders> = [];
     readonly #responses: Record<number, (content: Blob, headers: HttpHeaders, config: Config) => Awaitable<Response>> = {};
     readonly #validators: Array<(request: Request, config: Config) => void> = [];
+    readonly #query: Array<(request: Request, config: Config) => Record<string, QueryValue | QueryValue[]>> = [];
     #body?: (request: Request, config: Config) => Awaitable<Blob>;
 
     public constructor(method: string, route: (request: Request, config: Config) => string) {
         this.#method = method;
         this.#route = route;
+    }
+
+    public query(value: ValueOrFactory<Record<string, QueryValue | QueryValue[]>, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response> {
+        this.#query.push(typeof value === 'function' ? value : () => value);
+        return this;
     }
 
     public validate(validator: (request: Request, config: Config) => void): ApiClientEndpointBuilder<Config, Request, Response> {
@@ -161,6 +169,7 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
         const headers = [...this.#headers];
         const responses = { ...this.#responses };
         const validators = [...this.#validators];
+        const query = [...this.#query];
         const route = this.#route;
         const body = this.#body;
 
@@ -168,9 +177,27 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
             for (const validator of validators)
                 validator(request, config);
 
+            let url = route(request, config);
+            if (query.length > 0) {
+                const queryString = Object.entries(
+                    query.reduce<Record<string, string[]>>((p, c) => {
+                        for (const [key, value] of Object.entries(c(request, config))) {
+                            const values = p[key] ??= [];
+                            for (const v of Array.isArray(value) ? value : [value])
+                                if (v !== undefined && v !== null)
+                                    values.push(v.toString());
+                        }
+                        return p;
+                    }, {}))
+                    .flatMap(e => e[1].map(v => `${encodeURIComponent(e[0])}=${encodeURIComponent(v)}`))
+                    .join('&');
+                if (queryString.length === 0)
+                    url += `${url.includes('?') ? '&' : '?'}${queryString}`;
+            }
+
             const response = await client.send({
                 method,
-                url: route(request, config),
+                url,
                 content: await body?.(request, config),
                 headers: headers.reduce<Record<string, string[]>>((acc, h) => {
                     for (const [header, value] of Object.entries(h(request, config))) {

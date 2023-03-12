@@ -1,8 +1,8 @@
 import type { MessageHandle } from '@blargbot/message-hub';
 import type { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
+import type { TimeoutDetails } from '@blargbot/timeouts-client';
 
 import type { ITimeoutRecordDatabase } from './ITimeoutRecordDatabase.js';
-import type { TimeoutDetails, TimeoutRecord } from './TimeoutDetails.js';
 import type { TimeoutMessageBroker } from './TimeoutMessageBroker.js';
 
 export class TimeoutService {
@@ -33,11 +33,11 @@ export class TimeoutService {
             .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
     }
 
-    public async createTimeout(timeout: Omit<TimeoutRecord, 'id'>): Promise<string> {
+    public async createTimeout(timeout: Omit<TimeoutDetails, 'id'>): Promise<string> {
         return await this.#database.create(timeout);
     }
 
-    public async getTimeout(ownerId: bigint, id: string): Promise<TimeoutRecord | undefined> {
+    public async getTimeout(ownerId: bigint, id: string): Promise<TimeoutDetails | undefined> {
         return await this.#database.get(ownerId, id);
     }
 
@@ -45,7 +45,7 @@ export class TimeoutService {
         return await this.#database.delete(ownerId, id);
     }
 
-    public async listTimeout(ownerId: bigint, offset: number, count: number): Promise<TimeoutRecord[]> {
+    public async listTimeout(ownerId: bigint, offset: number, count: number): Promise<TimeoutDetails[]> {
         return await this.#database.list(ownerId, offset, count);
     }
 

@@ -1,3 +1,3 @@
-export function jsonBody(body: unknown): Blob {
-    return new Blob([JSON.stringify(body)], { type: 'application/json' });
+export function jsonBody<T>(body: T, serializer: (value: T) => string = JSON.stringify): Blob {
+    return new Blob([serializer(body)], { type: 'application/json' });
 }

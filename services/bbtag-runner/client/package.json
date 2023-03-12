@@ -1,0 +1,13 @@
+{
+    "name": "@blargbot/bbtag-runner-client",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "devDependencies": {
+        "@bbtag/blargbot": "workspace:^",
+        "@blargbot/message-hub": "workspace:^"
+    }
+}

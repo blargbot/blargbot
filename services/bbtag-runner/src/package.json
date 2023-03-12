@@ -9,11 +9,13 @@
     "dependencies": {
         "@bbtag/blargbot": "workspace:^",
         "@blargbot/application": "workspace:^",
+        "@blargbot/bbtag-runner-client": "workspace:^",
         "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
+        "@blargbot/timeouts-client": "workspace:^",
         "@blargbot/user-settings-client": "workspace:^",
         "@blargbot/user-warnings-client": "workspace:^",
         "amqplib": "^0.10.3"

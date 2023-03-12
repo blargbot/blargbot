@@ -11,7 +11,7 @@ export interface MetricsHttpClientConfig {
 
 export class MetricsHttpClient extends defineApiClient(b => b.withConfig<MetricsHttpClientConfig>(), {
     postMetrics: b => b.route<readonly MetricJson[]>('POST', (_, x) => `${x.serviceName}/${x.instanceId}`)
-        .body(jsonBody)
+        .body(x => jsonBody(x))
         .response(204),
     getAllMetrics: b => b.route('')
         .response(200, b => b.text())

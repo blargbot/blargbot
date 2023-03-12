@@ -168,17 +168,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/bbtag-runner-client@workspace:^, @blargbot/bbtag-runner-client@workspace:services/bbtag-runner/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/bbtag-runner-client@workspace:services/bbtag-runner/client"
+  dependencies:
+    "@bbtag/blargbot": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/bbtag@workspace:services/bbtag-runner/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/bbtag@workspace:services/bbtag-runner/src"
   dependencies:
     "@bbtag/blargbot": "workspace:^"
     "@blargbot/application": "workspace:^"
+    "@blargbot/bbtag-runner-client": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/timeouts-client": "workspace:^"
     "@blargbot/user-settings-client": "workspace:^"
     "@blargbot/user-warnings-client": "workspace:^"
     "@types/amqplib": ^0.10.1
@@ -1069,6 +1080,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/timeouts-client@workspace:^, @blargbot/timeouts-client@workspace:services/timeouts/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/timeouts-client@workspace:services/timeouts/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+    "@types/amqplib": ^0.10.1
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/timeouts@workspace:services/timeouts/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/timeouts@workspace:services/timeouts/src"
@@ -1082,6 +1103,7 @@ __metadata:
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
     "@blargbot/timeout-clock-client": "workspace:^"
+    "@blargbot/timeouts-client": "workspace:^"
     "@types/amqplib": ^0.10.1
     amqplib: ^0.10.3
   languageName: unknown

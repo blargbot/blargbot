@@ -1,4 +1,5 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { BBTagExecutionMessageBroker } from '@blargbot/bbtag-runner-client';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
@@ -6,7 +7,6 @@ import { MessageHub } from '@blargbot/message-hub';
 import { MetricsClient } from '@blargbot/metrics-client';
 
 import { createBBTagEngine } from './createBBTagEngine.js';
-import { ImageMessageBroker } from './ImageMessageBroker.js';
 
 @hostIfEntrypoint(() => [{
     defaultPrefix: env.get(String, 'COMMAND_PREFIX'),
@@ -20,9 +20,10 @@ import { ImageMessageBroker } from './ImageMessageBroker.js';
 export class ImageGeneratorApplication extends ServiceHost {
 
     public constructor(options: ImageGeneratorApplicationOptions) {
+        const serviceName = 'bbtag-runner';
         const messages = new MessageHub(options.messages);
-        const imageBroker = new ImageMessageBroker(messages);
-        const metrics = new MetricsClient({ serviceName: 'bbtag-runner', instanceId: fullContainerId });
+        const executeBroker = new BBTagExecutionMessageBroker(messages, serviceName);
+        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
         const subtagLatency = metrics.histogram({
             name: 'bot_subtag_latency_ms',
             help: 'Latency of subtag execution',
@@ -49,7 +50,7 @@ export class ImageGeneratorApplication extends ServiceHost {
             metrics
         ]);
 
-        imageBroker;
+        executeBroker;
         engine;
     }
 }

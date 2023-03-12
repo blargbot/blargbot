@@ -1,9 +1,8 @@
 import type { MessageHandle, MessageHub } from '@blargbot/message-hub';
 import { blobToJson } from '@blargbot/message-hub';
+import type { TimeoutDetails } from '@blargbot/timeouts-client';
+import { timeoutDetailsSerializer } from '@blargbot/timeouts-client';
 import type * as amqplib from 'amqplib';
-
-import type { TimeoutDetails } from './TimeoutDetails.js';
-import { timeoutDetailsSerializer } from './TimeoutDetails.js';
 
 export class TimeoutMessageBroker {
     static readonly #pendingTimeouts = 'pending-timeouts';
