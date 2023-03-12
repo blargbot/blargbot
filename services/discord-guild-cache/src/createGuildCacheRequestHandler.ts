@@ -1,3 +1,4 @@
+import type { GuildCacheGuildCountResponse, GuildCacheGuildResponse } from '@blargbot/discord-guild-cache-client';
 import express, { asyncHandler } from '@blargbot/express';
 
 import type { DiscordGuildCacheService } from './DiscordGuildCacheService.js';
@@ -11,13 +12,13 @@ export function createGuildCacheRequestHandler(service: DiscordGuildCacheService
             if (result === undefined)
                 res.status(404).end();
             else
-                res.status(200).send(result);
+                res.status(200).send(result satisfies GuildCacheGuildResponse);
         }));
 
     router.route('/')
         .get(asyncHandler(async (_, res) => {
             const guildCount = await service.getGuildCount();
-            res.status(200).send({ guildCount });
+            res.status(200).send({ guildCount } satisfies GuildCacheGuildCountResponse);
         }))
         .delete(asyncHandler(async (_, res) => {
             await service.deleteAllGuilds();

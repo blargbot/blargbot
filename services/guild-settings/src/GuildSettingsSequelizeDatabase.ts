@@ -1,4 +1,4 @@
-import type { GuildSettings } from '@blargbot/guild-settings-contract';
+import type { GuildSettings } from '@blargbot/guild-settings-client';
 import type { Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
 import { DataTypes, makeColumn } from '@blargbot/sequelize';
 

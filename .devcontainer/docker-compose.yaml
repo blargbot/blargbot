@@ -27,6 +27,10 @@ x-discord-guild-cache-env:
   &discord-guild-cache-env
   DISCORD_GUILD_CACHE_URL: http://discord-guild-cache
 
+x-discord-role-cache-env:
+  &discord-role-cache-env
+  DISCORD_ROLE_CACHE_URL: http://discord-role-cache
+
 x-user-settings-env:
   &user-settings-env
   USER_SETTINGS_URL: http://user-settings
@@ -138,6 +142,7 @@ services:
       <<: *rabbit-env
       <<: *discord-guild-cache-env
       <<: *discord-channel-cache-env
+      <<: *discord-role-cache-env
     depends_on:
       rabbitmq:
         condition: service_healthy

@@ -1,4 +1,6 @@
 import { BBTagEngine, createValueConverter, DefaultLockService, DistributedCooldownService, Subtag, subtags } from '@bbtag/blargbot';
+import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
+import { UserWarningsHttpClient } from '@blargbot/user-warnings-client';
 
 import { ChannelService } from './services/ChannelService.js';
 import { DeferredExecutionService } from './services/DeferredExecutionService.js';
@@ -17,6 +19,9 @@ import { WarningService } from './services/WarningService.js';
 
 export function createBBTagEngine(options: BBTagEngineOptions): BBTagEngine {
     const { defaultPrefix, metrics } = options;
+    const userSettings = new UserSettingsHttpClient('http://user-settings');
+    const warnings = new UserWarningsHttpClient('http://user-warnings');
+
     return new BBTagEngine({
         defaultPrefix,
         subtags: Object.values(subtags).map(Subtag.getDescriptor),
@@ -24,9 +29,9 @@ export function createBBTagEngine(options: BBTagEngineOptions): BBTagEngine {
             colors: {},
             regexMaxLength: 2000
         }),
-        warnings: new WarningService(),
+        warnings: new WarningService(warnings),
         sources: new SourceProvider(),
-        timezones: new TimezoneProvider(),
+        timezones: new TimezoneProvider(userSettings),
         variables: new VariablesStore(),
         defer: new DeferredExecutionService(),
         domains: new DomainFilterService(),

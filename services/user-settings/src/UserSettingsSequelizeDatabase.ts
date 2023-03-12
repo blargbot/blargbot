@@ -1,6 +1,6 @@
 import type { Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
 import { DataTypes, makeColumn } from '@blargbot/sequelize';
-import type { UserSettings } from '@blargbot/user-settings-contract';
+import type { UserSettings } from '@blargbot/user-settings-client';
 
 import { defaultSettings } from './defaultSettings.js';
 import type { IUserSettingsDatabase } from './IUserSettingsDatabase.js';

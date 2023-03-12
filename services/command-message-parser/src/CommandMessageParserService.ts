@@ -2,21 +2,18 @@ import type { ICurrentUserAccessor } from '@blargbot/current-user-accessor';
 import type { ExtendedMessage } from '@blargbot/discord-message-stream-contract';
 import { markup } from '@blargbot/discord-util';
 import { hasValue } from '@blargbot/guards';
-import type { GuildSettings } from '@blargbot/guild-settings-contract';
-import guildSettings from '@blargbot/guild-settings-contract';
+import { GuildSettingsHttpClient } from '@blargbot/guild-settings-client';
 import { splitInput } from '@blargbot/input';
 import type { MessageHandle } from '@blargbot/message-hub';
-import type { UserSettings } from '@blargbot/user-settings-contract';
-import userSettings from '@blargbot/user-settings-contract';
-import fetch from 'node-fetch';
+import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
 
 import type { CommandMessageParserMessageBroker } from './CommandMessageParserMessageBroker.js';
 
 export class CommandMessageParserService {
     readonly #messages: CommandMessageParserMessageBroker;
     readonly #handles: Set<MessageHandle>;
-    readonly #guildSettings: string;
-    readonly #userSettings: string;
+    readonly #guildSettings: GuildSettingsHttpClient;
+    readonly #userSettings: UserSettingsHttpClient;
     readonly #defaultPrefix: string;
     readonly #user: ICurrentUserAccessor;
 
@@ -27,8 +24,8 @@ export class CommandMessageParserService {
     ) {
         this.#messages = messages;
         this.#user = user;
-        this.#guildSettings = options.guildSettingsUrl;
-        this.#userSettings = options.userSettingsUrl;
+        this.#guildSettings = GuildSettingsHttpClient.from(options.guildSettingsClient ?? options.guildSettingsUrl);
+        this.#userSettings = UserSettingsHttpClient.from(options.userSettingsClient ?? options.userSettingsUrl);
         this.#defaultPrefix = options.defaultPrefix;
         this.#handles = new Set();
     }
@@ -42,21 +39,6 @@ export class CommandMessageParserService {
     public async stop(): Promise<void> {
         await Promise.all([...this.#handles]
             .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
-    }
-
-    async #loadUserSettings(userId: string): Promise<UserSettings> {
-        const settingsResponse = await fetch(new URL(userId, this.#userSettings).toString());
-        const body = await settingsResponse.json();
-        return userSettings.read(JSON.stringify(body));
-    }
-
-    async #loadGuildSettings(guildId?: string): Promise<GuildSettings | undefined> {
-        if (guildId === undefined)
-            return undefined;
-
-        const settingsResponse = await fetch(new URL(guildId, this.#guildSettings).toString());
-        const body = await settingsResponse.json();
-        return guildSettings.read(JSON.stringify(body));
     }
 
     async #handleMessageCreate(trigger: ExtendedMessage): Promise<void> {
@@ -84,9 +66,9 @@ export class CommandMessageParserService {
 
     async #getPrefixes(userId: string, guildId?: string): Promise<string[]> {
         const [userSettings, botUser, guildSettings] = await Promise.all([
-            this.#loadUserSettings(userId),
+            this.#userSettings.getSettings({ userId }),
             this.#user.getOrWait(),
-            this.#loadGuildSettings(guildId)
+            guildId === undefined ? undefined : this.#guildSettings.getSettings({ guildId })
         ]);
         return [
             this.#defaultPrefix,
@@ -100,6 +82,8 @@ export class CommandMessageParserService {
 
 interface CommandMessageParserServiceOptions {
     readonly defaultPrefix: string;
-    readonly guildSettingsUrl: string;
-    readonly userSettingsUrl: string;
+    readonly guildSettingsUrl?: string;
+    readonly guildSettingsClient?: GuildSettingsHttpClient;
+    readonly userSettingsUrl?: string;
+    readonly userSettingsClient?: UserSettingsHttpClient;
 }

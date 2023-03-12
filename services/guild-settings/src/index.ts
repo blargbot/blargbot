@@ -2,8 +2,8 @@ import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
-import type { GuildSettings } from '@blargbot/guild-settings-contract';
-import guildSettings from '@blargbot/guild-settings-contract';
+import type { GuildSettings } from '@blargbot/guild-settings-client';
+import { guildSettingsSerializer } from '@blargbot/guild-settings-client';
 import { MetricsClient } from '@blargbot/metrics-client';
 import { RedisKVCache } from '@blargbot/redis-cache';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
@@ -65,7 +65,7 @@ export class GuildSettingsApplication extends ServiceHost {
                         new RedisKVCache<bigint, GuildSettings>(redis, {
                             ttlS: options.redis.ttl,
                             keyspace: 'guild_settings',
-                            serializer: guildSettings
+                            serializer: guildSettingsSerializer
                         })))),
                 options.port
             )

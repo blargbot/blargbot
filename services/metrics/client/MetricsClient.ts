@@ -13,17 +13,10 @@ export class MetricsClient {
     #timer?: NodeJS.Timer;
 
     public constructor(options: MetricsServiceOptions) {
-        if (options.client !== undefined) {
-            this.#client = options.client;
-        } else {
-            const metricsUrl = options.metricsUrl ?? process.env['METRICS_URL'];
-            if (metricsUrl === undefined)
-                throw new Error('metricsUrl must be supplied when there is no METRICS_URL environment variable');
-            this.#client = new MetricsHttpClient(metricsUrl, {
-                serviceName: options.serviceName,
-                instanceId: options.instanceId
-            });
-        }
+        this.#client = MetricsHttpClient.from(options.client ?? options.metricsUrl ?? process.env['METRICS_URL'], {
+            serviceName: options.serviceName,
+            instanceId: options.instanceId
+        });
         this.#scopeLabels = {
             global: {},
             service: { serviceName: options.serviceName },

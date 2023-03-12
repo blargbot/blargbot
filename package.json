@@ -54,8 +54,5 @@
     "homepage": "https://github.com/blargbot/blargbot#readme",
     "resolutions": {
         "@types/mocha@^10.0.1": "patch:@types/mocha@npm%3A10.0.1#./.yarn/patches/@types-mocha-npm-10.0.1-7c94e9e170.patch"
-    },
-    "dependencies": {
-        "node-fetch": "^3.3.0"
     }
 }

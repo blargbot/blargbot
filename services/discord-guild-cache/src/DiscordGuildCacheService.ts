@@ -1,10 +1,9 @@
 import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
+import type { SlimDiscordGuild } from '@blargbot/discord-guild-cache-client';
+import { toSlimDiscordGuild } from '@blargbot/discord-guild-cache-client';
 import type Discord from '@blargbot/discord-types';
 import type { MessageHandle } from '@blargbot/message-hub';
 import type { IKVCache } from '@blargbot/redis-cache';
-
-import type { SlimDiscordGuild } from './SlimDiscordGuild.js';
-import { toSlimDiscordGuild } from './SlimDiscordGuild.js';
 
 type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
     | 'GUILD_CREATE'

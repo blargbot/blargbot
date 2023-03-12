@@ -6,7 +6,7 @@ import { request } from 'http';
 
 export class HttpClient {
     readonly #defaultHeaders: { readonly [x: string]: string[]; };
-    readonly #handler: HttpMessageHandler;
+    readonly #handler: (message: HttpRequestContext) => Awaitable<HttpResponseMessage>;
 
     readonly #resolveUrl: (url: string | URL | undefined) => URL;
 
@@ -22,7 +22,11 @@ export class HttpClient {
                     }
                 })
         ));
-        this.#handler = options.handler ?? defaultHttpMessageHandler;
+        const middleware = [...options.middleware ?? [], sendHttpRequest];
+        const callMiddleware = (index: number, message: HttpRequestContext): Awaitable<HttpResponseMessage> => {
+            return middleware[index](message, callMiddleware.bind(null, index + 1, message));
+        };
+        this.#handler = callMiddleware.bind(null, 0);
     }
 
     public async send(message: HttpRequestMessage, abort?: AbortSignal): Promise<HttpResponseMessage> {
@@ -30,8 +34,9 @@ export class HttpClient {
             method: message.method ?? 'GET',
             content: message.content,
             headers: this.#resolveHeaders(message.headers),
-            url: this.#resolveUrl(message.url)
-        }, abort ?? new AbortController().signal);
+            url: this.#resolveUrl(message.url),
+            abort: abort ?? new AbortController().signal
+        });
     }
 
     #resolveHeaders(headers: HttpHeaders | undefined): HttpHeaders {
@@ -75,7 +80,7 @@ function mergeUrls(baseUrl: URL, url: string | undefined | URL): URL {
     }
 }
 
-export const defaultHttpMessageHandler: HttpMessageHandler = async (message, abort) => {
+async function sendHttpRequest(message: HttpRequestContext): Promise<HttpResponseMessage> {
     const [request, response] = createRequest(message.url);
     request.method = message.method;
     for (const [name, values] of Object.entries(message.headers))
@@ -85,7 +90,7 @@ export const defaultHttpMessageHandler: HttpMessageHandler = async (message, abo
         request.setHeader('Content-Type', message.content.type);
         request.setHeader('Content-Length', message.content.size);
         await message.content.stream()
-            .pipeTo(Writable.toWeb(request), { signal: abort });
+            .pipeTo(Writable.toWeb(request), { signal: message.abort });
     }
     request.end();
     const result = await response;
@@ -98,7 +103,7 @@ export const defaultHttpMessageHandler: HttpMessageHandler = async (message, abo
             return content ??= readAsBlob(result, result.headers['content-type']);
         }
     };
-};
+}
 
 async function readAsBlob(stream: Readable, type?: string): Promise<Blob> {
     try {
@@ -122,12 +127,12 @@ function createRequest(url: URL): [ClientRequest, Promise<IncomingMessage>] {
     return [req, response];
 }
 
-export type HttpMessageHandler = (message: ResolvedHttpRequestMessage, abort: AbortSignal) => Awaitable<HttpResponseMessage>;
+export type HttpRequestMiddleware = (message: HttpRequestContext, next: () => Awaitable<HttpResponseMessage>) => Awaitable<HttpResponseMessage>;
 
 export interface HttpClientOptions {
     readonly defaultHeaders?: HttpHeaders;
     readonly baseAddress?: string | URL;
-    readonly handler?: HttpMessageHandler;
+    readonly middleware?: Iterable<HttpRequestMiddleware>;
 }
 
 export interface HttpHeaders {
@@ -141,11 +146,12 @@ export interface HttpRequestMessage {
     readonly content?: Blob;
 }
 
-export interface ResolvedHttpRequestMessage {
-    readonly method: string;
-    readonly url: URL;
-    readonly headers: HttpHeaders;
-    readonly content?: Blob;
+export interface HttpRequestContext {
+    method: string;
+    url: URL;
+    headers: HttpHeaders;
+    content?: Blob;
+    abort: AbortSignal;
 }
 
 export interface HttpResponseMessage {

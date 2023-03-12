@@ -1,6 +1,7 @@
 import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
+import type { SlimDiscordGuild } from '@blargbot/discord-guild-cache-client';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-hub';
@@ -12,7 +13,6 @@ import { createClient as createRedisClient } from 'redis';
 
 import { createGuildCacheRequestHandler } from './createGuildCacheRequestHandler.js';
 import { DiscordGuildCacheService } from './DiscordGuildCacheService.js';
-import type { SlimDiscordGuild } from './SlimDiscordGuild.js';
 
 @hostIfEntrypoint(() => [{
     port: env.appPort,

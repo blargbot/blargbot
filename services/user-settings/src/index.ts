@@ -5,8 +5,7 @@ import express from '@blargbot/express';
 import { MetricsClient } from '@blargbot/metrics-client';
 import { RedisKVCache } from '@blargbot/redis-cache';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
-import type { UserSettings } from '@blargbot/user-settings-contract';
-import userSettings from '@blargbot/user-settings-contract';
+import type { UserSettings } from '@blargbot/user-settings-client';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
 
@@ -64,8 +63,7 @@ export class UserSettingsApplication extends ServiceHost {
                         new UserSettingsSequelizeDatabase(database),
                         new RedisKVCache<bigint, UserSettings>(redis, {
                             ttlS: options.redis.ttl,
-                            keyspace: 'user_settings',
-                            serializer: userSettings
+                            keyspace: 'user_settings'
                         })))),
                 options.port
             )

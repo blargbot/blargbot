@@ -179,6 +179,8 @@ __metadata:
     "@blargbot/env": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/user-settings-client": "workspace:^"
+    "@blargbot/user-warnings-client": "workspace:^"
     "@types/amqplib": ^0.10.1
     amqplib: ^0.10.3
   languageName: unknown
@@ -283,17 +285,15 @@ __metadata:
     "@blargbot/discord-util": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/guards": "workspace:^"
-    "@blargbot/guild-settings-contract": "workspace:^"
+    "@blargbot/guild-settings-client": "workspace:^"
     "@blargbot/input": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/message-command-contract": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
-    "@blargbot/user-settings-contract": "workspace:^"
+    "@blargbot/user-settings-client": "workspace:^"
     "@types/amqplib": ^0.10.1
-    "@types/node-fetch": ^2.6.2
     amqplib: ^0.10.3
-    node-fetch: ^3.3.0
   languageName: unknown
   linkType: soft
 
@@ -417,12 +417,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-channel-cache-client@workspace:^, @blargbot/discord-channel-cache-client@workspace:services/discord-channel-cache/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-channel-cache-client@workspace:services/discord-channel-cache/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-channel-cache@workspace:services/discord-channel-cache/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-channel-cache@workspace:services/discord-channel-cache/src"
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/container-id": "workspace:^"
+    "@blargbot/discord-channel-cache-client": "workspace:^"
     "@blargbot/discord-gateway-client": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
     "@blargbot/discord-util": "workspace:^"
@@ -448,14 +458,12 @@ __metadata:
     "@blargbot/discord-gateway-client": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
-    "@blargbot/guild-settings-contract": "workspace:^"
+    "@blargbot/guild-settings-client": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
-    "@types/node-fetch": ^2.6.2
     amqplib: ^0.10.3
     cassandra-driver: ^4.6.4
-    node-fetch: ^3.3.0
   languageName: unknown
   linkType: soft
 
@@ -493,6 +501,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-guild-cache-client@workspace:^, @blargbot/discord-guild-cache-client@workspace:services/discord-guild-cache/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-guild-cache-client@workspace:services/discord-guild-cache/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-guild-cache@workspace:services/discord-guild-cache/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-guild-cache@workspace:services/discord-guild-cache/src"
@@ -500,6 +517,7 @@ __metadata:
     "@blargbot/application": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/discord-gateway-client": "workspace:^"
+    "@blargbot/discord-guild-cache-client": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
@@ -579,17 +597,18 @@ __metadata:
   dependencies:
     "@blargbot/application": "workspace:^"
     "@blargbot/container-id": "workspace:^"
+    "@blargbot/discord-channel-cache-client": "workspace:^"
     "@blargbot/discord-gateway-client": "workspace:^"
+    "@blargbot/discord-guild-cache-client": "workspace:^"
     "@blargbot/discord-message-stream-contract": "workspace:^"
+    "@blargbot/discord-role-cache-client": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@types/amqplib": ^0.10.1
-    "@types/node-fetch": ^2.6.2
     amqplib: ^0.10.3
-    node-fetch: ^3.3.0
   languageName: unknown
   linkType: soft
 
@@ -640,6 +659,15 @@ __metadata:
     "@blargbot/metrics-client": "workspace:^"
     "@types/amqplib": ^0.10.1
     amqplib: ^0.10.3
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-role-cache-client@workspace:^, @blargbot/discord-role-cache-client@workspace:services/discord-role-cache/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-role-cache-client@workspace:services/discord-role-cache/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -775,10 +803,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/guild-settings-contract@workspace:^, @blargbot/guild-settings-contract@workspace:contracts/guild-settings/src":
+"@blargbot/guild-settings-client@workspace:^, @blargbot/guild-settings-client@workspace:services/guild-settings/client":
   version: 0.0.0-use.local
-  resolution: "@blargbot/guild-settings-contract@workspace:contracts/guild-settings/src"
+  resolution: "@blargbot/guild-settings-client@workspace:services/guild-settings/client"
   dependencies:
+    "@blargbot/api-client": "workspace:^"
     "@blargbot/serialization": "workspace:^"
   languageName: unknown
   linkType: soft
@@ -791,7 +820,7 @@ __metadata:
     "@blargbot/container-id": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
-    "@blargbot/guild-settings-contract": "workspace:^"
+    "@blargbot/guild-settings-client": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/redis-cache": "workspace:^"
@@ -1048,11 +1077,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/user-settings-contract@workspace:^, @blargbot/user-settings-contract@workspace:contracts/user-settings/src":
+"@blargbot/user-settings-client@workspace:^, @blargbot/user-settings-client@workspace:services/user-settings/client":
   version: 0.0.0-use.local
-  resolution: "@blargbot/user-settings-contract@workspace:contracts/user-settings/src"
+  resolution: "@blargbot/user-settings-client@workspace:services/user-settings/client"
   dependencies:
-    "@blargbot/serialization": "workspace:^"
+    "@blargbot/api-client": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -1069,8 +1098,16 @@ __metadata:
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
-    "@blargbot/user-settings-contract": "workspace:^"
+    "@blargbot/user-settings-client": "workspace:^"
     redis: ^4.6.5
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/user-warnings-client@workspace:^, @blargbot/user-warnings-client@workspace:services/user-warnings/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/user-warnings-client@workspace:services/user-warnings/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -1085,6 +1122,7 @@ __metadata:
     "@blargbot/mapping": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
+    "@blargbot/user-warnings-client": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -2666,7 +2704,6 @@ __metadata:
     eslint: ^8.35.0
     eslint-plugin-import: ^2.27.5
     eslint-plugin-simple-import-sort: ^10.0.0
-    node-fetch: ^3.3.0
     typescript: ^4.9.5
   languageName: unknown
   linkType: soft

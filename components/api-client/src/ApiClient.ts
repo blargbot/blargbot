@@ -16,25 +16,18 @@ export interface ApiClientEndpoint<Name extends PropertyKey = PropertyKey, Reque
     readonly response: Response;
 }
 
-export interface ApiClientBuilder<Methods extends ApiClientEndpoint = never, Config = void> {
-    endpoint<Name extends PropertyKey, Request, Response>(
-        name: Name,
-        configure: (builder: ApiClientEndpointRootBuilder<Config>) => ApiClientEndpointBuilder<Config, Request, Response>
-    ): ApiClientBuilder<Methods | ApiClientEndpoint<Name, Request, Response>, Config>;
+export interface ApiClientBuilder<Config = void> {
+    readonly _config?: Config;
+    withConfig<Config>(): ApiClientBuilder<Config>;
 }
 
-export interface ApiClientRootBuilder<Config = void> extends ApiClientBuilder<never, Config> {
-    withConfig<Config>(): ApiClientRootBuilder<Config>;
-}
-
-export interface ApiClientEndpointRootBuilder<Config, Request = void> extends ApiClientEndpointBuilder<Config, Request> {
-    arg<R>(validator?: (request: R, config: Config) => void): ApiClientEndpointRootBuilder<Config, R>;
+export interface ApiClientEndpointRootBuilder<Config> {
+    route<R = void>(path: ValueOrFactory<string, [request: R, config: Config]>): ApiClientEndpointBuilder<Config, R>;
+    route<R = void>(method: string, path: ValueOrFactory<string, [request: R, config: Config]>): ApiClientEndpointBuilder<Config, R>;
 }
 
 export interface ApiClientEndpointBuilder<Config, Request = void, Response = never> {
-    arg(validator: (request: Request, config: Config) => void): ApiClientEndpointBuilder<Config, Request, Response>;
-    route(path: ValueOrFactory<string, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response>;
-    route(method: string, path: ValueOrFactory<string, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response>;
+    validate(validator: (request: Request, config: Config) => void): ApiClientEndpointBuilder<Config, Request, Response>;
     header(name: string, value: string, ...values: string[]): ApiClientEndpointBuilder<Config, Request, Response>;
     headers(headers: ValueOrFactory<HttpHeaders, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response>;
     body(content: ValueOrFactory<Blob, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response>;
@@ -42,83 +35,100 @@ export interface ApiClientEndpointBuilder<Config, Request = void, Response = nev
     response<R>(code: number, reader: (content: Blob, headers: HttpHeaders, config: Config) => Awaitable<R>): ApiClientEndpointBuilder<Config, Request, Response | R>;
 }
 
-export function defineApiClient<Config, Endpoint extends ApiClientEndpoint>(
-    configure: (builder: ApiClientRootBuilder) => ApiClientBuilder<Endpoint, Config>
-): ApiClientConstructor<Endpoint, Config> {
-    class ApiClient {
-        public readonly client: HttpClient;
-        public readonly config: Config;
+export interface ApiClientEndpointFactory<Config, Request, Response> {
+    (builder: ApiClientEndpointRootBuilder<Config>): ApiClientEndpointBuilder<Config, Request, Response>;
+}
+export type ApiClientEndpointFactories<Config> = Record<PropertyKey, ApiClientEndpointFactory<Config, unknown, unknown>>;
+export type ApiClientEndpointFactoriesToEndpoints<Config, Factories extends ApiClientEndpointFactories<Config>> = {
+    [P in keyof Factories]: Factories[P] extends ApiClientEndpointFactory<Config, infer Request, infer Response> ? ApiClientEndpoint<P, Request, Response> : never;
+}[keyof Factories]
 
-        public constructor(options: HttpClient | HttpClientOptions | string | URL, config: Config) {
-            if (options instanceof URL || typeof options === 'string') {
-                this.client = new HttpClient({ baseAddress: options });
-            } else if (options instanceof HttpClient) {
-                this.client = options;
-            } else {
-                this.client = new HttpClient(options);
-            }
-            this.config = config;
-        }
-    }
+export function defineApiClient<Methods extends ApiClientEndpointFactories<void>>(
+    factories: Methods
+): ApiClientConstructor<ApiClientEndpointFactoriesToEndpoints<void, Methods>, void>
+export function defineApiClient<Config, Methods extends ApiClientEndpointFactories<Config>>(
+    options: (builder: ApiClientBuilder) => ApiClientBuilder<Config>,
+    factories: Methods
+): ApiClientConstructor<ApiClientEndpointFactoriesToEndpoints<Config, Methods>, Config>
+export function defineApiClient<Config, Methods extends ApiClientEndpointFactories<Config>>(
+    ...args: [
+        factories: Methods
+    ] | [
+        options: (builder: ApiClientBuilder) => ApiClientBuilder<Config>,
+        factories: Methods
+    ]
+): ApiClientConstructor<ApiClientEndpointFactoriesToEndpoints<Config, Methods>, Config> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const [configure, factories] = typeof args[0] === 'function' ? [args[0], args[1]!] : [undefined, args[0]];
 
-    let hasEndpoint = false;
-    function assertHasNoEndpoint(): void {
-        if (hasEndpoint)
-            throw new Error('Configuration is fixed once an endpoint has been added!');
-    }
-
-    configure({
+    configure?.({
         withConfig<Config>() {
-            assertHasNoEndpoint();
-            return this as ApiClientRootBuilder<Config>;
-        },
-        endpoint(name, configure) {
-            hasEndpoint = true;
-            const builder = new ApiClientEndpointBuilderImpl();
-            configure(builder as ApiClientEndpointRootBuilder<void, void>);
-            const handler = builder.build();
-            Object.assign(ApiClient.prototype, {
-                async [name](this: ApiClient, request: unknown, abort?: AbortSignal): Promise<unknown> {
-                    // eslint-disable-next-line @typescript-eslint/return-await
-                    return await handler(this.client, request, this.config, abort);
-                }
-            });
-            return this;
+            return this as ApiClientBuilder<Config>;
         }
     });
 
+    let defineHandler: <Request, Response>(name: PropertyKey, handler: ApiClientEndpointHandler<Config, Request, Response>) => void;
+    class ApiClient {
+        static {
+            defineHandler = <Request, Response>(name: PropertyKey, handler: ApiClientEndpointHandler<Config, Request, Response>) => Object.assign(ApiClient.prototype, {
+                async [name](this: ApiClient, request: Request, abort?: AbortSignal): Promise<Response> {
+                    return await handler(this.#client, request, this.#config, abort);
+                }
+            });
+        }
+
+        readonly #client: HttpClient;
+        readonly #config: Config;
+
+        public constructor(options: HttpClient | HttpClientOptions | string | URL, config: Config) {
+            this.#config = config;
+            if (options instanceof URL || typeof options === 'string')
+                this.#client = new HttpClient({ baseAddress: options });
+            else if (options instanceof HttpClient)
+                this.#client = options;
+            else
+                this.#client = new HttpClient(options);
+        }
+    }
+
+    for (const [name, configure] of Object.entries(factories)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let builder: ApiClientEndpointBuilderImpl<Config, any, void> | undefined;
+        configure({
+            route<R>(...args: [method: string, route: ValueOrFactory<string, [request: R, config: Config]>] | [route: ValueOrFactory<string, [request: R, config: Config]>]): ApiClientEndpointBuilder<Config, R> {
+                if (builder !== undefined)
+                    throw new Error('Cannot set multiple routes for one API method');
+                const [method, route] = args[1] === undefined ? ['GET', args[0]] : [args[0] as string, args[1]];
+                return builder = new ApiClientEndpointBuilderImpl(method, typeof route === 'function' ? route : () => route);
+            }
+        });
+        if (builder === undefined)
+            throw new Error(`No route was provided for API method ${name}`);
+        defineHandler(name, builder.build());
+    }
+
     ApiClient satisfies ApiClientConstructor<never, Config>;
 
-    return ApiClient as ApiClientConstructor<Endpoint, Config>;
+    return ApiClient as unknown as ApiClientConstructor<ApiClientEndpointFactoriesToEndpoints<Config, Methods>, Config>;
 }
 
 type ValueOrFactory<T, Args extends readonly unknown[]> = T | ((...args: Args) => T)
 
-class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClientEndpointBuilder<Config, Request, Response>, ApiClientEndpointBuilder<Config, Request> {
-    #method = 'GET';
+class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClientEndpointBuilder<Config, Request, Response> {
+    readonly #method: string;
+    readonly #route: (request: Request, config: Config) => string;
     readonly #headers: Array<(request: Request, config: Config) => HttpHeaders> = [];
     readonly #responses: Record<number, (content: Blob, headers: HttpHeaders, config: Config) => Awaitable<Response>> = {};
     readonly #validators: Array<(request: Request, config: Config) => void> = [];
-    #route?: (request: Request, config: Config) => string;
     #body?: (request: Request, config: Config) => Awaitable<Blob>;
 
-    public arg<R extends Request>(validator?: (request: R, config: Config) => void): ApiClientEndpointBuilder<Config, R, Response>
-    public arg(validator: (request: Request, config: Config) => void): ApiClientEndpointBuilder<Config, Request, Response>
-    public arg(validator?: (request: Request, config: Config) => void): ApiClientEndpointBuilder<Config, Request, Response> {
-        if (validator !== undefined)
-            this.#validators.push(validator);
-        return this;
+    public constructor(method: string, route: (request: Request, config: Config) => string) {
+        this.#method = method;
+        this.#route = route;
     }
 
-    public route(route: ValueOrFactory<string, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response>
-    public route(method: string, route: ValueOrFactory<string, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response>
-    public route(...args: [method: string, route: ValueOrFactory<string, [request: Request, config: Config]>] | [route: ValueOrFactory<string, [request: Request, config: Config]>]): ApiClientEndpointBuilder<Config, Request, Response> {
-        if (this.#route !== undefined)
-            throw new Error('Route has already been set');
-
-        const [method, route] = args[1] === undefined ? [this.#method, args[0]] : [args[0] as string, args[1]];
-        this.#method = method;
-        this.#route = typeof route === 'function' ? route : () => route;
+    public validate(validator: (request: Request, config: Config) => void): ApiClientEndpointBuilder<Config, Request, Response> {
+        this.#validators.push(validator);
         return this;
     }
 
@@ -146,16 +156,13 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
         return this;
     }
 
-    public build(): (client: HttpClient, request: Request, config: Config, abort?: AbortSignal) => Awaitable<Response> {
+    public build(): ApiClientEndpointHandler<Config, Request, Response> {
         const method = this.#method;
         const headers = [...this.#headers];
         const responses = { ...this.#responses };
         const validators = [...this.#validators];
         const route = this.#route;
         const body = this.#body;
-
-        if (route === undefined)
-            throw new Error('No route was set!');
 
         return async (client, request, config, abort) => {
             for (const validator of validators)
@@ -183,4 +190,8 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
             throw new Error(`Unexpected response ${response.statusCode} ${response.statusMessage}`);
         };
     }
+}
+
+interface ApiClientEndpointHandler<Config, Request, Response> {
+    (client: HttpClient, request: Request, config: Config, abort?: AbortSignal): Awaitable<Response>;
 }

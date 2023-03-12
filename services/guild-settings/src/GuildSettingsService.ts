@@ -1,4 +1,4 @@
-import type { GuildSettings } from '@blargbot/guild-settings-contract';
+import type { GuildSettings } from '@blargbot/guild-settings-client';
 import type { IKVCache } from '@blargbot/redis-cache';
 
 import { defaultSettings } from './defaultSettings.js';

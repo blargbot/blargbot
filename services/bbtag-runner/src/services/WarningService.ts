@@ -1,32 +1,31 @@
 import type { BBTagContext, Entities, WarningService as BBTagWarningService } from '@bbtag/blargbot';
+import type { UserWarningsHttpClient } from '@blargbot/user-warnings-client';
 
 export class WarningService implements BBTagWarningService {
-    public warn(context: BBTagContext, member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number> {
-        context;
-        member;
-        moderator;
-        count;
-        reason;
-        throw new Error('Method not implemented.');
+    readonly #client: UserWarningsHttpClient;
+
+    public constructor(client: UserWarningsHttpClient) {
+        this.#client = client;
     }
 
-    public pardon(context: BBTagContext, member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number> {
-        context;
-        member;
+    public async warn(context: BBTagContext, member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number> {
+        const result = await this.#client.assignWarnings({ guildId: context.guild.id, userId: member.id, assign: count });
+        // TODO Send message to modlog
         moderator;
-        count;
         reason;
-        throw new Error('Method not implemented.');
+        return result.newCount;
     }
 
-    public count(context: BBTagContext, member: Entities.User): Promise<number> {
-        context;
-        member;
-        throw new Error('Method not implemented.');
+    public async pardon(context: BBTagContext, member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number> {
+        const result = await this.#client.assignWarnings({ guildId: context.guild.id, userId: member.id, assign: -count });
+        // TODO Send message to modlog
+        moderator;
+        reason;
+        return result.newCount;
+    }
+
+    public async count(context: BBTagContext, member: Entities.User): Promise<number> {
+        const result = await this.#client.getWarnings({ guildId: context.guild.id, userId: member.id });
+        return result.count;
     }
 }
-// {
-//     count: async (ctx, user) => await this.database.guilds.getWarnings(ctx.guild.id, user.id) ?? 0,
-//     pardon: (...args) => util.pardon(...args),
-//     warn: (...args) => util.warn(...args)
-// }

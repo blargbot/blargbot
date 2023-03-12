@@ -12,6 +12,7 @@
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/container-id": "workspace:^",
+        "@blargbot/discord-channel-cache-client": "workspace:^",
         "@blargbot/discord-gateway-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
         "@blargbot/discord-util": "workspace:^",

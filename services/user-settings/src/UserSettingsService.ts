@@ -1,5 +1,5 @@
 import type { IKVCache } from '@blargbot/redis-cache';
-import type { UserSettings } from '@blargbot/user-settings-contract';
+import type { UserSettings } from '@blargbot/user-settings-client';
 
 import { defaultSettings } from './defaultSettings.js';
 import type { IUserSettingsDatabase } from './IUserSettingsDatabase.js';

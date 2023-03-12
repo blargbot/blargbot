@@ -1,4 +1,4 @@
-import type { GuildSettings } from '@blargbot/guild-settings-contract';
+import type { GuildSettings } from '@blargbot/guild-settings-client';
 
 export const defaultSettings = (): GuildSettings => ({
     actOnLimitsOnly: false,

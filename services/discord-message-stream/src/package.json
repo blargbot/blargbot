@@ -12,18 +12,19 @@
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/container-id": "workspace:^",
+        "@blargbot/discord-channel-cache-client": "workspace:^",
         "@blargbot/discord-gateway-client": "workspace:^",
+        "@blargbot/discord-guild-cache-client": "workspace:^",
         "@blargbot/discord-message-stream-contract": "workspace:^",
+        "@blargbot/discord-role-cache-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
-        "amqplib": "^0.10.3",
-        "node-fetch": "^3.3.0"
+        "amqplib": "^0.10.3"
     },
     "devDependencies": {
-        "@types/amqplib": "^0.10.1",
-        "@types/node-fetch": "^2.6.2"
+        "@types/amqplib": "^0.10.1"
     }
 }

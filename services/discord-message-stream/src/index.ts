@@ -21,6 +21,9 @@ import { DiscordMessageStreamService } from './DiscordMessageStreamService.js';
     },
     discordGuildCache: {
         url: env.discordGuildCacheUrl
+    },
+    discordRoleCache: {
+        url: env.discordRoleCacheUrl
     }
 }])
 export class DiscordMessageStreamApplication extends ServiceHost {
@@ -34,7 +37,8 @@ export class DiscordMessageStreamApplication extends ServiceHost {
             metrics,
             {
                 discordChannelCacheUrl: options.discordChannelCache.url,
-                discordGuildCacheUrl: options.discordGuildCache.url
+                discordGuildCacheUrl: options.discordGuildCache.url,
+                discordRoleCacheUrl: options.discordRoleCache.url
             }
         );
 
@@ -52,6 +56,9 @@ export interface DiscordMessageStreamApplicationOptions {
         readonly url: string;
     };
     readonly discordGuildCache: {
+        readonly url: string;
+    };
+    readonly discordRoleCache: {
         readonly url: string;
     };
 }

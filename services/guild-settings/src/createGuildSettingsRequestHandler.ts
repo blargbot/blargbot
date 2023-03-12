@@ -1,6 +1,6 @@
 import express, { asyncHandler } from '@blargbot/express';
-import type { GuildSettings } from '@blargbot/guild-settings-contract';
-import guildSettings from '@blargbot/guild-settings-contract';
+import type { GuildSettings } from '@blargbot/guild-settings-client';
+import { guildSettingsSerializer } from '@blargbot/guild-settings-client';
 import { mapping } from '@blargbot/mapping';
 
 import type { GuildSettingsService } from './GuildSettingsService.js';
@@ -12,7 +12,7 @@ export function createGuildSettingsRequestHandler(service: GuildSettingsService)
         .get(asyncHandler(async (req, res) => {
             res.status(200)
                 .contentType('application/json')
-                .end(guildSettings.write(await service.getSettings(BigInt(req.params.guildId))));
+                .end(guildSettingsSerializer.write(await service.getSettings(BigInt(req.params.guildId))));
         }))
         .patch(asyncHandler(async (req, res) => {
             const mapped = mapUpdate(req.body);

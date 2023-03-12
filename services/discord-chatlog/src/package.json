@@ -16,15 +16,11 @@
         "@blargbot/discord-gateway-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
         "@blargbot/env": "workspace:^",
-        "@blargbot/guild-settings-contract": "workspace:^",
+        "@blargbot/guild-settings-client": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
         "amqplib": "^0.10.3",
-        "cassandra-driver": "^4.6.4",
-        "node-fetch": "^3.3.0"
-    },
-    "devDependencies": {
-        "@types/node-fetch": "^2.6.2"
+        "cassandra-driver": "^4.6.4"
     }
 }

@@ -1,5 +1,6 @@
 import express, { asyncHandler } from '@blargbot/express';
 import { mapping } from '@blargbot/mapping';
+import type { UserWarningsResponse, UserWarningsUpdateResponse } from '@blargbot/user-warnings-client';
 
 import type { UserWarningService } from './UserWarningService.js';
 
@@ -15,7 +16,7 @@ export function createModLogRequestHandler(service: UserWarningService): express
     router.route('/:guildId(\\d+)/:userId(\\d+)')
         .get(asyncHandler(async (req, res) => {
             const count = await service.getWarnings(BigInt(req.params.guildId), BigInt(req.params.userId));
-            res.status(200).send({ count });
+            res.status(200).send({ count } satisfies UserWarningsResponse);
         }))
         .patch(asyncHandler(async (req, res) => {
             const mapped = mapUpdate(req.body);
@@ -25,7 +26,7 @@ export function createModLogRequestHandler(service: UserWarningService): express
             }
 
             const result = await service.addWarnings(BigInt(req.params.guildId), BigInt(req.params.userId), mapped.value.assign);
-            res.status(200).send(result);
+            res.status(200).send(result satisfies UserWarningsUpdateResponse);
         }))
         .delete(asyncHandler(async (req, res) => {
             await service.clearWarnings(BigInt(req.params.guildId), BigInt(req.params.userId));

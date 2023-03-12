@@ -13,6 +13,7 @@
         "@blargbot/application": "workspace:^",
         "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-gateway-client": "workspace:^",
+        "@blargbot/discord-guild-cache-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",

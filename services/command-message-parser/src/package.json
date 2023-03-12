@@ -17,18 +17,16 @@
         "@blargbot/discord-util": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/guards": "workspace:^",
-        "@blargbot/guild-settings-contract": "workspace:^",
+        "@blargbot/guild-settings-client": "workspace:^",
         "@blargbot/input": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "@blargbot/message-command-contract": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
-        "@blargbot/user-settings-contract": "workspace:^",
-        "amqplib": "^0.10.3",
-        "node-fetch": "^3.3.0"
+        "@blargbot/user-settings-client": "workspace:^",
+        "amqplib": "^0.10.3"
     },
     "devDependencies": {
-        "@types/amqplib": "^0.10.1",
-        "@types/node-fetch": "^2.6.2"
+        "@types/amqplib": "^0.10.1"
     }
 }

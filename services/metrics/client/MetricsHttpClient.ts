@@ -1,15 +1,27 @@
-import { defineApiClient } from '@blargbot/api-client';
+import type { HttpClient, HttpClientOptions } from '@blargbot/api-client';
+import { defineApiClient, jsonBody } from '@blargbot/api-client';
+import type { Registry } from 'prom-client';
 
-import type { MetricJson } from './types.js';
+export type MetricJson = Awaited<ReturnType<Registry['getMetricsAsJSON']>>[number]
 
-export class MetricsHttpClient extends defineApiClient(b => b
-    .withConfig<{ serviceName: string; instanceId: string; }>()
-    .endpoint('postMetrics', b => b
-        .arg<readonly MetricJson[]>()
-        .route('POST', (_, x) => `${x.serviceName}/${x.instanceId}`)
-        .body(x => new Blob([JSON.stringify(x)], { type: 'application/json' }))
-        .response(204))
-    .endpoint('getAllMetrics', b => b
-        .route('')
-        .response(200, b => b.text()))) {
+export interface MetricsHttpClientConfig {
+    readonly serviceName: string;
+    readonly instanceId: string;
+}
+
+export class MetricsHttpClient extends defineApiClient(b => b.withConfig<MetricsHttpClientConfig>(), {
+    postMetrics: b => b.route<readonly MetricJson[]>('POST', (_, x) => `${x.serviceName}/${x.instanceId}`)
+        .body(jsonBody)
+        .response(204),
+    getAllMetrics: b => b.route('')
+        .response(200, b => b.text())
+}) {
+
+    public static from(options: MetricsHttpClient | HttpClient | HttpClientOptions | string | URL | undefined, config: MetricsHttpClientConfig): MetricsHttpClient {
+        if (options instanceof MetricsHttpClient)
+            return options;
+        if (options === undefined)
+            throw new Error('No configuration provided for client');
+        return new MetricsHttpClient(options, config);
+    }
 }

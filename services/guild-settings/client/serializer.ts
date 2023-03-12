@@ -1,10 +1,6 @@
-import type { IJsonConverterType } from '@blargbot/serialization';
 import { json } from '@blargbot/serialization';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface GuildSettings extends Readonly<IJsonConverterType<typeof guildSettingsSerializer>> {
-
-}
+import type { GuildSettings } from './index.js';
 
 export const guildSettingsSerializerOptions = {
     maxAllowedMentions: json.number.nullable,
@@ -36,6 +32,4 @@ export const guildSettingsSerializerOptions = {
     announceRole: json.bigint.nullable
 };
 
-export const guildSettingsSerializer = json.object(guildSettingsSerializerOptions);
-
-export default guildSettingsSerializer;
+export const guildSettingsSerializer = json.object<GuildSettings>(guildSettingsSerializerOptions);

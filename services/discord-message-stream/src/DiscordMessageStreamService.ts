@@ -1,8 +1,10 @@
+import { DiscordChannelCacheHttpClient } from '@blargbot/discord-channel-cache-client';
 import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
+import { DiscordGuildCacheHttpClient } from '@blargbot/discord-guild-cache-client';
+import { DiscordRoleCacheHttpClient } from '@blargbot/discord-role-cache-client';
 import type Discord from '@blargbot/discord-types';
 import type { MessageHandle } from '@blargbot/message-hub';
 import type { Counter, MetricsClient } from '@blargbot/metrics-client';
-import fetch from 'node-fetch';
 
 import type { DiscordMessageStreamMessageBroker } from './DiscordMessageStreamMessageBroker.js';
 
@@ -13,8 +15,9 @@ type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
 export class DiscordMessageStreamService {
     readonly #messages: DiscordMessageStreamMessageBroker;
     readonly #handles: Set<MessageHandle>;
-    readonly #discordChannelCache: string;
-    readonly #discordGuildCache: string;
+    readonly #discordChannelCache: DiscordChannelCacheHttpClient;
+    readonly #discordGuildCache: DiscordGuildCacheHttpClient;
+    readonly #discordRoleCache: DiscordRoleCacheHttpClient;
     readonly #gateway: DiscordGatewayMessageBroker;
     readonly #messageCount: Counter;
 
@@ -25,8 +28,9 @@ export class DiscordMessageStreamService {
         });
         this.#messages = messages;
         this.#gateway = gateway;
-        this.#discordChannelCache = options.discordChannelCacheUrl;
-        this.#discordGuildCache = options.discordGuildCacheUrl;
+        this.#discordChannelCache = DiscordChannelCacheHttpClient.from(options.discordChannelCacheClient ?? options.discordChannelCacheUrl);
+        this.#discordGuildCache = DiscordGuildCacheHttpClient.from(options.discordGuildCacheClient ?? options.discordGuildCacheUrl);
+        this.#discordRoleCache = DiscordRoleCacheHttpClient.from(options.discordRoleCacheClient ?? options.discordRoleCacheUrl);
         this.#handles = new Set();
     }
 
@@ -45,7 +49,7 @@ export class DiscordMessageStreamService {
         this.#messageCount.inc();
 
         const [channel, guild] = await Promise.all([
-            this.#getChannel(message.channel_id),
+            this.#discordChannelCache.getChannel({ channelId: message.channel_id }),
             this.#getGuildForChannel(message.channel_id)
         ]);
 
@@ -55,26 +59,29 @@ export class DiscordMessageStreamService {
         await this.#messages.pushMessage(Object.assign(message, { channel, guild }));
     }
 
-    async #getChannel(channelId: string): Promise<Discord.APIChannel | undefined> {
-        const channelResponse = await fetch(new URL(channelId, this.#discordChannelCache).toString());
-        if (channelResponse.status !== 200)
-            return undefined;
-        return await channelResponse.json() as Discord.APIChannel;
-    }
-
     async #getGuildForChannel(channelId: string): Promise<Discord.APIGuild | undefined> {
-        const channelResponse = await fetch(new URL(`${channelId}/guild-id`, this.#discordChannelCache).toString());
-        if (channelResponse.status !== 200)
+        const guildId = await this.#discordChannelCache.getChannelGuild({ channelId });
+        if (guildId === undefined)
             return undefined;
-        const { guildId } = await channelResponse.json() as { guildId: string; };
-        const guildResponse = await fetch(new URL(guildId, this.#discordGuildCache).toString());
-        if (guildResponse.status !== 200)
+        const roles = this.#discordRoleCache.getGuildRoles({ guildId });
+        const guild = await this.#discordGuildCache.getGuild({ guildId });
+        if (guild === undefined)
             return undefined;
-        return await guildResponse.json() as Discord.APIGuild;
+
+        return {
+            ...guild,
+            roles: await roles,
+            emojis: [],
+            stickers: []
+        };
     }
 }
 
 export interface DiscordMessageStreamServiceOptions {
-    readonly discordChannelCacheUrl: string;
-    readonly discordGuildCacheUrl: string;
+    readonly discordChannelCacheUrl?: string;
+    readonly discordChannelCacheClient?: DiscordChannelCacheHttpClient;
+    readonly discordGuildCacheUrl?: string;
+    readonly discordGuildCacheClient?: DiscordGuildCacheHttpClient;
+    readonly discordRoleCacheUrl?: string;
+    readonly discordRoleCacheClient?: DiscordRoleCacheHttpClient;
 }

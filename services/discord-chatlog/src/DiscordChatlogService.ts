@@ -1,9 +1,8 @@
 import { ChatLogType } from '@blargbot/chatlog-types';
 import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
-import guildSettings from '@blargbot/guild-settings-contract';
+import { GuildSettingsHttpClient } from '@blargbot/guild-settings-client';
 import type { MessageHandle } from '@blargbot/message-hub';
-import fetch from 'node-fetch';
 
 import type DiscordChatlogDatabase from './DiscordChatlogDatabase.js';
 
@@ -18,12 +17,12 @@ export class DiscordChatlogService {
     readonly #gateway: DiscordGatewayMessageBroker;
     readonly #database: DiscordChatlogDatabase;
     readonly #handles: Set<MessageHandle>;
-    readonly #guildSettings: string;
+    readonly #guildSettings: GuildSettingsHttpClient;
 
     public constructor(gateway: DiscordGatewayMessageBroker, database: DiscordChatlogDatabase, options: DiscordChatlogServiceOptions) {
         this.#gateway = gateway;
         this.#database = database;
-        this.#guildSettings = options.guildSettingsUrl;
+        this.#guildSettings = GuildSettingsHttpClient.from(options.guildSettingsClient ?? options.guildSettingsUrl);
         this.#handles = new Set();
     }
 
@@ -45,9 +44,7 @@ export class DiscordChatlogService {
         if (message.guild_id === undefined)
             return false;
 
-        const settingsResponse = await fetch(new URL(message.guild_id, this.#guildSettings).toString());
-        const body = await settingsResponse.json();
-        const settings = guildSettings.read(JSON.stringify(body));
+        const settings = await this.#guildSettings.getSettings({ guildId: message.guild_id });
         return settings.enableChatlogging;
     }
 
@@ -101,5 +98,6 @@ export class DiscordChatlogService {
 }
 
 interface DiscordChatlogServiceOptions {
-    readonly guildSettingsUrl: string;
+    readonly guildSettingsUrl?: string;
+    readonly guildSettingsClient?: GuildSettingsHttpClient;
 }
