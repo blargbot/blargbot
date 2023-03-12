@@ -1,4 +1,3 @@
-import { BBTagRuntimeError } from '../errors/index.js';
 import type { SourceMarker } from './SourceMarker.js';
 import type { Statement } from './Statement.js';
 import type { SubtagCall } from './SubtagCall.js';
@@ -11,7 +10,7 @@ type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
 type MutableSubtagCall = { -readonly [P in keyof SubtagCall]: ToMutable<SubtagCall[P]> }
 type MutableStatement = { -readonly [P in keyof Statement]: ToMutable<Statement[P]> };
 
-export function parseBBTag(source: string, throwOnError = false): Statement {
+export function parseBBTag(source: string): Statement {
     const result = createStatement(source);
     const subtags: MutableSubtagCall[] = [];
     let statement = result;
@@ -37,10 +36,7 @@ export function parseBBTag(source: string, throwOnError = false): Statement {
             case SourceTokenType.ENDSUBTAG:
                 if (subtag === undefined) {
                     const result = createStatement(source);
-                    const error = `Unexpected '}' at ${token.start.index}`;
-                    if (throwOnError)
-                        throw new BBTagRuntimeError(error);
-                    result.values.push(`\`${error}\``);
+                    result.values.push(`\`Unexpected '}' at ${token.start.index}\``);
                     return result;
                 }
                 trim(statement);
@@ -60,10 +56,7 @@ export function parseBBTag(source: string, throwOnError = false): Statement {
 
     if (subtag !== undefined) {
         const result = createStatement(source);
-        const error = `Unmatched '{' at ${subtag.start.index}`;
-        if (throwOnError)
-            throw new BBTagRuntimeError(error);
-        result.values.push(`\`${error}\``);
+        result.values.push(`\`Unmatched '{' at ${subtag.start.index}\``);
         return result;
     }
 

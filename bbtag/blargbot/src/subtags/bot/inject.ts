@@ -29,7 +29,7 @@ export class InjectSubtag extends CompiledSubtag {
 
     public async inject(context: BBTagContext, code: string): Promise<string> {
         return await context.withStack(async () => {
-            const ast = parseBBTag(code, true);
+            const ast = parseBBTag(code);
             const result = await context.eval(ast);
             if (context.data.state === BBTagRuntimeState.RETURN)
                 context.data.state = BBTagRuntimeState.RUNNING;
