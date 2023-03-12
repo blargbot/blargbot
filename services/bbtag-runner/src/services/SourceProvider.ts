@@ -7,7 +7,6 @@ export class SourceProvider implements BBTagSourceProvider {
         name;
         throw new Error('Method not implemented.');
     }
-
 }
 // {
 //     get: async (ctx, type, name) => {

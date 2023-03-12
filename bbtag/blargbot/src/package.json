@@ -7,6 +7,7 @@
         "./subtags": "./subtags/index.js"
     },
     "dependencies": {
+        "@bbtag/language": "workspace:^",
         "@blargbot/async-tools": "workspace:^",
         "@blargbot/catch-decorators": "workspace:^",
         "@blargbot/decancer": "workspace:^",

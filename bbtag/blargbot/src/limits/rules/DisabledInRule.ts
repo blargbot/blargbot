@@ -1,8 +1,8 @@
+import type { SubtagCall } from '@bbtag/language';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import type { SubtagCall } from '../../language/index.js';
 import textTemplates from '../../text.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 

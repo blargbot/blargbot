@@ -1,10 +1,10 @@
+import type { Statement } from '@bbtag/language';
+import { parseBBTag } from '@bbtag/language';
 import { Emote } from '@blargbot/discord-emote';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
-import type { Statement } from '../../language/index.js';
-import { parseBBTag } from '../../language/index.js';
 import type { MessageService } from '../../services/MessageService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';

@@ -1,8 +1,9 @@
+import type { Statement } from '@bbtag/language';
+import { parseBBTag } from '@bbtag/language';
+
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
-import type { Statement } from '../../language/index.js';
-import { parseBBTag } from '../../language/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
 import type { MessageService } from '../../services/MessageService.js';
 import type { UserService } from '../../services/UserService.js';

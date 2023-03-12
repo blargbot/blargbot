@@ -1,6 +1,7 @@
+import type { Statement, SubtagCall } from '@bbtag/language';
+
 import type { BBTagContext } from '../BBTagContext.js';
 import { ArgumentLengthError } from '../errors/index.js';
-import type { Statement, SubtagCall } from '../language/index.js';
 import type { SubtagSignatureValueParameter } from '../types.js';
 import { BBTagRuntimeState } from '../types.js';
 import type { SubtagArgument } from './SubtagArgument.js';

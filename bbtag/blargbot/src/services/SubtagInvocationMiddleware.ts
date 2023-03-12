@@ -1,5 +1,6 @@
+import type { SubtagCall } from '@bbtag/language';
+
 import type { BBTagContext } from '../BBTagContext.js';
-import type { SubtagCall } from '../index.js';
 import type { Subtag } from '../Subtag.js';
 
 export interface SubtagInvocationMiddleware {

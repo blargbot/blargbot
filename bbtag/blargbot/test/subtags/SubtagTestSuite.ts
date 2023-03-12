@@ -1,7 +1,9 @@
 import { inspect } from 'node:util';
 
-import type { BBTagArray, BBTagArrayTools, BBTagContextOptions, BBTagRuntimeScope, BBTagValueConverter, Entities, InjectionContext, LocatedRuntimeError, SourceMarker, SourceProvider, SubtagCall, SubtagDescriptor, SubtagInvocationMiddleware, TagVariableScope, VariablesStore } from '@bbtag/blargbot';
-import { BaseRuntimeLimit, BBTagContext, BBTagEngine, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, NotEnoughArgumentsError, parseBBTag, smartStringCompare, Subtag, SubtagType, TooManyArgumentsError } from '@bbtag/blargbot';
+import type { BBTagArray, BBTagArrayTools, BBTagContextOptions, BBTagRuntimeScope, BBTagValueConverter, Entities, InjectionContext, LocatedRuntimeError, SourceProvider, SubtagDescriptor, SubtagInvocationMiddleware, TagVariableScope, VariablesStore } from '@bbtag/blargbot';
+import { BaseRuntimeLimit, BBTagContext, BBTagEngine, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, NotEnoughArgumentsError, smartStringCompare, Subtag, SubtagType, TooManyArgumentsError } from '@bbtag/blargbot';
+import type {SourceMarker, SubtagCall } from '@bbtag/language';
+import { parseBBTag } from '@bbtag/language';
 import Discord from '@blargbot/discord-types';
 import { snowflake } from '@blargbot/discord-util';
 import { argument, Mock } from '@blargbot/test-util/mock.js';

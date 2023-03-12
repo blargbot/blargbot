@@ -1,9 +1,9 @@
+import { parseBBTag } from '@bbtag/language';
 import { joinInput } from '@blargbot/input';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import { parseBBTag } from '../../language/parseBBTag.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';

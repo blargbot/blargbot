@@ -1,4 +1,5 @@
-import type { Statement } from '../language/index.js';
+import type { Statement } from '@bbtag/language';
+
 import type { SubtagSignatureValueParameter } from '../types.js';
 
 export interface SubtagArgument {

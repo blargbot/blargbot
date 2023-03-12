@@ -1,7 +1,8 @@
+import type { SubtagCall } from '@bbtag/language';
+
 import type { BBTagContext } from '../BBTagContext.js';
-import type { BBTagRuntimeError} from '../errors/index.js';
+import type { BBTagRuntimeError } from '../errors/index.js';
 import { NotEnoughArgumentsError, TooManyArgumentsError } from '../errors/index.js';
-import type { SubtagCall } from '../language/index.js';
 import type { ArgumentResolver } from './ArgumentResolver.js';
 import type { CompositeSubtagHandler } from './CompositeSubtagHandler.js';
 import type { ConditionalSubtagHandler } from './ConditionalSubtagHandler.js';

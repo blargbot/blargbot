@@ -1,5 +1,6 @@
-import type { ExecutionResult, SubtagCall } from '@bbtag/blargbot';
+import type { ExecutionResult } from '@bbtag/blargbot';
 import { stringify, textTemplates } from '@bbtag/blargbot';
+import type { SubtagCall } from '@bbtag/language';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 

@@ -1,6 +1,7 @@
+import type { SubtagCall } from '@bbtag/language';
+
 import type { SubtagArgumentArray } from '../arguments/index.js';
 import type { BBTagContext } from '../BBTagContext.js';
-import type { SubtagCall } from '../language/index.js';
 import type { SubtagLogic } from './SubtagLogic.js';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper.js';
 

@@ -1,8 +1,8 @@
+import type { SubtagCall } from '@bbtag/language';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
 
 import type { BBTagContext } from '../BBTagContext.js';
-import type { SubtagCall } from '../language/index.js';
 import { Subtag } from '../Subtag.js';
 import type { SubtagOptions } from '../types.js';
 import type { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions.js';

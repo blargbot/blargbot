@@ -1,6 +1,6 @@
-import type { Statement } from '@bbtag/blargbot';
 import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
 import { FunctionSubtag } from '@bbtag/blargbot/subtags';
+import type { Statement } from '@bbtag/language';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

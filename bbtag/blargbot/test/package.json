@@ -13,6 +13,7 @@
     },
     "dependencies": {
         "@bbtag/blargbot": "workspace:^",
+        "@bbtag/language": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",

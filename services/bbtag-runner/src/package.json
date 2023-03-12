@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "@bbtag/blargbot": "workspace:^",
+        "@bbtag/language": "workspace:^",
         "@blargbot/application": "workspace:^",
         "@blargbot/bbtag-runner-client": "workspace:^",
         "@blargbot/container-id": "workspace:^",
@@ -17,10 +18,6 @@
         "@blargbot/metrics-client": "workspace:^",
         "@blargbot/timeouts-client": "workspace:^",
         "@blargbot/user-settings-client": "workspace:^",
-        "@blargbot/user-warnings-client": "workspace:^",
-        "amqplib": "^0.10.3"
-    },
-    "devDependencies": {
-        "@types/amqplib": "^0.10.1"
+        "@blargbot/user-warnings-client": "workspace:^"
     }
 }

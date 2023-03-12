@@ -1,5 +1,6 @@
-import { BBTagRuntimeState, parseBBTag, Subtag, SubtagStackOverflowError, UnknownSubtagError } from '@bbtag/blargbot';
+import { BBTagRuntimeState, Subtag, SubtagStackOverflowError, UnknownSubtagError } from '@bbtag/blargbot';
 import { FunctionInvokeSubtag } from '@bbtag/blargbot/subtags';
+import { parseBBTag } from '@bbtag/language';
 import chai from 'chai';
 
 import { AssertSubtag, createDescriptor, runSubtagTests } from '../SubtagTestSuite.js';

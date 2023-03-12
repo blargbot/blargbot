@@ -1,5 +1,4 @@
 export * from './utils/index.js';
-export * from './language/index.js';
 export * from './BBTagContext.js';
 export * from './BBTagEngine.js';
 export * from './arguments/index.js';

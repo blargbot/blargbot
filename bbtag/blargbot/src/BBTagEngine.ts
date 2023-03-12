@@ -1,3 +1,5 @@
+import type { Statement, SubtagCall } from '@bbtag/language';
+import { parseBBTag } from '@bbtag/language';
 import { sleep } from '@blargbot/async-tools';
 import { markup } from '@blargbot/discord-util';
 import { Timer } from '@blargbot/timer';
@@ -7,8 +9,6 @@ import { BBTagContext } from './BBTagContext.js';
 import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors/index.js';
 import { createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, smartStringCompare } from './index.js';
 import type { InjectionContext } from './InjectionContext.js';
-import type { Statement, SubtagCall } from './language/index.js';
-import { parseBBTag } from './language/index.js';
 import type { BBTagLogger } from './services/BBTagLogger.js';
 import type { SubtagInvocationContext } from './services/SubtagInvocationMiddleware.js';
 import type { Subtag } from './Subtag.js';
@@ -76,7 +76,7 @@ export class BBTagEngine {
     public async execute(source: string, options: BBTagContextOptions | BBTagContext, caller?: SubtagCall): Promise<ExecutionResult> {
         this.logger.info(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.rootTagName ?? ''}`);
         const timer = new Timer().start();
-        const bbtag = parseBBTag(source, options instanceof BBTagContext);
+        const bbtag = parseBBTag(source);
         this.logger.info(`Parsed bbtag in ${timer.poll(true)}ms`);
         const context = options instanceof BBTagContext ? options : new BBTagContext(this, options);
         this.logger.info(`Created context in ${timer.poll(true)}ms`);

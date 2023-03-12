@@ -1,4 +1,4 @@
-import type { SubtagCall } from './language/index.js';
+import type { SubtagCall } from '@bbtag/language';
 
 export class SubtagCallStack {
     readonly #callCounts: Record<string, number | undefined>;

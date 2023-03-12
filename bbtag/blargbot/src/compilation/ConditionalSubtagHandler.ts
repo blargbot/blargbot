@@ -1,4 +1,5 @@
-import type { SubtagCall } from '../language/index.js';
+import type { SubtagCall } from '@bbtag/language';
+
 import type { SubtagHandler } from './SubtagHandler.js';
 
 export interface ConditionalSubtagHandler extends SubtagHandler {

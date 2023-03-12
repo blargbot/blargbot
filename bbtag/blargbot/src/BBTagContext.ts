@@ -1,3 +1,4 @@
+import type { Statement, SubtagCall } from '@bbtag/language';
 import { Emote } from '@blargbot/discord-emote';
 import Discord, { AllowedMentionsTypes } from '@blargbot/discord-types';
 import { findRolePosition, permission } from '@blargbot/discord-util';
@@ -9,7 +10,6 @@ import { Timer } from '@blargbot/timer';
 import type { BBTagEngine } from './BBTagEngine.js';
 import type { BBTagRuntimeError } from './errors/index.js';
 import { SubtagStackOverflowError, UnknownSubtagError } from './errors/index.js';
-import type { Statement, SubtagCall } from './language/index.js';
 import type { RuntimeLimit } from './limits/index.js';
 import { limits } from './limits/index.js';
 import { ScopeManager } from './ScopeManager.js';

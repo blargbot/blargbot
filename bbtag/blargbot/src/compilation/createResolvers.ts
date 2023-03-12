@@ -1,6 +1,7 @@
+import type { Statement } from '@bbtag/language';
+
 import type { SubtagArgument } from '../arguments/index.js';
 import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue } from '../arguments/index.js';
-import type { Statement } from '../language/index.js';
 import type { SubtagSignatureParameter, SubtagSignatureValueParameter } from '../types.js';
 import type { ArgumentResolver } from './ArgumentResolver.js';
 import type { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
