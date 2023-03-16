@@ -39,7 +39,7 @@ export function bbtagDebugOutput(result: ExecutionResult): { content: IFormattab
                     errors: result.errors.map(e => ({
                         error: e.error.message,
                         details: e.error.detail,
-                        subtag: e.token?.source
+                        subtag: e.token.source
                     })),
                     variables: result.database.values,
                     performance: performance

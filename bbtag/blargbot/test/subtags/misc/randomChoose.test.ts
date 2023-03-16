@@ -48,12 +48,12 @@ runSubtagTests({
             errors(errors) {
                 chai.expect(errors).to.have.length(2);
                 const err1 = errors[0];
-                chai.expect(err1.token?.start.line).to.equal(0);
-                chai.expect(err1.token?.end.line).to.equal(0);
+                chai.expect(err1.token.start.line).to.equal(0);
+                chai.expect(err1.token.end.line).to.equal(0);
                 chai.expect(err1.error).to.be.instanceOf(MarkerError);
                 const err2 = errors[1];
-                chai.expect(err2.token?.start.line).to.equal(1);
-                chai.expect(err2.token?.end.line).to.equal(1);
+                chai.expect(err2.token.start.line).to.equal(1);
+                chai.expect(err2.token.end.line).to.equal(1);
                 chai.expect(err2.error).to.be.instanceOf(MarkerError);
             },
             retries: 5
