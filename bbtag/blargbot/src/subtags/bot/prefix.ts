@@ -7,6 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.prefix;
 
 @Subtag.id('prefix')
+@Subtag.ctorArgs()
 export class PrefixSubtag extends CompiledSubtag {
     public constructor() {
         super({

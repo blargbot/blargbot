@@ -65,19 +65,11 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>>, ISu
         [factoryKey]?: (runner: BBTagRunner) => Subtag;
         prototype: Subtag;
     }): SubtagDescriptor {
-        if (type[factoryKey] !== undefined) {
-            return {
-                createInstance: type[factoryKey],
-                names: type.prototype.names,
-                id: type.prototype.id
-            };
-        }
-
-        if (type.length > 0)
+        if (type[factoryKey] === undefined)
             throw new Error('No factory has been set!');
 
         return {
-            createInstance: () => new type(),
+            createInstance: type[factoryKey],
             names: type.prototype.names,
             id: type.prototype.id
         };
