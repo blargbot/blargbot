@@ -1,7 +1,7 @@
 import { mapping } from '@blargbot/mapping';
 
 import type { BBTagRuntime } from '../BBTagRuntime.js';
-import { BBTagRuntimeError, NotANumberError } from '../index.js';
+import { BBTagRuntimeError, NotANumberError } from '../errors/index.js';
 import type { BBTagArray } from '../types.js';
 
 export interface BBTagArrayTools {

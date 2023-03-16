@@ -4,7 +4,7 @@ import type { BBTagScript } from '../../BBTagScript.js';
 import type { BBTagStatement } from '../../BBTagStatement.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
-import type { ChannelService } from '../../index.js';
+import type { ChannelService } from '../../services/index.js';
 import type { MessageService } from '../../services/MessageService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
