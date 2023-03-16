@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.choose;
 
-@Subtag.names('choose')
+@Subtag.id('choose')
 @Subtag.ctorArgs('converter')
 export class ChooseSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -33,7 +33,7 @@ export class ChooseSubtag extends CompiledSubtag {
     public choose(
         choice: string,
         options: SubtagArgument[]
-    ): Promise<string> | string {
+    ): Awaitable<string> {
         const index = this.#converter.int(choice);
 
         if (index === undefined)

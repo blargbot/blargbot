@@ -7,7 +7,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.realPad;
 
-@Subtag.names('realPad')
+@Subtag.id('realPad')
 @Subtag.ctorArgs('converter')
 export class RealPadSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

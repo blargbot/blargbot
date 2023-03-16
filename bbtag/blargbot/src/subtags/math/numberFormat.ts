@@ -6,7 +6,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.numberFormat;
 
-@Subtag.names('numberFormat', 'numFormat')
+@Subtag.id('numberFormat', 'numFormat')
 @Subtag.ctorArgs('converter')
 export class NumberFormatSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

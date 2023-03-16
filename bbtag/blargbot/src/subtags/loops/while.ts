@@ -1,15 +1,14 @@
 import type { SubtagArgument } from '../../arguments/index.js';
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
-import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagOperators } from '../../utils/index.js';
 import { comparisonOperators, SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.while;
 
-@Subtag.names('while')
+@Subtag.id('while')
 @Subtag.ctorArgs('operators')
 export class WhileSubtag extends CompiledSubtag {
     #operators: BBTagOperators;
@@ -41,14 +40,13 @@ export class WhileSubtag extends CompiledSubtag {
     }
 
     public async * while(
-        context: BBTagContext,
+        context: BBTagScript,
         val1Raw: SubtagArgument,
         evaluator: SubtagArgument | string,
         val2Raw: SubtagArgument | string,
         codeRaw: SubtagArgument
     ): AsyncIterable<string> {
-        while (context.data.state === BBTagRuntimeState.RUNNING) {
-
+        while (true) {
             let right = await val1Raw.execute();
             let operator = typeof evaluator === 'string' ? evaluator : await evaluator.execute();
             let left = typeof val2Raw === 'string' ? val2Raw : await val2Raw.execute();
@@ -65,12 +63,12 @@ export class WhileSubtag extends CompiledSubtag {
 
             if (!comparisonOperators.test(operator)) {
                 //TODO invalid operator stuff here
-                await context.limit.check(context, 'while:loops');
+                await context.runtime.limit.check('while:loops');
                 yield await codeRaw.execute();
             } else if (!this.#operators.comparison[operator](right, left))
                 break;
             else {
-                await context.limit.check(context, 'while:loops');
+                await context.runtime.limit.check('while:loops');
                 yield await codeRaw.execute();
             }
         }

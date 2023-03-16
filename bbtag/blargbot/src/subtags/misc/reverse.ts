@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.reverse;
 
-@Subtag.names('reverse')
+@Subtag.id('reverse')
 @Subtag.ctorArgs('arrayTools')
 export class ReverseSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -30,7 +30,7 @@ export class ReverseSubtag extends CompiledSubtag {
         this.#arrayTools = arrayTools;
     }
 
-    public async reverse(context: BBTagContext, input: string): Promise<string> {
+    public async reverse(context: BBTagScript, input: string): Promise<string> {
         const arr = this.#arrayTools.deserialize(input);
         if (arr === undefined)
             return input.split('').reverse().join('');
@@ -39,7 +39,7 @@ export class ReverseSubtag extends CompiledSubtag {
         if (arr.n === undefined)
             return this.#arrayTools.serialize(arr.v);
 
-        await context.variables.set(arr.n, arr.v);
+        await context.runtime.variables.set(arr.n, arr.v);
         return '';
     }
 }

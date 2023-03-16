@@ -1,8 +1,7 @@
-import type { SubtagCall } from '@bbtag/language';
-
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagCall } from '../../BBTagCall.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
-import { BBTagRuntimeError, UnknownSubtagError } from '../../errors/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
@@ -11,7 +10,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.apply;
 
-@Subtag.names('apply')
+@Subtag.id('apply')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class ApplySubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -37,18 +36,13 @@ export class ApplySubtag extends CompiledSubtag {
     }
 
     public async defaultApply(
-        context: BBTagContext,
+        context: BBTagScript,
         subtagName: string,
         args: string[],
-        subtag: SubtagCall
+        subtag: BBTagCall
     ): Promise<string> {
-        try {
-            context.getSubtag(subtagName.toLowerCase());
-        } catch (error: unknown) {
-            if (error instanceof UnknownSubtagError)
-                throw new BBTagRuntimeError('No subtag found');
-            throw error;
-        }
+        if (context.runtime.subtags.get(subtagName.toLowerCase()) === undefined)
+            throw new BBTagRuntimeError('No subtag found');
 
         const flatArgs = args
             .flatMap(arg => this.#arrayTools.deserialize(arg)?.v ?? [arg])
@@ -59,23 +53,23 @@ export class ApplySubtag extends CompiledSubtag {
         return await context.eval({
             values: [{
                 name: {
-                    start: subtag.start,
-                    end: subtag.start,
+                    start: subtag.ast.start,
+                    end: subtag.ast.start,
                     values: [subtagName],
                     source: subtagName
                 },
                 args: flatArgs.map(arg => ({
-                    start: subtag.start,
-                    end: subtag.start,
+                    start: subtag.ast.start,
+                    end: subtag.ast.start,
                     values: [arg],
                     source: arg
                 })),
-                start: subtag.start,
-                end: subtag.end,
+                start: subtag.ast.start,
+                end: subtag.ast.end,
                 source
             }],
-            start: subtag.start,
-            end: subtag.end,
+            start: subtag.ast.start,
+            end: subtag.ast.end,
             source
         });
     }

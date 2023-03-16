@@ -1,6 +1,6 @@
 import type { IFormattable } from '@blargbot/formatting';
 
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagRuntime } from '../BBTagRuntime.js';
 import type { SerializedRuntimeLimit } from '../types.js';
 import type { limits } from './index.js';
 import { disabledRule } from './rules/index.js';
@@ -35,7 +35,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         return this;
     }
 
-    public async check(context: BBTagContext, rulekey: string): Promise<void> {
+    public async check(context: BBTagRuntime, rulekey: string): Promise<void> {
         const [rootKey, subKey] = this.#getKeys(rulekey);
         const set = this.#rules[rootKey] ?? {};
         const collection = set[subKey];

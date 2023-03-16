@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.reactionUser;
 
-@Subtag.names('reactionUser', 'reactUser')
+@Subtag.id('reactionUser', 'reactUser')
 @Subtag.ctorArgs()
 export class ReactionUserSubtag extends CompiledSubtag {
     public constructor() {
@@ -26,8 +26,8 @@ export class ReactionUserSubtag extends CompiledSubtag {
         });
     }
 
-    public getReaction(context: BBTagContext): string {
-        const val = context.scopes.local.reactUser;
+    public getReaction(context: BBTagScript): string {
+        const val = context.runtime.scopes.local.reactUser;
         if (val === undefined)
             throw new BBTagRuntimeError('{reactuser} can only be used inside {waitreaction}');
         return val;

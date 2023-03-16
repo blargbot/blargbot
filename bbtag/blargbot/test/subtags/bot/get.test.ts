@@ -42,7 +42,7 @@ runSubtagTests({
                 { start: 0, end: 25, error: new NotANumberError('abc') }
             ],
             async postSetup(ctx) {
-                await ctx.variables.set('*myVariableName', [1, 2, 3]);
+                await ctx.runtime.variables.set('*myVariableName', [1, 2, 3]);
             }
         },
         {
@@ -52,7 +52,7 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Index out of range') }
             ],
             async postSetup(ctx) {
-                await ctx.variables.set('*myVariableName', [1, 2, 3]);
+                await ctx.runtime.variables.set('*myVariableName', [1, 2, 3]);
             }
         },
         {
@@ -62,7 +62,7 @@ runSubtagTests({
                 { start: 0, end: 24, error: new BBTagRuntimeError('Index out of range') }
             ],
             async postSetup(ctx) {
-                await ctx.variables.set('*myVariableName', [1, 2, 3]);
+                await ctx.runtime.variables.set('*myVariableName', [1, 2, 3]);
             }
         }
     ]
@@ -81,7 +81,7 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 ctx.roles.everyone.id = ctx.guild.id;
                 ctx.users.command.id = '823764823946284623234';
                 ctx.options.isCC = isCC;
-                ctx.options.tagName = tagName;
+                ctx.entrypoint.name = tagName;
                 if (key !== undefined) {
                     if (value === undefined)
                         ctx.tagVariables.delete(key);
@@ -99,10 +99,10 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 ctx.roles.everyone.id = ctx.guild.id;
                 ctx.users.command.id = '823764823946284623234';
                 ctx.options.isCC = isCC;
-                ctx.options.tagName = tagName;
+                ctx.entrypoint.name = tagName;
             },
             async postSetup(bbctx) {
-                await bbctx.variables.set(args[0], value);
+                await bbctx.runtime.variables.set(args[0], value);
             }
         };
         yield {
@@ -114,7 +114,7 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 ctx.roles.everyone.id = ctx.guild.id;
                 ctx.users.command.id = '823764823946284623234';
                 ctx.options.isCC = isCC;
-                ctx.options.tagName = tagName;
+                ctx.entrypoint.name = tagName;
                 if (key !== undefined) {
                     if (value === undefined)
                         ctx.tagVariables.delete(key);
@@ -123,7 +123,7 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 }
             },
             async postSetup(bbctx) {
-                await bbctx.variables.set(args[0], 'FAIL');
+                await bbctx.runtime.variables.set(args[0], 'FAIL');
             }
         };
     }

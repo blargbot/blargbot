@@ -1,7 +1,6 @@
-import type { Statement } from '@bbtag/language';
-
 import type { SubtagArgument } from '../arguments/index.js';
 import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue } from '../arguments/index.js';
+import type { BBTagStatement } from '../BBTagStatement.js';
 import type { SubtagSignatureParameter, SubtagSignatureValueParameter } from '../types.js';
 import type { ArgumentResolver } from './ArgumentResolver.js';
 import type { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
@@ -105,7 +104,7 @@ function createResolver(
         * resolve(context, call) {
             const args = new Set(call.args);
             for (const item of parameterMap) {
-                const arg = call.args[item.argIndex] as Statement | undefined;
+                const arg = call.args[item.argIndex] as BBTagStatement | undefined;
                 if (arg === undefined)
                     yield item.default;
                 else {

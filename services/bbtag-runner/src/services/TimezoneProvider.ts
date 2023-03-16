@@ -1,4 +1,4 @@
-import type { BBTagContext, TimezoneProvider as BBTagTimezoneProvider } from '@bbtag/blargbot';
+import type { BBTagRuntime, TimezoneProvider as BBTagTimezoneProvider } from '@bbtag/blargbot';
 import type { UserSettingsHttpClient } from '@blargbot/user-settings-client';
 
 export class TimezoneProvider implements BBTagTimezoneProvider {
@@ -8,7 +8,7 @@ export class TimezoneProvider implements BBTagTimezoneProvider {
         this.#client = client;
     }
 
-    public async get(_context: BBTagContext, userId: string): Promise<string | undefined> {
+    public async get(_context: BBTagRuntime, userId: string): Promise<string | undefined> {
         const settings = await this.#client.getSettings({ userId });
         return settings.timezone ?? undefined;
     }

@@ -1,7 +1,6 @@
-import type { SubtagCall } from '@bbtag/language';
-
 import type { SubtagArgumentArray } from '../arguments/index.js';
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagCall } from '../BBTagCall.js';
+import type { BBTagScript } from '../BBTagScript.js';
 import type { SubtagLogic } from './SubtagLogic.js';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper.js';
 
@@ -10,8 +9,10 @@ export class StringIterableSubtagLogic extends SubtagLogicWrapper {
         super();
     }
 
-    protected async *getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string> {
-        for await (const item of this.toAsyncIterable(await this.logic.execute(context, args, subtag)))
-            yield item;
+    protected async getResults(context: BBTagScript, args: SubtagArgumentArray, subtag: BBTagCall): Promise<string> {
+        const results = [];
+        for await (const item of this.iterate(context, subtag, await this.logic.execute(context, args, subtag)))
+            results.push(item);
+        return results.join('');
     }
 }

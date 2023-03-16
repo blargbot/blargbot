@@ -10,7 +10,6 @@ export * from './fallback.js';
 export * from './flag.js';
 export * from './flagSet.js';
 export * from './flagsArray.js';
-export * from './func..js';
 export * from './function.js';
 export * from './get.js';
 export * from './inject.js';

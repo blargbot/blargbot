@@ -1,4 +1,4 @@
-import type { BBTagContext, Entities, EntityQueryService, FindEntityOptions, UserService } from '@bbtag/blargbot';
+import type { BBTagRuntime, Entities, EntityQueryService, FindEntityOptions, UserService } from '@bbtag/blargbot';
 import { util } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 
@@ -30,11 +30,11 @@ export class ErisBBTagUserService implements UserService {
         throw user;
     }
 
-    public async querySingle(context: BBTagContext, query: string, options?: FindEntityOptions | undefined): Promise<Entities.User | undefined> {
+    public async querySingle(context: BBTagRuntime, query: string, options?: FindEntityOptions | undefined): Promise<Entities.User | undefined> {
         return await this.#querySingle(context, query, options);
     }
 
-    public async get(context: BBTagContext, id: string): Promise<Entities.User | undefined> {
+    public async get(context: BBTagRuntime, id: string): Promise<Entities.User | undefined> {
         const entity = await this.#cluster.util.getMember(context.guild.id, id)
             ?? await this.#cluster.util.getUser(id);
         if (entity === undefined)
@@ -42,7 +42,7 @@ export class ErisBBTagUserService implements UserService {
         return this.#convertToUser(entity);
     }
 
-    public async getAll(context: BBTagContext): Promise<Entities.User[]> {
+    public async getAll(context: BBTagRuntime): Promise<Entities.User[]> {
         const guild = await this.#cluster.util.getGuild(context.guild.id);
         if (guild === undefined)
             return [];
@@ -51,7 +51,7 @@ export class ErisBBTagUserService implements UserService {
         return guild.members.map(this.#convertToUser.bind(this));
     }
 
-    public async findBanned(context: BBTagContext): Promise<string[]> {
+    public async findBanned(context: BBTagRuntime): Promise<string[]> {
         const guild = await this.#cluster.util.getGuild(context.guild.id);
         if (guild === undefined)
             return [];
@@ -61,7 +61,7 @@ export class ErisBBTagUserService implements UserService {
 
     }
 
-    public async edit(context: BBTagContext, userId: string, update: Partial<Entities.Member>, reason?: string): Promise<void> {
+    public async edit(context: BBTagRuntime, userId: string, update: Partial<Entities.Member>, reason?: string): Promise<void> {
         await this.#cluster.discord.editGuildMember(context.guild.id, userId, update, reason ?? context.auditReason());
     }
 

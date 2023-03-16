@@ -1,7 +1,7 @@
 import { snowflake } from '@blargbot/discord-util';
 import moment from 'moment-timezone';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -11,8 +11,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.userCreatedAt;
 
-@Subtag.names('userCreatedAt')
-@Subtag.ctorArgs('user')
+@Subtag.id('userCreatedAt')
+@Subtag.ctorArgs('users')
 export class UserCreatedAtSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -42,9 +42,9 @@ export class UserCreatedAtSubtag extends CompiledSubtag {
 
     }
 
-    public async getUserCreatedAt(context: BBTagContext, format: string, userStr: string, quiet: boolean): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userStr, { noLookup: quiet });
+    public async getUserCreatedAt(context: BBTagScript, format: string, userStr: string, quiet: boolean): Promise<string> {
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userStr, { noLookup: quiet });
 
         if (user === undefined) {
             throw new UserNotFoundError(userStr)

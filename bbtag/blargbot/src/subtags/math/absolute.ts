@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.absolute;
 
-@Subtag.names('absolute', 'abs')
+@Subtag.id('absolute', 'abs')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class AbsoluteSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

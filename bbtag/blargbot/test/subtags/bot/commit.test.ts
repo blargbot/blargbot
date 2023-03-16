@@ -13,7 +13,7 @@ runSubtagTests({
             expected: '',
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.rootTagName = 'commitTest';
+                ctx.entrypoint.name = 'commitTest';
 
                 ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([
                     { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
@@ -29,16 +29,16 @@ runSubtagTests({
                 ]))).thenResolve(undefined);
             },
             async postSetup(bbctx) {
-                await bbctx.variables.set('var1', 5);
-                await bbctx.variables.set('var2', 'abc');
-                await bbctx.variables.set('~var3', 5);
-                await bbctx.variables.set('~var4', 'abc');
-                await bbctx.variables.set('*var5', 5);
-                await bbctx.variables.set('*var6', 'abc');
-                await bbctx.variables.set('@var7', 5);
-                await bbctx.variables.set('@var8', 'abc');
-                await bbctx.variables.set('_var9', 5);
-                await bbctx.variables.set('_var10', 'abc');
+                await bbctx.runtime.variables.set('var1', 5);
+                await bbctx.runtime.variables.set('var2', 'abc');
+                await bbctx.runtime.variables.set('~var3', 5);
+                await bbctx.runtime.variables.set('~var4', 'abc');
+                await bbctx.runtime.variables.set('*var5', 5);
+                await bbctx.runtime.variables.set('*var6', 'abc');
+                await bbctx.runtime.variables.set('@var7', 5);
+                await bbctx.runtime.variables.set('@var8', 'abc');
+                await bbctx.runtime.variables.set('_var9', 5);
+                await bbctx.runtime.variables.set('_var10', 'abc');
             }
         },
         {
@@ -46,7 +46,7 @@ runSubtagTests({
             expected: '',
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.rootTagName = 'commitTest';
+                ctx.entrypoint.name = 'commitTest';
                 ctx.options.isCC = true;
 
                 ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([
@@ -63,16 +63,16 @@ runSubtagTests({
                 ]))).thenResolve(undefined);
             },
             async postSetup(bbctx) {
-                await bbctx.variables.set('var1', 5);
-                await bbctx.variables.set('var2', 'abc');
-                await bbctx.variables.set('~var3', 5);
-                await bbctx.variables.set('~var4', 'abc');
-                await bbctx.variables.set('*var5', 5);
-                await bbctx.variables.set('*var6', 'abc');
-                await bbctx.variables.set('@var7', 5);
-                await bbctx.variables.set('@var8', 'abc');
-                await bbctx.variables.set('_var9', 5);
-                await bbctx.variables.set('_var10', 'abc');
+                await bbctx.runtime.variables.set('var1', 5);
+                await bbctx.runtime.variables.set('var2', 'abc');
+                await bbctx.runtime.variables.set('~var3', 5);
+                await bbctx.runtime.variables.set('~var4', 'abc');
+                await bbctx.runtime.variables.set('*var5', 5);
+                await bbctx.runtime.variables.set('*var6', 'abc');
+                await bbctx.runtime.variables.set('@var7', 5);
+                await bbctx.runtime.variables.set('@var8', 'abc');
+                await bbctx.runtime.variables.set('_var9', 5);
+                await bbctx.runtime.variables.set('_var10', 'abc');
             }
         },
         {
@@ -80,7 +80,7 @@ runSubtagTests({
             expected: '',
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.rootTagName = 'commitTest';
+                ctx.entrypoint.name = 'commitTest';
 
                 ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([
                     { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
@@ -91,16 +91,16 @@ runSubtagTests({
                 ]))).thenResolve(undefined);
             },
             async postSetup(bbctx) {
-                await bbctx.variables.set('var1', 5);
-                await bbctx.variables.set('var2', 'abc');
-                await bbctx.variables.set('~var3', 5);
-                await bbctx.variables.set('~var4', 'abc');
-                await bbctx.variables.set('*var5', 5);
-                await bbctx.variables.set('*var6', 'abc');
-                await bbctx.variables.set('@var7', 5);
-                await bbctx.variables.set('@var8', 'abc');
-                await bbctx.variables.set('_var9', 5);
-                await bbctx.variables.set('_var10', 'abc');
+                await bbctx.runtime.variables.set('var1', 5);
+                await bbctx.runtime.variables.set('var2', 'abc');
+                await bbctx.runtime.variables.set('~var3', 5);
+                await bbctx.runtime.variables.set('~var4', 'abc');
+                await bbctx.runtime.variables.set('*var5', 5);
+                await bbctx.runtime.variables.set('*var6', 'abc');
+                await bbctx.runtime.variables.set('@var7', 5);
+                await bbctx.runtime.variables.set('@var8', 'abc');
+                await bbctx.runtime.variables.set('_var9', 5);
+                await bbctx.runtime.variables.set('_var10', 'abc');
             }
         },
         {
@@ -108,7 +108,7 @@ runSubtagTests({
             expected: '',
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.rootTagName = 'commitTest';
+                ctx.entrypoint.name = 'commitTest';
                 ctx.options.isCC = true;
 
                 ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([
@@ -120,16 +120,16 @@ runSubtagTests({
                 ]))).thenResolve(undefined);
             },
             async postSetup(bbctx) {
-                await bbctx.variables.set('var1', 5);
-                await bbctx.variables.set('var2', 'abc');
-                await bbctx.variables.set('~var3', 5);
-                await bbctx.variables.set('~var4', 'abc');
-                await bbctx.variables.set('*var5', 5);
-                await bbctx.variables.set('*var6', 'abc');
-                await bbctx.variables.set('@var7', 5);
-                await bbctx.variables.set('@var8', 'abc');
-                await bbctx.variables.set('_var9', 5);
-                await bbctx.variables.set('_var10', 'abc');
+                await bbctx.runtime.variables.set('var1', 5);
+                await bbctx.runtime.variables.set('var2', 'abc');
+                await bbctx.runtime.variables.set('~var3', 5);
+                await bbctx.runtime.variables.set('~var4', 'abc');
+                await bbctx.runtime.variables.set('*var5', 5);
+                await bbctx.runtime.variables.set('*var6', 'abc');
+                await bbctx.runtime.variables.set('@var7', 5);
+                await bbctx.runtime.variables.set('@var8', 'abc');
+                await bbctx.runtime.variables.set('_var9', 5);
+                await bbctx.runtime.variables.set('_var10', 'abc');
             }
         },
         {
@@ -137,16 +137,16 @@ runSubtagTests({
             expected: '',
             setupSaveVariables: false,
             async postSetup(bbctx) {
-                await bbctx.variables.set('var1', 5);
-                await bbctx.variables.set('var2', 'abc');
-                await bbctx.variables.set('~var3', 5);
-                await bbctx.variables.set('~var4', 'abc');
-                await bbctx.variables.set('*var5', 5);
-                await bbctx.variables.set('*var6', 'abc');
-                await bbctx.variables.set('@var7', 5);
-                await bbctx.variables.set('@var8', 'abc');
-                await bbctx.variables.set('_var9', 5);
-                await bbctx.variables.set('_var10', 'abc');
+                await bbctx.runtime.variables.set('var1', 5);
+                await bbctx.runtime.variables.set('var2', 'abc');
+                await bbctx.runtime.variables.set('~var3', 5);
+                await bbctx.runtime.variables.set('~var4', 'abc');
+                await bbctx.runtime.variables.set('*var5', 5);
+                await bbctx.runtime.variables.set('*var6', 'abc');
+                await bbctx.runtime.variables.set('@var7', 5);
+                await bbctx.runtime.variables.set('@var8', 'abc');
+                await bbctx.runtime.variables.set('_var9', 5);
+                await bbctx.runtime.variables.set('_var10', 'abc');
             }
         }
     ]

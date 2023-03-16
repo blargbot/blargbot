@@ -1,6 +1,6 @@
 import type { ExecutionResult } from '@bbtag/blargbot';
-import { stringify, textTemplates } from '@bbtag/blargbot';
-import type { SubtagCall } from '@bbtag/language';
+import { textTemplates } from '@bbtag/blargbot';
+import type { BBTagToken } from '@bbtag/language';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as Eris from 'eris';
 
@@ -34,12 +34,12 @@ export function bbtagDebugOutput(result: ExecutionResult): { content: IFormattab
                     loadedSources: result.loadedSources,
                     debug: result.debug.map(e => ({
                         details: e.text,
-                        subtag: subtagLocation(e.subtag)
+                        subtag: subtagLocation(e.token)
                     })),
                     errors: result.errors.map(e => ({
                         error: e.error.message,
                         details: e.error.detail,
-                        subtag: readableSubtag(e.subtag)
+                        subtag: e.token?.source
                     })),
                     variables: result.database.values,
                     performance: performance
@@ -49,15 +49,7 @@ export function bbtagDebugOutput(result: ExecutionResult): { content: IFormattab
     };
 }
 
-function readableSubtag(subtag: SubtagCall | undefined): JObject | undefined {
-    return subtag === undefined ? undefined : {
-        name: stringify(subtag.name),
-        arguments: subtag.args.map(stringify),
-        ...subtagLocation(subtag)
-    };
-}
-
-function subtagLocation(subtag: SubtagCall): JObject {
+function subtagLocation(subtag: BBTagToken): JObject {
     return {
         start: `Index ${subtag.start.index}: Line ${subtag.start.line}, column ${subtag.start.column}`,
         end: `Index ${subtag.end.index}: Line ${subtag.end.line}, column ${subtag.end.column}`

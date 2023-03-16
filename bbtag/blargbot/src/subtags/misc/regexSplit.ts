@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { RegexSubtag } from '../../RegexSubtag.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.regexSplit;
 
-@Subtag.names('regexSplit')
+@Subtag.id('regexSplit')
 @Subtag.ctorArgs()
 export class RegexSplitSubtag extends RegexSubtag {
     public constructor() {
@@ -25,8 +25,8 @@ export class RegexSplitSubtag extends RegexSubtag {
         });
     }
 
-    public regexSplit(context: BBTagContext, text: string, regexStr: string): string[] {
-        const regex = this.createRegex(context, regexStr);
+    public regexSplit(context: BBTagScript, text: string, regexStr: string): string[] {
+        const regex = this.createRegex(context.runtime, regexStr);
         return text.split(regex);
     }
 }

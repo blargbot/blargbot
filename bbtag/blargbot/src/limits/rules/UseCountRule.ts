@@ -1,7 +1,7 @@
 import type { IFormattable } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagRuntime } from '../../BBTagRuntime.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import textTemplates from '../../text.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
@@ -25,7 +25,7 @@ export class UseCountRule implements RuntimeLimitRule {
             : error;
     }
 
-    public check(_context: BBTagContext, subtagName: string): void {
+    public check(_context: BBTagRuntime, subtagName: string): void {
         if (this.#remaining-- <= 0)
             throw this.#makeError(subtagName);
     }

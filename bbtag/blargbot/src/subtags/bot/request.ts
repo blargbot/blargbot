@@ -14,7 +14,7 @@ const tag = textTemplates.subtags.request;
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
-@Subtag.names('request')
+@Subtag.id('request')
 @Subtag.ctorArgs('domains', 'converter')
 export class RequestSubtag extends CompiledSubtag {
     readonly #domains: DomainFilterService;

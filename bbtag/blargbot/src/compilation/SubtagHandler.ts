@@ -1,7 +1,6 @@
-import type { SubtagCall } from '@bbtag/language';
-
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagCall } from '../BBTagCall.js';
+import type { BBTagScript } from '../BBTagScript.js';
 
 export interface SubtagHandler {
-    execute(context: BBTagContext, subtagName: string, call: SubtagCall): AsyncIterable<string | undefined>;
+    execute(context: BBTagScript, subtagName: string, call: BBTagCall): Awaitable<string>;
 }

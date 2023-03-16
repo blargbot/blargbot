@@ -1,4 +1,4 @@
-import type { SourceMarker, Statement, SubtagCall } from '@bbtag/language';
+import type { BBTagStatementToken, BBTagToken, SourceMarker } from '@bbtag/language';
 import type { IVariableCache } from '@bbtag/variables';
 import type { Emote } from '@blargbot/discord-emote';
 import type Discord from '@blargbot/discord-types';
@@ -32,7 +32,6 @@ export type BBTagArray = { n?: string; v: JArray; };
 export interface BBTagRuntimeScope {
     // Everything here should be immutable types.
     // Mutable types will modify globally when editing a local scope if not careful
-
     quiet?: boolean;
     fallback?: string;
     noLookupErrors?: boolean;
@@ -41,10 +40,6 @@ export interface BBTagRuntimeScope {
     paramsarray?: readonly string[];
     reaction?: string;
     reactUser?: string;
-
-    // Functions are intended to be stored globally so a mutable type is fine
-    readonly functions: Record<string, Statement | undefined>;
-    readonly isTag: boolean;
 }
 export interface SerializedRuntimeLimit {
     type: keyof typeof limits;
@@ -70,7 +65,7 @@ export interface SerializedBBTagContext {
         paramsarray?: readonly string[];
         reaction?: string;
         reactUser?: string;
-        functions: Record<string, Statement | undefined>;
+        functions: Record<string, BBTagStatementToken | undefined>;
         isTag: boolean;
     };
     inputRaw: string;
@@ -132,12 +127,12 @@ export interface BBTagContextState {
 }
 
 export interface LocatedRuntimeError {
-    readonly subtag: SubtagCall | undefined;
+    readonly token: BBTagToken;
     readonly error: BBTagRuntimeError;
 }
 
 export interface RuntimeDebugEntry {
-    subtag: SubtagCall;
+    token: BBTagToken;
     text: string;
 }
 
@@ -168,7 +163,7 @@ export interface BBTagContextOptions {
     readonly flags?: ReadonlyArray<FlagDefinition<string>>;
     readonly isCC: boolean;
     readonly tagVars?: boolean;
-    readonly authorId?: string;
+    readonly authorId?: string | null;
     readonly rootTagName?: string;
     readonly tagName?: string;
     readonly cooldown?: number;
@@ -178,7 +173,7 @@ export interface BBTagContextOptions {
     readonly scopes?: ScopeManager;
     readonly variables?: IVariableCache;
     readonly callStack?: SubtagCallStack;
-    readonly prefix?: string;
+    readonly prefix?: string | null;
 }
 
 export interface ExecutionResult {
@@ -269,7 +264,6 @@ type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, 'nothing'>
     & SubtagReturnTypeUnion<['json[]', 'nothing']>
     & SubtagReturnTypeUnion<['json', 'nothing']>
     & {
-        unknown: AsyncIterable<string | undefined>;
         nothing: void;
         error: never;
         loop: AwaitableIterable<string>;

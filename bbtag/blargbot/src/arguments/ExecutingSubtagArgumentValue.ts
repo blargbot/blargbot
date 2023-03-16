@@ -1,6 +1,6 @@
-import type { Statement, SubtagCall } from '@bbtag/language';
-
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagCall } from '../BBTagCall.js';
+import type { BBTagScript } from '../BBTagScript.js';
+import type { BBTagStatement } from '../BBTagStatement.js';
 import { ArgumentLengthError } from '../errors/index.js';
 import type { SubtagSignatureValueParameter } from '../types.js';
 import { BBTagRuntimeState } from '../types.js';
@@ -9,10 +9,10 @@ import type { SubtagArgument } from './SubtagArgument.js';
 export class ExecutingSubtagArgumentValue implements SubtagArgument {
     #promise?: Promise<string>;
     #value?: string;
-    readonly #context: BBTagContext;
+    readonly #context: BBTagScript;
 
     public get isCached(): boolean { return this.#value !== undefined; }
-    public get raw(): string { return this.code.source; }
+    public get raw(): string { return this.code.ast.source; }
     public get value(): string {
         if (this.#value === undefined)
             throw new Error('The value is not available yet. Please await the wait() method before attempting to access the value');
@@ -21,9 +21,9 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
 
     public constructor(
         public readonly parameter: SubtagSignatureValueParameter,
-        context: BBTagContext,
-        public readonly call: SubtagCall,
-        public readonly code: Statement
+        context: BBTagScript,
+        public readonly call: BBTagCall,
+        public readonly code: BBTagStatement
     ) {
         this.#context = context;
     }
@@ -37,9 +37,9 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
     }
 
     async #executeInner(): Promise<string> {
-        const result = await this.#context.eval(this.code);
+        const result = await this.code.resolve();
         if (result.length > this.parameter.maxLength) {
-            this.#context.data.state = BBTagRuntimeState.ABORT;
+            this.#context.runtime.state = BBTagRuntimeState.ABORT;
             throw new ArgumentLengthError(this.call.args.indexOf(this.code), this.parameter.maxLength, result.length);
         }
         return this.#value = result.length === 0 ? this.parameter.defaultValue : result;

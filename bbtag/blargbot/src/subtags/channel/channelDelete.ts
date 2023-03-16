@@ -1,7 +1,7 @@
 import Discord from '@blargbot/discord-types';
 import { hasFlag } from '@blargbot/guards';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -11,8 +11,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.channelDelete;
 
-@Subtag.names('channelDelete')
-@Subtag.ctorArgs('channel')
+@Subtag.id('channelDelete')
+@Subtag.ctorArgs('channels')
 export class ChannelDeleteSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -34,8 +34,8 @@ export class ChannelDeleteSubtag extends CompiledSubtag {
         this.#channels = channels;
     }
 
-    public async deleteChannel(context: BBTagContext, channelStr: string): Promise<void> {
-        const channel = await this.#channels.querySingle(context, channelStr);
+    public async deleteChannel(context: BBTagScript, channelStr: string): Promise<void> {
+        const channel = await this.#channels.querySingle(context.runtime, channelStr);
 
         /**
          * TODO change this to "No channel found" for consistency
@@ -44,11 +44,11 @@ export class ChannelDeleteSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');
 
-        const permission = context.getPermission(context.authorizer, channel);
+        const permission = context.runtime.getPermission(context.runtime.authorizer, channel);
         if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageChannels))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
-        const result = await this.#channels.delete(context, channel.id);
+        const result = await this.#channels.delete(context.runtime, channel.id);
 
         if (result === undefined)
             return;

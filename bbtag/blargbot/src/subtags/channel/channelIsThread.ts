@@ -1,6 +1,6 @@
 import { isThreadChannel } from '@blargbot/discord-util';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -10,8 +10,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.channelIsThread;
 
-@Subtag.names('channelIsThread', 'isThread')
-@Subtag.ctorArgs('channel')
+@Subtag.id('channelIsThread', 'isThread')
+@Subtag.ctorArgs('channels')
 export class ChannelIsThreadSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -25,7 +25,7 @@ export class ChannelIsThreadSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx) => this.isThreadChannel(ctx, ctx.channel.id, true)
+                    execute: (ctx) => this.isThreadChannel(ctx, ctx.runtime.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -42,12 +42,12 @@ export class ChannelIsThreadSubtag extends CompiledSubtag {
     }
 
     public async isThreadChannel(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);

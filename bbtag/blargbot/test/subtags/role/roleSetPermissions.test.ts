@@ -25,7 +25,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.role.setup(m => m.edit(bbctx, role.id, argument.isDeepEqual({ permissions: '0' }))).thenResolve(undefined);
+                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ permissions: '0' }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -41,7 +41,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.role.setup(m => m.edit(bbctx, role.id, argument.isDeepEqual({ permissions: '0' }))).thenResolve(undefined);
+                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ permissions: '0' }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -56,7 +56,7 @@ runSubtagTests({
                     title: 'Author is missing permissions',
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.role.setup(m => m.edit(bbctx, role.id, argument.isDeepEqual({ permissions: '0' }))).thenResolve(undefined);
+                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ permissions: '0' }))).thenResolve(undefined);
                     }
                 },
                 {
@@ -66,7 +66,7 @@ runSubtagTests({
                         ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.Administrator.toString();
                     },
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.role.setup(m => m.edit(bbctx, role.id, argument.isDeepEqual({ permissions: '239748' }))).thenResolve(undefined);
+                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ permissions: '239748' }))).thenResolve(undefined);
                     }
                 },
                 {
@@ -76,7 +76,7 @@ runSubtagTests({
                         ctx.roles.authorizer.permissions = (-1n & ~Discord.PermissionFlagsBits.Administrator).toString();
                     },
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.role.setup(m => m.edit(bbctx, role.id, argument.isDeepEqual({ permissions: '239748' }))).thenResolve(undefined);
+                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ permissions: '239748' }))).thenResolve(undefined);
                     }
                 },
                 {
@@ -90,7 +90,7 @@ runSubtagTests({
                         ).toString();
                     },
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.role.setup(m => m.edit(bbctx, role.id, argument.isDeepEqual({ permissions: '65664' }))).thenResolve(undefined);
+                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ permissions: '65664' }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -112,7 +112,7 @@ runSubtagTests({
                 { start: 0, end: 28, error: new BBTagRuntimeError('Role above author') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.top);
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.top);
             }
         },
         {
@@ -122,8 +122,8 @@ runSubtagTests({
                 { start: 0, end: 28, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
-                ctx.dependencies.role.setup(m => m.edit(bbctx, ctx.roles.bot.id, argument.isDeepEqual({ permissions: '0' }))).thenResolve({ error: 'Test REST error' });
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
+                ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, ctx.roles.bot.id, argument.isDeepEqual({ permissions: '0' }))).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -133,8 +133,8 @@ runSubtagTests({
                 { start: 0, end: 28, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
-                ctx.dependencies.role.setup(m => m.edit(bbctx, ctx.roles.bot.id, argument.isDeepEqual({ permissions: '0' }))).thenResolve({ error: 'Some other error message' });
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
+                ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, ctx.roles.bot.id, argument.isDeepEqual({ permissions: '0' }))).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

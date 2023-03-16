@@ -1,7 +1,7 @@
 import Discord from '@blargbot/discord-types';
 import { hasFlag } from '@blargbot/guards';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -12,8 +12,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.reactionRemoveAll;
 
-@Subtag.names('reactionRemoveAll', 'reactRemoveAll', 'removeReactAll')
-@Subtag.ctorArgs('channel', 'message')
+@Subtag.id('reactionRemoveAll', 'reactRemoveAll', 'removeReactAll')
+@Subtag.ctorArgs('channels', 'messages')
 export class ReactionRemoveAllSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
     readonly #messages: MessageService;
@@ -37,23 +37,23 @@ export class ReactionRemoveAllSubtag extends CompiledSubtag {
         this.#messages = messages;
     }
 
-    public async removeAllReactions(context: BBTagContext, channelStr: string, messageId: string): Promise<void> {
-        const channel = await this.#channels.querySingle(context, channelStr);
+    public async removeAllReactions(context: BBTagScript, channelStr: string, messageId: string): Promise<void> {
+        const channel = await this.#channels.querySingle(context.runtime, channelStr);
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        const message = await this.#messages.get(context, channel.id, messageId);
+        const message = await this.#messages.get(context.runtime, channel.id, messageId);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
-        const permissions = context.getPermission(context.bot, channel);
+        const permissions = context.runtime.getPermission(context.runtime.bot, channel);
         if (!hasFlag(permissions, Discord.PermissionFlagsBits.ManageMessages))
             throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
 
-        if (!(context.isStaff || context.ownsMessage(message.id)))
+        if (!context.runtime.ownsMessage(message.id))
             throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
 
-        await this.#messages.removeReactions(context, channel.id, message.id);
+        await this.#messages.removeReactions(context.runtime, channel.id, message.id);
         //TODO meaningful output please
     }
 }

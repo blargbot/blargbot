@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -8,7 +8,7 @@ import { tagVariableScopeProviders } from '../../variables/tagVariableScopeProvi
 
 const tag = textTemplates.subtags.set;
 
-@Subtag.names('set')
+@Subtag.id('set')
 @Subtag.ctorArgs('arrayTools')
 export class SetSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -23,7 +23,7 @@ export class SetSubtag extends CompiledSubtag {
                     exampleCode: tag.clear.exampleCode,
                     exampleOut: tag.clear.exampleOut,
                     returns: 'nothing',
-                    execute: async (ctx, [name]) => await ctx.variables.set(name.value, undefined)
+                    execute: async (ctx, [name]) => await ctx.runtime.variables.set(name.value, undefined)
                 },
                 {
                     parameters: ['name', 'value'],
@@ -48,23 +48,23 @@ export class SetSubtag extends CompiledSubtag {
     }
 
     public async set(
-        context: BBTagContext,
+        context: BBTagScript,
         variableName: string,
         value: string
     ): Promise<void> {
         const deserializedArray = this.#arrayTools.deserialize(value);
         if (deserializedArray !== undefined) {
-            await context.variables.set(variableName, deserializedArray.v);
+            await context.runtime.variables.set(variableName, deserializedArray.v);
         } else {
-            await context.variables.set(variableName, value);
+            await context.runtime.variables.set(variableName, value);
         }
     }
 
     public async setArray(
-        context: BBTagContext,
+        context: BBTagScript,
         variableName: string,
         values: string[]
     ): Promise<void> {
-        await context.variables.set(variableName, values);
+        await context.runtime.variables.set(variableName, values);
     }
 }

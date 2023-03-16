@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.reason;
 
-@Subtag.names('reason')
+@Subtag.id('reason')
 @Subtag.ctorArgs()
 export class ReasonSubtag extends CompiledSubtag {
     public constructor() {
@@ -25,8 +25,8 @@ export class ReasonSubtag extends CompiledSubtag {
         });
     }
 
-    public setReason(context: BBTagContext, reason: string): void {
-        context.scopes.local.reason = reason;
+    public setReason(context: BBTagScript, reason: string): void {
+        context.runtime.scopes.local.reason = reason;
 
     }
 }

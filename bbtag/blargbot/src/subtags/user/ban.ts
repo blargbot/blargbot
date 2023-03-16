@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -16,8 +16,8 @@ const errorMap = {
     'moderatorTooLow': 'User has no permissions'
 };
 
-@Subtag.names('ban')
-@Subtag.ctorArgs('user', 'converter')
+@Subtag.id('ban')
+@Subtag.ctorArgs('users', 'converter')
 export class BanSubtag extends CompiledSubtag {
     readonly #users: UserService;
     readonly #converter: BBTagValueConverter;
@@ -59,14 +59,14 @@ export class BanSubtag extends CompiledSubtag {
     }
 
     public async banMember(
-        context: BBTagContext,
+        context: BBTagScript,
         userStr: string,
         daysToDeleteStr: string,
         reason: string,
         timeToUnbanStr: string,
         noPerms: boolean
     ): Promise<boolean | number> {
-        const user = await this.#users.querySingle(context, userStr, { noLookup: true });
+        const user = await this.#users.querySingle(context.runtime, userStr, { noLookup: true });
 
         if (user === undefined)
             throw new UserNotFoundError(userStr);
@@ -82,8 +82,8 @@ export class BanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Ban';
 
-        const authorizer = noPerms ? context.authorizer : context.user;
-        const response = await this.#users.ban(context.guild, user, context.user, authorizer, daysToDelete, reason, duration);
+        const authorizer = noPerms ? context.runtime.authorizer : context.runtime.user;
+        const response = await this.#users.ban(context.runtime.guild, user, context.runtime.user, authorizer, daysToDelete, reason, duration);
         if (response === 'success' || response === 'alreadyBanned')
             return duration < Infinity ? duration : true;
         throw new BBTagRuntimeError(errorMap[response]);

@@ -33,7 +33,7 @@ Database Execution Time: {database#duration(MS)}ms
     analysis: {
         unnamed: 'Unnamed subtag',
         dynamic: 'Dynamic subtag',
-        deprecated: t<Subtag>('\\{{name}\\} is deprecated. Use `\\{{deprecated}\\}` instead')
+        deprecated: t<Subtag>('\\{{id}\\} is deprecated. Use `\\{{deprecated}\\}` instead')
     },
     subtag: {
         types: {

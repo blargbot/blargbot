@@ -11,15 +11,14 @@ runSubtagTests({
             code: '{commandname}',
             expected: 'My cool command',
             setup(ctx) {
-                ctx.options.tagName = 'My cool command';
+                ctx.entrypoint.name = 'My cool command';
             }
         },
         {
             code: '{commandname}',
             expected: 'My cool command',
             setup(ctx) {
-                ctx.options.rootTagName = 'My cool command';
-                ctx.options.tagName = 'WRONG';
+                ctx.entrypoint.name = 'My cool command';
             }
         }
     ]

@@ -1,7 +1,7 @@
 import { hasProperty } from '@blargbot/guards';
 import Color from 'color';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -13,7 +13,7 @@ const tag = textTemplates.subtags.color;
 
 export type ColorFormat = keyof typeof colorConverters;
 
-@Subtag.names('color')
+@Subtag.id('color')
 @Subtag.ctorArgs('arrayTools')
 export class ColorSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -46,7 +46,7 @@ export class ColorSubtag extends CompiledSubtag {
     }
 
     public async parseColor(
-        context: BBTagContext,
+        context: BBTagScript,
         colorStr: string,
         outputStr: string,
         inputStr: string | undefined
@@ -54,7 +54,7 @@ export class ColorSubtag extends CompiledSubtag {
         if (colorStr === '')
             throw new BBTagRuntimeError('Invalid color', 'value was empty');
 
-        const arr = await this.#arrayTools.deserializeOrGetArray(context, colorStr);
+        const arr = await this.#arrayTools.deserializeOrGetArray(context.runtime, colorStr);
         const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
 
         const inputConverter = getConverter(inputStr ?? '');

@@ -12,7 +12,7 @@ runSubtagTests({
             code: '{pardon}',
             expected: '0',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.warnings.setup(m => m.pardon(bbctx, bbctx.user, bbctx.user, 1, 'Tag Pardon'))
+                ctx.dependencies.warnings.setup(m => m.pardon(bbctx.runtime, bbctx.runtime.user, bbctx.runtime.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(0);
             }
@@ -21,7 +21,7 @@ runSubtagTests({
             code: '{pardon}',
             expected: '5',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.warnings.setup(m => m.pardon(bbctx, bbctx.user, bbctx.user, 1, 'Tag Pardon'))
+                ctx.dependencies.warnings.setup(m => m.pardon(bbctx.runtime, bbctx.runtime.user, bbctx.runtime.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(5);
             }
@@ -30,7 +30,7 @@ runSubtagTests({
             code: '{pardon;}',
             expected: '3',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.warnings.setup(m => m.pardon(bbctx, bbctx.user, bbctx.user, 1, 'Tag Pardon'))
+                ctx.dependencies.warnings.setup(m => m.pardon(bbctx.runtime, bbctx.runtime.user, bbctx.runtime.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(3);
             }
@@ -40,8 +40,8 @@ runSubtagTests({
             expected: '7',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.warnings.setup(m => m.pardon(bbctx, user.instance, bbctx.user, 1, 'Tag Pardon'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.warnings.setup(m => m.pardon(bbctx.runtime, user.instance, bbctx.runtime.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(7);
             }
@@ -50,7 +50,7 @@ runSubtagTests({
             code: '{pardon;;6}',
             expected: '26',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.warnings.setup(m => m.pardon(bbctx, bbctx.user, bbctx.user, 6, 'Tag Pardon'))
+                ctx.dependencies.warnings.setup(m => m.pardon(bbctx.runtime, bbctx.runtime.user, bbctx.runtime.user, 6, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(26);
             }
@@ -60,8 +60,8 @@ runSubtagTests({
             expected: '0',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.warnings.setup(m => m.pardon(bbctx, user.instance, bbctx.user, 9, 'Tag Pardon'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.warnings.setup(m => m.pardon(bbctx.runtime, user.instance, bbctx.runtime.user, 9, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(0);
             }
@@ -71,8 +71,8 @@ runSubtagTests({
             expected: '6',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.warnings.setup(m => m.pardon(bbctx, user.instance, bbctx.user, 8, 'Because I felt like it'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.warnings.setup(m => m.pardon(bbctx.runtime, user.instance, bbctx.runtime.user, 8, 'Because I felt like it'))
                     .verifiable(1)
                     .thenResolve(6);
             }
@@ -84,7 +84,7 @@ runSubtagTests({
                 { start: 0, end: 21, error: new UserNotFoundError('unknown user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'unknown user')).verifiable(1).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'unknown user')).verifiable(1).thenResolve(undefined);
             }
         },
         {
@@ -95,7 +95,7 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
             }
         }
     ]

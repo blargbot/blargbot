@@ -1,4 +1,4 @@
-import type { BBTagContext, ChannelService, Entities, EntityQueryService, FindEntityOptions } from '@bbtag/blargbot';
+import type { BBTagRuntime, ChannelService, Entities, EntityQueryService, FindEntityOptions } from '@bbtag/blargbot';
 import { catchErrors } from '@blargbot/catch-decorators';
 import * as Eris from 'eris';
 
@@ -31,39 +31,39 @@ export class ErisBBTagChannelService implements ChannelService {
         throw channel;
     }
 
-    public async querySingle(context: BBTagContext, query: string, options?: FindEntityOptions | undefined): Promise<Entities.Channel | undefined> {
+    public async querySingle(context: BBTagRuntime, query: string, options?: FindEntityOptions | undefined): Promise<Entities.Channel | undefined> {
         return await this.#querySingle(context, query, options);
     }
 
-    public async get(context: BBTagContext, id: string): Promise<Entities.Channel | undefined> {
+    public async get(context: BBTagRuntime, id: string): Promise<Entities.Channel | undefined> {
         const channel = await this.#cluster.util.getChannel(context.guild.id, id);
         return channel === undefined ? undefined : this.#convertToChannel(channel);
     }
 
-    public async getAll(context: BBTagContext): Promise<Entities.Channel[]> {
+    public async getAll(context: BBTagRuntime): Promise<Entities.Channel[]> {
         const channels = await this.#cluster.util.findChannels(context.guild.id);
         return channels.map(this.#convertToChannel.bind(this));
     }
 
-    public async getDmChannelId(_context: BBTagContext, userId: string): Promise<string> {
+    public async getDmChannelId(_context: BBTagRuntime, userId: string): Promise<string> {
         const channel = await this.#cluster.discord.getDMChannel(userId);
         return channel.id;
     }
 
     @catchErisRESTErrors
-    public async edit(context: BBTagContext, channelId: string, update: Partial<Entities.EditChannel>, reason?: string): Promise<undefined | { error: string; }> {
+    public async edit(context: BBTagRuntime, channelId: string, update: Partial<Entities.EditChannel>, reason?: string): Promise<undefined | { error: string; }> {
         await this.#cluster.discord.editChannel(channelId, update, reason ?? context.auditReason());
         return undefined;
     }
 
     @catchErisRESTErrors
-    public async delete(context: BBTagContext, channelId: string, reason?: string): Promise<undefined | { error: string; }> {
+    public async delete(context: BBTagRuntime, channelId: string, reason?: string): Promise<undefined | { error: string; }> {
         await this.#cluster.discord.deleteChannel(channelId, reason ?? context.auditReason());
         return undefined;
     }
 
     @catchErisRESTErrors
-    public async create(context: BBTagContext, options: Entities.CreateChannel, reason?: string): Promise<Entities.Channel | { error: string; }> {
+    public async create(context: BBTagRuntime, options: Entities.CreateChannel, reason?: string): Promise<Entities.Channel | { error: string; }> {
         const { name, type, permissionOverwrites, ...config } = options;
         const channel = await this.#cluster.discord.createChannel(context.guild.id, name, type, reason ?? context.auditReason(), {
             ...config, permissionOverwrites: permissionOverwrites?.map(p => ({
@@ -76,7 +76,7 @@ export class ErisBBTagChannelService implements ChannelService {
     }
 
     @catchErisRESTErrors
-    public async setPermission(context: BBTagContext, channelId: string, overwrite: Entities.PermissionOverwrite, reason?: string): Promise<{ error: string; } | undefined> {
+    public async setPermission(context: BBTagRuntime, channelId: string, overwrite: Entities.PermissionOverwrite, reason?: string): Promise<{ error: string; } | undefined> {
         if (overwrite.allow === '0' && overwrite.deny === '0')
             await this.#cluster.discord.deleteChannelPermission(channelId, overwrite.id, reason ?? context.auditReason());
         else

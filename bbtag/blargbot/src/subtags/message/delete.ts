@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -9,8 +9,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.delete;
 
-@Subtag.names('delete')
-@Subtag.ctorArgs('channel', 'message')
+@Subtag.id('delete')
+@Subtag.ctorArgs('channels', 'messages')
 export class DeleteSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
     readonly #messages: MessageService;
@@ -26,7 +26,7 @@ export class DeleteSubtag extends CompiledSubtag {
                     exampleCode: tag.trigger.exampleCode,
                     exampleOut: tag.trigger.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx) => this.deleteMessage(ctx, ctx.channel.id, ctx.message.id)
+                    execute: (ctx) => this.deleteMessage(ctx, ctx.runtime.channel.id, ctx.runtime.message.id)
                 },
                 {
                     parameters: ['messageId'],
@@ -34,7 +34,7 @@ export class DeleteSubtag extends CompiledSubtag {
                     exampleCode: tag.inCurrent.exampleCode,
                     exampleOut: tag.inCurrent.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx, [messageId]) => this.deleteMessage(ctx, ctx.channel.id, messageId.value)
+                    execute: (ctx, [messageId]) => this.deleteMessage(ctx, ctx.runtime.channel.id, messageId.value)
                 },
                 {
                     parameters: ['channel', 'messageId'],
@@ -52,25 +52,25 @@ export class DeleteSubtag extends CompiledSubtag {
     }
 
     public async deleteMessage(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         messageId: string
     ): Promise<void> {
-        if (!(context.ownsMessage(messageId) || context.isStaff))
+        if (!context.runtime.ownsMessage(messageId))
             throw new BBTagRuntimeError('Author must be staff to delete unrelated messages');
 
-        const channel = await this.#channels.querySingle(context, channelStr);
+        const channel = await this.#channels.querySingle(context.runtime, channelStr);
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
         if (messageId.length === 0)
             throw new MessageNotFoundError(channel.id, messageId).withDisplay('');
 
-        const msg = await this.#messages.get(context, channel.id, messageId);
+        const msg = await this.#messages.get(context.runtime, channel.id, messageId);
         if (msg === undefined)
             throw new MessageNotFoundError(channel.id, messageId).withDisplay('');
 
-        await this.#messages.delete(context, channel.id, messageId);
+        await this.#messages.delete(context.runtime, channel.id, messageId);
         //TODO return something like true/false
     }
 }

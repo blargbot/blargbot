@@ -13,14 +13,17 @@ runSubtagTests({
             expected: '1,2,3,4,5,6,7,8,9,10,',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag), Subtag.getDescriptor(OperatorSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(10)
+                    .thenResolve(...Array.from({ length: 10 }, () => undefined))
+                    .thenReject(new RangeError('Too many calls to check while:loops, expected exactly 10'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal(10);
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(10);
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
             }
         },
@@ -29,14 +32,17 @@ runSubtagTests({
             expected: '1,2,3,4,5,6,7,8,9,10,',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(10)
+                    .thenResolve(...Array.from({ length: 10 }, () => undefined))
+                    .thenReject(new RangeError('Too many calls to check while:loops, expected exactly 10'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal(10);
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(10);
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
             }
         },
@@ -45,14 +51,17 @@ runSubtagTests({
             expected: '1,2,3,4,5,6,7,8,9,10,',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(10)
+                    .thenResolve(...Array.from({ length: 10 }, () => undefined))
+                    .thenReject(new RangeError('Too many calls to check while:loops, expected exactly 10'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal(10);
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(10);
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
             }
         },
@@ -61,14 +70,17 @@ runSubtagTests({
             expected: '1,2,3,4,5,6,7,8,9,10,',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(10)
+                    .thenResolve(...Array.from({ length: 10 }, () => undefined))
+                    .thenReject(new RangeError('Too many calls to check while:loops, expected exactly 10'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal(10);
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(10);
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
             }
         },
@@ -77,14 +89,17 @@ runSubtagTests({
             expected: '2,4,6,8,10,',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(5).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(5)
+                    .thenResolve(...Array.from({ length: 5 }, () => undefined))
+                    .thenReject(new RangeError('Too many calls to check while:loops, expected exactly 5'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal(10);
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(10);
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
             }
         },
@@ -93,14 +108,17 @@ runSubtagTests({
             expected: '9,8,7,6,5,4,3,2,1,0,',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(DecrementSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '10');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(10)
+                    .thenResolve(...Array.from({ length: 10 }, () => undefined))
+                    .thenReject(new RangeError('Too many calls to check while:loops, expected exactly 10'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal(0);
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(0);
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(0);
             }
         },
@@ -109,14 +127,17 @@ runSubtagTests({
             expected: '1,2,4,8,16,32,64,128,256,512,',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(SetSubtag), Subtag.getDescriptor(OperatorSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '1');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(10)
+                    .thenResolve(...Array.from({ length: 10 }, () => undefined))
+                    .thenReject(new RangeError('Too many calls to check while:loops, expected exactly 10'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal('1024');
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal('1024');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('1024');
             }
         },
@@ -128,19 +149,17 @@ runSubtagTests({
             ],
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(5).thenCall(() => {
-                    if (i++ >= 4)
-                        throw new BBTagRuntimeError('Too many loops');
-                    return undefined;
-                });
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(5)
+                    .thenResolve(...Array.from({ length: 4 }, () => undefined))
+                    .thenReject(new BBTagRuntimeError('Too many loops'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal(4);
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(4);
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
             }
         },
@@ -152,19 +171,17 @@ runSubtagTests({
             ],
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(5).thenCall(() => {
-                    if (i++ >= 4)
-                        throw new BBTagRuntimeError('Too many loops');
-                    return undefined;
-                });
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(5)
+                    .thenResolve(...Array.from({ length: 4 }, () => undefined))
+                    .thenReject(new BBTagRuntimeError('Too many loops'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal(4);
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(4);
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
             }
         },
@@ -176,19 +193,17 @@ runSubtagTests({
             ],
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(5).thenCall(() => {
-                    if (i++ >= 4)
-                        throw new BBTagRuntimeError('Too many loops');
-                    return undefined;
-                });
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(5)
+                    .thenResolve(...Array.from({ length: 4 }, () => undefined))
+                    .thenReject(new BBTagRuntimeError('Too many loops'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal(4);
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(4);
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
             }
         },
@@ -197,16 +212,19 @@ runSubtagTests({
             expected: '1,2,3,4,5,6',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IfSubtag), Subtag.getDescriptor(ReturnSubtag), Subtag.getDescriptor(IncrementSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(6).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
+                    .verifiable(6)
+                    .thenResolve(...Array.from({ length: 6 }, () => undefined))
+                    .thenReject(new RangeError('Too many calls to check while:loops, expected exactly 6'));
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal(6);
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(6);
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(6);
-                chai.expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                chai.expect(bbctx.runtime.state).to.equal(BBTagRuntimeState.ABORT);
             }
         }
     ]

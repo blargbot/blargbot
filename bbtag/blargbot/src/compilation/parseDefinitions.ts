@@ -1,7 +1,7 @@
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { SubtagLogic } from '../logic/index.js';
-import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic/index.js';
+import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic/index.js';
 import type { SubtagReturnTypeMap, SubtagSignature, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types.js';
 import type { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions.js';
 import type { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
@@ -117,7 +117,6 @@ function getExecute(definition: AnySubtagSignatureOptions, parameters: readonly 
 }
 
 const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLogic<Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic } = {
-    'unknown': DeferredSubtagLogic,
     'number': StringifySubtagLogic,
     'hex': StringSubtagLogic.withConversion(val => val.toString(16).padStart(6, '0')),
     'number[]': ArraySubtagLogic,
@@ -127,8 +126,8 @@ const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLog
     'string': StringSubtagLogic,
     'string|nothing': StringSubtagLogic,
     'string[]': ArraySubtagLogic,
-    'json': StringSubtagLogic.withConversion((v, e) => e.dependencies.converter.string(v)),
-    'json|nothing': StringSubtagLogic.withConversion((v, e) => e.dependencies.converter.string(v)),
+    'json': StringSubtagLogic.withConversion((v, e) => e.converter.string(v)),
+    'json|nothing': StringSubtagLogic.withConversion((v, e) => e.converter.string(v)),
     'json[]': ArraySubtagLogic,
     'json[]|nothing': ArraySubtagLogic,
     'nothing': IgnoreSubtagLogic,

@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -7,7 +7,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.hereMention;
 
-@Subtag.names('hereMention', 'here')
+@Subtag.id('hereMention', 'here')
 @Subtag.ctorArgs('converter')
 export class HereMentionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -31,11 +31,11 @@ export class HereMentionSubtag extends CompiledSubtag {
     }
 
     public hereMention(
-        context: BBTagContext,
+        context: BBTagScript,
         mention: string
     ): string {
         const enabled = this.#converter.boolean(mention, true);
-        context.data.allowedMentions.everybody = enabled;
+        context.runtime.outputOptions.allowEveryone = enabled;
         return '@here';
     }
 }

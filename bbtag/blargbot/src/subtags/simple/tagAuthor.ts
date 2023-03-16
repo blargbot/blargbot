@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.tagAuthor;
 
-@Subtag.names('tagAuthor', 'customCommandAuthor', 'ccAuthor')
+@Subtag.id('tagAuthor', 'customCommandAuthor', 'ccAuthor')
 @Subtag.ctorArgs()
 export class TagAuthorSubtag extends CompiledSubtag {
     public constructor() {
@@ -25,7 +25,7 @@ export class TagAuthorSubtag extends CompiledSubtag {
         });
     }
 
-    public getAuthor(context: BBTagContext): string {
-        return context.authorId ?? context.guild.id;
+    public getAuthor(context: BBTagScript): string {
+        return context.runtime.authorId ?? context.runtime.guild.id;
     }
 }

@@ -1,4 +1,4 @@
-import type { BBTagContext, BBTagRuntimeError, Entities, FindEntityOptions } from '@bbtag/blargbot';
+import type { BBTagRuntimeError, BBTagScript, Entities, FindEntityOptions } from '@bbtag/blargbot';
 import { ChannelNotFoundError } from '@bbtag/blargbot';
 import { argument } from '@blargbot/test-util/mock.js';
 
@@ -42,8 +42,8 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
         postSetup(bbctx, ctx) {
             const opt = options.getQueryOptions?.(false);
             if (opt === undefined)
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '12345678998765432'), false).thenResolve(undefined);
-            ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '12345678998765432', argument.isDeepEqual(opt)), false).thenResolve(undefined);
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '12345678998765432'), false).thenResolve(undefined);
+            ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '12345678998765432', argument.isDeepEqual(opt)), false).thenResolve(undefined);
         }
     };
     if (options.quiet !== false) {
@@ -55,7 +55,7 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
                 { start: 0, end: options.generateCode('12345678998765432', 'q').length, error: notFound('12345678998765432').withDisplay(options.quiet) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '12345678998765432', argument.isDeepEqual(options.getQueryOptions?.(true))), false).thenResolve(undefined);
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '12345678998765432', argument.isDeepEqual(options.getQueryOptions?.(true))), false).thenResolve(undefined);
             }
         };
     }
@@ -78,8 +78,8 @@ interface GetChannelPropTestCase {
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, quietStr?: string]) => string;
     setup?: (channel: Entities.Channel, context: SubtagTestContext) => void;
-    postSetup?: (channel: Entities.Channel, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, channel: Entities.Channel, context: BBTagContext, test: SubtagTestContext) => void;
+    postSetup?: (channel: Entities.Channel, context: BBTagScript, test: SubtagTestContext) => void;
+    assert?: (result: string, channel: Entities.Channel, context: BBTagScript, test: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetChannelPropTestData, isQuiet: boolean, testCase: GetChannelPropTestCase, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetChannelPropTestData['generateCode']>): SubtagTestCase {
@@ -104,8 +104,8 @@ function createTestCase(data: GetChannelPropTestData, isQuiet: boolean, testCase
 
                 const opt = data.getQueryOptions?.(isQuiet);
                 if (opt === undefined)
-                    ctx.dependencies.channel.setup(m => m.querySingle(bbctx, channelQuery), false).thenResolve(channel);
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, channelQuery, argument.isDeepEqual(opt)), false).thenResolve(channel);
+                    ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery), false).thenResolve(channel);
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery, argument.isDeepEqual(opt)), false).thenResolve(channel);
             }
 
             testCase.postSetup?.(channel, bbctx, ctx);

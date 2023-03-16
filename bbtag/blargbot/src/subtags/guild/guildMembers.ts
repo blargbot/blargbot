@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
@@ -7,8 +7,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.guildMembers;
 
-@Subtag.names('guildMembers')
-@Subtag.ctorArgs('user')
+@Subtag.id('guildMembers')
+@Subtag.ctorArgs('users')
 export class GuildMembersSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -30,8 +30,8 @@ export class GuildMembersSubtag extends CompiledSubtag {
         this.#users = users;
     }
 
-    public async getMembers(context: BBTagContext): Promise<string[]> {
-        const users = await this.#users.getAll(context);
+    public async getMembers(context: BBTagScript): Promise<string[]> {
+        const users = await this.#users.getAll(context.runtime);
         return users.filter(u => u.member !== undefined).map(u => u.id);
     }
 }

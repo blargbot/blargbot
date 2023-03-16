@@ -1,16 +1,15 @@
 import type { SubtagArgument } from '../../arguments/index.js';
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
-import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { overrides, SubtagType } from '../../utils/index.js';
 import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.filter;
 
-@Subtag.names('filter')
+@Subtag.id('filter')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class FilterSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -35,20 +34,17 @@ export class FilterSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public async * filter(context: BBTagContext, varName: string, source: string, code: SubtagArgument): AsyncIterable<JToken> {
-        const array = await this.#arrayTools.deserializeOrGetIterable(context, source) ?? [];
+    public async * filter(context: BBTagScript, varName: string, source: string, code: SubtagArgument): AsyncIterable<JToken> {
+        const array = await this.#arrayTools.deserializeOrGetIterable(context.runtime, source) ?? [];
         try {
             for (const item of array) {
-                await context.limit.check(context, 'filter:loops');
-                await context.variables.set(varName, item);
+                await context.runtime.limit.check('filter:loops');
+                await context.runtime.variables.set(varName, item);
                 if (this.#converter.boolean((await code.execute()).trim()) === true)
                     yield item;
-
-                if (context.data.state !== BBTagRuntimeState.RUNNING)
-                    break;
             }
         } finally {
-            context.variables.reset([varName]);
+            context.runtime.variables.reset([varName]);
         }
     }
 }

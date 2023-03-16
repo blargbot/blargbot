@@ -18,7 +18,7 @@ runSubtagTests({
             code: '{reactuser}',
             expected: '237462498437649',
             postSetup(bbctx) {
-                bbctx.scopes.local.reactUser = '237462498437649';
+                bbctx.runtime.scopes.local.reactUser = '237462498437649';
             }
         }
     ]

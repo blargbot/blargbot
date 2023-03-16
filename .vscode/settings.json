@@ -42,5 +42,6 @@
     "subtags",
     "timedout"
   ],
-  "task.allowAutomaticTasks": "on"
+  "task.allowAutomaticTasks": "on",
+  "javascript.preferences.importModuleSpecifierEnding": "js"
 }

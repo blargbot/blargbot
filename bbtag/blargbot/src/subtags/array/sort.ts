@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -9,7 +9,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.sort;
 
-@Subtag.names('sort')
+@Subtag.id('sort')
 @Subtag.ctorArgs('operators', 'arrayTools', 'converter')
 export class SortSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
@@ -36,8 +36,8 @@ export class SortSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public async sort(context: BBTagContext, arrayStr: string, descendingStr: string): Promise<JArray | undefined> {
-        const arr = await this.#arrayTools.deserializeOrGetArray(context, arrayStr);
+    public async sort(context: BBTagScript, arrayStr: string, descendingStr: string): Promise<JArray | undefined> {
+        const arr = await this.#arrayTools.deserializeOrGetArray(context.runtime, arrayStr);
         if (arr === undefined)
             throw new NotAnArrayError(arrayStr);
 
@@ -48,7 +48,7 @@ export class SortSubtag extends CompiledSubtag {
         if (arr.n === undefined)
             return arr.v;
 
-        await context.variables.set(arr.n, arr.v);
+        await context.runtime.variables.set(arr.n, arr.v);
         return undefined;
     }
 }

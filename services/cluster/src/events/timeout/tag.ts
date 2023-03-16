@@ -13,7 +13,7 @@ export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
 
         const contextData = JSON.parse(event.context) as unknown as SerializedBBTagContext;
         // context.limit.addRules(['timer', 'output'], disabledRule);
-        // context.data.stackSize = 0;
+        // context.runtime.moduleCount = 0;
         await this.cluster.bbtag.execute(event.content, {
             ...contextData
         });

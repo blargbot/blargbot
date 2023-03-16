@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.jsonKeys;
 
-@Subtag.names('jsonKeys', 'jKeys')
+@Subtag.id('jsonKeys', 'jKeys')
 @Subtag.ctorArgs('jsonTools')
 export class JsonKeysSubtag extends CompiledSubtag {
     readonly #jsonTools: BBTagJsonTools;
@@ -30,8 +30,8 @@ export class JsonKeysSubtag extends CompiledSubtag {
         this.#jsonTools = jsonTools;
     }
 
-    public async getJsonKeys(context: BBTagContext, objStr: string, path: string): Promise<string[]> {
-        const obj = (await this.#jsonTools.resolveObj(context, objStr)).object;
+    public async getJsonKeys(context: BBTagScript, objStr: string, path: string): Promise<string[]> {
+        const obj = (await this.#jsonTools.resolveObj(context.runtime, objStr)).object;
 
         if (path !== '')
             return Object.keys(this.#jsonTools.get(obj, path) ?? {});

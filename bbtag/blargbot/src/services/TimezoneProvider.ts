@@ -1,5 +1,5 @@
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagRuntime } from '../BBTagRuntime.js';
 
 export interface TimezoneProvider {
-    get(context: BBTagContext, userId: string): Promise<string | undefined>;
+    get(context: BBTagRuntime, userId: string): Promise<string | undefined>;
 }

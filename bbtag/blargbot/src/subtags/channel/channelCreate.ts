@@ -2,7 +2,7 @@ import Discord, { ChannelType, OverwriteType } from '@blargbot/discord-types';
 import { hasFlag, hasProperty } from '@blargbot/guards';
 import { mapping } from '@blargbot/mapping';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -13,8 +13,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.channelCreate;
 
-@Subtag.names('channelCreate')
-@Subtag.ctorArgs('channel')
+@Subtag.id('channelCreate')
+@Subtag.ctorArgs('channels')
 export class ChannelCreateSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -38,13 +38,12 @@ export class ChannelCreateSubtag extends CompiledSubtag {
     }
 
     public async channelCreate(
-        context: BBTagContext,
+        context: BBTagScript,
         name: string,
         typeKey: string,
         optionsJson: string
     ): Promise<string> {
-        const permission = context.getPermission(context.authorizer);
-        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageChannels))
+        if (!hasFlag(context.runtime.authorizerPermissions, Discord.PermissionFlagsBits.ManageChannels))
             throw new BBTagRuntimeError('Author cannot create channels');
 
         const mapped = mapOptions(optionsJson);
@@ -55,10 +54,10 @@ export class ChannelCreateSubtag extends CompiledSubtag {
         const type = hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : ChannelType.GuildText;
 
         for (const permission of options.permissionOverwrites ?? [])
-            if (!hasFlag(context.getPermission(context.authorizer), BigInt(permission.allow) | BigInt(permission.deny)))
+            if (!hasFlag(context.runtime.authorizerPermissions, BigInt(permission.allow) | BigInt(permission.deny)))
                 throw new BBTagRuntimeError('Author missing requested permissions');
 
-        const result = await this.#channels.create(context, { ...options, name, type }, reason);
+        const result = await this.#channels.create(context.runtime, { ...options, name, type }, reason);
 
         if (!('error' in result))
             return result.id;

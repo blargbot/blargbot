@@ -1,7 +1,7 @@
 import { snowflake } from '@blargbot/discord-util';
 import moment from 'moment-timezone';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.guildCreatedAt;
 
-@Subtag.names('guildCreatedAt')
+@Subtag.id('guildCreatedAt')
 @Subtag.ctorArgs()
 export class GuildCreatedAtSubtag extends CompiledSubtag {
     public constructor() {
@@ -28,8 +28,8 @@ export class GuildCreatedAtSubtag extends CompiledSubtag {
         });
     }
 
-    public getGuildCreatedDate(context: BBTagContext, format: string): string {
-        const createdAt = snowflake.parse(context.guild.id).timestampMs;
+    public getGuildCreatedDate(context: BBTagScript, format: string): string {
+        const createdAt = snowflake.parse(context.runtime.guild.id).timestampMs;
         return moment(createdAt).utcOffset(0).format(format);
     }
 }

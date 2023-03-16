@@ -334,7 +334,7 @@ export class CustomCommandCommand extends GuildCommand {
 
     async * #getRoles(context: GuildCommandContext, command: ICommand): AsyncGenerator<string | undefined> {
         if (command.roles.length === 0)
-            yield undefined;
+            yield;
 
         if (guard.isGuildCommandContext(context)) {
             for (const roleStr of command.roles) {

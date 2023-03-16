@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import type { StaffService } from '../../services/StaffService.js';
@@ -9,8 +9,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.isStaff;
 
-@Subtag.names('isStaff', 'isMod')
-@Subtag.ctorArgs('staff', 'user')
+@Subtag.id('isStaff', 'isMod')
+@Subtag.ctorArgs('staff', 'users')
 export class IsStaffSubtag extends CompiledSubtag {
     readonly #staff: StaffService;
     readonly #users: UserService;
@@ -25,7 +25,7 @@ export class IsStaffSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    execute: ctx => ctx.isStaff
+                    execute: ctx => ctx.runtime.isStaff
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -42,9 +42,9 @@ export class IsStaffSubtag extends CompiledSubtag {
         this.#users = users;
     }
 
-    public async isStaff(context: BBTagContext, userStr: string, quiet: boolean): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const member = await this.#users.querySingle(context, userStr, { noLookup: quiet });
+    public async isStaff(context: BBTagScript, userStr: string, quiet: boolean): Promise<boolean> {
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const member = await this.#users.querySingle(context.runtime, userStr, { noLookup: quiet });
 
         if (member === undefined) {
             throw new UserNotFoundError(userStr)

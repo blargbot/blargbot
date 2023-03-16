@@ -13,8 +13,8 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '023634983746234834')).thenResolve(user.instance);
-                ctx.dependencies.modLog.setup(m => m.addModLog(bbctx.guild, 'poke', user.instance, bbctx.user, '', undefined)).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '023634983746234834')).thenResolve(user.instance);
+                ctx.dependencies.modLog.setup(m => m.addModLog(bbctx.runtime.guild, 'poke', user.instance, bbctx.runtime.user, '', undefined)).thenResolve(undefined);
             }
         },
         {
@@ -22,11 +22,11 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const user1 = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '023634983746234834')).thenResolve(user1.instance);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '023634983746234834')).thenResolve(user1.instance);
 
                 const user2 = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '2365432687945234625')).thenResolve(user2.instance);
-                ctx.dependencies.modLog.setup(m => m.addModLog(bbctx.guild, 'poke', user1.instance, user2.instance, '', undefined)).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '2365432687945234625')).thenResolve(user2.instance);
+                ctx.dependencies.modLog.setup(m => m.addModLog(bbctx.runtime.guild, 'poke', user1.instance, user2.instance, '', undefined)).thenResolve(undefined);
             }
         },
         {
@@ -34,11 +34,11 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const user1 = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '023634983746234834')).thenResolve(user1.instance);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '023634983746234834')).thenResolve(user1.instance);
 
                 const user2 = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '2365432687945234625')).thenResolve(user2.instance);
-                ctx.dependencies.modLog.setup(m => m.addModLog(bbctx.guild, 'poke', user1.instance, user2.instance, 'power abuse is fun', undefined)).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '2365432687945234625')).thenResolve(user2.instance);
+                ctx.dependencies.modLog.setup(m => m.addModLog(bbctx.runtime.guild, 'poke', user1.instance, user2.instance, 'power abuse is fun', undefined)).thenResolve(undefined);
             }
         },
         {
@@ -46,11 +46,11 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const user1 = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '023634983746234834')).thenResolve(user1.instance);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '023634983746234834')).thenResolve(user1.instance);
 
                 const user2 = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '2365432687945234625')).thenResolve(user2.instance);
-                ctx.dependencies.modLog.setup(m => m.addModLog(bbctx.guild, 'poke', user1.instance, user2.instance, 'power abuse is fun', 0xff0000)).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '2365432687945234625')).thenResolve(user2.instance);
+                ctx.dependencies.modLog.setup(m => m.addModLog(bbctx.runtime.guild, 'poke', user1.instance, user2.instance, 'power abuse is fun', 0xff0000)).thenResolve(undefined);
             }
         },
         {
@@ -58,8 +58,8 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '023634983746234834')).thenResolve(user.instance);
-                ctx.dependencies.modLog.setup(m => m.addModLog(bbctx.guild, 'poke', user.instance, bbctx.user, '', undefined)).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '023634983746234834')).thenResolve(user.instance);
+                ctx.dependencies.modLog.setup(m => m.addModLog(bbctx.runtime.guild, 'poke', user.instance, bbctx.runtime.user, '', undefined)).thenResolve(undefined);
             }
         },
         {
@@ -69,7 +69,7 @@ runSubtagTests({
                 { start: 0, end: 35, error: new UserNotFoundError('023634983746234834') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '023634983746234834')).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '023634983746234834')).thenResolve(undefined);
             }
         }
     ]

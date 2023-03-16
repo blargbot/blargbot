@@ -32,7 +32,7 @@ runSubtagTests({
                     },
                     postSetup(channel, message, bbctx, ctx) {
                         ctx.roles.bot.permissions = Discord.PermissionFlagsBits.ManageMessages.toString();
-                        ctx.dependencies.message.setup(m => m.removeReactions(bbctx, channel.id, message.id)).thenResolve(undefined);
+                        ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, channel.id, message.id)).thenResolve(undefined);
                     }
                 },
                 {
@@ -43,8 +43,8 @@ runSubtagTests({
                     },
                     postSetup(channel, message, bbctx, ctx) {
                         ctx.roles.bot.permissions = Discord.PermissionFlagsBits.ManageMessages.toString();
-                        ctx.dependencies.message.setup(m => m.removeReactions(bbctx, channel.id, message.id)).thenResolve(undefined);
-                        bbctx.data.ownedMsgs.push(message.id);
+                        ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, channel.id, message.id)).thenResolve(undefined);
+                        bbctx.runtime.ownedMessageIds.add(message.id);
                     }
                 },
                 {

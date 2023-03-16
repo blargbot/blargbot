@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
@@ -9,8 +9,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.roleSetColor;
 
-@Subtag.names('roleSetColor')
-@Subtag.ctorArgs('converter', 'role')
+@Subtag.id('roleSetColor')
+@Subtag.ctorArgs('converter', 'roles')
 export class RoleSetColorSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #roles: RoleService;
@@ -43,17 +43,17 @@ export class RoleSetColorSubtag extends CompiledSubtag {
     }
 
     public async setRolecolor(
-        context: BBTagContext,
+        context: BBTagScript,
         roleStr: string,
         colorStr: string,
         quiet: boolean
     ): Promise<void> {
-        const topRole = context.roleEditPosition(context.authorizer);
+        const topRole = context.runtime.roleEditPosition(context.runtime.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
-        quiet ||= context.scopes.local.quiet ?? false;
-        const role = await this.#roles.querySingle(context, roleStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const role = await this.#roles.querySingle(context.runtime, roleStr, { noLookup: quiet });
         const color = this.#converter.color(colorStr !== '' ? colorStr : 0);
 
         if (role === undefined)
@@ -62,7 +62,7 @@ export class RoleSetColorSubtag extends CompiledSubtag {
         if (role.position >= topRole)
             throw new BBTagRuntimeError('Role above author');
 
-        const result = await this.#roles.edit(context, role.id, { color });
+        const result = await this.#roles.edit(context.runtime, role.id, { color });
 
         if (result === undefined || quiet)
             return;

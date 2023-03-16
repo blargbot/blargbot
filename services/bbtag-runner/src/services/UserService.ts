@@ -1,11 +1,11 @@
-import type { BBTagContext, Entities, FindEntityOptions, UserService as BBTagUserService } from '@bbtag/blargbot';
+import type { BBTagRuntime, Entities, FindEntityOptions, UserService as BBTagUserService } from '@bbtag/blargbot';
 
 export class UserService implements BBTagUserService {
-    public findBanned(context: BBTagContext): Promise<string[] | 'noPerms'> {
+    public findBanned(context: BBTagRuntime): Promise<string[] | 'noPerms'> {
         context;
         throw new Error('Method not implemented.');
     }
-    public edit(context: BBTagContext, userId: string, update: Partial<Entities.Member>, reason?: string | undefined): Promise<void> {
+    public edit(context: BBTagRuntime, userId: string, update: Partial<Entities.Member>, reason?: string | undefined): Promise<void> {
         context;
         userId;
         update;
@@ -52,18 +52,18 @@ export class UserService implements BBTagUserService {
         reason;
         throw new Error('Method not implemented.');
     }
-    public querySingle(context: BBTagContext, query: string, options?: FindEntityOptions | undefined): Promise<Entities.User | undefined> {
+    public querySingle(context: BBTagRuntime, query: string, options?: FindEntityOptions | undefined): Promise<Entities.User | undefined> {
         context;
         query;
         options;
         throw new Error('Method not implemented.');
     }
-    public get(context: BBTagContext, id: string): Promise<Entities.User | undefined> {
+    public get(context: BBTagRuntime, id: string): Promise<Entities.User | undefined> {
         context;
         id;
         throw new Error('Method not implemented.');
     }
-    public getAll(context: BBTagContext): Promise<Entities.User[]> {
+    public getAll(context: BBTagRuntime): Promise<Entities.User[]> {
         context;
         throw new Error('Method not implemented.');
     }

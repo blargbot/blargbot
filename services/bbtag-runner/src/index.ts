@@ -36,7 +36,6 @@ export class ImageGeneratorApplication extends ServiceHost {
             labelNames: ['subtag']
         });
         const engine = createBBTagEngine({
-            defaultPrefix: options.defaultPrefix,
             metrics: {
                 subtagUsed(name, duration) {
                     subtagLatency.labels(name).observe(duration);

@@ -3,7 +3,7 @@ import Discord from '@blargbot/discord-types';
 import { snowflake } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -14,8 +14,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.reactionAdd;
 
-@Subtag.names('reactionAdd', 'reactAdd', 'addReact')
-@Subtag.ctorArgs('message', 'channel')
+@Subtag.id('reactionAdd', 'reactAdd', 'addReact')
+@Subtag.ctorArgs('messages', 'channels')
 export class ReactionAddSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
     readonly #messages: MessageService;
@@ -56,20 +56,20 @@ export class ReactionAddSubtag extends CompiledSubtag {
     }
 
     public async addReactions(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         messageId: string | undefined,
         reactions: Emote[]
     ): Promise<void> {
-        const channel = await this.#channels.querySingle(context, channelStr, { noErrors: true, noLookup: true });
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noErrors: true, noLookup: true });
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        const message = messageId === undefined ? undefined : await this.#messages.get(context, channel.id, messageId);
+        const message = messageId === undefined ? undefined : await this.#messages.get(context.runtime, channel.id, messageId);
         if (message === undefined && messageId !== undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
-        const permissions = context.getPermission(context.bot, channel);
+        const permissions = context.runtime.getPermission(context.runtime.bot, channel);
         if (!hasFlag(permissions, Discord.PermissionFlagsBits.AddReactions))
             throw new BBTagRuntimeError('I dont have permission to Add Reactions');
 
@@ -78,19 +78,19 @@ export class ReactionAddSubtag extends CompiledSubtag {
 
         if (message !== undefined) {
             // Perform add of each reaction
-            const errors = await this.#messages.addReactions(context, channel.id, message.id, reactions);
+            const errors = await this.#messages.addReactions(context.runtime, channel.id, message.id, reactions);
             if (errors.failed.length > 0)
                 throw new BBTagRuntimeError(`I cannot add '${errors.failed.toString()}' as reactions`);
 
         } else {
             // Defer reactions to output message
-            context.data.reactions.push(...reactions.map(m => m.toString()));
+            context.runtime.outputOptions.reactions.push(...reactions.map(m => m.toString()));
         }
     }
 
-    #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string | undefined, reactions: Emote[]] {
-        let channel = context.channel.id;
-        let message = context.data.outputMessage;
+    #bindArguments(context: BBTagScript, args: string[]): [channel: string, message: string | undefined, reactions: Emote[]] {
+        let channel = context.runtime.channel.id;
+        let message = context.runtime.outputOptions.id;
 
         if (args.length >= 2 && snowflake.test(args[1]))
             channel = args.splice(0, 1)[0];

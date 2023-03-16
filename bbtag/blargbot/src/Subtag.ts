@@ -1,17 +1,17 @@
-import type { SubtagCall } from '@bbtag/language';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
 
-import type { BBTagContext } from './BBTagContext.js';
-import type { BBTagEngine } from './BBTagEngine.js';
-import type { InjectionContext } from './InjectionContext.js';
+import type { BBTagCall } from './BBTagCall.js';
+import type { BBTagRunner } from './BBTagRunner.js';
+import type { BBTagScript } from './BBTagScript.js';
+import type { ISubtag } from './ISubtag.js';
 import type { SubtagDescriptor } from './services/SubtagDescriptor.js';
 import type { SubtagOptions, SubtagSignature } from './types.js';
 import type { SubtagType } from './utils/subtagType.js';
 
 const factoryKey: unique symbol = Symbol();
 
-export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
+export abstract class Subtag implements SubtagOptions<IFormattable<string>>, ISubtag {
     public readonly category: SubtagType;
     public readonly description: IFormattable<string> | undefined;
     public readonly deprecated: string | boolean;
@@ -19,26 +19,26 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
     public readonly signatures: ReadonlyArray<SubtagSignature<IFormattable<string>>>;
     public readonly hidden: boolean;
 
-    public get name(): string {
+    public get id(): string {
         throw new Error('You must set a name, or use the Subtag.id(name, ...aliases) decorator');
     }
 
-    public get aliases(): string[] {
+    public get names(): string[] {
         throw new Error('You must set a name, or use the Subtag.id(name, ...aliases) decorator');
     }
 
-    public static names(name: string, ...aliases: string[]): (type: new (...args: never) => Subtag) => void {
+    public static id(name: string, ...aliases: string[]): (type: new (...args: never) => Subtag) => void {
         return type => {
             Object.defineProperties(type.prototype, {
-                name: {
+                id: {
                     configurable: false,
                     writable: false,
                     value: name
                 },
-                aliases: {
+                names: {
                     configurable: false,
                     writable: false,
-                    value: aliases
+                    value: [name, ...aliases]
                 }
             });
         };
@@ -46,14 +46,14 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
 
     public static ctorArgs<Args extends readonly SubtagCtorArgDescriptor[]>(...args: Args): (type: new (...args: ToSubtagCtorArgs<Args>) => Subtag) => void
     public static ctorArgs(...args: readonly SubtagCtorArgDescriptor[]): (type: new (...args: readonly unknown[]) => Subtag) => void {
-        const argFactories = args.map<SubtagCtorArgFactory<unknown>>(a => typeof a === 'string' ? e => e.dependencies[a] : a);
+        const argFactories = args.map<SubtagCtorArgFactory<unknown>>(a => typeof a === 'string' ? e => e[a] : a);
 
         return type => {
             Object.defineProperty(type, factoryKey, {
                 configurable: false,
                 enumerable: false,
                 writable: false,
-                value: (engine: BBTagEngine) => new type(...argFactories.map(x => x(engine)))
+                value: (runner: BBTagRunner) => new type(...argFactories.map(x => x(runner)))
             });
         };
     }
@@ -62,21 +62,29 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
     public static getDescriptor(this: void, type: new (...args: never) => Subtag): SubtagDescriptor;
     public static getDescriptor(this: void, type: {
         new(...args: readonly unknown[]): Subtag;
-        [factoryKey]?: (engine: BBTagEngine) => Subtag;
+        [factoryKey]?: (runner: BBTagRunner) => Subtag;
         prototype: Subtag;
     }): SubtagDescriptor {
-        if (type[factoryKey] === undefined)
+        if (type[factoryKey] !== undefined) {
+            return {
+                createInstance: type[factoryKey],
+                names: type.prototype.names,
+                id: type.prototype.id
+            };
+        }
+
+        if (type.length > 0)
             throw new Error('No factory has been set!');
 
         return {
-            createInstance: type[factoryKey],
-            aliases: type.prototype.aliases,
-            name: type.prototype.name
+            createInstance: () => new type(),
+            names: type.prototype.names,
+            id: type.prototype.id
         };
     }
 
     public constructor(options: SubtagOptions<IFormattable<string>>) {
-        const aliases = this.aliases;
+        const aliases = this.names;
         Object.defineProperty(this, 'aliases', {
             value: [
                 ...aliases,
@@ -92,13 +100,13 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
         this.signatures = options.signatures;
     }
 
-    public abstract execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined>;
+    public abstract execute(context: BBTagScript, subtagName: string, subtag: BBTagCall): Awaitable<string>;
 }
 
-type SubtagCtorArgFactory<T> = (engine: BBTagEngine) => T
-type SubtagCtorArgDescriptor = keyof InjectionContext | SubtagCtorArgFactory<unknown>;
+type SubtagCtorArgFactory<T> = (runner: BBTagRunner) => T
+type SubtagCtorArgDescriptor = keyof BBTagRunner | SubtagCtorArgFactory<unknown>;
 type ToSubtagCtorArgs<T extends readonly SubtagCtorArgDescriptor[]> = {
     [P in keyof T]:
-    | T[P] extends keyof InjectionContext ? BBTagEngine['dependencies'][T[P]] : never
+    | T[P] extends keyof BBTagRunner ? BBTagRunner[T[P]] : never
     | T[P] extends SubtagCtorArgFactory<infer R> ? R : never
 }

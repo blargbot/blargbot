@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.space;
 
-@Subtag.names('space', 's')
+@Subtag.id('space', 's')
 @Subtag.ctorArgs('converter')
 export class SpaceSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -31,8 +31,8 @@ export class SpaceSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public getSpaces(context: BBTagContext, countStr: string): string {
-        const count = this.#converter.int(countStr) ?? this.#converter.int(context.scopes.local.fallback ?? '');
+    public getSpaces(context: BBTagScript, countStr: string): string {
+        const count = this.#converter.int(countStr) ?? this.#converter.int(context.runtime.scopes.local.fallback ?? '');
         if (count === undefined)
             throw new NotANumberError(countStr);
 

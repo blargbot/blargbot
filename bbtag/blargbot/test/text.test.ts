@@ -5,7 +5,7 @@ import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
 import mocha from 'mocha';
 
-@Subtag.names('')
+@Subtag.id('')
 class TestSubtag extends Subtag {
     public override execute: Subtag['execute'] = () => {
         throw new Error('Method not implemented');
@@ -101,7 +101,7 @@ Database Execution Time: 678ms
             deprecated: [
                 {
                     name: 'default',
-                    input: [quickMock(subtag, { name: 'abc', deprecated: 'def' })],
+                    input: [quickMock(subtag, { id: 'abc', deprecated: 'def' })],
                     expected: '{abc} is deprecated. Use `{def}` instead'
                 }
             ]

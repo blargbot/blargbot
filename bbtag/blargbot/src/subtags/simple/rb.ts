@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.rb;
 
-@Subtag.names('rb')
+@Subtag.id('rb')
 @Subtag.ctorArgs()
 export class RbSubtag extends CompiledSubtag {
     public constructor() {

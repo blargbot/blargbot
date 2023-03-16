@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
@@ -9,8 +9,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.roleSize;
 
-@Subtag.names('roleSize', 'inRole')
-@Subtag.ctorArgs('role', 'user')
+@Subtag.id('roleSize', 'inRole')
+@Subtag.ctorArgs('roles', 'users')
 export class RoleSizeSubtag extends CompiledSubtag {
     readonly #roles: RoleService;
     readonly #users: UserService;
@@ -34,16 +34,16 @@ export class RoleSizeSubtag extends CompiledSubtag {
         this.#users = users;
     }
 
-    public async getRoleSize(context: BBTagContext, roleStr: string/*, quiet: boolean*/): Promise<number> {
+    public async getRoleSize(context: BBTagScript, roleStr: string/*, quiet: boolean*/): Promise<number> {
         /* quiet ||= context.scopes.local.quiet ?? false */
         /* const role = await this.#roles.querySingle(context, roleStr, {
             quiet
         }) */
-        const role = await this.#roles.querySingle(context, roleStr, { noLookup: true, noErrors: true });
+        const role = await this.#roles.querySingle(context.runtime, roleStr, { noLookup: true, noErrors: true });
         if (role === undefined)
             throw new RoleNotFoundError(roleStr);
 
-        const users = await this.#users.getAll(context);
+        const users = await this.#users.getAll(context.runtime);
         return users.filter(u => u.member?.roles.includes(role.id) === true).length;
     }
 }

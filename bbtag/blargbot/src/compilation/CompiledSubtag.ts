@@ -1,8 +1,8 @@
-import type { SubtagCall } from '@bbtag/language';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
 
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagCall } from '../BBTagCall.js';
+import type { BBTagScript } from '../BBTagScript.js';
 import { Subtag } from '../Subtag.js';
 import type { SubtagOptions } from '../types.js';
 import type { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions.js';
@@ -24,7 +24,7 @@ export abstract class CompiledSubtag extends Subtag {
         this.#handler = compileSignatures(signatures.map(s => s.implementation).filter(hasValue));
     }
 
-    public override execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
+    public override execute(context: BBTagScript, subtagName: string, subtag: BBTagCall): Awaitable<string> {
         return this.#handler.execute(context, subtagName, subtag);
     }
 }

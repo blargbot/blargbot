@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.zws;
 
-@Subtag.names('zws')
+@Subtag.id('zws')
 @Subtag.ctorArgs()
 export class ZwsSubtag extends CompiledSubtag {
     public constructor() {

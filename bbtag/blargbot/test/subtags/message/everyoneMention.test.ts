@@ -12,21 +12,21 @@ runSubtagTests({
             code: '{everyonemention}',
             expected: '@everyone',
             assert(ctx) {
-                chai.expect(ctx.data.allowedMentions.everybody).to.be.true;
+                chai.expect(ctx.runtime.outputOptions.allowEveryone).to.be.true;
             }
         },
         {
             code: '{everyonemention;true}',
             expected: '@everyone',
             assert(ctx) {
-                chai.expect(ctx.data.allowedMentions.everybody).to.be.true;
+                chai.expect(ctx.runtime.outputOptions.allowEveryone).to.be.true;
             }
         },
         {
             code: '{everyonemention;false}',
             expected: '@everyone',
             assert(ctx) {
-                chai.expect(ctx.data.allowedMentions.everybody).to.be.false;
+                chai.expect(ctx.runtime.outputOptions.allowEveryone).to.be.false;
             }
         }
     ]

@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.userDiscriminator;
 
-@Subtag.names('userDiscriminator', 'userDiscrim')
-@Subtag.ctorArgs('user')
+@Subtag.id('userDiscriminator', 'userDiscrim')
+@Subtag.ctorArgs('users')
 export class UserDiscriminatorSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -41,12 +41,12 @@ export class UserDiscriminatorSubtag extends CompiledSubtag {
     }
 
     public async getUserDiscrim(
-        context: BBTagContext,
+        context: BBTagScript,
         userId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userId, { noLookup: quiet });
 
         if (user === undefined) {
             throw new UserNotFoundError(userId)

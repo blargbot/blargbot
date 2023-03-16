@@ -1,6 +1,6 @@
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagRuntime } from '../BBTagRuntime.js';
 
 export interface EntityFetchService<Entity, Key> {
-    get(context: BBTagContext, id: Key): Promise<Entity | undefined>;
-    getAll(context: BBTagContext): Promise<Entity[]>;
+    get(context: BBTagRuntime, id: Key): Promise<Entity | undefined>;
+    getAll(context: BBTagRuntime): Promise<Entity[]>;
 }

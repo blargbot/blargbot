@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.roleName;
 
-@Subtag.names('roleName')
-@Subtag.ctorArgs('role')
+@Subtag.id('roleName')
+@Subtag.ctorArgs('roles')
 export class RoleNameSubtag extends CompiledSubtag {
     readonly #roles: RoleService;
 
@@ -32,12 +32,12 @@ export class RoleNameSubtag extends CompiledSubtag {
     }
 
     public async getRoleName(
-        context: BBTagContext,
+        context: BBTagScript,
         roleId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const role = await this.#roles.querySingle(context, roleId, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const role = await this.#roles.querySingle(context.runtime, roleId, { noLookup: quiet });
 
         if (role === undefined) {
             throw new RoleNotFoundError(roleId)

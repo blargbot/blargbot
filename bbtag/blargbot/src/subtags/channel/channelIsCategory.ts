@@ -1,6 +1,6 @@
 import { isCategoryChannel } from '@blargbot/discord-util';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -10,8 +10,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.channelIsCategory;
 
-@Subtag.names('channelIsCategory', 'isCategory')
-@Subtag.ctorArgs('channel')
+@Subtag.id('channelIsCategory', 'isCategory')
+@Subtag.ctorArgs('channels')
 export class ChannelIsCategorySubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -35,12 +35,12 @@ export class ChannelIsCategorySubtag extends CompiledSubtag {
     }
 
     public async isCategory(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);

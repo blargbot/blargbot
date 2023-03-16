@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -9,8 +9,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.slowMode;
 
-@Subtag.names('slowMode')
-@Subtag.ctorArgs('converter', 'channel')
+@Subtag.id('slowMode')
+@Subtag.ctorArgs('converter', 'channels')
 export class SlowModeSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #channels: ChannelService;
@@ -25,7 +25,7 @@ export class SlowModeSubtag extends CompiledSubtag {
                     exampleCode: tag.clearCurrent.exampleCode,
                     exampleOut: tag.clearCurrent.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx) => this.setSlowmode(ctx, ctx.channel.id, '0')
+                    execute: (ctx) => this.setSlowmode(ctx, ctx.runtime.channel.id, '0')
                 },
                 {
                     parameters: ['channel|time'],
@@ -60,17 +60,17 @@ export class SlowModeSubtag extends CompiledSubtag {
     }
 
     public async setSlowmode(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         timeStr: string
     ): Promise<void> {
         let time = this.#converter.int(timeStr);
         let channel;
-        const lookupChannel = await this.#channels.querySingle(context, channelStr, { noLookup: true });//TODO yikes
+        const lookupChannel = await this.#channels.querySingle(context.runtime, channelStr, { noLookup: true });//TODO yikes
         if (lookupChannel !== undefined)
             channel = lookupChannel;
         else {
-            channel = context.channel;
+            channel = context.runtime.channel;
             time = this.#converter.int(channelStr);
         }
 
@@ -79,7 +79,7 @@ export class SlowModeSubtag extends CompiledSubtag {
 
         time = Math.min(time, 21600);
 
-        const result = await this.#channels.edit(context, channel.id, { rateLimitPerUser: time });
+        const result = await this.#channels.edit(context.runtime, channel.id, { rateLimitPerUser: time });
         if (result === undefined)
             return;
 

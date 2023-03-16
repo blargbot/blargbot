@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.output;
 
-@Subtag.names('output')
+@Subtag.id('output')
 @Subtag.ctorArgs()
 export class OutputSubtag extends CompiledSubtag {
     public constructor() {
@@ -26,9 +26,9 @@ export class OutputSubtag extends CompiledSubtag {
         });
     }
 
-    public async sendTagOutput(context: BBTagContext, text: string): Promise<string> {
-        if (context.data.outputMessage !== undefined && text.length > 0)
+    public async sendTagOutput(context: BBTagScript, text: string): Promise<string> {
+        if (context.runtime.outputOptions.id !== undefined && text.length > 0)
             throw new BBTagRuntimeError('Cannot send multiple outputs');
-        return await context.sendOutput(text) ?? '';
+        return await context.runtime.output(text) ?? '';
     }
 }

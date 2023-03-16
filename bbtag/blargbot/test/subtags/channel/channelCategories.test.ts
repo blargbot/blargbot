@@ -12,10 +12,9 @@ runSubtagTests({
             code: '{channelcategories}',
             expected: '[]',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channel.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.channels));
+                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
             }
         },
-
         {
             code: '{channelcategories}',
             expected: '["29346782894762","2938476297493274"]',
@@ -30,7 +29,7 @@ runSubtagTests({
                 });
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channel.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.channels));
+                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
             }
         }
     ]

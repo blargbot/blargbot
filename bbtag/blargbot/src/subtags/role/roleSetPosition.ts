@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
@@ -9,8 +9,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.roleSetPosition;
 
-@Subtag.names('roleSetPosition', 'roleSetPos')
-@Subtag.ctorArgs('converter', 'role')
+@Subtag.id('roleSetPosition', 'roleSetPos')
+@Subtag.ctorArgs('converter', 'roles')
 export class RoleSetPositionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #roles: RoleService;
@@ -34,12 +34,12 @@ export class RoleSetPositionSubtag extends CompiledSubtag {
         this.#roles = roles;
     }
 
-    public async setRolePosition(context: BBTagContext, roleStr: string, positionStr: string, quiet: boolean): Promise<boolean> {
-        const topRole = context.roleEditPosition(context.authorizer);
+    public async setRolePosition(context: BBTagScript, roleStr: string, positionStr: string, quiet: boolean): Promise<boolean> {
+        const topRole = context.runtime.roleEditPosition(context.runtime.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
-        const role = await this.#roles.querySingle(context, roleStr, { noLookup: quiet });
+        const role = await this.#roles.querySingle(context.runtime, roleStr, { noLookup: quiet });
         const pos = this.#converter.int(positionStr);
         if (pos === undefined)
             throw new NotANumberError(positionStr);
@@ -52,7 +52,7 @@ export class RoleSetPositionSubtag extends CompiledSubtag {
         if (pos >= topRole)
             throw new BBTagRuntimeError('Desired position above author');
 
-        const result = await this.#roles.edit(context, role.id, { position: pos });
+        const result = await this.#roles.edit(context.runtime, role.id, { position: pos });
         if (result === undefined)
             return true;
 

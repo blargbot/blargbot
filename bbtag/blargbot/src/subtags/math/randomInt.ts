@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -11,7 +11,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.randomInt;
 
-@Subtag.names('randomInt', 'randInt')
+@Subtag.id('randomInt', 'randInt')
 @Subtag.ctorArgs('converter')
 export class RandomIntSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -35,11 +35,11 @@ export class RandomIntSubtag extends CompiledSubtag {
     }
 
     public randInt(
-        context: BBTagContext,
+        context: BBTagScript,
         minStr: string,
         maxStr: string
     ): number {
-        const fallback = new Lazy(() => this.#converter.int(context.scopes.local.fallback ?? ''));
+        const fallback = new Lazy(() => this.#converter.int(context.runtime.scopes.local.fallback ?? ''));
         let min = this.#converter.int(minStr) ?? fallback.value;
         if (min === undefined)
             throw new NotANumberError(minStr);

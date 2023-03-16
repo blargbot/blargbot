@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { BBTagLogger } from '../../services/BBTagLogger.js';
@@ -9,8 +9,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.userSetNickname;
 
-@Subtag.names('userSetNickname', 'setNickname', 'setNick', 'userSetNick')
-@Subtag.ctorArgs('user', 'logger')
+@Subtag.id('userSetNickname', 'setNickname', 'setNick', 'userSetNick')
+@Subtag.ctorArgs('users', 'logger')
 export class UserSetNickSubtag extends CompiledSubtag {
     readonly #users: UserService;
     readonly #logger: BBTagLogger;
@@ -34,14 +34,14 @@ export class UserSetNickSubtag extends CompiledSubtag {
         this.#logger = logger;
     }
 
-    public async setUserNick(context: BBTagContext, nick: string, userStr: string): Promise<void> {
-        const user = await this.#users.querySingle(context, userStr);
+    public async setUserNick(context: BBTagScript, nick: string, userStr: string): Promise<void> {
+        const user = await this.#users.querySingle(context.runtime, userStr);
 
         if (user?.member === undefined)
             throw new UserNotFoundError(userStr);
 
         try {
-            await this.#users.edit(context, user.id, { nick });
+            await this.#users.edit(context.runtime, user.id, { nick });
         } catch (err: unknown) {
             this.#logger.error(err);
             if (err instanceof Error)

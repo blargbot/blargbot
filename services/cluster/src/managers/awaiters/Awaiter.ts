@@ -2,7 +2,7 @@ import { PromiseCompletionSource } from '@blargbot/async-tools';
 
 export class Awaiter<T> {
     readonly #timeout: NodeJS.Timeout;
-    readonly #pcs: PromiseCompletionSource<T | undefined>;
+    readonly #waitResult: PromiseCompletionSource<T | undefined>;
     readonly #poolIds: ReadonlySet<string>;
     readonly #pools: Record<string, Array<Awaiter<T>> | undefined>;
     readonly #check: (item: T) => Awaitable<boolean>;
@@ -13,7 +13,7 @@ export class Awaiter<T> {
         check: (item: T) => Awaitable<boolean>,
         timeout: number
     ) {
-        this.#pcs = new PromiseCompletionSource<T | undefined>();
+        this.#waitResult = new PromiseCompletionSource<T | undefined>();
         this.#poolIds = poolIds;
         this.#pools = pools;
         this.#check = check;
@@ -25,25 +25,25 @@ export class Awaiter<T> {
     }
 
     public async wait(): Promise<T | undefined> {
-        return await this.#pcs.promise;
+        return await this.#waitResult;
     }
 
     public async tryConsume(item: T): Promise<boolean> {
         try {
             if (!await this.#check(item))
                 return false;
-            this.#pcs.resolve(item);
+            this.#waitResult.resolve(item);
             this.#cleanup();
             return true;
         } catch (ex: unknown) {
-            this.#pcs.reject(ex);
+            this.#waitResult.reject(ex);
             this.#cleanup();
             return true;
         }
     }
 
     public cancel(): void {
-        this.#pcs.resolve(undefined);
+        this.#waitResult.resolve(undefined);
         this.#cleanup();
     }
 

@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError, NotEnoughArgumentsError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.args;
 
-@Subtag.names('args')
+@Subtag.id('args')
 @Subtag.ctorArgs('converter')
 export class ArgsSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -50,11 +50,11 @@ export class ArgsSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public getAllArgs(context: BBTagContext): string {
+    public getAllArgs(context: BBTagScript): string {
         return context.input.join(' ');
     }
 
-    public getArg(context: BBTagContext, index: string): string {
+    public getArg(context: BBTagScript, index: string): string {
         const i = this.#converter.int(index);
         if (i === undefined)
             throw new NotANumberError(index);
@@ -66,7 +66,7 @@ export class ArgsSubtag extends CompiledSubtag {
     }
 
     public getArgs(
-        context: BBTagContext,
+        context: BBTagScript,
         start: string,
         end: string
     ): string {

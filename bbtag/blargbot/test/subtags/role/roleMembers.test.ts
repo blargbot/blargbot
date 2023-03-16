@@ -18,7 +18,7 @@ runSubtagTests({
                     expected: '[]',
                     postSetup(role, bbctx, ctx) {
                         role.id = '92348672342308424';
-                        ctx.dependencies.user.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
+                        ctx.dependencies.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
                     }
                 },
                 {
@@ -27,7 +27,7 @@ runSubtagTests({
                         role.id = '29384723084374304';
                         ctx.users.other.id = '23908467240974';
                         ctx.users.other.member.roles.push(role.id);
-                        ctx.dependencies.user.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
+                        ctx.dependencies.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
                     }
                 },
                 {
@@ -39,7 +39,7 @@ runSubtagTests({
                         ctx.users.other.member.roles.push(role.id);
                         ctx.users.bot.member.roles.push(role.id);
 
-                        ctx.dependencies.user.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.users));
+                        ctx.dependencies.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
                     }
                 }
             ]

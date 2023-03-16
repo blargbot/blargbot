@@ -12,7 +12,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.embedBuild;
 
-@Subtag.names('embedBuild', 'buildEmbed')
+@Subtag.id('embedBuild', 'buildEmbed')
 @Subtag.ctorArgs('converter')
 export class EmbedBuildSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

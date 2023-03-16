@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -9,7 +9,7 @@ import { tagVariableScopeProviders } from '../../variables/tagVariableScopeProvi
 
 const tag = textTemplates.subtags.get;
 
-@Subtag.names('get')
+@Subtag.id('get')
 @Subtag.ctorArgs('converter')
 export class GetSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -40,16 +40,16 @@ export class GetSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public async get(context: BBTagContext, variableName: string): Promise<JToken | undefined> {
-        const result = await context.variables.get(variableName);
+    public async get(context: BBTagScript, variableName: string): Promise<JToken | undefined> {
+        const result = await context.runtime.variables.get(variableName);
         if (!Array.isArray(result.value))
             return result.value;
 
         return { v: result.value, n: result.key };
     }
 
-    public async getArray(context: BBTagContext, variableName: string, indexStr: string): Promise<JToken | undefined> {
-        const result = await context.variables.get(variableName);
+    public async getArray(context: BBTagScript, variableName: string, indexStr: string): Promise<JToken | undefined> {
+        const result = await context.runtime.variables.get(variableName);
         if (!Array.isArray(result.value))
             return result.value;
 

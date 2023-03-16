@@ -38,14 +38,14 @@ runSubtagTests({
             code: '{emojis;329476274682462386432}',
             expected: '["<:rolerestricted:923846723894624242>"]',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, '329476274682462386432', argument.isDeepEqual({ noErrors: true, noLookup: true }))).thenResolve(ctx.roles.other);
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '329476274682462386432', argument.isDeepEqual({ noErrors: true, noLookup: true }))).thenResolve(ctx.roles.other);
             }
         },
         {
             code: '{emojis;other}',
             expected: '["<:rolerestricted:923846723894624242>"]',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, 'other', argument.isDeepEqual({ noErrors: true, noLookup: true }))).thenResolve(ctx.roles.other);
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noErrors: true, noLookup: true }))).thenResolve(ctx.roles.other);
             }
         }
     ]

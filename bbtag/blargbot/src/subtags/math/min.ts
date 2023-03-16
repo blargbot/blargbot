@@ -9,7 +9,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.min;
 
-@Subtag.names('min')
+@Subtag.id('min')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class MinSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

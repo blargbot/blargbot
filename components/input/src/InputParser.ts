@@ -1,15 +1,15 @@
 import { isAlphanumeric } from '@blargbot/guards';
 
-import type { FlagDefinition } from './FlagDefinition.js';
+import type { Flag } from './FlagDefinition.js';
 import type { FlagResult } from './FlagResult.js';
 import type { FlagResultValueSet } from './FlagResultValueSet.js';
 import { splitInput } from './splitInput.js';
 
 export interface InputParser {
-    (definitions: Iterable<FlagDefinition<unknown>>, text: string, strict?: boolean): { args: string[]; flags: FlagResult; };
+    (definitions: Iterable<Flag>, text: string, strict?: boolean): { args: string[]; flags: FlagResult; };
 }
 
-export function parseInput(definitions: Iterable<FlagDefinition<unknown>>, text: string, strict = false): { args: string[]; flags: FlagResult; } {
+export function parseInput(definitions: Iterable<Flag>, text: string, strict = false): { args: string[]; flags: FlagResult; } {
     let currentFlag: keyof FlagResult = '_';
     let currentGroup: StringRange[] = [];
     const defArr = [...definitions];

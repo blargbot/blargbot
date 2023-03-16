@@ -12,28 +12,28 @@ runSubtagTests({
             code: 'abc{return}def',
             expected: 'abc',
             assert(ctx) {
-                chai.expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                chai.expect(ctx.runtime.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
         {
             code: '{return;true}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                chai.expect(ctx.runtime.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
         {
             code: 'abc{return;false}def',
             expected: 'abc',
             assert(ctx) {
-                chai.expect(ctx.data.state).to.equal(BBTagRuntimeState.RETURN);
+                chai.expect(ctx.runtime.state).to.equal(BBTagRuntimeState.RUNNING);
             }
         },
         {
             code: '{return;abc}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                chai.expect(ctx.runtime.state).to.equal(BBTagRuntimeState.ABORT);
             }
         }
     ]

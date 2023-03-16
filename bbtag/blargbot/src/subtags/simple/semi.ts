@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.semi;
 
-@Subtag.names('semi')
+@Subtag.id('semi')
 @Subtag.ctorArgs()
 export class SemiSubtag extends CompiledSubtag {
     public constructor() {

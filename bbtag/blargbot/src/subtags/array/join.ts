@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.join;
 
-@Subtag.names('join')
+@Subtag.id('join')
 @Subtag.ctorArgs('arrayTools')
 export class JoinSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -31,8 +31,8 @@ export class JoinSubtag extends CompiledSubtag {
         this.#arrayTools = arrayTools;
     }
 
-    public async join(context: BBTagContext, arrayStr: string, separator: string): Promise<string> {
-        const { v: array } = await this.#arrayTools.deserializeOrGetArray(context, arrayStr) ?? {};
+    public async join(context: BBTagScript, arrayStr: string, separator: string): Promise<string> {
+        const { v: array } = await this.#arrayTools.deserializeOrGetArray(context.runtime, arrayStr) ?? {};
 
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);

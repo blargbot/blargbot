@@ -13,14 +13,14 @@ runSubtagTests({
             expected: '0,1,2,3,4,5,6,7,8,9,',
             subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(10).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'for:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('initial');
             }
         },
@@ -29,14 +29,14 @@ runSubtagTests({
             expected: '0,2,4,6,8,',
             subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(5).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'for:loops')).verifiable(5).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('initial');
             }
         },
@@ -45,14 +45,14 @@ runSubtagTests({
             expected: '10,9,8,7,6,5,4,3,2,1,',
             subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(10).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'for:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('initial');
             }
         },
@@ -61,14 +61,14 @@ runSubtagTests({
             expected: '1,2,4,8,16,32,64,128,256,512,',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(SetSubtag), Subtag.getDescriptor(OperatorSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(10).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'for:loops')).verifiable(10).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('initial');
             }
         },
@@ -80,14 +80,14 @@ runSubtagTests({
             ],
             subtags: [Subtag.getDescriptor(SetSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(1).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'for:loops')).verifiable(1).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('initial');
             }
         },
@@ -141,19 +141,19 @@ runSubtagTests({
             ],
             subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(5).thenCall(() => {
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'for:loops')).verifiable(5).thenCall(() => {
                     if (i++ >= 4)
                         throw new BBTagRuntimeError('Too many loops');
                     return undefined;
                 });
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('initial');
             }
         },
@@ -162,16 +162,16 @@ runSubtagTests({
             expected: '0,1,2,3,4,5',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IfSubtag), Subtag.getDescriptor(ReturnSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(6).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'for:loops')).verifiable(6).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('index')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('initial');
-                chai.expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                chai.expect(bbctx.runtime.state).to.equal(BBTagRuntimeState.ABORT);
             }
         }
     ]

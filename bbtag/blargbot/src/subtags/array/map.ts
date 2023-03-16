@@ -1,15 +1,14 @@
 import type { SubtagArgument } from '../../arguments/index.js';
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
-import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.map;
 
-@Subtag.names('map')
+@Subtag.id('map')
 @Subtag.ctorArgs('arrayTools')
 export class MapSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -32,19 +31,16 @@ export class MapSubtag extends CompiledSubtag {
         this.#arrayTools = arrayTools;
     }
 
-    public async * map(context: BBTagContext, varName: string, arrayStr: string, code: SubtagArgument): AsyncIterable<string> {
-        const array = await this.#arrayTools.deserializeOrGetIterable(context, arrayStr) ?? [];
+    public async * map(context: BBTagScript, varName: string, arrayStr: string, code: SubtagArgument): AsyncIterable<string> {
+        const array = await this.#arrayTools.deserializeOrGetIterable(context.runtime, arrayStr) ?? [];
         try {
             for (const item of array) {
-                await context.limit.check(context, 'map:loops');
-                await context.variables.set(varName, item);
+                await context.runtime.limit.check('map:loops');
+                await context.runtime.variables.set(varName, item);
                 yield await code.execute();
-
-                if (context.data.state !== BBTagRuntimeState.RUNNING)
-                    break;
             }
         } finally {
-            context.variables.reset([varName]);
+            context.runtime.variables.reset([varName]);
         }
     }
 }

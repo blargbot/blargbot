@@ -1,4 +1,4 @@
-import { BBTagEngine, createValueConverter, DefaultLockService, DistributedCooldownService, Subtag, subtags } from '@bbtag/blargbot';
+import { BBTagRunner, createValueConverter, DefaultLockService, DistributedCooldownService, Subtag, subtags, tagVariableScopeProviders } from '@bbtag/blargbot';
 import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
 import { UserWarningsHttpClient } from '@blargbot/user-warnings-client';
 
@@ -17,13 +17,12 @@ import { UserService } from './services/UserService.js';
 import { VariablesStore } from './services/VariablesStore.js';
 import { WarningService } from './services/WarningService.js';
 
-export function createBBTagEngine(options: BBTagEngineOptions): BBTagEngine {
-    const { defaultPrefix, metrics } = options;
+export function createBBTagEngine(options: BBTagEngineOptions): BBTagRunner {
+    const { metrics } = options;
     const userSettings = new UserSettingsHttpClient('http://user-settings');
     const warnings = new UserWarningsHttpClient('http://user-warnings');
 
-    return new BBTagEngine({
-        defaultPrefix,
+    return new BBTagRunner({
         subtags: Object.values(subtags).map(Subtag.getDescriptor),
         converter: createValueConverter({
             colors: {},
@@ -33,17 +32,19 @@ export function createBBTagEngine(options: BBTagEngineOptions): BBTagEngine {
         sources: new SourceProvider(),
         timezones: new TimezoneProvider(userSettings),
         variables: new VariablesStore(),
+        variableMiddleware: [],
+        variableScopes: tagVariableScopeProviders,
         defer: new DeferredExecutionService(),
         domains: new DomainFilterService(),
         dump: new DumpService(),
         modLog: new ModLogService(),
         staff: new StaffService(),
-        channel: new ChannelService(),
-        user: new UserService(),
-        role: new RoleService(),
+        channels: new ChannelService(),
+        users: new UserService(),
+        roles: new RoleService(),
         guild: new GuildService(),
-        message: new MessageService(),
-        cooldown: new DistributedCooldownService({
+        messages: new MessageService(),
+        cooldowns: new DistributedCooldownService({
             get(key) {
                 key;
                 throw null;
@@ -60,16 +61,14 @@ export function createBBTagEngine(options: BBTagEngineOptions): BBTagEngine {
                 throw null;
             }
         }),
-        middleware: [
-            async function* ({ subtag, context }, next) {
+        subtagMiddleware: [
+            async ({ subtag }, next) => {
                 const start = performance.now();
                 try {
-                    yield* next();
+                    return await next();
                 } finally {
                     const elapsed = performance.now() - start;
-                    metrics.subtagUsed(subtag.name, elapsed);
-                    const debugPerf = context.data.subtags[subtag.name] ??= [];
-                    debugPerf.push(elapsed);
+                    metrics.subtagUsed(subtag.id, elapsed);
                 }
             }
         ]
@@ -77,7 +76,6 @@ export function createBBTagEngine(options: BBTagEngineOptions): BBTagEngine {
 }
 
 export interface BBTagEngineOptions {
-    readonly defaultPrefix: string;
     readonly metrics: MetricsApi;
 }
 

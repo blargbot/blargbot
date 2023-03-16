@@ -9,7 +9,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.if;
 
-@Subtag.names('if')
+@Subtag.id('if')
 @Subtag.ctorArgs('operators', 'converter')
 export class IfSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;

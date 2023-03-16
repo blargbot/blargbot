@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.argsLength;
 
-@Subtag.names('argsLength')
+@Subtag.id('argsLength')
 @Subtag.ctorArgs()
 export class ArgsLengthSubtag extends CompiledSubtag {
     public constructor() {
@@ -26,7 +26,7 @@ export class ArgsLengthSubtag extends CompiledSubtag {
         });
     }
 
-    public getArgsLength(context: BBTagContext): number {
+    public getArgsLength(context: BBTagScript): number {
         return context.input.length;
     }
 }

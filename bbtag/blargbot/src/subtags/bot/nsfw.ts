@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.nsfw;
 
-@Subtag.names('nsfw')
+@Subtag.id('nsfw')
 @Subtag.ctorArgs()
 export class NsfwSubtag extends CompiledSubtag {
     public constructor() {
@@ -25,7 +25,7 @@ export class NsfwSubtag extends CompiledSubtag {
         });
     }
 
-    public setNsfw(context: BBTagContext, message: string): void {
-        context.data.nsfw = message;
+    public setNsfw(context: BBTagScript, message: string): void {
+        context.runtime.outputOptions.nsfwMessage = message;
     }
 }

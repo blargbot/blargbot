@@ -11,7 +11,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.operator;
 
-@Subtag.names('operator')
+@Subtag.id('operator', ...[ordinalOperators, stringOperators, logicOperators, numericOperators, aggregationOperators].flatMap(x => x.keys))
 @Subtag.ctorArgs('operators', 'arrayTools', 'converter')
 export class OperatorSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;

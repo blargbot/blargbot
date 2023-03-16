@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -7,7 +7,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.quiet;
 
-@Subtag.names('quiet')
+@Subtag.id('quiet')
 @Subtag.ctorArgs('converter')
 export class QuietSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -30,7 +30,7 @@ export class QuietSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public setQuiet(context: BBTagContext, valueStr: string): void {
-        context.scopes.local.quiet = this.#converter.boolean(valueStr);
+    public setQuiet(context: BBTagScript, valueStr: string): void {
+        context.runtime.scopes.local.quiet = this.#converter.boolean(valueStr);
     }
 }

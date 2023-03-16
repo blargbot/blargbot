@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.capitalize;
 
-@Subtag.names('capitalize')
+@Subtag.id('capitalize')
 @Subtag.ctorArgs()
 export class CapitalizeSubtag extends CompiledSubtag {
     public constructor() {

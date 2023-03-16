@@ -1,6 +1,6 @@
 import { markup } from '@blargbot/discord-util';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, RoleNotFoundError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
@@ -11,8 +11,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.roleMention;
 
-@Subtag.names('roleMention')
-@Subtag.ctorArgs('converter', 'role')
+@Subtag.id('roleMention')
+@Subtag.ctorArgs('converter', 'roles')
 export class RoleMentionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #roles: RoleService;
@@ -37,25 +37,25 @@ export class RoleMentionSubtag extends CompiledSubtag {
     }
 
     public async roleMention(
-        context: BBTagContext,
+        context: BBTagScript,
         roleId: string,
         quiet: boolean,
         noPingStr: string
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
         const noPing = this.#converter.boolean(noPingStr);
         if (noPing === undefined)
             throw new NotABooleanError(noPing);
 
-        const role = await this.#roles.querySingle(context, roleId, { noLookup: quiet });
+        const role = await this.#roles.querySingle(context.runtime, roleId, { noLookup: quiet });
 
         if (role === undefined) {
             throw new RoleNotFoundError(roleId)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        if (!noPing && !context.data.allowedMentions.roles.includes(role.id))
-            context.data.allowedMentions.roles.push(role.id);
+        if (!noPing)
+            context.runtime.outputOptions.mentionRoles.add(role.id);
         return markup.role(role.id);
     }
 }

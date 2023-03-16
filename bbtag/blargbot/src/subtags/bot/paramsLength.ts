@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.paramsLength;
 
-@Subtag.names('paramsLength')
+@Subtag.id('paramsLength')
 @Subtag.ctorArgs()
 export class ParamsLengthSubtag extends CompiledSubtag {
     public constructor() {
@@ -26,8 +26,8 @@ export class ParamsLengthSubtag extends CompiledSubtag {
         });
     }
 
-    public getParamsLength(context: BBTagContext): number {
-        const params = context.scopes.local.paramsarray;
+    public getParamsLength(context: BBTagScript): number {
+        const params = context.runtime.scopes.local.paramsarray;
         if (params === undefined)
             throw new BBTagRuntimeError('{paramslength} can only be used inside {function}');
         return params.length;

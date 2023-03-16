@@ -1,26 +1,24 @@
-export class PromiseCompletionSource<T> {
+export class PromiseCompletionSource<T = void> extends Promise<T> {
     #resolve: (value: Awaitable<T>) => void;
     #reject: (reason?: unknown) => void;
     #state: 'pending' | 'resolved' | 'rejected';
 
-    public readonly promise: Promise<T>;
-    public get state(): 'pending' | 'resolved' | 'rejected' { return this.#state; }
+    public get state(): 'pending' | 'resolved' | 'rejected' {
+        return this.#state;
+    }
 
-    public constructor() {
-        this.#state = 'pending';
-        let rejectVal: { value: unknown; } | undefined;
-        let resolveVal: { value: Awaitable<T>; } | undefined;
-        this.#resolve = v => resolveVal = { value: v };
-        this.#reject = v => rejectVal = { value: v };
-        this.promise = new Promise<T>((resolve, reject) => {
-            this.#resolve = resolve;
-            this.#reject = reject;
-
-            if (rejectVal !== undefined)
-                reject(rejectVal.value);
-            if (resolveVal !== undefined)
-                resolve(resolveVal.value);
+    public constructor()
+    public constructor(x: ConstructorParameters<typeof Promise<T>>[0] = defaultCtorArg) {
+        let resolve: (value: Awaitable<T>) => void = notSetup;
+        let reject: (resolve?: unknown) => void = notSetup;
+        super((res, rej) => {
+            x(res, rej);
+            resolve = res;
+            reject = rej;
         });
+        this.#state = 'pending';
+        this.#resolve = resolve;
+        this.#reject = reject;
     }
 
     public resolve(value: Awaitable<T>): boolean {
@@ -41,3 +39,11 @@ export class PromiseCompletionSource<T> {
         return true;
     }
 }
+
+const notSetup = (): void => {
+    throw null;
+};
+
+const defaultCtorArg = (): void => {
+    /* NO-OP */
+};

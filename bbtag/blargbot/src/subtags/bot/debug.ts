@@ -1,6 +1,5 @@
-import type { SubtagCall } from '@bbtag/language';
-
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagCall } from '../../BBTagCall.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -8,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.debug;
 
-@Subtag.names('debug')
+@Subtag.id('debug')
 @Subtag.ctorArgs()
 export class DebugSubtag extends CompiledSubtag {
     public constructor() {
@@ -27,7 +26,7 @@ export class DebugSubtag extends CompiledSubtag {
         });
     }
 
-    public addDebug(context: BBTagContext, text: string, subtag: SubtagCall): void {
-        context.debug.push({ subtag, text });
+    public addDebug(context: BBTagScript, text: string, subtag: BBTagCall): void {
+        context.runtime.debug.push({ token: subtag.ast, text });
     }
 }

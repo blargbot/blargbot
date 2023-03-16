@@ -1,4 +1,4 @@
-import type { BBTagContext, BBTagRuntimeError, Entities, FindEntityOptions } from '@bbtag/blargbot';
+import type { BBTagRuntimeError, BBTagScript, Entities, FindEntityOptions } from '@bbtag/blargbot';
 import { UserNotFoundError } from '@bbtag/blargbot';
 import { argument } from '@blargbot/test-util/mock.js';
 
@@ -31,7 +31,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
             { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
         ],
         postSetup(bbctx, ctx) {
-            ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(false))), false).thenResolve(undefined);
+            ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(false))), false).thenResolve(undefined);
         }
     };
     if (options.quiet !== false) {
@@ -42,7 +42,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
                 { start: 0, end: options.generateCode('unknown user', '').length, error: new UserNotFoundError('unknown user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(false))), false).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(false))), false).thenResolve(undefined);
             }
         };
         yield {
@@ -52,7 +52,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
                 { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.quiet) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(true))), false).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(true))), false).thenResolve(undefined);
             }
         };
     }
@@ -72,8 +72,8 @@ interface GetUserPropTestCase {
     queryString?: string;
     generateCode?: (...args: [userStr?: string, quietStr?: string]) => string;
     setup?: (member: Entities.User, context: SubtagTestContext, quiet: boolean) => void;
-    postSetup?: (member: Entities.User, context: BBTagContext, test: SubtagTestContext, quiet: boolean) => void;
-    assert?: (result: string, member: Entities.User, context: BBTagContext, test: SubtagTestContext, quiet: boolean) => void;
+    postSetup?: (member: Entities.User, context: BBTagScript, test: SubtagTestContext, quiet: boolean) => void;
+    assert?: (result: string, member: Entities.User, context: BBTagScript, test: SubtagTestContext, quiet: boolean) => void;
 }
 
 function createTestCase(data: GetUserPropTestData, isQuiet: boolean, testCase: GetUserPropTestCase, memberKey: keyof SubtagTestContext['users'], args: Parameters<GetUserPropTestData['generateCode']>): SubtagTestCase {
@@ -88,7 +88,7 @@ function createTestCase(data: GetUserPropTestData, isQuiet: boolean, testCase: G
         postSetup(bbctx, ctx) {
             const member = ctx.users[memberKey];
             if (args[0] !== undefined && args[0] !== '') {
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, args[0] as string, argument.isDeepEqual(data.getQueryOptions?.(isQuiet))), false).thenResolve(member);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, args[0] as string, argument.isDeepEqual(data.getQueryOptions?.(isQuiet))), false).thenResolve(member);
             }
 
             testCase.postSetup?.(member, bbctx, ctx, isQuiet);

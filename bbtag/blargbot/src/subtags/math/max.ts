@@ -9,7 +9,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.max;
 
-@Subtag.names('max')
+@Subtag.id('max')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class MaxSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

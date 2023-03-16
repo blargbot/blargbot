@@ -18,7 +18,7 @@ runSubtagTests({
             code: '{reaction}',
             expected: '🤔',
             postSetup(bbctx) {
-                bbctx.scopes.local.reaction = '🤔';
+                bbctx.runtime.scopes.local.reaction = '🤔';
             }
         }
     ]

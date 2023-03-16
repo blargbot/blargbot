@@ -1,17 +1,16 @@
 import type { SubtagArgument } from '../../arguments/index.js';
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
-import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagOperators, OrdinalOperator } from '../../utils/index.js';
 import { comparisonOperators, SubtagType } from '../../utils/index.js';
 import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.for;
 
-@Subtag.names('for')
+@Subtag.id('for')
 @Subtag.ctorArgs('operators', 'converter')
 export class ForSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
@@ -37,7 +36,7 @@ export class ForSubtag extends CompiledSubtag {
     }
 
     public async * for(
-        context: BBTagContext,
+        context: BBTagScript,
         varName: string,
         initialStr: string,
         operator: string,
@@ -59,21 +58,18 @@ export class ForSubtag extends CompiledSubtag {
 
         try {
             for (let i = initial; this.#operators.comparison[operator as OrdinalOperator](i.toString(), limit.toString()); i += increment) {
-                await context.limit.check(context, 'for:loops');
-                await context.variables.set(varName, i);
+                await context.runtime.limit.check('for:loops');
+                await context.runtime.variables.set(varName, i);
                 yield await code.execute();
 
-                const varEntry = await context.variables.get(varName);
+                const varEntry = await context.runtime.variables.get(varName);
                 i = this.#converter.float(this.#converter.string(varEntry.value)) ?? NaN;
 
                 if (isNaN(i))
                     throw new NotANumberError(varEntry.value);
-
-                if (context.data.state !== BBTagRuntimeState.RUNNING)
-                    break;
             }
         } finally {
-            context.variables.reset([varName]);
+            context.runtime.variables.reset([varName]);
         }
     }
 }

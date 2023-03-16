@@ -1,7 +1,7 @@
 import { Emote } from '@blargbot/discord-emote';
 import { snowflake } from '@blargbot/discord-util';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -13,8 +13,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.reactionList;
 
-@Subtag.names('reactionList', 'reactList', 'listReact')
-@Subtag.ctorArgs('channel', 'message')
+@Subtag.id('reactionList', 'reactList', 'listReact')
+@Subtag.ctorArgs('channels', 'messages')
 export class ReactionListSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
     readonly #messages: MessageService;
@@ -26,12 +26,12 @@ export class ReactionListSubtag extends CompiledSubtag {
                 {
                     parameters: [],
                     returns: 'error',
-                    execute: (ctx) => { throw new MessageNotFoundError(ctx.channel.id, ''); }
+                    execute: (ctx) => { throw new MessageNotFoundError(ctx.runtime.channel.id, ''); }
                 },
                 {
                     parameters: ['messageid'],
                     returns: 'string[]',
-                    execute: (ctx, [messageid]) => this.getReactions(ctx, ctx.channel.id, messageid.value)
+                    execute: (ctx, [messageid]) => this.getReactions(ctx, ctx.runtime.channel.id, messageid.value)
                 },
                 {
                     parameters: ['arguments+2'],
@@ -58,19 +58,19 @@ export class ReactionListSubtag extends CompiledSubtag {
     }
 
     public async getReactionsOrReactors(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         messageId: string,
         reactions: Emote[] | undefined
-    ): Promise<Iterable<string>> {
-        const channel = await this.#channels.querySingle(context, channelStr, { noErrors: true, noLookup: true });
+    ): Promise<string[]> {
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noErrors: true, noLookup: true });
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
         if (reactions === undefined)
             return await this.getReactions(context, channel.id, messageId);
 
-        const message = await this.#messages.get(context, channel.id, messageId);
+        const message = await this.#messages.get(context.runtime, channel.id, messageId);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
@@ -81,7 +81,7 @@ export class ReactionListSubtag extends CompiledSubtag {
         const users: string[] = [];
         const errors = [];
         for (const emote of reactions) {
-            const reactionUsers = await this.#messages.getReactors(context, channel.id, message.id, emote);
+            const reactionUsers = await this.#messages.getReactors(context.runtime, channel.id, message.id, emote);
             if (reactionUsers === 'unknownEmote')
                 errors.push(emote);
             else if (typeof reactionUsers !== 'string')
@@ -93,8 +93,8 @@ export class ReactionListSubtag extends CompiledSubtag {
         return [...new Set(users)];
     }
 
-    #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
-        let channel = context.channel.id;
+    #bindArguments(context: BBTagScript, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
+        let channel = context.runtime.channel.id;
         let message = '';
 
         if (args.length >= 2 && snowflake.test(args[1]))
@@ -108,8 +108,8 @@ export class ReactionListSubtag extends CompiledSubtag {
         return [channel, message, args.flatMap(x => Emote.findAll(x))];
     }
 
-    public async getReactions(context: BBTagContext, channelId: string, messageId: string): Promise<string[]> {
-        const msg = await this.#messages.get(context, channelId, messageId);
+    public async getReactions(context: BBTagScript, channelId: string, messageId: string): Promise<string[]> {
+        const msg = await this.#messages.get(context.runtime, channelId, messageId);
         if (msg === undefined)
             throw new MessageNotFoundError(channelId, messageId);
         return this.#getReactions(msg);

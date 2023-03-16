@@ -1,19 +1,17 @@
-import { parseBBTag } from '@bbtag/language';
 import { joinInput } from '@blargbot/input';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
-import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.execTag;
 
-@Subtag.names('execTag', 'exec')
+@Subtag.id('execTag', 'exec')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class ExecTagSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -38,9 +36,9 @@ export class ExecTagSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public async execTag(context: BBTagContext, name: string, args: string[]): Promise<string> {
+    public async execTag(context: BBTagScript, name: string, args: string[]): Promise<string> {
         const tagName = name;
-        const tag = await context.getTag('tag', tagName);
+        const tag = await context.runtime.getTag('tag', tagName);
 
         if (tag === null)
             throw new BBTagRuntimeError(`Tag not found: ${tagName}`);
@@ -49,16 +47,12 @@ export class ExecTagSubtag extends CompiledSubtag {
         if (args.length > 1)
             input = joinInput(this.#arrayTools.flattenArray(args).map(x => this.#converter.string(x)));
 
-        return await context.withScope(true, () => context.withChild({
-            tagName,
-            cooldown: tag.cooldown ?? 0,
-            inputRaw: input
-        }, async context => {
-            const ast = parseBBTag(tag.content);
-            const result = await context.withStack(() => context.eval(ast));
-            if (context.data.state === BBTagRuntimeState.RETURN)
-                context.data.state = BBTagRuntimeState.RUNNING;
-            return result;
-        }));
+        return await context.runtime.withScope(true, () => context.runtime.createScript({
+            source: tag.content,
+            flags: [],
+            inputRaw: input,
+            name: tagName,
+            cooldownMs: tag.cooldown
+        }).execute());
     }
 }

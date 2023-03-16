@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.unban;
 
-@Subtag.names('unban')
-@Subtag.ctorArgs('user')
+@Subtag.id('unban')
+@Subtag.ctorArgs('users')
 export class UnbanSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -40,12 +40,12 @@ export class UnbanSubtag extends CompiledSubtag {
     }
 
     public async unbanUser(
-        context: BBTagContext,
+        context: BBTagScript,
         userStr: string,
         reason: string,
         noPerms: boolean
     ): Promise<boolean> {
-        const user = await this.#users.querySingle(context, userStr);
+        const user = await this.#users.querySingle(context.runtime, userStr);
 
         if (user === undefined)
             throw new UserNotFoundError(userStr);
@@ -53,8 +53,8 @@ export class UnbanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Unban';
 
-        const authorizer = noPerms ? context.authorizer : context.user;
-        const result = await this.#users.unban(context.guild, user, context.user, authorizer, reason);
+        const authorizer = noPerms ? context.runtime.authorizer : context.runtime.user;
+        const result = await this.#users.unban(context.runtime.guild, user, context.runtime.user, authorizer, reason);
 
         switch (result) {
             case 'success': return true;

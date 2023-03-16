@@ -1,7 +1,5 @@
-import type { Statement } from '@bbtag/language';
-import { parseBBTag } from '@bbtag/language';
-
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
+import type { BBTagStatement } from '../../BBTagStatement.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -14,10 +12,19 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.waitMessage;
 
-const defaultCondition = parseBBTag('true');
+const defaultCondition: BBTagStatement = {
+    isEmpty: false,
+    ast: {
+        start: { line: 0, column: 0, index: 0 },
+        end: { column: 0, index: 0, line: 0 },
+        source: '',
+        values: []
+    },
+    resolve: () => 'true'
+};
 
-@Subtag.names('waitMessage')
-@Subtag.ctorArgs('user', 'channel', 'message', 'converter')
+@Subtag.id('waitMessage')
+@Subtag.ctorArgs('users', 'channels', 'messages', 'converter')
 export class WaitMessageSubtag extends CompiledSubtag {
     readonly #users: UserService;
     readonly #converter: BBTagValueConverter;
@@ -55,17 +62,17 @@ export class WaitMessageSubtag extends CompiledSubtag {
     }
 
     public async awaitMessage(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         userStr: string,
-        condition: Statement,
+        condition: BBTagStatement,
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string]> {
-        const channels = await context.bulkLookup(channelStr, i => this.#channels.querySingle(context, i, { noLookup: true }), ChannelNotFoundError)
-            ?? [context.channel];
+        const channels = await context.runtime.bulkLookup(channelStr, i => this.#channels.querySingle(context.runtime, i, { noLookup: true }), ChannelNotFoundError)
+            ?? [context.runtime.channel];
 
-        const users = await context.bulkLookup(userStr, i => this.#users.querySingle(context, i, { noLookup: true }), UserNotFoundError)
-            ?? [context.user];
+        const users = await context.runtime.bulkLookup(userStr, i => this.#users.querySingle(context.runtime, i, { noLookup: true }), UserNotFoundError)
+            ?? [context.runtime.user];
 
         let timeout = this.#converter.float(timeoutStr);
         if (timeout === undefined)
@@ -76,15 +83,24 @@ export class WaitMessageSubtag extends CompiledSubtag {
         else if (timeout > 300)
             timeout = 300;
 
-        if (condition.values.length === 0)
+        if (condition.isEmpty)
             condition = defaultCondition;
 
-        const userSet = new Set(users.map(u => u.id));
-        const result = await this.#messages.awaitMessage(context, channels.map(c => c.id), async message => {
-            if (!userSet.has(message.author.id))
+        const userLookup = new Map(users.map(u => [u.id, u]));
+        const channelLookup = new Map(channels.map(c => [c.id, c]));
+        const result = await this.#messages.awaitMessage(context.runtime, channels.map(c => c.id), async message => {
+            if (!userLookup.has(message.author.id))
                 return false;
 
-            const resultStr = await context.withChild({ message }, async context => await context.eval(condition));
+            const channel = channelLookup.get(message.channel_id);
+            if (channel === undefined)
+                return false;
+
+            const user = userLookup.get(message.author.id);
+            if (user === undefined)
+                return false;
+
+            const resultStr = await context.runtime.withMessage(message, channel, user, () => condition.resolve());
             const result = this.#converter.boolean(resultStr.trim());
             if (result === undefined)
                 throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);

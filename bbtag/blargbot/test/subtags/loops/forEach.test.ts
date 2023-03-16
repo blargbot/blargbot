@@ -17,15 +17,15 @@ runSubtagTests({
             expected: '<this><is><arr1>',
             subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }, 'initial');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(3).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'foreach:loops')).verifiable(3).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('a')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
             }
         },
@@ -34,15 +34,15 @@ runSubtagTests({
             expected: '<this><is><arr1>',
             subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }, 'initial');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(3).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'foreach:loops')).verifiable(3).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('a')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
             }
         },
@@ -51,15 +51,15 @@ runSubtagTests({
             expected: '<t><h><i><s>< ><i><s>< ><v><a><r><1>',
             subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }, 'initial');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(12).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'foreach:loops')).verifiable(12).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('a')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
             }
         },
@@ -68,17 +68,17 @@ runSubtagTests({
             expected: '<t><h><i><s>',
             subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IfSubtag), Subtag.getDescriptor(ReturnSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }, 'initial');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(4).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'foreach:loops')).verifiable(4).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('a')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
-                chai.expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                chai.expect(bbctx.runtime.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
         {
@@ -89,20 +89,20 @@ runSubtagTests({
             ],
             subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }, 'initial');
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'foreach:loops')).verifiable(2).thenCall(() => {
+                ctx.limit.setup(m => m.check(bbctx.runtime, 'foreach:loops')).verifiable(2).thenCall(() => {
                     if (i++ >= 1)
                         throw new BBTagRuntimeError('Too many loops');
                     return undefined;
                 });
             },
             async assert(bbctx, _, ctx) {
-                chai.expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                chai.expect((await bbctx.runtime.variables.get('a')).value).to.equal('initial');
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' })).to.equal('initial');
             }
         }

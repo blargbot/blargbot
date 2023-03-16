@@ -1,5 +1,6 @@
 import { Subtag } from '@bbtag/blargbot';
 import { InjectSubtag, LbSubtag, RbSubtag } from '@bbtag/blargbot/subtags';
+import { PromiseCompletionSource } from '@blargbot/async-tools';
 import chai from 'chai';
 
 import { AssertSubtag, createDescriptor, runSubtagTests } from '../SubtagTestSuite.js';
@@ -11,13 +12,14 @@ runSubtagTests({
         {
             code: '{inject;{lb}assert{rb}}',
             subtags: [Subtag.getDescriptor(LbSubtag), Subtag.getDescriptor(RbSubtag), createDescriptor(new AssertSubtag(ctx => {
-                chai.expect(ctx.parent).to.be.undefined;
-                chai.expect(ctx.data.stackSize).to.equal(123);
+                chai.expect(ctx.runtime.moduleCount).to.equal(124);
                 return 'Inject successful';
             }))],
             expected: 'Inject successful',
-            setup(ctx) {
-                ctx.options.data = { stackSize: 122 };
+            postSetup(bbctx) {
+                const neverResolve = new PromiseCompletionSource();
+                for (let i = 0; i < 122; i++)
+                    void bbctx.runtime.withModule(() => neverResolve);
             }
         },
         {

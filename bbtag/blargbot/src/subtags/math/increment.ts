@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.increment;
 
-@Subtag.names('increment')
+@Subtag.id('increment')
 @Subtag.ctorArgs('converter')
 export class IncrementSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -39,7 +39,7 @@ export class IncrementSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public async increment(context: BBTagContext, varName: string, amountStr: string, floorStr: string): Promise<number> {
+    public async increment(context: BBTagScript, varName: string, amountStr: string, floorStr: string): Promise<number> {
         let amount = this.#converter.float(amountStr);
         if (amount === undefined)
             throw new NotANumberError(amountStr);
@@ -48,7 +48,7 @@ export class IncrementSubtag extends CompiledSubtag {
         if (floor === undefined)
             throw new NotABooleanError(floorStr);
 
-        const valueRaw = await context.variables.get(varName);
+        const valueRaw = await context.runtime.variables.get(varName);
         let value: number | undefined;
         switch (typeof valueRaw.value) {
             case 'string':
@@ -67,7 +67,7 @@ export class IncrementSubtag extends CompiledSubtag {
         }
 
         value += amount;
-        await context.variables.set(varName, value);
+        await context.runtime.variables.set(varName, value);
 
         return value;
     }

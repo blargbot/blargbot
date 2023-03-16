@@ -66,7 +66,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                     },
                     selectText: doc.subtags.prompt,
                     items: [...subtagGroups.entries()]
-                        .map(kvp => ({ category: tagTypeDetails[kvp[0]], subtags: [...kvp[1]].sort((a, b) => a.name < b.name ? -1 : 1) }))
+                        .map(kvp => ({ category: tagTypeDetails[kvp[0]], subtags: [...kvp[1]].sort((a, b) => a.id < b.id ? -1 : 1) }))
                         .sort((a, b) => a.category.name < b.category.name ? -1 : 1)
                         .map(({ category, subtags }) => ({
                             id: `category_${category.id}`,
@@ -76,7 +76,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                             items: subtags.map(s => this.#getSubtagDocs(s)),
                             hidden: category.hidden,
                             embed: {
-                                description: doc.subtagCategory.description({ description: category.desc, subtags: subtags.map(s => s.name) })
+                                description: doc.subtagCategory.description({ description: category.desc, subtags: subtags.map(s => s.id) })
                             }
                         }))
                 },
@@ -200,21 +200,21 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
         const description = [];
         if (subtag.deprecated !== false)
             description.push(doc.subtag.description.deprecated({ replacement: typeof subtag.deprecated === 'string' ? subtag.deprecated : undefined }));
-        if (subtag.aliases.length > 0)
-            description.push(doc.subtag.description.aliases({ aliases: subtag.aliases }));
+        if (subtag.names.length > 0)
+            description.push(doc.subtag.description.aliases({ aliases: subtag.names }));
         if (subtag.description !== undefined)
             description.push(subtag.description);
 
         return {
-            id: `subtag_${subtag.name}`,
-            name: doc.subtag.name({ name: subtag.name }),
+            id: `subtag_${subtag.id}`,
+            name: doc.subtag.name({ name: subtag.id }),
             type: 'paged',
             embed: {
-                url: `bbtag/subtags/#${encodeURIComponent(subtag.name)}`,
+                url: `bbtag/subtags/#${encodeURIComponent(subtag.id)}`,
                 description: description.length === 0 ? undefined : doc.subtag.description.template({ parts: description }),
                 color: subtag.deprecated !== false ? 0xff0000 : undefined
             },
-            tags: [subtag.name, ...subtag.aliases],
+            tags: [subtag.id, ...subtag.names],
             hidden: subtag.hidden,
             selectText: doc.subtag.prompt,
             pages: subtag.signatures.map(sig => this.#toSubtagSignaturePage(subtag, sig))
@@ -222,7 +222,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
     }
 
     #toSubtagSignaturePage(subtag: Subtag, signature: SubtagSignature<IFormattable<string>>): DocumentationPage {
-        const parameters = stringifyParameters(signature.subtagName ?? subtag.name, signature.parameters);
+        const parameters = stringifyParameters(signature.subtagName ?? subtag.id, signature.parameters);
 
         return {
             name: doc.subtag.pages.signature.name({ parameters }),
@@ -256,7 +256,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                     ...Object.values(limits)
                         .flatMap(l => {
                             const limit = new l();
-                            const rules = limit.rulesFor(subtag.name);
+                            const rules = limit.rulesFor(subtag.id);
                             return rules.length === 0 ? [] : [{
                                 name: doc.subtag.pages.signature.limit.name[limit.id],
                                 value: doc.subtag.pages.signature.limit.value({ rules })

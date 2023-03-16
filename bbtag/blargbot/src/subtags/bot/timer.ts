@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { DeferredExecutionService } from '../../services/DeferredExecutionService.js';
@@ -9,7 +9,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.timer;
 
-@Subtag.names('timer')
+@Subtag.id('timer')
 @Subtag.ctorArgs('defer', 'converter')
 export class TimerSubtag extends CompiledSubtag {
     readonly #defer: DeferredExecutionService;
@@ -34,7 +34,7 @@ export class TimerSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public async queueTimer(context: BBTagContext, code: string, durationStr: string): Promise<void> {
+    public async queueTimer(context: BBTagScript, code: string, durationStr: string): Promise<void> {
         const duration = resolveDuration(this.#converter.duration(durationStr))?.asMilliseconds();
 
         if (duration === undefined || duration <= 0)

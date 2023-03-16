@@ -1,7 +1,6 @@
-import type { SubtagCall } from '@bbtag/language';
 import type { IFormattable } from '@blargbot/formatting';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagRuntime } from '../../BBTagRuntime.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import textTemplates from '../../text.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
@@ -12,12 +11,12 @@ export class DisabledInRule implements RuntimeLimitRule {
         this.#subtags = subtagNames;
     }
 
-    public check(context: BBTagContext, subtagName: string): void {
-        const problem = this.#subtags.map(s => ({ s, i: context.callStack.lastIndexOf(s) }))
+    public check(context: BBTagRuntime, subtagName: string): void {
+        const problem = this.#subtags.map(s => ({ s, i: context.subtagStack.lastIndexOf(s) }))
             .reduce((p, c) => p.i < c.i ? c : p, { s: '', i: -1 });
         if (problem.s.length > 0) {
-            const { subtag } = context.callStack.get(problem.i) ?? { subtag: unknownSubtag };
-            throw new BBTagRuntimeError(`{${subtagName}} is disabled inside {${problem.s}}`, `${problem.s} located at:\nIndex ${subtag.start.index}: Line ${subtag.start.line}, column ${subtag.start.column}\nIndex ${subtag.end.index}: Line ${subtag.end.line}, column ${subtag.end.column}`);
+            const { subtag } = context.subtagStack.get(problem.i) ?? { subtag: unknownSubtag };
+            throw new BBTagRuntimeError(`{${subtagName}} is disabled inside {${problem.s}}`, `${problem.s} located at:\nIndex ${subtag.ast.start.index}: Line ${subtag.ast.start.line}, column ${subtag.ast.start.column}\nIndex ${subtag.ast.end.index}: Line ${subtag.ast.end.line}, column ${subtag.ast.end.column}`);
         }
     }
 
@@ -34,11 +33,13 @@ export class DisabledInRule implements RuntimeLimitRule {
     }
 }
 
-const unknownSubtag: Pick<SubtagCall, 'start' | 'end'> = {
-    start: {
-        column: -1,
-        index: -1,
-        line: -1
-    },
-    get end() { return this.start; }
+const unknownSubtag = {
+    ast: {
+        start: {
+            column: -1,
+            index: -1,
+            line: -1
+        },
+        get end() { return this.start; }
+    }
 };

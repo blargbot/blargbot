@@ -7,15 +7,13 @@ runSubtagTests({
     subtag: Subtag.getDescriptor(FlagSetSubtag),
     argCountBounds: { min: 1, max: 1 },
     setupEach(ctx) {
-        ctx.options.inputRaw = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
-        ctx.options.flags = [
+        ctx.entrypoint.inputRaw = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
+        ctx.entrypoint.flags = [
             {
-                description: '',
                 flag: 'e',
                 word: 'extra'
             },
             {
-                description: '',
                 flag: 'E',
                 word: 'else'
             }

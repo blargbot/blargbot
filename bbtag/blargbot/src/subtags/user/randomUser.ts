@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
@@ -9,8 +9,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.randomUser;
 
-@Subtag.names('randomUser', 'randUser')
-@Subtag.ctorArgs('user')
+@Subtag.id('randomUser', 'randUser')
+@Subtag.ctorArgs('users')
 export class RandomUserSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -32,8 +32,8 @@ export class RandomUserSubtag extends CompiledSubtag {
         this.#users = users;
     }
 
-    public async randomUser(context: BBTagContext): Promise<string> {
-        const users = await this.#users.getAll(context);
+    public async randomUser(context: BBTagScript): Promise<string> {
+        const users = await this.#users.getAll(context.runtime);
         return users[randomInt(users.length)].id;
     }
 }

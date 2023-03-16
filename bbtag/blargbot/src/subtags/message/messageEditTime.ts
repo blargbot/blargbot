@@ -1,7 +1,7 @@
 import { snowflake } from '@blargbot/discord-util';
 import moment from 'moment-timezone';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -12,8 +12,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.messageEditTime;
 
-@Subtag.names('messageEditTime')
-@Subtag.ctorArgs('channel', 'message')
+@Subtag.id('messageEditTime')
+@Subtag.ctorArgs('channels', 'messages')
 export class MessageEditTimeSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
     readonly #messages: MessageService;
@@ -26,15 +26,15 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
                 {
                     parameters: [],
                     returns: 'string',
-                    execute: (ctx) => this.getMessageEditTime(ctx, ctx.channel.id, ctx.message.id, 'x')
+                    execute: (ctx) => this.getMessageEditTime(ctx, ctx.runtime.channel.id, ctx.runtime.message.id, 'x')
                 },
                 {
                     parameters: ['format|messageid'],
                     returns: 'string',
                     execute: (context, [formatOrMessageId]) => {
                         if (snowflake.test(formatOrMessageId.value))
-                            return this.getMessageEditTime(context, context.channel.id, formatOrMessageId.value, 'x');
-                        return this.getMessageEditTime(context, context.channel.id, context.message.id, formatOrMessageId.value);
+                            return this.getMessageEditTime(context, context.runtime.channel.id, formatOrMessageId.value, 'x');
+                        return this.getMessageEditTime(context, context.runtime.channel.id, context.runtime.message.id, formatOrMessageId.value);
                     }
                 },
                 {
@@ -43,7 +43,7 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
                     execute: async (context, [channelOrMessageId, messageIdOrFormat]) => {
                         if (snowflake.test(messageIdOrFormat.value))
                             return await this.getMessageEditTime(context, channelOrMessageId.value, messageIdOrFormat.value, 'x');
-                        return await this.getMessageEditTime(context, context.channel.id, channelOrMessageId.value, messageIdOrFormat.value);
+                        return await this.getMessageEditTime(context, context.runtime.channel.id, channelOrMessageId.value, messageIdOrFormat.value);
                     }
                 },
                 {
@@ -77,16 +77,16 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
     }
 
     public async getMessageEditTime(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         messageStr: string,
         format: string
     ): Promise<string> {
-        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: true }); //TODO lookup
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noLookup: true }); //TODO lookup
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        const message = await this.#messages.get(context, channel.id, messageStr);
+        const message = await this.#messages.get(context.runtime, channel.id, messageStr);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageStr);
 

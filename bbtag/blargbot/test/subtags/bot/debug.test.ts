@@ -12,30 +12,30 @@ runSubtagTests({
             code: '{debug}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.debug).to.have.length(1);
-                chai.expect(ctx.debug[0].text).to.equal('');
-                chai.expect(ctx.debug[0].subtag.start.index).to.equal(0);
-                chai.expect(ctx.debug[0].subtag.end.index).to.equal(7);
+                chai.expect(ctx.runtime.debug).to.have.length(1);
+                chai.expect(ctx.runtime.debug[0].text).to.equal('');
+                chai.expect(ctx.runtime.debug[0].token.start.index).to.equal(0);
+                chai.expect(ctx.runtime.debug[0].token.end.index).to.equal(7);
             }
         },
         {
             code: '{debug;some text!}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.debug).to.have.length(1);
-                chai.expect(ctx.debug[0].text).to.equal('some text!');
-                chai.expect(ctx.debug[0].subtag.start.index).to.equal(0);
-                chai.expect(ctx.debug[0].subtag.end.index).to.equal(18);
+                chai.expect(ctx.runtime.debug).to.have.length(1);
+                chai.expect(ctx.runtime.debug[0].text).to.equal('some text!');
+                chai.expect(ctx.runtime.debug[0].token.start.index).to.equal(0);
+                chai.expect(ctx.runtime.debug[0].token.end.index).to.equal(18);
             }
         },
         {
             code: '{debug;some text!;and some more;ooh fancy}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.debug).to.have.length(1);
-                chai.expect(ctx.debug[0].text).to.equal('some text! and some more ooh fancy');
-                chai.expect(ctx.debug[0].subtag.start.index).to.equal(0);
-                chai.expect(ctx.debug[0].subtag.end.index).to.equal(42);
+                chai.expect(ctx.runtime.debug).to.have.length(1);
+                chai.expect(ctx.runtime.debug[0].text).to.equal('some text! and some more ooh fancy');
+                chai.expect(ctx.runtime.debug[0].token.start.index).to.equal(0);
+                chai.expect(ctx.runtime.debug[0].token.end.index).to.equal(42);
             }
         }
     ]

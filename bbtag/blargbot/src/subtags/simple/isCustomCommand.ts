@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.isCustomCommand;
 
-@Subtag.names('isCustomCommand', 'isCC')
+@Subtag.id('isCustomCommand', 'isCC')
 @Subtag.ctorArgs()
 export class IsCustomCommandSubtag extends CompiledSubtag {
     public constructor() {
@@ -25,7 +25,7 @@ export class IsCustomCommandSubtag extends CompiledSubtag {
         });
     }
 
-    public isCC(context: BBTagContext): boolean {
-        return context.isCC;
+    public isCC(context: BBTagScript): boolean {
+        return context.runtime.isCC;
     }
 }

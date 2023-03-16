@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import type { TimezoneProvider } from '../../services/TimezoneProvider.js';
@@ -9,8 +9,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.userTimeZone;
 
-@Subtag.names('userTimeZone')
-@Subtag.ctorArgs('timezones', 'user')
+@Subtag.id('userTimeZone')
+@Subtag.ctorArgs('timezones', 'users')
 export class UserTimezoneSubtag extends CompiledSubtag {
     readonly #timezones: TimezoneProvider;
     readonly #users: UserService;
@@ -43,18 +43,18 @@ export class UserTimezoneSubtag extends CompiledSubtag {
     }
 
     public async getUserTimezone(
-        context: BBTagContext,
+        context: BBTagScript,
         userStr: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userStr, { noLookup: quiet });
 
         if (user === undefined) {
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return await this.#timezones.get(context, user.id) ?? 'UTC';
+        return await this.#timezones.get(context.runtime, user.id) ?? 'UTC';
     }
 }

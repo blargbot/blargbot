@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.argsArray;
 
-@Subtag.names('argsArray')
+@Subtag.id('argsArray')
 @Subtag.ctorArgs()
 export class ArgsArraySubtag extends CompiledSubtag {
     public constructor() {
@@ -26,7 +26,7 @@ export class ArgsArraySubtag extends CompiledSubtag {
         });
     }
 
-    public getInput(context: BBTagContext): string[] {
+    public getInput(context: BBTagScript): string[] {
         return context.input;
     }
 }

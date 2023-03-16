@@ -1,46 +1,46 @@
+import { ContextManager } from './ContextManager.js';
 import type { BBTagRuntimeScope } from './types.js';
 
 export class ScopeManager {
     readonly #scopes: BBTagRuntimeScope[];
-    readonly #tags: number[];
+    readonly #tags: BBTagRuntimeScope[];
+    readonly #context: ContextManager<[isTag: boolean], BBTagRuntimeScope>;
 
     public get local(): BBTagRuntimeScope { return this.#scopes[this.#scopes.length - 1]; }
-    public get tag(): BBTagRuntimeScope { return this.#scopes[this.#tags[this.#tags.length - 1]]; }
+    public get tag(): BBTagRuntimeScope { return this.#tags[this.#tags.length - 1]; }
     public readonly root: BBTagRuntimeScope;
 
     public constructor() {
-        this.#scopes = [this.root = {
-            functions: {},
-            inLock: false,
-            isTag: false
-        }];
-        this.#tags = [0];
+        this.root = {
+            inLock: false
+        };
+        this.#scopes = [this.root];
+        this.#tags = [this.root];
+        this.#context = new ContextManager({
+            enter: isTag => {
+                const scope = { ...this.local };
+                this.#scopes.push(scope);
+                if (isTag)
+                    this.#tags.push(scope);
+                return scope;
+            },
+            exit: scope => {
+                if (!removeLast(this.#scopes, scope))
+                    return;
+                removeLast(this.#tags, scope);
+            }
+        });
     }
 
-    public withScope<T>(action: (scope: BBTagRuntimeScope) => T, isTag = false): T {
-        const scope = this.#pushScope(isTag);
-        const result = action(scope);
-        if (result instanceof Promise)
-            result.finally(() => this.#popScope());
-        else
-            this.#popScope();
-        return result;
+    public invoke<T>(action: (scope: BBTagRuntimeScope) => T, isTag = false): T {
+        return this.#context.invoke(action, isTag);
     }
+}
 
-    #pushScope(isTag = false): BBTagRuntimeScope {
-        if (isTag)
-            this.#tags.push(this.#scopes.length);
-        this.#scopes.push({ ...this.local, isTag });
-        return this.local;
-    }
-
-    #popScope(): BBTagRuntimeScope {
-        if (this.#scopes.length === 1)
-            throw new Error('Cannot pop the root scope');
-        const popped = this.local;
-        this.#scopes.pop();
-        if (popped.isTag)
-            this.#tags.pop();
-        return popped;
-    }
+function removeLast<T>(arr: T[], item: T): boolean {
+    const index = arr.lastIndexOf(item);
+    if (index < 0)
+        return false;
+    arr.splice(index, 1);
+    return true;
 }

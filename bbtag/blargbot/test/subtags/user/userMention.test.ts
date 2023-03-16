@@ -23,7 +23,7 @@ runSubtagTests({
                         member.id = '12345678900987236';
                     },
                     assert(_, __, ctx) {
-                        chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
+                        chai.expect(ctx.runtime.outputOptions.mentionUsers).to.deep.equal(new Set(['12345678900987236']));
                     }
                 },
                 {
@@ -32,7 +32,7 @@ runSubtagTests({
                         member.id = '098765434512212678';
                     },
                     assert(_, __, ctx) {
-                        chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['098765434512212678']);
+                        chai.expect(ctx.runtime.outputOptions.mentionUsers).to.deep.equal(new Set(['098765434512212678']));
                     }
                 },
                 {
@@ -41,7 +41,7 @@ runSubtagTests({
                         member.id = '876543456778367654';
                     },
                     assert(_, __, ctx) {
-                        chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['876543456778367654']);
+                        chai.expect(ctx.runtime.outputOptions.mentionUsers).to.deep.equal(new Set(['876543456778367654']));
                     }
                 }
             ]
@@ -53,7 +53,7 @@ runSubtagTests({
                 ctx.users.command.id = '12345678900987236';
             },
             assert(ctx) {
-                chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
+                chai.expect(ctx.runtime.outputOptions.mentionUsers).to.deep.equal(new Set(['12345678900987236']));
             }
         },
         {
@@ -63,7 +63,7 @@ runSubtagTests({
                 ctx.users.command.id = '12345678900987236';
             },
             assert(ctx) {
-                chai.expect(ctx.data.allowedMentions.users).to.deep.equal([]);
+                chai.expect(ctx.runtime.outputOptions.mentionUsers).to.deep.equal(new Set([]));
             }
         },
         {
@@ -73,7 +73,7 @@ runSubtagTests({
                 ctx.users.command.id = '12345678900987236';
             },
             assert(ctx) {
-                chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
+                chai.expect(ctx.runtime.outputOptions.mentionUsers).to.deep.equal(new Set(['12345678900987236']));
             }
         },
         {
@@ -85,11 +85,11 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, '98765434512212678', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '98765434512212678', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(user.instance);
                 user.setup(m => m.id).thenReturn('98765434512212678');
             },
             assert(ctx) {
-                chai.expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236', '98765434512212678']);
+                chai.expect(ctx.runtime.outputOptions.mentionUsers).to.deep.equal(new Set(['12345678900987236', '98765434512212678']));
             }
         }
     ]

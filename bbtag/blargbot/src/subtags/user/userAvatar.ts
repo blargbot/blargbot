@@ -1,6 +1,6 @@
 import { images } from '@blargbot/discord-util';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -10,8 +10,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.userAvatar;
 
-@Subtag.names('userAvatar')
-@Subtag.ctorArgs('user')
+@Subtag.id('userAvatar')
+@Subtag.ctorArgs('users')
 export class UserAvatarSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -43,17 +43,17 @@ export class UserAvatarSubtag extends CompiledSubtag {
     }
 
     public async getUserAvatarUrl(
-        context: BBTagContext,
+        context: BBTagScript,
         userId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userId, { noLookup: quiet });
         if (user === undefined)
             throw new UserNotFoundError(userId)
                 .withDisplay(quiet ? '' : undefined);
 
-        return images.memberAvatar(context.guild.id, user.member?.avatar, user);
+        return images.memberAvatar(context.runtime.guild.id, user.member?.avatar, user);
 
     }
 }

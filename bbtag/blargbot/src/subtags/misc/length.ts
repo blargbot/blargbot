@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.length;
 
-@Subtag.names('length')
+@Subtag.id('length')
 @Subtag.ctorArgs('arrayTools')
 export class LengthSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

@@ -1,9 +1,8 @@
 import { inspect } from 'node:util';
 
-import type { BBTagArray, BBTagArrayTools, BBTagContextOptions, BBTagRuntimeScope, BBTagValueConverter, Entities, InjectionContext, LocatedRuntimeError, SourceProvider, SubtagDescriptor, SubtagInvocationMiddleware, TagVariableScope, VariablesStore } from '@bbtag/blargbot';
-import { BaseRuntimeLimit, BBTagContext, BBTagEngine, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, NotEnoughArgumentsError, smartStringCompare, Subtag, SubtagType, TooManyArgumentsError } from '@bbtag/blargbot';
-import type { SourceMarker, SubtagCall } from '@bbtag/language';
-import { parseBBTag } from '@bbtag/language';
+import type { BBTagArray, BBTagArrayTools, BBTagRunnerOptions, BBTagRuntimeOptions, BBTagRuntimeScope, BBTagScript, BBTagScriptOptions, BBTagValueConverter, Entities, LocatedRuntimeError, SourceProvider, SubtagDescriptor, SubtagInvocationMiddleware, TagVariableScope, VariablesStore } from '@bbtag/blargbot';
+import { BaseRuntimeLimit, BBTagRunner, BBTagRuntime, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, InternalServerError, NotEnoughArgumentsError, smartStringCompare, Subtag, SubtagType, tagVariableScopeProviders, TooManyArgumentsError } from '@bbtag/blargbot';
+import type { SourceMarker } from '@bbtag/language';
 import Discord from '@blargbot/discord-types';
 import { snowflake } from '@blargbot/discord-util';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
@@ -13,8 +12,9 @@ import chaiBytes from 'chai-bytes';
 import chaiDateTime from 'chai-datetime';
 import chaiExclude from 'chai-exclude';
 import mocha from 'mocha';
-import moment from 'moment-timezone';
 import tsMockito from 'ts-mockito';
+
+import type { BBTagCall } from '../../src/BBTagCall.js';
 
 chai.use(chaiExclude);
 chai.use(chaiBytes);
@@ -24,19 +24,15 @@ type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${num
 type IdPropertiesOf<T> = { [P in AnyPropertyKey<T>]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[AnyPropertyKey<T>];
 type RequireIds<T, OtherProps extends AnyPropertyKey<T> = never> = T extends infer R ? RequiredProps<Partial<R>, IdPropertiesOf<R> | OtherProps> : never;
 
-type RuntimeSubtagTestCase<T> = Readonly<T> & {
-    readonly timestamp: moment.Moment;
-}
-
 export interface SubtagTestCase {
     readonly title?: string;
     readonly code: string;
     readonly subtagName?: string;
     readonly expected?: string | RegExp | (() => string | RegExp);
-    readonly setup?: (this: RuntimeSubtagTestCase<this>, context: SubtagTestContext) => Awaitable<void>;
-    readonly postSetup?: (this: RuntimeSubtagTestCase<this>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>;
-    readonly assert?: (this: RuntimeSubtagTestCase<this>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>;
-    readonly teardown?: (this: RuntimeSubtagTestCase<this>, context: SubtagTestContext) => Awaitable<void>;
+    readonly setup?: (this: this, context: SubtagTestContext) => Awaitable<void>;
+    readonly postSetup?: (this: this, context: BBTagScript, mocks: SubtagTestContext) => Awaitable<void>;
+    readonly assert?: (this: this, context: BBTagScript, result: string, test: SubtagTestContext) => Awaitable<void>;
+    readonly teardown?: (this: this, context: SubtagTestContext) => Awaitable<void>;
     readonly expectError?: {
         required?: boolean;
         handle: (error: unknown) => Awaitable<void>;
@@ -52,10 +48,10 @@ export interface SubtagTestCase {
 interface TestSuiteConfig<T extends SubtagTestCase> {
     readonly setup: Array<() => Awaitable<void>>;
     readonly teardown: Array<() => Awaitable<void>>;
-    readonly setupEach: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
-    readonly assertEach: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>>;
-    readonly teardownEach: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
-    readonly postSetupEach: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>>;
+    readonly setupEach: Array<(this: T, context: SubtagTestContext) => Awaitable<void>>;
+    readonly assertEach: Array<(this: T, context: BBTagScript, result: string, test: SubtagTestContext) => Awaitable<void>>;
+    readonly teardownEach: Array<(this: T, context: SubtagTestContext) => Awaitable<void>>;
+    readonly postSetupEach: Array<(this: T, context: BBTagScript, mocks: SubtagTestContext) => Awaitable<void>>;
 }
 
 export class MarkerError extends BBTagRuntimeError {
@@ -87,6 +83,7 @@ export class SubtagTestContext {
     readonly #allMocks: Array<Mock<unknown>> = [];
     #isCreated = false;
     public readonly timer = new Timer();
+    public readonly code: string;
     get #converter(): BBTagValueConverter {
         return this.dependencies.converter;
     }
@@ -94,9 +91,8 @@ export class SubtagTestContext {
         return this.dependencies.arrayTools;
     }
     public readonly dependencies = {
-        defaultPrefix: 'b!',
         subtags: [] as SubtagDescriptor[],
-        middleware: [] as SubtagInvocationMiddleware[],
+        subtagMiddleware: [] as SubtagInvocationMiddleware[],
         converter: createValueConverter({
             colors: {
                 blue: 0x0000ff,
@@ -118,14 +114,14 @@ export class SubtagTestContext {
             isTagArray: (v): v is BBTagArray => this.#arrayTools.isTagArray(v)
         }),
         variables: this.createMock(),
-        user: this.createMock(),
-        channel: this.createMock(),
+        users: this.createMock(),
+        channels: this.createMock(),
         guild: this.createMock(),
-        role: this.createMock(),
+        roles: this.createMock(),
         lock: this.createMock(),
-        message: this.createMock(),
+        messages: this.createMock(),
         sources: this.createMock(),
-        cooldown: this.createMock(),
+        cooldowns: this.createMock(),
         timezones: this.createMock(),
         warnings: this.createMock(),
         modLog: this.createMock(),
@@ -133,18 +129,21 @@ export class SubtagTestContext {
         domains: this.createMock(),
         defer: this.createMock(),
         staff: this.createMock(),
-        logger: this.createMock()
-    } satisfies { [P in keyof InjectionContext]-?: Mock<NonNullable<InjectionContext[P]>> | InjectionContext[P] };
+        logger: this.createMock(),
+        variableScopes: tagVariableScopeProviders,
+        variableMiddleware: []
+    } satisfies { [P in keyof BBTagRunnerOptions]-?: Mock<NonNullable<BBTagRunnerOptions[P]>> | BBTagRunnerOptions[P] };
     public readonly limit = this.createMock(BaseRuntimeLimit);
     public isStaff = false;
     public readonly ownedMessages: string[] = [];
 
-    public readonly ccommands: Record<string, { content: string; cooldown?: number; }>;
-    public readonly tags: Record<string, { content: string; cooldown?: number; }>;
+    public readonly ccommands: Record<string, { content: string; cooldown: number; }>;
+    public readonly tags: Record<string, { content: string; cooldown: number; }>;
     public readonly tagVariables: MapByValue<{ scope: TagVariableScope; name: string; }, JToken>;
-    public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false, isTag: true };
+    public readonly rootScope: BBTagRuntimeScope = { inLock: false };
 
-    public readonly options: Mutable<Partial<BBTagContextOptions>>;
+    public readonly options: Mutable<Partial<Omit<BBTagRuntimeOptions, 'entrypoint'>>>;
+    public readonly entrypoint: Mutable<Partial<BBTagScriptOptions>>;
 
     public readonly roles = {
         everyone: SubtagTestContext.createRole({ id: createSnowflake() }),
@@ -193,11 +192,13 @@ export class SubtagTestContext {
         channel_id: this.channels.command.id
     }, this.users.command);
 
-    public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<SubtagDescriptor>) {
+    public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<SubtagDescriptor>, code: string) {
         this.tagVariables = new MapByValue();
         this.tags = {};
         this.ccommands = {};
-        this.options = { tagName: `testTag_${createSnowflake()}` };
+        this.options = {};
+        this.entrypoint = {};
+        this.code = code;
 
         const args = new Array(100).fill(argument.any().value) as unknown[];
         for (let i = 0; i < args.length; i++) {
@@ -206,6 +207,7 @@ export class SubtagTestContext {
             });
         }
 
+        this.limit.setup(m => m.id).thenReturn('tagLimit');
         this.dependencies.variables.setup(m => m.get(tsMockito.anything() as never, tsMockito.anything() as never), false)
             .thenCall((...[scope, name]: Parameters<VariablesStore['get']>) => this.tagVariables.get({ scope, name }));
         if (this.testCase.setupSaveVariables !== false) {
@@ -246,52 +248,69 @@ export class SubtagTestContext {
         }
     }
 
-    public createContext(): BBTagContext {
+    public createRuntime(): BBTagRuntime {
         if (this.#isCreated)
             throw new Error('Cannot create multiple contexts from 1 mock');
         this.#isCreated = true;
 
-        const engine = new BBTagEngine(
-            Object.fromEntries(
-                Object.entries(this.dependencies)
-                    .map(([key, val]) => [key, val instanceof Mock ? val.instance : val])
-            ) as InjectionContext
-        );
+        const runner = new BBTagRunner(Object.fromEntries(
+            Object.entries(this.dependencies)
+                .map(([key, val]) => [key, val instanceof Mock ? val.instance : val])
+        ) as BBTagRunnerOptions);
 
-        const context = new BBTagContext(engine, {
-            bot: this.users.bot,
+        const runtime = runner.createRuntime({
+            authorId: this.message.author.id,
             authorizer: this.users.authorizer,
-            user: this.users.command,
-            isStaff: this.isStaff,
+            bot: this.users.bot,
             channel: this.channels.command,
             guild: this.guild,
-            authorId: this.message.author.id,
-            inputRaw: '',
             isCC: false,
+            isStaff: this.isStaff,
             limit: this.limit.instance,
             message: this.message,
-            ...this.options
+            prefix: 'b!',
+            silent: false,
+            subtags: [],
+            tagVars: this.options.isCC !== true,
+            user: this.users.command,
+            ...this.options,
+            entrypoint: {
+                flags: [],
+                inputRaw: '',
+                name: `testTag_${createSnowflake()}`,
+                source: this.code,
+                cooldownMs: 0,
+                ...this.entrypoint
+            },
+            queryCache: {
+                channel: {},
+                count: 0,
+                role: {},
+                user: {},
+                ...this.options.queryCache
+            }
         });
 
-        this.dependencies.user.setup(m => m.querySingle(context, ''), false).thenResolve(this.users.command);
-        this.dependencies.user.setup(m => m.querySingle(context, '', argument.any().value as undefined), false).thenResolve(this.users.command);
-        this.dependencies.user.setup(m => m.querySingle(context, this.users.command.id), false).thenResolve(this.users.command);
-        this.dependencies.user.setup(m => m.querySingle(context, this.users.command.id, argument.any().value as undefined), false).thenResolve(this.users.command);
-        this.dependencies.channel.setup(m => m.querySingle(context, ''), false).thenResolve(this.channels.command);
-        this.dependencies.channel.setup(m => m.querySingle(context, '', argument.any().value as undefined), false).thenResolve(this.channels.command);
-        this.dependencies.channel.setup(m => m.querySingle(context, this.channels.command.id), false).thenResolve(this.channels.command);
-        this.dependencies.channel.setup(m => m.querySingle(context, this.channels.command.id, argument.any().value as undefined), false).thenResolve(this.channels.command);
-        this.dependencies.message.setup(m => m.get(context, this.channels.command.id, ''), false).thenResolve(this.message);
-        this.dependencies.message.setup(m => m.get(context, this.channels.command.id, this.message.id), false).thenResolve(this.message);
-        this.dependencies.sources.setup(m => m.get(context, 'tag', argument.isTypeof('string').value), false)
+        this.dependencies.users.setup(m => m.querySingle(runtime, ''), false).thenResolve(this.users.command);
+        this.dependencies.users.setup(m => m.querySingle(runtime, '', argument.any().value as undefined), false).thenResolve(this.users.command);
+        this.dependencies.users.setup(m => m.querySingle(runtime, this.users.command.id), false).thenResolve(this.users.command);
+        this.dependencies.users.setup(m => m.querySingle(runtime, this.users.command.id, argument.any().value as undefined), false).thenResolve(this.users.command);
+        this.dependencies.channels.setup(m => m.querySingle(runtime, ''), false).thenResolve(this.channels.command);
+        this.dependencies.channels.setup(m => m.querySingle(runtime, '', argument.any().value as undefined), false).thenResolve(this.channels.command);
+        this.dependencies.channels.setup(m => m.querySingle(runtime, this.channels.command.id), false).thenResolve(this.channels.command);
+        this.dependencies.channels.setup(m => m.querySingle(runtime, this.channels.command.id, argument.any().value as undefined), false).thenResolve(this.channels.command);
+        this.dependencies.messages.setup(m => m.get(runtime, this.channels.command.id, ''), false).thenResolve(this.message);
+        this.dependencies.messages.setup(m => m.get(runtime, this.channels.command.id, this.message.id), false).thenResolve(this.message);
+        this.dependencies.sources.setup(m => m.get(runtime, 'tag', argument.isTypeof('string').value), false)
             .thenCall((...args: Parameters<SourceProvider['get']>) => this.tags[args[2]]);
-        this.dependencies.sources.setup(m => m.get(context, 'cc', argument.isTypeof('string').value), false)
+        this.dependencies.sources.setup(m => m.get(runtime, 'cc', argument.isTypeof('string').value), false)
             .thenCall((...args: Parameters<SourceProvider['get']>) => this.ccommands[args[2]]);
 
-        context.data.ownedMsgs.push(...this.ownedMessages);
-        Object.assign(context.scopes.root, this.rootScope);
+        for (const id of this.ownedMessages)
+            runtime.ownedMessageIds.add(id);
+        Object.assign(runtime.scopes.root, this.rootScope);
 
-        return context;
+        return runtime;
     }
 
     public static createMessage(settings: RequireIds<Entities.Message>, author: Discord.APIUser): Entities.Message {
@@ -403,8 +422,8 @@ export class SubtagTestContext {
 
 export function createDescriptor<T extends Subtag>(subtag: T): SubtagDescriptor<T> {
     return {
-        name: subtag.name,
-        aliases: subtag.aliases,
+        id: subtag.id,
+        names: subtag.names,
         createInstance: () => subtag
     };
 }
@@ -429,17 +448,17 @@ export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase
     const min = typeof data.argCountBounds.min === 'number' ? { count: data.argCountBounds.min, noEval: [] } : data.argCountBounds.min;
     const max = typeof data.argCountBounds.max === 'number' ? { count: data.argCountBounds.max, noEval: [] } : data.argCountBounds.max;
 
-    suite.addTestCases(notEnoughArgumentsTestCases(data.subtag.name, min.count, min.noEval));
+    suite.addTestCases(notEnoughArgumentsTestCases(data.subtag.id, min.count, min.noEval));
     suite.addTestCases(data.cases);
     if (max.count < Infinity)
-        suite.addTestCases(tooManyArgumentsTestCases(data.subtag.name, max.count, max.noEval));
+        suite.addTestCases(tooManyArgumentsTestCases(data.subtag.id, max.count, max.noEval));
 
     suite.run(() => data.runOtherTests?.(data.subtag));
 }
 
-export function sourceMarker(location: SourceMarkerResolvable): SourceMarker
-export function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined
-export function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined {
+function sourceMarker(location: SourceMarkerResolvable): SourceMarker
+function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined
+function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined {
     if (typeof location === 'number')
         return { index: location, line: 0, column: location };
     if (typeof location === 'object')
@@ -455,7 +474,7 @@ export function sourceMarker(location: SourceMarkerResolvable | undefined): Sour
     return { index: parseInt(index), line: parseInt(line), column: parseInt(column) };
 }
 
-@Subtag.names('testdata')
+@Subtag.id('testdata')
 export class TestDataSubtag extends Subtag {
     public constructor(public readonly values: Record<string, string | undefined>) {
         super({
@@ -464,21 +483,21 @@ export class TestDataSubtag extends Subtag {
         });
     }
 
-    public override async * execute(_: unknown, __: unknown, subtag: SubtagCall): AsyncIterable<string> {
+    public override async execute(_: unknown, __: unknown, subtag: BBTagCall): Promise<string> {
         if (subtag.args.length !== 1)
-            throw new RangeError(`Subtag ${this.name} must be given 1 argument!`);
-        const key = subtag.args[0].source;
+            throw new RangeError(`Subtag ${this.id} must be given 1 argument!`);
+        const key = subtag.args[0].ast.source;
         const value = this.values[key];
         if (value === undefined)
-            throw new RangeError(`Subtag ${this.name} doesnt have test data set up for ${JSON.stringify(value)}`);
+            throw new RangeError(`Subtag ${this.id} doesnt have test data set up for ${JSON.stringify(value)}`);
 
         await Promise.resolve();
-        yield value;
+        return value;
     }
 }
 
 @Subtag.ctorArgs()
-@Subtag.names('eval')
+@Subtag.id('eval')
 export class EvalSubtag extends Subtag {
     public constructor() {
         super({
@@ -488,14 +507,14 @@ export class EvalSubtag extends Subtag {
         });
     }
 
-    public override execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
-        throw new MarkerError('eval', subtag.start.index);
+    public override execute(_context: BBTagScript, _subtagName: string, subtag: BBTagCall): never {
+        throw new MarkerError('eval', subtag.ast.start.index);
     }
 }
 
-@Subtag.names('assert')
+@Subtag.id('assert')
 export class AssertSubtag extends Subtag {
-    readonly #assertion: (context: BBTagContext, subtagName: string, subtag: SubtagCall) => Awaitable<string>;
+    readonly #assertion: (context: BBTagScript, subtagName: string, subtag: BBTagCall) => Awaitable<string>;
 
     public constructor(assertion: (...args: Parameters<Subtag['execute']>) => Awaitable<string>) {
         super({
@@ -507,13 +526,13 @@ export class AssertSubtag extends Subtag {
         this.#assertion = assertion;
     }
 
-    public override async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string> {
-        yield await this.#assertion(context, subtagName, subtag);
+    public override async execute(context: BBTagScript, subtagName: string, subtag: BBTagCall): Promise<string> {
+        return await this.#assertion(context, subtagName, subtag);
     }
 }
 
 @Subtag.ctorArgs()
-@Subtag.names('fail')
+@Subtag.id('fail')
 export class FailTestSubtag extends Subtag {
     public constructor() {
         super({
@@ -523,14 +542,14 @@ export class FailTestSubtag extends Subtag {
         });
     }
 
-    public override execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
-        throw new RangeError(`Subtag ${subtag.source} was evaluated when it wasnt supposed to!`);
+    public override execute(_context: BBTagScript, _subtagName: string, subtag: BBTagCall): never {
+        throw new RangeError(`Subtag ${subtag.ast.source} was evaluated when it wasnt supposed to!`);
     }
 }
 
-@Subtag.names('limit')
+@Subtag.id('limit')
 export class LimitedTestSubtag extends Subtag {
-    readonly #counts = new WeakMap<BBTagContext, number>();
+    readonly #counts = new WeakMap<BBTagScript, number>();
     readonly #limit: number;
 
     public constructor(limit = 1) {
@@ -542,7 +561,7 @@ export class LimitedTestSubtag extends Subtag {
         this.#limit = limit;
     }
 
-    public override execute(context: BBTagContext): never {
+    public override execute(context: BBTagScript): never {
         const count = this.#counts.get(context) ?? 0;
         this.#counts.set(context, count + 1);
 
@@ -553,7 +572,7 @@ export class LimitedTestSubtag extends Subtag {
 }
 
 @Subtag.ctorArgs()
-@Subtag.names('echoargs')
+@Subtag.id('echoargs')
 export class EchoArgsSubtag extends Subtag {
     public constructor() {
         super({
@@ -563,15 +582,9 @@ export class EchoArgsSubtag extends Subtag {
         });
     }
 
-    public override async * execute(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
+    public override async execute(_: BBTagScript, __: string, subtag: BBTagCall): Promise<string> {
         await Promise.resolve();
-        yield '[';
-        yield JSON.stringify(subtag.name.source);
-        for (const arg of subtag.args) {
-            yield ',';
-            yield JSON.stringify(arg.source);
-        }
-        yield ']';
+        return JSON.stringify([subtag.ast.name, ...subtag.args.map(a => a.ast)].map(x => x.source));
     }
 }
 
@@ -623,7 +636,7 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
     }
 
     public run(otherTests?: () => void): void {
-        const suite = mocha.describe(`{${this.#subtag.name}}`, () => {
+        const suite = mocha.describe(`{${this.#subtag.id}}`, () => {
             const subtag = this.#subtag;
             const config = this.#config;
             for (const testCase of this.#testCases) {
@@ -682,38 +695,44 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: mocha.Conte
         context.skip();
 
     const subtags = [subtag, Subtag.getDescriptor(EvalSubtag), Subtag.getDescriptor(FailTestSubtag), ...testCase.subtags ?? []];
-    const test = new SubtagTestContext(testCase, subtags);
-    const actualTestCase = Object.create(testCase, { 'timestamp': { value: moment() } });
+    const test = new SubtagTestContext(testCase, subtags, testCase.code);
 
     try {
         // arrange
         for (const s of subtags)
-            test.limit.setup(m => m.check(argument.isInstanceof(BBTagContext).value, s.name), s === subtag).thenResolve(undefined);
+            test.limit.setup(m => m.check(argument.isInstanceof(BBTagRuntime).value, s.id), s === subtag).thenResolve(undefined);
         for (const setup of config.setupEach)
-            await setup.call(actualTestCase, test);
-        await actualTestCase.setup?.(test);
-        const code = parseBBTag(testCase.code);
-        const context = test.createContext();
+            await setup.call(testCase, test);
+        await testCase.setup?.(test);
+        const context = test.createRuntime();
         for (const postSetup of config.postSetupEach)
-            await postSetup.call(actualTestCase, context, test);
-        await actualTestCase.postSetup?.(context, test);
+            await postSetup.call(testCase, context.entrypoint, test);
+        await testCase.postSetup?.(context.entrypoint, test);
 
         const expected = getExpectation(testCase);
 
         // act
         test.timer.start(true);
-        const result = await runSafe(() => context.eval(code));
+        const [result] = await Promise.allSettled([context.execute()]);
         test.timer.end();
-        if (!result.success) {
-            if (actualTestCase.expectError === undefined)
-                throw result.error;
-            await actualTestCase.expectError.handle(result.error);
+        if (result.status === 'rejected') {
+            if (testCase.expectError === undefined)
+                throw result.reason;
+            await testCase.expectError.handle(result.reason);
             return;
-        } else if (actualTestCase.expectError?.required === true) {
+        } else if (testCase.expectError?.required === true) {
             throw new Error('Expected an error to be thrown!');
+        } else {
+            for (const error of context.errors) {
+                if (error.error instanceof InternalServerError) {
+                    if (testCase.expectError === undefined)
+                        throw error.error.error;
+                    await testCase.expectError.handle(error.error.error);
+                }
+            }
         }
 
-        if (actualTestCase.setupSaveVariables !== false)
+        if (testCase.setupSaveVariables !== false)
             await context.variables.persist();
 
         // assert
@@ -726,14 +745,14 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: mocha.Conte
                 break;
         }
 
-        await actualTestCase.assert?.(context, result.value, test);
+        await testCase.assert?.(context.entrypoint, result.value, test);
         for (const assert of config.assertEach)
-            await assert.call(actualTestCase, context, result.value, test);
+            await assert.call(testCase, context.entrypoint, result.value, test);
 
         if (typeof testCase.errors === 'function') {
             testCase.errors(context.errors);
         } else {
-            chai.expect(context.errors.map(err => ({ error: err.error, start: err.subtag?.start, end: err.subtag?.end })))
+            chai.expect(context.errors.map(err => ({ error: err.error, start: err.token.start, end: err.token.end })))
                 .excludingEvery('stack')
                 .to.deep.equal(testCase.errors?.map(err => ({ error: err.error, start: sourceMarker(err.start), end: sourceMarker(err.end) })) ?? [],
                     'Error details didnt match the expectation');
@@ -741,15 +760,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: mocha.Conte
         test.verifyAll();
     } finally {
         for (const teardown of config.teardownEach)
-            await teardown.call(actualTestCase, test);
-    }
-}
-
-async function runSafe<T>(action: () => Awaitable<T>): Promise<{ success: true; value: T; } | { success: false; error: unknown; }> {
-    try {
-        return { success: true, value: await action() };
-    } catch (err: unknown) {
-        return { success: false, error: err };
+            await teardown.call(testCase, test);
     }
 }
 

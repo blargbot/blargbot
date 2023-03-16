@@ -1,4 +1,4 @@
-import type { BBTagContext, BBTagRuntimeError, Entities, FindEntityOptions } from '@bbtag/blargbot';
+import type { BBTagRuntimeError, BBTagScript, Entities, FindEntityOptions } from '@bbtag/blargbot';
 import { ChannelNotFoundError, MessageNotFoundError } from '@bbtag/blargbot';
 import type Discord from '@blargbot/discord-types';
 import { snowflake } from '@blargbot/discord-util';
@@ -44,7 +44,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
         },
         postSetup(bbctx, ctx) {
-            ctx.dependencies.message.setup(m => m.get(bbctx, bbctx.channel.id, '12345678998765432'), false).thenResolve(undefined);
+            ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678998765432'), false).thenResolve(undefined);
         }
     };
     yield {
@@ -57,9 +57,9 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
         postSetup(bbctx, ctx) {
             const opt = options.getQueryOptions?.(false);
             if (opt === undefined)
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '98765434567889121'), false).thenResolve();
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121'), false).thenResolve();
             else
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '98765434567889121', argument.isDeepEqual(opt)), false).thenResolve();
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121', argument.isDeepEqual(opt)), false).thenResolve();
         }
     };
     if (options.quiet !== false) {
@@ -74,7 +74,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
                 ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.message.setup(m => m.get(bbctx, bbctx.channel.id, '12345678998765432'), false).thenResolve(undefined);
+                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678998765432'), false).thenResolve(undefined);
             }
         };
         yield {
@@ -87,9 +87,9 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             postSetup(bbctx, ctx) {
                 const opt = options.getQueryOptions?.(true);
                 if (opt === undefined)
-                    ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '98765434567889121'), false).thenResolve();
+                    ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121'), false).thenResolve();
                 else
-                    ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '98765434567889121', argument.isDeepEqual(opt)), false).thenResolve();
+                    ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121', argument.isDeepEqual(opt)), false).thenResolve();
             }
         };
     }
@@ -111,8 +111,8 @@ interface GetMessagePropTestCase {
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, messageId?: string, quietStr?: string]) => string;
     setup?: (channel: Entities.Channel, message: Discord.APIMessage, context: SubtagTestContext) => void;
-    postSetup?: (channel: Entities.Channel, message: Entities.Message, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, channel: Entities.Channel, message: Entities.Message, context: BBTagContext, test: SubtagTestContext) => void;
+    postSetup?: (channel: Entities.Channel, message: Entities.Message, context: BBTagScript, test: SubtagTestContext) => void;
+    assert?: (result: string, channel: Entities.Channel, message: Entities.Message, context: BBTagScript, test: SubtagTestContext) => void;
 }
 
 const createSnowflake = snowflake.nextFactory();
@@ -145,12 +145,12 @@ function createTestCase(data: GetMessagePropTestData, isQuiet: boolean, testCase
             if (channelQuery !== undefined && channelQuery !== '') {
                 const opt = data.getQueryOptions?.(isQuiet);
                 if (opt === undefined)
-                    ctx.dependencies.channel.setup(m => m.querySingle(bbctx, channelQuery), false).thenResolve(channel);
+                    ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery), false).thenResolve(channel);
                 else
-                    ctx.dependencies.channel.setup(m => m.querySingle(bbctx, channelQuery, argument.isDeepEqual(opt)), false).thenResolve(channel);
+                    ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery, argument.isDeepEqual(opt)), false).thenResolve(channel);
             }
 
-            ctx.dependencies.message.setup(m => m.get(bbctx, channel.id, args[1] ?? ''), false).thenResolve(message);
+            ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, channel.id, args[1] ?? ''), false).thenResolve(message);
             testCase.postSetup?.(channel, message, bbctx, ctx);
         },
         assert(bbctx, result, ctx) {

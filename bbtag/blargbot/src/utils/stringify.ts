@@ -1,6 +1,6 @@
-import type { Statement, SubtagCall } from '@bbtag/language';
+import type { BBTagCallToken, BBTagStatementToken } from '@bbtag/language';
 
-export function stringify(bbtag: Statement | SubtagCall): string {
+export function stringify(bbtag: BBTagStatementToken | BBTagCallToken): string {
     if ('values' in bbtag) {
         return bbtag.values.map(val => typeof val === 'string' ? val : stringify(val)).join('');
     }

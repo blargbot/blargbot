@@ -1,15 +1,14 @@
 import type { SubtagArgument } from '../../arguments/index.js';
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
-import { BBTagRuntimeState } from '../../types.js';
 import type { BBTagArrayTools } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.forEach;
 
-@Subtag.names('forEach')
+@Subtag.id('forEach')
 @Subtag.ctorArgs('arrayTools')
 export class ForEachSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -32,23 +31,20 @@ export class ForEachSubtag extends CompiledSubtag {
         this.#arrayTools = arrayTools;
     }
     public async * foreach(
-        context: BBTagContext,
+        context: BBTagScript,
         varName: string,
         source: string,
         code: SubtagArgument
     ): AsyncIterable<string> {
-        const array = await this.#arrayTools.deserializeOrGetIterable(context, source) ?? [];
+        const array = await this.#arrayTools.deserializeOrGetIterable(context.runtime, source) ?? [];
         try {
             for (const item of array) {
-                await context.limit.check(context, 'foreach:loops');
-                await context.variables.set(varName, item);
+                await context.runtime.limit.check('foreach:loops');
+                await context.runtime.variables.set(varName, item);
                 yield await code.execute();
-
-                if (context.data.state !== BBTagRuntimeState.RUNNING)
-                    break;
             }
         } finally {
-            context.variables.reset([varName]);
+            context.runtime.variables.reset([varName]);
         }
     }
 }

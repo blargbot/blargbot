@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.commit;
 
-@Subtag.names('commit')
+@Subtag.id('commit')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class CommitSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -43,12 +43,12 @@ export class CommitSubtag extends CompiledSubtag {
     }
 
     public async commit(
-        context: BBTagContext,
+        context: BBTagScript,
         args: string[]
     ): Promise<void> {
         const values = args.length === 0
             ? undefined
             : this.#arrayTools.flattenArray(args).map(value => this.#converter.string(value));
-        await context.variables.persist(values);
+        await context.runtime.variables.persist(values);
     }
 }

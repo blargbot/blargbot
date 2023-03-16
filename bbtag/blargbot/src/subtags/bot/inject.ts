@@ -1,15 +1,12 @@
-import { parseBBTag } from '@bbtag/language';
-
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
-import { BBTagRuntimeState } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.inject;
 
-@Subtag.names('inject')
+@Subtag.id('inject')
 @Subtag.ctorArgs()
 export class InjectSubtag extends CompiledSubtag {
     public constructor() {
@@ -28,13 +25,13 @@ export class InjectSubtag extends CompiledSubtag {
         });
     }
 
-    public async inject(context: BBTagContext, code: string): Promise<string> {
-        return await context.withStack(async () => {
-            const ast = parseBBTag(code);
-            const result = await context.eval(ast);
-            if (context.data.state === BBTagRuntimeState.RETURN)
-                context.data.state = BBTagRuntimeState.RUNNING;
-            return result;
-        });
+    public async inject(context: BBTagScript, code: string): Promise<string> {
+        return await context.runtime.createScript({
+            flags: context.flags,
+            inputRaw: context.inputRaw,
+            name: context.name,
+            source: code,
+            cooldownMs: 0
+        }).execute();
     }
 }

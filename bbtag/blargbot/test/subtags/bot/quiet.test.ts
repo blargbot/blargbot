@@ -12,35 +12,35 @@ runSubtagTests({
             code: '{quiet}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.scopes.local.quiet).to.be.true;
+                chai.expect(ctx.runtime.scopes.local.quiet).to.be.true;
             }
         },
         {
             code: '{quiet;}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.scopes.local.quiet).to.be.true;
+                chai.expect(ctx.runtime.scopes.local.quiet).to.be.true;
             }
         },
         {
             code: '{quiet;true}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.scopes.local.quiet).to.be.true;
+                chai.expect(ctx.runtime.scopes.local.quiet).to.be.true;
             }
         },
         {
             code: '{quiet;false}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.scopes.local.quiet).to.be.false;
+                chai.expect(ctx.runtime.scopes.local.quiet).to.be.false;
             }
         },
         {
             code: '{quiet;abc}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.scopes.local.quiet).to.be.undefined;
+                chai.expect(ctx.runtime.scopes.local.quiet).to.be.undefined;
             }
         }
     ]

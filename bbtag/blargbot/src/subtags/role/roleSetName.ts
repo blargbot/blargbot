@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.roleSetName;
 
-@Subtag.names('roleSetName')
-@Subtag.ctorArgs('role')
+@Subtag.id('roleSetName')
+@Subtag.ctorArgs('roles')
 export class RoleSetNameSubtag extends CompiledSubtag {
     readonly #roles: RoleService;
 
@@ -32,17 +32,17 @@ export class RoleSetNameSubtag extends CompiledSubtag {
     }
 
     public async setRolename(
-        context: BBTagContext,
+        context: BBTagScript,
         roleStr: string,
         name: string,
         quiet: boolean
     ): Promise<void> {
-        const topRole = context.roleEditPosition(context.authorizer);
+        const topRole = context.runtime.roleEditPosition(context.runtime.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
-        quiet ||= context.scopes.local.quiet ?? false;
-        const role = await this.#roles.querySingle(context, roleStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const role = await this.#roles.querySingle(context.runtime, roleStr, { noLookup: quiet });
 
         if (role === undefined)
             throw new RoleNotFoundError(roleStr);
@@ -50,7 +50,7 @@ export class RoleSetNameSubtag extends CompiledSubtag {
         if (role.position >= topRole)
             throw new BBTagRuntimeError('Role above author');
 
-        const result = await this.#roles.edit(context, role.id, { name });
+        const result = await this.#roles.edit(context.runtime, role.id, { name });
 
         if (result === undefined || quiet)
             return;

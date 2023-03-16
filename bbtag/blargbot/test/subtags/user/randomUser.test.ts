@@ -14,7 +14,7 @@ runSubtagTests({
                 chai.expect(result).to.be.oneOf(Object.values(ctx.users).map(u => u.id));
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.getAll(bbctx)).verifiable(1).thenResolve(Object.values(ctx.users));
+                ctx.dependencies.users.setup(m => m.getAll(bbctx.runtime)).verifiable(1).thenResolve(Object.values(ctx.users));
             }
         }
     ]

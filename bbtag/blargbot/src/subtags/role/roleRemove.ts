@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import type { BBTagLogger } from '../../services/BBTagLogger.js';
@@ -10,8 +10,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.roleRemove;
 
-@Subtag.names('roleRemove', 'removeRole')
-@Subtag.ctorArgs('arrayTools', 'user', 'logger')
+@Subtag.id('roleRemove', 'removeRole')
+@Subtag.ctorArgs('arrayTools', 'users', 'logger')
 export class RoleRemoveSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #users: UserService;
@@ -28,7 +28,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [role]) => this.removeRole(ctx, role.value, ctx.user.id, false)
+                    execute: (ctx, [role]) => this.removeRole(ctx, role.value, ctx.runtime.user.id, false)
                 },
                 {
                     parameters: ['role', 'user', 'quiet?'],
@@ -47,17 +47,17 @@ export class RoleRemoveSubtag extends CompiledSubtag {
     }
 
     public async removeRole(
-        context: BBTagContext,
+        context: BBTagScript,
         roleStr: string,
         userStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        const topRole = context.roleEditPosition(context.authorizer);
+        const topRole = context.runtime.roleEditPosition(context.runtime.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot remove roles');
 
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userStr, { noLookup: quiet });
 
         if (user?.member === undefined) {
             throw new UserNotFoundError(userStr)
@@ -65,7 +65,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
         }
 
         const roleStrs = new Set(this.#arrayTools.deserialize(roleStr)?.v.map(v => v?.toString() ?? '~') ?? [roleStr]);
-        const roles = context.guild.roles.filter(r => roleStrs.has(r.id));
+        const roles = context.runtime.guild.roles.filter(r => roleStrs.has(r.id));
 
         if (roles.length === 0)
             throw new RoleNotFoundError(roleStr);
@@ -80,7 +80,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
         try {
             const removeRoles = new Set(roles.map(r => r.id));
             const newRoleList = [...new Set(user.member.roles.filter(r => !removeRoles.has(r)))];
-            await this.#users.edit(context, user.id, { roles: newRoleList });
+            await this.#users.edit(context.runtime, user.id, { roles: newRoleList });
             return true;
         } catch (err: unknown) {
             this.#logger.error(err);

@@ -12,21 +12,21 @@ runSubtagTests({
             code: '{suppresslookup}',
             expected: '',
             assert(bbctx) {
-                chai.expect(bbctx.scopes.root.noLookupErrors).to.be.true;
+                chai.expect(bbctx.runtime.scopes.root.noLookupErrors).to.be.true;
             }
         },
         {
             code: '{suppresslookup;true}',
             expected: '',
             assert(bbctx) {
-                chai.expect(bbctx.scopes.root.noLookupErrors).to.be.true;
+                chai.expect(bbctx.runtime.scopes.root.noLookupErrors).to.be.true;
             }
         },
         {
             code: '{suppresslookup;false}',
             expected: '',
             assert(bbctx) {
-                chai.expect(bbctx.scopes.root.noLookupErrors).to.be.false;
+                chai.expect(bbctx.runtime.scopes.root.noLookupErrors).to.be.false;
             }
         },
         {
@@ -36,7 +36,7 @@ runSubtagTests({
                 { start: 0, end: 20, error: new NotABooleanError('abc') }
             ],
             assert(bbctx) {
-                chai.expect(bbctx.scopes.root.noLookupErrors).to.be.undefined;
+                chai.expect(bbctx.runtime.scopes.root.noLookupErrors).to.be.undefined;
             }
         }
     ]

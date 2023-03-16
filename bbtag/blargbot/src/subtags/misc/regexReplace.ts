@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { RegexSubtag } from '../../RegexSubtag.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.regexReplace;
 
-@Subtag.names('regexReplace')
+@Subtag.id('regexReplace')
 @Subtag.ctorArgs()
 export class RegexReplaceSubtag extends RegexSubtag {
     public constructor() {
@@ -34,15 +34,15 @@ export class RegexReplaceSubtag extends RegexSubtag {
         });
     }
 
-    public setOutputReplacement(context: BBTagContext, regexStr: string, replacement: string): void {
-        context.data.replace = {
-            regex: this.createRegex(context, regexStr),
+    public setOutputReplacement(context: BBTagScript, regexStr: string, replacement: string): void {
+        context.runtime.outputOptions.replace = {
+            regex: this.createRegex(context.runtime, regexStr),
             with: replacement
         };
     }
 
-    public regexReplace(context: BBTagContext, text: string, regexStr: string, replaceWith: string): string {
-        const regex = this.createRegex(context, regexStr);
+    public regexReplace(context: BBTagScript, text: string, regexStr: string, replaceWith: string): string {
+        const regex = this.createRegex(context.runtime, regexStr);
         return text.replace(regex, replaceWith);
     }
 }

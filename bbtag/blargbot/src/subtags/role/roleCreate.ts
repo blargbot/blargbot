@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
@@ -10,8 +10,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.roleCreate;
 
-@Subtag.names('roleCreate')
-@Subtag.ctorArgs('converter', 'role')
+@Subtag.id('roleCreate')
+@Subtag.ctorArgs('converter', 'roles')
 export class RoleCreateSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #roles: RoleService;
@@ -36,14 +36,14 @@ export class RoleCreateSubtag extends CompiledSubtag {
     }
 
     public async createRole(
-        context: BBTagContext,
+        context: BBTagScript,
         name: string,
         colorStr: string,
         permStr: string,
         mentionableStr: string,
         hoistedStr: string
     ): Promise<string> {
-        const topRole = context.roleEditPosition(context.authorizer);
+        const topRole = context.runtime.roleEditPosition(context.runtime.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot create roles');
 
@@ -59,10 +59,10 @@ export class RoleCreateSubtag extends CompiledSubtag {
             hoist: this.#converter.boolean(hoistedStr, false)
         };
 
-        if ((context.authorizerPermissions & rolePerms) !== rolePerms)
+        if ((context.runtime.authorizerPermissions & rolePerms) !== rolePerms)
             throw new BBTagRuntimeError('Author missing requested permissions');
 
-        const result = await this.#roles.create(context, options);
+        const result = await this.#roles.create(context.runtime, options);
 
         if (!('error' in result))
             return result.id;

@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import type { BBTagLogger } from '../../services/BBTagLogger.js';
@@ -12,8 +12,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.userSetRoles;
 
-@Subtag.names('userSetRoles', 'setRoles')
-@Subtag.ctorArgs('arrayTools', 'converter', 'user', 'role', 'logger')
+@Subtag.id('userSetRoles', 'setRoles')
+@Subtag.ctorArgs('arrayTools', 'converter', 'users', 'roles', 'logger')
 export class UserSetRolesSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;
@@ -32,7 +32,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.user.id, false)
+                    execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.runtime.user.id, false)
                 },
                 {
                     parameters: ['roleArray', 'user', 'quiet?'],
@@ -53,12 +53,12 @@ export class UserSetRolesSubtag extends CompiledSubtag {
     }
 
     public async userSetRole(
-        context: BBTagContext,
+        context: BBTagScript,
         rolesStr: string,
         userStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        const topRole = context.roleEditPosition(context.authorizer);
+        const topRole = context.runtime.roleEditPosition(context.runtime.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot remove roles');
 
@@ -66,14 +66,14 @@ export class UserSetRolesSubtag extends CompiledSubtag {
          * Quiet suppresses all errors here instead of just the user errors
          * I feel like that is how it *should* work
         */
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userStr, { noLookup: quiet });
         if (user?.member === undefined) {
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        const roleArr = await this.#arrayTools.deserializeOrGetArray(context, rolesStr !== '' ? rolesStr : '[]');
+        const roleArr = await this.#arrayTools.deserializeOrGetArray(context.runtime, rolesStr !== '' ? rolesStr : '[]');
         if (roleArr === undefined) {
             throw new NotAnArrayError(rolesStr)
                 .withDisplay(quiet ? 'false' : undefined);
@@ -82,7 +82,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
         const parsedRoles: string[] = [];
 
         for (const roleStr of roleArr.v.map(v => this.#converter.string(v))) {
-            const role = await this.#roles.querySingle(context, roleStr, { noLookup: quiet });
+            const role = await this.#roles.querySingle(context.runtime, roleStr, { noLookup: quiet });
             if (role === undefined) {
                 throw new RoleNotFoundError(roleStr)
                     .withDisplay(quiet ? 'false' : undefined);
@@ -91,7 +91,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
         }
 
         try {
-            await this.#users.edit(context, user.id, { roles: parsedRoles });
+            await this.#users.edit(context.runtime, user.id, { roles: parsedRoles });
             return true;
         } catch (err: unknown) {
             this.#logger.error(err);

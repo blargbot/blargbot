@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,12 +6,9 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.prefix;
 
-@Subtag.names('prefix')
-@Subtag.ctorArgs('defaultPrefix')
+@Subtag.id('prefix')
 export class PrefixSubtag extends CompiledSubtag {
-    readonly #defaultPrefix: string;
-
-    public constructor(defaultPrefix: string) {
+    public constructor() {
         super({
             category: SubtagType.BOT,
             definition: [
@@ -25,11 +22,9 @@ export class PrefixSubtag extends CompiledSubtag {
                 }
             ]
         });
-
-        this.#defaultPrefix = defaultPrefix;
     }
 
-    public getPrefix(context: BBTagContext): string {
-        return context.prefix ?? this.#defaultPrefix;
+    public getPrefix(context: BBTagScript): string {
+        return context.runtime.prefix;
     }
 }

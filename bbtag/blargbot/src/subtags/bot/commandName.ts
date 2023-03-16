@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.commandName;
 
-@Subtag.names('commandName')
+@Subtag.id('commandName')
 @Subtag.ctorArgs()
 export class CommandNameSubtag extends CompiledSubtag {
     public constructor() {
@@ -26,7 +26,7 @@ export class CommandNameSubtag extends CompiledSubtag {
         });
     }
 
-    public getTagName(context: BBTagContext): string {
-        return context.rootTagName;
+    public getTagName(context: BBTagScript): string {
+        return context.name;
     }
 }

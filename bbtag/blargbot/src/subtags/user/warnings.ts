@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -9,8 +9,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.warnings;
 
-@Subtag.names('warnings')
-@Subtag.ctorArgs('warnings', 'user')
+@Subtag.id('warnings')
+@Subtag.ctorArgs('warnings', 'users')
 export class WarningsSubtag extends CompiledSubtag {
     readonly #users: UserService;
     readonly #warnings: WarningService;
@@ -34,12 +34,12 @@ export class WarningsSubtag extends CompiledSubtag {
         this.#users = users;
     }
 
-    public async getUserWarnings(context: BBTagContext, userQuery: string, quiet: boolean): Promise<number> {
-        const user = await this.#users.querySingle(context, userQuery, { noLookup: quiet });
+    public async getUserWarnings(context: BBTagScript, userQuery: string, quiet: boolean): Promise<number> {
+        const user = await this.#users.querySingle(context.runtime, userQuery, { noLookup: quiet });
 
         if (user === undefined)
             throw new UserNotFoundError(userQuery);
 
-        return await this.#warnings.count(context, user);
+        return await this.#warnings.count(context.runtime, user);
     }
 }

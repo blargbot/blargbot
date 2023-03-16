@@ -12,7 +12,7 @@ runSubtagTests({
             code: '{replace;abc;123}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.data.replace).to.deep.equal({ regex: 'abc', with: '123' });
+                chai.expect(ctx.runtime.outputOptions.replace).to.deep.equal({ regex: 'abc', with: '123' });
             }
         },
         { code: '{replace;This is a test;is;aaaa}', expected: 'Thaaaa is a test' }

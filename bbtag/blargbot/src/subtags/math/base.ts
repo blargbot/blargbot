@@ -1,6 +1,6 @@
 import { isBetween } from '@blargbot/guards';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -11,7 +11,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.base;
 
-@Subtag.names('base', 'radix')
+@Subtag.id('base', 'radix')
 @Subtag.ctorArgs('converter')
 export class BaseNumberSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -35,12 +35,12 @@ export class BaseNumberSubtag extends CompiledSubtag {
     }
 
     public toBase(
-        context: BBTagContext,
+        context: BBTagScript,
         valueStr: string,
         originStr: string,
         radixStr: string
     ): string {
-        const fallback = new Lazy(() => this.#converter.int(context.scopes.local.fallback ?? ''));
+        const fallback = new Lazy(() => this.#converter.int(context.runtime.scopes.local.fallback ?? ''));
         let origin = this.#converter.int(originStr) ?? fallback.value;
         if (origin === undefined)
             throw new NotANumberError(originStr);

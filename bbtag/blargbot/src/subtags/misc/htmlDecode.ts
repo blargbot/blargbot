@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.htmlDecode;
 
-@Subtag.names('htmlDecode')
+@Subtag.id('htmlDecode')
 @Subtag.ctorArgs()
 export class HtmlDecodeSubtag extends CompiledSubtag {
     public constructor() {

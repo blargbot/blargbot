@@ -1,7 +1,6 @@
-import type { SubtagCall } from '@bbtag/language';
-
 import type { SubtagArgumentArray } from '../arguments/index.js';
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagCall } from '../BBTagCall.js';
+import type { BBTagScript } from '../BBTagScript.js';
 import type { SubtagReturnTypeMap } from '../types.js';
 import type { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions.js';
 
@@ -9,5 +8,5 @@ export interface SubtagSignatureCallableOptions<Type extends keyof SubtagReturnT
     readonly subtagName?: string;
     readonly parameters: readonly SubtagSignatureParameterOptions[];
     readonly returns: Type;
-    readonly execute: (context: BBTagContext, args: SubtagArgumentArray, call: SubtagCall) => Awaitable<SubtagReturnTypeMap[Type]>;
+    readonly execute: (context: BBTagScript, args: SubtagArgumentArray, call: BBTagCall) => Awaitable<SubtagReturnTypeMap[Type]>;
 }

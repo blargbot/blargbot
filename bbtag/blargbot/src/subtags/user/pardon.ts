@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -10,8 +10,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.pardon;
 
-@Subtag.names('pardon')
-@Subtag.ctorArgs('warnings', 'converter', 'user')
+@Subtag.id('pardon')
+@Subtag.ctorArgs('warnings', 'converter', 'users')
 export class PardonSubtag extends CompiledSubtag {
     readonly #warnings: WarningService;
     readonly #converter: BBTagValueConverter;
@@ -47,12 +47,12 @@ export class PardonSubtag extends CompiledSubtag {
     }
 
     public async pardon(
-        context: BBTagContext,
+        context: BBTagScript,
         userStr: string,
         countStr: string,
         reason: string
     ): Promise<number> {
-        const member = await this.#users.querySingle(context, userStr);
+        const member = await this.#users.querySingle(context.runtime, userStr);
         if (member === undefined)
             throw new UserNotFoundError(userStr);
 
@@ -60,6 +60,6 @@ export class PardonSubtag extends CompiledSubtag {
         if (count === undefined)
             throw new NotANumberError(countStr);
 
-        return await this.#warnings.pardon(context, member, context.user, count, reason === '' ? 'Tag Pardon' : reason);
+        return await this.#warnings.pardon(context.runtime, member, context.runtime.user, count, reason === '' ? 'Tag Pardon' : reason);
     }
 }

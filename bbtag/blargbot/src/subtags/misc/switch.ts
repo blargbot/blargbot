@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.switch;
 
-@Subtag.names('switch')
+@Subtag.id('switch')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class SwitchSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;

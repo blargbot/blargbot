@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
@@ -9,8 +9,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.roleSetPermissions;
 
-@Subtag.names('roleSetPermissions', 'roleSetPerms')
-@Subtag.ctorArgs('converter', 'role')
+@Subtag.id('roleSetPermissions', 'roleSetPerms')
+@Subtag.ctorArgs('converter', 'roles')
 export class RoleSetPermissionsSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #roles: RoleService;
@@ -43,20 +43,20 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
     }
 
     public async roleSetPerms(
-        context: BBTagContext,
+        context: BBTagScript,
         roleStr: string,
         permsStr: string,
         quietStr: string
     ): Promise<void> {
-        const topRole = context.roleEditPosition(context.authorizer);
+        const topRole = context.runtime.roleEditPosition(context.runtime.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
-        const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
-        const role = await this.#roles.querySingle(context, roleStr, { noLookup: quiet });
+        const quiet = typeof context.runtime.scopes.local.quiet === 'boolean' ? context.runtime.scopes.local.quiet : quietStr !== '';
+        const role = await this.#roles.querySingle(context.runtime, roleStr, { noLookup: quiet });
         const perms = this.#converter.bigInt(permsStr) ?? 0n;
 
-        const mappedPerms = perms & context.authorizerPermissions;
+        const mappedPerms = perms & context.runtime.authorizerPermissions;
 
         if (role === undefined)
             throw new BBTagRuntimeError('Role not found');
@@ -64,7 +64,7 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
         if (role.position >= topRole)
             throw new BBTagRuntimeError('Role above author');
 
-        const result = await this.#roles.edit(context, role.id, { permissions: mappedPerms.toString() });
+        const result = await this.#roles.edit(context.runtime, role.id, { permissions: mappedPerms.toString() });
 
         if (result === undefined || quiet)
             return;

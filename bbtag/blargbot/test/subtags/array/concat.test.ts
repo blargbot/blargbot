@@ -14,7 +14,7 @@ runSubtagTests({
             expected: '["this","is","arr1","this","is","arr2"]',
             subtags: [Subtag.getDescriptor(GetSubtag)],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr2' }, ['this', 'is', 'arr2']);
             }

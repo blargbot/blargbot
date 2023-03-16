@@ -20,7 +20,7 @@ runSubtagTests({
                 const expected = ctx.createMock<Entities.Role>();
                 expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 0n,
@@ -36,7 +36,7 @@ runSubtagTests({
                 const expected = ctx.createMock<Entities.Role>();
                 expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0xff0000,
                     permissions: 0n,
@@ -52,7 +52,7 @@ runSubtagTests({
                 const expected = ctx.createMock<Entities.Role>();
                 expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 238764n,
@@ -68,7 +68,7 @@ runSubtagTests({
                 const expected = ctx.createMock<Entities.Role>();
                 expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0x0000ff,
                     permissions: 238764n,
@@ -84,7 +84,7 @@ runSubtagTests({
                 const expected = ctx.createMock<Entities.Role>();
                 expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0x0000ff,
                     permissions: 238764n,
@@ -100,7 +100,7 @@ runSubtagTests({
                 const expected = ctx.createMock<Entities.Role>();
                 expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 0n,
@@ -116,7 +116,7 @@ runSubtagTests({
                 const expected = ctx.createMock<Entities.Role>();
                 expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 0n,
@@ -132,7 +132,7 @@ runSubtagTests({
                 const expected = ctx.createMock<Entities.Role>();
                 expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 0n,
@@ -148,7 +148,7 @@ runSubtagTests({
                 const expected = ctx.createMock<Entities.Role>();
                 expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0,
                     permissions: 0n,
@@ -164,7 +164,7 @@ runSubtagTests({
                 const expected = ctx.createMock<Entities.Role>();
                 expected.setup(m => m.id).thenReturn('982374624329846');
 
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0xff0000,
                     permissions: 3297864n,
@@ -211,7 +211,7 @@ runSubtagTests({
                 { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0xff0000,
                     permissions: 3297864n,
@@ -227,7 +227,7 @@ runSubtagTests({
                 { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.create(bbctx, argument.isDeepEqual({
+                ctx.dependencies.roles.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0xff0000,
                     permissions: 3297864n,

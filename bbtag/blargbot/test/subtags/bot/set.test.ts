@@ -23,7 +23,7 @@ runSubtagTests({
                 db: { name: 'testTag', type: TagVariableType.LOCAL_TAG },
                 varName: 'varName',
                 setup(ctx) {
-                    ctx.options.tagName = 'testTag';
+                    ctx.entrypoint.name = 'testTag';
                 }
             },
             {
@@ -31,7 +31,7 @@ runSubtagTests({
                 db: { guildId: '234983689742643223984', name: 'testTag', type: TagVariableType.LOCAL_CC },
                 varName: 'varName',
                 setup(ctx) {
-                    ctx.options.tagName = 'testTag';
+                    ctx.entrypoint.name = 'testTag';
                     ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
                     ctx.options.isCC = true;
                 }
@@ -88,7 +88,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                 setupSaveVariables: false,
                 setup,
                 async assert(bbctx) {
-                    chai.expect((await bbctx.variables.get(`${prefix}${varName}`)).value).to.deep.equal(value);
+                    chai.expect((await bbctx.runtime.variables.get(`${prefix}${varName}`)).value).to.deep.equal(value);
                 }
             };
             yield {
@@ -105,7 +105,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                     await setup?.call(this, ctx, ...args);
                 },
                 async assert(bbctx) {
-                    chai.expect((await bbctx.variables.get(`${prefix}${varName}`)).value).to.deep.equal(value);
+                    chai.expect((await bbctx.runtime.variables.get(`${prefix}${varName}`)).value).to.deep.equal(value);
                 }
             };
             yield {
@@ -123,7 +123,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                     await setup?.call(this, ctx, ...args);
                 },
                 async assert(bbctx) {
-                    chai.expect((await bbctx.variables.get(`${prefix}${varName}`)).value).to.deep.equal(value);
+                    chai.expect((await bbctx.runtime.variables.get(`${prefix}${varName}`)).value).to.deep.equal(value);
                 }
             };
         }

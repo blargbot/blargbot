@@ -11,7 +11,7 @@ runSubtagTests({
             code: '{prefix}',
             expected: 'd!',
             setup(ctx) {
-                ctx.dependencies.defaultPrefix = 'd!';
+                ctx.options.prefix = 'd!';
             }
         },
         {

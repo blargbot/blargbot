@@ -1,7 +1,6 @@
-import type { SubtagCall } from '@bbtag/language';
-
 import type { SubtagArgumentArray } from '../arguments/index.js';
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagCall } from '../BBTagCall.js';
+import type { BBTagScript } from '../BBTagScript.js';
 import type { SubtagLogic } from './SubtagLogic.js';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper.js';
 
@@ -10,23 +9,22 @@ export class ArrayOrValueSubtagLogicWrapper<T extends { toString(): string; }> e
         super();
     }
 
-    protected async *getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string | undefined> {
-        const values = await this.logic.execute(context, args, subtag);
-        if (values === undefined)
-            return;
-
+    protected async getResults(context: BBTagScript, args: SubtagArgumentArray, subtag: BBTagCall): Promise<string> {
+        const values = await this.logic.execute(context, args, subtag) ?? '';
         if (Array.isArray(values))
-            return yield JSON.stringify(values);
+            return JSON.stringify(values);
 
-        if (!this.isIterable(values))
-            return yield values.toString();
+        if (typeof values !== 'object' || !isIterable(values))
+            return values.toString();
 
         const result = [];
-        for await (const item of this.toAsyncIterable(values)) {
-            yield undefined;
+        for await (const item of this.iterate(context, subtag, values))
             result.push(item);
-        }
 
-        yield JSON.stringify(result);
+        return JSON.stringify(result);
     }
+}
+
+function isIterable<T>(value: object): value is AsyncIterable<T> | Iterable<T> {
+    return typeof value !== 'string' && Symbol.iterator in value || Symbol.asyncIterator in value;
 }

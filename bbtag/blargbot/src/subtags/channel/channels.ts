@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.channels;
 
-@Subtag.names('channels')
-@Subtag.ctorArgs('channel')
+@Subtag.id('channels')
+@Subtag.ctorArgs('channels')
 export class ChannelsSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -39,20 +39,20 @@ export class ChannelsSubtag extends CompiledSubtag {
         this.#channels = channels;
     }
 
-    public async getChannels(context: BBTagContext): Promise<string[]> {
-        const channels = await this.#channels.getAll(context);
+    public async getChannels(context: BBTagScript): Promise<string[]> {
+        const channels = await this.#channels.getAll(context.runtime);
         return channels.map(c => c.id);
     }
 
-    public async getChannelsInCategory(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string[]> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
+    public async getChannelsInCategory(context: BBTagScript, channelStr: string, quiet: boolean): Promise<string[]> {
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const channels = await this.#channels.getAll(context);
+        const channels = await this.#channels.getAll(context.runtime);
         return channels.filter(c => c.parent_id === channel.id).map(c => c.id);
     }
 }

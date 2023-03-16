@@ -59,6 +59,7 @@ __metadata:
     "@bbtag/blargbot": "workspace:^"
     "@bbtag/language": "workspace:^"
     "@bbtag/variables": "workspace:^"
+    "@blargbot/async-tools": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"

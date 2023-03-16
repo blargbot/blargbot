@@ -1,6 +1,6 @@
 import { isVoiceChannel } from '@blargbot/discord-util';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -10,8 +10,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.channelIsVoice;
 
-@Subtag.names('channelIsVoice', 'isVoice')
-@Subtag.ctorArgs('channel')
+@Subtag.id('channelIsVoice', 'isVoice')
+@Subtag.ctorArgs('channels')
 export class ChannelIsVoiceSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -25,7 +25,7 @@ export class ChannelIsVoiceSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx) => this.isVoiceChannel(ctx, ctx.channel.id, true)
+                    execute: (ctx) => this.isVoiceChannel(ctx, ctx.runtime.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -42,12 +42,12 @@ export class ChannelIsVoiceSubtag extends CompiledSubtag {
     }
 
     public async isVoiceChannel(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);

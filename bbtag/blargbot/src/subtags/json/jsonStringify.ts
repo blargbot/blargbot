@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -9,7 +9,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.jsonStringify;
 
-@Subtag.names('jsonStringify', 'jStringify')
+@Subtag.id('jsonStringify', 'jStringify')
 @Subtag.ctorArgs('jsonTools', 'converter')
 export class JsonStringifySubtag extends CompiledSubtag {
     readonly #jsonTools: BBTagJsonTools;
@@ -33,12 +33,12 @@ export class JsonStringifySubtag extends CompiledSubtag {
         this.#jsonTools = jsonTools;
         this.#converter = converter;
     }
-    public async jsonStringify(context: BBTagContext, input: string, indentStr: string): Promise<string> {
+    public async jsonStringify(context: BBTagScript, input: string, indentStr: string): Promise<string> {
         const indent = this.#converter.int(indentStr);
         if (indent === undefined)
             throw new NotANumberError(indentStr);
 
-        const obj = (await this.#jsonTools.resolveObj(context, input)).object;
+        const obj = (await this.#jsonTools.resolveObj(context.runtime, input)).object;
         return JSON.stringify(obj, null, indent);
     }
 }

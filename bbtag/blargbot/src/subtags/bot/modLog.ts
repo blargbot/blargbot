@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import type { ModLogService } from '../../services/ModLogService.js';
@@ -10,8 +10,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.modLog;
 
-@Subtag.names('modLog')
-@Subtag.ctorArgs('modLog', 'converter', 'user')
+@Subtag.id('modLog')
+@Subtag.ctorArgs('modLog', 'converter', 'users')
 export class ModLogSubtag extends CompiledSubtag {
     readonly #modLog: ModLogService;
     readonly #converter: BBTagValueConverter;
@@ -39,22 +39,22 @@ export class ModLogSubtag extends CompiledSubtag {
     }
 
     public async createModLog(
-        context: BBTagContext,
+        context: BBTagScript,
         action: string,
         userStr: string,
         modStr: string,
         reason: string,
         colorStr: string
     ): Promise<void> {
-        const user = await this.#users.querySingle(context, userStr);
+        const user = await this.#users.querySingle(context.runtime, userStr);
         if (user === undefined)
             throw new UserNotFoundError(userStr);
 
         const color = this.#converter.color(colorStr);
 
         //TODO no user found for this?
-        const mod = await this.#users.querySingle(context, modStr) ?? context.user;
+        const mod = await this.#users.querySingle(context.runtime, modStr) ?? context.runtime.user;
 
-        await this.#modLog.addModLog(context.guild, action, user, mod, reason, color);
+        await this.#modLog.addModLog(context.runtime.guild, action, user, mod, reason, color);
     }
 }

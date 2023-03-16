@@ -1,6 +1,6 @@
 import Discord from '@blargbot/discord-types';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -13,8 +13,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.send;
 
-@Subtag.names('send')
-@Subtag.ctorArgs('converter', 'channel', 'message')
+@Subtag.id('send')
+@Subtag.ctorArgs('converter', 'channels', 'messages')
 export class SendSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #channels: ChannelService;
@@ -57,8 +57,8 @@ export class SendSubtag extends CompiledSubtag {
         this.#messages = messages;
     }
 
-    public async send(context: BBTagContext, channelId: string, message?: string, embed?: Entities.Message['embeds'], file?: Entities.FileContent): Promise<string> {
-        const channel = await this.#channels.querySingle(context, channelId, { noLookup: true });
+    public async send(context: BBTagScript, channelId: string, message?: string, embed?: Entities.Message['embeds'], file?: Entities.FileContent): Promise<string> {
+        const channel = await this.#channels.querySingle(context.runtime, channelId, { noLookup: true });
         if (channel === undefined)
             throw new ChannelNotFoundError(channelId);
 
@@ -69,15 +69,15 @@ export class SendSubtag extends CompiledSubtag {
                 file.file = Buffer.from(file.file).toString('base64');
         }
 
-        const disableEveryone = !context.isCC || !context.data.allowedMentions.everybody;
+        const disableEveryone = !context.runtime.isCC || !context.runtime.outputOptions.allowEveryone;
 
-        const result = await this.#messages.create(context, channel.id, {
+        const result = await this.#messages.create(context.runtime, channel.id, {
             content: message,
             embeds: embed !== undefined ? embed : undefined,
             allowed_mentions: {
                 parse: disableEveryone ? [] : [Discord.AllowedMentionsTypes.Everyone],
-                roles: context.isCC ? context.data.allowedMentions.roles : undefined,
-                users: context.isCC ? context.data.allowedMentions.users : undefined
+                roles: context.runtime.isCC ? [...context.runtime.outputOptions.mentionRoles] : undefined,
+                users: context.runtime.isCC ? [...context.runtime.outputOptions.mentionUsers] : undefined
             },
             files: file !== undefined ? [file] : undefined
         });
@@ -86,7 +86,7 @@ export class SendSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Send unsuccessful');
 
         if (!('error' in result)) {
-            context.data.ownedMsgs.push(result.id);
+            context.runtime.ownedMessageIds.add(result.id);
             return result.id;
         }
 

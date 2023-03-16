@@ -6,7 +6,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.parseInt;
 
-@Subtag.names('parseInt')
+@Subtag.id('parseInt')
 @Subtag.ctorArgs('converter')
 export class ParseIntSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

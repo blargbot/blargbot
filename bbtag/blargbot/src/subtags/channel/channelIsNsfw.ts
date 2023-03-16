@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.channelIsNsfw;
 
-@Subtag.names('channelIsNsfw', 'isNsfw')
-@Subtag.ctorArgs('channel')
+@Subtag.id('channelIsNsfw', 'isNsfw')
+@Subtag.ctorArgs('channels')
 export class ChannelIsNsfwSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -23,7 +23,7 @@ export class ChannelIsNsfwSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx) => this.isNsfwChannel(ctx, ctx.channel.id, true)
+                    execute: (ctx) => this.isNsfwChannel(ctx, ctx.runtime.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -40,12 +40,12 @@ export class ChannelIsNsfwSubtag extends CompiledSubtag {
     }
 
     public async isNsfwChannel(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);

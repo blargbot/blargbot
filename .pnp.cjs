@@ -575,6 +575,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@bbtag/language", "workspace:bbtag/language/src"],\
             ["@bbtag/variables", "workspace:bbtag/variables/src"],\
+            ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\

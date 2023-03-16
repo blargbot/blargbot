@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -7,7 +7,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.embed;
 
-@Subtag.names('embed')
+@Subtag.id('embed')
 @Subtag.ctorArgs('converter')
 export class EmbedSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -30,7 +30,7 @@ export class EmbedSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public setEmbed(context: BBTagContext, embedStr: string[]): void {
-        context.data.embeds = embedStr.flatMap(e => this.#converter.embed(e, { allowMalformed: true }) ?? []);
+    public setEmbed(context: BBTagScript, embedStr: string[]): void {
+        context.runtime.outputOptions.embeds = embedStr.flatMap(e => this.#converter.embed(e, { allowMalformed: true }) ?? []);
     }
 }

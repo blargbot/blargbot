@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -10,7 +10,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.splice;
 
-@Subtag.names('splice')
+@Subtag.id('splice')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class SpliceSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -45,14 +45,14 @@ export class SpliceSubtag extends CompiledSubtag {
     }
 
     public async spliceArray(
-        context: BBTagContext,
+        context: BBTagScript,
         arrStr: string,
         startStr: string,
         countStr: string,
         replaceItems: string[]
     ): Promise<JArray> {
-        const arr = await this.#arrayTools.deserializeOrGetArray(context, arrStr);
-        const fallback = new Lazy(() => this.#converter.int(context.scopes.local.fallback ?? ''));
+        const arr = await this.#arrayTools.deserializeOrGetArray(context.runtime, arrStr);
+        const fallback = new Lazy(() => this.#converter.int(context.runtime.scopes.local.fallback ?? ''));
 
         if (arr === undefined)
             throw new NotAnArrayError(arrStr);
@@ -68,7 +68,7 @@ export class SpliceSubtag extends CompiledSubtag {
         const insert = this.#arrayTools.flattenArray(replaceItems);
         const result = arr.v.splice(start, delCount, ...insert);
         if (arr.n !== undefined)
-            await context.variables.set(arr.n, arr.v);
+            await context.runtime.variables.set(arr.n, arr.v);
 
         return result;
     }

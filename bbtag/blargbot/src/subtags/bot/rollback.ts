@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.rollback;
 
-@Subtag.names('rollback')
+@Subtag.id('rollback')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class RollbackSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -42,10 +42,10 @@ export class RollbackSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public rollback(context: BBTagContext, args: string[]): void {
+    public rollback(context: BBTagScript, args: string[]): void {
         const keys = args.length === 0
             ? undefined
             : this.#arrayTools.flattenArray(args).map(v => this.#converter.string(v));
-        context.variables.reset(keys);
+        context.runtime.variables.reset(keys);
     }
 }

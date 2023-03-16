@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.userIsBot;
 
-@Subtag.names('userIsBot', 'userBot')
-@Subtag.ctorArgs('user')
+@Subtag.id('userIsBot', 'userBot')
+@Subtag.ctorArgs('users')
 export class UserIsBotSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -40,12 +40,12 @@ export class UserIsBotSubtag extends CompiledSubtag {
     }
 
     public async getUserIsBot(
-        context: BBTagContext,
+        context: BBTagScript,
         userId: string,
         quiet: boolean
     ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userId, { noLookup: quiet });
 
         if (user === undefined) {
             throw new UserNotFoundError(userId)

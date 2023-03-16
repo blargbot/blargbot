@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -9,7 +9,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.jsonSort;
 
-@Subtag.names('jsonSort', 'jSort')
+@Subtag.id('jsonSort', 'jSort')
 @Subtag.ctorArgs('operators', 'jsonTools', 'converter')
 export class JsonSortSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;
@@ -36,9 +36,9 @@ export class JsonSortSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public async jsonSort(context: BBTagContext, arrStr: string, pathStr: string, descStr: string): Promise<JArray | undefined> {
+    public async jsonSort(context: BBTagScript, arrStr: string, pathStr: string, descStr: string): Promise<JArray | undefined> {
         const descending = this.#converter.boolean(descStr) ?? descStr !== '';
-        const obj = await this.#jsonTools.resolveObj(context, arrStr);
+        const obj = await this.#jsonTools.resolveObj(context.runtime, arrStr);
         if (!Array.isArray(obj.object))
             throw new NotAnArrayError(arrStr);
 
@@ -57,7 +57,7 @@ export class JsonSortSubtag extends CompiledSubtag {
         if (obj.variable === undefined)
             return obj.object;
 
-        await context.variables.set(obj.variable, obj.object);
+        await context.runtime.variables.set(obj.variable, obj.object);
         return undefined;
     }
 }

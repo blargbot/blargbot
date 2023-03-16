@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.kick;
 
-@Subtag.names('kick')
-@Subtag.ctorArgs('user')
+@Subtag.id('kick')
+@Subtag.ctorArgs('users')
 export class KickSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -41,20 +41,20 @@ export class KickSubtag extends CompiledSubtag {
     }
 
     public async kickMember(
-        context: BBTagContext,
+        context: BBTagScript,
         userStr: string,
         reason: string,
         noPerms: boolean
     ): Promise<string> {
-        const user = await this.#users.querySingle(context, userStr, { noLookup: true /* TODO why? */ });
+        const user = await this.#users.querySingle(context.runtime, userStr, { noLookup: true /* TODO why? */ });
         if (user === undefined)
             throw new UserNotFoundError(userStr);
 
         if (reason === '')
             reason = 'Tag Kick';
 
-        const authorizer = noPerms ? context.authorizer : context.user;
-        const response = await this.#users.kick(user, context.user, authorizer, reason);
+        const authorizer = noPerms ? context.runtime.authorizer : context.runtime.user;
+        const response = await this.#users.kick(user, context.runtime.user, authorizer, reason);
 
         switch (response) {
             case 'success': //Successful

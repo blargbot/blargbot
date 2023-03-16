@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import type { DumpService } from '../../services/DumpService.js';
 import { Subtag } from '../../Subtag.js';
@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.dump;
 
-@Subtag.names('dump')
+@Subtag.id('dump')
 @Subtag.ctorArgs('dump')
 export class DumpSubtag extends CompiledSubtag {
     readonly #dump: DumpService;
@@ -30,7 +30,7 @@ export class DumpSubtag extends CompiledSubtag {
         this.#dump = dump;
     }
 
-    public async createDump(context: BBTagContext, text: string): Promise<string> {
-        return await this.#dump.generateDumpPage({ content: text }, context.channel);
+    public async createDump(context: BBTagScript, text: string): Promise<string> {
+        return await this.#dump.generateDumpPage({ content: text }, context.runtime.channel);
     }
 }

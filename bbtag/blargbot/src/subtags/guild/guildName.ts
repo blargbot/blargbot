@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.guildName;
 
-@Subtag.names('guildName')
+@Subtag.id('guildName')
 @Subtag.ctorArgs()
 export class GuildNameSubtag extends CompiledSubtag {
     public constructor() {
@@ -25,7 +25,7 @@ export class GuildNameSubtag extends CompiledSubtag {
         });
     }
 
-    public getGuildName(context: BBTagContext): string {
-        return context.guild.name;
+    public getGuildName(context: BBTagScript): string {
+        return context.runtime.guild.name;
     }
 }

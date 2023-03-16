@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.subtagExists;
 
-@Subtag.names('subtagExists')
+@Subtag.id('subtagExists')
 @Subtag.ctorArgs()
 export class SubtagExistsSubtag extends CompiledSubtag {
     public constructor() {
@@ -25,12 +25,7 @@ export class SubtagExistsSubtag extends CompiledSubtag {
         });
     }
 
-    public subtagExists(context: BBTagContext, name: string): boolean {
-        try {
-            context.getSubtag(name);
-            return true;
-        } catch {
-            return false;
-        }
+    public subtagExists(context: BBTagScript, name: string): boolean {
+        return context.runtime.subtags.get(name) instanceof Subtag;
     }
 }

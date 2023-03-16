@@ -18,7 +18,7 @@ export class ClusterGetSubtagHandler extends ClusterEventService<'getSubtag'> {
         const formatter = await this.cluster.util.getFormatter();
         return {
             category: subtag.category,
-            name: subtag.name,
+            name: subtag.id,
             signatures: subtag.signatures.map(s => ({
                 ...s,
                 description: s.description[format](formatter),
@@ -28,7 +28,7 @@ export class ClusterGetSubtagHandler extends ClusterEventService<'getSubtag'> {
             })),
             deprecated: subtag.deprecated,
             staff: subtag.staff,
-            aliases: subtag.aliases,
+            aliases: subtag.names,
             description: subtag.description?.[format](formatter)
         };
     }

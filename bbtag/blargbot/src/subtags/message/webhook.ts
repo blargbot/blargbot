@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { MessageService } from '../../services/MessageService.js';
@@ -9,8 +9,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.webhook;
 
-@Subtag.names('webhook')
-@Subtag.ctorArgs('converter', 'message')
+@Subtag.id('webhook')
+@Subtag.ctorArgs('converter', 'messages')
 export class WebhookSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #messages: MessageService;
@@ -59,10 +59,10 @@ export class WebhookSubtag extends CompiledSubtag {
         this.#messages = messages;
     }
 
-    public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string): Promise<never>;
-    public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void>;
-    public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void> {
-        const result = await this.#messages.runWebhook(context, webhookID, webhookToken, {
+    public async executeWebhook(context: BBTagScript, webhookID: string, webhookToken: string): Promise<never>;
+    public async executeWebhook(context: BBTagScript, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void>;
+    public async executeWebhook(context: BBTagScript, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void> {
+        const result = await this.#messages.runWebhook(context.runtime, webhookID, webhookToken, {
             username: username ||= undefined,
             avatarUrl: avatar ||= undefined,
             content: content,

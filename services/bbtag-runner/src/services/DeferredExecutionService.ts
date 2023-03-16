@@ -1,7 +1,7 @@
-import type { BBTagContext, DeferredExecutionService as BBTagDeferredExecutionService } from '@bbtag/blargbot';
+import type { BBTagScript, DeferredExecutionService as BBTagDeferredExecutionService } from '@bbtag/blargbot';
 
 export class DeferredExecutionService implements BBTagDeferredExecutionService {
-    public defer(context: BBTagContext, content: string, delayMs: number): Promise<void> {
+    public defer(context: BBTagScript, content: string, delayMs: number): Promise<void> {
         context;
         content;
         delayMs;

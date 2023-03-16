@@ -1,7 +1,7 @@
 import Discord from '@blargbot/discord-types';
 import { hasFlag } from '@blargbot/guards';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -12,8 +12,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.channelSetPosition;
 
-@Subtag.names('channelSetPosition', 'channelSetPos')
-@Subtag.ctorArgs('converter', 'channel')
+@Subtag.id('channelSetPosition', 'channelSetPos')
+@Subtag.ctorArgs('converter', 'channels')
 export class ChannelSetPositionSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #channels: ChannelService;
@@ -37,13 +37,13 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
         this.#channels = channels;
     }
 
-    public async setChannelPosition(context: BBTagContext, channelStr: string, posStr: string): Promise<void> {
-        const channel = await this.#channels.querySingle(context, channelStr);
+    public async setChannelPosition(context: BBTagScript, channelStr: string, posStr: string): Promise<void> {
+        const channel = await this.#channels.querySingle(context.runtime, channelStr);
 
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO No channel found error
 
-        const permission = context.getPermission(context.authorizer, channel);
+        const permission = context.runtime.getPermission(context.runtime.authorizer, channel);
         if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageChannels))
             throw new BBTagRuntimeError('Author cannot move this channel');
 
@@ -53,7 +53,7 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
 
         //TODO maybe check if the position doesn't exceed any bounds? Like amount of channels / greater than -1?
 
-        const result = await this.#channels.edit(context, channel.id, { position: pos });
+        const result = await this.#channels.edit(context.runtime, channel.id, { position: pos });
 
         if (result === undefined)
             return;

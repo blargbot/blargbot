@@ -2,7 +2,7 @@ import Discord from '@blargbot/discord-types';
 import { hasFlag, isUrl } from '@blargbot/guards';
 import fetch from 'node-fetch';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { GuildService } from '../../services/GuildService.js';
@@ -20,8 +20,8 @@ interface EmojiCreateOptions {
     roles: string[];
 }
 
-@Subtag.names('emojiCreate')
-@Subtag.ctorArgs('arrayTools', 'role', 'guild')
+@Subtag.id('emojiCreate')
+@Subtag.ctorArgs('arrayTools', 'roles', 'guild')
 export class EmojiCreateSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #roles: RoleService;
@@ -48,13 +48,12 @@ export class EmojiCreateSubtag extends CompiledSubtag {
     }
 
     public async createEmoji(
-        context: BBTagContext,
+        context: BBTagScript,
         name: string,
         imageStr: string,
         rolesStr: string
     ): Promise<string> {
-        const permission = context.getPermission(context.authorizer);
-        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageEmojisAndStickers))
+        if (!hasFlag(context.runtime.authorizerPermissions, Discord.PermissionFlagsBits.ManageEmojisAndStickers))
             throw new BBTagRuntimeError('Author cannot create emojis');
 
         const options: EmojiCreateOptions = {
@@ -77,17 +76,17 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         }
 
         //TODO would be nice to be able to provide one role without using an array like {emojicreate;name;image;role} and not {emojicreate;name;image;["role"]}
-        const roleArray = await this.#arrayTools.deserializeOrGetArray(context, rolesStr);
+        const roleArray = await this.#arrayTools.deserializeOrGetArray(context.runtime, rolesStr);
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
-                const role = await this.#roles.querySingle(context, roleQuery?.toString() ?? '', { noLookup: true });
+                const role = await this.#roles.querySingle(context.runtime, roleQuery?.toString() ?? '', { noLookup: true });
                 if (role !== undefined) {
                     options.roles.push(role.id);
                 }
             }
         }
 
-        const result = await this.#guilds.createEmote(context, { image: options.image, name: options.name, roles: options.roles });
+        const result = await this.#guilds.createEmote(context.runtime, { image: options.image, name: options.name, roles: options.roles });
         if ('error' in result)
             throw new BBTagRuntimeError(`Failed to create emoji: ${result.error}`);
 

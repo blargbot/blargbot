@@ -1,7 +1,7 @@
 import Discord from '@blargbot/discord-types';
 import { hasFlag } from '@blargbot/guards';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { GuildService } from '../../services/GuildService.js';
@@ -11,7 +11,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.emojiDelete;
 
-@Subtag.names('emojiDelete')
+@Subtag.id('emojiDelete')
 @Subtag.ctorArgs('guild')
 export class EmojiDeleteSubtag extends CompiledSubtag {
     readonly #guilds: GuildService;
@@ -34,12 +34,11 @@ export class EmojiDeleteSubtag extends CompiledSubtag {
         this.#guilds = guilds;
     }
 
-    public async deleteEmoji(context: BBTagContext, emojiId: string): Promise<void> {
-        const permission = context.getPermission(context.authorizer);
-        if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageEmojisAndStickers))
+    public async deleteEmoji(context: BBTagScript, emojiId: string): Promise<void> {
+        if (!hasFlag(context.runtime.authorizerPermissions, Discord.PermissionFlagsBits.ManageEmojisAndStickers))
             throw new BBTagRuntimeError('Author cannot delete emojis');
 
-        const result = await this.#guilds.deleteEmote(context, emojiId);
+        const result = await this.#guilds.deleteEmote(context.runtime, emojiId);
         if (result !== undefined)
             throw new BBTagRuntimeError(`Failed to delete emoji: ${result.error}`);
     }

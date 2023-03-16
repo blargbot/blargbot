@@ -28,7 +28,7 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(member.instance);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(member.instance);
                 ctx.dependencies.staff.setup(m => m.isUserStaff(member.instance))
                     .verifiable(1)
                     .thenResolve(true);
@@ -39,7 +39,7 @@ runSubtagTests({
             expected: 'false',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(member.instance);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(member.instance);
                 ctx.dependencies.staff.setup(m => m.isUserStaff(member.instance))
                     .verifiable(1)
                     .thenResolve(false);
@@ -53,7 +53,7 @@ runSubtagTests({
 
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(undefined);
             }
         },
         {
@@ -64,7 +64,7 @@ runSubtagTests({
 
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(undefined);
             }
         },
         {
@@ -74,7 +74,7 @@ runSubtagTests({
                 { start: 0, end: 22, error: new UserNotFoundError('other user').withDisplay('') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
             }
         }
     ]

@@ -1,10 +1,10 @@
 import moment from 'moment-timezone';
 
-import type { BBTagContext } from '../index.js';
+import type { BBTagScript } from '../BBTagScript.js';
 
 export interface CooldownService {
-    getCooldown(context: BBTagContext, type: 'tag' | 'cc', name: string, durationMs: number): Awaitable<Date>;
-    setCooldown(context: BBTagContext, type: 'tag' | 'cc', name: string): Awaitable<void>;
+    getCooldown(script: BBTagScript): Awaitable<Date>;
+    setCooldown(script: BBTagScript): Awaitable<void>;
 }
 
 export class InProcessCooldownService implements CooldownService {
@@ -14,22 +14,22 @@ export class InProcessCooldownService implements CooldownService {
         this.#cooldowns = {};
     }
 
-    public getCooldown(context: BBTagContext, type: 'cc' | 'tag', name: string, durationMs: number): Date {
-        const key = this.#getKey(context, type, name);
+    public getCooldown(script: BBTagScript): Date {
+        const key = this.#getKey(script);
         const value = this.#cooldowns[key];
         if (value === undefined)
             return new Date(0);
         return value.clone()
-            .add(durationMs)
+            .add(script.cooldownMs)
             .toDate();
     }
 
-    public setCooldown(context: BBTagContext, type: 'cc' | 'tag', name: string): void {
-        this.#cooldowns[this.#getKey(context, type, name)] = moment();
+    public setCooldown(script: BBTagScript): void {
+        this.#cooldowns[this.#getKey(script)] = moment();
     }
 
-    #getKey(context: BBTagContext, type: 'cc' | 'tag', name: string): string {
-        return `${context.guild.id}:${type}:${context.user.id}:${name}`;
+    #getKey(script: BBTagScript): string {
+        return `${script.runtime.guild.id}:${script.runtime.isCC ? 'cc' : 'tag'}:${script.runtime.user.id}:${script.name}`;
     }
 }
 
@@ -45,19 +45,19 @@ export class DistributedCooldownService implements CooldownService {
         this.#cooldowns = cooldowns;
     }
 
-    public async getCooldown(context: BBTagContext, type: 'cc' | 'tag', name: string, durationMs: number): Promise<Date> {
-        const key = this.#getKey(context, type, name);
+    public async getCooldown(script: BBTagScript): Promise<Date> {
+        const key = this.#getKey(script);
         const value = await this.#cooldowns.get(key);
         if (value === undefined)
             return new Date(0);
-        return new Date(value.valueOf() + durationMs);
+        return new Date(value.valueOf() + script.cooldownMs);
     }
 
-    public async setCooldown(context: BBTagContext, type: 'cc' | 'tag', name: string): Promise<void> {
-        await this.#cooldowns.set(this.#getKey(context, type, name), new Date());
+    public async setCooldown(script: BBTagScript): Promise<void> {
+        await this.#cooldowns.set(this.#getKey(script), new Date());
     }
 
-    #getKey(context: BBTagContext, type: 'cc' | 'tag', name: string): string {
-        return `${context.guild.id}:${type}:${context.user.id}:${name}`;
+    #getKey(script: BBTagScript): string {
+        return `${script.runtime.guild.id}:${script.runtime.isCC ? 'cc' : 'tag'}:${script.runtime.user.id}:${script.name}`;
     }
 }

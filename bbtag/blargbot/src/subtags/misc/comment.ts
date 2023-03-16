@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.comment;
 
-@Subtag.names('comment', '//')
+@Subtag.id('comment', '//')
 @Subtag.ctorArgs()
 export class CommentSubtag extends CompiledSubtag {
     public constructor() {

@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.shuffle;
 
-@Subtag.names('shuffle')
+@Subtag.id('shuffle')
 @Subtag.ctorArgs('arrayTools')
 export class ShuffleSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -42,11 +42,11 @@ export class ShuffleSubtag extends CompiledSubtag {
         this.#arrayTools = arrayTools;
     }
 
-    public shuffleInput(context: BBTagContext): void {
+    public shuffleInput(context: BBTagScript): void {
         this.#shuffle(context.input);
     }
 
-    public async shuffle(context: BBTagContext, array: string): Promise<JArray | undefined> {
+    public async shuffle(context: BBTagScript, array: string): Promise<JArray | undefined> {
         const arr = this.#arrayTools.deserialize(array);
         if (arr === undefined)
             throw new NotAnArrayError(array);
@@ -55,7 +55,7 @@ export class ShuffleSubtag extends CompiledSubtag {
         if (arr.n === undefined)
             return arr.v;
 
-        await context.variables.set(arr.n, arr.v);
+        await context.runtime.variables.set(arr.n, arr.v);
         return undefined;
     }
 

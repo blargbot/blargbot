@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -10,7 +10,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.slice;
 
-@Subtag.names('slice')
+@Subtag.id('slice')
 @Subtag.ctorArgs('arrayTools', 'converter')
 export class SliceSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -35,9 +35,9 @@ export class SliceSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public async slice(context: BBTagContext, array: string, startStr: string, endStr: string): Promise<JArray> {
-        const arr = await this.#arrayTools.deserializeOrGetArray(context, array);
-        const fallback = new Lazy(() => this.#converter.int(context.scopes.local.fallback ?? ''));
+    public async slice(context: BBTagScript, array: string, startStr: string, endStr: string): Promise<JArray> {
+        const arr = await this.#arrayTools.deserializeOrGetArray(context.runtime, array);
+        const fallback = new Lazy(() => this.#converter.int(context.runtime.scopes.local.fallback ?? ''));
 
         if (arr === undefined)
             throw new NotAnArrayError(array);

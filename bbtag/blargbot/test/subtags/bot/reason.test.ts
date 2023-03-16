@@ -12,21 +12,21 @@ runSubtagTests({
             code: '{reason}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.scopes.local.reason).to.equal('');
+                chai.expect(ctx.runtime.scopes.local.reason).to.equal('');
             }
         },
         {
             code: '{reason;}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.scopes.local.reason).to.equal('');
+                chai.expect(ctx.runtime.scopes.local.reason).to.equal('');
             }
         },
         {
             code: '{reason;Because i can}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.scopes.local.reason).to.equal('Because i can');
+                chai.expect(ctx.runtime.scopes.local.reason).to.equal('Because i can');
             }
         }
     ]

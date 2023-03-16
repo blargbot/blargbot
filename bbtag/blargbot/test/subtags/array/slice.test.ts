@@ -49,24 +49,24 @@ runSubtagTests({
             code: '{slice;arr1;1}',
             expected: '[2,3,4]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
             },
             async assert(bbctx, _, ctx) {
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
-                chai.expect((await bbctx.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
+                chai.expect((await bbctx.runtime.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
             }
         },
         {
             code: '{slice;arr1;1;3}',
             expected: '[2,3]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
             },
             async assert(bbctx, _, ctx) {
                 chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
-                chai.expect((await bbctx.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
+                chai.expect((await bbctx.runtime.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
             }
         }
     ]

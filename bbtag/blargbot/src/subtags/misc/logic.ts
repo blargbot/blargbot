@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.logic;
 
-@Subtag.names('logic')
+@Subtag.id('logic')
 @Subtag.ctorArgs('operators', 'converter')
 export class LogicSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

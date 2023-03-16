@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagRuntime } from '../BBTagRuntime.js';
 import { BBTagRuntimeError } from '../errors/index.js';
 import type { BBTagArrayTools } from './tagArray.js';
 
@@ -8,7 +8,7 @@ export interface JsonResolveResult {
 }
 
 export interface BBTagJsonTools {
-    resolveObj(this: void, context: BBTagContext, input: string): Promise<JsonResolveResult>;
+    resolveObj(this: void, context: BBTagRuntime, input: string): Promise<JsonResolveResult>;
     get(this: void, input: JToken | undefined, path: string | readonly string[]): JToken | undefined;
     set(this: void, input: JToken | undefined, path: string | readonly string[], value: JToken | undefined, forceCreate?: boolean): void;
     clean(this: void, input: JToken): JToken;

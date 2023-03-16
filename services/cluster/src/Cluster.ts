@@ -1,8 +1,7 @@
 import { inspect } from 'node:util';
 
 import type { AnalysisResults, ExecutionResult } from '@bbtag/blargbot';
-import { BBTagEngine, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, DefaultLockService, InProcessCooldownService, smartStringCompare, Subtag } from '@bbtag/blargbot';
-import * as Subtags from '@bbtag/blargbot/subtags';
+import { BBTagRunner, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, DefaultLockService, InProcessCooldownService, smartStringCompare, Subtag, subtags, tagVariableScopeProviders } from '@bbtag/blargbot';
 import type { ClusterOptions } from '@blargbot/cluster/types.js';
 import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
@@ -140,8 +139,8 @@ export class Cluster extends BaseClient {
         const bbtagArrayTools = createBBTagArrayTools({
             convertToInt: converter.int
         });
-        const bbtag = new BBTagEngine({
-            defaultPrefix: this.config.discord.defaultPrefix,
+        const bbtag = new BBTagRunner({
+            subtags: Object.values(subtags).map(Subtag.getDescriptor),
             defer: new ClusterDeferredExecutionService(this),
             domains: new ClusterDomainFilterService(this),
             dump: new ClusterDumpService(this),
@@ -160,7 +159,7 @@ export class Cluster extends BaseClient {
                     };
                 }
             }),
-            cooldown: new InProcessCooldownService(),
+            cooldowns: new InProcessCooldownService(),
             sources: {
                 get: async (ctx, type, name) => {
                     if (type === 'cc') {
@@ -168,13 +167,24 @@ export class Cluster extends BaseClient {
                         if (ccommand === undefined)
                             return undefined;
 
-                        if (!('alias' in ccommand))
-                            return ccommand;
+                        if (!('alias' in ccommand)) {
+                            return {
+                                content: ccommand.content,
+                                cooldown: ccommand.cooldown ?? 0
+                            };
+                        }
 
                         name = ccommand.alias;
                     }
 
-                    return await this.database.tags.get(name);
+                    const tag = await this.database.tags.get(name);
+                    if (tag === undefined)
+                        return undefined;
+
+                    return {
+                        content: tag.content,
+                        cooldown: tag.cooldown ?? 0
+                    };
                 }
             },
             timezones: {
@@ -184,12 +194,14 @@ export class Cluster extends BaseClient {
                 get: (scope, name) => this.database.tagVariables.get(name, scope),
                 set: (entries) => this.database.tagVariables.upsert(entries)
             },
+            variableScopes: tagVariableScopeProviders,
+            variableMiddleware: [],
             logger: {
                 error: (...args) => this.logger.error(...args),
                 info: (...args) => this.logger.bbtag(...args)
             },
-            subtags: Object.values(Subtags)
-                .map(Subtag.getDescriptor),
+            // subtags: Object.values(Subtags)
+            //     .map(Subtag.getDescriptor),
             arrayTools: bbtagArrayTools,
             jsonTools: createBBTagJsonTools({
                 convertToInt: converter.int,
@@ -204,22 +216,20 @@ export class Cluster extends BaseClient {
                 regex: createSafeRegExp,
                 colors: {}
             }),
-            channel: new ErisBBTagChannelService(this),
-            user: new ErisBBTagUserService(this),
-            role: new ErisBBTagRoleService(this),
+            channels: new ErisBBTagChannelService(this),
+            users: new ErisBBTagUserService(this),
+            roles: new ErisBBTagRoleService(this),
             guild: new ErisBBTagGuildService(this),
-            message: new ErisBBTagMessageService(this),
-            middleware: [
-                async function* ({ subtag, context }, next) {
+            messages: new ErisBBTagMessageService(this),
+            subtagMiddleware: [
+                async ({ subtag }, next) => {
                     const timer = new Timer().start();
                     try {
-                        yield* next();
+                        return await next();
                     } finally {
                         timer.end();
-                        metrics.subtagLatency.labels(subtag.name).observe(timer.elapsed);
-                        metrics.subtagCounter.labels(subtag.name).inc();
-                        const debugPerf = context.data.subtags[subtag.name] ??= [];
-                        debugPerf.push(timer.elapsed);
+                        metrics.subtagLatency.labels(subtag.id).observe(timer.elapsed);
+                        metrics.subtagCounter.labels(subtag.id).inc();
                     }
                 }
             ]

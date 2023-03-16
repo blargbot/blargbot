@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.jsonGet;
 
-@Subtag.names('jsonGet', 'jGet')
+@Subtag.id('jsonGet', 'jGet')
 @Subtag.ctorArgs('jsonTools')
 export class JsonGetSubtag extends CompiledSubtag {
     readonly #jsonTools: BBTagJsonTools;
@@ -38,8 +38,8 @@ export class JsonGetSubtag extends CompiledSubtag {
         this.#jsonTools = jsonTools;
     }
 
-    public async jsonGet(context: BBTagContext, input: string, path?: string): Promise<JToken | undefined> {
-        const obj = (await this.#jsonTools.resolveObj(context, input)).object;
+    public async jsonGet(context: BBTagScript, input: string, path?: string): Promise<JToken | undefined> {
+        const obj = (await this.#jsonTools.resolveObj(context.runtime, input)).object;
         if (path === undefined)
             return obj;
         return this.#jsonTools.get(obj, path);

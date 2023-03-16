@@ -3,7 +3,7 @@ import { isThreadChannel } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
 import { mapping } from '@blargbot/mapping';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -14,8 +14,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.channelEdit;
 
-@Subtag.names('channelEdit')
-@Subtag.ctorArgs('channel')
+@Subtag.id('channelEdit')
+@Subtag.ctorArgs('channels')
 export class ChannelEditSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -38,16 +38,16 @@ export class ChannelEditSubtag extends CompiledSubtag {
     }
 
     public async channelEdit(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         editJson: string
     ): Promise<string> {
-        const channel = await this.#channels.querySingle(context, channelStr);
+        const channel = await this.#channels.querySingle(context.runtime, channelStr);
 
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO no channel found error
 
-        const permission = context.getPermission(context.authorizer, channel);
+        const permission = context.runtime.getPermission(context.runtime.authorizer, channel);
         if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageChannels))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
@@ -58,7 +58,7 @@ export class ChannelEditSubtag extends CompiledSubtag {
 
         const options = mapped.value;
 
-        const result = await this.#channels.edit(context, channel.id, options);
+        const result = await this.#channels.edit(context.runtime, channel.id, options);
 
         if (result === undefined)
             return channel.id;

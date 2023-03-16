@@ -1,4 +1,4 @@
-import type { BBTagContext, BBTagRuntimeError, Entities, FindEntityOptions } from '@bbtag/blargbot';
+import type { BBTagRuntimeError, BBTagScript, Entities, FindEntityOptions } from '@bbtag/blargbot';
 import { RoleNotFoundError } from '@bbtag/blargbot';
 import { argument } from '@blargbot/test-util/mock.js';
 
@@ -33,7 +33,7 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
             { start: 0, end: options.generateCode('unknown role').length, error: notFound('unknown role') }
         ],
         postSetup(bbctx, ctx) {
-            ctx.dependencies.role.setup(m => m.querySingle(bbctx, 'unknown role', argument.isDeepEqual(options.getQueryOptions?.(false)))).thenResolve(undefined);
+            ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, 'unknown role', argument.isDeepEqual(options.getQueryOptions?.(false)))).thenResolve(undefined);
         }
     };
 
@@ -45,7 +45,7 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
                 { start: 0, end: options.generateCode('unknown role', '').length, error: notFound('unknown role') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, 'unknown role', argument.isDeepEqual(options.getQueryOptions?.(false)))).thenResolve(undefined);
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, 'unknown role', argument.isDeepEqual(options.getQueryOptions?.(false)))).thenResolve(undefined);
             }
         };
         yield {
@@ -55,7 +55,7 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
                 { start: 0, end: options.generateCode('unknown role', 'q').length, error: notFound('unknown role').withDisplay(options.quiet) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, 'unknown role', argument.isDeepEqual(options.getQueryOptions?.(true)))).thenResolve(undefined);
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, 'unknown role', argument.isDeepEqual(options.getQueryOptions?.(true)))).thenResolve(undefined);
             }
         };
     }
@@ -76,8 +76,8 @@ interface GetRolePropTestCase {
     queryString?: string;
     generateCode?: (...args: [roleStr?: string, quietStr?: string]) => string;
     setup?: (role: Entities.Role, context: SubtagTestContext) => void;
-    postSetup?: (role: Entities.Role, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, role: Entities.Role, context: BBTagContext, test: SubtagTestContext) => void;
+    postSetup?: (role: Entities.Role, context: BBTagScript, test: SubtagTestContext) => void;
+    assert?: (result: string, role: Entities.Role, context: BBTagScript, test: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetRolePropTestData, isQuiet: boolean, testCase: GetRolePropTestCase, roleKey: keyof SubtagTestContext['roles'], args: Parameters<GetRolePropTestData['generateCode']>): SubtagTestCase {
@@ -93,7 +93,7 @@ function createTestCase(data: GetRolePropTestData, isQuiet: boolean, testCase: G
         postSetup(bbctx, ctx) {
             const role = ctx.roles[roleKey];
             if (args[0] !== undefined && args[0] !== '') {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, args[0] as string, argument.isDeepEqual(data.getQueryOptions?.(isQuiet))), false).thenResolve(role);
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, args[0] as string, argument.isDeepEqual(data.getQueryOptions?.(isQuiet))), false).thenResolve(role);
             }
 
             testCase.postSetup?.(role, bbctx, ctx);

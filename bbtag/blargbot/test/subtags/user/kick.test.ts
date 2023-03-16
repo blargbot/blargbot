@@ -16,7 +16,7 @@ runSubtagTests({
                 { start: 0, end: 10, error: new UserNotFoundError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'abc', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'abc', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(undefined);
             }
         },
         {
@@ -24,8 +24,8 @@ runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.user.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'Tag Kick'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.users.setup(m => m.kick(user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -38,8 +38,8 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.user.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'Tag Kick'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.users.setup(m => m.kick(user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('noPerms');
             }
@@ -53,8 +53,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.username).thenReturn('other user');
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.user.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'Tag Kick'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.users.setup(m => m.kick(user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('memberTooHigh');
             }
@@ -67,8 +67,8 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.user.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'Tag Kick'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.users.setup(m => m.kick(user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('moderatorNoPerms');
             }
@@ -82,8 +82,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.username).thenReturn('other user');
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.user.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'Tag Kick'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.users.setup(m => m.kick(user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Kick'))
                     .verifiable(1)
                     .thenResolve('moderatorTooLow');
             }
@@ -93,8 +93,8 @@ runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.user.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'My reason here'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.users.setup(m => m.kick(user.instance, bbctx.runtime.user, bbctx.runtime.user, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -104,8 +104,8 @@ runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.user.setup(m => m.kick(user.instance, bbctx.user, ctx.users.authorizer, 'My reason here'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.users.setup(m => m.kick(user.instance, bbctx.runtime.user, ctx.users.authorizer, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -115,8 +115,8 @@ runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.user.setup(m => m.querySingle(bbctx, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.user.setup(m => m.kick(user.instance, bbctx.user, bbctx.user, 'My reason here'))
+                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).verifiable(1).thenResolve(user.instance);
+                ctx.dependencies.users.setup(m => m.kick(user.instance, bbctx.runtime.user, bbctx.runtime.user, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }

@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.md5;
 
-@Subtag.names('md5', 'md5encode')
+@Subtag.id('md5', 'md5encode')
 @Subtag.ctorArgs()
 export class Md5Subtag extends CompiledSubtag {
     public constructor() {

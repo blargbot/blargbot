@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.htmlEncode;
 
-@Subtag.names('htmlEncode')
+@Subtag.id('htmlEncode')
 @Subtag.ctorArgs()
 export class HtmlEncodeSubtag extends CompiledSubtag {
     public constructor() {

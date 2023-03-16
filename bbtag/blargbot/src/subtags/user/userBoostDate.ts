@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -10,8 +10,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.userBoostDate;
 
-@Subtag.names('userBoostDate')
-@Subtag.ctorArgs('user')
+@Subtag.id('userBoostDate')
+@Subtag.ctorArgs('users')
 export class UserBoostDateSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -43,9 +43,9 @@ export class UserBoostDateSubtag extends CompiledSubtag {
         this.#users = users;
     }
 
-    public async findUserBoostDate(context: BBTagContext, format: string, userStr: string, quiet: boolean): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userStr, { noLookup: quiet });
+    public async findUserBoostDate(context: BBTagScript, format: string, userStr: string, quiet: boolean): Promise<string> {
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userStr, { noLookup: quiet });
 
         if (user?.member === undefined) {
             throw new UserNotFoundError(userStr)

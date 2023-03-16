@@ -1,6 +1,6 @@
 import { mapping } from '@blargbot/mapping';
 
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagRuntime } from '../BBTagRuntime.js';
 import { BBTagRuntimeError, NotANumberError } from '../index.js';
 import type { BBTagArray } from '../types.js';
 
@@ -8,8 +8,8 @@ export interface BBTagArrayTools {
     serialize(this: void, array: JArray | BBTagArray, varName?: string): string;
     deserialize(this: void, value: string): BBTagArray | undefined;
     flattenArray(this: void, array: JArray): JArray;
-    deserializeOrGetArray(this: void, context: BBTagContext, value: string): Promise<BBTagArray | undefined>;
-    deserializeOrGetIterable(this: void, context: BBTagContext, value: string): Promise<Iterable<JToken> | undefined>;
+    deserializeOrGetArray(this: void, context: BBTagRuntime, value: string): Promise<BBTagArray | undefined>;
+    deserializeOrGetIterable(this: void, context: BBTagRuntime, value: string): Promise<Iterable<JToken> | undefined>;
     isTagArray(this: void, value: unknown): value is BBTagArray;
 }
 
@@ -77,7 +77,7 @@ export function createBBTagArrayTools(options: BBTagArrayToolsOptions): BBTagArr
             }
             return result;
         },
-        async deserializeOrGetArray(context: BBTagContext, value: string): Promise<BBTagArray | undefined> {
+        async deserializeOrGetArray(context: BBTagRuntime, value: string): Promise<BBTagArray | undefined> {
             const obj = tools.deserialize(value);
             if (obj !== undefined)
                 return obj;
@@ -88,7 +88,7 @@ export function createBBTagArrayTools(options: BBTagArrayToolsOptions): BBTagArr
 
             return undefined;
         },
-        async deserializeOrGetIterable(context: BBTagContext, value: string): Promise<Iterable<JToken> | undefined> {
+        async deserializeOrGetIterable(context: BBTagRuntime, value: string): Promise<Iterable<JToken> | undefined> {
             const obj = tools.deserialize(value);
             if (obj !== undefined)
                 return obj.v;

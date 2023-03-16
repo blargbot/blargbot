@@ -1,7 +1,6 @@
-import type { SubtagCall } from '@bbtag/language';
-
 import type { SubtagArgumentArray } from '../arguments/index.js';
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagCall } from '../BBTagCall.js';
+import type { BBTagScript } from '../BBTagScript.js';
 import type { SubtagLogic } from './SubtagLogic.js';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper.js';
 
@@ -10,8 +9,8 @@ export class IgnoreSubtagLogic<T> extends SubtagLogicWrapper {
         super();
     }
 
-    protected async getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): Promise<[]> {
+    protected async getResults(context: BBTagScript, args: SubtagArgumentArray, subtag: BBTagCall): Promise<string> {
         await this.logic.execute(context, args, subtag);
-        return [];
+        return '';
     }
 }

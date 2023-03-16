@@ -7,7 +7,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.time;
 
-@Subtag.names('time')
+@Subtag.id('time')
 @Subtag.ctorArgs('converter')
 export class TimeSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

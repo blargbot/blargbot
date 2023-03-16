@@ -1,4 +1,4 @@
-import type { BBTagContext, Entities, EntityQueryService, FindEntityOptions, RoleService } from '@bbtag/blargbot';
+import type { BBTagRuntime, Entities, EntityQueryService, FindEntityOptions, RoleService } from '@bbtag/blargbot';
 import { catchErrors } from '@blargbot/catch-decorators';
 import * as Eris from 'eris';
 
@@ -33,13 +33,13 @@ export class ErisBBTagRoleService implements RoleService {
     }
 
     @catchErisRESTErrors
-    public async create(context: BBTagContext, options: Entities.RoleCreate, reason?: string | undefined): Promise<Entities.Role | { error: string; }> {
+    public async create(context: BBTagRuntime, options: Entities.RoleCreate, reason?: string | undefined): Promise<Entities.Role | { error: string; }> {
         const entity = await this.#cluster.discord.createRole(context.guild.id, options, reason ?? context.auditReason());
         return this.#convertToRole(entity);
     }
 
     @catchErisRESTErrors
-    public async edit(context: BBTagContext, roleId: string, update: Partial<Entities.Role>, reason?: string | undefined): Promise<{ error: string; } | undefined> {
+    public async edit(context: BBTagRuntime, roleId: string, update: Partial<Entities.Role>, reason?: string | undefined): Promise<{ error: string; } | undefined> {
         const { icon, ...rest } = update;
         await this.#cluster.discord.editRole(context.guild.id, roleId, {
             ...rest,
@@ -49,12 +49,12 @@ export class ErisBBTagRoleService implements RoleService {
     }
 
     @catchErisRESTErrors
-    public async delete(context: BBTagContext, roleId: string, reason?: string | undefined): Promise<{ error: string; } | undefined> {
+    public async delete(context: BBTagRuntime, roleId: string, reason?: string | undefined): Promise<{ error: string; } | undefined> {
         await this.#cluster.discord.deleteRole(context.guild.id, roleId, reason ?? context.auditReason());
         return undefined;
     }
 
-    public async querySingle(context: BBTagContext, query: string, options?: FindEntityOptions | undefined): Promise<Entities.Role | undefined> {
+    public async querySingle(context: BBTagRuntime, query: string, options?: FindEntityOptions | undefined): Promise<Entities.Role | undefined> {
         return await this.#querySingle(context, query, options);
     }
 

@@ -7,7 +7,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.round;
 
-@Subtag.names('round')
+@Subtag.id('round')
 @Subtag.ctorArgs('converter')
 export class RoundSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

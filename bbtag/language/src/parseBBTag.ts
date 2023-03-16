@@ -1,16 +1,16 @@
+import type { BBTagCallToken } from './BBTagCallToken.js';
+import type { BBTagStatementToken } from './BBTagStatementToken.js';
 import type { SourceMarker } from './SourceMarker.js';
-import type { Statement } from './Statement.js';
-import type { SubtagCall } from './SubtagCall.js';
 
 type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
-    : T extends SubtagCall ? MutableSubtagCall
-    : T extends Statement ? MutableStatement
+    : T extends BBTagCallToken ? MutableSubtagCall
+    : T extends BBTagStatementToken ? MutableStatement
     : T;
 
-type MutableSubtagCall = { -readonly [P in keyof SubtagCall]: ToMutable<SubtagCall[P]> }
-type MutableStatement = { -readonly [P in keyof Statement]: ToMutable<Statement[P]> };
+type MutableSubtagCall = { -readonly [P in keyof BBTagCallToken]: ToMutable<BBTagCallToken[P]> }
+type MutableStatement = { -readonly [P in keyof BBTagStatementToken]: ToMutable<BBTagStatementToken[P]> };
 
-export function parseBBTag(source: string): Statement {
+export function parseBBTag(source: string): BBTagStatementToken {
     const result = createStatement(source);
     const subtags: MutableSubtagCall[] = [];
     let statement = result;

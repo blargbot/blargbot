@@ -6,7 +6,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.unindent;
 
-@Subtag.names('unindent', 'ui')
+@Subtag.id('unindent', 'ui')
 @Subtag.ctorArgs('converter')
 export class UnindentSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

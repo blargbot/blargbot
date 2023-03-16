@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { RegexSubtag } from '../../RegexSubtag.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.regexMatch;
 
-@Subtag.names('regexMatch', 'match')
+@Subtag.id('regexMatch', 'match')
 @Subtag.ctorArgs()
 export class RegexMatchSubtag extends RegexSubtag {
     public constructor() {
@@ -25,8 +25,8 @@ export class RegexMatchSubtag extends RegexSubtag {
         });
     }
 
-    public regexMatch(ctx: BBTagContext, text: string, regexStr: string): string[] {
-        const regex = this.createRegex(ctx, regexStr);
+    public regexMatch(context: BBTagScript, text: string, regexStr: string): string[] {
+        const regex = this.createRegex(context.runtime, regexStr);
         const matches = text.match(regex);
         if (matches === null)
             return [];

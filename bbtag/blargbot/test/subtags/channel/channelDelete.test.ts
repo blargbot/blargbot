@@ -23,7 +23,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, bbctx, ctx) {
-                        ctx.dependencies.channel.setup(m => m.delete(bbctx, channel.id)).thenResolve(undefined);
+                        ctx.dependencies.channels.setup(m => m.delete(bbctx.runtime, channel.id)).thenResolve(undefined);
                     }
                 }
             ]
@@ -38,7 +38,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channel.setup(m => m.delete(bbctx, '2384762844234324')).thenResolve(undefined);
+                ctx.dependencies.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve(undefined);
             }
         },
         {
@@ -54,7 +54,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channel.setup(m => m.delete(bbctx, '2384762844234324')).thenResolve(undefined);
+                ctx.dependencies.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve(undefined);
             }
         },
         {
@@ -80,7 +80,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channel.setup(m => m.delete(bbctx, '2384762844234324')).thenResolve({ error: 'Test REST error' });
+                ctx.dependencies.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -94,7 +94,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channel.setup(m => m.delete(bbctx, '2384762844234324')).thenResolve({ error: 'Some other error message' });
+                ctx.dependencies.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

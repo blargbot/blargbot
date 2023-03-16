@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.base64Encode;
 
-@Subtag.names('base64Encode', 'bToA')
+@Subtag.id('base64Encode', 'bToA')
 @Subtag.ctorArgs()
 export class Base64EncodeSubtag extends CompiledSubtag {
     public constructor() {

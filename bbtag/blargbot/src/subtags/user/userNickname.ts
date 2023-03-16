@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.userNickname;
 
-@Subtag.names('userNickname', 'userNick')
-@Subtag.ctorArgs('user')
+@Subtag.id('userNickname', 'userNick')
+@Subtag.ctorArgs('users')
 export class UserNicknameSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -40,12 +40,12 @@ export class UserNicknameSubtag extends CompiledSubtag {
     }
 
     public async getUserNick(
-        context: BBTagContext,
+        context: BBTagScript,
         userId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userId, { noLookup: quiet });
 
         if (user?.member === undefined) {
             throw new UserNotFoundError(userId)

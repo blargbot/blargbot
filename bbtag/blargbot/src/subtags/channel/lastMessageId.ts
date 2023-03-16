@@ -1,6 +1,6 @@
 import { isTextableChannel } from '@blargbot/discord-util';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -10,8 +10,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.lastMessageId;
 
-@Subtag.names('lastMessageId')
-@Subtag.ctorArgs('channel')
+@Subtag.id('lastMessageId')
+@Subtag.ctorArgs('channels')
 export class LastMessageIdSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -26,7 +26,7 @@ export class LastMessageIdSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'id|nothing',
-                    execute: (ctx) => this.getLastMessageID(ctx, ctx.channel.id)
+                    execute: (ctx) => this.getLastMessageID(ctx, ctx.runtime.channel.id)
                 },
                 {
                     parameters: ['channel'],
@@ -43,10 +43,10 @@ export class LastMessageIdSubtag extends CompiledSubtag {
     }
 
     public async getLastMessageID(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string
     ): Promise<string | undefined> {
-        const channel = await this.#channels.querySingle(context, channelStr);
+        const channel = await this.#channels.querySingle(context.runtime, channelStr);
 
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);

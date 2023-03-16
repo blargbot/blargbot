@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.userName;
 
-@Subtag.names('userName')
-@Subtag.ctorArgs('user')
+@Subtag.id('userName')
+@Subtag.ctorArgs('users')
 export class UserNameSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -23,7 +23,7 @@ export class UserNameSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'string',
-                    execute: (ctx) => this.getUserName(ctx, ctx.user.id, true)
+                    execute: (ctx) => this.getUserName(ctx, ctx.runtime.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -40,12 +40,12 @@ export class UserNameSubtag extends CompiledSubtag {
     }
 
     public async getUserName(
-        context: BBTagContext,
+        context: BBTagScript,
         userId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userId, { noLookup: quiet });
 
         if (user === undefined) {
             throw new UserNotFoundError(userId)

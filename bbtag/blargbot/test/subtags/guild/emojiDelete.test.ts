@@ -15,7 +15,7 @@ runSubtagTests({
             code: '{emojidelete;234762389364243}',
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.guild.setup(m => m.deleteEmote(bbctx, '234762389364243')).thenResolve(undefined);
+                ctx.dependencies.guild.setup(m => m.deleteEmote(bbctx.runtime, '234762389364243')).thenResolve(undefined);
             }
         },
         {
@@ -35,7 +35,7 @@ runSubtagTests({
                 { start: 0, end: 29, error: new BBTagRuntimeError('Failed to delete emoji: This is an error') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.guild.setup(m => m.deleteEmote(bbctx, '234762389364243')).thenResolve({ error: 'This is an error' });
+                ctx.dependencies.guild.setup(m => m.deleteEmote(bbctx.runtime, '234762389364243')).thenResolve({ error: 'This is an error' });
             }
         }
     ]

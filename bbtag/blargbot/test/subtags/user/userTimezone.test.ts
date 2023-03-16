@@ -17,19 +17,19 @@ runSubtagTests({
                 {
                     expected: 'UTC',
                     postSetup(member, bbctx, ctx) {
-                        ctx.dependencies.timezones.setup(m => m.get(bbctx, member.id)).thenResolve(undefined);
+                        ctx.dependencies.timezones.setup(m => m.get(bbctx.runtime, member.id)).thenResolve(undefined);
                     }
                 },
                 {
                     expected: 'abc',
                     postSetup(member, bbctx, ctx) {
-                        ctx.dependencies.timezones.setup(m => m.get(bbctx, member.id)).thenResolve('abc');
+                        ctx.dependencies.timezones.setup(m => m.get(bbctx.runtime, member.id)).thenResolve('abc');
                     }
                 },
                 {
                     expected: 'Etc/UTC',
                     postSetup(member, bbctx, ctx) {
-                        ctx.dependencies.timezones.setup(m => m.get(bbctx, member.id)).thenResolve('Etc/UTC');
+                        ctx.dependencies.timezones.setup(m => m.get(bbctx.runtime, member.id)).thenResolve('Etc/UTC');
                     }
                 }
             ]

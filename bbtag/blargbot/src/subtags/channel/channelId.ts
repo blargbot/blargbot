@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.channelId;
 
-@Subtag.names('channelId', 'categoryId')
-@Subtag.ctorArgs('channel')
+@Subtag.id('channelId', 'categoryId')
+@Subtag.ctorArgs('channels')
 export class ChannelIdSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -23,7 +23,7 @@ export class ChannelIdSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'id',
-                    execute: (ctx) => this.getChannelId(ctx, ctx.channel.id, true)
+                    execute: (ctx) => this.getChannelId(ctx, ctx.runtime.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -41,12 +41,12 @@ export class ChannelIdSubtag extends CompiledSubtag {
     }
 
     public async getChannelId(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);

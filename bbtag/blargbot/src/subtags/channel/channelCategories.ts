@@ -1,6 +1,6 @@
 import { isCategoryChannel } from '@blargbot/discord-util';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
 import { Subtag } from '../../Subtag.js';
@@ -9,8 +9,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.channelCategories;
 
-@Subtag.names('channelCategories', 'categories')
-@Subtag.ctorArgs('channel')
+@Subtag.id('channelCategories', 'categories')
+@Subtag.ctorArgs('channels')
 export class ChannelCategoriesSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
 
@@ -32,8 +32,8 @@ export class ChannelCategoriesSubtag extends CompiledSubtag {
         this.#channels = channels;
     }
 
-    public async getChannelCategories(context: BBTagContext): Promise<string[]> {
-        const channels = await this.#channels.getAll(context);
+    public async getChannelCategories(context: BBTagScript): Promise<string[]> {
+        const channels = await this.#channels.getAll(context.runtime);
         return channels.filter(isCategoryChannel).map(c => c.id);
     }
 }

@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -9,8 +9,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.timeout;
 
-@Subtag.names('timeout')
-@Subtag.ctorArgs('converter', 'user')
+@Subtag.id('timeout')
+@Subtag.ctorArgs('converter', 'users')
 export class TimeoutSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #users: UserService;
@@ -44,7 +44,7 @@ export class TimeoutSubtag extends CompiledSubtag {
     }
 
     public async timeoutMember(
-        context: BBTagContext,
+        context: BBTagScript,
         userStr: string,
         duration: string,
         reason: string,
@@ -54,18 +54,18 @@ export class TimeoutSubtag extends CompiledSubtag {
         if (delay === undefined)
             throw new BBTagRuntimeError('Invalid duration');
 
-        const user = await this.#users.querySingle(context, userStr, { noLookup: true /* TODO why? */ });
+        const user = await this.#users.querySingle(context.runtime, userStr, { noLookup: true /* TODO why? */ });
         if (user?.member === undefined)
             throw new UserNotFoundError(userStr);
 
         if (reason === '')
             reason = 'Tag Timeout';
 
-        const authorizer = noPerms ? context.authorizer : context.user;
+        const authorizer = noPerms ? context.runtime.authorizer : context.runtime.user;
         const delayMs = resolveDuration(delay).asMilliseconds();
         const response = delayMs !== 0
-            ? await this.#users.mute(user, context.user, authorizer, delayMs, reason)
-            : await this.#users.unmute(user, context.user, authorizer, reason);
+            ? await this.#users.mute(user, context.runtime.user, authorizer, delayMs, reason)
+            : await this.#users.unmute(user, context.runtime.user, authorizer, reason);
 
         switch (response) {
             case 'success':

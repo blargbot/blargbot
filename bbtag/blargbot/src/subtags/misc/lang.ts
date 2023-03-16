@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.lang;
 
-@Subtag.names('lang')
+@Subtag.id('lang')
 @Subtag.ctorArgs()
 export class LangSubtag extends CompiledSubtag {
     public constructor() {

@@ -50,7 +50,7 @@ function* generateTestCases(source: JToken, path: string, expected: string): Ite
         code: `{jsonget;myJsonVar;${path}}`,
         expected: expected,
         setup(ctx) {
-            ctx.options.tagName = 'testTag';
+            ctx.entrypoint.name = 'testTag';
             ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myJsonVar' }, source);
         }
     };
@@ -58,7 +58,7 @@ function* generateTestCases(source: JToken, path: string, expected: string): Ite
         code: '{jsonget;myJsonVar}',
         expected: typeof source === 'string' ? source : JSON.stringify(source),
         setup(ctx) {
-            ctx.options.tagName = 'testTag';
+            ctx.entrypoint.name = 'testTag';
             ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myJsonVar' }, source);
         }
     };

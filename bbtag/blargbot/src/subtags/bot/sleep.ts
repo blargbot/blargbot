@@ -12,7 +12,7 @@ const tag = textTemplates.subtags.sleep;
 
 const maxSleep = moment.duration(5, 'minutes');
 
-@Subtag.names('sleep')
+@Subtag.id('sleep')
 @Subtag.ctorArgs('converter')
 export class SleepSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;

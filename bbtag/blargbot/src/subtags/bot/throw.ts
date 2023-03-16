@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.throw;
 
-@Subtag.names('throw')
+@Subtag.id('throw')
 @Subtag.ctorArgs()
 export class ThrowSubtag extends CompiledSubtag {
     public constructor() {

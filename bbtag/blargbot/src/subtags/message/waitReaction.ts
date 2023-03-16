@@ -1,10 +1,10 @@
-import type { Statement } from '@bbtag/language';
-import { parseBBTag } from '@bbtag/language';
 import { Emote } from '@blargbot/discord-emote';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
+import type { BBTagStatement } from '../../BBTagStatement.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
+import type { ChannelService } from '../../index.js';
 import type { MessageService } from '../../services/MessageService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
@@ -15,17 +15,27 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.waitReaction;
 
-const defaultCondition = parseBBTag('true');
+const defaultCondition: BBTagStatement = {
+    isEmpty: false,
+    ast: {
+        start: { line: 0, column: 0, index: 0 },
+        end: { column: 0, index: 0, line: 0 },
+        source: '',
+        values: []
+    },
+    resolve: () => 'true'
+};
 
-@Subtag.names('waitReaction', 'waitReact')
-@Subtag.ctorArgs('user', 'message', 'arrayTools', 'converter')
+@Subtag.id('waitReaction', 'waitReact')
+@Subtag.ctorArgs('users', 'messages', 'channels', 'arrayTools', 'converter')
 export class WaitReactionSubtag extends CompiledSubtag {
     readonly #users: UserService;
     readonly #messages: MessageService;
+    readonly #channels: ChannelService;
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;
 
-    public constructor(users: UserService, messages: MessageService, arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
+    public constructor(users: UserService, messages: MessageService, channels: ChannelService, arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
             category: SubtagType.MESSAGE,
             description: tag.description({ disabled: overrides.waitreaction }),
@@ -53,21 +63,23 @@ export class WaitReactionSubtag extends CompiledSubtag {
 
         this.#users = users;
         this.#messages = messages;
+        this.#channels = channels;
         this.#arrayTools = arrayTools;
         this.#converter = converter;
     }
 
     public async awaitReaction(
-        context: BBTagContext,
+        context: BBTagScript,
         messageStr: string,
         userIDStr: string,
         reactions: string,
-        condition: Statement,
+        condition: BBTagStatement,
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string, userId: string, emoji: string]> {
         const messages = this.#arrayTools.flattenArray([messageStr]).map(i => this.#converter.string(i));
-        const users = await context.bulkLookup(userIDStr, i => this.#users.querySingle(context, i, { noErrors: true, noLookup: true }), UserNotFoundError)
-            ?? [context.user];
+        const channels = this.#channels.getAll(context.runtime);
+        const users = await context.runtime.bulkLookup(userIDStr, i => this.#users.querySingle(context.runtime, i, { noErrors: true, noLookup: true }), UserNotFoundError)
+            ?? [context.runtime.user];
 
         // parse reactions
         let parsedReactions: Emote[] | undefined;
@@ -88,20 +100,25 @@ export class WaitReactionSubtag extends CompiledSubtag {
         else if (timeout > 300)
             timeout = 300;
 
-        if (condition.values.length === 0)
+        if (condition.isEmpty)
             condition = defaultCondition;
 
-        const userSet = new Set(users.map(u => u.id));
+        const userLookup = new Set(users.map(u => u.id));
+        const channelLookup = new Map((await channels).map(c => [c.id, c]));
         const reactionSet = new Set(parsedReactions?.map(r => r.toString()));
         const checkReaction = reactionSet.size === 0 ? () => true : (emoji: Emote) => reactionSet.has(emoji.toString());
-        const result = await this.#messages.awaitReaction(context, messages, async ({ user, reaction, message }) => {
-            if (!userSet.has(user.id) || !checkReaction(reaction))
+        const result = await this.#messages.awaitReaction(context.runtime, messages, async ({ user, reaction, message }) => {
+            if (!userLookup.has(user.id) || !checkReaction(reaction))
                 return false;
 
-            const resultStr = await context.withScope(scope => {
+            const channel = channelLookup.get(message.channel_id);
+            if (channel === undefined)
+                return false;
+
+            const resultStr = await context.runtime.withScope(scope => {
                 scope.reaction = reaction.toString();
                 scope.reactUser = user.id;
-                return context.withChild({ message }, context => context.eval(condition));
+                return context.runtime.withMessage(message, channel, user, () => condition.resolve());
             });
             const result = this.#converter.boolean(resultStr.trim());
             if (result === undefined)

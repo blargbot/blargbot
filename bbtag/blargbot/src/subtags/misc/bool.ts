@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.bool;
 
-@Subtag.names('bool')
+@Subtag.id('bool')
 @Subtag.ctorArgs('operators', 'converter')
 export class BoolSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;

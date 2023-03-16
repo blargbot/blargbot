@@ -25,7 +25,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.role.setup(m => m.edit(bbctx, role.id, argument.isDeepEqual({ color: 0 }))).thenResolve(undefined);
+                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ color: 0 }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -45,7 +45,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.role.setup(m => m.edit(bbctx, role.id, argument.isDeepEqual({ color: color }))).thenResolve(undefined);
+                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ color: color }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -67,7 +67,7 @@ runSubtagTests({
                 { start: 0, end: 28, error: new BBTagRuntimeError('Role above author') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.top);
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.top);
             }
         },
         {
@@ -80,8 +80,8 @@ runSubtagTests({
                 ctx.roles.other.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
-                ctx.dependencies.role.setup(m => m.edit(bbctx, ctx.roles.bot.id, argument.isDeepEqual({ color: 0 }))).thenResolve({ error: 'Test REST error' });
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
+                ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, ctx.roles.bot.id, argument.isDeepEqual({ color: 0 }))).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -94,8 +94,8 @@ runSubtagTests({
                 ctx.roles.other.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.role.setup(m => m.querySingle(bbctx, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
-                ctx.dependencies.role.setup(m => m.edit(bbctx, ctx.roles.bot.id, argument.isDeepEqual({ color: 0 }))).thenResolve({ error: 'Some other error message' });
+                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
+                ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, ctx.roles.bot.id, argument.isDeepEqual({ color: 0 }))).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

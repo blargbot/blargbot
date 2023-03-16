@@ -15,9 +15,9 @@ export class Semaphore {
         if (this.#heldLocks++ < this.#maxConcurrency)
             return;
 
-        const pcs = new PromiseCompletionSource<void>();
-        this.#waiters.push(pcs);
-        await pcs.promise;
+        const releaseCalled = new PromiseCompletionSource();
+        this.#waiters.push(releaseCalled);
+        await releaseCalled;
     }
 
     public release(): number {

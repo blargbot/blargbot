@@ -1,15 +1,14 @@
-import type { SubtagCall } from '@bbtag/language';
-
-import type { BBTagContext } from '../BBTagContext.js';
-import type { Subtag } from '../Subtag.js';
+import type { BBTagCall } from '../BBTagCall.js';
+import type { BBTagScript } from '../BBTagScript.js';
+import type { ISubtag } from '../ISubtag.js';
 
 export interface SubtagInvocationMiddleware {
-    (context: SubtagInvocationContext, next: () => AsyncIterable<string | undefined>): AsyncIterable<string | undefined>;
+    (context: SubtagInvocationContext, next: () => Awaitable<string>): Awaitable<string>;
 }
 
 export interface SubtagInvocationContext {
-    readonly subtag: Subtag;
-    readonly context: BBTagContext;
+    readonly subtag: ISubtag;
+    readonly script: BBTagScript;
     readonly subtagName: string;
-    readonly call: SubtagCall;
+    readonly call: BBTagCall;
 }

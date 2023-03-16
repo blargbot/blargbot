@@ -1,7 +1,7 @@
 import { randomInt } from 'node:crypto';
 
 import type { SubtagArgument } from '../../arguments/index.js';
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -10,7 +10,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.randomChoose;
 
-@Subtag.names('randomChoose', 'randChoose')
+@Subtag.id('randomChoose', 'randChoose')
 @Subtag.ctorArgs('arrayTools')
 export class RandomChooseSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
@@ -48,8 +48,8 @@ export class RandomChooseSubtag extends CompiledSubtag {
         return await choices[randomInt(choices.length)].wait();
     }
 
-    public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {
-        const choices = await this.#arrayTools.deserializeOrGetArray(context, arrayStr);
+    public async randChoose(context: BBTagScript, arrayStr: string): Promise<JToken> {
+        const choices = await this.#arrayTools.deserializeOrGetArray(context.runtime, arrayStr);
         if (choices === undefined)
             return arrayStr;
 

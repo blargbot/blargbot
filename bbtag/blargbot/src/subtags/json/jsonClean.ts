@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -7,7 +7,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.jsonClean;
 
-@Subtag.names('jsonClean', 'jClean')
+@Subtag.id('jsonClean', 'jClean')
 @Subtag.ctorArgs('jsonTools')
 export class JsonCleanSubtag extends CompiledSubtag {
     readonly #jsonTools: BBTagJsonTools;
@@ -30,8 +30,8 @@ export class JsonCleanSubtag extends CompiledSubtag {
         this.#jsonTools = jsonTools;
     }
 
-    public async cleanJson(context: BBTagContext, input: string): Promise<JToken> {
-        const obj = await this.#jsonTools.resolveObj(context, input);
+    public async cleanJson(context: BBTagScript, input: string): Promise<JToken> {
+        const obj = await this.#jsonTools.resolveObj(context.runtime, input);
         return this.#jsonTools.clean(obj.object);
     }
 }

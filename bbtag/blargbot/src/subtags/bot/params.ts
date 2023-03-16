@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.params;
 
-@Subtag.names('params')
+@Subtag.id('params')
 @Subtag.ctorArgs('converter')
 export class ParamsSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -47,15 +47,15 @@ export class ParamsSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public getAllParams(context: BBTagContext): string {
-        const params = context.scopes.local.paramsarray;
+    public getAllParams(context: BBTagScript): string {
+        const params = context.runtime.scopes.local.paramsarray;
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
         return params.join(' ');
     }
 
-    public getParam(context: BBTagContext, index: string): string {
-        const params = context.scopes.local.paramsarray;
+    public getParam(context: BBTagScript, index: string): string {
+        const params = context.runtime.scopes.local.paramsarray;
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
@@ -70,11 +70,11 @@ export class ParamsSubtag extends CompiledSubtag {
     }
 
     public getParams(
-        context: BBTagContext,
+        context: BBTagScript,
         start: string,
         end: string
     ): string {
-        const params = context.scopes.local.paramsarray;
+        const params = context.runtime.scopes.local.paramsarray;
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
 

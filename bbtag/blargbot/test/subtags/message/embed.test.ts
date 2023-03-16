@@ -13,7 +13,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.data.embeds).to.deep.equal([
+                chai.expect(ctx.runtime.outputOptions.embeds).to.deep.equal([
                     { title: 'Hello!' }
                 ]);
             }
@@ -23,7 +23,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.data.embeds).to.deep.equal([
+                chai.expect(ctx.runtime.outputOptions.embeds).to.deep.equal([
                     { title: 'Hello!' },
                     { author: { name: 'abc' } }
                 ]);
@@ -34,7 +34,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.data.embeds).to.deep.equal([
+                chai.expect(ctx.runtime.outputOptions.embeds).to.deep.equal([
                     { title: 'Hello!' },
                     { fields: [{ name: 'Malformed JSON', value: '{"title":false}' }] }
                 ]);
@@ -45,7 +45,7 @@ runSubtagTests({
             subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.data.embeds).to.deep.equal([
+                chai.expect(ctx.runtime.outputOptions.embeds).to.deep.equal([
                     { title: 'Hello!' },
                     { author: { name: 'abc' } },
                     { title: 'embed array 1' },

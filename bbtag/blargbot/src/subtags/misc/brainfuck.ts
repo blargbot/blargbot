@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.brainfuck;
 
-@Subtag.names('brainfuck')
+@Subtag.id('brainfuck')
 @Subtag.ctorArgs()
 export class BrainfuckSubtag extends CompiledSubtag {
     readonly #bfClient: Brainfuck;

@@ -1,6 +1,5 @@
-import type { SubtagCall } from '@bbtag/language';
-
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagCall } from '../BBTagCall.js';
+import type { BBTagScript } from '../BBTagScript.js';
 import type { BBTagRuntimeError } from '../errors/index.js';
 import { NotEnoughArgumentsError, TooManyArgumentsError } from '../errors/index.js';
 import type { ArgumentResolver } from './ArgumentResolver.js';
@@ -54,14 +53,14 @@ function createConditionalHandler(signature: SubtagSignatureCallable, resolver: 
         canHandle: name === undefined
             ? subtag => resolver.isExactMatch(subtag)
             : (subtag, subtagName) => subtagName.toLowerCase() === name && resolver.isExactMatch(subtag),
-        async * execute(context, subtagName, call) {
+        async execute(context, subtagName, call) {
             const args = [];
             for (const arg of resolver.resolve(context, call)) {
                 args.push(arg);
                 if (arg.parameter.autoResolve)
                     await arg.execute();
             }
-            yield* signature.implementation.execute(context, Object.assign(args, { subtagName }), call);
+            return await signature.implementation.execute(context, Object.assign(args, { subtagName }), call);
         }
     };
 }
@@ -75,11 +74,10 @@ const initialResolver: ArgumentResolver = {
     }
 };
 
-async function* resolveAndThrow(context: BBTagContext, call: SubtagCall, resolver: ArgumentResolver, error: BBTagRuntimeError): AsyncIterable<undefined> {
+async function resolveAndThrow(context: BBTagScript, call: BBTagCall, resolver: ArgumentResolver, error: BBTagRuntimeError): Promise<never> {
     for (const arg of resolver.resolve(context, call)) {
         if (arg.parameter.autoResolve) {
             await arg.execute();
-            yield undefined;
         }
     }
     throw error;

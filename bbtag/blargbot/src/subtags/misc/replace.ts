@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.replace;
 
-@Subtag.names('replace')
+@Subtag.id('replace')
 @Subtag.ctorArgs()
 export class ReplaceSubtag extends CompiledSubtag {
     public constructor() {
@@ -37,8 +37,8 @@ export class ReplaceSubtag extends CompiledSubtag {
         return text.replace(phrase, replacement);
     }
 
-    public setOutputReplacement(context: BBTagContext, phrase: string, replacement: string): void {
-        context.data.replace = {
+    public setOutputReplacement(context: BBTagScript, phrase: string, replacement: string): void {
+        context.runtime.outputOptions.replace = {
             regex: phrase,
             with: replacement
         };

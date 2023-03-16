@@ -12,7 +12,7 @@ runSubtagTests({
             code: '{dump;abc123}',
             expected: 'https://blargbot.xyz/dumps/1271927912712712',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.dump.setup(m => m.generateDumpPage(argument.isDeepEqual({ content: 'abc123' }), bbctx.channel)).thenResolve('https://blargbot.xyz/dumps/1271927912712712');
+                ctx.dependencies.dump.setup(m => m.generateDumpPage(argument.isDeepEqual({ content: 'abc123' }), bbctx.runtime.channel)).thenResolve('https://blargbot.xyz/dumps/1271927912712712');
             }
         }
     ]

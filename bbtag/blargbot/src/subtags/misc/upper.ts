@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.upper;
 
-@Subtag.names('upper')
+@Subtag.id('upper')
 @Subtag.ctorArgs()
 export class UpperSubtag extends CompiledSubtag {
     public constructor() {

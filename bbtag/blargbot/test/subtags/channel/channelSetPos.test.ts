@@ -20,8 +20,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.dependencies.channel.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ position: 123 }))).thenResolve(undefined);
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
+                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({ position: 123 }))).thenResolve(undefined);
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
             }
         },
         {
@@ -33,7 +33,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
             }
         },
         {
@@ -43,7 +43,7 @@ runSubtagTests({
                 { start: 0, end: 38, error: new BBTagRuntimeError('Channel does not exist') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve();
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve();
             }
         },
         {
@@ -58,7 +58,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
             }
         },
         {
@@ -70,8 +70,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
-                ctx.dependencies.channel.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ position: 123 })))
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
+                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({ position: 123 })))
                     .thenResolve({ error: 'Test REST error' });
             }
         },
@@ -84,8 +84,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '239874692346327846')).thenResolve(channel);
-                ctx.dependencies.channel.setup(m => m.edit(bbctx, channel.id, argument.isDeepEqual({ position: 123 })))
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
+                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({ position: 123 })))
                     .thenResolve({ error: 'Some other error message' });
             }
         }

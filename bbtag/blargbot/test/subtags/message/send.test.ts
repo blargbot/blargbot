@@ -17,7 +17,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new ChannelNotFoundError('1923681361978632931') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve();
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve();
             }
         },
         {
@@ -34,12 +34,14 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -49,7 +51,7 @@ runSubtagTests({
                 }))).thenReject(new BBTagRuntimeError('Test error'));
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.be.empty;
+                chai.expect(bbctx.runtime.ownedMessageIds).to.eql(new Set([bbctx.runtime.message.id]));
             }
         },
         {
@@ -66,12 +68,14 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -81,7 +85,7 @@ runSubtagTests({
                 }))).thenResolve({ error: 'Test error' });
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.be.empty;
+                chai.expect(bbctx.runtime.ownedMessageIds).to.eql(new Set([bbctx.runtime.message.id]));
             }
         },
         {
@@ -98,12 +102,14 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -113,7 +119,7 @@ runSubtagTests({
                 }))).thenResolve({ error: 'UNKNOWN' });
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.be.empty;
+                chai.expect(bbctx.runtime.ownedMessageIds).to.eql(new Set([bbctx.runtime.message.id]));
             }
         },
         {
@@ -128,17 +134,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -150,7 +158,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -166,17 +174,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -188,7 +198,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -203,17 +213,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -223,7 +235,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -239,17 +251,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -259,7 +273,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -275,17 +289,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -297,7 +313,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -313,17 +329,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -333,7 +351,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -349,17 +367,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'file.txt' }],
@@ -371,7 +391,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -387,17 +407,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'file.txt' }],
@@ -407,7 +429,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -423,17 +445,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -448,7 +472,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -464,17 +488,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -487,7 +513,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -503,17 +529,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'test.zip' }],
@@ -525,7 +553,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -541,17 +569,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'test.zip' }],
@@ -561,7 +591,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -577,17 +607,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -602,7 +634,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         },
         {
@@ -618,17 +650,19 @@ runSubtagTests({
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message = SubtagTestContext.createMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
                 const general = ctx.channels.general;
 
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.runtime.outputOptions.allowEveryone = true;
+                for (const role of roleMentions)
+                    bbctx.runtime.outputOptions.mentionRoles.add(role);
+                for (const user of userMentions)
+                    bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channel.setup(m => m.querySingle(bbctx, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.message.setup(m => m.create(bbctx, general.id, argument.isDeepEqual({
+                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -641,7 +675,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                chai.expect(bbctx.runtime.ownedMessageIds).to.include('239476239742340234');
             }
         }
     ]

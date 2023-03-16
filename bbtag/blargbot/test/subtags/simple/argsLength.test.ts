@@ -10,17 +10,17 @@ runSubtagTests({
         {
             code: '{argslength}',
             expected: '0',
-            setup(ctx) { ctx.options.inputRaw = ''; }
+            setup(ctx) { ctx.entrypoint.inputRaw = ''; }
         },
         {
             code: '{argslength}',
             expected: '4',
-            setup(ctx) { ctx.options.inputRaw = 'this is a test'; }
+            setup(ctx) { ctx.entrypoint.inputRaw = 'this is a test'; }
         },
         {
             code: '{argslength}',
             expected: '3',
-            setup(ctx) { ctx.options.inputRaw = 'this "is a" test'; }
+            setup(ctx) { ctx.entrypoint.inputRaw = 'this "is a" test'; }
         }
     ]
 });

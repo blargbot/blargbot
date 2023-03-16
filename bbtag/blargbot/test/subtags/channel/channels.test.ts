@@ -33,7 +33,7 @@ runSubtagTests({
                         });
                     },
                     postSetup(_, bbctx, ctx) {
-                        ctx.dependencies.channel.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.channels));
+                        ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
                     }
                 }
             ]
@@ -47,7 +47,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channel.setup(m => m.getAll(bbctx)).thenResolve(Object.values(ctx.channels));
+                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
             }
         }
     ]

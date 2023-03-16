@@ -1,6 +1,6 @@
 import { isAlphanumeric } from '@blargbot/guards';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.flag;
 
-@Subtag.names('flag')
+@Subtag.id('flag')
 @Subtag.ctorArgs()
 export class FlagSubtag extends CompiledSubtag {
     public constructor() {
@@ -28,7 +28,7 @@ export class FlagSubtag extends CompiledSubtag {
         });
     }
 
-    public getFlag(context: BBTagContext, flagName: string): string | undefined {
+    public getFlag(context: BBTagScript, flagName: string): string | undefined {
         if (!isAlphanumeric(flagName) && flagName !== '_')
             return undefined;
 

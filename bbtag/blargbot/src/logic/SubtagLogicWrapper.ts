@@ -1,37 +1,34 @@
-import type { SubtagCall } from '@bbtag/language';
-
 import type { SubtagArgumentArray } from '../arguments/index.js';
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagCall } from '../BBTagCall.js';
+import type { BBTagScript } from '../BBTagScript.js';
 import { BBTagRuntimeError } from '../errors/index.js';
+import { BBTagRuntimeState } from '../types.js';
 import type { SubtagLogic } from './SubtagLogic.js';
 
 export abstract class SubtagLogicWrapper implements SubtagLogic {
-    public async *execute(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string | undefined> {
+    public async execute(context: BBTagScript, args: SubtagArgumentArray, subtag: BBTagCall): Promise<string> {
         try {
-            yield* await this.getResults(context, args, subtag);
+            return await this.getResults(context, args, subtag);
         } catch (error: unknown) {
             if (!(error instanceof BBTagRuntimeError))
                 throw error;
-            yield context.addError(error, subtag);
+            return context.runtime.addError(error, subtag.ast);
         }
     }
 
-    protected abstract getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): Awaitable<AsyncIterable<string | undefined> | Iterable<string | undefined>>;
+    protected abstract getResults(context: BBTagScript, args: SubtagArgumentArray, subtag: BBTagCall): Awaitable<string>;
 
-    protected async *toAsyncIterable<T>(source: AsyncIterable<T> | Iterable<T>): AsyncGenerator<T, void, undefined> {
-        yield* source;
-    }
-
-    protected isIterable(value: unknown): value is Iterable<unknown> | AsyncIterable<unknown> {
-        switch (typeof value) {
-            case 'object':
-                if (value === null)
-                    return false;
-                return Symbol.iterator in value || Symbol.asyncIterator in value;
-            case 'string':
-                return true;
-            default:
-                return false;
+    protected async* iterate<T>(context: BBTagScript, subtag: BBTagCall, source: Iterable<T> | AsyncIterable<T>): AsyncIterable<T | string> {
+        try {
+            for await (const item of source) {
+                yield item;
+                if (context.runtime.state !== BBTagRuntimeState.RUNNING)
+                    break;
+            }
+        } catch (err: unknown) {
+            if (!(err instanceof BBTagRuntimeError))
+                throw err;
+            yield context.runtime.addError(err, subtag.ast);
         }
     }
 }

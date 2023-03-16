@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.escapeBBTag;
 
-@Subtag.names('escapeBBTag', 'escape')
+@Subtag.id('escapeBBTag', 'escape')
 @Subtag.ctorArgs()
 export class EscapeBBTagSubtag extends CompiledSubtag {
     public constructor() {
@@ -18,7 +18,7 @@ export class EscapeBBTagSubtag extends CompiledSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'string',
-                    execute: (_, items) => this.escape(items.map(i => i.code.source).join(';'))
+                    execute: (_, items) => this.escape(items.map(i => i.code.ast.source).join(';'))
                 }
             ]
         });

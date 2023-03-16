@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -8,8 +8,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.guildBans;
 
-@Subtag.names('guildBans')
-@Subtag.ctorArgs('user')
+@Subtag.id('guildBans')
+@Subtag.ctorArgs('users')
 export class GuildBansSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -31,8 +31,8 @@ export class GuildBansSubtag extends CompiledSubtag {
         this.#users = users;
     }
 
-    public async getGuildBans(context: BBTagContext): Promise<string[]> {
-        const users = await this.#users.findBanned(context);
+    public async getGuildBans(context: BBTagScript): Promise<string[]> {
+        const users = await this.#users.findBanned(context.runtime);
         if (users === 'noPerms')
             throw new BBTagRuntimeError('Missing required permissions');
 

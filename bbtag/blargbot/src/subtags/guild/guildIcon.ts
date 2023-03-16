@@ -1,6 +1,6 @@
 import { images } from '@blargbot/discord-util';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -8,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.guildIcon;
 
-@Subtag.names('guildIcon')
+@Subtag.id('guildIcon')
 @Subtag.ctorArgs()
 export class GuildIconSubtag extends CompiledSubtag {
     public constructor() {
@@ -27,7 +27,7 @@ export class GuildIconSubtag extends CompiledSubtag {
         });
     }
 
-    public getGuildIcon(context: BBTagContext): string | undefined {
-        return images.guildIcon(context.guild) ?? undefined;
+    public getGuildIcon(context: BBTagScript): string | undefined {
+        return images.guildIcon(context.runtime.guild) ?? undefined;
     }
 }

@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.void;
 
-@Subtag.names('void', 'null')
+@Subtag.id('void', 'null')
 @Subtag.ctorArgs()
 export class VoidSubtag extends CompiledSubtag {
     public constructor() {

@@ -1,6 +1,5 @@
-import type { Statement } from '@bbtag/language';
-
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
+import type { BBTagStatement } from '../../BBTagStatement.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -9,7 +8,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.function;
 
-@Subtag.names('function', 'func')
+@Subtag.id('function', 'func')
 @Subtag.ctorArgs()
 export class FunctionSubtag extends CompiledSubtag {
     public constructor() {
@@ -29,9 +28,9 @@ export class FunctionSubtag extends CompiledSubtag {
     }
 
     public createFunction(
-        context: BBTagContext,
+        context: BBTagScript,
         funcName: string,
-        code: Statement
+        code: BBTagStatement
     ): void {
         let name: string = funcName.toLowerCase();
         if (name.startsWith('func.'))
@@ -40,6 +39,6 @@ export class FunctionSubtag extends CompiledSubtag {
         if (name === '')
             throw new BBTagRuntimeError('Must provide a name');
 
-        context.scopes.root.functions[name] = code;
+        context.runtime.defineSnippet(`func.${name}`, code.ast);
     }
 }

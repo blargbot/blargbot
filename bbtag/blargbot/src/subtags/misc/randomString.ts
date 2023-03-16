@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.randomString;
 
-@Subtag.names('randomString', 'randStr', 'randString')
+@Subtag.id('randomString', 'randStr', 'randString')
 @Subtag.ctorArgs('converter')
 export class RandomStringSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -32,12 +32,12 @@ export class RandomStringSubtag extends CompiledSubtag {
     }
 
     public randStr(
-        context: BBTagContext,
+        context: BBTagScript,
         charsStr: string,
         countStr: string
     ): string {
         const chars = charsStr.split('');
-        const count = this.#converter.int(countStr) ?? this.#converter.int(context.scopes.local.fallback ?? '');
+        const count = this.#converter.int(countStr) ?? this.#converter.int(context.runtime.scopes.local.fallback ?? '');
         if (count === undefined)
             throw new NotANumberError(countStr);
 

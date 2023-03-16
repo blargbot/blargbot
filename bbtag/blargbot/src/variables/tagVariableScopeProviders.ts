@@ -15,7 +15,7 @@ export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
         name: textTemplates.subtag.variables.author.name,
         prefix: '@',
         description: textTemplates.subtag.variables.author.description,
-        getScope: (context) => context.authorId !== undefined
+        getScope: (context) => context.authorId !== null
             ? { type: TagVariableType.AUTHOR, authorId: context.authorId }
             : { type: TagVariableType.TEMP }
     },
@@ -36,7 +36,7 @@ export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
         prefix: '',
         description: textTemplates.subtag.variables.local.description,
         getScope: (context) => context.tagVars
-            ? { type: TagVariableType.LOCAL_TAG, name: context.rootTagName }
-            : { type: TagVariableType.LOCAL_CC, name: context.rootTagName, guildId: context.guild.id }
+            ? { type: TagVariableType.LOCAL_TAG, name: context.entrypoint.name }
+            : { type: TagVariableType.LOCAL_CC, name: context.entrypoint.name, guildId: context.guild.id }
     }
 ];

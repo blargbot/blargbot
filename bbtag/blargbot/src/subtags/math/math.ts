@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.math;
 
-@Subtag.names('math')
+@Subtag.id('math')
 @Subtag.ctorArgs('operators', 'arrayTools', 'converter')
 export class MathSubtag extends CompiledSubtag {
     readonly #operators: BBTagOperators;

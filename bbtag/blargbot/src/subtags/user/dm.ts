@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -11,8 +11,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.dm;
 
-@Subtag.names('dm')
-@Subtag.ctorArgs('converter', 'user', 'channel', 'message')
+@Subtag.id('dm')
+@Subtag.ctorArgs('converter', 'users', 'channels', 'messages')
 export class DMSubtag extends CompiledSubtag {
     readonly #dmCache: DMCache = {};
     readonly #converter: BBTagValueConverter;
@@ -59,12 +59,12 @@ export class DMSubtag extends CompiledSubtag {
     }
 
     public async sendDm(
-        context: BBTagContext,
+        context: BBTagScript,
         userStr: string,
         messageStr: string,
         embedStr?: string
     ): Promise<void> {
-        const user = await this.#users.querySingle(context, userStr);
+        const user = await this.#users.querySingle(context.runtime, userStr);
         if (user === undefined)
             throw new UserNotFoundError(userStr);
 
@@ -73,20 +73,20 @@ export class DMSubtag extends CompiledSubtag {
         const content = messageAsEmbeds === undefined ? messageStr : undefined;
 
         let cache = this.#dmCache[user.id];
-        const channelId = await this.#channels.getDmChannelId(context, user.id);
+        const channelId = await this.#channels.getDmChannelId(context.runtime, user.id);
         if (cache === undefined ||
             cache.count > 5 ||
-            cache.user !== context.user.id ||
-            cache.guild !== context.guild.id) {
+            cache.user !== context.runtime.user.id ||
+            cache.guild !== context.runtime.guild.id) {
             // Ew we're gonna send a message first? It was voted...
             // TODO: Maybe change to a footer embed on every DM? I dont think its possible to disable embeds in DMs
-            const result = await this.#messages.create(context, channelId, { content: `The following message was sent from **__${context.guild.name}__** (${context.guild.id}), and was sent by **__${context.user.username}#${context.user.discriminator}__** (${context.user.id}):` });
+            const result = await this.#messages.create(context.runtime, channelId, { content: `The following message was sent from **__${context.runtime.guild.name}__** (${context.runtime.guild.id}), and was sent by **__${context.runtime.user.username}#${context.runtime.user.discriminator}__** (${context.runtime.user.id}):` });
             if (result === undefined || 'error' in result)
                 throw new BBTagRuntimeError('Could not send DM');
-            cache = this.#dmCache[user.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
+            cache = this.#dmCache[user.id] = { user: context.runtime.user.id, guild: context.runtime.guild.id, count: 1 };
         }
 
-        const result = await this.#messages.create(context, channelId, { content, embeds });
+        const result = await this.#messages.create(context.runtime, channelId, { content, embeds });
         if (result === undefined || 'error' in result)
             throw new BBTagRuntimeError('Could not send DM');
         cache.count++;

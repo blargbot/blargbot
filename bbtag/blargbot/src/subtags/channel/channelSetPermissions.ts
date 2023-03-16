@@ -2,7 +2,7 @@ import Discord, { OverwriteType } from '@blargbot/discord-types';
 import { isThreadChannel } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -14,8 +14,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.channelSetPermissions;
 
-@Subtag.names('channelSetPermissions', 'channelSetPerms')
-@Subtag.ctorArgs('converter', 'channel')
+@Subtag.id('channelSetPermissions', 'channelSetPerms')
+@Subtag.ctorArgs('converter', 'channels')
 export class ChannelSetPermissionsSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #channels: ChannelService;
@@ -48,14 +48,14 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
     }
 
     public async channelSetPerms(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         typeStr: string,
         entityId: string,
         allow = 0n,
         deny = 0n
     ): Promise<string> {
-        const channel = await this.#channels.querySingle(context, channelStr);
+        const channel = await this.#channels.querySingle(context.runtime, channelStr);
 
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist'); //TODO No channel found error
@@ -63,7 +63,7 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
         if (isThreadChannel(channel))
             throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
-        const permission = context.getPermission(context.authorizer, channel);
+        const permission = context.runtime.getPermission(context.runtime.authorizer, channel);
         if (!hasFlag(permission, Discord.PermissionFlagsBits.ManageChannels))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
@@ -72,7 +72,7 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
 
         const type = this.#getOverwriteType(typeStr);
 
-        const result = await this.#channels.setPermission(context, channel.id, {
+        const result = await this.#channels.setPermission(context.runtime, channel.id, {
             id: entityId,
             allow: allow.toString(),
             deny: deny.toString(),

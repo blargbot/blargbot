@@ -1,10 +1,10 @@
 import type { VariableScopeProvider } from '@bbtag/variables';
 import type { IFormattable } from '@blargbot/formatting';
 
-import type { BBTagContext } from '../index.js';
+import type { BBTagRuntime } from '../BBTagRuntime.js';
 import type { TagVariableScope } from './TagVariableScope.js';
 
-export interface TagVariableScopeProvider extends VariableScopeProvider<BBTagContext, TagVariableScope> {
+export interface TagVariableScopeProvider extends VariableScopeProvider<BBTagRuntime, TagVariableScope> {
     readonly name: IFormattable<string>;
     readonly prefix: string;
     readonly description: IFormattable<string>;

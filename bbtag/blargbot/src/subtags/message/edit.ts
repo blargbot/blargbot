@@ -1,6 +1,6 @@
 import type Discord from '@blargbot/discord-types';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -12,8 +12,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.edit;
 
-@Subtag.names('edit')
-@Subtag.ctorArgs('converter', 'channel', 'message')
+@Subtag.id('edit')
+@Subtag.ctorArgs('converter', 'channels', 'messages')
 export class EditSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #channels: ChannelService;
@@ -39,7 +39,7 @@ export class EditSubtag extends CompiledSubtag {
                 {
                     parameters: ['messageId', 'text|embed'],
                     returns: 'nothing',
-                    execute: (ctx, [messageId, content]) => this.edit(ctx, ctx.channel.id, messageId.value, content.value)
+                    execute: (ctx, [messageId, content]) => this.edit(ctx, ctx.runtime.channel.id, messageId.value, content.value)
                 },
                 {
                     parameters: ['messageId', 'text', 'embed'],
@@ -63,10 +63,10 @@ export class EditSubtag extends CompiledSubtag {
                     parameters: ['messageId|channelId', 'messageId|text', '(text|embed)|(embed)'],
                     returns: 'nothing',
                     execute: async (ctx, [chanOrMessage, messageOrText, content]) => {
-                        const channel = await this.#channels.querySingle(ctx, chanOrMessage.value, { noLookup: true });
+                        const channel = await this.#channels.querySingle(ctx.runtime, chanOrMessage.value, { noLookup: true });
                         if (channel === undefined)
                             //{edit;msg;text;embed}
-                            return await this.edit(ctx, ctx.channel.id, chanOrMessage.value, messageOrText.value, content.value);
+                            return await this.edit(ctx, ctx.runtime.channel.id, chanOrMessage.value, messageOrText.value, content.value);
 
                         //{edit;channel;msg;text|embed}
                         return await this.edit(ctx, channel.id, messageOrText.value, content.value);
@@ -90,13 +90,13 @@ export class EditSubtag extends CompiledSubtag {
     }
 
     public async edit(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         messageStr: string,
         contentStr: string,
         embedStr?: string
     ): Promise<void> {
-        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: true });
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noLookup: true });
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
@@ -114,10 +114,10 @@ export class EditSubtag extends CompiledSubtag {
             }
         }
 
-        const message = await this.#messages.get(context, channel.id, messageStr);
+        const message = await this.#messages.get(context.runtime, channel.id, messageStr);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageStr);
-        if (message.author.id !== context.bot.id)
+        if (message.author.id !== context.runtime.bot.id)
             throw new BBTagRuntimeError('I must be the message author');
 
         content = content ?? message.content;
@@ -129,6 +129,6 @@ export class EditSubtag extends CompiledSubtag {
         if (content.trim() === '' && embeds.length === 0)
             throw new BBTagRuntimeError('Message cannot be empty');
 
-        await this.#messages.edit(context, channel.id, message.id, { content, embeds });
+        await this.#messages.edit(context.runtime, channel.id, message.id, { content, embeds });
     }
 }

@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { RoleService } from '../../services/RoleService.js';
@@ -9,8 +9,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.roleSetMentionable;
 
-@Subtag.names('roleSetMentionable')
-@Subtag.ctorArgs('converter', 'role')
+@Subtag.id('roleSetMentionable')
+@Subtag.ctorArgs('converter', 'roles')
 export class RoleSetMentionableSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
     readonly #roles: RoleService;
@@ -43,17 +43,17 @@ export class RoleSetMentionableSubtag extends CompiledSubtag {
     }
 
     public async setRolementionable(
-        context: BBTagContext,
+        context: BBTagScript,
         roleStr: string,
         toggleStr: string,
         quiet: boolean
     ): Promise<void> {
-        const topRole = context.roleEditPosition(context.authorizer);
+        const topRole = context.runtime.roleEditPosition(context.runtime.authorizer);
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
-        quiet ||= context.scopes.local.quiet ?? false;
-        const role = await this.#roles.querySingle(context, roleStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const role = await this.#roles.querySingle(context.runtime, roleStr, { noLookup: quiet });
         const mentionable = this.#converter.boolean(toggleStr, false);
 
         if (role === undefined)
@@ -62,7 +62,7 @@ export class RoleSetMentionableSubtag extends CompiledSubtag {
         if (role.position >= topRole)
             throw new BBTagRuntimeError('Role above author');
 
-        const result = await this.#roles.edit(context, role.id, { mentionable });
+        const result = await this.#roles.edit(context.runtime, role.id, { mentionable });
 
         if (result === undefined || quiet)
             return;

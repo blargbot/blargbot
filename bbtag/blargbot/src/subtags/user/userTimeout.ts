@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -11,8 +11,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.userTimeout;
 
-@Subtag.names('userTimeout', 'timedoutUntil', 'userTimedoutUntil', 'memberTimeout', 'memberTimedoutUntil')
-@Subtag.ctorArgs('user')
+@Subtag.id('userTimeout', 'timedoutUntil', 'userTimedoutUntil', 'memberTimeout', 'memberTimedoutUntil')
+@Subtag.ctorArgs('users')
 export class UserTimeoutSubtag extends CompiledSubtag {
     readonly #users: UserService;
 
@@ -44,13 +44,13 @@ export class UserTimeoutSubtag extends CompiledSubtag {
     }
 
     public async findUserTimeout(
-        context: BBTagContext,
+        context: BBTagScript,
         format: string,
         userId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userId, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userId, { noLookup: quiet });
 
         if (user?.member === undefined) {
             throw new UserNotFoundError(userId)

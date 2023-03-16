@@ -5,7 +5,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.split;
 
-@Subtag.names('split')
+@Subtag.id('split')
 @Subtag.ctorArgs()
 export class SplitSubtag extends CompiledSubtag {
     public constructor() {

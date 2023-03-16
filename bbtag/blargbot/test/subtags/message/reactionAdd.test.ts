@@ -22,7 +22,7 @@ runSubtagTests({
             code: '{reactadd;🤔}',
             expected: '',
             assert(bbctx) {
-                chai.expect(bbctx.data.reactions).to.deep.equal(['🤔']);
+                chai.expect(bbctx.runtime.outputOptions.reactions).to.deep.equal(['🤔']);
             }
         },
         ...createGetMessagePropTestCases({
@@ -36,7 +36,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.dependencies.message.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think])))
+                        ctx.dependencies.messages.setup(m => m.addReactions(bbctx.runtime, channel.id, message.id, argument.isDeepEqual([think])))
                             .thenResolve({ success: [think], failed: [] });
                     }
                 },
@@ -56,7 +56,7 @@ runSubtagTests({
                 ctx.roles.bot.permissions = Discord.PermissionFlagsBits.AddReactions.toString();
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.reactions).to.deep.equal([think.toString(), notLikeCat.toString()]);
+                chai.expect(bbctx.runtime.outputOptions.reactions).to.deep.equal([think.toString(), notLikeCat.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
@@ -70,7 +70,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.dependencies.message.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
+                        ctx.dependencies.messages.setup(m => m.addReactions(bbctx.runtime, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
                             .thenResolve({ success: [think, notLikeCat], failed: [] });
                     }
                 }
@@ -83,7 +83,7 @@ runSubtagTests({
                 ctx.roles.bot.permissions = Discord.PermissionFlagsBits.AddReactions.toString();
             },
             assert(bbctx) {
-                chai.expect(bbctx.data.reactions).to.deep.equal([think.toString(), notLikeCat.toString()]);
+                chai.expect(bbctx.runtime.outputOptions.reactions).to.deep.equal([think.toString(), notLikeCat.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
@@ -97,7 +97,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.dependencies.message.setup(m => m.addReactions(bbctx, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
+                        ctx.dependencies.messages.setup(m => m.addReactions(bbctx.runtime, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
                             .thenResolve({ success: [think, notLikeCat], failed: [] });
                     }
                 }
@@ -114,7 +114,7 @@ runSubtagTests({
             code: '{reactadd;abc;🤔;ghi}',
             expected: '',
             assert(bbctx) {
-                chai.expect(bbctx.data.reactions).to.deep.equal(['🤔']);
+                chai.expect(bbctx.runtime.outputOptions.reactions).to.deep.equal(['🤔']);
             }
         },
         {
@@ -123,11 +123,11 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const message = SubtagTestContext.createMessage({
                     id: '2938456469267324234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
-                ctx.dependencies.message.setup(m => m.get(bbctx, ctx.channels.command.id, message.id)).thenResolve(message);
-                ctx.dependencies.message.setup(m => m.addReactions(bbctx, ctx.channels.command.id, message.id, argument.isDeepEqual([think])))
+                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, ctx.channels.command.id, message.id)).thenResolve(message);
+                ctx.dependencies.messages.setup(m => m.addReactions(bbctx.runtime, ctx.channels.command.id, message.id, argument.isDeepEqual([think])))
                     .thenResolve({ success: [], failed: [think] });
             },
             errors: [

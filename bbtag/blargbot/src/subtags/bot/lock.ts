@@ -1,5 +1,5 @@
 import type { SubtagArgument } from '../../arguments/index.js';
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { LockService } from '../../services/LockService.js';
@@ -10,7 +10,7 @@ import { tagVariableScopeProviders } from '../../variables/tagVariableScopeProvi
 
 const tag = textTemplates.subtags.lock;
 
-@Subtag.names('lock')
+@Subtag.id('lock')
 @Subtag.ctorArgs('lock')
 export class LockSubtag extends CompiledSubtag {
     readonly #lock: LockService;
@@ -34,12 +34,12 @@ export class LockSubtag extends CompiledSubtag {
     }
 
     public async lock(
-        context: BBTagContext,
+        context: BBTagScript,
         mode: string,
         key: string,
         code: SubtagArgument
     ): Promise<string> {
-        if (context.scopes.local.inLock)
+        if (context.runtime.scopes.local.inLock)
             throw new BBTagRuntimeError('Lock cannot be nested');
 
         mode = mode.toLowerCase();
@@ -55,13 +55,13 @@ export class LockSubtag extends CompiledSubtag {
         if (provider === undefined)
             throw new Error('Missing default variable scope!');
 
-        const scope = provider.getScope(context);
+        const scope = provider.getScope(context.runtime);
         const release = await this.#lock.acquire(scope, key.substring(provider.prefix.length), mode === 'write');
         try {
-            context.scopes.local.inLock = true;
+            context.runtime.scopes.local.inLock = true;
             return await code.wait();
         } finally {
-            context.scopes.local.inLock = false;
+            context.runtime.scopes.local.inLock = false;
             await release();
         }
     }

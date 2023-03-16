@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -8,7 +8,7 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.return;
 
-@Subtag.names('return')
+@Subtag.id('return')
 @Subtag.ctorArgs('converter')
 export class ReturnSubtag extends CompiledSubtag {
     readonly #converter: BBTagValueConverter;
@@ -31,8 +31,8 @@ export class ReturnSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
-    public setReturn(context: BBTagContext, forcedStr: string): void {
+    public setReturn(context: BBTagScript, forcedStr: string): void {
         const forced = this.#converter.boolean(forcedStr, true);
-        context.data.state = forced ? BBTagRuntimeState.ABORT : BBTagRuntimeState.RETURN;
+        context.runtime.state = forced ? BBTagRuntimeState.ABORT : BBTagRuntimeState.RETURN;
     }
 }

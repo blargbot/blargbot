@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import type { UserService } from '../../services/UserService.js';
@@ -10,8 +10,8 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.userHasRole;
 
-@Subtag.names('userHasRole', 'hasRole')
-@Subtag.ctorArgs('arrayTools', 'converter', 'user')
+@Subtag.id('userHasRole', 'hasRole')
+@Subtag.ctorArgs('arrayTools', 'converter', 'users')
 export class UserHasRoleSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #converter: BBTagValueConverter;
@@ -47,20 +47,20 @@ export class UserHasRoleSubtag extends CompiledSubtag {
     }
 
     public async userHasRole(
-        context: BBTagContext,
+        context: BBTagScript,
         roleStr: string,
         userStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const user = await this.#users.querySingle(context, userStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const user = await this.#users.querySingle(context.runtime, userStr, { noLookup: quiet });
         if (user?.member === undefined)
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? 'false' : undefined);
 
         const arr = this.#arrayTools.deserialize(roleStr) ?? { v: [roleStr] };
         const roleArr = arr.v.map(x => this.#converter.string(x));
-        const roleIds = new Set(context.guild.roles.map(r => r.id));
+        const roleIds = new Set(context.runtime.guild.roles.map(r => r.id));
 
         if (roleArr.every(role => !roleIds.has(role)))
             throw new RoleNotFoundError(roleStr)

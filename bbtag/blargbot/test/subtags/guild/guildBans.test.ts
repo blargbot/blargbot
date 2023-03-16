@@ -11,7 +11,7 @@ runSubtagTests({
             code: '{guildbans}',
             expected: '["23946327849364832","32967423897649864"]',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.findBanned(bbctx))
+                ctx.dependencies.users.setup(m => m.findBanned(bbctx.runtime))
                     .thenResolve([
                         '23946327849364832',
                         '32967423897649864'
@@ -25,7 +25,7 @@ runSubtagTests({
                 { start: 0, end: 11, error: new BBTagRuntimeError('Missing required permissions') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.user.setup(m => m.findBanned(bbctx)).thenResolve('noPerms');
+                ctx.dependencies.users.setup(m => m.findBanned(bbctx.runtime)).thenResolve('noPerms');
             }
         }
     ]

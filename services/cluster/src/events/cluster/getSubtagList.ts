@@ -16,9 +16,9 @@ export class ClusterGetSubtagListHandler extends ClusterEventService<'getSubtagL
         for (const t of this.cluster.bbtag.subtags.values()) {
             if (t.hidden)
                 continue;
-            tags[t.name] = {
+            tags[t.id] = {
                 category: t.category,
-                name: t.name,
+                name: t.id,
                 signatures: t.signatures.map(s => ({
                     ...s,
                     description: s.description[format](formatter),
@@ -28,7 +28,7 @@ export class ClusterGetSubtagListHandler extends ClusterEventService<'getSubtagL
                 })),
                 deprecated: t.deprecated,
                 staff: t.staff,
-                aliases: t.aliases,
+                aliases: t.names,
                 description: t.description?.[format](formatter)
             };
         }

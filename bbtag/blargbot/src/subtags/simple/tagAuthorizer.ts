@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.tagAuthorizer;
 
-@Subtag.names('tagAuthorizer', 'customCommandAuthorizer', 'ccAuthorizer')
+@Subtag.id('tagAuthorizer', 'customCommandAuthorizer', 'ccAuthorizer')
 @Subtag.ctorArgs()
 export class TagAuthorizerSubtag extends CompiledSubtag {
     public constructor() {
@@ -25,7 +25,7 @@ export class TagAuthorizerSubtag extends CompiledSubtag {
         });
     }
 
-    public getAuthorizer(context: BBTagContext): string {
-        return context.authorizer.id;
+    public getAuthorizer(context: BBTagScript): string {
+        return context.runtime.authorizer.id;
     }
 }

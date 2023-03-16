@@ -1,5 +1,5 @@
-import type { BBTagContext } from '../BBTagContext.js';
+import type { BBTagScript } from '../BBTagScript.js';
 
 export interface DeferredExecutionService {
-    defer(context: BBTagContext, content: string, delayMs: number): Promise<void>;
+    defer(context: BBTagScript, content: string, delayMs: number): Promise<void>;
 }

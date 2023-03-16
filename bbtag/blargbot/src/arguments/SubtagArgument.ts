@@ -1,13 +1,12 @@
-import type { Statement } from '@bbtag/language';
-
+import type { BBTagStatement } from '../BBTagStatement.js';
 import type { SubtagSignatureValueParameter } from '../types.js';
 
 export interface SubtagArgument {
     readonly parameter: SubtagSignatureValueParameter;
     readonly isCached: boolean;
     readonly value: string;
-    readonly code: Statement;
+    readonly code: BBTagStatement;
     readonly raw: string;
-    wait(): Promise<string>;
-    execute(): Promise<string>;
+    wait(): Awaitable<string>;
+    execute(): Awaitable<string>;
 }

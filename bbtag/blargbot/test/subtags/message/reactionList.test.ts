@@ -70,7 +70,7 @@ runSubtagTests({
                 {
                     expected: '[]',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.dependencies.message.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                        ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, channel.id, message.id, argument.isDeepEqual(think)))
                             .thenResolve([]);
                     }
                 },
@@ -81,7 +81,7 @@ runSubtagTests({
                         ctx.users.other.id = '32847623493687578962';
                         ctx.users.command.id = '29874394027843984987';
 
-                        ctx.dependencies.message.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                        ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, channel.id, message.id, argument.isDeepEqual(think)))
                             .thenResolve([ctx.users.bot.id, ctx.users.other.id, ctx.users.command.id]);
                     }
                 }
@@ -99,9 +99,9 @@ runSubtagTests({
                     expected: '[]',
                     postSetup(channel, message, bbctx, ctx) {
 
-                        ctx.dependencies.message.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                        ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, channel.id, message.id, argument.isDeepEqual(think)))
                             .thenResolve([]);
-                        ctx.dependencies.message.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
+                        ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
                             .thenResolve([]);
                     }
                 },
@@ -112,9 +112,9 @@ runSubtagTests({
                         ctx.users.other.id = '32847623493687578962';
                         ctx.users.command.id = '29874394027843984987';
 
-                        ctx.dependencies.message.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                        ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, channel.id, message.id, argument.isDeepEqual(think)))
                             .thenResolve([ctx.users.bot.id, ctx.users.other.id]);
-                        ctx.dependencies.message.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
+                        ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
                             .thenResolve([ctx.users.other.id, ctx.users.command.id]);
                     }
                 }
@@ -131,9 +131,9 @@ runSubtagTests({
                 {
                     expected: '[]',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.dependencies.message.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                        ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, channel.id, message.id, argument.isDeepEqual(think)))
                             .thenResolve([]);
-                        ctx.dependencies.message.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
+                        ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
                             .thenResolve([]);
                     }
                 },
@@ -144,9 +144,9 @@ runSubtagTests({
                         ctx.users.other.id = '32847623493687578962';
                         ctx.users.command.id = '29874394027843984987';
 
-                        ctx.dependencies.message.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(think)))
+                        ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, channel.id, message.id, argument.isDeepEqual(think)))
                             .thenResolve([ctx.users.bot.id, ctx.users.other.id]);
-                        ctx.dependencies.message.setup(m => m.getReactors(bbctx, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
+                        ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, channel.id, message.id, argument.isDeepEqual(notLikeCat)))
                             .thenResolve([ctx.users.other.id, ctx.users.command.id]);
                     }
                 }
@@ -161,10 +161,10 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const message = SubtagTestContext.createMessage({
                     id: '92384982642323432343',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
-                ctx.dependencies.message.setup(m => m.get(bbctx, ctx.channels.command.id, '92384982642323432343'))
+                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, ctx.channels.command.id, '92384982642323432343'))
                     .thenResolve(message);
             }
         },
@@ -177,12 +177,12 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const message = SubtagTestContext.createMessage({
                     id: '92384982642323432343',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
-                ctx.dependencies.message.setup(m => m.get(bbctx, ctx.channels.command.id, '92384982642323432343'))
+                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, ctx.channels.command.id, '92384982642323432343'))
                     .thenResolve(message);
-                ctx.dependencies.message.setup(m => m.getReactors(bbctx, ctx.channels.command.id, message.id, argument.isDeepEqual(fakeEmote)))
+                ctx.dependencies.messages.setup(m => m.getReactors(bbctx.runtime, ctx.channels.command.id, message.id, argument.isDeepEqual(fakeEmote)))
                     .thenResolve('unknownEmote');
             }
         }

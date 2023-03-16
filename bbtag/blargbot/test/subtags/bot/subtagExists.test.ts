@@ -39,13 +39,13 @@ runSubtagTests({
         {
             code: '{subtagexists;func.abc}',
             expected: 'false',
-            setup(ctx) {
-                ctx.rootScope.functions['abc'] = {
+            postSetup(bbctx) {
+                bbctx.runtime.defineSnippet('func.abc', {
                     end: { index: 0, line: 0, column: 0 },
                     start: { index: 0, line: 0, column: 0 },
                     source: '',
                     values: []
-                };
+                });
             }
         }
     ]

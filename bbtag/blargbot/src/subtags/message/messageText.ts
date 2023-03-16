@@ -1,4 +1,4 @@
-import type { BBTagContext } from '../../BBTagContext.js';
+import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import type { ChannelService } from '../../services/ChannelService.js';
@@ -9,8 +9,8 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.messageText;
 
-@Subtag.names('messageText', 'text')
-@Subtag.ctorArgs('channel', 'message')
+@Subtag.id('messageText', 'text')
+@Subtag.ctorArgs('channels', 'messages')
 export class MessageTextSubtag extends CompiledSubtag {
     readonly #channels: ChannelService;
     readonly #messages: MessageService;
@@ -25,7 +25,7 @@ export class MessageTextSubtag extends CompiledSubtag {
                     exampleCode: tag.trigger.exampleCode,
                     exampleOut: tag.trigger.exampleOut,
                     returns: 'string',
-                    execute: (ctx) => this.getMessageText(ctx, ctx.channel.id, ctx.message.id, false)
+                    execute: (ctx) => this.getMessageText(ctx, ctx.runtime.channel.id, ctx.runtime.message.id, false)
                 },
                 {
                     parameters: ['messageid'],
@@ -33,7 +33,7 @@ export class MessageTextSubtag extends CompiledSubtag {
                     exampleCode: tag.inCurrent.exampleCode,
                     exampleOut: tag.inCurrent.exampleOut,
                     returns: 'string',
-                    execute: (ctx, [messageId]) => this.getMessageText(ctx, ctx.channel.id, messageId.value, false)
+                    execute: (ctx, [messageId]) => this.getMessageText(ctx, ctx.runtime.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
@@ -51,19 +51,19 @@ export class MessageTextSubtag extends CompiledSubtag {
     }
 
     public async getMessageText(
-        context: BBTagContext,
+        context: BBTagScript,
         channelStr: string,
         messageStr: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
-        const channel = await this.#channels.querySingle(context, channelStr, { noLookup: quiet });
+        quiet ||= context.runtime.scopes.local.quiet ?? false;
+        const channel = await this.#channels.querySingle(context.runtime, channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const message = await this.#messages.get(context, channel.id, messageStr);
+        const message = await this.#messages.get(context.runtime, channel.id, messageStr);
         if (message === undefined) {
             throw new MessageNotFoundError(channel.id, messageStr)
                 .withDisplay(quiet ? '' : undefined);

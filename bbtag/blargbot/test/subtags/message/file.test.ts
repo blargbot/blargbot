@@ -12,27 +12,27 @@ runSubtagTests({
             code: '{file;abcdef;def}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.data.file).to.not.be.undefined.and.not.be.null;
-                chai.expect(ctx.data.file?.file).to.equal('YWJjZGVm');
-                chai.expect(ctx.data.file?.name).to.equal('def');
+                chai.expect(ctx.runtime.outputOptions.file).to.not.be.undefined.and.not.be.null;
+                chai.expect(ctx.runtime.outputOptions.file?.file).to.equal('YWJjZGVm');
+                chai.expect(ctx.runtime.outputOptions.file?.name).to.equal('def');
             }
         },
         {
             code: '{file;buffer:abcdef;def}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.data.file).to.not.be.undefined.and.not.be.null;
-                chai.expect(ctx.data.file?.file).to.equal('abcdef');
-                chai.expect(ctx.data.file?.name).to.equal('def');
+                chai.expect(ctx.runtime.outputOptions.file).to.not.be.undefined.and.not.be.null;
+                chai.expect(ctx.runtime.outputOptions.file?.file).to.equal('abcdef');
+                chai.expect(ctx.runtime.outputOptions.file?.name).to.equal('def');
             }
         },
         {
             code: '{file;Buffer:abcdef;def}',
             expected: '',
             assert(ctx) {
-                chai.expect(ctx.data.file).to.not.be.undefined.and.not.be.null;
-                chai.expect(ctx.data.file?.file).to.equal('QnVmZmVyOmFiY2RlZg==');
-                chai.expect(ctx.data.file?.name).to.equal('def');
+                chai.expect(ctx.runtime.outputOptions.file).to.not.be.undefined.and.not.be.null;
+                chai.expect(ctx.runtime.outputOptions.file?.file).to.equal('QnVmZmVyOmFiY2RlZg==');
+                chai.expect(ctx.runtime.outputOptions.file?.name).to.equal('def');
             }
         }
     ]

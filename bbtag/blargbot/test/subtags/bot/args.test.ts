@@ -7,7 +7,7 @@ runSubtagTests({
     subtag: Subtag.getDescriptor(ArgsSubtag),
     argCountBounds: { min: 0, max: 2 },
     setupEach(ctx) {
-        ctx.options.inputRaw = 'arg1 arg2 "arg3 arg3" arg4 "arg5"';
+        ctx.entrypoint.inputRaw = 'arg1 arg2 "arg3 arg3" arg4 "arg5"';
     },
     cases: [
         {
@@ -18,14 +18,14 @@ runSubtagTests({
             code: '{args}',
             expected: '',
             setup(ctx) {
-                ctx.options.inputRaw = '';
+                ctx.entrypoint.inputRaw = '';
             }
         },
         {
             code: '{args}',
             expected: '{json;{\n "key": "value"\n}}',
             setup(ctx) {
-                ctx.options.inputRaw = '{json;{\n  "key": "value"\n}}';
+                ctx.entrypoint.inputRaw = '{json;{\n  "key": "value"\n}}';
             }
         },
         {
