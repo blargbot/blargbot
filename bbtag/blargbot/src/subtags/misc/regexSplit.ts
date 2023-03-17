@@ -1,15 +1,18 @@
-import type { BBTagScript } from '../../BBTagScript.js';
-import { RegexSubtag } from '../../RegexSubtag.js';
+import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
+import { createRegex } from '../../utils/createRegex.js';
+import type { BBTagValueConverter } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.regexSplit;
 
 @Subtag.id('regexSplit')
-@Subtag.ctorArgs()
-export class RegexSplitSubtag extends RegexSubtag {
-    public constructor() {
+@Subtag.ctorArgs('converter')
+export class RegexSplitSubtag extends CompiledSubtag {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
             category: SubtagType.MISC,
             definition: [
@@ -19,14 +22,15 @@ export class RegexSplitSubtag extends RegexSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'string[]',
-                    execute: (ctx, [text, regex]) => this.regexSplit(ctx, text.value, regex.raw)
+                    execute: (_, [text, regex]) => this.regexSplit(text.value, regex.raw)
                 }
             ]
         });
+        this.#converter = converter;
     }
 
-    public regexSplit(context: BBTagScript, text: string, regexStr: string): string[] {
-        const regex = this.createRegex(context.runtime, regexStr);
+    public regexSplit(text: string, regexStr: string): string[] {
+        const regex = createRegex(this.#converter, regexStr);
         return text.split(regex);
     }
 }

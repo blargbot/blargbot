@@ -22,7 +22,7 @@ import { SubtagCollection } from './SubtagCollection.js';
 import type { SubtagExecutor } from './SubtagExecutor.js';
 import type { BBTagRuntimeScope, Entities, LocatedRuntimeError, RuntimeDebugEntry, TagVariableScope } from './types.js';
 import { BBTagRuntimeState } from './types.js';
-import type { BBTagArrayTools, BBTagValueConverter } from './utils/index.js';
+import type { BBTagValueConverter } from './utils/index.js';
 
 export class BBTagRuntime {
     readonly #subtags: SubtagCollection;
@@ -92,7 +92,6 @@ export class BBTagRuntime {
     public readonly messages: MessageService;
     public readonly sources: SourceProvider;
     public readonly converter: BBTagValueConverter;
-    public readonly arrayTools: BBTagArrayTools;
 
     public readonly outputOptions: OutputOptions;
     public get subtags(): ISubtagLookup {
@@ -138,7 +137,6 @@ export class BBTagRuntime {
         this.messages = services.messages;
         this.sources = services.sources;
         this.converter = services.converter;
-        this.arrayTools = services.arrayTools;
         this.authorId = config.authorId;
         this.bot = config.bot;
         this.authorizer = config.authorizer;
@@ -313,19 +311,6 @@ export class BBTagRuntime {
             return this.#sourceCache[cacheKey] = fetchedValue;
         return this.#sourceCache[cacheKey] = null;
     }
-
-    public async bulkLookup<T>(source: string, lookup: (value: string) => Awaitable<T | undefined>, error: new (term: string) => BBTagRuntimeError): Promise<T[] | undefined> {
-        if (source === '')
-            return undefined;
-
-        const flatSource = this.arrayTools.flattenArray([source]).map(i => this.converter.string(i));
-        return await Promise.all(flatSource.map(async input => {
-            const element = await lookup(input);
-            if (element === undefined)
-                throw new error(input);
-            return element;
-        }));
-    }
 }
 
 export interface BBTagRuntimeConfig {
@@ -352,7 +337,6 @@ export interface BBTagRuntimeServices {
     readonly messages: MessageService;
     readonly sources: SourceProvider;
     readonly converter: BBTagValueConverter;
-    readonly arrayTools: BBTagArrayTools;
     readonly variables: IVariableProvider<BBTagRuntime, TagVariableScope>;
     readonly middleware: Iterable<SubtagInvocationMiddleware>;
     readonly subtags: Iterable<ISubtag>;

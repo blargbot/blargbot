@@ -3,6 +3,7 @@ import { hasValue } from '@blargbot/guards';
 
 import type { BBTagCall } from './BBTagCall.js';
 import type { BBTagScript } from './BBTagScript.js';
+import type { BBTagRuntimeError } from './errors/index.js';
 import type { ISubtag } from './ISubtag.js';
 import type { BBTagLogger, ChannelService, DeferredExecutionService, DomainFilterService, DumpService, GuildService, LockService, MessageService, ModLogService, RoleService, StaffService, TimezoneProvider, UserService, WarningService } from './services/index.js';
 import type { SubtagDescriptor } from './services/SubtagDescriptor.js';
@@ -92,6 +93,25 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>>, ISu
     }
 
     public abstract execute(context: BBTagScript, subtagName: string, subtag: BBTagCall): Awaitable<string>;
+
+    protected async bulkLookup<T>(
+        source: string,
+        lookup: (value: string) => Awaitable<T | undefined>,
+        error: new (term: string) => BBTagRuntimeError,
+        arrayTools: BBTagArrayTools,
+        converter: BBTagValueConverter
+    ): Promise<T[] | undefined> {
+        if (source === '')
+            return undefined;
+        const items = arrayTools.deserialize(source)?.v ?? [source];
+        return await Promise.all(items.map(async input => {
+            const asString = converter.string(input);
+            const element = await lookup(asString);
+            if (element === undefined)
+                throw new error(asString);
+            return element;
+        }));
+    }
 }
 
 type SubtagCtorArgFactory<T> = (context: InjectionContext) => T

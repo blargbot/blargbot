@@ -3,7 +3,6 @@ export * from './BBTagRuntime.js';
 export * from './arguments/index.js';
 export * from './ISubtag.js';
 export * from './Subtag.js';
-export * from './RegexSubtag.js';
 export * from './variables/index.js';
 export * from './BBTagScript.js';
 export * from './limits/index.js';

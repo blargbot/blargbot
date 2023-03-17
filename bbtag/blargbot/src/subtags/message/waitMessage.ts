@@ -7,6 +7,7 @@ import type { MessageService } from '../../services/MessageService.js';
 import type { UserService } from '../../services/UserService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
+import type { BBTagArrayTools } from '../../utils/index.js';
 import { overrides, SubtagType } from '../../utils/index.js';
 import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
@@ -24,14 +25,15 @@ const defaultCondition: BBTagStatement = {
 };
 
 @Subtag.id('waitMessage')
-@Subtag.ctorArgs('users', 'channels', 'messages', 'converter')
+@Subtag.ctorArgs('users', 'channels', 'messages', 'arrayTools', 'converter')
 export class WaitMessageSubtag extends CompiledSubtag {
     readonly #users: UserService;
     readonly #converter: BBTagValueConverter;
     readonly #channels: ChannelService;
     readonly #messages: MessageService;
+    readonly #arrayTools: BBTagArrayTools;
 
-    public constructor(users: UserService, channels: ChannelService, messages: MessageService, converter: BBTagValueConverter) {
+    public constructor(users: UserService, channels: ChannelService, messages: MessageService, arrayTools: BBTagArrayTools, converter: BBTagValueConverter) {
         super({
             category: SubtagType.MESSAGE,
             description: tag.description({ disabled: overrides.waitmessage }),
@@ -58,6 +60,7 @@ export class WaitMessageSubtag extends CompiledSubtag {
         this.#users = users;
         this.#channels = channels;
         this.#messages = messages;
+        this.#arrayTools = arrayTools;
         this.#converter = converter;
     }
 
@@ -68,10 +71,10 @@ export class WaitMessageSubtag extends CompiledSubtag {
         condition: BBTagStatement,
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string]> {
-        const channels = await context.runtime.bulkLookup(channelStr, i => this.#channels.querySingle(context.runtime, i, { noLookup: true }), ChannelNotFoundError)
+        const channels = await this.bulkLookup(channelStr, i => this.#channels.querySingle(context.runtime, i, { noLookup: true }), ChannelNotFoundError, this.#arrayTools, this.#converter)
             ?? [context.runtime.channel];
 
-        const users = await context.runtime.bulkLookup(userStr, i => this.#users.querySingle(context.runtime, i, { noLookup: true }), UserNotFoundError)
+        const users = await this.bulkLookup(userStr, i => this.#users.querySingle(context.runtime, i, { noLookup: true }), UserNotFoundError, this.#arrayTools, this.#converter)
             ?? [context.runtime.user];
 
         let timeout = this.#converter.float(timeoutStr);

@@ -1,15 +1,18 @@
-import type { BBTagScript } from '../../BBTagScript.js';
-import { RegexSubtag } from '../../RegexSubtag.js';
+import { CompiledSubtag } from '../../compilation/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
+import { createRegex } from '../../utils/createRegex.js';
+import type { BBTagValueConverter } from '../../utils/index.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = textTemplates.subtags.regexTest;
 
 @Subtag.id('regexTest')
-@Subtag.ctorArgs()
-export class RegexTestSubtag extends RegexSubtag {
-    public constructor() {
+@Subtag.ctorArgs('converter')
+export class RegexTestSubtag extends CompiledSubtag {
+    readonly #converter: BBTagValueConverter;
+
+    public constructor(converter: BBTagValueConverter) {
         super({
             category: SubtagType.MISC,
             definition: [
@@ -19,14 +22,15 @@ export class RegexTestSubtag extends RegexSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [text, regex]) => this.regexTest(ctx, text.value, regex.raw)
+                    execute: (_, [text, regex]) => this.regexTest(text.value, regex.raw)
                 }
             ]
         });
+        this.#converter = converter;
     }
 
-    public regexTest(context: BBTagScript, text: string, regexStr: string): boolean {
-        const regex = this.createRegex(context.runtime, regexStr);
+    public regexTest(text: string, regexStr: string): boolean {
+        const regex = createRegex(this.#converter, regexStr);
         return regex.test(text);
     }
 }

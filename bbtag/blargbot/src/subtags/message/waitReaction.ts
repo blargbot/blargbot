@@ -78,7 +78,7 @@ export class WaitReactionSubtag extends CompiledSubtag {
     ): Promise<[channelId: string, messageId: string, userId: string, emoji: string]> {
         const messages = this.#arrayTools.flattenArray([messageStr]).map(i => this.#converter.string(i));
         const channels = this.#channels.getAll(context.runtime);
-        const users = await context.runtime.bulkLookup(userIDStr, i => this.#users.querySingle(context.runtime, i, { noErrors: true, noLookup: true }), UserNotFoundError)
+        const users = await this.bulkLookup(userIDStr, i => this.#users.querySingle(context.runtime, i, { noErrors: true, noLookup: true }), UserNotFoundError, this.#arrayTools, this.#converter)
             ?? [context.runtime.user];
 
         // parse reactions

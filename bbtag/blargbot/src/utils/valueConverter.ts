@@ -8,7 +8,7 @@ import { createEmbedParser } from './embedParser.js';
 export interface BBTagValueConverter {
     int(this: void, value: string, options?: { strict?: boolean; radix?: number; }): number | undefined;
     float(this: void, value: string, options?: { strict?: boolean; }): number | undefined;
-    string(this: void, value: JToken | undefined, includeNull?: boolean): string;
+    string(this: void, value: JToken | undefined): string;
     boolean(this: void, value: string | boolean | number | undefined, defValue: boolean, includeNumbers?: boolean): boolean;
     boolean(this: void, value: string | boolean | number | undefined, defValue?: undefined, includeNumbers?: boolean): boolean | undefined;
     duration(this: void, text: string, fallbackMs: moment.Duration): moment.Duration;
@@ -33,11 +33,11 @@ export function createValueConverter(options: ValueConverterOptions): BBTagValue
         float,
         color,
         regex,
-        string: function convertToString(this: void, value: JToken | undefined, includeNull = false): string {
+        string: function convertToString(this: void, value: JToken | undefined): string {
             if (typeof value === 'object') {
                 if (value !== null)
                     return JSON.stringify(value);
-                return includeNull ? 'null' : '';
+                return '';
             } else if (value !== undefined) {
                 return value.toString();
             }
