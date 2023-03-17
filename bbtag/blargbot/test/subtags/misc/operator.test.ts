@@ -1,5 +1,5 @@
 import type { LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '@bbtag/blargbot';
-import { InvalidOperatorError, ordinalOperators, stringOperators, Subtag } from '@bbtag/blargbot';
+import { InvalidOperatorError, ordinalOperators, stringOperators } from '@bbtag/blargbot';
 import { OperatorSubtag } from '@bbtag/blargbot/subtags';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
@@ -16,7 +16,7 @@ const doesntContain = { 'startswith': false, 'endswith': false, 'includes': fals
 const isFalse = { '!=': false, '<': false, '<=': false, '==': false, '>': false, '>=': false } as const;
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(OperatorSubtag),
+    subtag: OperatorSubtag,
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {

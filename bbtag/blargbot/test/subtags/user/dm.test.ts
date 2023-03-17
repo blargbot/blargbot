@@ -1,5 +1,5 @@
 import type { Entities } from '@bbtag/blargbot';
-import { Subtag, UserNotFoundError } from '@bbtag/blargbot';
+import { UserNotFoundError } from '@bbtag/blargbot';
 import { DMSubtag, EscapeBBTagSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import { randomUUID } from 'crypto';
@@ -7,7 +7,7 @@ import { randomUUID } from 'crypto';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(DMSubtag),
+    subtag: DMSubtag,
     argCountBounds: { min: 2, max: 3 },
     cases: [
         {
@@ -19,7 +19,7 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 ctx.entrypoint.name = 'mySuperCoolTestingTag';
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'aaaa')).verifiable(1).thenResolve(undefined);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'aaaa')).verifiable(1).thenResolve(undefined);
             }
         },
         {
@@ -30,69 +30,69 @@ runSubtagTests({
                 const userId = randomUUID();
                 const channelId = randomUUID();
                 user.setup(m => m.id).thenReturn(userId);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(1).thenResolve(channelId);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.inject.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(1).thenResolve(channelId);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(1)
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: 'Hello!' })))
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: 'Hello!' })))
                     .verifiable(1)
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
             }
         },
         {
             code: '{dm;other user;{escapebbtag;{ "title": "Hi!" }}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 const userId = randomUUID();
                 const channelId = randomUUID();
                 user.setup(m => m.id).thenReturn(userId);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(1).thenResolve(channelId);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.inject.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(1).thenResolve(channelId);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(1)
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ embeds: [{ title: 'Hi!' }] })))
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ embeds: [{ title: 'Hi!' }] })))
                     .verifiable(1)
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
             }
         },
         {
             code: '{dm;other user;Hello there!;{escapebbtag;{ "title": "General Kenobi!" }}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 const userId = randomUUID();
                 const channelId = randomUUID();
                 user.setup(m => m.id).thenReturn(userId);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(1).thenResolve(channelId);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.inject.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(1).thenResolve(channelId);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(1)
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] })))
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] })))
                     .verifiable(1)
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
             }
         },
         {
             code: '{dm;other user;{escapebbtag;{ "title": "this isnt actually an embed" }};{escapebbtag;{ "title": "General Kenobi!" }}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
                 const userId = randomUUID();
                 const channelId = randomUUID();
                 user.setup(m => m.id).thenReturn(userId);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
-                ctx.dependencies.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(1).thenResolve(channelId);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(1).thenResolve(user.instance);
+                ctx.inject.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(1).thenResolve(channelId);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(1)
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] })))
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] })))
                     .verifiable(1)
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
             }
@@ -105,12 +105,12 @@ runSubtagTests({
                 const userId = randomUUID();
                 const channelId = randomUUID();
                 user.setup(m => m.id).thenReturn(userId);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(5).thenResolve(user.instance);
-                ctx.dependencies.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(5).thenResolve(channelId);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(5).thenResolve(user.instance);
+                ctx.inject.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(5).thenResolve(channelId);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(1)
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: 'Hi!' })))
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: 'Hi!' })))
                     .verifiable(x => x.times(5))
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
             }
@@ -123,12 +123,12 @@ runSubtagTests({
                 const userId = randomUUID();
                 const channelId = randomUUID();
                 user.setup(m => m.id).thenReturn(userId);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(6).thenResolve(user.instance);
-                ctx.dependencies.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(6).thenResolve(channelId);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user')).verifiable(6).thenResolve(user.instance);
+                ctx.inject.channels.setup(m => m.getDmChannelId(bbctx.runtime, userId)).verifiable(6).thenResolve(channelId);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
                     .verifiable(2)
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: 'Hi!' })))
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, channelId, argument.isDeepEqual({ content: 'Hi!' })))
                     .verifiable(x => x.times(6))
                     .thenResolve(ctx.createMock<Entities.Message>().instance);
             }

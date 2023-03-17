@@ -1,16 +1,15 @@
-import { Subtag } from '@bbtag/blargbot';
 import { EmbedSubtag, EscapeBBTagSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(EmbedSubtag),
+    subtag: EmbedSubtag,
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             assert(ctx) {
                 chai.expect(ctx.runtime.outputOptions.embeds).to.deep.equal([
@@ -20,7 +19,7 @@ runSubtagTests({
         },
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"author":{ "name": "abc" }}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             assert(ctx) {
                 chai.expect(ctx.runtime.outputOptions.embeds).to.deep.equal([
@@ -31,7 +30,7 @@ runSubtagTests({
         },
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"title": false}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             assert(ctx) {
                 chai.expect(ctx.runtime.outputOptions.embeds).to.deep.equal([
@@ -42,7 +41,7 @@ runSubtagTests({
         },
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"author":{ "name": "abc" }}};{escapebbtag;[{"title":"embed array 1"}, {"title": "embed array 2"}]}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             assert(ctx) {
                 chai.expect(ctx.runtime.outputOptions.embeds).to.deep.equal([

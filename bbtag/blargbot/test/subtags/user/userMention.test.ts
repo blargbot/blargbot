@@ -1,5 +1,4 @@
 import type { Entities } from '@bbtag/blargbot';
-import { Subtag } from '@bbtag/blargbot';
 import { UserMentionSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
@@ -8,7 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(UserMentionSubtag),
+    subtag: UserMentionSubtag,
     argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetUserPropTestCases({
@@ -85,7 +84,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '98765434512212678', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(user.instance);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '98765434512212678', argument.isDeepEqual({ noLookup: false }))).verifiable(1).thenResolve(user.instance);
                 user.setup(m => m.id).thenReturn('98765434512212678');
             },
             assert(ctx) {

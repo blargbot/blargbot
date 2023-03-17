@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { HashSubtag } from '@bbtag/blargbot/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
@@ -8,7 +8,7 @@ function hashMissing(algorithm: string): boolean {
 }
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(HashSubtag),
+    subtag: HashSubtag,
     argCountBounds: { min: 1, max: 2 },
     cases: [
         { code: '{hash;brown}', expected: '94011702' },

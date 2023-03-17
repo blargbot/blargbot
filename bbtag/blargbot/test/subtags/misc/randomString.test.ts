@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError, NotANumberError } from '@bbtag/blargbot';
 import { RandomStringSubtag } from '@bbtag/blargbot/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RandomStringSubtag),
+    subtag: RandomStringSubtag,
     argCountBounds: { min: 2, max: 2 },
     cases: [
         { code: '{randstr;abcdefg;5}', expected: /^([a-g])(?!\1{4})[a-g]{4}$/, retries: 5 },

@@ -1,4 +1,3 @@
-import { Subtag } from '@bbtag/blargbot';
 import { RoleMentionSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
@@ -7,7 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RoleMentionSubtag),
+    subtag: RoleMentionSubtag,
     argCountBounds: { min: 1, max: 3 },
     cases: [
         ...createGetRolePropTestCases({
@@ -34,7 +33,7 @@ runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
             },
             assert(bbctx) {
                 chai.expect(bbctx.runtime.outputOptions.mentionRoles).to.deep.equal(new Set(['347865137576334534']));
@@ -47,7 +46,7 @@ runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
             },
             assert(bbctx) {
                 chai.expect(bbctx.runtime.outputOptions.mentionRoles).to.deep.equal(new Set([]));
@@ -60,7 +59,7 @@ runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, 'other role', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.other);
             },
             assert(bbctx) {
                 chai.expect(bbctx.runtime.outputOptions.mentionRoles).to.deep.equal(new Set(['347865137576334534']));

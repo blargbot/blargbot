@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { RegexSplitSubtag } from '@bbtag/blargbot/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RegexSplitSubtag),
+    subtag: RegexSplitSubtag,
     argCountBounds: { min: 2, max: { count: 2, noEval: [1] } },
     cases: [
         { code: '{regexsplit;a1b2c3d4e5c6;/[bc]\\d/g}', expected: '["a1","","d4e5",""]' },

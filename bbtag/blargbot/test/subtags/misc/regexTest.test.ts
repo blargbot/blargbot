@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { RegexTestSubtag } from '@bbtag/blargbot/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RegexTestSubtag),
+    subtag: RegexTestSubtag,
     argCountBounds: { min: 2, max: { count: 2, noEval: [1] } },
     cases: [
         { code: '{regextest;a1b2c3d4e5c6;/[bc]\\d/g}', expected: 'true' },

@@ -1,31 +1,31 @@
-import { Subtag, TagVariableType } from '@bbtag/blargbot';
+import { TagVariableType } from '@bbtag/blargbot';
 import { JsonCleanSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(JsonCleanSubtag),
+    subtag: JsonCleanSubtag,
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {
             code: '{jsonclean;{j;{"test":"[]"}}}',
             expected: '{"test":[]}',
-            subtags: [Subtag.getDescriptor(JsonSubtag)]
+            subtags: [JsonSubtag]
         },
         {
             code: '{jsonclean;{j;{"test":"[\\"{}\\"]"}}}',
             expected: '{"test":[{}]}',
-            subtags: [Subtag.getDescriptor(JsonSubtag)]
+            subtags: [JsonSubtag]
         },
         {
             code: '{jsonclean;{j;["test","[\\"{}\\"]"]}}',
             expected: '["test",[{}]]',
-            subtags: [Subtag.getDescriptor(JsonSubtag)]
+            subtags: [JsonSubtag]
         },
         {
             code: '{jsonclean;{j;{"n":"arr1","v":["abc","{\\"x\\":\\"5\\"}"]}}}',
             expected: '["abc",{"x":"5"}]',
-            subtags: [Subtag.getDescriptor(JsonSubtag)]
+            subtags: [JsonSubtag]
         },
         {
             code: '{jsonclean;arr1}',

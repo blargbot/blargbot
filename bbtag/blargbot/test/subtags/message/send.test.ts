@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, ChannelNotFoundError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError, ChannelNotFoundError } from '@bbtag/blargbot';
 import { EscapeBBTagSubtag, SendSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -7,7 +7,7 @@ import chai from 'chai';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(SendSubtag),
+    subtag: SendSubtag,
     argCountBounds: { min: 2, max: 5 },
     cases: [
         {
@@ -17,7 +17,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new ChannelNotFoundError('1923681361978632931') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve();
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve();
             }
         },
         {
@@ -40,8 +40,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -74,8 +74,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -108,8 +108,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -145,8 +145,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -164,7 +164,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -185,8 +185,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -224,8 +224,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -241,7 +241,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -262,8 +262,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -279,7 +279,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -300,8 +300,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -319,7 +319,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -340,8 +340,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -357,7 +357,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -378,8 +378,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'file.txt' }],
@@ -397,7 +397,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -418,8 +418,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'file.txt' }],
@@ -435,7 +435,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -456,8 +456,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -478,7 +478,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -499,8 +499,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -519,7 +519,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content;test.zip}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -540,8 +540,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'test.zip' }],
@@ -559,7 +559,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content;test.zip}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -580,8 +580,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'bXkgZmlsZSBjb250ZW50', name: 'test.zip' }],
@@ -597,7 +597,7 @@ runSubtagTests({
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef;test.zip}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -618,8 +618,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -640,7 +640,7 @@ runSubtagTests({
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef;test.zip}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -661,8 +661,8 @@ runSubtagTests({
                 for (const user of userMentions)
                     bbctx.runtime.outputOptions.mentionUsers.add(user);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1923681361978632931', argument.isDeepEqual({ noLookup: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.create(bbctx.runtime, general.id, argument.isDeepEqual({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{

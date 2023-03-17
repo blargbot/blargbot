@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@bbtag/blargbot';
 import { EditSubtag, EscapeBBTagSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
@@ -6,7 +6,7 @@ import chai from 'chai';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(EditSubtag),
+    subtag: EditSubtag,
     argCountBounds: { min: 2, max: 4 },
     cases: [
         {
@@ -17,7 +17,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(undefined);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(undefined);
             },
             errors: [
                 { start: 0, end: 41, error: new MessageNotFoundError('987654321123456789', '12345678901234567') }
@@ -35,7 +35,7 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.command);
 
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
             },
             errors: [
                 { start: 0, end: 41, error: new BBTagRuntimeError('I must be the message author') }
@@ -52,7 +52,7 @@ runSubtagTests({
                     content: 'Original message text'
                 }, ctx.users.bot);
 
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
             },
             errors: [
                 { start: 0, end: 32, error: new BBTagRuntimeError('Message cannot be empty') }
@@ -69,8 +69,8 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
                     content: 'New message text',
                     embeds: argument.exact(message.embeds)
                 }))).thenResolve();
@@ -78,7 +78,7 @@ runSubtagTests({
         },
         {
             code: '{edit;12345678901234567;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = SubtagTestContext.createMessage({
@@ -88,8 +88,8 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
                     content: 'Original message text',
                     embeds: [{ title: 'New embed!' }]
                 }))).thenResolve();
@@ -97,7 +97,7 @@ runSubtagTests({
         },
         {
             code: '{edit;12345678901234567;{escapebbtag;{"title":false}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = SubtagTestContext.createMessage({
@@ -107,8 +107,8 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
                     content: '{"title":false}',
                     embeds: argument.exact(message.embeds)
                 }))).thenResolve();
@@ -125,8 +125,8 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
                     content: '',
                     embeds: argument.exact(message.embeds)
                 }))).thenResolve();
@@ -134,7 +134,7 @@ runSubtagTests({
         },
         {
             code: '{edit;12345678901234567;New message text;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = SubtagTestContext.createMessage({
@@ -144,9 +144,9 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '12345678901234567', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '12345678901234567', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
                     content: 'New message text',
                     embeds: [{ title: 'New embed!' }]
                 }))).thenResolve();
@@ -154,7 +154,7 @@ runSubtagTests({
         },
         {
             code: '{edit;12345678901234567;{escapebbtag;{"title":"New embed!"}};New message text}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = SubtagTestContext.createMessage({
@@ -164,9 +164,9 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '12345678901234567', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '12345678901234567', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, bbctx.runtime.channel.id, message.id, argument.isDeepEqual({
                     content: '{"title":"New embed!"}',
                     embeds: [{ fields: [{ name: 'Malformed JSON', value: '"New message text"' }] }]
                 }))).thenResolve();
@@ -184,8 +184,8 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '12345678901234567', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '12345678901234567', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678901234567')).thenResolve(message);
             },
             errors: [
                 { start: 0, end: 40, error: new BBTagRuntimeError('Message cannot be empty') }
@@ -207,9 +207,9 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channel.id, argument.isDeepEqual({ noLookup: true }))).thenResolve(channel);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, channel.id, argument.isDeepEqual({ noLookup: true }))).thenResolve(channel);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, channel.id, message.id, argument.isDeepEqual({
                     content: 'New message text',
                     embeds: argument.exact(message.embeds)
                 }))).thenResolve();
@@ -217,7 +217,7 @@ runSubtagTests({
         },
         {
             code: '{edit;9876543212345678;12345678901234567;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
@@ -232,9 +232,9 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channel.id, argument.isDeepEqual({ noLookup: true }))).thenResolve(channel);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, channel.id, argument.isDeepEqual({ noLookup: true }))).thenResolve(channel);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, channel.id, message.id, argument.isDeepEqual({
                     content: 'Original message text',
                     embeds: [{ title: 'New embed!' }]
                 }))).thenResolve();
@@ -242,7 +242,7 @@ runSubtagTests({
         },
         {
             code: '{edit;9876543212345678;12345678901234567;{escapebbtag;{"title":false}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
@@ -257,9 +257,9 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channel.id, argument.isDeepEqual({ noLookup: true }))).thenResolve(channel);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, channel.id, argument.isDeepEqual({ noLookup: true }))).thenResolve(channel);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, channel.id, message.id, argument.isDeepEqual({
                     content: '{"title":false}',
                     embeds: argument.exact(message.embeds)
                 }))).thenResolve();
@@ -281,9 +281,9 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channel.id, argument.isDeepEqual({ noLookup: true }))).thenResolve(channel);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, channel.id, argument.isDeepEqual({ noLookup: true }))).thenResolve(channel);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, channel.id, message.id, argument.isDeepEqual({
                     content: '',
                     embeds: argument.exact(message.embeds)
                 }))).thenResolve();
@@ -291,7 +291,7 @@ runSubtagTests({
         },
         {
             code: '{edit;9876543212345678;12345678901234567;New message text;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
@@ -306,9 +306,9 @@ runSubtagTests({
                     embeds: [{ title: 'Original embed' }]
                 }, ctx.users.bot);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channel.id, argument.isDeepEqual({ noLookup: true }))).thenResolve(channel);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, channel.id, '12345678901234567')).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.edit(bbctx.runtime, channel.id, message.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, channel.id, argument.isDeepEqual({ noLookup: true }))).thenResolve(channel);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, channel.id, '12345678901234567')).thenResolve(message);
+                ctx.inject.messages.setup(m => m.edit(bbctx.runtime, channel.id, message.id, argument.isDeepEqual({
                     content: 'New message text',
                     embeds: [{ title: 'New embed!' }]
                 }))).thenResolve();
@@ -317,10 +317,10 @@ runSubtagTests({
         {
             title: 'When no channel is found',
             code: '{edit;9876543212345678;12345678901234567;New message text;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             expected: '`No channel found`',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '9876543212345678', argument.isDeepEqual({ noLookup: true }))).thenResolve();
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '9876543212345678', argument.isDeepEqual({ noLookup: true }))).thenResolve();
             },
             errors: [
                 { start: 0, end: 95, error: new ChannelNotFoundError('9876543212345678') }

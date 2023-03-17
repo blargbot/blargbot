@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { ChannelEditSubtag, EscapeBBTagSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -6,7 +6,7 @@ import { argument } from '@blargbot/test-util/mock.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ChannelEditSubtag),
+    subtag: ChannelEditSubtag,
     argCountBounds: { min: 1, max: 2 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageChannels.toString();
@@ -21,8 +21,8 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = ctx.channels.general;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -52,8 +52,8 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = ctx.channels.general;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -87,14 +87,14 @@ runSubtagTests({
                 locked: true
             })}}}`,
             expected: '1293671282973698',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
             },
             postSetup(bbctx, ctx) {
                 const channel = ctx.channels.general;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
                     bitrate: 123,
                     name: 'new channel name',
                     nsfw: true,
@@ -125,15 +125,15 @@ runSubtagTests({
                 invitable: true
             })}}}`,
             expected: '1293671282973698',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
                 ctx.channels.general.type = Discord.ChannelType.GuildPublicThread;
             },
             postSetup(bbctx, ctx) {
                 const channel = ctx.channels.general;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
                     archived: true,
                     autoArchiveDuration: 4320,
                     locked: true,
@@ -167,14 +167,14 @@ runSubtagTests({
                 locked: 'true'
             })}}}`,
             expected: '1293671282973698',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
             },
             postSetup(bbctx, ctx) {
                 const channel = ctx.channels.general;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
                     bitrate: 123,
                     name: 'new channel name',
                     nsfw: true,
@@ -205,15 +205,15 @@ runSubtagTests({
                 invitable: 'true'
             })}}}`,
             expected: '1293671282973698',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
                 ctx.channels.general.type = Discord.ChannelType.PublicThread;
             },
             postSetup(bbctx, ctx) {
                 const channel = ctx.channels.general;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({
                     archived: true,
                     autoArchiveDuration: 4320,
                     locked: true,
@@ -240,13 +240,13 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Channel does not exist') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve();
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve();
             }
         },
         {
             code: '{channeledit;1293671282973698}',
             expected: '`Author cannot edit this channel`',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             errors: [
                 { start: 0, end: 30, error: new BBTagRuntimeError('Author cannot edit this channel') }
             ],
@@ -255,7 +255,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = ctx.channels.general;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
             }
         },
         {
@@ -269,13 +269,13 @@ runSubtagTests({
                 invitable: true
             })}}}`,
             expected: '`Invalid JSON`',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             errors: [
                 { start: 0, end: 168, error: new BBTagRuntimeError('Invalid JSON') }
             ],
             postSetup(bbctx, ctx) {
                 const channel = ctx.channels.general;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
             }
         },
         {
@@ -292,7 +292,7 @@ runSubtagTests({
                 locked: true
             })}}}`,
             expected: '`Invalid JSON`',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             errors: [
                 { start: 0, end: 243, error: new BBTagRuntimeError('Invalid JSON') }
             ],
@@ -301,7 +301,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = ctx.channels.general;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '1293671282973698')).thenResolve(channel);
             }
         },
         {
@@ -313,8 +313,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '2384762844234324')).thenResolve(ctx.channels.command);
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, ctx.channels.command.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '2384762844234324')).thenResolve(ctx.channels.command);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, ctx.channels.command.id, argument.isDeepEqual({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -343,8 +343,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '2384762844234324')).thenResolve(ctx.channels.command);
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, ctx.channels.command.id, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '2384762844234324')).thenResolve(ctx.channels.command);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, ctx.channels.command.id, argument.isDeepEqual({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,

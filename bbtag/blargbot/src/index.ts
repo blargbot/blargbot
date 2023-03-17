@@ -1,6 +1,5 @@
 export * from './utils/index.js';
 export * from './BBTagRuntime.js';
-export * from './BBTagRunner.js';
 export * from './arguments/index.js';
 export * from './ISubtag.js';
 export * from './Subtag.js';

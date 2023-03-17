@@ -1,10 +1,10 @@
-import { Subtag, TagVariableType } from '@bbtag/blargbot';
+import { TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag, IsArraySubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(IsArraySubtag),
+    subtag: IsArraySubtag,
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{isarray;[1,2,3]}', expected: 'true' },
@@ -15,7 +15,7 @@ runSubtagTests({
         {
             code: '{isarray;{get;arr1}}',
             expected: 'true',
-            subtags: [Subtag.getDescriptor(GetSubtag)],
+            subtags: [GetSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);

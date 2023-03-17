@@ -1,10 +1,10 @@
-import { NotANumberError, Subtag } from '@bbtag/blargbot';
+import { NotANumberError } from '@bbtag/blargbot';
 import { SpaceSubtag } from '@bbtag/blargbot/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(SpaceSubtag),
+    subtag: SpaceSubtag,
     argCountBounds: { min: 0, max: 1 },
     cases: [
         { code: '{space}', expected: ' ' },

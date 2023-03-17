@@ -1,11 +1,11 @@
-import { Subtag, TagVariableType } from '@bbtag/blargbot';
+import { TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag, ReverseSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ReverseSubtag),
+    subtag: ReverseSubtag,
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{reverse;abcdefg}', expected: 'gfedcba' },
@@ -23,7 +23,7 @@ runSubtagTests({
         {
             code: '{reverse;{get;_myArray}}',
             expected: '',
-            subtags: [Subtag.getDescriptor(GetSubtag)],
+            subtags: [GetSubtag],
             setup(ctx) {
                 ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myArray' }, ['abc', 'def', 'ghi']);
             },

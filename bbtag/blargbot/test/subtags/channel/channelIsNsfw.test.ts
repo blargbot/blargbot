@@ -1,4 +1,3 @@
-import { Subtag } from '@bbtag/blargbot';
 import { ChannelIsNsfwSubtag } from '@bbtag/blargbot/subtags';
 import type Discord from '@blargbot/discord-types';
 
@@ -6,7 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ChannelIsNsfwSubtag),
+    subtag: ChannelIsNsfwSubtag,
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({

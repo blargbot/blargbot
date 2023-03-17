@@ -2,11 +2,12 @@ import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
 
 import type { BBTagCall } from './BBTagCall.js';
-import type { BBTagRunner } from './BBTagRunner.js';
 import type { BBTagScript } from './BBTagScript.js';
 import type { ISubtag } from './ISubtag.js';
+import type { BBTagLogger, ChannelService, DeferredExecutionService, DomainFilterService, DumpService, GuildService, LockService, MessageService, ModLogService, RoleService, StaffService, TimezoneProvider, UserService, WarningService } from './services/index.js';
 import type { SubtagDescriptor } from './services/SubtagDescriptor.js';
 import type { SubtagOptions, SubtagSignature } from './types.js';
+import type { BBTagArrayTools, BBTagJsonTools, BBTagOperators, BBTagValueConverter } from './utils/index.js';
 import type { SubtagType } from './utils/subtagType.js';
 
 const factoryKey: unique symbol = Symbol();
@@ -53,23 +54,21 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>>, ISu
                 configurable: false,
                 enumerable: false,
                 writable: false,
-                value: (runner: BBTagRunner) => new type(...argFactories.map(x => x(runner)))
+                value: (runner: InjectionContext) => new type(...argFactories.map(x => x(runner)))
             });
         };
     }
 
-    public static getDescriptor<T extends Subtag>(this: void, type: new (...args: never) => T): SubtagDescriptor<T>;
-    public static getDescriptor(this: void, type: new (...args: never) => Subtag): SubtagDescriptor;
-    public static getDescriptor(this: void, type: {
-        new(...args: readonly unknown[]): Subtag;
-        [factoryKey]?: (runner: BBTagRunner) => Subtag;
-        prototype: Subtag;
-    }): SubtagDescriptor {
+    public static createInstance<T extends Subtag>(type: abstract new (...args: never) => T, context: InjectionContext): T
+    public static createInstance<T extends Subtag>(type: { new(...args: never): T;[factoryKey]?: (args: InjectionContext) => T; }, context: InjectionContext): T {
         if (type[factoryKey] === undefined)
             throw new Error('No factory has been set!');
+        return type[factoryKey](context);
+    }
 
+    public static getDescriptor(this: void, type: new (...args: never) => Subtag): SubtagDescriptor;
+    public static getDescriptor(this: void, type: { prototype: Subtag; }): SubtagDescriptor {
         return {
-            createInstance: type[factoryKey],
             names: type.prototype.names,
             id: type.prototype.id
         };
@@ -95,10 +94,31 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>>, ISu
     public abstract execute(context: BBTagScript, subtagName: string, subtag: BBTagCall): Awaitable<string>;
 }
 
-type SubtagCtorArgFactory<T> = (runner: BBTagRunner) => T
-type SubtagCtorArgDescriptor = keyof BBTagRunner | SubtagCtorArgFactory<unknown>;
+type SubtagCtorArgFactory<T> = (context: InjectionContext) => T
+type SubtagCtorArgDescriptor = keyof InjectionContext | SubtagCtorArgFactory<unknown>;
 type ToSubtagCtorArgs<T extends readonly SubtagCtorArgDescriptor[]> = {
     [P in keyof T]:
-    | T[P] extends keyof BBTagRunner ? BBTagRunner[T[P]] : never
+    | T[P] extends keyof InjectionContext ? InjectionContext[T[P]] : never
     | T[P] extends SubtagCtorArgFactory<infer R> ? R : never
+}
+
+export interface InjectionContext {
+    readonly messages: MessageService;
+    readonly converter: BBTagValueConverter;
+    readonly operators: BBTagOperators;
+    readonly arrayTools: BBTagArrayTools;
+    readonly jsonTools: BBTagJsonTools;
+    readonly lock: LockService;
+    readonly users: UserService;
+    readonly roles: RoleService;
+    readonly channels: ChannelService;
+    readonly guild: GuildService;
+    readonly timezones: TimezoneProvider;
+    readonly warnings: WarningService;
+    readonly modLog: ModLogService;
+    readonly dump: DumpService;
+    readonly domains: DomainFilterService;
+    readonly defer: DeferredExecutionService;
+    readonly staff: StaffService;
+    readonly logger: BBTagLogger;
 }

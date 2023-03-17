@@ -1,5 +1,5 @@
 import type { AwaitReactionsResponse, Entities, MessageService } from '@bbtag/blargbot';
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, WaitReactionSubtag } from '@bbtag/blargbot/subtags';
 import { Emote } from '@blargbot/discord-emote';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -12,7 +12,7 @@ type AwaitCondition = Exclude<Parameters<MessageService['awaitReaction']>[2], un
 const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(WaitReactionSubtag),
+    subtag: WaitReactionSubtag,
     argCountBounds: { min: 1, max: { count: 5, noEval: [3] } },
     cases: [
         {
@@ -23,8 +23,8 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '23642834762378964232');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(undefined, [rejectedReaction]));
             }
         },
@@ -39,8 +39,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
             }
         },
@@ -55,8 +55,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
             }
         },
@@ -71,8 +71,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '34897465835684954375', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874', '34897465835684954375', '9328479238794834798487']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874', '34897465835684954375', '9328479238794834798487']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
             }
         },
@@ -86,13 +86,13 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -106,13 +106,13 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -126,23 +126,23 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
 
                 const user1 = ctx.createMock<Entities.User>();
                 user1.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user1.instance);
 
                 const user2 = ctx.createMock<Entities.User>();
                 user2.setup(m => m.id).thenReturn('9234874534905735485');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '9234874534905735485', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '9234874534905735485', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user2.instance);
 
                 const user3 = ctx.createMock<Entities.User>();
                 user3.setup(m => m.id).thenReturn('39857623874642873');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '39857623874642873', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '39857623874642873', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user3.instance);
             }
         },
@@ -157,13 +157,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '❌', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -178,13 +178,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -199,13 +199,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -220,13 +220,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -241,13 +241,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -262,13 +262,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -283,13 +283,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -303,13 +303,13 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -320,7 +320,7 @@ runSubtagTests({
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) }
             ],
-            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(MessageIdSubtag)],
+            subtags: [OperatorSubtag, MessageIdSubtag],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -329,13 +329,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, '🤔', '238746283794634234', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -346,7 +346,7 @@ runSubtagTests({
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) }
             ],
-            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(ReactionSubtag)],
+            subtags: [OperatorSubtag, ReactionSubtag],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -355,13 +355,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -371,7 +371,7 @@ runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) }
             ],
-            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(ReactionUserSubtag)],
+            subtags: [OperatorSubtag, ReactionUserSubtag],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -379,13 +379,13 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -405,13 +405,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -428,13 +428,13 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const rejectedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(undefined, [rejectedReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -454,13 +454,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 10000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 10000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -480,13 +480,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 0))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 0))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -506,13 +506,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
-                ctx.dependencies.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 300000))
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.messages.setup(m => m.awaitReaction(bbctx.runtime, argument.isDeepEqual(['328974628744623874']), anyCondition.value, 300000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23897462384627348293436', argument.isDeepEqual({ noErrors: true, noLookup: true })))
                     .thenResolve(user.instance);
             }
         }

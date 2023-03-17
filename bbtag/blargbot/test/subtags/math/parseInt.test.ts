@@ -1,10 +1,9 @@
-import { Subtag } from '@bbtag/blargbot';
 import { ParseIntSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ParseIntSubtag),
+    subtag: ParseIntSubtag,
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{parseint;123}', expected: '123' },

@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { GuildFeaturesSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(GuildFeaturesSubtag),
+    subtag: GuildFeaturesSubtag,
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

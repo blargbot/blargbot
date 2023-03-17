@@ -1,11 +1,11 @@
-import { BBTagRuntimeError, NotANumberError, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { BBTagRuntimeError, NotANumberError, TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag } from '@bbtag/blargbot/subtags';
 
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(GetSubtag),
+    subtag: GetSubtag,
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...generateTestCases(false, 'testTag', [

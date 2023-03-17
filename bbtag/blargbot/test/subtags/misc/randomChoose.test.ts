@@ -1,13 +1,12 @@
 import 'chai-exclude';
 
-import { Subtag } from '@bbtag/blargbot';
 import { RandomChooseSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RandomChooseSubtag),
+    subtag: RandomChooseSubtag,
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {

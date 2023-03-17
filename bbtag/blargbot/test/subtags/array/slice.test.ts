@@ -1,11 +1,11 @@
-import { NotAnArrayError, NotANumberError, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { NotAnArrayError, NotANumberError, TagVariableType } from '@bbtag/blargbot';
 import { SliceSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(SliceSubtag),
+    subtag: SliceSubtag,
     argCountBounds: { min: 2, max: 3 },
     cases: [
         {

@@ -1,11 +1,11 @@
-import { BBTagRuntimeError, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { BBTagRuntimeError, TagVariableType } from '@bbtag/blargbot';
 import { JsonGetSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(JsonGetSubtag),
+    subtag: JsonGetSubtag,
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...generateTestCases({ array: [{ test: { abc: 123 } }] }, 'array.0.test', '{"abc":123}'),
@@ -43,7 +43,7 @@ runSubtagTests({
 function* generateTestCases(source: JToken, path: string, expected: string): Iterable<SubtagTestCase> {
     yield {
         code: `{jsonget;{j;${JSON.stringify(source)}};${path}}`,
-        subtags: [Subtag.getDescriptor(JsonSubtag)],
+        subtags: [JsonSubtag],
         expected: expected
     };
     yield {

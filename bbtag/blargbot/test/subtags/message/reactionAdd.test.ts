@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { ReactionAddSubtag } from '@bbtag/blargbot/subtags';
 import { Emote } from '@blargbot/discord-emote';
 import Discord from '@blargbot/discord-types';
@@ -12,7 +12,7 @@ const think = Emote.parse('🤔');
 const notLikeCat = Emote.parse('<:notlikecat:280110565161041921>');
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ReactionAddSubtag),
+    subtag: ReactionAddSubtag,
     argCountBounds: { min: 1, max: Infinity },
     setupEach(ctx) {
         ctx.roles.bot.permissions = Discord.PermissionFlagsBits.AddReactions.toString();
@@ -36,7 +36,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.dependencies.messages.setup(m => m.addReactions(bbctx.runtime, channel.id, message.id, argument.isDeepEqual([think])))
+                        ctx.inject.messages.setup(m => m.addReactions(bbctx.runtime, channel.id, message.id, argument.isDeepEqual([think])))
                             .thenResolve({ success: [think], failed: [] });
                     }
                 },
@@ -70,7 +70,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.dependencies.messages.setup(m => m.addReactions(bbctx.runtime, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
+                        ctx.inject.messages.setup(m => m.addReactions(bbctx.runtime, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
                             .thenResolve({ success: [think, notLikeCat], failed: [] });
                     }
                 }
@@ -97,7 +97,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, message, bbctx, ctx) {
-                        ctx.dependencies.messages.setup(m => m.addReactions(bbctx.runtime, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
+                        ctx.inject.messages.setup(m => m.addReactions(bbctx.runtime, channel.id, message.id, argument.isDeepEqual([think, notLikeCat])))
                             .thenResolve({ success: [think, notLikeCat], failed: [] });
                     }
                 }
@@ -126,8 +126,8 @@ runSubtagTests({
                     channel_id: bbctx.runtime.channel.id
                 }, ctx.users.command);
 
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, ctx.channels.command.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.addReactions(bbctx.runtime, ctx.channels.command.id, message.id, argument.isDeepEqual([think])))
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, ctx.channels.command.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.addReactions(bbctx.runtime, ctx.channels.command.id, message.id, argument.isDeepEqual([think])))
                     .thenResolve({ success: [], failed: [think] });
             },
             errors: [

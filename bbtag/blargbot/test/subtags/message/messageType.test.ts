@@ -1,4 +1,3 @@
-import { Subtag } from '@bbtag/blargbot';
 import { MessageTypeSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import { snowflake } from '@blargbot/discord-util';
@@ -43,7 +42,7 @@ const messageTypes: { [P in string & keyof typeof Discord.MessageType]: typeof D
 
 const createSnowflake = snowflake.nextFactory();
 runSubtagTests({
-    subtag: Subtag.getDescriptor(MessageTypeSubtag),
+    subtag: MessageTypeSubtag,
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetMessagePropTestCases({

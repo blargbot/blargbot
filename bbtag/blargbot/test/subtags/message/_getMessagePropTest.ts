@@ -44,7 +44,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
         },
         postSetup(bbctx, ctx) {
-            ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678998765432'), false).thenResolve(undefined);
+            ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678998765432'), false).thenResolve(undefined);
         }
     };
     yield {
@@ -57,9 +57,9 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
         postSetup(bbctx, ctx) {
             const opt = options.getQueryOptions?.(false);
             if (opt === undefined)
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121'), false).thenResolve();
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121'), false).thenResolve();
             else
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121', argument.isDeepEqual(opt)), false).thenResolve();
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121', argument.isDeepEqual(opt)), false).thenResolve();
         }
     };
     if (options.quiet !== false) {
@@ -74,7 +74,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
                 ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678998765432'), false).thenResolve(undefined);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, '12345678998765432'), false).thenResolve(undefined);
             }
         };
         yield {
@@ -87,9 +87,9 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             postSetup(bbctx, ctx) {
                 const opt = options.getQueryOptions?.(true);
                 if (opt === undefined)
-                    ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121'), false).thenResolve();
+                    ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121'), false).thenResolve();
                 else
-                    ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121', argument.isDeepEqual(opt)), false).thenResolve();
+                    ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '98765434567889121', argument.isDeepEqual(opt)), false).thenResolve();
             }
         };
     }
@@ -145,12 +145,12 @@ function createTestCase(data: GetMessagePropTestData, isQuiet: boolean, testCase
             if (channelQuery !== undefined && channelQuery !== '') {
                 const opt = data.getQueryOptions?.(isQuiet);
                 if (opt === undefined)
-                    ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery), false).thenResolve(channel);
+                    ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery), false).thenResolve(channel);
                 else
-                    ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery, argument.isDeepEqual(opt)), false).thenResolve(channel);
+                    ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery, argument.isDeepEqual(opt)), false).thenResolve(channel);
             }
 
-            ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, channel.id, args[1] ?? ''), false).thenResolve(message);
+            ctx.inject.messages.setup(m => m.get(bbctx.runtime, channel.id, args[1] ?? ''), false).thenResolve(message);
             testCase.postSetup?.(channel, message, bbctx, ctx);
         },
         assert(bbctx, result, ctx) {

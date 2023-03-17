@@ -1,8 +1,10 @@
 import { inspect } from 'node:util';
 
-import type { BBTagArray, BBTagArrayTools, BBTagRunnerOptions, BBTagRuntimeOptions, BBTagRuntimeScope, BBTagScript, BBTagScriptOptions, BBTagValueConverter, Entities, LocatedRuntimeError, SourceProvider, SubtagDescriptor, SubtagInvocationMiddleware, TagVariableScope, VariablesStore } from '@bbtag/blargbot';
-import { BaseRuntimeLimit, BBTagRunner, BBTagRuntime, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, InternalServerError, NotEnoughArgumentsError, smartStringCompare, Subtag, SubtagType, tagVariableScopeProviders, TooManyArgumentsError } from '@bbtag/blargbot';
+import type { BBTagArray, BBTagArrayTools, BBTagRuntimeConfig, BBTagRuntimeScope, BBTagScript, BBTagScriptOptions, BBTagValueConverter, CooldownService, Entities, InjectionContext, LocatedRuntimeError, SourceProvider, SubtagDescriptor, TagVariableScope, VariablesStore } from '@bbtag/blargbot';
+import { BaseRuntimeLimit, BBTagRuntime, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, InternalServerError, NotEnoughArgumentsError, smartStringCompare, Subtag, SubtagType, tagVariableScopeProviders, TooManyArgumentsError } from '@bbtag/blargbot';
 import type { SourceMarker } from '@bbtag/language';
+import type { IVariableStore } from '@bbtag/variables';
+import { VariableNameParser, VariableProvider } from '@bbtag/variables';
 import Discord from '@blargbot/discord-types';
 import { snowflake } from '@blargbot/discord-util';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
@@ -38,7 +40,7 @@ export interface SubtagTestCase {
         handle: (error: unknown) => Awaitable<void>;
     };
     readonly errors?: ReadonlyArray<{ start?: SourceMarkerResolvable; end?: SourceMarkerResolvable; error: BBTagRuntimeError; }> | ((errors: LocatedRuntimeError[]) => void);
-    readonly subtags?: readonly SubtagDescriptor[];
+    readonly subtags?: ReadonlyArray<new (...args: never) => Subtag>;
     readonly skip?: boolean | (() => Awaitable<boolean>);
     readonly retries?: number;
     readonly timeout?: number;
@@ -67,8 +69,8 @@ type SuiteEachSetup<T extends SubtagTestCase> = {
 
 export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends SuiteEachSetup<TestCase> {
     readonly cases: TestCase[];
-    readonly subtag: SubtagDescriptor<T>;
-    readonly runOtherTests?: (subtag: SubtagDescriptor<T>) => void;
+    readonly subtag: new (...args: never) => T;
+    readonly runOtherTests?: (subtag: new (...args: never) => T) => void;
     readonly argCountBounds: { min: ArgCountBound; max: ArgCountBound; };
     readonly setup?: (this: void) => Awaitable<void>;
     readonly teardown?: (this: void) => Awaitable<void>;
@@ -84,15 +86,17 @@ export class SubtagTestContext {
     #isCreated = false;
     public readonly timer = new Timer();
     public readonly code: string;
+    public readonly subtags: Array<new (...args: never) => Subtag>;
+    public readonly variables = this.createMock<IVariableStore<TagVariableScope>>();
+    public readonly cooldowns = this.createMock<CooldownService>();
+    public readonly sources = this.createMock<SourceProvider>();
     get #converter(): BBTagValueConverter {
-        return this.dependencies.converter;
+        return this.inject.converter;
     }
     get #arrayTools(): BBTagArrayTools {
-        return this.dependencies.arrayTools;
+        return this.inject.arrayTools;
     }
-    public readonly dependencies = {
-        subtags: [] as SubtagDescriptor[],
-        subtagMiddleware: [] as SubtagInvocationMiddleware[],
+    public readonly inject = {
         converter: createValueConverter({
             colors: {
                 blue: 0x0000ff,
@@ -113,15 +117,12 @@ export class SubtagTestContext {
             convertToInt: v => this.#converter.int(v),
             isTagArray: (v): v is BBTagArray => this.#arrayTools.isTagArray(v)
         }),
-        variables: this.createMock(),
         users: this.createMock(),
         channels: this.createMock(),
         guild: this.createMock(),
         roles: this.createMock(),
         lock: this.createMock(),
         messages: this.createMock(),
-        sources: this.createMock(),
-        cooldowns: this.createMock(),
         timezones: this.createMock(),
         warnings: this.createMock(),
         modLog: this.createMock(),
@@ -129,10 +130,8 @@ export class SubtagTestContext {
         domains: this.createMock(),
         defer: this.createMock(),
         staff: this.createMock(),
-        logger: this.createMock(),
-        variableScopes: tagVariableScopeProviders,
-        variableMiddleware: []
-    } satisfies { [P in keyof BBTagRunnerOptions]-?: Mock<NonNullable<BBTagRunnerOptions[P]>> | BBTagRunnerOptions[P] };
+        logger: this.createMock()
+    } satisfies { [P in keyof InjectionContext]-?: Mock<NonNullable<InjectionContext[P]>> | InjectionContext[P] };
     public readonly limit = this.createMock(BaseRuntimeLimit);
     public isStaff = false;
     public readonly ownedMessages: string[] = [];
@@ -142,7 +141,7 @@ export class SubtagTestContext {
     public readonly tagVariables: MapByValue<{ scope: TagVariableScope; name: string; }, JToken>;
     public readonly rootScope: BBTagRuntimeScope = { inLock: false };
 
-    public readonly options: Mutable<Partial<Omit<BBTagRuntimeOptions, 'entrypoint'>>>;
+    public readonly options: Mutable<Partial<Omit<BBTagRuntimeConfig, 'entrypoint'>>>;
     public readonly entrypoint: Mutable<Partial<BBTagScriptOptions>>;
 
     public readonly roles = {
@@ -192,7 +191,7 @@ export class SubtagTestContext {
         channel_id: this.channels.command.id
     }, this.users.command);
 
-    public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<SubtagDescriptor>, code: string) {
+    public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<new (...args: never) => Subtag>, code: string) {
         this.tagVariables = new MapByValue();
         this.tags = {};
         this.ccommands = {};
@@ -202,17 +201,17 @@ export class SubtagTestContext {
 
         const args = new Array(100).fill(argument.any().value) as unknown[];
         for (let i = 0; i < args.length; i++) {
-            this.dependencies.logger.setup(m => m.error(...args.slice(0, i)), false).thenCall((...args: unknown[]) => {
+            this.inject.logger.setup(m => m.error(...args.slice(0, i)), false).thenCall((...args: unknown[]) => {
                 throw args.find(x => x instanceof Error) ?? new Error(`Unexpected logger error: ${inspect(args)}`);
             });
         }
 
         this.limit.setup(m => m.id).thenReturn('tagLimit');
-        this.dependencies.variables.setup(m => m.get(tsMockito.anything() as never, tsMockito.anything() as never), false)
+        this.variables.setup(m => m.get(tsMockito.anything() as never, tsMockito.anything() as never), false)
             .thenCall((...[scope, name]: Parameters<VariablesStore['get']>) => this.tagVariables.get({ scope, name }));
         if (this.testCase.setupSaveVariables !== false) {
-            this.dependencies.variables.setup(m => m.set(tsMockito.anything() as never), false)
-                .thenCall((...[values]: Parameters<VariablesStore['set']>) => {
+            this.variables.setup(m => m.set(tsMockito.anything() as never), false)
+                .thenCall((...[values]: Parameters<IVariableStore<TagVariableScope>['set']>) => {
                     for (const { name, scope, value } of values) {
                         if (value !== undefined)
                             this.tagVariables.set({ scope, name }, value);
@@ -222,7 +221,7 @@ export class SubtagTestContext {
                 });
         }
 
-        this.dependencies.subtags.push(...subtags);
+        this.subtags = [...subtags];
     }
 
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -253,12 +252,19 @@ export class SubtagTestContext {
             throw new Error('Cannot create multiple contexts from 1 mock');
         this.#isCreated = true;
 
-        const runner = new BBTagRunner(Object.fromEntries(
-            Object.entries(this.dependencies)
+        const injectionContext = Object.fromEntries(
+            Object.entries(this.inject)
                 .map(([key, val]) => [key, val instanceof Mock ? val.instance : val])
-        ) as BBTagRunnerOptions);
+        ) as InjectionContext;
 
-        const runtime = runner.createRuntime({
+        const runtime = new BBTagRuntime({
+            ...injectionContext,
+            subtags: this.subtags.map(s => Subtag.createInstance(s, injectionContext)),
+            cooldowns: this.cooldowns.instance,
+            variables: new VariableProvider(new VariableNameParser(tagVariableScopeProviders), this.variables.instance),
+            sources: this.sources.instance,
+            middleware: []
+        }, {
             authorId: this.message.author.id,
             authorizer: this.users.authorizer,
             bot: this.users.bot,
@@ -270,7 +276,6 @@ export class SubtagTestContext {
             message: this.message,
             prefix: 'b!',
             silent: false,
-            subtags: [],
             tagVars: this.options.isCC !== true,
             user: this.users.command,
             ...this.options,
@@ -291,19 +296,19 @@ export class SubtagTestContext {
             }
         });
 
-        this.dependencies.users.setup(m => m.querySingle(runtime, ''), false).thenResolve(this.users.command);
-        this.dependencies.users.setup(m => m.querySingle(runtime, '', argument.any().value as undefined), false).thenResolve(this.users.command);
-        this.dependencies.users.setup(m => m.querySingle(runtime, this.users.command.id), false).thenResolve(this.users.command);
-        this.dependencies.users.setup(m => m.querySingle(runtime, this.users.command.id, argument.any().value as undefined), false).thenResolve(this.users.command);
-        this.dependencies.channels.setup(m => m.querySingle(runtime, ''), false).thenResolve(this.channels.command);
-        this.dependencies.channels.setup(m => m.querySingle(runtime, '', argument.any().value as undefined), false).thenResolve(this.channels.command);
-        this.dependencies.channels.setup(m => m.querySingle(runtime, this.channels.command.id), false).thenResolve(this.channels.command);
-        this.dependencies.channels.setup(m => m.querySingle(runtime, this.channels.command.id, argument.any().value as undefined), false).thenResolve(this.channels.command);
-        this.dependencies.messages.setup(m => m.get(runtime, this.channels.command.id, ''), false).thenResolve(this.message);
-        this.dependencies.messages.setup(m => m.get(runtime, this.channels.command.id, this.message.id), false).thenResolve(this.message);
-        this.dependencies.sources.setup(m => m.get(runtime, 'tag', argument.isTypeof('string').value), false)
+        this.inject.users.setup(m => m.querySingle(runtime, ''), false).thenResolve(this.users.command);
+        this.inject.users.setup(m => m.querySingle(runtime, '', argument.any().value as undefined), false).thenResolve(this.users.command);
+        this.inject.users.setup(m => m.querySingle(runtime, this.users.command.id), false).thenResolve(this.users.command);
+        this.inject.users.setup(m => m.querySingle(runtime, this.users.command.id, argument.any().value as undefined), false).thenResolve(this.users.command);
+        this.inject.channels.setup(m => m.querySingle(runtime, ''), false).thenResolve(this.channels.command);
+        this.inject.channels.setup(m => m.querySingle(runtime, '', argument.any().value as undefined), false).thenResolve(this.channels.command);
+        this.inject.channels.setup(m => m.querySingle(runtime, this.channels.command.id), false).thenResolve(this.channels.command);
+        this.inject.channels.setup(m => m.querySingle(runtime, this.channels.command.id, argument.any().value as undefined), false).thenResolve(this.channels.command);
+        this.inject.messages.setup(m => m.get(runtime, this.channels.command.id, ''), false).thenResolve(this.message);
+        this.inject.messages.setup(m => m.get(runtime, this.channels.command.id, this.message.id), false).thenResolve(this.message);
+        this.sources.setup(m => m.get(runtime, 'tag', argument.isTypeof('string').value), false)
             .thenCall((...args: Parameters<SourceProvider['get']>) => this.tags[args[2]]);
-        this.dependencies.sources.setup(m => m.get(runtime, 'cc', argument.isTypeof('string').value), false)
+        this.sources.setup(m => m.get(runtime, 'cc', argument.isTypeof('string').value), false)
             .thenCall((...args: Parameters<SourceProvider['get']>) => this.ccommands[args[2]]);
 
         for (const id of this.ownedMessages)
@@ -420,14 +425,6 @@ export class SubtagTestContext {
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export function createDescriptor<T extends Subtag>(subtag: T): SubtagDescriptor<T> {
-    return {
-        id: subtag.id,
-        names: subtag.names,
-        createInstance: () => subtag
-    };
-}
-
 export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): void
 export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): void
 export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): void {
@@ -448,10 +445,11 @@ export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase
     const min = typeof data.argCountBounds.min === 'number' ? { count: data.argCountBounds.min, noEval: [] } : data.argCountBounds.min;
     const max = typeof data.argCountBounds.max === 'number' ? { count: data.argCountBounds.max, noEval: [] } : data.argCountBounds.max;
 
-    suite.addTestCases(notEnoughArgumentsTestCases(data.subtag.id, min.count, min.noEval));
+    const descriptor = Subtag.getDescriptor(data.subtag);
+    suite.addTestCases(notEnoughArgumentsTestCases(descriptor.id, min.count, min.noEval));
     suite.addTestCases(data.cases);
     if (max.count < Infinity)
-        suite.addTestCases(tooManyArgumentsTestCases(data.subtag.id, max.count, max.noEval));
+        suite.addTestCases(tooManyArgumentsTestCases(descriptor.id, max.count, max.noEval));
 
     suite.run(() => data.runOtherTests?.(data.subtag));
 }
@@ -474,30 +472,34 @@ function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarke
     return { index: parseInt(index), line: parseInt(line), column: parseInt(column) };
 }
 
-@Subtag.id('testdata')
-export class TestDataSubtag extends Subtag {
-    public constructor(public readonly values: Record<string, string | undefined>) {
-        super({
-            category: SubtagType.SIMPLE,
-            signatures: []
-        });
-    }
+export function makeTestDataSubtag(values: Record<string, string | undefined>): new (...args: never) => Subtag {
+    @Subtag.id('testdata')
+    @Subtag.ctorArgs()
+    class TestDataSubtag extends Subtag {
+        public constructor() {
+            super({
+                category: SubtagType.SIMPLE,
+                signatures: []
+            });
+        }
 
-    public override async execute(_: unknown, __: unknown, subtag: BBTagCall): Promise<string> {
-        if (subtag.args.length !== 1)
-            throw new RangeError(`Subtag ${this.id} must be given 1 argument!`);
-        const key = subtag.args[0].ast.source;
-        const value = this.values[key];
-        if (value === undefined)
-            throw new RangeError(`Subtag ${this.id} doesnt have test data set up for ${JSON.stringify(value)}`);
+        public override async execute(_: unknown, __: unknown, subtag: BBTagCall): Promise<string> {
+            if (subtag.args.length !== 1)
+                throw new RangeError(`Subtag ${this.id} must be given 1 argument!`);
+            const key = subtag.args[0].ast.source;
+            const value = values[key];
+            if (value === undefined)
+                throw new RangeError(`Subtag ${this.id} doesnt have test data set up for ${JSON.stringify(value)}`);
 
-        await Promise.resolve();
-        return value;
+            await Promise.resolve();
+            return value;
+        }
     }
+    return TestDataSubtag;
 }
 
-@Subtag.ctorArgs()
 @Subtag.id('eval')
+@Subtag.ctorArgs()
 export class EvalSubtag extends Subtag {
     public constructor() {
         super({
@@ -512,27 +514,27 @@ export class EvalSubtag extends Subtag {
     }
 }
 
-@Subtag.id('assert')
-export class AssertSubtag extends Subtag {
-    readonly #assertion: (context: BBTagScript, subtagName: string, subtag: BBTagCall) => Awaitable<string>;
+export function makeAssertSubtag(assertion: (...args: Parameters<Subtag['execute']>) => Awaitable<string>): new () => Subtag {
+    @Subtag.id('assert')
+    @Subtag.ctorArgs()
+    class AssertSubtag extends Subtag {
+        public constructor() {
+            super({
+                category: SubtagType.SIMPLE,
+                hidden: true,
+                signatures: []
+            });
+        }
 
-    public constructor(assertion: (...args: Parameters<Subtag['execute']>) => Awaitable<string>) {
-        super({
-            category: SubtagType.SIMPLE,
-            hidden: true,
-            signatures: []
-        });
-
-        this.#assertion = assertion;
+        public override async execute(context: BBTagScript, subtagName: string, subtag: BBTagCall): Promise<string> {
+            return await assertion(context, subtagName, subtag);
+        }
     }
-
-    public override async execute(context: BBTagScript, subtagName: string, subtag: BBTagCall): Promise<string> {
-        return await this.#assertion(context, subtagName, subtag);
-    }
+    return AssertSubtag;
 }
 
-@Subtag.ctorArgs()
 @Subtag.id('fail')
+@Subtag.ctorArgs()
 export class FailTestSubtag extends Subtag {
     public constructor() {
         super({
@@ -591,10 +593,12 @@ export class EchoArgsSubtag extends Subtag {
 export class SubtagTestSuite<TestCase extends SubtagTestCase> {
     readonly #config: TestSuiteConfig<TestCase> = { setup: [], teardown: [], setupEach: [], assertEach: [], postSetupEach: [], teardownEach: [] };
     readonly #testCases: TestCase[] = [];
-    readonly #subtag: SubtagDescriptor;
+    readonly #subtag: new (...args: never) => Subtag;
+    readonly #descriptor: SubtagDescriptor;
 
-    public constructor(subtag: SubtagDescriptor) {
+    public constructor(subtag: new (...args: never) => Subtag) {
         this.#subtag = subtag;
+        this.#descriptor = Subtag.getDescriptor(subtag);
     }
 
     public setup(setup: TestSuiteConfig<TestCase>['setup'][number]): this {
@@ -636,7 +640,7 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
     }
 
     public run(otherTests?: () => void): void {
-        const suite = mocha.describe(`{${this.#subtag.id}}`, () => {
+        const suite = mocha.describe(`{${this.#descriptor.id}}`, () => {
             const subtag = this.#subtag;
             const config = this.#config;
             for (const testCase of this.#testCases) {
@@ -690,17 +694,19 @@ function getTestName(testCase: SubtagTestCase): string {
     return result;
 }
 
-async function runTestCase<TestCase extends SubtagTestCase>(context: mocha.Context, subtag: SubtagDescriptor, testCase: TestCase, config: TestSuiteConfig<TestCase>): Promise<void> {
+async function runTestCase<TestCase extends SubtagTestCase>(context: mocha.Context, subtag: new (...args: never) => Subtag, testCase: TestCase, config: TestSuiteConfig<TestCase>): Promise<void> {
     if (typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false)
         context.skip();
 
-    const subtags = [subtag, Subtag.getDescriptor(EvalSubtag), Subtag.getDescriptor(FailTestSubtag), ...testCase.subtags ?? []];
+    const subtags = [subtag, EvalSubtag, FailTestSubtag, ...testCase.subtags ?? []];
     const test = new SubtagTestContext(testCase, subtags, testCase.code);
 
     try {
         // arrange
-        for (const s of subtags)
-            test.limit.setup(m => m.check(argument.isInstanceof(BBTagRuntime).value, s.id), s === subtag).thenResolve(undefined);
+        for (const s of subtags) {
+            const descriptor = Subtag.getDescriptor(s);
+            test.limit.setup(m => m.check(argument.isInstanceof(BBTagRuntime).value, descriptor.id), s === subtag).thenResolve(undefined);
+        }
         for (const setup of config.setupEach)
             await setup.call(testCase, test);
         await testCase.setup?.(test);

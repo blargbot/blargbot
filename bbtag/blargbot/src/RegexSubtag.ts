@@ -8,7 +8,7 @@ export abstract class RegexSubtag extends CompiledSubtag {
 
     @catchErrors.thenThrow(Error, err => new BBTagRuntimeError(err.message))
     protected createRegex(context: BBTagRuntime, regexStr: string): RegExp {
-        const regexResult = context.runner.converter.regex(regexStr);
+        const regexResult = context.converter.regex(regexStr);
         if (regexResult.success)
             return regexResult.value;
         switch (regexResult.reason) {

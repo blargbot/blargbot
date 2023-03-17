@@ -1,18 +1,17 @@
-import { Subtag } from '@bbtag/blargbot';
 import { ChannelCategoriesSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ChannelCategoriesSubtag),
+    subtag: ChannelCategoriesSubtag,
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {
             code: '{channelcategories}',
             expected: '[]',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
             }
         },
         {
@@ -29,7 +28,7 @@ runSubtagTests({
                 });
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
             }
         }
     ]

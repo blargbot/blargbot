@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { QuietSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(QuietSubtag),
+    subtag: QuietSubtag,
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

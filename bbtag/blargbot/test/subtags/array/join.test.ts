@@ -1,10 +1,10 @@
-import { NotAnArrayError, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { NotAnArrayError, TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag, JoinSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(JoinSubtag),
+    subtag: JoinSubtag,
     argCountBounds: { min: 2, max: 2 },
     cases: [
         {
@@ -39,7 +39,7 @@ runSubtagTests({
         {
             code: '{join;{get;arr1};~}',
             expected: 'this~is~arr1',
-            subtags: [Subtag.getDescriptor(GetSubtag)],
+            subtags: [GetSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);

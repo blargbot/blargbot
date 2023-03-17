@@ -1,5 +1,5 @@
 import type { BBTagScript, Entities } from '@bbtag/blargbot';
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { ChannelCreateSubtag, EscapeBBTagSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -8,7 +8,7 @@ import type { SubtagTestContext } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ChannelCreateSubtag),
+    subtag: ChannelCreateSubtag,
     argCountBounds: { min: 1, max: 3 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.Administrator.toString();
@@ -21,7 +21,7 @@ runSubtagTests({
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('28376128632132');
 
-                ctx.dependencies.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     type: Discord.ChannelType.GuildText,
                     name: 'My new channel',
                     bitrate: undefined,
@@ -50,7 +50,7 @@ runSubtagTests({
                     channel.setup(m => m.type, false).thenReturn(code);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.dependencies.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
+                    ctx.inject.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                         name: 'My new channel',
                         type: code,
                         bitrate: undefined,
@@ -66,13 +66,13 @@ runSubtagTests({
             {
                 code: `{channelcreate;My new channel;${type};{escapebbtag;{}}}`,
                 expected: '28376128632132',
-                subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+                subtags: [EscapeBBTagSubtag],
                 postSetup(bbctx: BBTagScript, ctx: SubtagTestContext) {
                     const channel = ctx.createMock<Entities.Channel>();
                     channel.setup(m => m.type, false).thenReturn(code);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.dependencies.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
+                    ctx.inject.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                         name: 'My new channel',
                         type: code,
                         bitrate: undefined,
@@ -110,13 +110,13 @@ runSubtagTests({
                     userLimit: 32042430
                 })}}}`,
                 expected: '28376128632132',
-                subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+                subtags: [EscapeBBTagSubtag],
                 postSetup(bbctx: BBTagScript, ctx: SubtagTestContext) {
                     const channel = ctx.createMock<Entities.Channel>();
                     channel.setup(m => m.type, false).thenReturn(code);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.dependencies.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
+                    ctx.inject.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                         name: 'My new channel',
                         type: code,
                         bitrate: 1234,
@@ -167,13 +167,13 @@ runSubtagTests({
                     userLimit: '32042430'
                 })}}}`,
                 expected: '28376128632132',
-                subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+                subtags: [EscapeBBTagSubtag],
                 postSetup(bbctx: BBTagScript, ctx: SubtagTestContext) {
                     const channel = ctx.createMock<Entities.Channel>();
                     channel.setup(m => m.type, false).thenReturn(code);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.dependencies.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
+                    ctx.inject.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                         name: 'My new channel',
                         type: code,
                         bitrate: 1234,
@@ -210,13 +210,13 @@ runSubtagTests({
                 ]
             })}}}`,
             expected: '28376128632132',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             postSetup(bbctx: BBTagScript, ctx: SubtagTestContext) {
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.type, false).thenReturn(Discord.ChannelType.GuildText);
                 channel.setup(m => m.id).thenReturn('28376128632132');
 
-                ctx.dependencies.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My new channel',
                     type: Discord.ChannelType.GuildText,
                     bitrate: undefined,
@@ -247,7 +247,7 @@ runSubtagTests({
                 ]
             })}}}`,
             expected: '`Author missing requested permissions`',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             errors: [
                 { start: 0, end: 124, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
@@ -280,7 +280,7 @@ runSubtagTests({
                 channel.setup(m => m.type, false).thenReturn(Discord.ChannelType.GuildText);
                 channel.setup(m => m.id).thenReturn('28376128632132');
 
-                ctx.dependencies.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My new channel',
                     type: Discord.ChannelType.GuildText,
                     bitrate: undefined,
@@ -300,7 +300,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My new channel',
                     type: Discord.ChannelType.GuildText,
                     bitrate: undefined,
@@ -320,7 +320,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
+                ctx.inject.channels.setup(m => m.create(bbctx.runtime, argument.isDeepEqual({
                     name: 'My new channel',
                     type: Discord.ChannelType.GuildText,
                     bitrate: undefined,

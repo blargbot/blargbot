@@ -1,4 +1,3 @@
-import { Subtag } from '@bbtag/blargbot';
 import { UserStatusSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 
@@ -6,7 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(UserStatusSubtag),
+    subtag: UserStatusSubtag,
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({

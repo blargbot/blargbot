@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { ApplySubtag } from '@bbtag/blargbot/subtags';
 
-import { createDescriptor, EchoArgsSubtag, MarkerError, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
+import { EchoArgsSubtag, makeTestDataSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ApplySubtag),
+    subtag: ApplySubtag,
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
@@ -16,22 +16,22 @@ runSubtagTests({
         },
         {
             code: '{apply;testdata;1234}',
-            subtags: [createDescriptor(new TestDataSubtag({ 1234: 'My cool test data' }))],
+            subtags: [makeTestDataSubtag({ 1234: 'My cool test data' })],
             expected: 'My cool test data'
         },
         {
             code: '{apply;testdata;[1234]}',
-            subtags: [createDescriptor(new TestDataSubtag({ 1234: 'My cool test data' }))],
+            subtags: [makeTestDataSubtag({ 1234: 'My cool test data' })],
             expected: 'My cool test data'
         },
         {
             code: '{apply;testdata;["1234"]}',
-            subtags: [createDescriptor(new TestDataSubtag({ 1234: 'My cool test data' }))],
+            subtags: [makeTestDataSubtag({ 1234: 'My cool test data' })],
             expected: 'My cool test data'
         },
         {
             code: '{apply;echoargs;["1234","567",null];abc;def;[];["ghi",123]}',
-            subtags: [Subtag.getDescriptor(EchoArgsSubtag)],
+            subtags: [EchoArgsSubtag],
             expected: '["echoargs","1234","567","","abc","def","ghi","123"]'
         },
         {

@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { ReasonSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ReasonSubtag),
+    subtag: ReasonSubtag,
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { FileSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(FileSubtag),
+    subtag: FileSubtag,
     argCountBounds: { min: 2, max: 2 },
     cases: [
         {

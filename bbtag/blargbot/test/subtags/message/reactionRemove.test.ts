@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, Subtag, UserNotFoundError } from '@bbtag/blargbot';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@bbtag/blargbot';
 import { ReactionRemoveSubtag } from '@bbtag/blargbot/subtags';
 import { Emote } from '@blargbot/discord-emote';
 import Discord from '@blargbot/discord-types';
@@ -11,7 +11,7 @@ const notLikeCat = Emote.parse('notlikecat:280110565161041921');
 const fakeEmote = Emote.parse('fakeemote:192612896213677963');
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ReactionRemoveSubtag),
+    subtag: ReactionRemoveSubtag,
     argCountBounds: { min: 1, max: Infinity },
     setupEach(ctx) {
         ctx.roles.bot.permissions = Discord.PermissionFlagsBits.ManageMessages.toString();
@@ -40,8 +40,8 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, message.channel_id, message.id, ctx.users.command.id, argument.isDeepEqual([think, notLikeCat])))
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, message.channel_id, message.id, ctx.users.command.id, argument.isDeepEqual([think, notLikeCat])))
                     .thenResolve({ success: [think, notLikeCat], failed: [] });
             }
         },
@@ -69,10 +69,10 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, ctx.users.command.id, argument.isDeepEqual([think, notLikeCat])))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, ctx.users.command.id, argument.isDeepEqual([think, notLikeCat])))
                     .thenResolve({ success: [think, notLikeCat], failed: [] });
             }
         },
@@ -100,11 +100,11 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '2938453289453240', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, bbctx.runtime.channel.id, message.id, otherUser.id, argument.isDeepEqual([think, notLikeCat])))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '2938453289453240', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, bbctx.runtime.channel.id, message.id, otherUser.id, argument.isDeepEqual([think, notLikeCat])))
                     .thenResolve({ success: [think, notLikeCat], failed: [] });
             }
         },
@@ -133,12 +133,12 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, otherUser.id, argument.isDeepEqual([think, notLikeCat])))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, otherUser.id, argument.isDeepEqual([think, notLikeCat])))
                     .thenResolve({ success: [think, notLikeCat], failed: [] });
             }
         },
@@ -166,11 +166,11 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '2938453289453240', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, bbctx.runtime.channel.id, message.id, otherUser.id, argument.isDeepEqual([think])))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '2938453289453240', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, bbctx.runtime.channel.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, bbctx.runtime.channel.id, message.id, otherUser.id, argument.isDeepEqual([think])))
                     .thenResolve({ success: [think], failed: [] });
             }
         },
@@ -198,11 +198,11 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '🤔', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(undefined);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, ctx.users.command.id, argument.isDeepEqual([think])))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '🤔', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(undefined);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, ctx.users.command.id, argument.isDeepEqual([think])))
                     .thenResolve({ success: [think], failed: [] });
             }
         },
@@ -231,12 +231,12 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, otherUser.id, argument.isDeepEqual([think])))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, otherUser.id, argument.isDeepEqual([think])))
                     .thenResolve({ success: [think], failed: [] });
             }
         },
@@ -267,11 +267,11 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
             }
         },
         {
@@ -287,9 +287,9 @@ runSubtagTests({
                 const general = ctx.channels.general;
                 const otherUser = ctx.users.other;
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
             }
         },
         {
@@ -305,9 +305,9 @@ runSubtagTests({
                 const general = ctx.channels.general;
                 const otherUser = ctx.users.other;
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
             }
         },
         {
@@ -323,10 +323,10 @@ runSubtagTests({
                 const general = ctx.channels.general;
                 const otherUser = ctx.users.other;
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, '2938453289453240')).thenResolve(undefined);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, '2938453289453240')).thenResolve(undefined);
             }
         },
         {
@@ -359,10 +359,10 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
             }
         },
         {
@@ -394,12 +394,12 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, otherUser.id, argument.isDeepEqual([think])))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, otherUser.id, argument.isDeepEqual([think])))
                     .thenResolve({ success: [think], failed: [] });
             }
         },
@@ -433,11 +433,11 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve();
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
             }
         },
         {
@@ -468,12 +468,12 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, otherUser.id, argument.isDeepEqual([fakeEmote])))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, otherUser.id, argument.isDeepEqual([fakeEmote])))
                     .verifiable(1)
                     .thenResolve({ success: [], failed: [fakeEmote] });
 
@@ -507,12 +507,12 @@ runSubtagTests({
                     ]
                 }, ctx.users.other);
 
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
-                ctx.dependencies.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
-                ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, otherUser.id, argument.isDeepEqual([think])))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, 'general', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, general.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(general);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, otherUser.id, argument.isDeepEqual({ noLookup: true, noErrors: true }))).thenResolve(otherUser);
+                ctx.inject.messages.setup(m => m.get(bbctx.runtime, general.id, message.id)).thenResolve(message);
+                ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, general.id, message.id, otherUser.id, argument.isDeepEqual([think])))
                     .verifiable(1)
                     .thenResolve('noPerms');
 

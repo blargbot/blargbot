@@ -1,11 +1,11 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { RegexReplaceSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RegexReplaceSubtag),
+    subtag: RegexReplaceSubtag,
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 3, noEval: [1] } },
     cases: [
         {

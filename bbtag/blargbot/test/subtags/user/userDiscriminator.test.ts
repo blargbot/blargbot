@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { UserDiscriminatorSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(UserDiscriminatorSubtag),
+    subtag: UserDiscriminatorSubtag,
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({

@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { RoleIdSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RoleIdSubtag),
+    subtag: RoleIdSubtag,
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetRolePropTestCases({

@@ -1,10 +1,9 @@
-import { Subtag } from '@bbtag/blargbot';
 import { MaxSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(MaxSubtag),
+    subtag: MaxSubtag,
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         { code: '{max;1;2;3;4;5}', expected: '5' },

@@ -1,15 +1,22 @@
 import { hasValue } from '@blargbot/guards';
 
-import type { IVariableCache } from './IVariableCache.js';
-import type { VariableProvider } from './VariableProvider.js';
-import type { VariableReference } from './VariableReference.js';
+import type { IVariableProvider } from './VariableProvider.js';
+import type { IVariableReference } from './VariableReference.js';
+
+export interface IVariableCache {
+    cached: IVariableReference[];
+    get(variable: string): Awaitable<IVariableReference>;
+    set(variable: string, value: JToken | undefined): Awaitable<void>;
+    reset(variables?: string[]): void;
+    persist(variables?: string[]): Awaitable<void>;
+}
 
 export class VariableCache<Context, Scope> implements IVariableCache {
     readonly #cache: Record<string, CacheEntry<Context> | undefined>;
-    readonly #provider: VariableProvider<Context, Scope>;
+    readonly #provider: IVariableProvider<Context, Scope>;
     readonly #context: Context;
 
-    public get cached(): VariableReference[] {
+    public get cached(): IVariableReference[] {
         return Object.values(this.#cache)
             .filter(hasValue)
             .map(v => v.reference);
@@ -17,7 +24,7 @@ export class VariableCache<Context, Scope> implements IVariableCache {
 
     public constructor(
         context: Context,
-        provider: VariableProvider<Context, Scope>
+        provider: IVariableProvider<Context, Scope>
     ) {
         this.#context = context;
         this.#cache = {};
@@ -43,7 +50,7 @@ export class VariableCache<Context, Scope> implements IVariableCache {
         return this.#cache[variable] = new CacheEntry(this.#context, variable, value);
     }
 
-    public async get(variable: string): Promise<VariableReference> {
+    public async get(variable: string): Promise<IVariableReference> {
         const result = await this.#getEntry(variable);
         return result.reference;
     }
@@ -79,7 +86,7 @@ class CacheEntry<Context> {
     #initialValue: ValueSource;
     public value: JToken | undefined;
 
-    public reference: VariableReference;
+    public reference: IVariableReference;
     public get changed(): boolean { return !this.#initialValue.isEqual(this.value); }
 
     public constructor(

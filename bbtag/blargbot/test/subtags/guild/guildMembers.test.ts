@@ -1,10 +1,9 @@
-import { Subtag } from '@bbtag/blargbot';
 import { GuildMembersSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(GuildMembersSubtag),
+    subtag: GuildMembersSubtag,
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {
@@ -18,7 +17,7 @@ runSubtagTests({
                 ctx.users.bot.id = '23746392746789426394';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
+                ctx.inject.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
             }
         }
     ]

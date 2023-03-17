@@ -31,7 +31,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
             { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
         ],
         postSetup(bbctx, ctx) {
-            ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(false))), false).thenResolve(undefined);
+            ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(false))), false).thenResolve(undefined);
         }
     };
     if (options.quiet !== false) {
@@ -42,7 +42,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
                 { start: 0, end: options.generateCode('unknown user', '').length, error: new UserNotFoundError('unknown user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(false))), false).thenResolve(undefined);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(false))), false).thenResolve(undefined);
             }
         };
         yield {
@@ -52,7 +52,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
                 { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.quiet) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(true))), false).thenResolve(undefined);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'unknown user', argument.isDeepEqual(options.getQueryOptions?.(true))), false).thenResolve(undefined);
             }
         };
     }
@@ -88,7 +88,7 @@ function createTestCase(data: GetUserPropTestData, isQuiet: boolean, testCase: G
         postSetup(bbctx, ctx) {
             const member = ctx.users[memberKey];
             if (args[0] !== undefined && args[0] !== '') {
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, args[0] as string, argument.isDeepEqual(data.getQueryOptions?.(isQuiet))), false).thenResolve(member);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, args[0] as string, argument.isDeepEqual(data.getQueryOptions?.(isQuiet))), false).thenResolve(member);
             }
 
             testCase.postSetup?.(member, bbctx, ctx, isQuiet);

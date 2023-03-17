@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { ReactionRemoveAllSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 
@@ -6,7 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ReactionRemoveAllSubtag),
+    subtag: ReactionRemoveAllSubtag,
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetMessagePropTestCases({
@@ -32,7 +32,7 @@ runSubtagTests({
                     },
                     postSetup(channel, message, bbctx, ctx) {
                         ctx.roles.bot.permissions = Discord.PermissionFlagsBits.ManageMessages.toString();
-                        ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, channel.id, message.id)).thenResolve(undefined);
+                        ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, channel.id, message.id)).thenResolve(undefined);
                     }
                 },
                 {
@@ -43,7 +43,7 @@ runSubtagTests({
                     },
                     postSetup(channel, message, bbctx, ctx) {
                         ctx.roles.bot.permissions = Discord.PermissionFlagsBits.ManageMessages.toString();
-                        ctx.dependencies.messages.setup(m => m.removeReactions(bbctx.runtime, channel.id, message.id)).thenResolve(undefined);
+                        ctx.inject.messages.setup(m => m.removeReactions(bbctx.runtime, channel.id, message.id)).thenResolve(undefined);
                         bbctx.runtime.ownedMessageIds.add(message.id);
                     }
                 },

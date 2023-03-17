@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError, NotANumberError } from '@bbtag/blargbot';
 import { RealPadSubtag } from '@bbtag/blargbot/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RealPadSubtag),
+    subtag: RealPadSubtag,
     argCountBounds: { min: 2, max: 4 },
     cases: [
         { code: '{realpad;;5}', expected: '     ' },

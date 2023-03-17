@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { RoleMembersSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RoleMembersSubtag),
+    subtag: RoleMembersSubtag,
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetRolePropTestCases({
@@ -18,7 +17,7 @@ runSubtagTests({
                     expected: '[]',
                     postSetup(role, bbctx, ctx) {
                         role.id = '92348672342308424';
-                        ctx.dependencies.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
+                        ctx.inject.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
                     }
                 },
                 {
@@ -27,7 +26,7 @@ runSubtagTests({
                         role.id = '29384723084374304';
                         ctx.users.other.id = '23908467240974';
                         ctx.users.other.member.roles.push(role.id);
-                        ctx.dependencies.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
+                        ctx.inject.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
                     }
                 },
                 {
@@ -39,7 +38,7 @@ runSubtagTests({
                         ctx.users.other.member.roles.push(role.id);
                         ctx.users.bot.member.roles.push(role.id);
 
-                        ctx.dependencies.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
+                        ctx.inject.users.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.users));
                     }
                 }
             ]

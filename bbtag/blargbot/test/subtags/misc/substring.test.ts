@@ -1,10 +1,10 @@
-import { NotANumberError, Subtag } from '@bbtag/blargbot';
+import { NotANumberError } from '@bbtag/blargbot';
 import { SubstringSubtag } from '@bbtag/blargbot/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(SubstringSubtag),
+    subtag: SubstringSubtag,
     argCountBounds: { min: 2, max: 3 },
     cases: [
         { code: '{substring;This is some text;5}', expected: 'is some text' },

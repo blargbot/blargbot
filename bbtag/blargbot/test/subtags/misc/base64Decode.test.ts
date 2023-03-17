@@ -1,10 +1,9 @@
-import { Subtag } from '@bbtag/blargbot';
 import { Base64DecodeSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(Base64DecodeSubtag),
+    subtag: Base64DecodeSubtag,
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {

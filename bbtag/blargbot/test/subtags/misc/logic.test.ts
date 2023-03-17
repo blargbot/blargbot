@@ -1,12 +1,12 @@
 import type { LogicOperator } from '@bbtag/blargbot';
-import { InvalidOperatorError, NotABooleanError, Subtag } from '@bbtag/blargbot';
+import { InvalidOperatorError, NotABooleanError } from '@bbtag/blargbot';
 import { LogicSubtag } from '@bbtag/blargbot/subtags';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(LogicSubtag),
+    subtag: LogicSubtag,
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {

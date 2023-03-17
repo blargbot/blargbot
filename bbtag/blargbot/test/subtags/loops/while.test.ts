@@ -1,17 +1,17 @@
-import { BBTagRuntimeError, BBTagRuntimeState, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { BBTagRuntimeError, BBTagRuntimeState, TagVariableType } from '@bbtag/blargbot';
 import { DecrementSubtag, GetSubtag, IfSubtag, IncrementSubtag, OperatorSubtag, ReturnSubtag, SetSubtag, WhileSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(WhileSubtag),
+    subtag: WhileSubtag,
     argCountBounds: { min: { count: 2, noEval: [0, 1] }, max: { count: 4, noEval: [0, 1, 2, 3] } },
     cases: [
         {
             code: '{while;{<;{get;index};10};{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag), Subtag.getDescriptor(OperatorSubtag)],
+            subtags: [GetSubtag, IncrementSubtag, OperatorSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
@@ -30,7 +30,7 @@ runSubtagTests({
         {
             code: '{while;{get;index};<;10;{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
+            subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
@@ -49,7 +49,7 @@ runSubtagTests({
         {
             code: '{while;<;{get;index};10;{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
+            subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
@@ -68,7 +68,7 @@ runSubtagTests({
         {
             code: '{while;{get;index};10;<;{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
+            subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
@@ -87,7 +87,7 @@ runSubtagTests({
         {
             code: '{while;{get;index};<;10;{increment;index;2},}',
             expected: '2,4,6,8,10,',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
+            subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
@@ -106,7 +106,7 @@ runSubtagTests({
         {
             code: '{while;{get;index};>;0;{decrement;index},}',
             expected: '9,8,7,6,5,4,3,2,1,0,',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(DecrementSubtag)],
+            subtags: [GetSubtag, DecrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '10');
@@ -125,7 +125,7 @@ runSubtagTests({
         {
             code: '{while;{get;index};<;513;{get;index},{set;index;{*;{get;index};2}}}',
             expected: '1,2,4,8,16,32,64,128,256,512,',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(SetSubtag), Subtag.getDescriptor(OperatorSubtag)],
+            subtags: [GetSubtag, SetSubtag, OperatorSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '1');
@@ -147,7 +147,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 43, error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
+            subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
@@ -169,7 +169,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 38, error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
+            subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
@@ -191,7 +191,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 31, error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IncrementSubtag)],
+            subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
@@ -210,7 +210,7 @@ runSubtagTests({
         {
             code: '{while;{get;index};<;10;{increment;index}{if;{get;index};==;6;{return}},}',
             expected: '1,2,3,4,5,6',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IfSubtag), Subtag.getDescriptor(ReturnSubtag), Subtag.getDescriptor(IncrementSubtag)],
+            subtags: [GetSubtag, IfSubtag, ReturnSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');

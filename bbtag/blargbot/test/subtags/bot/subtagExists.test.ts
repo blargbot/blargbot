@@ -1,10 +1,9 @@
-import { Subtag } from '@bbtag/blargbot';
 import { FunctionSubtag, IfSubtag, SubtagExistsSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(SubtagExistsSubtag),
+    subtag: SubtagExistsSubtag,
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {
@@ -22,17 +21,17 @@ runSubtagTests({
         },
         {
             title: '{if} is loaded',
-            subtags: [Subtag.getDescriptor(IfSubtag)],
+            subtags: [IfSubtag],
             code: '{subtagexists;if}',
             expected: 'true'
         },
         {
-            subtags: [Subtag.getDescriptor(FunctionSubtag)],
+            subtags: [FunctionSubtag],
             code: '{subtagexists;function}',
             expected: 'true'
         },
         {
-            subtags: [Subtag.getDescriptor(FunctionSubtag)],
+            subtags: [FunctionSubtag],
             code: '{subtagexists;func}',
             expected: 'true'
         },

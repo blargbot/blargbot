@@ -1,14 +1,14 @@
-import { BBTagRuntimeError, BBTagRuntimeState, RuntimeModuleOverflowError, Subtag, UnknownSubtagError } from '@bbtag/blargbot';
+import { BBTagRuntimeError, BBTagRuntimeState, RuntimeModuleOverflowError, UnknownSubtagError } from '@bbtag/blargbot';
 import { FunctionSubtag } from '@bbtag/blargbot/subtags';
 import type { BBTagStatementToken } from '@bbtag/language';
 import { parseBBTag } from '@bbtag/language';
 import { PromiseCompletionSource } from '@blargbot/async-tools';
 import chai from 'chai';
 
-import { AssertSubtag, createDescriptor, runSubtagTests } from '../SubtagTestSuite.js';
+import { makeAssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(FunctionSubtag),
+    subtag: FunctionSubtag,
     argCountBounds: { min: { count: 2, noEval: [1] }, max: { count: 2, noEval: [1] } },
     cases: [
         {
@@ -75,11 +75,11 @@ runSubtagTests({
         {
             code: '{func.test}',
             expected: 'Success!',
-            subtags: [createDescriptor(new AssertSubtag(ctx => {
+            subtags: [makeAssertSubtag(ctx => {
                 chai.expect(ctx.runtime.scopes.local.paramsarray).to.deep.equal([]);
                 chai.expect(ctx.runtime.moduleCount).to.equal(124);
                 return 'Success!';
-            }))],
+            })],
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'func.test')).thenResolve();
                 const alwaysPending = new PromiseCompletionSource();
@@ -95,11 +95,11 @@ runSubtagTests({
         {
             code: '{func.test;arg1;arg2;["arg3","arg3"];arg4;}',
             expected: 'Success!',
-            subtags: [createDescriptor(new AssertSubtag(ctx => {
+            subtags: [makeAssertSubtag(ctx => {
                 chai.expect(ctx.runtime.scopes.local.paramsarray).to.deep.equal(['arg1', 'arg2', '["arg3","arg3"]', 'arg4', '']);
                 chai.expect(ctx.runtime.moduleCount).to.equal(124);
                 return 'Success!';
-            }))],
+            })],
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'func.test')).thenResolve();
                 const alwaysPending = new PromiseCompletionSource();

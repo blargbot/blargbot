@@ -1,10 +1,10 @@
-import { NotANumberError, Subtag } from '@bbtag/blargbot';
+import { NotANumberError } from '@bbtag/blargbot';
 import { RandomIntSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RandomIntSubtag),
+    subtag: RandomIntSubtag,
     argCountBounds: { min: 1, max: 2 },
     cases: [
         { code: '{randint;9}', expected: /^[0-9]$/ },

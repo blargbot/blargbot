@@ -1,10 +1,9 @@
-import { Subtag } from '@bbtag/blargbot';
 import { ZwsSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ZwsSubtag),
+    subtag: ZwsSubtag,
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

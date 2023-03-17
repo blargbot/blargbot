@@ -1,10 +1,9 @@
-import { Subtag } from '@bbtag/blargbot';
 import { FlagSetSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(FlagSetSubtag),
+    subtag: FlagSetSubtag,
     argCountBounds: { min: 1, max: 1 },
     setupEach(ctx) {
         ctx.entrypoint.inputRaw = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';

@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { RoleSetMentionableSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -7,7 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RoleSetMentionableSubtag),
+    subtag: RoleSetMentionableSubtag,
     argCountBounds: { min: 1, max: 3 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageRoles.toString();
@@ -25,7 +25,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ mentionable: true }))).thenResolve(undefined);
+                        ctx.inject.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ mentionable: true }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -41,7 +41,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ mentionable: false }))).thenResolve(undefined);
+                        ctx.inject.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ mentionable: false }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -55,7 +55,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ mentionable: true }))).thenResolve(undefined);
+                        ctx.inject.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ mentionable: true }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -69,7 +69,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ mentionable: true }))).thenResolve(undefined);
+                        ctx.inject.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ mentionable: true }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -83,7 +83,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ mentionable: false }))).thenResolve(undefined);
+                        ctx.inject.roles.setup(m => m.edit(bbctx.runtime, role.id, argument.isDeepEqual({ mentionable: false }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -105,7 +105,7 @@ runSubtagTests({
                 { start: 0, end: 34, error: new BBTagRuntimeError('Role above author') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.top);
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.top);
             }
         },
         {
@@ -118,8 +118,8 @@ runSubtagTests({
                 ctx.roles.bot.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
-                ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, ctx.roles.bot.id, argument.isDeepEqual({ mentionable: true }))).thenResolve({ error: 'Test REST error' });
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
+                ctx.inject.roles.setup(m => m.edit(bbctx.runtime, ctx.roles.bot.id, argument.isDeepEqual({ mentionable: true }))).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -132,8 +132,8 @@ runSubtagTests({
                 ctx.roles.bot.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
-                ctx.dependencies.roles.setup(m => m.edit(bbctx.runtime, ctx.roles.bot.id, argument.isDeepEqual({ mentionable: true }))).thenResolve({ error: 'Some other error message' });
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.roles.bot);
+                ctx.inject.roles.setup(m => m.edit(bbctx.runtime, ctx.roles.bot.id, argument.isDeepEqual({ mentionable: true }))).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

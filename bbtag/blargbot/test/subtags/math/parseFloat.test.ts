@@ -1,10 +1,9 @@
-import { Subtag } from '@bbtag/blargbot';
 import { ParseFloatSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ParseFloatSubtag),
+    subtag: ParseFloatSubtag,
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{parsefloat;123}', expected: '123' },

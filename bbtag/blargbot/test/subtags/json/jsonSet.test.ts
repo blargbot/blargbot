@@ -1,22 +1,22 @@
-import { BBTagRuntimeError, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { BBTagRuntimeError, TagVariableType } from '@bbtag/blargbot';
 import { JsonSetSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(JsonSetSubtag),
+    subtag: JsonSetSubtag,
     argCountBounds: { min: 2, max: 4 },
     cases: [
         {
             code: '{jsonset;{j;{"test": 123, "other": 456}};test}',
             expected: '{"other":456}',
-            subtags: [Subtag.getDescriptor(JsonSubtag)]
+            subtags: [JsonSubtag]
         },
         {
             code: '{jsonset;{j;{"test": 123, "other": 456}};somethingElse}',
             expected: '{"test":123,"other":456}',
-            subtags: [Subtag.getDescriptor(JsonSubtag)]
+            subtags: [JsonSubtag]
         },
         {
             code: '{jsonset;null;myProp;123}',
@@ -60,7 +60,7 @@ runSubtagTests({
         {
             code: '{jsonset;{j;{"test": 123, "other": "{\\"myProp\\":123}"}};other.myProp;10}',
             expected: '`Cannot set property myProp on "{\\"myProp\\":123}"`',
-            subtags: [Subtag.getDescriptor(JsonSubtag)],
+            subtags: [JsonSubtag],
             errors: [
                 { start: 0, end: 72, error: new BBTagRuntimeError('Cannot set property myProp on "{\\"myProp\\":123}"') }
             ]
@@ -68,7 +68,7 @@ runSubtagTests({
         {
             code: '{jsonset;{j;{"test": 123, "other": "{\\"myProp\\":123}"}};other.myProp;10;true}',
             expected: '{"test":123,"other":{"myProp":"10"}}',
-            subtags: [Subtag.getDescriptor(JsonSubtag)]
+            subtags: [JsonSubtag]
         },
         {
             code: '{jsonset;jsonVar;other.myProp;10;true}',

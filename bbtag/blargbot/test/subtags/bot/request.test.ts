@@ -1,7 +1,7 @@
 import { Server } from 'node:http';
 import { promisify } from 'node:util';
 
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { EscapeBBTagSubtag, RequestSubtag } from '@bbtag/blargbot/subtags';
 import chai, { expect } from 'chai';
 import express from 'express';
@@ -46,7 +46,7 @@ function assertResult(result: string): JObject {
 }
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RequestSubtag),
+    subtag: RequestSubtag,
     argCountBounds: { min: 1, max: 3 },
     async setup() {
         await promisify(server.listen.bind(server, 19000))();
@@ -59,7 +59,7 @@ runSubtagTests({
             code: '{request;http://localhost:19000/get-test}',
             setup(ctx) {
                 responses.set('/get-test', res => res.status(200).json({ response: 'get-test success' }));
-                ctx.dependencies.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+                ctx.inject.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert(_, result) {
                 assertRequest({
@@ -84,10 +84,10 @@ runSubtagTests({
         },
         {
             code: '{request;http://localhost:19000/empty-post;{escapebbtag;{"method":"post"}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             setup(ctx) {
                 responses.set('/empty-post', res => res.status(200).json({ response: 'empty-post success' }));
-                ctx.dependencies.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+                ctx.inject.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert(_, result) {
                 assertRequest({
@@ -115,10 +115,10 @@ runSubtagTests({
         },
         {
             code: '{request;http://localhost:19000/post-with-json;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             setup(ctx) {
                 responses.set('/post-with-json', res => res.status(200).json({ response: 'post-with-json success' }));
-                ctx.dependencies.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+                ctx.inject.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert(_, result) {
                 assertRequest({
@@ -148,10 +148,10 @@ runSubtagTests({
         },
         {
             code: '{request;http://localhost:19000/post-with-text;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;This isnt json}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             setup(ctx) {
                 responses.set('/post-with-text', res => res.status(200).json({ response: 'post-with-text success' }));
-                ctx.dependencies.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+                ctx.inject.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert(_, result) {
                 assertRequest({
@@ -181,10 +181,10 @@ runSubtagTests({
         },
         {
             code: '{request;http://localhost:19000/post-with-text-json;{escapebbtag;{"method":"post","headers":{"x-test":true,"content-type":"text/plain"}}};{escapebbtag;{"age":123}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             setup(ctx) {
                 responses.set('/post-with-text-json', res => res.status(200).json({ response: 'post-with-text-json success' }));
-                ctx.dependencies.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+                ctx.inject.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert(_, result) {
                 assertRequest({
@@ -214,10 +214,10 @@ runSubtagTests({
         },
         {
             code: '{request;http://localhost:19000/get-with-query;{escapebbtag;{"method":"get","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
-            subtags: [Subtag.getDescriptor(EscapeBBTagSubtag)],
+            subtags: [EscapeBBTagSubtag],
             setup(ctx) {
                 responses.set('/get-with-query?age=123', res => res.status(200).json({ response: 'get-with-query success' }));
-                ctx.dependencies.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+                ctx.inject.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert(_, result) {
                 assertRequest({
@@ -247,7 +247,7 @@ runSubtagTests({
             code: '{request;http://localhost:19000/get-image-limit}',
             setup(ctx) {
                 responses.set('/get-image-limit', res => res.status(200).contentType('image/png').send(randomData(8000000, { seed: 278364828438 })));
-                ctx.dependencies.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+                ctx.inject.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert(_, result) {
                 assertRequest({
@@ -278,7 +278,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 responses.set('/get-forbidden', res => res.status(403).send('nope'));
-                ctx.dependencies.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+                ctx.inject.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             },
             assert() {
                 assertRequest({
@@ -310,7 +310,7 @@ runSubtagTests({
                 { start: 0, end: 45, error: new BBTagRuntimeError('Domain is not whitelisted: localhost:19000') }
             ],
             setup(ctx) {
-                ctx.dependencies.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(false);
+                ctx.inject.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(false);
             }
         },
         {
@@ -320,7 +320,7 @@ runSubtagTests({
                 { start: 0, end: 70, error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
             ],
             setup(ctx) {
-                ctx.dependencies.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
+                ctx.inject.domains.setup(m => m.canRequestDomain('localhost:19000')).thenReturn(true);
             }
         }
     ]

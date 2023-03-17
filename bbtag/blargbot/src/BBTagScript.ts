@@ -65,7 +65,7 @@ export class BBTagScript {
         if (this.cooldownMs <= 0)
             return;
 
-        const cooldown = await this.runtime.runner.cooldowns.getCooldown(this);
+        const cooldown = await this.runtime.cooldowns.getCooldown(this);
         const cooldownMs = cooldown.valueOf();
         const now = Date.now();
         if (now >= cooldownMs)

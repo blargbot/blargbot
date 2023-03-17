@@ -1,11 +1,11 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { EmojiDeleteSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(EmojiDeleteSubtag),
+    subtag: EmojiDeleteSubtag,
     argCountBounds: { min: 1, max: 1 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageEmojisAndStickers.toString();
@@ -15,7 +15,7 @@ runSubtagTests({
             code: '{emojidelete;234762389364243}',
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.guild.setup(m => m.deleteEmote(bbctx.runtime, '234762389364243')).thenResolve(undefined);
+                ctx.inject.guild.setup(m => m.deleteEmote(bbctx.runtime, '234762389364243')).thenResolve(undefined);
             }
         },
         {
@@ -35,7 +35,7 @@ runSubtagTests({
                 { start: 0, end: 29, error: new BBTagRuntimeError('Failed to delete emoji: This is an error') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.guild.setup(m => m.deleteEmote(bbctx.runtime, '234762389364243')).thenResolve({ error: 'This is an error' });
+                ctx.inject.guild.setup(m => m.deleteEmote(bbctx.runtime, '234762389364243')).thenResolve({ error: 'This is an error' });
             }
         }
     ]

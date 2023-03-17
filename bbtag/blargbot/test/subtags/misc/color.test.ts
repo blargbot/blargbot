@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { BBTagRuntimeError, TagVariableType } from '@bbtag/blargbot';
 import type { ColorFormat } from '@bbtag/blargbot/subtags';
 import { ColorSubtag } from '@bbtag/blargbot/subtags';
 
@@ -6,7 +6,7 @@ import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ColorSubtag),
+    subtag: ColorSubtag,
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {

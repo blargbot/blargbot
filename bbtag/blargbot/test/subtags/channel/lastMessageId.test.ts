@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { LastMessageIdSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 
@@ -6,7 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(LastMessageIdSubtag),
+    subtag: LastMessageIdSubtag,
     argCountBounds: { min: 0, max: 1 },
     cases: [
         ...createGetChannelPropTestCases({

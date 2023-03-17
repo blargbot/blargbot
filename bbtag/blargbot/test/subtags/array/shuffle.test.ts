@@ -1,11 +1,11 @@
-import { NotAnArrayError, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { NotAnArrayError, TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag, ShuffleSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ShuffleSubtag),
+    subtag: ShuffleSubtag,
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
@@ -50,7 +50,7 @@ runSubtagTests({
         {
             code: '{shuffle;{get;arr1}}',
             expected: '',
-            subtags: [Subtag.getDescriptor(GetSubtag)],
+            subtags: [GetSubtag],
             retries: 1,
             setupSaveVariables: false,
             setup(ctx) {

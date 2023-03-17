@@ -1,4 +1,4 @@
-import { NotAnArrayError, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { NotAnArrayError, TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag, PushSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
@@ -6,7 +6,7 @@ import chai from 'chai';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(PushSubtag),
+    subtag: PushSubtag,
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {
@@ -34,7 +34,7 @@ runSubtagTests({
         {
             code: '{push;{get;arr1};def}',
             expected: '',
-            subtags: [Subtag.getDescriptor(GetSubtag)],
+            subtags: [GetSubtag],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
@@ -48,7 +48,7 @@ runSubtagTests({
         {
             code: '{push;arr1;def}',
             expected: '',
-            subtags: [Subtag.getDescriptor(GetSubtag)],
+            subtags: [GetSubtag],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
@@ -62,12 +62,12 @@ runSubtagTests({
         {
             code: '{push;!arr1;def}',
             expected: '',
-            subtags: [Subtag.getDescriptor(GetSubtag)],
+            subtags: [GetSubtag],
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([{ name: 'arr1', value: ['this', 'is', 'arr1', 'def'], scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' } }]))).thenResolve(undefined);
+                ctx.variables.setup(m => m.set(argument.isDeepEqual([{ name: 'arr1', value: ['this', 'is', 'arr1', 'def'], scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' } }]))).thenResolve(undefined);
             },
             async assert(bbctx) {
                 chai.expect((await bbctx.runtime.variables.get('arr1')).value).to.deep.equal(['this', 'is', 'arr1', 'def']);

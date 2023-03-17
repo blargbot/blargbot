@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { EveryoneMentionSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(EveryoneMentionSubtag),
+    subtag: EveryoneMentionSubtag,
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

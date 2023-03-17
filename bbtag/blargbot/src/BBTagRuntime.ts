@@ -1,4 +1,5 @@
 import type { BBTagStatementToken, BBTagToken } from '@bbtag/language';
+import type { IVariableProvider } from '@bbtag/variables';
 import { VariableCache } from '@bbtag/variables';
 import { sleep, StackScheduler } from '@blargbot/async-tools';
 import { Emote } from '@blargbot/discord-emote';
@@ -6,24 +7,25 @@ import Discord, { AllowedMentionsTypes } from '@blargbot/discord-types';
 import { findRolePosition, permission } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
 
-import type { BBTagRunner } from './BBTagRunner.js';
 import { BBTagRuntimeMetrics } from './BBTagRuntimeMetrics.js';
 import type { BBTagScriptOptions } from './BBTagScript.js';
 import { BBTagScript } from './BBTagScript.js';
 import { ContextManager } from './ContextManager.js';
 import { BBTagRuntimeError, RuntimeModuleOverflowError } from './errors/index.js';
-import type { SubtagDescriptor } from './index.js';
+import type { ISubtag } from './ISubtag.js';
 import type { BBTagRuntimeGuard, RuntimeLimit } from './limits/index.js';
 import { ScopeManager } from './ScopeManager.js';
+import type { CooldownService, MessageService, SourceProvider, SubtagInvocationContext, SubtagInvocationMiddleware } from './services/index.js';
 import { SubtagCallStack } from './SubtagCallStack.js';
 import type { ISubtagLookup } from './SubtagCollection.js';
 import { SubtagCollection } from './SubtagCollection.js';
 import type { SubtagExecutor } from './SubtagExecutor.js';
 import type { BBTagRuntimeScope, Entities, LocatedRuntimeError, RuntimeDebugEntry, TagVariableScope } from './types.js';
 import { BBTagRuntimeState } from './types.js';
+import type { BBTagArrayTools, BBTagValueConverter } from './utils/index.js';
 
 export class BBTagRuntime {
-    readonly #subtags = new SubtagCollection();
+    readonly #subtags: SubtagCollection;
     readonly #mainLoop: StackScheduler = new StackScheduler();
     readonly #moduleStack = new ContextManager({
         exit: () => {
@@ -53,17 +55,16 @@ export class BBTagRuntime {
             this.#user = user;
         }
     });
+    readonly #execSubtag: SubtagExecutor;
     readonly #snippets: Record<string, BBTagStatementToken> = {};
     readonly #sourceCache: Record<string, { content: string; cooldown: number; } | null> = {};
     #moduleCount = 0;
 
-    readonly #execSubtag: SubtagExecutor;
     #result?: Promise<string>;
     #message: Entities.Message;
     #user: Entities.User;
     #channel: Entities.Channel;
 
-    public readonly runner: BBTagRunner;
     public readonly scopes = new ScopeManager();
     public readonly subtagStack = new SubtagCallStack();
     public readonly limit: BBTagRuntimeGuard;
@@ -87,6 +88,11 @@ export class BBTagRuntime {
     public readonly botPermissions: bigint;
     public readonly userPermissions: bigint;
     public readonly authorizerPermissions: bigint;
+    public readonly cooldowns: CooldownService;
+    public readonly messages: MessageService;
+    public readonly sources: SourceProvider;
+    public readonly converter: BBTagValueConverter;
+    public readonly arrayTools: BBTagArrayTools;
 
     public readonly outputOptions: OutputOptions;
     public get subtags(): ISubtagLookup {
@@ -110,46 +116,57 @@ export class BBTagRuntime {
 
     public readonly entrypoint: BBTagScript;
 
-    public constructor(runner: BBTagRunner, options: BBTagRuntimeOptions, execSubtag: SubtagExecutor) {
-        this.#execSubtag = execSubtag;
-        this.#message = options.message;
-        this.#user = options.user;
-        this.#channel = options.channel;
-        this.runner = runner;
-        const limit = options.limit;
-        this.limit = {
-            id: limit.id,
-            check: (key) => limit.check(this, key),
-            state: () => limit.serialize()
-        };
-        this.authorId = options.authorId;
-        this.bot = options.bot;
-        this.authorizer = options.authorizer;
-        this.guild = options.guild;
-        this.isStaff = options.isStaff;
-        this.silent = options.silent;
-        this.isCC = options.isCC;
-        this.tagVars = options.tagVars;
-        this.prefix = options.prefix;
-        this.queryCache = options.queryCache;
+    public constructor(services: BBTagRuntimeServices, config: BBTagRuntimeConfig) {
+        const callSubtag = [...services.middleware].reduceRight<(ctx: SubtagInvocationContext) => Awaitable<string>>(
+            (p, c) => (ctx) => c(ctx, p.bind(null, ctx)),
+        /**/(ctx) => ctx.subtag.execute(ctx.script, ctx.subtagName, ctx.call)
+        );
+        this.#execSubtag = (subtag, script, subtagName, call) =>
+            this.subtagStack.invoke(subtag.id, call, () =>
+                this.metrics.timeSubtag(subtag.id, () =>
+                    callSubtag({ subtag, script, subtagName, call })));
+        this.#message = config.message;
+        this.#user = config.user;
+        this.#channel = config.channel;
+        this.#subtags = new SubtagCollection(services.subtags);
+        const variables = services.variables;
+        this.variables = new VariableCache(this, {
+            get: (...args) => this.metrics.timeDb(() => variables.get(...args)),
+            set: (...args) => this.metrics.timeDb(() => variables.set(...args))
+        });
+        this.cooldowns = services.cooldowns;
+        this.messages = services.messages;
+        this.sources = services.sources;
+        this.converter = services.converter;
+        this.arrayTools = services.arrayTools;
+        this.authorId = config.authorId;
+        this.bot = config.bot;
+        this.authorizer = config.authorizer;
+        this.guild = config.guild;
+        this.isStaff = config.isStaff;
+        this.silent = config.silent;
+        this.isCC = config.isCC;
+        this.tagVars = config.tagVars;
+        this.prefix = config.prefix;
+        this.queryCache = config.queryCache;
         this.outputOptions = {
             allowEveryone: false,
             mentionRoles: new Set(),
             mentionUsers: new Set(),
             reactions: [],
-            ...options.output
+            ...config.output
         };
-        this.variables = new VariableCache(this, runner.variables);
-
-        for (const subtag of runner.subtags)
-            this.#subtags.add(subtag);
-        for (const subtag of options.subtags ?? [])
-            this.#subtags.add(subtag.createInstance(this.runner));
-        this.ownedMessageIds.add(options.message.id);
+        const limit = config.limit;
+        this.limit = {
+            id: limit.id,
+            check: (key) => limit.check(this, key),
+            state: () => limit.serialize()
+        };
+        this.ownedMessageIds.add(config.message.id);
         this.botPermissions = this.getPermission(this.bot);
         this.userPermissions = this.getPermission(this.user);
         this.authorizerPermissions = this.getPermission(this.authorizer);
-        this.entrypoint = this.createScript(options.entrypoint);
+        this.entrypoint = this.createScript(config.entrypoint);
     }
 
     public execute(): Promise<string> {
@@ -226,7 +243,7 @@ export class BBTagRuntime {
     async #output(text: string): Promise<string | undefined> {
         const options = this.outputOptions;
         const disableEveryone = !this.isCC || !options.allowEveryone;
-        const response = await this.runner.messages.create(this, this.channel.id, {
+        const response = await this.messages.create(this, this.channel.id, {
             content: text,
             embeds: options.embeds !== undefined ? options.embeds : undefined,
             allowed_mentions: {
@@ -247,7 +264,7 @@ export class BBTagRuntime {
         }
 
         this.ownedMessageIds.add(response.id);
-        await this.runner.messages.addReactions(this, this.channel.id, response.id, [...new Set(options.reactions)].map(Emote.parse));
+        await this.messages.addReactions(this, this.channel.id, response.id, [...new Set(options.reactions)].map(Emote.parse));
         return response.id;
     }
 
@@ -291,7 +308,7 @@ export class BBTagRuntime {
         const cacheKey = `${type}_${key}`;
         if (cacheKey in this.#sourceCache)
             return this.#sourceCache[cacheKey];
-        const fetchedValue = await this.runner.sources.get(this, type, key);
+        const fetchedValue = await this.sources.get(this, type, key);
         if (fetchedValue !== undefined)
             return this.#sourceCache[cacheKey] = fetchedValue;
         return this.#sourceCache[cacheKey] = null;
@@ -301,7 +318,7 @@ export class BBTagRuntime {
         if (source === '')
             return undefined;
 
-        const flatSource = this.runner.arrayTools.flattenArray([source]).map(i => this.runner.converter.string(i));
+        const flatSource = this.arrayTools.flattenArray([source]).map(i => this.converter.string(i));
         return await Promise.all(flatSource.map(async input => {
             const element = await lookup(input);
             if (element === undefined)
@@ -311,8 +328,7 @@ export class BBTagRuntime {
     }
 }
 
-export interface BBTagRuntimeOptions {
-    readonly subtags?: Iterable<SubtagDescriptor>;
+export interface BBTagRuntimeConfig {
     readonly authorId: string | null;
     readonly message: Entities.Message;
     readonly bot: Entities.User;
@@ -329,6 +345,17 @@ export interface BBTagRuntimeOptions {
     readonly queryCache: BBTagRuntimeQueryCache;
     readonly entrypoint: BBTagScriptOptions;
     readonly output?: Partial<OutputOptions>;
+}
+
+export interface BBTagRuntimeServices {
+    readonly cooldowns: CooldownService;
+    readonly messages: MessageService;
+    readonly sources: SourceProvider;
+    readonly converter: BBTagValueConverter;
+    readonly arrayTools: BBTagArrayTools;
+    readonly variables: IVariableProvider<BBTagRuntime, TagVariableScope>;
+    readonly middleware: Iterable<SubtagInvocationMiddleware>;
+    readonly subtags: Iterable<ISubtag>;
 }
 
 export interface BBTagRuntimeQueryCache {

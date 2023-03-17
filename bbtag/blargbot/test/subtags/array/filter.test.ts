@@ -1,11 +1,11 @@
-import { BBTagRuntimeError, BBTagRuntimeState, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { BBTagRuntimeError, BBTagRuntimeState, TagVariableType } from '@bbtag/blargbot';
 import { CommentSubtag, FilterSubtag, GetSubtag, IfSubtag, LengthSubtag, OperatorSubtag, ReturnSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(FilterSubtag),
+    subtag: FilterSubtag,
     argCountBounds: { min: { count: 3, noEval: [2] }, max: { count: 3, noEval: [2] } },
     cases: [
         {
@@ -15,7 +15,7 @@ runSubtagTests({
         {
             code: '{filter;a;arr1;{==;{length;{get;a}};4}}',
             expected: '["this","arr1"]',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(LengthSubtag)],
+            subtags: [GetSubtag, OperatorSubtag, LengthSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
@@ -32,7 +32,7 @@ runSubtagTests({
         {
             code: '{filter;a;{get;arr1};{==;{length;{get;a}};4}}',
             expected: '["this","arr1"]',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(LengthSubtag)],
+            subtags: [GetSubtag, OperatorSubtag, LengthSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
@@ -49,7 +49,7 @@ runSubtagTests({
         {
             code: '{filter;a;var1;{contains;aieou;{get;a}}}',
             expected: '["i","i","a"]',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(OperatorSubtag)],
+            subtags: [GetSubtag, OperatorSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
@@ -66,7 +66,7 @@ runSubtagTests({
         {
             code: '{filter;a;var1;{//;aaaaaa}    {contains;aieou;{get;a}}}',
             expected: '["i","i","a"]',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(CommentSubtag)],
+            subtags: [GetSubtag, OperatorSubtag, CommentSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
@@ -83,7 +83,7 @@ runSubtagTests({
         {
             code: '{filter;a;var1;{contains;aieou;{get;a}}      {//;aaaaaa}}',
             expected: '["i","i","a"]',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(CommentSubtag)],
+            subtags: [GetSubtag, OperatorSubtag, CommentSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
@@ -100,7 +100,7 @@ runSubtagTests({
         {
             code: '{filter;a;var1;true{if;{get;a};==;s;{return}}}',
             expected: '["t","h","i","s"]',
-            subtags: [Subtag.getDescriptor(GetSubtag), Subtag.getDescriptor(IfSubtag), Subtag.getDescriptor(ReturnSubtag)],
+            subtags: [GetSubtag, IfSubtag, ReturnSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
@@ -121,7 +121,7 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 26, error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [Subtag.getDescriptor(GetSubtag)],
+            subtags: [GetSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);

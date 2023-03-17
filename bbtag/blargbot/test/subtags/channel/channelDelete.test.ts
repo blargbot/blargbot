@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { ChannelDeleteSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 
@@ -6,7 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ChannelDeleteSubtag),
+    subtag: ChannelDeleteSubtag,
     argCountBounds: { min: 1, max: 1 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageChannels.toString();
@@ -23,7 +23,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(channel, bbctx, ctx) {
-                        ctx.dependencies.channels.setup(m => m.delete(bbctx.runtime, channel.id)).thenResolve(undefined);
+                        ctx.inject.channels.setup(m => m.delete(bbctx.runtime, channel.id)).thenResolve(undefined);
                     }
                 }
             ]
@@ -38,7 +38,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve(undefined);
+                ctx.inject.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve(undefined);
             }
         },
         {
@@ -54,7 +54,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve(undefined);
+                ctx.inject.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve(undefined);
             }
         },
         {
@@ -80,7 +80,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve({ error: 'Test REST error' });
+                ctx.inject.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -94,7 +94,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve({ error: 'Some other error message' });
+                ctx.inject.channels.setup(m => m.delete(bbctx.runtime, '2384762844234324')).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

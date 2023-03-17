@@ -1,9 +1,13 @@
-import type { VariableScopeProvider } from './VariableScopeProvider.js';
+import type { IVariableScopeProvider } from './VariableScopeProvider.js';
 
-export class VariableNameParser<Context, Scope> {
-    readonly #scopes: Array<VariableScopeProvider<Context, Scope>>;
+export interface IVariableNameParser<Context, Scope> {
+    parse(context: Context, variable: string): { scope: Scope; name: string; };
+}
 
-    public constructor(scopes: Iterable<VariableScopeProvider<Context, Scope>>) {
+export class VariableNameParser<Context, Scope> implements IVariableNameParser<Context, Scope> {
+    readonly #scopes: Array<IVariableScopeProvider<Context, Scope>>;
+
+    public constructor(scopes: Iterable<IVariableScopeProvider<Context, Scope>>) {
         this.#scopes = [...scopes].sort((a, b) => b.prefix.length - a.prefix.length);
     }
 

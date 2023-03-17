@@ -1,19 +1,19 @@
-import { BBTagRuntimeError, BBTagRuntimeState, BBTagScript, RuntimeModuleOverflowError, Subtag, UnknownSubtagError } from '@bbtag/blargbot';
+import { BBTagRuntimeError, BBTagRuntimeState, BBTagScript, RuntimeModuleOverflowError, UnknownSubtagError } from '@bbtag/blargbot';
 import { ExecCustomCommandSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 import { PromiseCompletionSource } from '@blargbot/async-tools';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 
-import { AssertSubtag, createDescriptor, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
+import { makeAssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ExecCustomCommandSubtag),
+    subtag: ExecCustomCommandSubtag,
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
             code: '{execcc;otherSubtag}',
             expected: 'Success!',
-            subtags: [createDescriptor(new AssertSubtag((ctx) => {
+            subtags: [makeAssertSubtag((ctx) => {
                 chai.expect(ctx).to.not.equal(ctx.runtime.entrypoint);
                 chai.expect(ctx.name).to.equal('othersubtag');
                 chai.expect(ctx.runtime.entrypoint.name).to.equal('test tag');
@@ -25,7 +25,7 @@ runSubtagTests({
                 chai.expect(ctx.runtime.moduleCount).to.equal(102);
                 ctx.runtime.outputOptions.embeds = [{ title: 'abc' }];
                 return 'Success!';
-            }))],
+            })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -39,8 +39,8 @@ runSubtagTests({
                 };
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
                 const neverResolve = new PromiseCompletionSource();
                 for (let i = 0; i < 100; i++)
                     void bbctx.runtime.withModule(() => neverResolve);
@@ -59,7 +59,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;}',
             expected: 'Success!',
-            subtags: [createDescriptor(new AssertSubtag((ctx) => {
+            subtags: [makeAssertSubtag((ctx) => {
                 chai.expect(ctx).to.not.equal(ctx.runtime.entrypoint);
                 chai.expect(ctx.name).to.equal('othersubtag');
                 chai.expect(ctx.runtime.entrypoint.name).to.equal('test tag');
@@ -70,7 +70,7 @@ runSubtagTests({
                 chai.expect(ctx.runtime.scopes.local).to.not.equal(ctx.runtime.scopes.root);
                 chai.expect(ctx.runtime.scopes.tag).to.not.equal(ctx.runtime.scopes.root);
                 return 'Success!';
-            }))],
+            })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -85,8 +85,8 @@ runSubtagTests({
                 };
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
                 const neverResolve = new PromiseCompletionSource();
                 for (let i = 0; i < 100; i++)
                     void bbctx.runtime.withModule(() => neverResolve);
@@ -104,7 +104,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;abc;\\"def\\";ghi}',
             expected: 'Success!',
-            subtags: [createDescriptor(new AssertSubtag((ctx) => {
+            subtags: [makeAssertSubtag((ctx) => {
                 chai.expect(ctx).to.not.equal(ctx.runtime.entrypoint);
                 chai.expect(ctx.name).to.equal('othersubtag');
                 chai.expect(ctx.runtime.entrypoint.name).to.equal('test tag');
@@ -115,7 +115,7 @@ runSubtagTests({
                 chai.expect(ctx.runtime.scopes.local).to.not.equal(ctx.runtime.scopes.root);
                 chai.expect(ctx.runtime.scopes.tag).to.not.equal(ctx.runtime.scopes.root);
                 return 'Success!';
-            }))],
+            })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -130,8 +130,8 @@ runSubtagTests({
                 };
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
                 const neverResolve = new PromiseCompletionSource();
                 for (let i = 0; i < 100; i++)
                     void bbctx.runtime.withModule(() => neverResolve);
@@ -149,7 +149,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;abc;{j;{"def":123}}}',
             expected: 'Success!',
-            subtags: [createDescriptor(new AssertSubtag((ctx) => {
+            subtags: [makeAssertSubtag((ctx) => {
                 chai.expect(ctx).to.not.equal(ctx.runtime.entrypoint);
                 chai.expect(ctx.name).to.equal('othersubtag');
                 chai.expect(ctx.runtime.entrypoint.name).to.equal('test tag');
@@ -160,7 +160,7 @@ runSubtagTests({
                 chai.expect(ctx.runtime.scopes.tag).to.not.equal(ctx.runtime.scopes.root);
                 chai.expect(ctx.runtime.moduleCount).to.equal(102);
                 return 'Success!';
-            })), Subtag.getDescriptor(JsonSubtag)],
+            }), JsonSubtag],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -175,8 +175,8 @@ runSubtagTests({
                 };
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
                 const neverResolve = new PromiseCompletionSource();
                 for (let i = 0; i < 100; i++)
                     void bbctx.runtime.withModule(() => neverResolve);
@@ -211,8 +211,8 @@ runSubtagTests({
                 };
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
             }
         },
         {
@@ -228,8 +228,8 @@ runSubtagTests({
                 };
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
                 const neverResolve = new PromiseCompletionSource();
                 for (let i = 0; i < 199; i++)
                     void bbctx.runtime.withModule(() => neverResolve);
@@ -242,7 +242,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;arg1;arg2;-f flag value}',
             expected: 'Success!',
-            subtags: [createDescriptor(new AssertSubtag((ctx) => {
+            subtags: [makeAssertSubtag((ctx) => {
                 chai.expect(ctx).to.not.equal(ctx.runtime.entrypoint);
                 chai.expect(ctx.name).to.equal('othersubtag');
                 chai.expect(ctx.runtime.entrypoint.name).to.equal('test tag');
@@ -255,7 +255,7 @@ runSubtagTests({
                 chai.expect(ctx.runtime.scopes.local).to.not.equal(ctx.runtime.scopes.root);
                 chai.expect(ctx.runtime.scopes.tag).to.not.equal(ctx.runtime.scopes.root);
                 return 'Success!';
-            }))],
+            })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -270,8 +270,8 @@ runSubtagTests({
                 };
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
                 const neverResolve = new PromiseCompletionSource();
                 for (let i = 0; i < 100; i++)
                     void bbctx.runtime.withModule(() => neverResolve);
@@ -291,7 +291,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;arg1 arg2 -f flag value}',
             expected: 'Success!',
-            subtags: [createDescriptor(new AssertSubtag((ctx) => {
+            subtags: [makeAssertSubtag((ctx) => {
                 chai.expect(ctx).to.not.equal(ctx.runtime.entrypoint);
                 chai.expect(ctx.name).to.equal('othersubtag');
                 chai.expect(ctx.runtime.entrypoint.name).to.equal('test tag');
@@ -304,7 +304,7 @@ runSubtagTests({
                 chai.expect(ctx.runtime.scopes.local).to.not.equal(ctx.runtime.scopes.root);
                 chai.expect(ctx.runtime.scopes.tag).to.not.equal(ctx.runtime.scopes.root);
                 return 'Success!';
-            }))],
+            })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -319,8 +319,8 @@ runSubtagTests({
                 };
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
                 const neverResolve = new PromiseCompletionSource();
                 for (let i = 0; i < 100; i++)
                     void bbctx.runtime.withModule(() => neverResolve);
@@ -340,7 +340,7 @@ runSubtagTests({
         {
             code: '{execcc;otherSubtag;arg1 arg2 \\-f flag value}',
             expected: 'Success!',
-            subtags: [createDescriptor(new AssertSubtag((ctx) => {
+            subtags: [makeAssertSubtag((ctx) => {
                 chai.expect(ctx).to.not.equal(ctx.runtime.entrypoint);
                 chai.expect(ctx.name).to.equal('othersubtag');
                 chai.expect(ctx.runtime.entrypoint.name).to.equal('test tag');
@@ -353,7 +353,7 @@ runSubtagTests({
                 chai.expect(ctx.runtime.scopes.local).to.not.equal(ctx.runtime.scopes.root);
                 chai.expect(ctx.runtime.scopes.tag).to.not.equal(ctx.runtime.scopes.root);
                 return 'Success!';
-            }))],
+            })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
@@ -368,8 +368,8 @@ runSubtagTests({
                 };
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
-                ctx.dependencies.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(bbctx)).thenReturn(new Date(0));
+                ctx.cooldowns.setup(m => m.getCooldown(argument.isInstanceof(BBTagScript).and(s => s.name === 'othersubtag').value)).thenReturn(new Date(0));
                 const neverResolve = new PromiseCompletionSource();
                 for (let i = 0; i < 100; i++)
                     void bbctx.runtime.withModule(() => neverResolve);

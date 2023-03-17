@@ -1,4 +1,3 @@
-import { Subtag } from '@bbtag/blargbot';
 import { MessageEditTimeSubtag } from '@bbtag/blargbot/subtags';
 import moment from 'moment-timezone';
 
@@ -6,7 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(MessageEditTimeSubtag),
+    subtag: MessageEditTimeSubtag,
     argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetMessagePropTestCases({

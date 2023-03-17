@@ -1,10 +1,9 @@
-import { Subtag } from '@bbtag/blargbot';
 import { MinSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(MinSubtag),
+    subtag: MinSubtag,
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         { code: '{min;1;2;3;4;5}', expected: '1' },

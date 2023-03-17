@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { RoleDeleteSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -7,7 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RoleDeleteSubtag),
+    subtag: RoleDeleteSubtag,
     argCountBounds: { min: 1, max: 2 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageRoles.toString();
@@ -24,7 +24,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, bbctx, ctx) {
-                        ctx.dependencies.roles.setup(m => m.delete(bbctx.runtime, role.id)).thenResolve(undefined);
+                        ctx.inject.roles.setup(m => m.delete(bbctx.runtime, role.id)).thenResolve(undefined);
                     }
                 }
             ]
@@ -46,7 +46,7 @@ runSubtagTests({
                 { start: 0, end: 26, error: new BBTagRuntimeError('Role above author') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.top);
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.top);
             }
         },
         {
@@ -56,8 +56,8 @@ runSubtagTests({
                 { start: 0, end: 26, error: new BBTagRuntimeError('Failed to delete role: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.other);
-                ctx.dependencies.roles.setup(m => m.delete(bbctx.runtime, ctx.roles.other.id)).thenResolve({ error: 'Test REST error' });
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.inject.roles.setup(m => m.delete(bbctx.runtime, ctx.roles.other.id)).thenResolve({ error: 'Test REST error' });
             }
         },
         {
@@ -67,8 +67,8 @@ runSubtagTests({
                 { start: 0, end: 26, error: new BBTagRuntimeError('Failed to delete role: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.other);
-                ctx.dependencies.roles.setup(m => m.delete(bbctx.runtime, ctx.roles.other.id)).thenResolve({ error: 'Some other error message' });
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, '3298746326924', argument.isDeepEqual({ noErrors: false, noLookup: false }))).thenResolve(ctx.roles.other);
+                ctx.inject.roles.setup(m => m.delete(bbctx.runtime, ctx.roles.other.id)).thenResolve({ error: 'Some other error message' });
             }
         }
     ]

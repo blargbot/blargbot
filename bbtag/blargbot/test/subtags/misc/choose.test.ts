@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError, NotANumberError } from '@bbtag/blargbot';
 import { ChooseSubtag } from '@bbtag/blargbot/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ChooseSubtag),
+    subtag: ChooseSubtag,
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {

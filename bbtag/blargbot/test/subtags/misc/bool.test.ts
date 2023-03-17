@@ -1,5 +1,5 @@
 import type { OrdinalOperator, StringOperator } from '@bbtag/blargbot';
-import { InvalidOperatorError, ordinalOperators, stringOperators, Subtag } from '@bbtag/blargbot';
+import { InvalidOperatorError, ordinalOperators, stringOperators } from '@bbtag/blargbot';
 import { BoolSubtag } from '@bbtag/blargbot/subtags';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
@@ -14,7 +14,7 @@ const endsWith = { 'startswith': false, 'endswith': true, 'includes': true, 'con
 const doesntContain = { 'startswith': false, 'endswith': false, 'includes': false, 'contains': false } as const;
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(BoolSubtag),
+    subtag: BoolSubtag,
     argCountBounds: { min: 3, max: 3 },
     cases: [
         ...generateOrdinalTestCases('123', isEqualTo, '123'),

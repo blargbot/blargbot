@@ -1,10 +1,9 @@
-import { Subtag } from '@bbtag/blargbot';
 import { TagAuthorSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(TagAuthorSubtag),
+    subtag: TagAuthorSubtag,
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

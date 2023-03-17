@@ -1,5 +1,5 @@
 import type { Entities, MessageService } from '@bbtag/blargbot';
-import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError, NotANumberError } from '@bbtag/blargbot';
 import { MessageIdSubtag, OperatorSubtag, WaitMessageSubtag } from '@bbtag/blargbot/subtags';
 import type { Mock } from '@blargbot/test-util/mock.js';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -12,7 +12,7 @@ type AwaitCondition = Exclude<Parameters<MessageService['awaitMessage']>[2], und
 const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(WaitMessageSubtag),
+    subtag: WaitMessageSubtag,
     argCountBounds: { min: 0, max: { count: 4, noEval: [2] } },
     cases: [
         {
@@ -23,7 +23,7 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual([ctx.channels.command.id]), anyCondition.value, 60000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual([ctx.channels.command.id]), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(undefined, [rejectedMessage.instance]));
             }
         },
@@ -37,7 +37,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, ctx.users.command.id);
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual([ctx.channels.command.id]), anyCondition.value, 60000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual([ctx.channels.command.id]), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
             }
         },
@@ -51,12 +51,12 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, ctx.users.command.id);
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
             }
         },
@@ -70,12 +70,12 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, ctx.users.command.id);
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
             }
         },
@@ -89,22 +89,22 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', '987234657348965', ctx.users.command.id);
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374', '987234657348965', '39457643897564358']), anyCondition.value, 60000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374', '987234657348965', '39457643897564358']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
                 const channel1 = ctx.createMock<Entities.Channel>();
                 channel1.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel1.instance);
 
                 const channel2 = ctx.createMock<Entities.Channel>();
                 channel2.setup(m => m.id).thenReturn('987234657348965');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '987234657348965', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '987234657348965', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel2.instance);
 
                 const channel3 = ctx.createMock<Entities.Channel>();
                 channel3.setup(m => m.id).thenReturn('39457643897564358');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '39457643897564358', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '39457643897564358', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel3.instance);
             }
         },
@@ -118,17 +118,17 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('289374634729826479828');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -142,17 +142,17 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('289374634729826479828');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -166,27 +166,27 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, '328762389764234374');
                 const rejectedMessage = createRejectedMessage(ctx);
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
 
                 const user1 = ctx.createMock<Entities.User>();
                 user1.setup(m => m.id).thenReturn('289374634729826479828');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user1.instance);
 
                 const user2 = ctx.createMock<Entities.User>();
                 user2.setup(m => m.id).thenReturn('328762389764234374');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '328762389764234374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '328762389764234374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user2.instance);
 
                 const user3 = ctx.createMock<Entities.User>();
                 user3.setup(m => m.id).thenReturn('23894767278934620893');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '23894767278934620893', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '23894767278934620893', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user3.instance);
             }
         },
@@ -197,7 +197,7 @@ runSubtagTests({
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
                 { start: 53, end: 59, error: new MarkerError('eval', 53) }
             ],
-            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(MessageIdSubtag)],
+            subtags: [OperatorSubtag, MessageIdSubtag],
             setup(ctx) {
                 ctx.channels.command.id = '21938762934928374';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -206,17 +206,17 @@ runSubtagTests({
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 const filterableMessage = createFilterableMessage(ctx, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('289374634729826479828');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -227,7 +227,7 @@ runSubtagTests({
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
                 { start: 53, end: 59, error: new MarkerError('eval', 53) }
             ],
-            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(MessageIdSubtag)],
+            subtags: [OperatorSubtag, MessageIdSubtag],
             setup(ctx) {
                 ctx.channels.command.id = '21938762934928374';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -236,17 +236,17 @@ runSubtagTests({
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 const filterableMessage = createFilterableMessage(ctx, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 10000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 10000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('289374634729826479828');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -257,7 +257,7 @@ runSubtagTests({
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
                 { start: 53, end: 59, error: new MarkerError('eval', 53) }
             ],
-            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(MessageIdSubtag)],
+            subtags: [OperatorSubtag, MessageIdSubtag],
             setup(ctx) {
                 ctx.channels.command.id = '21938762934928374';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -266,17 +266,17 @@ runSubtagTests({
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 const filterableMessage = createFilterableMessage(ctx, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 0))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 0))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('289374634729826479828');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -287,7 +287,7 @@ runSubtagTests({
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
                 { start: 53, end: 59, error: new MarkerError('eval', 53) }
             ],
-            subtags: [Subtag.getDescriptor(OperatorSubtag), Subtag.getDescriptor(MessageIdSubtag)],
+            subtags: [OperatorSubtag, MessageIdSubtag],
             setup(ctx) {
                 ctx.channels.command.id = '21938762934928374';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -296,17 +296,17 @@ runSubtagTests({
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 const filterableMessage = createFilterableMessage(ctx, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 300000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 300000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('289374634729826479828');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -326,17 +326,17 @@ runSubtagTests({
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 const filterableMessage = createFilterableMessage(ctx, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 300000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 300000))
                     .thenCall(createFakeAwaiterFactory(acceptedMessage.instance, [filterableMessage.instance, rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('289374634729826479828');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -353,17 +353,17 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const rejectedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
-                ctx.dependencies.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 300000))
+                ctx.inject.messages.setup(m => m.awaitMessage(bbctx.runtime, argument.isDeepEqual(['21938762934928374']), anyCondition.value, 300000))
                     .thenCall(createFakeAwaiterFactory(undefined, [rejectedMessage.instance]));
 
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('289374634729826479828');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user.instance);
             }
         },
@@ -380,12 +380,12 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const channel = ctx.createMock<Entities.Channel>();
                 channel.setup(m => m.id).thenReturn('21938762934928374');
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '21938762934928374', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(channel.instance);
 
                 const user = ctx.createMock<Entities.User>();
                 user.setup(m => m.id).thenReturn('289374634729826479828');
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, '289374634729826479828', argument.isDeepEqual({ noLookup: true })))
                     .thenResolve(user.instance);
             }
         }

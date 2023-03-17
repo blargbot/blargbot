@@ -42,8 +42,8 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
         postSetup(bbctx, ctx) {
             const opt = options.getQueryOptions?.(false);
             if (opt === undefined)
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '12345678998765432'), false).thenResolve(undefined);
-            ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '12345678998765432', argument.isDeepEqual(opt)), false).thenResolve(undefined);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '12345678998765432'), false).thenResolve(undefined);
+            ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '12345678998765432', argument.isDeepEqual(opt)), false).thenResolve(undefined);
         }
     };
     if (options.quiet !== false) {
@@ -55,7 +55,7 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
                 { start: 0, end: options.generateCode('12345678998765432', 'q').length, error: notFound('12345678998765432').withDisplay(options.quiet) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '12345678998765432', argument.isDeepEqual(options.getQueryOptions?.(true))), false).thenResolve(undefined);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '12345678998765432', argument.isDeepEqual(options.getQueryOptions?.(true))), false).thenResolve(undefined);
             }
         };
     }
@@ -104,8 +104,8 @@ function createTestCase(data: GetChannelPropTestData, isQuiet: boolean, testCase
 
                 const opt = data.getQueryOptions?.(isQuiet);
                 if (opt === undefined)
-                    ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery), false).thenResolve(channel);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery, argument.isDeepEqual(opt)), false).thenResolve(channel);
+                    ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery), false).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, channelQuery, argument.isDeepEqual(opt)), false).thenResolve(channel);
             }
 
             testCase.postSetup?.(channel, bbctx, ctx);

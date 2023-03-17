@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 
-import { BBTagRuntimeError, NotANumberError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError, NotANumberError } from '@bbtag/blargbot';
 import { ChannelSetPositionSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -8,7 +8,7 @@ import { argument } from '@blargbot/test-util/mock.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ChannelSetPositionSubtag),
+    subtag: ChannelSetPositionSubtag,
     argCountBounds: { min: 2, max: 2 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageChannels.toString();
@@ -20,8 +20,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({ position: 123 }))).thenResolve(undefined);
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({ position: 123 }))).thenResolve(undefined);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
             }
         },
         {
@@ -33,7 +33,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
             }
         },
         {
@@ -43,7 +43,7 @@ runSubtagTests({
                 { start: 0, end: 38, error: new BBTagRuntimeError('Channel does not exist') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve();
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve();
             }
         },
         {
@@ -58,7 +58,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
             }
         },
         {
@@ -70,8 +70,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({ position: 123 })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({ position: 123 })))
                     .thenResolve({ error: 'Test REST error' });
             }
         },
@@ -84,8 +84,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const choices = Object.values(ctx.channels);
                 const channel = choices[randomInt(choices.length)];
-                ctx.dependencies.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
-                ctx.dependencies.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({ position: 123 })))
+                ctx.inject.channels.setup(m => m.querySingle(bbctx.runtime, '239874692346327846')).thenResolve(channel);
+                ctx.inject.channels.setup(m => m.edit(bbctx.runtime, channel.id, argument.isDeepEqual({ position: 123 })))
                     .thenResolve({ error: 'Some other error message' });
             }
         }

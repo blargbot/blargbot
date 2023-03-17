@@ -1,10 +1,10 @@
-import { Subtag, TagVariableType } from '@bbtag/blargbot';
+import { TagVariableType } from '@bbtag/blargbot';
 import { ConcatSubtag, GetSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ConcatSubtag),
+    subtag: ConcatSubtag,
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         { code: '{concat;["this", "is"];["an", "array"]}', expected: '["this","is","an","array"]' },
@@ -12,7 +12,7 @@ runSubtagTests({
         {
             code: '{concat;{get;arr1};{get;arr2}}',
             expected: '["this","is","arr1","this","is","arr2"]',
-            subtags: [Subtag.getDescriptor(GetSubtag)],
+            subtags: [GetSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);

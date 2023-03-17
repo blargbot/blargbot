@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { UserTimezoneSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(UserTimezoneSubtag),
+    subtag: UserTimezoneSubtag,
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
@@ -17,19 +16,19 @@ runSubtagTests({
                 {
                     expected: 'UTC',
                     postSetup(member, bbctx, ctx) {
-                        ctx.dependencies.timezones.setup(m => m.get(bbctx.runtime, member.id)).thenResolve(undefined);
+                        ctx.inject.timezones.setup(m => m.get(bbctx.runtime, member.id)).thenResolve(undefined);
                     }
                 },
                 {
                     expected: 'abc',
                     postSetup(member, bbctx, ctx) {
-                        ctx.dependencies.timezones.setup(m => m.get(bbctx.runtime, member.id)).thenResolve('abc');
+                        ctx.inject.timezones.setup(m => m.get(bbctx.runtime, member.id)).thenResolve('abc');
                     }
                 },
                 {
                     expected: 'Etc/UTC',
                     postSetup(member, bbctx, ctx) {
-                        ctx.dependencies.timezones.setup(m => m.get(bbctx.runtime, member.id)).thenResolve('Etc/UTC');
+                        ctx.inject.timezones.setup(m => m.get(bbctx.runtime, member.id)).thenResolve('Etc/UTC');
                     }
                 }
             ]

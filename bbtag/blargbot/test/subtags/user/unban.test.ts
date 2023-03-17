@@ -1,11 +1,11 @@
 import type { Entities } from '@bbtag/blargbot';
-import { BBTagRuntimeError, Subtag, UserNotFoundError } from '@bbtag/blargbot';
+import { BBTagRuntimeError, UserNotFoundError } from '@bbtag/blargbot';
 import { UnbanSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(UnbanSubtag),
+    subtag: UnbanSubtag,
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {
@@ -15,7 +15,7 @@ runSubtagTests({
                 { start: 0, end: 11, error: new UserNotFoundError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'abc'))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'abc'))
                     .verifiable(1)
                     .thenResolve(undefined);
             }
@@ -25,10 +25,10 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
                     .verifiable(1)
                     .thenResolve(user.instance);
-                ctx.dependencies.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Unban'))
+                ctx.inject.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Unban'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -41,10 +41,10 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
                     .verifiable(1)
                     .thenResolve(user.instance);
-                ctx.dependencies.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Unban'))
+                ctx.inject.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Unban'))
                     .verifiable(1)
                     .thenResolve('noPerms');
             }
@@ -54,10 +54,10 @@ runSubtagTests({
             expected: 'false',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
                     .verifiable(1)
                     .thenResolve(user.instance);
-                ctx.dependencies.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Unban'))
+                ctx.inject.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Unban'))
                     .verifiable(1)
                     .thenResolve('notBanned');
             }
@@ -70,10 +70,10 @@ runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
                     .verifiable(1)
                     .thenResolve(user.instance);
-                ctx.dependencies.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Unban'))
+                ctx.inject.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'Tag Unban'))
                     .verifiable(1)
                     .thenResolve('moderatorNoPerms');
             }
@@ -83,10 +83,10 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
                     .verifiable(1)
                     .thenResolve(user.instance);
-                ctx.dependencies.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'My reason here'))
+                ctx.inject.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -96,10 +96,10 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
                     .verifiable(1)
                     .thenResolve(user.instance);
-                ctx.dependencies.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, ctx.users.authorizer, 'My reason here'))
+                ctx.inject.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, ctx.users.authorizer, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }
@@ -109,10 +109,10 @@ runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const user = ctx.createMock<Entities.User>();
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user'))
                     .verifiable(1)
                     .thenResolve(user.instance);
-                ctx.dependencies.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'My reason here'))
+                ctx.inject.users.setup(x => x.unban(bbctx.runtime.guild, user.instance, bbctx.runtime.user, bbctx.runtime.user, 'My reason here'))
                     .verifiable(1)
                     .thenResolve('success');
             }

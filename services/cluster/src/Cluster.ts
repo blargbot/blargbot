@@ -1,36 +1,36 @@
 import { inspect } from 'node:util';
 
-import type { AnalysisResults, ExecutionResult } from '@bbtag/blargbot';
-import { BBTagRunner, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, DefaultLockService, InProcessCooldownService, smartStringCompare, Subtag, subtags, tagVariableScopeProviders } from '@bbtag/blargbot';
+import type { AnalysisResults, ExecutionResult, Subtag } from '@bbtag/blargbot';
+// import { BBTagRunner, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, DefaultLockService, InProcessCooldownService, smartStringCompare, subtags, tagVariableScopeProviders } from '@bbtag/blargbot';
 import type { ClusterOptions } from '@blargbot/cluster/types.js';
 import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
-import { metrics } from '@blargbot/core/Metrics.js';
+// import { metrics } from '@blargbot/core/Metrics.js';
 import { BaseService } from '@blargbot/core/serviceTypes/index.js';
 import type { EvalResult } from '@blargbot/core/types.js';
-import { createSafeRegExp } from '@blargbot/core/utils/createSafeRegExp.js';
+// import { createSafeRegExp } from '@blargbot/core/utils/createSafeRegExp.js';
 import Discord from '@blargbot/discord-types';
 import type { Logger } from '@blargbot/logger';
 import { ModuleLoader } from '@blargbot/modules';
-import { Timer } from '@blargbot/timer';
+// import { Timer } from '@blargbot/timer';
 import moment from 'moment-timezone';
-import ReadWriteLock from 'rwlock';
 
+// import ReadWriteLock from 'rwlock';
 import { ClusterUtilities } from './ClusterUtilities.js';
 import type { ClusterWorker } from './ClusterWorker.js';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
 import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
-import { ClusterDeferredExecutionService } from './utils/bbtag/ClusterDeferredExecutionService.js';
-import { ClusterDomainFilterService } from './utils/bbtag/ClusterDomainFilterService.js';
-import { ClusterDumpService } from './utils/bbtag/ClusterDumpService.js';
-import { ClusterModlogService } from './utils/bbtag/ClusterModlogService.js';
-import { ClusterStaffService } from './utils/bbtag/ClusterStaffService.js';
-import { ClusterWarningService } from './utils/bbtag/ClusterWarningService.js';
-import { ErisBBTagChannelService } from './utils/bbtag/ErisBBTagChannelService.js';
-import { ErisBBTagGuildService } from './utils/bbtag/ErisBBTagGuildService.js';
-import { ErisBBTagMessageService } from './utils/bbtag/ErisBBTagMessageService.js';
-import { ErisBBTagRoleService } from './utils/bbtag/ErisBBTagRoleService.js';
-import { ErisBBTagUserService } from './utils/bbtag/ErisBBTagUserService.js';
+// import { ClusterDeferredExecutionService } from './utils/bbtag/ClusterDeferredExecutionService.js';
+// import { ClusterDomainFilterService } from './utils/bbtag/ClusterDomainFilterService.js';
+// import { ClusterDumpService } from './utils/bbtag/ClusterDumpService.js';
+// import { ClusterModlogService } from './utils/bbtag/ClusterModlogService.js';
+// import { ClusterStaffService } from './utils/bbtag/ClusterStaffService.js';
+// import { ClusterWarningService } from './utils/bbtag/ClusterWarningService.js';
+// import { ErisBBTagChannelService } from './utils/bbtag/ErisBBTagChannelService.js';
+// import { ErisBBTagGuildService } from './utils/bbtag/ErisBBTagGuildService.js';
+// import { ErisBBTagMessageService } from './utils/bbtag/ErisBBTagMessageService.js';
+// import { ErisBBTagRoleService } from './utils/bbtag/ErisBBTagRoleService.js';
+// import { ErisBBTagUserService } from './utils/bbtag/ErisBBTagUserService.js';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -132,109 +132,109 @@ export class Cluster extends BaseClient {
         this.botStaff = new BotStaffManager(this);
         this.moderation = new ModerationManager(this);
         this.greetings = new GreetingManager(this);
-        const converter = createValueConverter({
-            regex: createSafeRegExp,
-            colors: {}
-        });
-        const bbtagArrayTools = createBBTagArrayTools({
-            convertToInt: converter.int
-        });
-        const bbtag = new BBTagRunner({
-            subtags: Object.values(subtags).map(Subtag.getDescriptor),
-            defer: new ClusterDeferredExecutionService(this),
-            domains: new ClusterDomainFilterService(this),
-            dump: new ClusterDumpService(this),
-            modLog: new ClusterModlogService(this),
-            staff: new ClusterStaffService(this),
-            warnings: new ClusterWarningService(this),
-            lock: new DefaultLockService({
-                createLock() {
-                    const lock = new ReadWriteLock();
-                    return {
-                        acquire(exclusive) {
-                            return new Promise(res => exclusive
-                                ? lock.writeLock(res)
-                                : lock.readLock(res));
-                        }
-                    };
-                }
-            }),
-            cooldowns: new InProcessCooldownService(),
-            sources: {
-                get: async (ctx, type, name) => {
-                    if (type === 'cc') {
-                        const ccommand = await this.database.guilds.getCommand(ctx.guild.id, name);
-                        if (ccommand === undefined)
-                            return undefined;
+        // const converter = createValueConverter({
+        //     regex: createSafeRegExp,
+        //     colors: {}
+        // });
+        // const bbtagArrayTools = createBBTagArrayTools({
+        //     convertToInt: converter.int
+        // });
+        // const bbtag = new BBTagRunner({
+        //     subtags: Object.values(subtags).map(Subtag.getDescriptor),
+        //     defer: new ClusterDeferredExecutionService(this),
+        //     domains: new ClusterDomainFilterService(this),
+        //     dump: new ClusterDumpService(this),
+        //     modLog: new ClusterModlogService(this),
+        //     staff: new ClusterStaffService(this),
+        //     warnings: new ClusterWarningService(this),
+        //     lock: new DefaultLockService({
+        //         createLock() {
+        //             const lock = new ReadWriteLock();
+        //             return {
+        //                 acquire(exclusive) {
+        //                     return new Promise(res => exclusive
+        //                         ? lock.writeLock(res)
+        //                         : lock.readLock(res));
+        //                 }
+        //             };
+        //         }
+        //     }),
+        //     cooldowns: new InProcessCooldownService(),
+        //     sources: {
+        //         get: async (ctx, type, name) => {
+        //             if (type === 'cc') {
+        //                 const ccommand = await this.database.guilds.getCommand(ctx.guild.id, name);
+        //                 if (ccommand === undefined)
+        //                     return undefined;
 
-                        if (!('alias' in ccommand)) {
-                            return {
-                                content: ccommand.content,
-                                cooldown: ccommand.cooldown ?? 0
-                            };
-                        }
+        //                 if (!('alias' in ccommand)) {
+        //                     return {
+        //                         content: ccommand.content,
+        //                         cooldown: ccommand.cooldown ?? 0
+        //                     };
+        //                 }
 
-                        name = ccommand.alias;
-                    }
+        //                 name = ccommand.alias;
+        //             }
 
-                    const tag = await this.database.tags.get(name);
-                    if (tag === undefined)
-                        return undefined;
+        //             const tag = await this.database.tags.get(name);
+        //             if (tag === undefined)
+        //                 return undefined;
 
-                    return {
-                        content: tag.content,
-                        cooldown: tag.cooldown ?? 0
-                    };
-                }
-            },
-            timezones: {
-                get: (_ctx, userId) => this.database.users.getProp(userId, 'timezone')
-            },
-            variables: {
-                get: (scope, name) => this.database.tagVariables.get(name, scope),
-                set: (entries) => this.database.tagVariables.upsert(entries)
-            },
-            variableScopes: tagVariableScopeProviders,
-            variableMiddleware: [],
-            logger: {
-                error: (...args) => this.logger.error(...args),
-                info: (...args) => this.logger.bbtag(...args)
-            },
-            // subtags: Object.values(Subtags)
-            //     .map(Subtag.getDescriptor),
-            arrayTools: bbtagArrayTools,
-            jsonTools: createBBTagJsonTools({
-                convertToInt: converter.int,
-                isTagArray: bbtagArrayTools.isTagArray
-            }),
-            operators: createBBTagOperators({
-                compare: smartStringCompare,
-                convertToString: converter.string,
-                parseArray: v => bbtagArrayTools.deserialize(v)?.v
-            }),
-            converter: createValueConverter({
-                regex: createSafeRegExp,
-                colors: {}
-            }),
-            channels: new ErisBBTagChannelService(this),
-            users: new ErisBBTagUserService(this),
-            roles: new ErisBBTagRoleService(this),
-            guild: new ErisBBTagGuildService(this),
-            messages: new ErisBBTagMessageService(this),
-            subtagMiddleware: [
-                async ({ subtag }, next) => {
-                    const timer = new Timer().start();
-                    try {
-                        return await next();
-                    } finally {
-                        timer.end();
-                        metrics.subtagLatency.labels(subtag.id).observe(timer.elapsed);
-                        metrics.subtagCounter.labels(subtag.id).inc();
-                    }
-                }
-            ]
-        });
-        bbtag;
+        //             return {
+        //                 content: tag.content,
+        //                 cooldown: tag.cooldown ?? 0
+        //             };
+        //         }
+        //     },
+        //     timezones: {
+        //         get: (_ctx, userId) => this.database.users.getProp(userId, 'timezone')
+        //     },
+        //     variables: {
+        //         get: (scope, name) => this.database.tagVariables.get(name, scope),
+        //         set: (entries) => this.database.tagVariables.upsert(entries)
+        //     },
+        //     variableScopes: tagVariableScopeProviders,
+        //     variableMiddleware: [],
+        //     logger: {
+        //         error: (...args) => this.logger.error(...args),
+        //         info: (...args) => this.logger.bbtag(...args)
+        //     },
+        //     // subtags: Object.values(Subtags)
+        //     //     .map(Subtag.getDescriptor),
+        //     arrayTools: bbtagArrayTools,
+        //     jsonTools: createBBTagJsonTools({
+        //         convertToInt: converter.int,
+        //         isTagArray: bbtagArrayTools.isTagArray
+        //     }),
+        //     operators: createBBTagOperators({
+        //         compare: smartStringCompare,
+        //         convertToString: converter.string,
+        //         parseArray: v => bbtagArrayTools.deserialize(v)?.v
+        //     }),
+        //     converter: createValueConverter({
+        //         regex: createSafeRegExp,
+        //         colors: {}
+        //     }),
+        //     channels: new ErisBBTagChannelService(this),
+        //     users: new ErisBBTagUserService(this),
+        //     roles: new ErisBBTagRoleService(this),
+        //     guild: new ErisBBTagGuildService(this),
+        //     messages: new ErisBBTagMessageService(this),
+        //     subtagMiddleware: [
+        //         async ({ subtag }, next) => {
+        //             const timer = new Timer().start();
+        //             try {
+        //                 return await next();
+        //             } finally {
+        //                 timer.end();
+        //                 metrics.subtagLatency.labels(subtag.id).observe(timer.elapsed);
+        //                 metrics.subtagCounter.labels(subtag.id).inc();
+        //             }
+        //         }
+        //     ]
+        // });
+        // bbtag;
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));
         this.rolemes = new RolemeManager(this);
         this.help = new CommandDocumentationManager(this);

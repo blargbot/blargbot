@@ -1,10 +1,10 @@
-import { NotANumberError, NotEnoughArgumentsError, Subtag } from '@bbtag/blargbot';
+import { NotANumberError, NotEnoughArgumentsError } from '@bbtag/blargbot';
 import { ArgsSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ArgsSubtag),
+    subtag: ArgsSubtag,
     argCountBounds: { min: 0, max: 2 },
     setupEach(ctx) {
         ctx.entrypoint.inputRaw = 'arg1 arg2 "arg3 arg3" arg4 "arg5"';

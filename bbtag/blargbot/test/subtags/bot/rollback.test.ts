@@ -1,12 +1,12 @@
 import type { BBTagScript } from '@bbtag/blargbot';
-import { Subtag, TagVariableType } from '@bbtag/blargbot';
+import { TagVariableType } from '@bbtag/blargbot';
 import { RollbackSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RollbackSubtag),
+    subtag: RollbackSubtag,
     argCountBounds: { min: 0, max: Infinity },
     setupEach(ctx) {
         ctx.entrypoint.name = 'testTag';

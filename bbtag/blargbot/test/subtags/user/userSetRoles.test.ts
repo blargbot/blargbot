@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, Subtag } from '@bbtag/blargbot';
+import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@bbtag/blargbot';
 import { UserSetRolesSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -7,7 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(UserSetRolesSubtag),
+    subtag: UserSetRolesSubtag,
     argCountBounds: { min: 0, max: 3 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageRoles.toString();
@@ -18,7 +18,7 @@ runSubtagTests({
             code: '{usersetroles}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.users.setup(m => m.edit(bbctx.runtime, ctx.users.command.id, argument.isDeepEqual({ roles: [] }))).thenResolve(undefined);
+                ctx.inject.users.setup(m => m.edit(bbctx.runtime, ctx.users.command.id, argument.isDeepEqual({ roles: [] }))).thenResolve(undefined);
             }
         },
         ...createGetUserPropTestCases({
@@ -30,7 +30,7 @@ runSubtagTests({
                 {
                     expected: 'true',
                     postSetup(member, bbctx, ctx) {
-                        ctx.dependencies.users.setup(m => m.edit(bbctx.runtime, member.id, argument.isDeepEqual({ roles: [] }))).thenResolve(undefined);
+                        ctx.inject.users.setup(m => m.edit(bbctx.runtime, member.id, argument.isDeepEqual({ roles: [] }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -48,9 +48,9 @@ runSubtagTests({
                         ctx.roles.bot.id = '234967249876489624';
                     },
                     postSetup(member, bbctx, ctx, q) {
-                        ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '283674284762348926', argument.isDeepEqual({ noLookup: q }))).thenResolve(ctx.roles.other);
-                        ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '234967249876489624', argument.isDeepEqual({ noLookup: q }))).thenResolve(ctx.roles.bot);
-                        ctx.dependencies.users.setup(m => m.edit(bbctx.runtime, member.id, argument.isDeepEqual({ roles: ['283674284762348926', '234967249876489624'] }))).thenResolve(undefined);
+                        ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, '283674284762348926', argument.isDeepEqual({ noLookup: q }))).thenResolve(ctx.roles.other);
+                        ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, '234967249876489624', argument.isDeepEqual({ noLookup: q }))).thenResolve(ctx.roles.bot);
+                        ctx.inject.users.setup(m => m.edit(bbctx.runtime, member.id, argument.isDeepEqual({ roles: ['283674284762348926', '234967249876489624'] }))).thenResolve(undefined);
                     }
                 }
             ]
@@ -86,7 +86,7 @@ runSubtagTests({
                 { start: 0, end: 31, error: new RoleNotFoundError('unknown role') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, 'unknown role', argument.isDeepEqual({ noLookup: false }))).thenResolve(undefined);
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, 'unknown role', argument.isDeepEqual({ noLookup: false }))).thenResolve(undefined);
             }
         },
         {
@@ -96,7 +96,7 @@ runSubtagTests({
                 { start: 0, end: 34, error: new RoleNotFoundError('unknown role').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, 'unknown role', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, 'unknown role', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
             }
         }
     ]

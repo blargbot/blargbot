@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto';
 
-import { Subtag } from '@bbtag/blargbot';
 import { UserActivityTypeSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import moment from 'moment-timezone';
@@ -9,7 +8,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(UserActivityTypeSubtag),
+    subtag: UserActivityTypeSubtag,
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({

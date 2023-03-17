@@ -1,11 +1,11 @@
-import { NotABooleanError, NotANumberError, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { NotABooleanError, NotANumberError, TagVariableType } from '@bbtag/blargbot';
 import { IncrementSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(IncrementSubtag),
+    subtag: IncrementSubtag,
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {

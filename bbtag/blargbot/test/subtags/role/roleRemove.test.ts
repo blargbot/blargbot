@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, RoleNotFoundError, Subtag, UserNotFoundError } from '@bbtag/blargbot';
+import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@bbtag/blargbot';
 import { RoleRemoveSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -6,7 +6,7 @@ import { argument } from '@blargbot/test-util/mock.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(RoleRemoveSubtag),
+    subtag: RoleRemoveSubtag,
     argCountBounds: { min: 1, max: 3 },
     setupEach(ctx) {
         ctx.roles.authorizer.permissions = Discord.PermissionFlagsBits.ManageRoles.toString();
@@ -18,7 +18,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 ctx.roles.other.id = '3298746326924';
                 ctx.users.command.member.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.dependencies.users.setup(m => m.edit(bbctx.runtime, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.bot.id] }))).thenResolve();
+                ctx.inject.users.setup(m => m.edit(bbctx.runtime, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.bot.id] }))).thenResolve();
             }
         },
         {
@@ -35,7 +35,7 @@ runSubtagTests({
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
                 ctx.users.command.member.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.dependencies.users.setup(m => m.edit(bbctx.runtime, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id] }))).thenResolve();
+                ctx.inject.users.setup(m => m.edit(bbctx.runtime, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id] }))).thenResolve();
             }
         },
         {
@@ -45,7 +45,7 @@ runSubtagTests({
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
                 ctx.users.command.member.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.dependencies.users.setup(m => m.edit(bbctx.runtime, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.bot.id] }))).thenResolve();
+                ctx.inject.users.setup(m => m.edit(bbctx.runtime, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.command.id, ctx.roles.bot.id] }))).thenResolve();
             }
         },
         {
@@ -81,8 +81,8 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 ctx.roles.bot.id = '3298746326924';
                 ctx.users.other.member.roles.push(ctx.roles.authorizer.id, ctx.roles.bot.id);
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.users.other);
-                ctx.dependencies.users.setup(m => m.edit(bbctx.runtime, ctx.users.other.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.other.id, ctx.roles.authorizer.id] }))).thenResolve();
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: false }))).thenResolve(ctx.users.other);
+                ctx.inject.users.setup(m => m.edit(bbctx.runtime, ctx.users.other.id, argument.isDeepEqual({ roles: [ctx.roles.everyone.id, ctx.roles.other.id, ctx.roles.authorizer.id] }))).thenResolve();
             }
         },
         {
@@ -92,7 +92,7 @@ runSubtagTests({
                 { start: 0, end: 37, error: new UserNotFoundError('other user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: false }))).thenResolve(undefined);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: false }))).thenResolve(undefined);
             }
         },
         {
@@ -105,7 +105,7 @@ runSubtagTests({
                 ctx.rootScope.quiet = true;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
             }
         },
         {
@@ -115,7 +115,7 @@ runSubtagTests({
                 { start: 0, end: 39, error: new UserNotFoundError('other user').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.dependencies.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
+                ctx.inject.users.setup(m => m.querySingle(bbctx.runtime, 'other user', argument.isDeepEqual({ noLookup: true }))).thenResolve(undefined);
             }
         }
     ]

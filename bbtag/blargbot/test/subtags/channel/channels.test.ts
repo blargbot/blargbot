@@ -1,4 +1,3 @@
-import { Subtag } from '@bbtag/blargbot';
 import { ChannelsSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 
@@ -6,7 +5,7 @@ import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ChannelsSubtag),
+    subtag: ChannelsSubtag,
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({
@@ -33,7 +32,7 @@ runSubtagTests({
                         });
                     },
                     postSetup(_, bbctx, ctx) {
-                        ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                        ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
                     }
                 }
             ]
@@ -47,7 +46,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                ctx.dependencies.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
+                ctx.inject.channels.setup(m => m.getAll(bbctx.runtime)).thenResolve(Object.values(ctx.channels));
             }
         }
     ]

@@ -1,5 +1,5 @@
 import type { TagVariableScope } from '@bbtag/blargbot';
-import { Subtag, TagVariableType } from '@bbtag/blargbot';
+import { TagVariableType } from '@bbtag/blargbot';
 import { SetSubtag } from '@bbtag/blargbot/subtags';
 import { snowflake } from '@blargbot/discord-util';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -10,7 +10,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const createSnowflake = snowflake.nextFactory();
 runSubtagTests({
-    subtag: Subtag.getDescriptor(SetSubtag),
+    subtag: SetSubtag,
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         ...createTestCases([
@@ -98,7 +98,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                 setupSaveVariables: false,
                 async setup(ctx, ...args) {
                     if (db !== undefined) {
-                        ctx.dependencies.variables.setup(m => m.set(argument.isDeepEqual([{ name: varName, value, scope: db }])))
+                        ctx.variables.setup(m => m.set(argument.isDeepEqual([{ name: varName, value, scope: db }])))
                             .thenResolve(undefined);
                         ctx.tagVariables.set({ scope: db, name: varName }, createSnowflake());
                     }

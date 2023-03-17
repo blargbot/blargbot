@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { ReplaceSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ReplaceSubtag),
+    subtag: ReplaceSubtag,
     argCountBounds: { min: 2, max: 3 },
     cases: [
         {

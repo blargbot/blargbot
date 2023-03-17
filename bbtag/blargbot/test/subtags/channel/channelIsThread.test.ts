@@ -1,5 +1,4 @@
 import type { Entities } from '@bbtag/blargbot';
-import { Subtag } from '@bbtag/blargbot';
 import { ChannelIsThreadSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 
@@ -7,7 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(ChannelIsThreadSubtag),
+    subtag: ChannelIsThreadSubtag,
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({

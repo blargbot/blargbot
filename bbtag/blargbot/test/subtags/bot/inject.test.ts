@@ -1,20 +1,19 @@
-import { Subtag } from '@bbtag/blargbot';
 import { InjectSubtag, LbSubtag, RbSubtag } from '@bbtag/blargbot/subtags';
 import { PromiseCompletionSource } from '@blargbot/async-tools';
 import chai from 'chai';
 
-import { AssertSubtag, createDescriptor, runSubtagTests } from '../SubtagTestSuite.js';
+import { makeAssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(InjectSubtag),
+    subtag: InjectSubtag,
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {
             code: '{inject;{lb}assert{rb}}',
-            subtags: [Subtag.getDescriptor(LbSubtag), Subtag.getDescriptor(RbSubtag), createDescriptor(new AssertSubtag(ctx => {
+            subtags: [LbSubtag, RbSubtag, makeAssertSubtag(ctx => {
                 chai.expect(ctx.runtime.moduleCount).to.equal(124);
                 return 'Inject successful';
-            }))],
+            })],
             expected: 'Inject successful',
             postSetup(bbctx) {
                 const neverResolve = new PromiseCompletionSource();
@@ -24,12 +23,12 @@ runSubtagTests({
         },
         {
             code: '{inject;{lb}fail}',
-            subtags: [Subtag.getDescriptor(LbSubtag)],
+            subtags: [LbSubtag],
             expected: '`Unmatched \'{\' at 0`'
         },
         {
             code: '{inject;fail{rb}}',
-            subtags: [Subtag.getDescriptor(RbSubtag)],
+            subtags: [RbSubtag],
             expected: '`Unexpected \'}\' at 4`'
         }
     ]

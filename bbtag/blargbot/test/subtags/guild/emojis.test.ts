@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { EmojisSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(EmojisSubtag),
+    subtag: EmojisSubtag,
     argCountBounds: { min: 0, max: 1 },
     setupEach(ctx) {
         ctx.roles.other.id = '329476274682462386432';
@@ -38,14 +37,14 @@ runSubtagTests({
             code: '{emojis;329476274682462386432}',
             expected: '["<:rolerestricted:923846723894624242>"]',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, '329476274682462386432', argument.isDeepEqual({ noErrors: true, noLookup: true }))).thenResolve(ctx.roles.other);
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, '329476274682462386432', argument.isDeepEqual({ noErrors: true, noLookup: true }))).thenResolve(ctx.roles.other);
             }
         },
         {
             code: '{emojis;other}',
             expected: '["<:rolerestricted:923846723894624242>"]',
             postSetup(bbctx, ctx) {
-                ctx.dependencies.roles.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noErrors: true, noLookup: true }))).thenResolve(ctx.roles.other);
+                ctx.inject.roles.setup(m => m.querySingle(bbctx.runtime, 'other', argument.isDeepEqual({ noErrors: true, noLookup: true }))).thenResolve(ctx.roles.other);
             }
         }
     ]

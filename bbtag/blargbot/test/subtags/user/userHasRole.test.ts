@@ -1,11 +1,11 @@
-import { RoleNotFoundError, Subtag } from '@bbtag/blargbot';
+import { RoleNotFoundError } from '@bbtag/blargbot';
 import { UserHasRoleSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(UserHasRoleSubtag),
+    subtag: UserHasRoleSubtag,
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {

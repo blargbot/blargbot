@@ -1,11 +1,10 @@
-import { Subtag } from '@bbtag/blargbot';
 import { WarningsSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(WarningsSubtag),
+    subtag: WarningsSubtag,
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
@@ -17,13 +16,13 @@ runSubtagTests({
                 {
                     expected: '0',
                     postSetup(member, bbctx, ctx) {
-                        ctx.dependencies.warnings.setup(m => m.count(bbctx.runtime, member)).thenResolve(0);
+                        ctx.inject.warnings.setup(m => m.count(bbctx.runtime, member)).thenResolve(0);
                     }
                 },
                 {
                     expected: '1234',
                     postSetup(member, bbctx, ctx) {
-                        ctx.dependencies.warnings.setup(m => m.count(bbctx.runtime, member)).thenResolve(1234);
+                        ctx.inject.warnings.setup(m => m.count(bbctx.runtime, member)).thenResolve(1234);
                     }
                 }
             ]

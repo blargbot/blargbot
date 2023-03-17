@@ -1,11 +1,11 @@
-import { NotAnArrayError, NotANumberError, Subtag, TagVariableType } from '@bbtag/blargbot';
+import { NotAnArrayError, NotANumberError, TagVariableType } from '@bbtag/blargbot';
 import { GetSubtag, SpliceSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
-    subtag: Subtag.getDescriptor(SpliceSubtag),
+    subtag: SpliceSubtag,
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {
@@ -132,7 +132,7 @@ runSubtagTests({
         {
             code: '{splice;{get;arr1};2;2;a;[[1,2,"d"]];e;f}',
             expected: '[3,4]',
-            subtags: [Subtag.getDescriptor(GetSubtag)],
+            subtags: [GetSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
