@@ -1,8 +1,19 @@
 import { json } from '@blargbot/serialization';
 
+export interface ModLogDetails {
+    readonly caseId: number;
+    readonly guildId: bigint;
+    readonly users: readonly bigint[];
+    readonly type: string;
+    readonly timestamp: Date;
+    readonly moderatorId?: bigint;
+    readonly reason?: string;
+    readonly metadata: Record<string, JToken>;
+}
+
 export interface ModLogCreateRequest {
     readonly guildId: bigint;
-    readonly userId: bigint;
+    readonly users: readonly bigint[];
     readonly type: string;
     readonly moderatorId?: bigint;
     readonly reason?: string;
@@ -15,27 +26,21 @@ export const modLogCreateRequestSerializer = json.object<ModLogCreateRequest>({
     moderatorId: json.bigint.optional,
     reason: json.string.optional,
     type: json.string,
-    userId: json.bigint
+    users: json.array(json.bigint)
 });
 
-export interface ModLogCreatedEvent {
-    readonly caseId: number;
-    readonly guildId: bigint;
-    readonly userId: bigint;
-    readonly type: string;
-    readonly moderatorId?: bigint;
-    readonly reason?: string;
-    readonly metadata?: Record<string, JToken>;
-}
+export type ModLogCreatedEvent = ModLogDetails
 
 export const modLogCreatedEventSerializer = json.object<ModLogCreatedEvent>({
     caseId: json.number,
     guildId: json.bigint,
     metadata: json.record(json.jToken),
     moderatorId: json.bigint.optional,
+    timestamp: json.date,
     reason: json.string.optional,
     type: json.string,
-    userId: json.bigint
+    users: json.array(json.bigint)
+
 });
 
 export interface ModLogUpdateRequest {
@@ -44,6 +49,7 @@ export interface ModLogUpdateRequest {
     readonly moderatorId?: bigint | null;
     readonly reason?: string | null;
 }
+
 export const modLogUpdateRequestSerializer = json.object<ModLogUpdateRequest>({
     caseId: json.number,
     guildId: json.bigint,
@@ -51,22 +57,17 @@ export const modLogUpdateRequestSerializer = json.object<ModLogUpdateRequest>({
     reason: json.string.nullish
 });
 
-export interface ModLogUpdatedEvent {
-    readonly caseId: number;
-    readonly guildId: bigint;
-    readonly userId: bigint;
-    readonly type: string;
-    readonly moderatorId?: bigint;
-    readonly reason?: string;
-}
+export type ModLogUpdatedEvent = ModLogDetails
 
 export const modLogUpdatedEventSerializer = json.object<ModLogUpdatedEvent>({
     caseId: json.number,
     guildId: json.bigint,
+    metadata: json.record(json.jToken),
     moderatorId: json.bigint.optional,
+    timestamp: json.date,
     reason: json.string.optional,
     type: json.string,
-    userId: json.bigint
+    users: json.array(json.bigint)
 });
 
 export interface ModLogDeleteRequest {
@@ -78,20 +79,15 @@ export const modLogDeleteRequestSerializer = json.object<ModLogDeleteRequest>({
     guildId: json.bigint
 });
 
-export interface ModLogDeletedEvent {
-    readonly caseId: number;
-    readonly guildId: bigint;
-    readonly userId: bigint;
-    readonly type: string;
-    readonly moderatorId?: bigint;
-    readonly reason?: string;
-}
+export type ModLogDeletedEvent = ModLogDetails
 
 export const modLogDeletedEventSerializer = json.object<ModLogDeletedEvent>({
     caseId: json.number,
     guildId: json.bigint,
+    metadata: json.record(json.jToken),
     moderatorId: json.bigint.optional,
     reason: json.string.optional,
+    timestamp: json.date,
     type: json.string,
-    userId: json.bigint
+    users: json.array(json.bigint)
 });

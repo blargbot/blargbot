@@ -15,7 +15,6 @@ export class ModLogService {
         const modLog = await this.#database.create(options);
         await this.#messages.modLogCreated({
             ...modLog,
-            metadata: options.metadata,
             moderatorId: modLog.moderatorId ?? undefined,
             reason: modLog.reason ?? undefined
         });

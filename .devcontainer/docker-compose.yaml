@@ -89,6 +89,10 @@ x-redis-env:
   REDIS_PASSWORD: SomePassword
   REDIS_TTL: 300
 
+x-command-prefix:
+  &command-prefix
+  COMMAND_PREFIX: d!
+
 version: '3.5'
 
 services:
@@ -112,7 +116,7 @@ services:
       <<: *postgres-env
       <<: *rethinkdb-env
       <<: *redis-env
-      COMMAND_PREFIX: d!
+      <<: *command-prefix
 
   discord-proxy:
     image: blargbot/discord-proxy
@@ -264,6 +268,20 @@ services:
       redis:
         condition: service_healthy
 
+  discord-mod-log:
+    image: blargbot/discord-mod-log
+    <<: *env-file
+    environment:
+      <<: *metrics-env
+      <<: *rabbit-env
+      <<: *guild-settings-env
+      <<: *command-prefix
+      <<: *discord-proxy-env
+      <<: *postgres-env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   image-generator:
     image: blargbot/image-generator
     <<: *env-file
@@ -356,7 +374,7 @@ services:
       <<: *guild-settings-env
       <<: *user-settings-env
       <<: *discord-user-cache-env
-      COMMAND_PREFIX: d!
+      <<: *command-prefix
     depends_on:
       rabbitmq:
         condition: service_healthy

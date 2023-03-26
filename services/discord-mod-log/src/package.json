@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/mod-log",
+    "name": "@blargbot/discord-mod-log",
     "version": "1.0.0",
     "private": true,
     "type": "module",
@@ -12,11 +12,14 @@
     "dependencies": {
         "@blargbot/application": "workspace:^",
         "@blargbot/container-id": "workspace:^",
+        "@blargbot/discord-util": "workspace:^",
         "@blargbot/env": "workspace:^",
+        "@blargbot/guild-settings-client": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
         "@blargbot/mod-log-client": "workspace:^",
         "@blargbot/sequelize": "workspace:^",
-        "@blargbot/serialization": "workspace:^"
+        "@blargbot/serialization": "workspace:^",
+        "discordeno": "^18.0.1"
     }
 }

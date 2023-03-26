@@ -645,6 +645,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-mod-log@workspace:services/discord-mod-log/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-mod-log@workspace:services/discord-mod-log/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/container-id": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/guild-settings-client": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+    "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/mod-log-client": "workspace:^"
+    "@blargbot/sequelize": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+    discordeno: ^18.0.1
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-presence-cache@workspace:services/discord-presence-cache/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-presence-cache@workspace:services/discord-presence-cache/src"
@@ -1002,7 +1020,6 @@ __metadata:
     "@blargbot/application": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/env": "workspace:^"
-    "@blargbot/mapping": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/mod-log-client": "workspace:^"

@@ -23,7 +23,7 @@ export class UserWarningService {
             await this.#modLog.createModlog({
                 guildId,
                 type,
-                userId,
+                users: [userId],
                 moderatorId: options.moderator,
                 reason: options.reason,
                 metadata: {

@@ -272,6 +272,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-message-stream/src"\
       },\
       {\
+        "name": "@blargbot/discord-mod-log",\
+        "reference": "workspace:services/discord-mod-log/src"\
+      },\
+      {\
         "name": "@blargbot/discord-presence-cache",\
         "reference": "workspace:services/discord-presence-cache/src"\
       },\
@@ -413,6 +417,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-message-cache", ["workspace:services/discord-message-cache/src"]],\
       ["@blargbot/discord-message-stream", ["workspace:services/discord-message-stream/src"]],\
       ["@blargbot/discord-message-stream-client", ["workspace:services/discord-message-stream/client"]],\
+      ["@blargbot/discord-mod-log", ["workspace:services/discord-mod-log/src"]],\
       ["@blargbot/discord-presence-cache", ["workspace:services/discord-presence-cache/src"]],\
       ["@blargbot/discord-proxy", ["workspace:services/discord-proxy/src"]],\
       ["@blargbot/discord-reaction-stream", ["workspace:services/discord-reaction-stream/src"]],\
@@ -1220,6 +1225,26 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/discord-mod-log", [\
+        ["workspace:services/discord-mod-log/src", {\
+          "packageLocation": "./services/discord-mod-log/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-mod-log", "workspace:services/discord-mod-log/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/guild-settings-client", "workspace:services/guild-settings/client"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/mod-log-client", "workspace:services/mod-log/client"],\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"],\
+            ["discordeno", "npm:18.0.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/discord-presence-cache", [\
         ["workspace:services/discord-presence-cache/src", {\
           "packageLocation": "./services/discord-presence-cache/src/",\
@@ -1641,7 +1666,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/mod-log-client", "workspace:services/mod-log/client"],\

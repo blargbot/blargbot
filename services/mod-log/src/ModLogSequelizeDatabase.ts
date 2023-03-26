@@ -5,17 +5,13 @@ import { DataTypes, makeColumn } from '@blargbot/sequelize';
 import type { IModLogEntryDatabase } from './IModLogEntryDatabase.js';
 import type { ModLogEntry } from './ModLogEntry.js';
 
-interface ModLogEntryTable extends ModLogEntry {
-    readonly guildId: bigint;
-}
-
 interface ModLogIndex {
     readonly guildId: bigint;
     readonly lastCaseId: number;
 }
 
 export default class ModLogSequelizeDatabase implements IModLogEntryDatabase {
-    readonly #modLog: ModelStatic<Model<ModLogEntryTable>>;
+    readonly #modLog: ModelStatic<Model<ModLogEntry>>;
     readonly #modLogIndex: ModelStatic<Model<ModLogIndex>>;
     readonly #sequelize: Pick<Sequelize, 'transaction'>;
 
@@ -27,13 +23,15 @@ export default class ModLogSequelizeDatabase implements IModLogEntryDatabase {
             ...makeColumn('lastCaseId', DataTypes.INTEGER, y)
         });
         const x = defaultModLogEntry;
-        this.#modLog = sequelize.define<Model<ModLogEntryTable>>('moderation_log', {
+        this.#modLog = sequelize.define<Model<ModLogEntry>>('moderation_log', {
             ...makeColumn('guildId', DataTypes.BIGINT, x, { primaryKey: true }),
             ...makeColumn('caseId', DataTypes.INTEGER, x, { primaryKey: true }),
             ...makeColumn('moderatorId', DataTypes.BIGINT, x),
             ...makeColumn('reason', DataTypes.STRING, x),
+            ...makeColumn('timestamp', DataTypes.DATE, x),
             ...makeColumn('type', DataTypes.STRING, x),
-            ...makeColumn('userId', DataTypes.BIGINT, x)
+            ...makeColumn('users', DataTypes.ARRAY(DataTypes.BIGINT), x),
+            ...makeColumn('metadata', DataTypes.JSON, x)
         }, {
             indexes: [
                 {
@@ -42,16 +40,6 @@ export default class ModLogSequelizeDatabase implements IModLogEntryDatabase {
                 }
             ]
         });
-    }
-
-    public async get(guildId: bigint, caseId: number): Promise<ModLogEntry | undefined> {
-        const model = await this.#modLog.findOne({ where: { guildId, caseId } });
-        return model?.get();
-    }
-
-    public async list(guildId: bigint): Promise<ModLogEntry[]> {
-        const models = await this.#modLog.findAll({ where: { guildId } });
-        return models.map(m => m.get());
     }
 
     public async create(options: ModLogCreateRequest): Promise<ModLogEntry> {
@@ -63,7 +51,9 @@ export default class ModLogSequelizeDatabase implements IModLogEntryDatabase {
             await index.increment('lastCaseId');
             const result = await this.#modLog.create({
                 ...options,
-                caseId: index.get().lastCaseId
+                caseId: index.get().lastCaseId,
+                timestamp: new Date(),
+                metadata: options.metadata ?? {}
             });
             return result.get();
         });
@@ -90,13 +80,15 @@ export default class ModLogSequelizeDatabase implements IModLogEntryDatabase {
 
 }
 
-const defaultModLogEntry: { [P in keyof Required<ModLogEntryTable>]: ModLogEntryTable[P] | undefined } = {
+const defaultModLogEntry: { [P in keyof Required<ModLogEntry>]: ModLogEntry[P] | undefined } = {
     caseId: undefined,
     guildId: undefined,
     moderatorId: null,
     reason: null,
+    timestamp: undefined,
     type: undefined,
-    userId: undefined
+    users: undefined,
+    metadata: {}
 };
 
 const defaultModLogIndex: { [P in keyof Required<ModLogIndex>]: ModLogIndex[P] | undefined } = {
