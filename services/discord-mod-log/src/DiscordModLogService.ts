@@ -16,7 +16,8 @@ export class DiscordModLogService {
         guildSettings: GuildSettingsHttpClient,
         database: IDiscordModLogEntryDatabase,
         discord: discordeno.Bot,
-        options: DiscordModLogServiceOptions) {
+        options: DiscordModLogServiceOptions
+    ) {
         this.#guildSettings = guildSettings;
         this.#database = database;
         this.#discord = discord;
@@ -35,7 +36,7 @@ export class DiscordModLogService {
         try {
             message = await this.#discord.helpers.sendMessage(modLogChannel, { embeds: [embed] });
         } catch (err) {
-            await this.#guildSettings.updateSettings({ guildId: options.guildId, modLogChannel: null });
+            await this.#handleError(err, options.guildId, options.caseId);
             throw err;
         }
         await this.#database.set({
@@ -55,7 +56,8 @@ export class DiscordModLogService {
         try {
             await this.#discord.helpers.editMessage(entry.channelId, entry.messageId, { embeds: [embed] });
         } catch (err) {
-            await this.#database.delete(entry.guildId, entry.caseId);
+            await this.#handleError(err, options.guildId, options.caseId);
+            throw err;
         }
     }
 
@@ -64,7 +66,27 @@ export class DiscordModLogService {
         if (entry === undefined)
             return;
 
-        await this.#discord.helpers.deleteMessage(entry.channelId, entry.messageId);
+        await this.#database.delete(entry.channelId, options.caseId);
+
+        try {
+            await this.#discord.helpers.deleteMessage(entry.channelId, entry.messageId);
+        } catch (err) {
+            await this.#handleError(err, options.guildId, options.caseId);
+            throw err;
+        }
+    }
+
+    async #handleError(error: unknown, guildId: bigint, caseId: number): Promise<void> {
+        if (!(error instanceof Error))
+            return;
+
+        const promises = [];
+        if (error.message === 'Error: Unknown Channel')
+            promises.push(this.#guildSettings.updateSettings({ guildId, modLogChannel: null }));
+        if (error.message === 'Error: Unknown Message')
+            promises.push(this.#database.delete(guildId, caseId));
+
+        await Promise.all(promises);
     }
 
     async #createModLogEmbed(options: ModLogDetails): Promise<discordeno.Embed> {
@@ -83,7 +105,7 @@ export class DiscordModLogService {
             title: `Case ${options.caseId}`,
             color: colour,
             timestamp: options.timestamp.valueOf(),
-            author: users.length === 1 ? undefined : {
+            author: users.length !== 1 ? undefined : {
                 iconUrl: this.#avatarUrl(users[0]),
                 name: this.#userTag(users[0])
             },

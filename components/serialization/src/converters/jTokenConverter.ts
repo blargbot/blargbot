@@ -8,12 +8,27 @@ export const jTokenConverter: IJsonConverter<JToken> = makeJsonConverter<JToken>
             case 'number': return success(value);
             case 'boolean': return success(value);
             case 'string': return success(value);
-            case 'object': switch (value) {
-                case null: return success(null);
-                default: return success(Object.fromEntries(
-                    Object.entries(value)
-                        .map(([k, v]) => [k, jTokenConverter.fromJson(v as JToken)])
-                ));
+            case 'object': {
+                if (value === null)
+                    return success(null);
+                if (Array.isArray(value)) {
+                    const result = [];
+                    for (const element of value) {
+                        const res = jTokenConverter.fromJson(element);
+                        if (!res.success)
+                            return res;
+                        result.push(res.value);
+                    }
+                    return success(result);
+                }
+                const result: JObject = {};
+                for (const [k, v] of Object.entries(value)) {
+                    const res = jTokenConverter.fromJson(v);
+                    if (!res.success)
+                        return res;
+                    result[k] = res.value;
+                }
+                return success(result);
             }
             default: return failed('Invalid value');
         }
