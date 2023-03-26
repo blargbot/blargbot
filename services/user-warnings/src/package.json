@@ -15,7 +15,9 @@
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
         "@blargbot/mapping": "workspace:^",
+        "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
+        "@blargbot/mod-log-client": "workspace:^",
         "@blargbot/sequelize": "workspace:^",
         "@blargbot/user-warnings-client": "workspace:^"
     }

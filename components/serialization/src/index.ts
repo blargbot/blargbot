@@ -4,7 +4,9 @@ import { bufferConverter } from './converters/bufferConverter.js';
 import { createJsonArrayConverter } from './converters/createJsonArrayConverter.js';
 import { createJsonObjectConverter } from './converters/createJsonObjectConverter.js';
 import { createJsonUnionConverter } from './converters/createJsonUnionConverter.js';
+import { createRecordConverter } from './converters/createRecordConverter.js';
 import { dateConverter } from './converters/dateConverter.js';
+import { jTokenConverter } from './converters/jTokenConverter.js';
 import { nullConverter } from './converters/nullConverter.js';
 import { numberConverter } from './converters/numberConverter.js';
 import { regexConverter } from './converters/regexConverter.js';
@@ -22,6 +24,7 @@ export * as Convert from './result.js';
 
 export const json = {
     object: createJsonObjectConverter,
+    record: createRecordConverter,
     choice: createJsonUnionConverter,
     array: createJsonArrayConverter,
     boolean: booleanConverter,
@@ -33,5 +36,6 @@ export const json = {
     regex: regexConverter,
     date: dateConverter,
     buffer: bufferConverter,
-    unknown: unknownConverter
+    unknown: unknownConverter,
+    jToken: jTokenConverter
 } as const;

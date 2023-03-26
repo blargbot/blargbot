@@ -1,5 +1,4 @@
-import type { MessageHandle, MessageHub } from '@blargbot/message-hub';
-import type { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
+import type { MessageHub } from '@blargbot/message-hub';
 import type { TimeoutDetails } from '@blargbot/timeouts-client';
 
 import type { ITimeoutRecordDatabase } from './ITimeoutRecordDatabase.js';
@@ -7,33 +6,16 @@ import type { TimeoutMessageBroker } from './TimeoutMessageBroker.js';
 
 export class TimeoutService {
     readonly #database: ITimeoutRecordDatabase;
-    readonly #handles: Set<MessageHandle>;
     readonly #timeouts: TimeoutMessageBroker;
-    readonly #clock: TimeoutClockMessageBroker;
     readonly #messages: MessageHub;
 
     public constructor(
         database: ITimeoutRecordDatabase,
         timeouts: TimeoutMessageBroker,
-        clock: TimeoutClockMessageBroker,
         messages: MessageHub) {
         this.#database = database;
         this.#timeouts = timeouts;
         this.#messages = messages;
-        this.#clock = clock;
-        this.#handles = new Set();
-    }
-
-    public async start(): Promise<void> {
-        await Promise.all([
-            this.#clock.handleTick(this.#handleTick.bind(this)).then(h => this.#handles.add(h)),
-            this.#timeouts.handleProcessTimeout(this.#handleProcessTimeout.bind(this)).then(h => this.#handles.add(h))
-        ]);
-    }
-
-    public async stop(): Promise<void> {
-        await Promise.all([...this.#handles]
-            .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
     }
 
     public async createTimeout(timeout: Omit<TimeoutDetails, 'id'>): Promise<string> {
@@ -60,7 +42,7 @@ export class TimeoutService {
         return await this.#database.clear(ownerId);
     }
 
-    async #handleTick(): Promise<void> {
+    public async handleTick(): Promise<void> {
         const pending = await this.#database.pending();
         if (pending.length === 0)
             return;
@@ -77,7 +59,7 @@ export class TimeoutService {
         await deletePending;
     }
 
-    async #handleProcessTimeout(timeout: TimeoutDetails): Promise<void> {
+    public async handleProcessTimeout(timeout: TimeoutDetails): Promise<void> {
         try {
             await this.#messages.send(timeout.queue, new Blob([timeout.data], { type: timeout.dataType }), timeout.options);
         } catch (err) {

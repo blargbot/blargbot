@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
@@ -34,7 +34,6 @@ import { GuildSettingsService } from './GuildSettingsService.js';
 export class GuildSettingsApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
         const serviceName = 'guild-settings';
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
         const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,
@@ -51,11 +50,13 @@ export class GuildSettingsApplication extends ServiceHost {
         });
 
         super([
-            connectionToService(redis, 'redis'),
-            metrics,
-            sequelizeToService(database, {
-                syncOptions: { alter: true }
-            }),
+            parallelServices(
+                connectToService(redis, 'redis'),
+                sequelizeToService(database, {
+                    syncOptions: { alter: true }
+                }),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))

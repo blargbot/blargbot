@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -32,16 +32,15 @@ import { DiscordMessageCacheService } from './DiscordMessageCacheService.js';
 export class DiscordMessageCacheApplication extends ServiceHost {
     public constructor(options: DiscordMessageCacheApplicationOptions) {
         const serviceName = 'discord-message-cache';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
         const redis: RedisClientType = createRedisClient({
             url: options.redis.url,
             username: options.redis.username,
             password: options.redis.password
         });
 
+        const gateway = new DiscordGatewayMessageBroker(hub, serviceName);
         const service = new DiscordMessageCacheService(
-            new DiscordGatewayMessageBroker(messages, serviceName),
             new RedisKVCache<bigint, bigint>(redis, {
                 ttlS: null,
                 keyspace: 'discord_channels:last_message_id',
@@ -50,10 +49,16 @@ export class DiscordMessageCacheApplication extends ServiceHost {
         );
 
         super([
-            connectionToService(redis, 'redis'),
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
-            service,
+            parallelServices(
+                connectToService(redis, 'redis'),
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
+            parallelServices(
+                connectToService(() => gateway.handleGuildCreate(m => service.handleGuildCreate(m)), 'handleGuildCreate'),
+                connectToService(() => gateway.handleChannelCreate(m => service.handleChannelCreate(m)), 'handleChannelCreate'),
+                connectToService(() => gateway.handleMessageCreate(m => service.handleMessageCreate(m)), 'handleMessageCreate')
+            ),
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))

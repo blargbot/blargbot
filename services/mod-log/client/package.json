@@ -1,0 +1,12 @@
+{
+    "name": "@blargbot/mod-log-client",
+    "version": "1.0.0",
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "@blargbot/message-hub": "workspace:^",
+        "@blargbot/serialization": "workspace:^"
+    }
+}

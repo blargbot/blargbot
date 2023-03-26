@@ -13,10 +13,9 @@ import { MetricsService } from './MetricsService.js';
 export class MetricsApplication extends ServiceHost {
     public constructor(options: MetricsApplicationOptions) {
         const serviceName = 'metrics';
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
 
         super([
-            metrics,
+            new MetricsPushService({ serviceName, instanceId: fullContainerId }),
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))

@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import containerId, { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
@@ -27,10 +27,9 @@ import { createDiscordRestClient } from './DiscordRestClient.js';
 export class DiscordGatewayApplication extends ServiceHost {
     public constructor(options: DiscordGatewayApplicationOptions) {
         const serviceName = 'discord-gateway-manager';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
         const manager = createDiscordGatewayManager({
-            ipc: new DiscordGatewayIPCMessageBroker(messages, { managerId: options.managerId }),
+            ipc: new DiscordGatewayIPCMessageBroker(hub, { managerId: options.managerId }),
             client: createDiscordRestClient({
                 token: options.token,
                 url: options.rest.url,
@@ -41,8 +40,10 @@ export class DiscordGatewayApplication extends ServiceHost {
         });
 
         super([
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
+            parallelServices(
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
             manager
         ]);
     }

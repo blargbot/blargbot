@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
-import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import containerId, { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -28,19 +28,20 @@ export const workerPath = fileURLToPath(import.meta.url);
 export class DiscordGatewayWorkerApplication extends ServiceHost {
     public constructor(options: DiscordGatewayWorkerApplicationOptions) {
         const serviceName = 'discord-gateway-worker';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: `${fullContainerId}(${options.workerId})` });
+        const hub = new MessageHub(options.messages);
         const manager = createDiscordShardManager({
-            ipc: new DiscordGatewayIPCMessageBroker(messages, { managerId: options.managerId }),
-            gateway: new DiscordGatewayMessageBroker(messages, 'discord-gateway'),
+            ipc: new DiscordGatewayIPCMessageBroker(hub, { managerId: options.managerId }),
+            gateway: new DiscordGatewayMessageBroker(hub, 'discord-gateway'),
             lastShardId: options.lastShardId,
             token: options.token,
             workerId: options.workerId
         });
 
         super([
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
+            parallelServices(
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: `${fullContainerId}(${options.workerId})` })
+            ),
             manager,
             {
                 start() {

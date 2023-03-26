@@ -1,43 +1,16 @@
 import { ChatLogType } from '@blargbot/chatlog-types';
-import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
 import { GuildSettingsHttpClient } from '@blargbot/guild-settings-client';
-import type { MessageHandle } from '@blargbot/message-hub';
 
 import type DiscordChatlogDatabase from './DiscordChatlogDatabase.js';
 
-type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
-    | 'MESSAGE_CREATE'
-    | 'MESSAGE_UPDATE'
-    | 'MESSAGE_DELETE'
-    | 'MESSAGE_DELETE_BULK'
->;
-
 export class DiscordChatlogService {
-    readonly #gateway: DiscordGatewayMessageBroker;
     readonly #database: DiscordChatlogDatabase;
-    readonly #handles: Set<MessageHandle>;
     readonly #guildSettings: GuildSettingsHttpClient;
 
-    public constructor(gateway: DiscordGatewayMessageBroker, database: DiscordChatlogDatabase, options: DiscordChatlogServiceOptions) {
-        this.#gateway = gateway;
+    public constructor(database: DiscordChatlogDatabase, options: DiscordChatlogServiceOptions) {
         this.#database = database;
         this.#guildSettings = GuildSettingsHttpClient.from(options.guildSettingsClient ?? options.guildSettingsUrl);
-        this.#handles = new Set();
-    }
-
-    public async start(): Promise<void> {
-        await Promise.all([
-            this.#gateway.handleMessageCreate(this.#handleMessageCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleMessageUpdate(this.#handleMessageUpdate.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleMessageDelete(this.#handleMessageDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleMessageDeleteBulk(this.#handleMessageDeleteBulk.bind(this)).then(h => this.#handles.add(h))
-        ]);
-    }
-
-    public async stop(): Promise<void> {
-        await Promise.all([...this.#handles]
-            .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
     }
 
     async #shouldChatlog(message: Pick<Discord.GatewayMessageCreateDispatchData, 'guild_id' | 'channel_id'>): Promise<boolean> {
@@ -48,7 +21,7 @@ export class DiscordChatlogService {
         return settings.enableChatlogging;
     }
 
-    async #handleMessageCreate(message: Discord.GatewayMessageCreateDispatchData): Promise<void> {
+    public async handleMessageCreate(message: Discord.GatewayMessageCreateDispatchData): Promise<void> {
         if (!await this.#shouldChatlog(message))
             return;
 
@@ -63,7 +36,7 @@ export class DiscordChatlogService {
         }, ChatLogType.CREATE);
     }
 
-    async #handleMessageUpdate(message: Discord.GatewayMessageUpdateDispatchData): Promise<void> {
+    public async handleMessageUpdate(message: Discord.GatewayMessageUpdateDispatchData): Promise<void> {
         if (!await this.#shouldChatlog(message))
             return;
 
@@ -79,14 +52,14 @@ export class DiscordChatlogService {
 
     }
 
-    async #handleMessageDelete(message: Discord.GatewayMessageDeleteDispatchData): Promise<void> {
-        await this.#handleMessageDeleteBulk({
+    public async handleMessageDelete(message: Discord.GatewayMessageDeleteDispatchData): Promise<void> {
+        await this.handleMessageDeleteBulk({
             ...message,
             ids: [message.id]
         });
     }
 
-    async #handleMessageDeleteBulk(message: Discord.GatewayMessageDeleteBulkDispatchData): Promise<void> {
+    public async handleMessageDeleteBulk(message: Discord.GatewayMessageDeleteBulkDispatchData): Promise<void> {
         if (!await this.#shouldChatlog(message))
             return;
 

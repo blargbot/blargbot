@@ -986,6 +986,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/mod-log-client@workspace:^, @blargbot/mod-log-client@workspace:services/mod-log/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/mod-log-client@workspace:services/mod-log/client"
+  dependencies:
+    "@blargbot/message-hub": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/mod-log@workspace:services/mod-log/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/mod-log@workspace:services/mod-log/src"
@@ -993,9 +1002,10 @@ __metadata:
     "@blargbot/application": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/env": "workspace:^"
-    "@blargbot/express": "workspace:^"
     "@blargbot/mapping": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/mod-log-client": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
   languageName: unknown
@@ -1164,7 +1174,9 @@ __metadata:
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
     "@blargbot/mapping": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/mod-log-client": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/user-warnings-client": "workspace:^"
   languageName: unknown

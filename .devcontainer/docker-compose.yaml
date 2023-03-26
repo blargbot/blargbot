@@ -316,6 +316,7 @@ services:
     environment:
       <<: *metrics-env
       <<: *postgres-env
+      <<: *rabbit-env
     depends_on:
       postgres:
         condition: service_healthy
@@ -365,6 +366,7 @@ services:
     environment:
       <<: *metrics-env
       <<: *postgres-env
+      <<: *rabbit-env
     depends_on:
       postgres:
         condition: service_healthy

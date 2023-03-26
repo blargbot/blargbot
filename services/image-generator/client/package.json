@@ -5,7 +5,7 @@
     "exports": {
         ".": "./index.js"
     },
-    "devDependencies": {
+    "dependencies": {
         "@blargbot/message-hub": "workspace:^"
     }
 }

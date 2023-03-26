@@ -18,9 +18,8 @@ const requestLimit = 50 << 20; // 50MB
 export default class RestProxyApplication extends ServiceHost {
     public constructor(options: RestProxyApplicationOptions) {
         const serviceName = 'discord-proxy';
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
         super([
-            metrics,
+            new MetricsPushService({ serviceName, instanceId: fullContainerId }),
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))

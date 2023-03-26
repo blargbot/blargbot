@@ -1,3 +1,4 @@
+import type { ModLogCreateRequest, ModLogDeleteRequest, ModLogUpdateRequest } from '@blargbot/mod-log-client';
 import type { Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
 import { DataTypes, makeColumn } from '@blargbot/sequelize';
 
@@ -29,8 +30,6 @@ export default class ModLogSequelizeDatabase implements IModLogEntryDatabase {
         this.#modLog = sequelize.define<Model<ModLogEntryTable>>('moderation_log', {
             ...makeColumn('guildId', DataTypes.BIGINT, x, { primaryKey: true }),
             ...makeColumn('caseId', DataTypes.INTEGER, x, { primaryKey: true }),
-            ...makeColumn('channelId', DataTypes.BIGINT, x),
-            ...makeColumn('messageId', DataTypes.BIGINT, x),
             ...makeColumn('moderatorId', DataTypes.BIGINT, x),
             ...makeColumn('reason', DataTypes.STRING, x),
             ...makeColumn('type', DataTypes.STRING, x),
@@ -55,45 +54,49 @@ export default class ModLogSequelizeDatabase implements IModLogEntryDatabase {
         return models.map(m => m.get());
     }
 
-    public async create(guildId: bigint, value: Omit<ModLogEntry, 'caseId'>): Promise<number> {
+    public async create(options: ModLogCreateRequest): Promise<ModLogEntry> {
         return await this.#sequelize.transaction(async () => {
             const [index] = await this.#modLogIndex.findOrCreate({
-                where: { guildId },
-                defaults: { guildId, lastCaseId: 0 }
+                where: { guildId: options.guildId },
+                defaults: { guildId: options.guildId, lastCaseId: 0 }
             });
             await index.increment('lastCaseId');
             const result = await this.#modLog.create({
-                ...value,
-                guildId,
+                ...options,
                 caseId: index.get().lastCaseId
             });
-            return result.get().caseId;
+            return result.get();
         });
     }
 
-    public async update(guildId: bigint, caseId: number, value: Partial<Omit<ModLogEntry, 'caseId'>>): Promise<void> {
-        await this.#modLog.update({
-            ...value,
-            guildId,
-            caseId
-        }, { where: { guildId, caseId } });
+    async #getModLog(guildId: bigint, caseId: number): Promise<Model<ModLogEntry> | undefined> {
+        return await this.#modLog.findOne({
+            where: { guildId, caseId }
+        }) ?? undefined;
     }
 
-    public async delete(guildId: bigint, caseId: number): Promise<void> {
-        await this.#modLog.destroy({ where: { guildId, caseId } });
+    public async update({ guildId, caseId, ...update }: ModLogUpdateRequest): Promise<ModLogEntry | undefined> {
+        const model = await this.#getModLog(guildId, caseId);
+        await model?.update(update);
+        return model?.get();
+    }
+
+    public async delete({ guildId, caseId }: ModLogDeleteRequest): Promise<ModLogEntry | undefined> {
+        const model = await this.#getModLog(guildId, caseId);
+        const result = model?.get();
+        await model?.destroy();
+        return result;
     }
 
 }
 
 const defaultModLogEntry: { [P in keyof Required<ModLogEntryTable>]: ModLogEntryTable[P] | undefined } = {
-    guildId: undefined,
     caseId: undefined,
-    userId: undefined,
-    channelId: null,
-    messageId: null,
+    guildId: undefined,
     moderatorId: null,
     reason: null,
-    type: null
+    type: undefined,
+    userId: undefined
 };
 
 const defaultModLogIndex: { [P in keyof Required<ModLogIndex>]: ModLogIndex[P] | undefined } = {

@@ -1,10 +1,11 @@
 import type { HostState, IHost } from './IHost.js';
 import type { IService } from './IService.js';
+import { seriesServices } from './IService.js';
 
 export class ServiceHost implements IHost {
     readonly #options: Required<HostingApplicationOptions>;
-    readonly #services: readonly IService[];
-    #state: number;
+    readonly #service: IService;
+    #running: boolean;
     #stateName: HostState;
     #shutdown?: () => Promise<void>;
 
@@ -13,20 +14,20 @@ export class ServiceHost implements IHost {
     }
 
     public constructor(services: Iterable<IService>, options?: HostingApplicationOptions) {
+        this.#service = seriesServices(...services);
         this.#options = {
             ...defaultOptions,
             ...options
         };
-        this.#services = [...services];
-        this.#state = -1;
+        this.#running = false;
         this.#stateName = 'stopped';
     }
 
     public async run(): Promise<void> {
-        if (this.#state !== -1)
+        if (this.#running)
             throw new Error('Application is already running!');
 
-        this.#state++;
+        this.#running = true;
 
         const startAbort = new AbortController();
         let signalStopped: () => void = () => { /* NO-OP */ };
@@ -54,7 +55,7 @@ export class ServiceHost implements IHost {
 
         this.#stateName = 'stopped';
         this.#shutdown = undefined;
-        this.#state = -1;
+        this.#running = false;
         startAbort.abort();
         signalStopped();
 
@@ -62,12 +63,7 @@ export class ServiceHost implements IHost {
 
     async #start(abortSignal: AbortSignal): Promise<boolean> {
         try {
-            while (this.#state < this.#services.length) {
-                await this.#services[this.#state].start(abortSignal);
-                this.#state++;
-                if (abortSignal.aborted)
-                    throw new Error('Abort requested during application startup');
-            }
+            await this.#service.start(abortSignal);
             return true;
         } catch (err) {
             console.error('Error while starting application', err);
@@ -77,15 +73,7 @@ export class ServiceHost implements IHost {
 
     async #stop(abortSignal: AbortSignal): Promise<boolean> {
         try {
-            while (--this.#state >= 0) {
-                try {
-                    await this.#services[this.#state].stop(abortSignal);
-                } catch (err) {
-                    console.error('Error while stopping application', err);
-                }
-                if (abortSignal.aborted)
-                    throw new Error('Abort requested during application shutdown');
-            }
+            await this.#service.stop(abortSignal);
             return true;
         } catch (err) {
             console.error('Error while stopping application', err);

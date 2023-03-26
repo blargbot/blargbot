@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import { ImageGenerateMessageBroker } from '@blargbot/image-generator-client';
@@ -27,7 +27,7 @@ import StarVsTheForcesOfGenerator from './generators/starVsTheForcesOf.js';
 import StupidGenerator from './generators/stupid.js';
 import TheSearchGenerator from './generators/thesearch.js';
 import TruthGenerator from './generators/truth.js';
-import ImageGeneratorManager from './ImageGeneratorManager.js';
+import ImageGeneratorService from './ImageGeneratorService.js';
 
 export interface ImageGeneratorApplicationOptions {
     readonly messages: ConnectionOptions;
@@ -49,37 +49,37 @@ export interface ImageGeneratorApplicationOptions {
 export class ImageGeneratorApplication extends ServiceHost {
     public constructor(options: ImageGeneratorApplicationOptions) {
         const serviceName = 'image-generator';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
 
+        const requests = new ImageGenerateMessageBroker(hub, serviceName);
+        const service = new ImageGeneratorService({
+            art: new ArtGenerator(),
+            cah: new CardsAgainstHumanityGenerator(),
+            caption: new CaptionGenerator(),
+            clint: new ClintGenerator(options.api),
+            clippy: new ClippyGenerator(),
+            clyde: new ClydeGenerator(),
+            color: new ColorGenerator(options.api),
+            delete: new DeleteGenerator(options.api),
+            distort: new DistortGenerator(),
+            emoji: new EmojiGenerator(),
+            free: new FreeGenerator(),
+            linus: new LinusGenerator(options.api),
+            pcCheck: new PCCheckGenerator(options.api),
+            pixelate: new PixelateGenerator(),
+            shit: new ShitGenerator(options.api),
+            sonicSays: new SonicSaysGenerator(options.api),
+            starVsTheForcesOf: new StarVsTheForcesOfGenerator(),
+            stupid: new StupidGenerator(),
+            theSearch: new TheSearchGenerator(options.api),
+            truth: new TruthGenerator()
+        });
         super([
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
-            new ImageGeneratorManager(
-                new ImageGenerateMessageBroker(messages, serviceName),
-                {
-                    art: new ArtGenerator(),
-                    cah: new CardsAgainstHumanityGenerator(),
-                    caption: new CaptionGenerator(),
-                    clint: new ClintGenerator(options.api),
-                    clippy: new ClippyGenerator(),
-                    clyde: new ClydeGenerator(),
-                    color: new ColorGenerator(options.api),
-                    delete: new DeleteGenerator(options.api),
-                    distort: new DistortGenerator(),
-                    emoji: new EmojiGenerator(),
-                    free: new FreeGenerator(),
-                    linus: new LinusGenerator(options.api),
-                    pcCheck: new PCCheckGenerator(options.api),
-                    pixelate: new PixelateGenerator(),
-                    shit: new ShitGenerator(options.api),
-                    sonicSays: new SonicSaysGenerator(options.api),
-                    starVsTheForcesOf: new StarVsTheForcesOfGenerator(),
-                    stupid: new StupidGenerator(),
-                    theSearch: new TheSearchGenerator(options.api),
-                    truth: new TruthGenerator()
-                }
-            )
+            parallelServices(
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
+            connectToService(() => requests.handleImageRequest((t, p) => service.generate(t, p)), 'handleImageRequest')
         ]);
     }
 }

@@ -1,54 +1,21 @@
-import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
 import { isGuildChannel } from '@blargbot/discord-util';
 import { hasValue } from '@blargbot/guards';
-import type { MessageHandle } from '@blargbot/message-hub';
 import type { IKSCache, IKVCache } from '@blargbot/redis-cache';
 
-type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
-    | 'GUILD_CREATE'
-    | 'GUILD_DELETE'
-    | 'CHANNEL_CREATE'
-    | 'CHANNEL_UPDATE'
-    | 'CHANNEL_DELETE'
-    | 'THREAD_CREATE'
-    | 'THREAD_UPDATE'
-    | 'THREAD_DELETE'
-    | 'THREAD_LIST_SYNC'
->;
-
 export class DiscordChannelCacheService {
-    readonly #gateway: DiscordGatewayMessageBroker;
-    readonly #handles: Set<MessageHandle>;
     readonly #channelCache: IKVCache<bigint, Discord.APIChannel>;
     readonly #guildIndex: IKSCache<bigint, bigint>;
     readonly #channelGuildMap: IKVCache<bigint, bigint>;
 
     public constructor(
-        gateway: DiscordGatewayMessageBroker,
         channelCache: IKVCache<bigint, Discord.APIChannel>,
         guildIndex: IKSCache<bigint, bigint>,
         channelGuildMap: IKVCache<bigint, bigint>
     ) {
-        this.#gateway = gateway;
         this.#channelCache = channelCache;
         this.#guildIndex = guildIndex;
         this.#channelGuildMap = channelGuildMap;
-        this.#handles = new Set();
-    }
-
-    public async start(): Promise<void> {
-        await Promise.all([
-            this.#gateway.handleGuildCreate(this.#handleGuildCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleGuildDelete(this.#handleGuildDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleChannelCreate(this.#handleChannelCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleChannelDelete(this.#handleChannelDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleChannelUpdate(this.#handleChannelUpdate.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleThreadCreate(this.#handleThreadCreate.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleThreadDelete(this.#handleThreadDelete.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleThreadListSync(this.#handleThreadListSync.bind(this)).then(h => this.#handles.add(h)),
-            this.#gateway.handleThreadUpdate(this.#handleThreadUpdate.bind(this)).then(h => this.#handles.add(h))
-        ]);
     }
 
     public async getChannel(channelId: bigint): Promise<Discord.APIChannel | undefined> {
@@ -122,45 +89,40 @@ export class DiscordChannelCacheService {
         await Promise.all(promises);
     }
 
-    async #handleGuildCreate(message: Discord.GatewayGuildCreateDispatchData): Promise<void> {
+    public async handleGuildCreate(message: Discord.GatewayGuildCreateDispatchData): Promise<void> {
         await this.#clearCache(BigInt(message.id));
         await this.#addChannels([...message.channels, ...message.threads], message.id);
     }
 
-    async #handleGuildDelete(message: Discord.GatewayGuildDeleteDispatchData): Promise<void> {
+    public async handleGuildDelete(message: Discord.GatewayGuildDeleteDispatchData): Promise<void> {
         await this.#clearCache(BigInt(message.id));
     }
 
-    async #handleChannelCreate(message: Discord.GatewayChannelCreateDispatchData): Promise<void> {
+    public async handleChannelCreate(message: Discord.GatewayChannelCreateDispatchData): Promise<void> {
         await this.#addChannels([message]);
     }
 
-    async #handleChannelDelete(message: Discord.GatewayChannelDeleteDispatchData): Promise<void> {
+    public async handleChannelDelete(message: Discord.GatewayChannelDeleteDispatchData): Promise<void> {
         await this.#deleteChannel(message);
     }
 
-    async #handleChannelUpdate(message: Discord.GatewayChannelUpdateDispatchData): Promise<void> {
+    public async handleChannelUpdate(message: Discord.GatewayChannelUpdateDispatchData): Promise<void> {
         await this.#addChannels([message]);
     }
 
-    async #handleThreadCreate(message: Discord.APIChannel): Promise<void> {
+    public async handleThreadCreate(message: Discord.APIChannel): Promise<void> {
         await this.#addChannels([message]);
     }
 
-    async #handleThreadDelete(message: Discord.GatewayThreadDeleteDispatchData): Promise<void> {
+    public async handleThreadDelete(message: Discord.GatewayThreadDeleteDispatchData): Promise<void> {
         await this.#deleteChannel(message);
     }
 
-    async #handleThreadListSync(message: Discord.GatewayThreadListSyncDispatchData): Promise<void> {
+    public async handleThreadListSync(message: Discord.GatewayThreadListSyncDispatchData): Promise<void> {
         await this.#addChannels(message.threads, message.guild_id);
     }
 
-    async #handleThreadUpdate(message: Discord.GatewayThreadUpdateDispatchData): Promise<void> {
+    public async handleThreadUpdate(message: Discord.GatewayThreadUpdateDispatchData): Promise<void> {
         await this.#addChannels([message]);
-    }
-
-    public async stop(): Promise<void> {
-        await Promise.all([...this.#handles]
-            .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
     }
 }

@@ -1,49 +1,32 @@
 import type { CommandMessageParserMessageBroker } from '@blargbot/command-message-parser-client';
 import type { ICurrentUserAccessor } from '@blargbot/current-user-accessor';
-import type { DiscordMessageStreamMessageBroker, ExtendedMessage } from '@blargbot/discord-message-stream-client';
+import type { ExtendedMessage } from '@blargbot/discord-message-stream-client';
 import { markup } from '@blargbot/discord-util';
 import { hasValue } from '@blargbot/guards';
 import { GuildSettingsHttpClient } from '@blargbot/guild-settings-client';
 import { splitInput } from '@blargbot/input';
-import type { MessageHandle } from '@blargbot/message-hub';
 import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
 
 export class CommandMessageParserService {
-    readonly #messages: DiscordMessageStreamMessageBroker;
     readonly #commands: CommandMessageParserMessageBroker;
-    readonly #handles: Set<MessageHandle>;
     readonly #guildSettings: GuildSettingsHttpClient;
     readonly #userSettings: UserSettingsHttpClient;
     readonly #defaultPrefix: string;
     readonly #user: ICurrentUserAccessor;
 
     public constructor(
-        messages: DiscordMessageStreamMessageBroker,
         commands: CommandMessageParserMessageBroker,
         user: ICurrentUserAccessor,
         options: CommandMessageParserServiceOptions
     ) {
-        this.#messages = messages;
         this.#commands = commands;
         this.#user = user;
         this.#guildSettings = GuildSettingsHttpClient.from(options.guildSettingsClient ?? options.guildSettingsUrl);
         this.#userSettings = UserSettingsHttpClient.from(options.userSettingsClient ?? options.userSettingsUrl);
         this.#defaultPrefix = options.defaultPrefix;
-        this.#handles = new Set();
     }
 
-    public async start(): Promise<void> {
-        await Promise.all([
-            this.#messages.handleMessage(this.#handleMessage.bind(this)).then(h => this.#handles.add(h))
-        ]);
-    }
-
-    public async stop(): Promise<void> {
-        await Promise.all([...this.#handles]
-            .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
-    }
-
-    async #handleMessage(trigger: ExtendedMessage): Promise<void> {
+    public async handleMessage(trigger: ExtendedMessage): Promise<void> {
         if (trigger.author.bot === true || !hasValue(trigger.content) || trigger.content.length === 0)
             return;
 

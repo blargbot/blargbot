@@ -1,30 +1,45 @@
+import type { ModLogCreateRequest, ModLogDeleteRequest, ModLogMessageBroker, ModLogUpdateRequest } from '@blargbot/mod-log-client';
+
 import type { IModLogEntryDatabase } from './IModLogEntryDatabase.js';
-import type { ModLogEntry } from './ModLogEntry.js';
 
 export class ModLogService {
     readonly #database: IModLogEntryDatabase;
+    readonly #messages: ModLogMessageBroker;
 
-    public constructor(database: IModLogEntryDatabase) {
+    public constructor(database: IModLogEntryDatabase, messages: ModLogMessageBroker) {
         this.#database = database;
+        this.#messages = messages;
     }
 
-    public async getModLog(guildId: bigint, caseId: number): Promise<ModLogEntry | undefined> {
-        return await this.#database.get(guildId, caseId);
+    public async createModLog(options: ModLogCreateRequest): Promise<void> {
+        const modLog = await this.#database.create(options);
+        await this.#messages.modLogCreated({
+            ...modLog,
+            metadata: options.metadata,
+            moderatorId: modLog.moderatorId ?? undefined,
+            reason: modLog.reason ?? undefined
+        });
     }
 
-    public async getAllModLogs(guildId: bigint): Promise<ModLogEntry[]> {
-        return await this.#database.list(guildId);
+    public async updateModLog(options: ModLogUpdateRequest): Promise<void> {
+        const modLog = await this.#database.update(options);
+        if (modLog === undefined)
+            return;
+        await this.#messages.modLogUpdated({
+            ...modLog,
+            moderatorId: modLog.moderatorId ?? undefined,
+            reason: modLog.reason ?? undefined
+        });
     }
 
-    public async createModLog(guildId: bigint, modLog: Omit<ModLogEntry, 'caseId'>): Promise<number> {
-        return await this.#database.create(guildId, modLog);
-    }
-
-    public async updateModLog(guildId: bigint, caseId: number, modLog: Partial<Omit<ModLogEntry, 'caseId'>>): Promise<void> {
-        await this.#database.update(guildId, caseId, modLog);
-    }
-
-    public async deleteModLog(guildId: bigint, caseId: number): Promise<void> {
-        await this.#database.delete(guildId, caseId);
+    public async deleteModLog(options: ModLogDeleteRequest): Promise<void> {
+        const modLog = await this.#database.delete(options);
+        if (modLog === undefined)
+            return;
+        await this.#messages.modLogDeleted({
+            ...modLog,
+            moderatorId: modLog.moderatorId ?? undefined,
+            reason: modLog.reason ?? undefined
+        });
     }
 }

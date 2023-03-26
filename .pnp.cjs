@@ -332,6 +332,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/metrics/src"\
       },\
       {\
+        "name": "@blargbot/mod-log-client",\
+        "reference": "workspace:services/mod-log/client"\
+      },\
+      {\
         "name": "@blargbot/mod-log",\
         "reference": "workspace:services/mod-log/src"\
       },\
@@ -438,6 +442,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/metrics", ["workspace:services/metrics/src"]],\
       ["@blargbot/metrics-client", ["workspace:services/metrics/client"]],\
       ["@blargbot/mod-log", ["workspace:services/mod-log/src"]],\
+      ["@blargbot/mod-log-client", ["workspace:services/mod-log/client"]],\
       ["@blargbot/modules", ["workspace:components/modules/src"]],\
       ["@blargbot/redis-cache", ["workspace:components/redis-cache/src"]],\
       ["@blargbot/res", ["workspace:components/res/src"]],\
@@ -1636,10 +1641,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/mod-log-client", "workspace:services/mod-log/client"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/mod-log-client", [\
+        ["workspace:services/mod-log/client", {\
+          "packageLocation": "./services/mod-log/client/",\
+          "packageDependencies": [\
+            ["@blargbot/mod-log-client", "workspace:services/mod-log/client"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"]\
           ],\
           "linkType": "SOFT"\
@@ -1832,7 +1849,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/mod-log-client", "workspace:services/mod-log/client"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/user-warnings-client", "workspace:services/user-warnings/client"]\
           ],\

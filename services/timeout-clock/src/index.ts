@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
@@ -20,15 +20,16 @@ import { TimeoutService } from './TimeoutService.js';
 export class TimeoutClockApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
         const serviceName = 'timeout-clock';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
 
         super([
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
+            parallelServices(
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
             new TimeoutService(
                 options.cron,
-                new TimeoutClockMessageBroker(messages, serviceName)
+                new TimeoutClockMessageBroker(hub, serviceName)
             )
         ]);
     }

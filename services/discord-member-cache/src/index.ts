@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -31,16 +31,15 @@ import type { SlimDiscordMember } from './SlimDiscordMember.js';
 export class DiscordMemberCacheApplication extends ServiceHost {
     public constructor(options: DiscordMemberCacheApplicationOptions) {
         const serviceName = 'discord-member-cache';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
         const redis: RedisClientType = createRedisClient({
             url: options.redis.url,
             username: options.redis.username,
             password: options.redis.password
         });
 
+        const gateway = new DiscordGatewayMessageBroker(hub, serviceName);
         const service = new DiscordMemberCacheService(
-            new DiscordGatewayMessageBroker(messages, serviceName),
             new RedisKKVCache<bigint, bigint, SlimDiscordMember>(redis, {
                 ttlS: null,
                 keyspace: 'discord_members',
@@ -49,10 +48,19 @@ export class DiscordMemberCacheApplication extends ServiceHost {
         );
 
         super([
-            connectionToService(redis, 'redis'),
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
-            service,
+            parallelServices(
+                connectToService(redis, 'redis'),
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
+            parallelServices(
+                connectToService(() => gateway.handleGuildCreate(m => service.handleGuildCreate(m)), 'handleGuildCreate'),
+                connectToService(() => gateway.handleGuildDelete(m => service.handleGuildDelete(m)), 'handleGuildDelete'),
+                connectToService(() => gateway.handleGuildMemberAdd(m => service.handleGuildMemberAdd(m)), 'handleGuildMemberAdd'),
+                connectToService(() => gateway.handleGuildMemberRemove(m => service.handleGuildMemberRemove(m)), 'handleGuildMemberRemove'),
+                connectToService(() => gateway.handleGuildMemberUpdate(m => service.handleGuildMemberUpdate(m)), 'handleGuildMemberUpdate'),
+                connectToService(() => gateway.handleGuildMembersChunk(m => service.handleGuildMembersChunk(m)), 'handleGuildMembersChunk')
+            ),
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))

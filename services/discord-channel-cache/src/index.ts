@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
@@ -32,15 +32,14 @@ import { DiscordChannelCacheService } from './DiscordChannelCacheService.js';
 export class DiscordChannelCacheApplication extends ServiceHost {
     public constructor(options: DiscordChannelCacheApplicationOptions) {
         const serviceName = 'discord-channel-cache';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
         const redis: RedisClientType = createRedisClient({
             url: options.redis.url,
             username: options.redis.username,
             password: options.redis.password
         });
+        const gateway = new DiscordGatewayMessageBroker(hub, serviceName);
         const service = new DiscordChannelCacheService(
-            new DiscordGatewayMessageBroker(messages, serviceName),
             new RedisKVCache<bigint, Discord.APIChannel>(redis, {
                 ttlS: null,
                 keyspace: 'discord_channels'
@@ -58,10 +57,22 @@ export class DiscordChannelCacheApplication extends ServiceHost {
         );
 
         super([
-            connectionToService(redis, 'redis'),
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
-            service,
+            parallelServices(
+                connectToService(redis, 'redis'),
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
+            parallelServices(
+                connectToService(() => gateway.handleGuildCreate(m => service.handleGuildCreate(m)), 'handleGuildCreate'),
+                connectToService(() => gateway.handleGuildDelete(m => service.handleGuildDelete(m)), 'handleGuildDelete'),
+                connectToService(() => gateway.handleChannelCreate(m => service.handleChannelCreate(m)), 'handleChannelCreate'),
+                connectToService(() => gateway.handleChannelDelete(m => service.handleChannelDelete(m)), 'handleChannelDelete'),
+                connectToService(() => gateway.handleChannelUpdate(m => service.handleChannelUpdate(m)), 'handleChannelUpdate'),
+                connectToService(() => gateway.handleThreadCreate(m => service.handleThreadCreate(m)), 'handleThreadCreate'),
+                connectToService(() => gateway.handleThreadDelete(m => service.handleThreadDelete(m)), 'handleThreadDelete'),
+                connectToService(() => gateway.handleThreadListSync(m => service.handleThreadListSync(m)), 'handleThreadListSync'),
+                connectToService(() => gateway.handleThreadUpdate(m => service.handleThreadUpdate(m)), 'handleThreadUpdate')
+            ),
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))

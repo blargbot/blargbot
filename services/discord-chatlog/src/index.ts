@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -30,21 +30,27 @@ import { DiscordChatlogService } from './DiscordChatlogService.js';
 export class DiscordChatlogApplication extends ServiceHost {
     public constructor(options: DiscordChatlogApplicationOptions) {
         const serviceName = 'discord-chatlog';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
         const database = new DiscordChatlogDatabase(options.database);
+        const gateway = new DiscordGatewayMessageBroker(hub, serviceName);
         const service = new DiscordChatlogService(
-            new DiscordGatewayMessageBroker(messages, serviceName),
             database,
             {
                 guildSettingsUrl: options.guildSettings.url
             }
         );
         super([
-            connectionToService(messages, 'rabbitmq'),
-            connectionToService(database, 'cassandra'),
-            metrics,
-            service
+            parallelServices(
+                connectToService(hub, 'rabbitmq'),
+                connectToService(database, 'cassandra'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
+            parallelServices(
+                connectToService(() => gateway.handleMessageCreate(m => service.handleMessageCreate(m)), 'handleMessageCreate'),
+                connectToService(() => gateway.handleMessageUpdate(m => service.handleMessageUpdate(m)), 'handleMessageUpdate'),
+                connectToService(() => gateway.handleMessageDelete(m => service.handleMessageDelete(m)), 'handleMessageDelete'),
+                connectToService(() => gateway.handleMessageDeleteBulk(m => service.handleMessageDeleteBulk(m)), 'handleMessageDeleteBulk')
+            )
         ]);
     }
 }

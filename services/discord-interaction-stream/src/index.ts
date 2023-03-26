@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -20,17 +20,18 @@ import { DiscordInteractionStreamService } from './DiscordInteractionStreamServi
 export class DiscordInteractionStreamApplication extends ServiceHost {
     public constructor(options: DiscordInteractionStreamApplicationOptions) {
         const serviceName = 'discord-interaction-stream';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
+        const gateway = new DiscordGatewayMessageBroker(hub, serviceName);
         const service = new DiscordInteractionStreamService(
-            new DiscordInteractionStreamMessageBroker(messages),
-            new DiscordGatewayMessageBroker(messages, serviceName)
+            new DiscordInteractionStreamMessageBroker(hub)
         );
 
         super([
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
-            service
+            parallelServices(
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
+            connectToService(() => gateway.handleInteractionCreate(m => service.handleInteractionCreate(m)), 'handleInteractionCreate')
         ]);
     }
 }

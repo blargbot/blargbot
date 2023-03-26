@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
@@ -32,16 +32,15 @@ import { DiscordUserCacheService } from './DiscordUserCacheService.js';
 export class DiscordUserCacheApplication extends ServiceHost {
     public constructor(options: DiscordUserCacheApplicationOptions) {
         const serviceName = 'discord-user-cache';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
         const redis: RedisClientType = createRedisClient({
             url: options.redis.url,
             username: options.redis.username,
             password: options.redis.password
         });
 
+        const gateway = new DiscordGatewayMessageBroker(hub, serviceName);
         const service = new DiscordUserCacheService(
-            new DiscordGatewayMessageBroker(messages, serviceName),
             new RedisKVCache<bigint, Discord.APIUser>(redis, {
                 ttlS: null,
                 keyspace: 'discord_users',
@@ -55,10 +54,21 @@ export class DiscordUserCacheApplication extends ServiceHost {
         );
 
         super([
-            connectionToService(redis, 'redis'),
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
-            service,
+            parallelServices(
+                connectToService(redis, 'redis'),
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
+            parallelServices(
+                connectToService(() => gateway.handleGuildCreate(m => service.handleGuildCreate(m)), 'handleGuildCreate'),
+                connectToService(() => gateway.handleGuildMemberAdd(m => service.handleGuildMemberAdd(m)), 'handleGuildMemberAdd'),
+                connectToService(() => gateway.handleGuildMembersChunk(m => service.handleGuildMembersChunk(m)), 'handleGuildMembersChunk'),
+                connectToService(() => gateway.handleUserUpdate(m => service.handleUserUpdate(m)), 'handleUserUpdate'),
+                connectToService(() => gateway.handleReady(m => service.handleReady(m)), 'handleReady'),
+                connectToService(() => gateway.handleGuildBanAdd(m => service.handleGuildBanAdd(m)), 'handleGuildBanAdd'),
+                connectToService(() => gateway.handleGuildBanRemove(m => service.handleGuildBanRemove(m)), 'handleGuildBanRemove'),
+                connectToService(() => gateway.handleInteractionCreate(m => service.handleInteractionCreate(m)), 'handleInteractionCreate')
+            ),
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))

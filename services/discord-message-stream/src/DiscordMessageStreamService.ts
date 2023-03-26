@@ -1,50 +1,29 @@
 import { DiscordChannelCacheHttpClient } from '@blargbot/discord-channel-cache-client';
-import type { PartialDiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import { DiscordGuildCacheHttpClient } from '@blargbot/discord-guild-cache-client';
 import type { DiscordMessageStreamMessageBroker } from '@blargbot/discord-message-stream-client';
 import { DiscordRoleCacheHttpClient } from '@blargbot/discord-role-cache-client';
 import type Discord from '@blargbot/discord-types';
-import type { MessageHandle } from '@blargbot/message-hub';
-import type { Counter, MetricsPushService } from '@blargbot/metrics-client';
-
-type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
-    | 'MESSAGE_CREATE'
->;
+import type { Counter, Metrics } from '@blargbot/metrics-client';
 
 export class DiscordMessageStreamService {
     readonly #messages: DiscordMessageStreamMessageBroker;
-    readonly #handles: Set<MessageHandle>;
     readonly #discordChannelCache: DiscordChannelCacheHttpClient;
     readonly #discordGuildCache: DiscordGuildCacheHttpClient;
     readonly #discordRoleCache: DiscordRoleCacheHttpClient;
-    readonly #gateway: DiscordGatewayMessageBroker;
     readonly #messageCount: Counter;
 
-    public constructor(messages: DiscordMessageStreamMessageBroker, gateway: DiscordGatewayMessageBroker, metrics: MetricsPushService, options: DiscordMessageStreamServiceOptions) {
+    public constructor(messages: DiscordMessageStreamMessageBroker, metrics: Metrics, options: DiscordMessageStreamServiceOptions) {
         this.#messageCount = metrics.counter({
             name: 'bot_message_counter',
             help: 'Messages the bot sees'
         });
         this.#messages = messages;
-        this.#gateway = gateway;
         this.#discordChannelCache = DiscordChannelCacheHttpClient.from(options.discordChannelCacheClient ?? options.discordChannelCacheUrl);
         this.#discordGuildCache = DiscordGuildCacheHttpClient.from(options.discordGuildCacheClient ?? options.discordGuildCacheUrl);
         this.#discordRoleCache = DiscordRoleCacheHttpClient.from(options.discordRoleCacheClient ?? options.discordRoleCacheUrl);
-        this.#handles = new Set();
     }
 
-    public async start(): Promise<void> {
-        await Promise.all([
-            this.#gateway.handleMessageCreate(this.#handleMessageCreate.bind(this)).then(h => this.#handles.add(h))
-        ]);
-    }
-
-    public async stop(): Promise<void> {
-        await Promise.all([...this.#handles]
-            .map(h => h.disconnect().finally(() => this.#handles.delete(h))));
-    }
-
-    async #handleMessageCreate(message: Discord.GatewayMessageCreateDispatchData): Promise<void> {
+    public async handleMessageCreate(message: Discord.GatewayMessageCreateDispatchData): Promise<void> {
         this.#messageCount.inc();
 
         const [channel, guild] = await Promise.all([

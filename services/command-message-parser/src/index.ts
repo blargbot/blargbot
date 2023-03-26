@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { CommandMessageParserMessageBroker } from '@blargbot/command-message-parser-client';
 import { fullContainerId } from '@blargbot/container-id';
 import { CurrentUserAccessor } from '@blargbot/current-user-accessor';
@@ -31,26 +31,28 @@ import { CommandMessageParserService } from './CommandMessageParserService.js';
 export class CommandMessageParserApplication extends ServiceHost {
     public constructor(options: DiscordChatlogApplicationOptions) {
         const serviceName = 'command-message-parser';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
+        const messageStream = new DiscordMessageStreamMessageBroker(hub, serviceName);
+        const service = new CommandMessageParserService(
+            new CommandMessageParserMessageBroker(hub, serviceName),
+            new CurrentUserAccessor({
+                userCacheUrl: options.discordUserCache.url,
+                refreshInterval: options.discordUserCache.refreshInterval,
+                retryInterval: options.discordUserCache.retryInterval
+            }),
+            {
+                guildSettingsUrl: options.guildSettings.url,
+                userSettingsUrl: options.userSettings.url,
+                defaultPrefix: options.defaultPrefix
+            }
+        );
 
         super([
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
-            new CommandMessageParserService(
-                new DiscordMessageStreamMessageBroker(messages, serviceName),
-                new CommandMessageParserMessageBroker(messages, serviceName),
-                new CurrentUserAccessor({
-                    userCacheUrl: options.discordUserCache.url,
-                    refreshInterval: options.discordUserCache.refreshInterval,
-                    retryInterval: options.discordUserCache.retryInterval
-                }),
-                {
-                    guildSettingsUrl: options.guildSettings.url,
-                    userSettingsUrl: options.userSettings.url,
-                    defaultPrefix: options.defaultPrefix
-                }
-            )
+            parallelServices(
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
+            connectToService(() => messageStream.handleMessage(m => service.handleMessage(m)), 'handleMessage')
         ]);
     }
 }

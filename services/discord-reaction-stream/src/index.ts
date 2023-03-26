@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -20,16 +20,17 @@ import { DiscordReactionStreamService } from './DiscordReactionStreamService.js'
 export class DiscordReactionStreamApplication extends ServiceHost {
     public constructor(options: DiscordReactionStreamApplicationOptions) {
         const serviceName = 'discord-reaction-stream';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
+        const gateway = new DiscordGatewayMessageBroker(hub, serviceName);
         const service = new DiscordReactionStreamService(
-            new DiscordReactionStreamMessageBroker(messages),
-            new DiscordGatewayMessageBroker(messages, serviceName)
+            new DiscordReactionStreamMessageBroker(hub)
         );
         super([
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
-            service
+            parallelServices(
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
+            connectToService(() => gateway.handleMessageReactionAdd(m => service.handleMessageReactionAdd(m)), 'handleMessageReactionAdd')
         ]);
     }
 }

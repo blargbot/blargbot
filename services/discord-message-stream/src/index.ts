@@ -1,11 +1,11 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import { DiscordMessageStreamMessageBroker } from '@blargbot/discord-message-stream-client';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsPushService } from '@blargbot/metrics-client';
+import { Metrics, MetricsPushService } from '@blargbot/metrics-client';
 
 import { DiscordMessageStreamService } from './DiscordMessageStreamService.js';
 
@@ -29,11 +29,11 @@ import { DiscordMessageStreamService } from './DiscordMessageStreamService.js';
 export class DiscordMessageStreamApplication extends ServiceHost {
     public constructor(options: DiscordMessageStreamApplicationOptions) {
         const serviceName = 'discord-message-stream';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
+        const metrics = new Metrics({ serviceName, instanceId: fullContainerId });
+        const gateway = new DiscordGatewayMessageBroker(hub, serviceName);
         const service = new DiscordMessageStreamService(
-            new DiscordMessageStreamMessageBroker(messages, serviceName),
-            new DiscordGatewayMessageBroker(messages, serviceName),
+            new DiscordMessageStreamMessageBroker(hub, serviceName),
             metrics,
             {
                 discordChannelCacheUrl: options.discordChannelCache.url,
@@ -43,9 +43,11 @@ export class DiscordMessageStreamApplication extends ServiceHost {
         );
 
         super([
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
-            service
+            parallelServices(
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService(metrics)
+            ),
+            connectToService(() => gateway.handleMessageCreate(m => service.handleMessageCreate(m)), 'handleMessageCreate')
         ]);
     }
 }

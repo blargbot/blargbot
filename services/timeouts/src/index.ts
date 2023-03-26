@@ -1,4 +1,4 @@
-import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
@@ -33,8 +33,7 @@ import { TimeoutService } from './TimeoutService.js';
 export class GuildSettingsApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
         const serviceName = 'timeouts';
-        const messages = new MessageHub(options.messages);
-        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
+        const hub = new MessageHub(options.messages);
         const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,
@@ -44,20 +43,26 @@ export class GuildSettingsApplication extends ServiceHost {
                 dialect: 'postgres'
             }
         );
+        const clock = new TimeoutClockMessageBroker(hub, serviceName);
+        const timeouts = new TimeoutMessageBroker(hub);
         const service = new TimeoutService(
             new TimeoutSequelizeDatabase(database),
-            new TimeoutMessageBroker(messages),
-            new TimeoutClockMessageBroker(messages, serviceName),
-            messages
+            timeouts,
+            hub
         );
 
         super([
-            sequelizeToService(database, {
-                syncOptions: { alter: true }
-            }),
-            connectionToService(messages, 'rabbitmq'),
-            metrics,
-            service,
+            parallelServices(
+                sequelizeToService(database, {
+                    syncOptions: { alter: true }
+                }),
+                connectToService(hub, 'rabbitmq'),
+                new MetricsPushService({ serviceName, instanceId: fullContainerId })
+            ),
+            parallelServices(
+                connectToService(() => clock.handleTick(() => service.handleTick()), 'handleTick'),
+                connectToService(() => timeouts.handleProcessTimeout(m => service.handleProcessTimeout(m)), 'handleProcessTimeout')
+            ),
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))
