@@ -3,7 +3,6 @@ import type { IncomingMessage } from 'node:http';
 import type { ClusterStats, CommandListResult, CommandListResultItem, GuildPermissionDetails, SubtagDetails, SubtagListResult } from '@blargbot/cluster/types.js';
 import type { GuildSettingDocs } from '@blargbot/domain/models/index.js';
 import type { IRoute, IRouterHandler, Request, Response, RouteParameters } from 'express-serve-static-core';
-import type { metric } from 'prom-client';
 import type { WebSocket } from 'ws';
 
 import type { Api } from './Api.js';
@@ -18,7 +17,6 @@ export type ApiIPCContracts = {
     getGuildSettings: { masterGets: undefined; workerGets: GuildSettingDocs; };
     getCommand: { masterGets: string; workerGets: CommandListResultItem | undefined; };
     clusterStats: { masterGets: never; workerGets: Record<number, ClusterStats | undefined>; };
-    getMetrics: { masterGets: undefined; workerGets: Record<number | string, metric[]>; };
 }
 
 export interface ApiOptions {

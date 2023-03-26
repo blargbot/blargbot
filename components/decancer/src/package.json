@@ -7,7 +7,8 @@
         ".": "./index.js"
     },
     "dependencies": {
-        "limax": "^3.0.0",
+        "@napi-rs/pinyin-linux-x64-musl": "^1.7.1",
+        "limax": "^4.0.0",
         "unorm": "^1.6.0"
     },
     "devDependencies": {

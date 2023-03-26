@@ -13,6 +13,6 @@
         "moment-timezone": "*"
     },
     "devDependencies": {
-        "moment-timezone": "*"
+        "moment-timezone": "^0.5.42"
     }
 }

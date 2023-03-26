@@ -1946,7 +1946,7 @@ async function resolvePrivateRequest(specifier, issuer, context, nextResolve) {
     conditions: new Set(context.conditions),
     readFileSyncFn: tryReadFile
   });
-  if (resolved instanceof URL) {
+  if (resolved instanceof URL$1) {
     return { url: resolved.href, shortCircuit: true };
   } else {
     if (resolved.startsWith(`#`))

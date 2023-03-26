@@ -7,6 +7,6 @@
         ".": "./index.js"
     },
     "dependencies": {
-        "discord-api-types": "^0.37.35"
+        "discord-api-types": "^0.37.37"
     }
 }

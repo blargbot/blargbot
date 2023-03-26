@@ -28,15 +28,15 @@
         "@blargbot/user-regex": "workspace:^",
         "airtable": "^0.11.6",
         "color": "^4.2.3",
-        "cron": "^2.2.0",
-        "eris": "^0.17.1",
+        "cron": "^2.3.0",
+        "eris": "^0.17.2",
         "eventemitter3": "^5.0.0",
-        "moment-timezone": "^0.5.41",
-        "prom-client": "^14.1.1"
+        "moment-timezone": "^0.5.42",
+        "prom-client": "^14.2.0"
     },
     "devDependencies": {
         "@types/color": "^3.0.3",
-        "@types/cron": "^2.0.0",
+        "@types/cron": "^2.0.1",
         "@types/eris": "workspace:^"
     }
 }

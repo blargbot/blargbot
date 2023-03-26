@@ -6,7 +6,6 @@ import type { IFormattable } from '@blargbot/formatting';
 import type { FlagDefinition, FlagResult } from '@blargbot/input';
 import type * as Eris from 'eris';
 import type moment from 'moment-timezone';
-import type { metric } from 'prom-client';
 
 import type { ClusterUtilities } from './ClusterUtilities.js';
 import type { Command, CommandContext, ScopedCommand } from './command/index.js';
@@ -29,7 +28,6 @@ export type ClusterIPCContract = {
     getCommandList: { masterGets: CommandListResult; workerGets: undefined; };
     getGuildSettings: { masterGets: GuildSettingDocs; workerGets: undefined; };
     getCommand: { masterGets: CommandListResultItem | undefined; workerGets: string; };
-    metrics: { masterGets: metric[]; workerGets: undefined; };
     reloadTranslations: { masterGets: undefined; workerGets: undefined; };
 }
 

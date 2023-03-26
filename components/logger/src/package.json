@@ -9,8 +9,8 @@
     },
     "dependencies": {
         "@blargbot/config": "workspace:^",
-        "@sentry/node": "^7.38.0",
-        "@sentry/tracing": "^7.38.0",
+        "@sentry/node": "^7.45.0",
+        "@sentry/tracing": "^7.45.0",
         "cat-loggr": "^1.2.2"
     }
 }

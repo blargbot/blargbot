@@ -17,7 +17,7 @@
         "@blargbot/formatting": "workspace:^",
         "@blargbot/test-util": "workspace:^",
         "chai": "^4.3.7",
-        "eris": "^0.17.1",
+        "eris": "^0.17.2",
         "mocha": "^10.2.0",
         "ts-mockito": "^2.6.1"
     },

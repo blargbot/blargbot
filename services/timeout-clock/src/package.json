@@ -16,9 +16,9 @@
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
         "@blargbot/timeout-clock-client": "workspace:^",
-        "cron": "^2.2.0"
+        "cron": "^2.3.0"
     },
     "devDependencies": {
-        "@types/cron": "^2.0.0"
+        "@types/cron": "^2.0.1"
     }
 }

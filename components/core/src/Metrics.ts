@@ -1,7 +1,7 @@
 import Prometheus from 'prom-client';
 
 export const metrics = {
-    registryCache: <Prometheus.metric[][]>[],
+    registryCache: [] as object[][],
     guildGauge: new Prometheus.Gauge({
         name: 'bot_guild_gauge', help: 'How many guilds the bot is in'
     }),
@@ -62,7 +62,7 @@ export const metrics = {
     }
 };
 
-function aggregate(regArray: Prometheus.metric[][]): Prometheus.Registry {
+function aggregate(regArray: object[][]): Prometheus.Registry {
     const aggregated = Prometheus.AggregatorRegistry.aggregate(regArray);
     return aggregated;
 }

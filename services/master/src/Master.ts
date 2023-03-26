@@ -11,7 +11,6 @@ import type { Logger } from '@blargbot/logger';
 import type { MasterOptions } from '@blargbot/master/types.js';
 import { ModuleLoader } from '@blargbot/modules';
 import fetch from 'node-fetch';
-import type { metric } from 'prom-client';
 
 import { ClusterStatsManager } from './managers/index.js';
 import type { MasterWorker } from './MasterWorker.js';
@@ -23,8 +22,6 @@ export class Master extends BaseClient {
     public readonly worker: MasterWorker;
     public readonly clusterStats: ClusterStatsManager;
     public readonly api: ApiPool;
-
-    public readonly metrics: Record<number, metric[]>;
 
     public constructor(
         logger: Logger,
@@ -45,7 +42,6 @@ export class Master extends BaseClient {
         this.worker = options.worker;
         this.api = new ApiPool(this.logger);
         this.clusterStats = new ClusterStatsManager(this.api);
-        this.metrics = {};
         this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
         this.eventHandlers = new ModuleLoader(import.meta, 'events', BaseService, [this, options], this.logger, e => e.name);
         this.services = new ModuleLoader(import.meta, 'services', BaseService, [this, options], this.logger, e => e.name);

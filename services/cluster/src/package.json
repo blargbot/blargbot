@@ -39,11 +39,11 @@
         "@hunteroi/versioning": "^1.3.2",
         "brainfuck-node": "^1.0.2",
         "crypto": "^1.0.1",
-        "eris": "^0.17.1",
+        "eris": "^0.17.2",
         "eventemitter3": "^5.0.0",
-        "moment-timezone": "^0.5.41",
-        "node-fetch": "^3.3.0",
-        "prom-client": "^14.1.1",
+        "moment-timezone": "^0.5.42",
+        "node-fetch": "^3.3.1",
+        "prom-client": "^14.2.0",
         "rwlock": "^5.0.0",
         "wolken": "^0.2.1",
         "xml2js": "^0.4.23"
@@ -54,7 +54,7 @@
         "@types/eris": "workspace:^",
         "@types/md5": "^2.3.2",
         "@types/node-fetch": "^2.6.2",
-        "@types/rwlock": "^5",
+        "@types/rwlock": "^5.0.3",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.11"
     }

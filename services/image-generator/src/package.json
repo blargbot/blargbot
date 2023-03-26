@@ -19,13 +19,13 @@
         "canvas": "^2.11.0",
         "gifencoder": "^2.0.1",
         "gm": "^1.25.0",
-        "node-fetch": "^3.3.0",
-        "sharp": "^0.31.3",
+        "node-fetch": "^3.3.1",
+        "sharp": "^0.32.0",
         "twemoji": "^14.0.2"
     },
     "devDependencies": {
         "@types/gifencoder": "^2.0.1",
-        "@types/gm": "^1.25.0",
+        "@types/gm": "^1.25.1",
         "@types/node-fetch": "^2.6.2",
         "@types/sharp": "^0.31.1"
     }

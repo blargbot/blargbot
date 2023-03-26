@@ -23,10 +23,10 @@
         "@blargbot/modules": "workspace:^",
         "@blargbot/res": "workspace:^",
         "@blargbot/timer": "workspace:^",
-        "eris": "^0.17.1",
-        "moment-timezone": "^0.5.41",
-        "node-fetch": "^3.3.0",
-        "prom-client": "^14.1.1",
+        "eris": "^0.17.2",
+        "moment-timezone": "^0.5.42",
+        "node-fetch": "^3.3.1",
+        "prom-client": "^14.2.0",
         "strip-ansi": "^7.0.1"
     },
     "devDependencies": {

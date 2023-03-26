@@ -4,7 +4,7 @@ import type { BBTagVariable } from '@blargbot/domain/models/index.js';
 import type { TagVariableStore } from '@blargbot/domain/stores/index.js';
 import { hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
-import type { FindOptions, WhereAttributeHashValue } from '@blargbot/sequelize';
+import type { FindOptions, WhereOperators } from '@blargbot/sequelize';
 import { DataTypes, Op } from '@blargbot/sequelize';
 
 import type { PostgresDb } from '../clients/index.js';
@@ -137,7 +137,7 @@ function idToVariableScope(id: string, type: TagVariableScope['type']): TagVaria
     }
 }
 
-function variableScopeToFilter(scope: TagVariableScopeFilter): WhereAttributeHashValue<string> | undefined {
+function variableScopeToFilter(scope: TagVariableScopeFilter): string | readonly string[] | WhereOperators<string> | { [Op.or]: Array<WhereOperators<string>>; } | undefined {
     switch (scope.type) {
         case TagVariableType.AUTHOR: return scope.authorId;
         case TagVariableType.GLOBAL: return scope.type;
