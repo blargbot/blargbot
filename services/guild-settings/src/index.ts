@@ -4,7 +4,7 @@ import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { GuildSettings } from '@blargbot/guild-settings-client';
 import { guildSettingsSerializer } from '@blargbot/guild-settings-client';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 import { RedisKVCache } from '@blargbot/redis-cache';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 import type { RedisClientType } from 'redis';
@@ -34,7 +34,7 @@ import { GuildSettingsService } from './GuildSettingsService.js';
 export class GuildSettingsApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
         const serviceName = 'guild-settings';
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
         const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,

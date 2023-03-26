@@ -2,7 +2,7 @@ import { hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 
 import { createMetricsRequestHandler } from './createMetricsRequestHandler.js';
 import { MetricsService } from './MetricsService.js';
@@ -13,7 +13,7 @@ import { MetricsService } from './MetricsService.js';
 export class MetricsApplication extends ServiceHost {
     public constructor(options: MetricsApplicationOptions) {
         const serviceName = 'metrics';
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
 
         super([
             metrics,

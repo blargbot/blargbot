@@ -4,7 +4,7 @@ import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 import { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
 
@@ -34,7 +34,7 @@ export class GuildSettingsApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
         const serviceName = 'timeouts';
         const messages = new MessageHub(options.messages);
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
         const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,

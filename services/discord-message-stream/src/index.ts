@@ -5,7 +5,7 @@ import { DiscordMessageStreamMessageBroker } from '@blargbot/discord-message-str
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 
 import { DiscordMessageStreamService } from './DiscordMessageStreamService.js';
 
@@ -30,7 +30,7 @@ export class DiscordMessageStreamApplication extends ServiceHost {
     public constructor(options: DiscordMessageStreamApplicationOptions) {
         const serviceName = 'discord-message-stream';
         const messages = new MessageHub(options.messages);
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
         const service = new DiscordMessageStreamService(
             new DiscordMessageStreamMessageBroker(messages, serviceName),
             new DiscordGatewayMessageBroker(messages, serviceName),

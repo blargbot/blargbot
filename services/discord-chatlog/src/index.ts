@@ -4,7 +4,7 @@ import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 
 import type { DiscordChatlogDatabaseOptions } from './DiscordChatlogDatabase.js';
 import DiscordChatlogDatabase from './DiscordChatlogDatabase.js';
@@ -31,7 +31,7 @@ export class DiscordChatlogApplication extends ServiceHost {
     public constructor(options: DiscordChatlogApplicationOptions) {
         const serviceName = 'discord-chatlog';
         const messages = new MessageHub(options.messages);
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
         const database = new DiscordChatlogDatabase(options.database);
         const service = new DiscordChatlogService(
             new DiscordGatewayMessageBroker(messages, serviceName),

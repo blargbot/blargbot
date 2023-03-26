@@ -5,7 +5,7 @@ import type { DiscordMessageStreamMessageBroker } from '@blargbot/discord-messag
 import { DiscordRoleCacheHttpClient } from '@blargbot/discord-role-cache-client';
 import type Discord from '@blargbot/discord-types';
 import type { MessageHandle } from '@blargbot/message-hub';
-import type { Counter, MetricsClient } from '@blargbot/metrics-client';
+import type { Counter, MetricsPushService } from '@blargbot/metrics-client';
 
 type DiscordGatewayMessageBroker = PartialDiscordGatewayMessageBroker<
     | 'MESSAGE_CREATE'
@@ -20,7 +20,7 @@ export class DiscordMessageStreamService {
     readonly #gateway: DiscordGatewayMessageBroker;
     readonly #messageCount: Counter;
 
-    public constructor(messages: DiscordMessageStreamMessageBroker, gateway: DiscordGatewayMessageBroker, metrics: MetricsClient, options: DiscordMessageStreamServiceOptions) {
+    public constructor(messages: DiscordMessageStreamMessageBroker, gateway: DiscordGatewayMessageBroker, metrics: MetricsPushService, options: DiscordMessageStreamServiceOptions) {
         this.#messageCount = metrics.counter({
             name: 'bot_message_counter',
             help: 'Messages the bot sees'

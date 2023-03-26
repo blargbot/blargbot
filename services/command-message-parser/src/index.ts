@@ -6,7 +6,7 @@ import { DiscordMessageStreamMessageBroker } from '@blargbot/discord-message-str
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 
 import { CommandMessageParserService } from './CommandMessageParserService.js';
 
@@ -32,7 +32,7 @@ export class CommandMessageParserApplication extends ServiceHost {
     public constructor(options: DiscordChatlogApplicationOptions) {
         const serviceName = 'command-message-parser';
         const messages = new MessageHub(options.messages);
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
 
         super([
             connectionToService(messages, 'rabbitmq'),

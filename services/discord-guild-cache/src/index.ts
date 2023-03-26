@@ -6,7 +6,7 @@ import env from '@blargbot/env';
 import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 import { RedisKVCache } from '@blargbot/redis-cache';
 import type { RedisClientType } from 'redis';
 import { createClient as createRedisClient } from 'redis';
@@ -32,7 +32,7 @@ export class DiscordGuildCacheApplication extends ServiceHost {
     public constructor(options: DiscordGuildCacheApplicationOptions) {
         const serviceName = 'discord-guild-cache';
         const messages = new MessageHub(options.messages);
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
         const redis: RedisClientType = createRedisClient({
             url: options.redis.url,
             username: options.redis.username,

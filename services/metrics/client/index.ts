@@ -1,2 +1,2 @@
-export * from './MetricsClient.js';
+export * from './MetricsPushService.js';
 export * from './MetricsHttpClient.js';

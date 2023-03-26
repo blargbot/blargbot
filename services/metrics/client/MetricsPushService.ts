@@ -4,7 +4,7 @@ import { MetricsHttpClient } from './MetricsHttpClient.js';
 
 export type { Counter, Gauge, Histogram, Summary } from 'prom-client';
 
-export class MetricsClient {
+export class MetricsPushService {
     readonly #client: MetricsHttpClient;
     readonly #registry: prom.Registry;
     readonly #interval: number;

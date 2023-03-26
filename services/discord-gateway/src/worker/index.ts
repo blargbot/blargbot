@@ -6,7 +6,7 @@ import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 
 import { DiscordGatewayIPCMessageBroker } from '../DiscordGatewayIPCMessageBroker.js';
 import { createDiscordShardManager } from './DiscordShardManager.js';
@@ -29,7 +29,7 @@ export class DiscordGatewayWorkerApplication extends ServiceHost {
     public constructor(options: DiscordGatewayWorkerApplicationOptions) {
         const serviceName = 'discord-gateway-worker';
         const messages = new MessageHub(options.messages);
-        const metrics = new MetricsClient({ serviceName, instanceId: `${fullContainerId}(${options.workerId})` });
+        const metrics = new MetricsPushService({ serviceName, instanceId: `${fullContainerId}(${options.workerId})` });
         const manager = createDiscordShardManager({
             ipc: new DiscordGatewayIPCMessageBroker(messages, { managerId: options.managerId }),
             gateway: new DiscordGatewayMessageBroker(messages, 'discord-gateway'),

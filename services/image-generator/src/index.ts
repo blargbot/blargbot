@@ -4,7 +4,7 @@ import env from '@blargbot/env';
 import { ImageGenerateMessageBroker } from '@blargbot/image-generator-client';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 
 import ArtGenerator from './generators/art.js';
 import type { ApiImageGeneratorConfig } from './generators/base/ApiImageGenerator.js';
@@ -50,7 +50,7 @@ export class ImageGeneratorApplication extends ServiceHost {
     public constructor(options: ImageGeneratorApplicationOptions) {
         const serviceName = 'image-generator';
         const messages = new MessageHub(options.messages);
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
 
         super([
             connectionToService(messages, 'rabbitmq'),

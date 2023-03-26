@@ -2,7 +2,7 @@ import { connectionToService, hostIfEntrypoint, ServiceHost, webService } from '
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 import { RedisKVCache } from '@blargbot/redis-cache';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 import type { UserSettings } from '@blargbot/user-settings-client';
@@ -33,7 +33,7 @@ import { UserSettingsService } from './UserSettingsService.js';
 export class UserSettingsApplication extends ServiceHost {
     public constructor(options: UserSettingsApplicationOptions) {
         const serviceName = 'user-settings';
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
         const database = new Sequelize(
             options.postgres.database,
             options.postgres.user,

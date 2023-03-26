@@ -3,7 +3,7 @@ import containerId, { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 
 import { DiscordGatewayIPCMessageBroker } from '../DiscordGatewayIPCMessageBroker.js';
 import { createDiscordGatewayManager } from './DiscordGatewayManager.js';
@@ -28,7 +28,7 @@ export class DiscordGatewayApplication extends ServiceHost {
     public constructor(options: DiscordGatewayApplicationOptions) {
         const serviceName = 'discord-gateway-manager';
         const messages = new MessageHub(options.messages);
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
         const manager = createDiscordGatewayManager({
             ipc: new DiscordGatewayIPCMessageBroker(messages, { managerId: options.managerId }),
             client: createDiscordRestClient({

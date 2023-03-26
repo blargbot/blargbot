@@ -4,7 +4,7 @@ import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
-import { MetricsClient } from '@blargbot/metrics-client';
+import { MetricsPushService } from '@blargbot/metrics-client';
 
 import { createBBTagEngine } from './createBBTagEngine.js';
 
@@ -23,7 +23,7 @@ export class ImageGeneratorApplication extends ServiceHost {
         const serviceName = 'bbtag-runner';
         const messages = new MessageHub(options.messages);
         const executeBroker = new BBTagExecutionMessageBroker(messages, serviceName);
-        const metrics = new MetricsClient({ serviceName, instanceId: fullContainerId });
+        const metrics = new MetricsPushService({ serviceName, instanceId: fullContainerId });
         const subtagLatency = metrics.histogram({
             name: 'bot_subtag_latency_ms',
             help: 'Latency of subtag execution',
