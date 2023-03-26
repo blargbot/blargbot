@@ -1,3 +1,9 @@
-export function jsonBody<T>(body: T, serializer: (value: T) => string = JSON.stringify): Blob {
-    return new Blob([serializer(body)], { type: 'application/json' });
+export function jsonBody<T>(body: T, serializer: { write(value: T): string; } = defaultSerializer): Blob {
+    return new Blob([serializer.write(body)], { type: 'application/json' });
 }
+
+const defaultSerializer = {
+    write<T>(value: T): string {
+        return JSON.stringify(value);
+    }
+};

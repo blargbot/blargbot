@@ -40,7 +40,7 @@ export class TimeoutHttpClient extends defineApiClient({
         .query(x => ({ offset: x.offset, count: x.count }))
         .response<TimeoutListResponse>(200),
     createTimeout: b => b.route<TimeoutCreateRequest>('POST', x => `${x.ownerId}/timers`)
-        .body(x => jsonBody(x, v => timeoutDetailsCreateSerializer.write(v)))
+        .body(x => jsonBody(x, timeoutDetailsCreateSerializer))
         .response<TimeoutCreateResponse>(200),
     clearTimeouts: b => b.route<TimeoutOwnerParams>('DELETE', x => `${x.ownerId}/timers`)
         .response(204),

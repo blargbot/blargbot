@@ -1848,7 +1848,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/mod-log-client", "workspace:services/mod-log/client"],\
@@ -1863,7 +1862,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/user-warnings/client/",\
           "packageDependencies": [\
             ["@blargbot/user-warnings-client", "workspace:services/user-warnings/client"],\
-            ["@blargbot/api-client", "workspace:components/api-client/src"]\
+            ["@blargbot/api-client", "workspace:components/api-client/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

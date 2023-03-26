@@ -1162,6 +1162,7 @@ __metadata:
   resolution: "@blargbot/user-warnings-client@workspace:services/user-warnings/client"
   dependencies:
     "@blargbot/api-client": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -1173,7 +1174,6 @@ __metadata:
     "@blargbot/container-id": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"
-    "@blargbot/mapping": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/mod-log-client": "workspace:^"
