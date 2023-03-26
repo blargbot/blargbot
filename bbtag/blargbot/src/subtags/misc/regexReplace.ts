@@ -1,5 +1,8 @@
+import { catchErrors } from '@blargbot/catch-decorators';
+
 import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { createRegex } from '../../utils/createRegex.js';
@@ -39,6 +42,7 @@ export class RegexReplaceSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
+    @catchErrors.thenThrow(Error, err => new BBTagRuntimeError(err.message))
     public setOutputReplacement(context: BBTagScript, regexStr: string, replacement: string): void {
         context.runtime.outputOptions.replace = {
             regex: createRegex(this.#converter, regexStr),
@@ -46,6 +50,7 @@ export class RegexReplaceSubtag extends CompiledSubtag {
         };
     }
 
+    @catchErrors.thenThrow(Error, err => new BBTagRuntimeError(err.message))
     public regexReplace(text: string, regexStr: string, replaceWith: string): string {
         const regex = createRegex(this.#converter, regexStr);
         return text.replace(regex, replaceWith);

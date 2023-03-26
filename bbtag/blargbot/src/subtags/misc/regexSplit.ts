@@ -1,4 +1,7 @@
+import { catchErrors } from '@blargbot/catch-decorators';
+
 import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { createRegex } from '../../utils/createRegex.js';
@@ -29,6 +32,7 @@ export class RegexSplitSubtag extends CompiledSubtag {
         this.#converter = converter;
     }
 
+    @catchErrors.thenThrow(Error, err => new BBTagRuntimeError(err.message))
     public regexSplit(text: string, regexStr: string): string[] {
         const regex = createRegex(this.#converter, regexStr);
         return text.split(regex);

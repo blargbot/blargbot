@@ -145,9 +145,9 @@ function createErrorCatchingFunction<Args extends readonly unknown[], Result>(im
         throw error;
     }
 
-    return Object.assign((...args: Args): Result => {
+    return Object.assign(function (this: unknown, ...args: Args): Result {
         try {
-            return impl(...args);
+            return impl.call(this, ...args);
         } catch (error) {
             return handleError(error);
         }
@@ -166,9 +166,9 @@ function createAsyncErrorCatchingFunction<Args extends readonly unknown[], Resul
         throw error;
     }
 
-    return Object.assign(async (...args: Args): Promise<Result> => {
+    return Object.assign(async function (this: unknown, ...args: Args): Promise<Result> {
         try {
-            return await impl(...args);
+            return await impl.call(this, ...args);
         } catch (error) {
             return await handleError(error);
         }
