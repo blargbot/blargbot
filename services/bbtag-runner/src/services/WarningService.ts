@@ -9,18 +9,24 @@ export class WarningService implements BBTagWarningService {
     }
 
     public async warn(context: BBTagRuntime, member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number> {
-        const result = await this.#client.assignWarnings({ guildId: context.guild.id, userId: member.id, assign: count });
-        // TODO Send message to modlog
-        moderator;
-        reason;
+        const result = await this.#client.assignWarnings({
+            guildId: context.guild.id,
+            userId: member.id,
+            assign: count,
+            moderator: BigInt(moderator.id),
+            reason
+        });
         return result.newCount;
     }
 
     public async pardon(context: BBTagRuntime, member: Entities.User, moderator: Entities.User, count: number, reason?: string): Promise<number> {
-        const result = await this.#client.assignWarnings({ guildId: context.guild.id, userId: member.id, assign: -count });
-        // TODO Send message to modlog
-        moderator;
-        reason;
+        const result = await this.#client.assignWarnings({
+            guildId: context.guild.id,
+            userId: member.id,
+            assign: -count,
+            moderator: BigInt(moderator.id),
+            reason
+        });
         return result.newCount;
     }
 

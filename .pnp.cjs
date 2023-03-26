@@ -717,6 +717,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/mod-log-client", "workspace:services/mod-log/client"],\
             ["@blargbot/timeouts-client", "workspace:services/timeouts/client"],\
             ["@blargbot/user-settings-client", "workspace:services/user-settings/client"],\
             ["@blargbot/user-warnings-client", "workspace:services/user-warnings/client"]\

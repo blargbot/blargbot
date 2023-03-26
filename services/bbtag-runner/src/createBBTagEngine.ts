@@ -1,6 +1,8 @@
 import type { BBTagRuntimeConfig, InjectionContext, SubtagInvocationMiddleware } from '@bbtag/blargbot';
 import { BBTagRuntime, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, DefaultLockService, DistributedCooldownService, smartStringCompare, Subtag, subtags, tagVariableScopeProviders } from '@bbtag/blargbot';
 import { VariableNameParser, VariableProvider } from '@bbtag/variables';
+import type { MessageHub } from '@blargbot/message-hub';
+import { ModLogMessageBroker } from '@blargbot/mod-log-client';
 import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
 import { UserWarningsHttpClient } from '@blargbot/user-warnings-client';
 
@@ -23,6 +25,7 @@ export function createBBTagEngine(options: BBTagEngineOptions): (config: BBTagRu
     const { metrics } = options;
     const userSettings = new UserSettingsHttpClient('http://user-settings');
     const warnings = new UserWarningsHttpClient('http://user-warnings');
+    const modLog = new ModLogMessageBroker(options.messages, 'bbtag');
     const converter = createValueConverter({
         colors: {},
         regexMaxLength: 2000
@@ -48,7 +51,7 @@ export function createBBTagEngine(options: BBTagEngineOptions): (config: BBTagRu
         defer: new DeferredExecutionService(),
         domains: new DomainFilterService(),
         dump: new DumpService(),
-        modLog: new ModLogService(),
+        modLog: new ModLogService(modLog),
         staff: new StaffService(),
         channels: new ChannelService(),
         users: new UserService(),
@@ -113,6 +116,7 @@ export function createBBTagEngine(options: BBTagEngineOptions): (config: BBTagRu
 
 export interface BBTagEngineOptions {
     readonly metrics: MetricsApi;
+    readonly messages: MessageHub;
 }
 
 export interface MetricsApi {
