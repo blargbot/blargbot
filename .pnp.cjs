@@ -1275,10 +1275,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["@types/express", "npm:4.17.17"],\
-            ["discordeno", "npm:18.0.1"],\
-            ["express", "npm:4.18.2"]\
+            ["discordeno", "npm:18.0.1"]\
           ],\
           "linkType": "SOFT"\
         }]\

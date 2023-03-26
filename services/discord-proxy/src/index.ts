@@ -1,8 +1,8 @@
 import { hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
+import express from '@blargbot/express';
 import { MetricsPushService } from '@blargbot/metrics-client';
-import express from 'express';
 
 import createRestProxy from './createRestProxy.js';
 import type { RestProxyOptions } from './RestProxyOptions.js';
