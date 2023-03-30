@@ -1,4 +1,4 @@
-import { NotAnArrayError, TagVariableType } from '@bbtag/blargbot';
+import { NotAnArrayError } from '@bbtag/blargbot';
 import { GetSubtag, JoinSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -22,7 +22,7 @@ runSubtagTests({
             expected: 'this~is~arr1',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
             }
         },
         {
@@ -33,7 +33,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'This is var1');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'var1' }, 'This is var1');
             }
         },
         {
@@ -42,7 +42,7 @@ runSubtagTests({
             subtags: [GetSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
             }
         }
     ]

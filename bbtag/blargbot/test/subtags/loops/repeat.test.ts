@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, BBTagRuntimeState, NotANumberError, TagVariableType } from '@bbtag/blargbot';
+import { BBTagRuntimeError, BBTagRuntimeState, NotANumberError } from '@bbtag/blargbot';
 import { GetSubtag, IfSubtag, IncrementSubtag, RepeatSubtag, ReturnSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
@@ -21,14 +21,14 @@ runSubtagTests({
             subtags: [IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'repeat:loops')).verifiable(8).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(8);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(8);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(8);
             }
         },
         {
@@ -51,14 +51,14 @@ runSubtagTests({
             subtags: [GetSubtag, IfSubtag, ReturnSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'repeat:loops')).verifiable(6).thenResolve(undefined);
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(6);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(6);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(6);
                 chai.expect(bbctx.runtime.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
@@ -71,7 +71,7 @@ runSubtagTests({
             subtags: [IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
@@ -83,7 +83,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(4);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(4);
             }
         }
     ]

@@ -9,12 +9,17 @@ runSubtagTests({
         {
             code: '{iscc}',
             expected: 'true',
-            setup(ctx) { ctx.options.isCC = true; }
+            setup(ctx) { ctx.options.type = 'cc'; }
+        },
+        {
+            code: '{iscc}',
+            expected: 'true',
+            setup(ctx) { ctx.options.type = 'autoresponse'; }
         },
         {
             code: '{iscc}',
             expected: 'false',
-            setup(ctx) { ctx.options.isCC = false; }
+            setup(ctx) { ctx.options.type = 'tag'; }
         }
     ]
 });

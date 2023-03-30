@@ -1,4 +1,3 @@
-import { TagVariableType } from '@bbtag/blargbot';
 import { ConcatSubtag, GetSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -15,8 +14,8 @@ runSubtagTests({
             subtags: [GetSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr2' }, ['this', 'is', 'arr2']);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr2' }, ['this', 'is', 'arr2']);
             }
         }
     ]

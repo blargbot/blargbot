@@ -1,5 +1,4 @@
 import type { BBTagScript } from '@bbtag/blargbot';
-import { TagVariableType } from '@bbtag/blargbot';
 import { RollbackSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
@@ -10,14 +9,14 @@ runSubtagTests({
     argCountBounds: { min: 0, max: Infinity },
     setupEach(ctx) {
         ctx.entrypoint.name = 'testTag';
-        ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 22);
-        ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var2' }, 'def');
-        ctx.tagVariables.set({ scope: { type: TagVariableType.GLOBAL }, name: 'var5' }, 22);
-        ctx.tagVariables.set({ scope: { type: TagVariableType.GLOBAL }, name: 'var6' }, 'def');
-        ctx.tagVariables.set({ scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id }, name: 'var7' }, 22);
-        ctx.tagVariables.set({ scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id }, name: 'var8' }, 'def');
-        ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'var9' }, 22);
-        ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'var10' }, 'def');
+        ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'var1' }, 22);
+        ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'var2' }, 'def');
+        ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'global' }, name: 'var5' }, 22);
+        ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'global' }, name: 'var6' }, 'def');
+        ctx.tagVariables.set({ scope: { ownerId: BigInt(ctx.users.command.id), scope: 'global' }, name: 'var7' }, 22);
+        ctx.tagVariables.set({ scope: { ownerId: BigInt(ctx.users.command.id), scope: 'global' }, name: 'var8' }, 'def');
+        ctx.tagVariables.set({ scope: { ownerId: BigInt(ctx.guild.id), scope: 'public:tag' }, name: 'var9' }, 22);
+        ctx.tagVariables.set({ scope: { ownerId: BigInt(ctx.guild.id), scope: 'public:tag' }, name: 'var10' }, 'def');
     },
     async postSetupEach(bbctx) {
         await bbctx.runtime.variables.set('var1', 5);

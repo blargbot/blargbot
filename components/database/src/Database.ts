@@ -1,5 +1,5 @@
 import { sleep } from '@blargbot/async-tools';
-import type { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
+import type { BotVariableStore, ChatLogIndexStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, UserStore } from '@blargbot/domain/stores/index.js';
 import type { Logger } from '@blargbot/logger';
 import Airtable from 'airtable';
 import type { AirtableBase } from 'airtable/lib/airtable_base.js';
@@ -9,9 +9,7 @@ import { PostgresDb, RethinkDb } from './clients/index.js';
 import type { DatabaseOptions } from './DatabaseOptions.js';
 import { AirtableSuggesterStore } from './stores/AirtableSuggesterStore.js';
 import { AirtableSuggestionStore } from './stores/AirtableSuggestionStore.js';
-import { CassandraDbChatLogStore } from './stores/CassandraDbChatLogStore.js';
 import { CassandraDbDumpStore } from './stores/CassandraDbDumpStore.js';
-import { PostgresDbTagVariableStore } from './stores/PostgresDbTagVariableStore.js';
 import { RethinkDbBotVariableStore } from './stores/RethinkDbBotVariableStore.js';
 import { RethinkDbChatLogIndexStore } from './stores/RethinkDbChatLogIndexStore.js';
 import { RethinkDbEventStore } from './stores/RethinkDbEventStore.js';
@@ -29,9 +27,7 @@ export class Database {
     readonly #events: RethinkDbEventStore;
     readonly #tags: RethinkDbTagStore;
     readonly #logIndex: RethinkDbChatLogIndexStore;
-    readonly #chatlogs: CassandraDbChatLogStore;
     readonly #dumps: CassandraDbDumpStore;
-    readonly #tagVariables: PostgresDbTagVariableStore;
     readonly #airtable: AirtableBase;
     readonly #suggestors: AirtableSuggesterStore;
     readonly #suggestions: AirtableSuggestionStore;
@@ -43,9 +39,7 @@ export class Database {
     public get events(): EventStore { return this.#events; }
     public get tags(): TagStore { return this.#tags; }
     public get chatlogIndex(): ChatLogIndexStore { return this.#logIndex; }
-    public get chatlogs(): ChatLogStore { return this.#chatlogs; }
     public get dumps(): DumpStore { return this.#dumps; }
-    public get tagVariables(): TagVariableStore { return this.#tagVariables; }
     public get suggesters(): SuggesterStore { return this.#suggestors; }
     public get suggestions(): SuggestionStore { return this.#suggestions; }
 
@@ -71,9 +65,7 @@ export class Database {
         this.#events = new RethinkDbEventStore(this.#rethink, this.#logger);
         this.#tags = new RethinkDbTagStore(this.#rethink, this.#logger);
         this.#logIndex = new RethinkDbChatLogIndexStore(this.#rethink, this.#logger);
-        this.#chatlogs = new CassandraDbChatLogStore(this.#cassandra, this.#logger);
         this.#dumps = new CassandraDbDumpStore(this.#cassandra, this.#logger);
-        this.#tagVariables = new PostgresDbTagVariableStore(this.#postgres, this.#logger);
         this.#suggestors = new AirtableSuggesterStore(this.#airtable, this.#logger);
         this.#suggestions = new AirtableSuggestionStore(this.#airtable, this.#logger);
     }
@@ -89,7 +81,6 @@ export class Database {
 
         await Promise.all([
             this.#guilds.migrate(),
-            this.#chatlogs.migrate(),
             this.#dumps.migrate()
         ]);
     }

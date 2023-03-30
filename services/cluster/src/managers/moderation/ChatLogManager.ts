@@ -12,11 +12,13 @@ export class ChatLogManager {
     }
 
     public async find(options: ChatLogSearchOptions): Promise<readonly ChatLog[]> {
-        return await this.cluster.database.chatlogs.findAll(options);
+        options;
+        return await Promise.resolve([]);
+        // return await this.cluster.database.chatlogs.findAll(options);
     }
 
     public async createIndex(options: ChatLogSearchOptions): Promise<ChatLogIndex<ChatLog>> {
-        const chatlogs = await this.cluster.database.chatlogs.findAll(options);
+        const chatlogs = await this.find(options);
         const key = randomUUID();
 
         const channel = await this.cluster.util.getChannel(options.channelId);
@@ -47,7 +49,8 @@ export class ChatLogManager {
         if (index === undefined)
             return undefined;
 
-        const chatlogs = await this.cluster.database.chatlogs.getAll(index.channel, index.ids);
-        return { ...index, ids: chatlogs };
+        return { ...index, ids: [] };
+        // const chatlogs = await this.cluster.database.chatlogs.getAll(index.channel, index.ids);
+        // return { ...index, ids: chatlogs };
     }
 }

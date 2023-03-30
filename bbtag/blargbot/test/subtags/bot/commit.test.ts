@@ -1,4 +1,3 @@
-import { TagVariableType } from '@bbtag/blargbot';
 import { CommitSubtag } from '@bbtag/blargbot/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 
@@ -14,21 +13,21 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'commitTest';
-
-                ctx.variables.setup(m => m.set(argument.isDeepEqual([
-                    { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
-                    { name: 'var2', value: 'abc', scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
-                    { name: 'var3', value: 5, scope: { type: TagVariableType.TEMP } },
-                    { name: 'var4', value: 'abc', scope: { type: TagVariableType.TEMP } },
-                    { name: 'var5', value: 5, scope: { type: TagVariableType.GLOBAL } },
-                    { name: 'var6', value: 'abc', scope: { type: TagVariableType.GLOBAL } },
-                    { name: 'var7', value: 5, scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id } },
-                    { name: 'var8', value: 'abc', scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id } },
-                    { name: 'var9', value: 5, scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id } },
-                    { name: 'var10', value: 'abc', scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id } }
-                ]))).thenResolve(undefined);
             },
-            async postSetup(bbctx) {
+            async postSetup(bbctx, ctx) {
+                ctx.variables.setup(m => m.set(argument.isDeepEqual([
+                    { name: 'var1', value: 5, scope: { ownerId: 0n, scope: 'local:tag:commitTest' } },
+                    { name: 'var2', value: 'abc', scope: { ownerId: 0n, scope: 'local:tag:commitTest' } },
+                    { name: 'var3', value: 5, scope: { ownerId: 0n, scope: `temp:${bbctx.runtime.id}` } },
+                    { name: 'var4', value: 'abc', scope: { ownerId: 0n, scope: `temp:${bbctx.runtime.id}` } },
+                    { name: 'var5', value: 5, scope: { ownerId: 0n, scope: 'global' } },
+                    { name: 'var6', value: 'abc', scope: { ownerId: 0n, scope: 'global' } },
+                    { name: 'var7', value: 5, scope: { ownerId: BigInt(ctx.users.command.id), scope: 'global' } },
+                    { name: 'var8', value: 'abc', scope: { ownerId: BigInt(ctx.users.command.id), scope: 'global' } },
+                    { name: 'var9', value: 5, scope: { ownerId: BigInt(ctx.guild.id), scope: 'public:tag' } },
+                    { name: 'var10', value: 'abc', scope: { ownerId: BigInt(ctx.guild.id), scope: 'public:tag' } }
+                ]))).thenResolve(undefined);
+
                 await bbctx.runtime.variables.set('var1', 5);
                 await bbctx.runtime.variables.set('var2', 'abc');
                 await bbctx.runtime.variables.set('~var3', 5);
@@ -47,22 +46,22 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'commitTest';
-                ctx.options.isCC = true;
-
-                ctx.variables.setup(m => m.set(argument.isDeepEqual([
-                    { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' } },
-                    { name: 'var2', value: 'abc', scope: { type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' } },
-                    { name: 'var3', value: 5, scope: { type: TagVariableType.TEMP } },
-                    { name: 'var4', value: 'abc', scope: { type: TagVariableType.TEMP } },
-                    { name: 'var5', value: 5, scope: { type: TagVariableType.GLOBAL } },
-                    { name: 'var6', value: 'abc', scope: { type: TagVariableType.GLOBAL } },
-                    { name: 'var7', value: 5, scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id } },
-                    { name: 'var8', value: 'abc', scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id } },
-                    { name: 'var9', value: 5, scope: { type: TagVariableType.GUILD_CC, guildId: ctx.guild.id } },
-                    { name: 'var10', value: 'abc', scope: { type: TagVariableType.GUILD_CC, guildId: ctx.guild.id } }
-                ]))).thenResolve(undefined);
+                ctx.options.type = 'cc';
             },
-            async postSetup(bbctx) {
+            async postSetup(bbctx, ctx) {
+                ctx.variables.setup(m => m.set(argument.isDeepEqual([
+                    { name: 'var1', value: 5, scope: { ownerId: BigInt(ctx.guild.id), scope: 'local:cc:commitTest' } },
+                    { name: 'var2', value: 'abc', scope: { ownerId: BigInt(ctx.guild.id), scope: 'local:cc:commitTest' } },
+                    { name: 'var3', value: 5, scope: { ownerId: 0n, scope: `temp:${bbctx.runtime.id}` } },
+                    { name: 'var4', value: 'abc', scope: { ownerId: 0n, scope: `temp:${bbctx.runtime.id}` } },
+                    { name: 'var5', value: 5, scope: { ownerId: 0n, scope: 'global' } },
+                    { name: 'var6', value: 'abc', scope: { ownerId: 0n, scope: 'global' } },
+                    { name: 'var7', value: 5, scope: { ownerId: BigInt(ctx.users.command.id), scope: 'global' } },
+                    { name: 'var8', value: 'abc', scope: { ownerId: BigInt(ctx.users.command.id), scope: 'global' } },
+                    { name: 'var9', value: 5, scope: { ownerId: BigInt(ctx.guild.id), scope: 'secret' } },
+                    { name: 'var10', value: 'abc', scope: { ownerId: BigInt(ctx.guild.id), scope: 'secret' } }
+                ]))).thenResolve(undefined);
+
                 await bbctx.runtime.variables.set('var1', 5);
                 await bbctx.runtime.variables.set('var2', 'abc');
                 await bbctx.runtime.variables.set('~var3', 5);
@@ -81,16 +80,16 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'commitTest';
-
-                ctx.variables.setup(m => m.set(argument.isDeepEqual([
-                    { name: 'var1', value: 5, scope: { type: TagVariableType.LOCAL_TAG, name: 'commitTest' } },
-                    { name: 'var3', value: 5, scope: { type: TagVariableType.TEMP } },
-                    { name: 'var5', value: 5, scope: { type: TagVariableType.GLOBAL } },
-                    { name: 'var7', value: 5, scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id } },
-                    { name: 'var9', value: 5, scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id } }
-                ]))).thenResolve(undefined);
             },
-            async postSetup(bbctx) {
+            async postSetup(bbctx, ctx) {
+                ctx.variables.setup(m => m.set(argument.isDeepEqual([
+                    { name: 'var1', value: 5, scope: { ownerId: 0n, scope: 'local:tag:commitTest' } },
+                    { name: 'var3', value: 5, scope: { ownerId: 0n, scope: `temp:${bbctx.runtime.id}` } },
+                    { name: 'var5', value: 5, scope: { ownerId: 0n, scope: 'global' } },
+                    { name: 'var7', value: 5, scope: { ownerId: BigInt(ctx.users.command.id), scope: 'global' } },
+                    { name: 'var9', value: 5, scope: { ownerId: BigInt(ctx.guild.id), scope: 'public:tag' } }
+                ]))).thenResolve(undefined);
+
                 await bbctx.runtime.variables.set('var1', 5);
                 await bbctx.runtime.variables.set('var2', 'abc');
                 await bbctx.runtime.variables.set('~var3', 5);
@@ -109,17 +108,17 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'commitTest';
-                ctx.options.isCC = true;
-
-                ctx.variables.setup(m => m.set(argument.isDeepEqual([
-                    { name: 'var2', value: 'abc', scope: { type: TagVariableType.LOCAL_CC, guildId: ctx.guild.id, name: 'commitTest' } },
-                    { name: 'var4', value: 'abc', scope: { type: TagVariableType.TEMP } },
-                    { name: 'var6', value: 'abc', scope: { type: TagVariableType.GLOBAL } },
-                    { name: 'var8', value: 'abc', scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id } },
-                    { name: 'var10', value: 'abc', scope: { type: TagVariableType.GUILD_CC, guildId: ctx.guild.id } }
-                ]))).thenResolve(undefined);
+                ctx.options.type = 'cc';
             },
-            async postSetup(bbctx) {
+            async postSetup(bbctx, ctx) {
+                ctx.variables.setup(m => m.set(argument.isDeepEqual([
+                    { name: 'var2', value: 'abc', scope: { ownerId: BigInt(ctx.guild.id), scope: 'local:cc:commitTest' } },
+                    { name: 'var4', value: 'abc', scope: { ownerId: 0n, scope: `temp:${bbctx.runtime.id}` } },
+                    { name: 'var6', value: 'abc', scope: { ownerId: 0n, scope: 'global' } },
+                    { name: 'var8', value: 'abc', scope: { ownerId: BigInt(ctx.users.command.id), scope: 'global' } },
+                    { name: 'var10', value: 'abc', scope: { ownerId: BigInt(ctx.guild.id), scope: 'secret' } }
+                ]))).thenResolve(undefined);
+
                 await bbctx.runtime.variables.set('var1', 5);
                 await bbctx.runtime.variables.set('var2', 'abc');
                 await bbctx.runtime.variables.set('~var3', 5);

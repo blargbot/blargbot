@@ -26,6 +26,7 @@ export class IsCustomCommandSubtag extends CompiledSubtag {
     }
 
     public isCC(context: BBTagScript): boolean {
-        return context.runtime.isCC;
+        // Legacy, the two original types were just cc or tag, but cc has been split into many such as cc, autoresponse, interval etc
+        return context.runtime.type !== 'tag';
     }
 }

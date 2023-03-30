@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, NotAnArrayError, TagVariableType } from '@bbtag/blargbot';
+import { BBTagRuntimeError, NotAnArrayError } from '@bbtag/blargbot';
 import { JsonSortSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
@@ -24,7 +24,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
@@ -46,7 +46,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
@@ -71,7 +71,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { test: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
@@ -88,7 +88,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
@@ -105,7 +105,7 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'testVar' }, 'xyz');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'testVar' }, 'xyz');
             }
         }
     ]

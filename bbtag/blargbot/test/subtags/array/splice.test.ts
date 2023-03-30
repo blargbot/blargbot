@@ -1,4 +1,4 @@
-import { NotAnArrayError, NotANumberError, TagVariableType } from '@bbtag/blargbot';
+import { NotAnArrayError, NotANumberError } from '@bbtag/blargbot';
 import { GetSubtag, SpliceSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
@@ -13,10 +13,10 @@ runSubtagTests({
             expected: '[]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4, 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4, 5, 6]);
             }
         },
         {
@@ -24,10 +24,10 @@ runSubtagTests({
             expected: '[]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4, 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4, 5, 6]);
             }
         },
         {
@@ -35,10 +35,10 @@ runSubtagTests({
             expected: '[3]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 4, 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 4, 5, 6]);
             }
         },
         {
@@ -46,10 +46,10 @@ runSubtagTests({
             expected: '[2,3,4]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 5, 6]);
             }
         },
         {
@@ -57,10 +57,10 @@ runSubtagTests({
             expected: '[5,6]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
             }
         },
         {
@@ -68,10 +68,10 @@ runSubtagTests({
             expected: '[]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', 3, 4, 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', 3, 4, 5, 6]);
             }
         },
         {
@@ -79,10 +79,10 @@ runSubtagTests({
             expected: '[3]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', 4, 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', 4, 5, 6]);
             }
         },
         {
@@ -90,10 +90,10 @@ runSubtagTests({
             expected: '[3,4]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', 'b', 'c', 'd', 'e', 'f', 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', 'b', 'c', 'd', 'e', 'f', 5, 6]);
             }
         },
         {
@@ -101,10 +101,10 @@ runSubtagTests({
             expected: '[3,4]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', '1', '2', 'd', 'e', 'f', 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', '1', '2', 'd', 'e', 'f', 5, 6]);
             }
         },
         {
@@ -112,10 +112,10 @@ runSubtagTests({
             expected: '[3,4]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', 1, 2, 'd', 'e', 'f', 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', 1, 2, 'd', 'e', 'f', 5, 6]);
             }
         },
         {
@@ -123,10 +123,10 @@ runSubtagTests({
             expected: '[3,4]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', [1, 2, 'd'], 'e', 'f', 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', [1, 2, 'd'], 'e', 'f', 5, 6]);
             }
         },
         {
@@ -135,10 +135,10 @@ runSubtagTests({
             subtags: [GetSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', [1, 2, 'd'], 'e', 'f', 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 'a', [1, 2, 'd'], 'e', 'f', 5, 6]);
             }
         },
         {
@@ -153,7 +153,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, 'abc');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, 'abc');
             }
         },
         {

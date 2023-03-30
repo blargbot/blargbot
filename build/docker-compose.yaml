@@ -57,6 +57,10 @@ services:
     build: ../services/discord-mod-log/src
     image: blargbot/discord-mod-log
 
+  bbtag-variables:
+    build: ../services/bbtag-variables/src
+    image: blargbot/bbtag-variables
+
   image-generator:
     build: ../services/image-generator/src
     image: blargbot/image-generator

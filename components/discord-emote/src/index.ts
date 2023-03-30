@@ -105,7 +105,7 @@ const discordEmotes = Object.values(discordEmoteData)
 
 const isLeaf: unique symbol = Symbol();
 interface CodepointTree {
-    [key: string]: CodepointTree;
+    [key: string]: CodepointTree | undefined;
 }
 
 const codepointTree = {} as CodepointTree;
@@ -120,7 +120,7 @@ for (const emote of discordEmotes) {
 
 function buildRegexStr(tree: CodepointTree): string[] {
     return Object.entries(tree)
-        .map(([codepoint, children]) => {
+        .map(([codepoint, children = {}]) => {
             const innerRegex = buildRegexStr(children);
             if (innerRegex.length === 0)
                 return `\\u${codepoint}`;

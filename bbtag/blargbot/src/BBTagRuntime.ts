@@ -6,6 +6,7 @@ import { Emote } from '@blargbot/discord-emote';
 import Discord, { AllowedMentionsTypes } from '@blargbot/discord-types';
 import { findRolePosition, permission } from '@blargbot/discord-util';
 import { hasFlag } from '@blargbot/guards';
+import { randomUUID } from 'crypto';
 
 import { BBTagRuntimeMetrics } from './BBTagRuntimeMetrics.js';
 import type { BBTagScriptOptions } from './BBTagScript.js';
@@ -20,7 +21,7 @@ import { SubtagCallStack } from './SubtagCallStack.js';
 import type { ISubtagLookup } from './SubtagCollection.js';
 import { SubtagCollection } from './SubtagCollection.js';
 import type { SubtagExecutor } from './SubtagExecutor.js';
-import type { BBTagRuntimeScope, Entities, LocatedRuntimeError, RuntimeDebugEntry, TagVariableScope } from './types.js';
+import type { BBTagRuntimeScope, BBTagScope, Entities, LocatedRuntimeError, RuntimeDebugEntry } from './types.js';
 import { BBTagRuntimeState } from './types.js';
 import type { BBTagValueConverter } from './utils/index.js';
 
@@ -65,17 +66,17 @@ export class BBTagRuntime {
     #user: Entities.User;
     #channel: Entities.Channel;
 
+    public readonly id: string;
     public readonly scopes = new ScopeManager();
     public readonly subtagStack = new SubtagCallStack();
     public readonly limit: BBTagRuntimeGuard;
-    public readonly variables: VariableCache<this, TagVariableScope>;
+    public readonly variables: VariableCache<this, BBTagScope>;
     public readonly authorId: string | null;
     public readonly bot: Entities.User;
     public readonly authorizer: Entities.User;
     public readonly guild: Entities.Guild;
     public readonly isStaff: boolean;
-    public readonly isCC: boolean;
-    public readonly tagVars: boolean;
+    public readonly type: string;
     public readonly silent: boolean;
     public readonly prefix: string;
     public readonly queryCache: BBTagRuntimeQueryCache;
@@ -92,6 +93,8 @@ export class BBTagRuntime {
     public readonly messages: MessageService;
     public readonly sources: SourceProvider;
     public readonly converter: BBTagValueConverter;
+    public readonly allowMentions: boolean;
+    public readonly isTrusted: boolean;
 
     public readonly outputOptions: OutputOptions;
     public get subtags(): ISubtagLookup {
@@ -116,6 +119,7 @@ export class BBTagRuntime {
     public readonly entrypoint: BBTagScript;
 
     public constructor(services: BBTagRuntimeServices, config: BBTagRuntimeConfig) {
+        this.id = randomUUID();
         const callSubtag = [...services.middleware].reduceRight<(ctx: SubtagInvocationContext) => Awaitable<string>>(
             (p, c) => (ctx) => c(ctx, p.bind(null, ctx)),
         /**/(ctx) => ctx.subtag.execute(ctx.script, ctx.subtagName, ctx.call)
@@ -142,9 +146,10 @@ export class BBTagRuntime {
         this.authorizer = config.authorizer;
         this.guild = config.guild;
         this.isStaff = config.isStaff;
+        this.allowMentions = config.allowMentions;
         this.silent = config.silent;
-        this.isCC = config.isCC;
-        this.tagVars = config.tagVars;
+        this.type = config.type;
+        this.isTrusted = config.isTrusted;
         this.prefix = config.prefix;
         this.queryCache = config.queryCache;
         this.outputOptions = {
@@ -240,15 +245,14 @@ export class BBTagRuntime {
 
     async #output(text: string): Promise<string | undefined> {
         const options = this.outputOptions;
-        const disableEveryone = !this.isCC || !options.allowEveryone;
         const response = await this.messages.create(this, this.channel.id, {
             content: text,
             embeds: options.embeds !== undefined ? options.embeds : undefined,
-            allowed_mentions: {
-                parse: disableEveryone ? [] : [AllowedMentionsTypes.Everyone],
-                roles: this.isCC ? [...options.mentionRoles] : undefined,
-                users: this.isCC ? [...options.mentionUsers] : undefined
-            },
+            allowed_mentions: this.allowMentions ? {
+                parse: options.allowEveryone ? [AllowedMentionsTypes.Everyone] : [],
+                roles: [...options.mentionRoles],
+                users: [...options.mentionUsers]
+            } : { parse: [] },
             files: options.file !== undefined ? [options.file] : undefined
         });
 
@@ -314,6 +318,8 @@ export class BBTagRuntime {
 }
 
 export interface BBTagRuntimeConfig {
+    readonly isTrusted: boolean;
+    readonly allowMentions: boolean;
     readonly authorId: string | null;
     readonly message: Entities.Message;
     readonly bot: Entities.User;
@@ -323,8 +329,7 @@ export interface BBTagRuntimeConfig {
     readonly channel: Entities.Channel;
     readonly guild: Entities.Guild;
     readonly isStaff: boolean;
-    readonly isCC: boolean;
-    readonly tagVars: boolean;
+    readonly type: string;
     readonly limit: RuntimeLimit;
     readonly prefix: string;
     readonly queryCache: BBTagRuntimeQueryCache;
@@ -337,7 +342,7 @@ export interface BBTagRuntimeServices {
     readonly messages: MessageService;
     readonly sources: SourceProvider;
     readonly converter: BBTagValueConverter;
-    readonly variables: IVariableProvider<BBTagRuntime, TagVariableScope>;
+    readonly variables: IVariableProvider<BBTagRuntime, BBTagScope>;
     readonly middleware: Iterable<SubtagInvocationMiddleware>;
     readonly subtags: Iterable<ISubtag>;
 }

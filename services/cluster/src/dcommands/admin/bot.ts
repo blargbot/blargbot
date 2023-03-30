@@ -1,4 +1,4 @@
-import { TagVariableType } from '@bbtag/blargbot';
+// import { TagVariableType } from '@bbtag/blargbot';
 import type { StoredGuild, StoredUser } from '@blargbot/domain/models/index.js';
 import * as Eris from 'eris';
 
@@ -63,9 +63,9 @@ export class ServerCommand extends GlobalCommand {
         }
 
         await context.database.guilds.reset(context.channel.guild);
-        await context.database.tagVariables.clearScope({ type: TagVariableType.GUILD_CC, guildId: context.channel.guild.id });
-        await context.database.tagVariables.clearScope({ type: TagVariableType.GUILD_TAG, guildId: context.channel.guild.id });
-        await context.database.tagVariables.clearScope({ type: TagVariableType.LOCAL_CC, guildId: context.channel.guild.id });
+        // await context.database.tagVariables.clearScope({ type: TagVariableType.GUILD_CC, guildId: context.channel.guild.id });
+        // await context.database.tagVariables.clearScope({ ownerId: context.channel.guild.id, scope: 'public:tag' });
+        // await context.database.tagVariables.clearScope({ type: TagVariableType.LOCAL_CC, guildId: context.channel.guild.id });
 
         return text.success;
     }
@@ -86,11 +86,11 @@ export class ServerCommand extends GlobalCommand {
             return text.cancelled;
         }
 
-        const tags = await context.database.tags.byAuthor(context.author.id);
+        // const tags = await context.database.tags.byAuthor(context.author.id);
         await context.database.users.reset(context.author);
         await context.database.tags.deleteByAuthor(context.author.id);
-        await context.database.tagVariables.clearScope({ type: TagVariableType.AUTHOR, authorId: context.author.id });
-        await context.database.tagVariables.clearScope({ type: TagVariableType.LOCAL_TAG, name: tags });
+        // await context.database.tagVariables.clearScope({ ownerId: context.author.id, scope: 'global' });
+        // await context.database.tagVariables.clearScope({ type: TagVariableType.LOCAL_TAG, name: tags });
         return text.success;
     }
 
@@ -109,10 +109,10 @@ export class ServerCommand extends GlobalCommand {
             return cmd.dump.cancelled;
         }
         const [guild, ...variables] = await Promise.all([
-            context.database.guilds.get(context.channel.guild.id),
-            context.database.tagVariables.getScope({ type: TagVariableType.GUILD_CC, guildId: context.channel.guild.id }),
-            context.database.tagVariables.getScope({ type: TagVariableType.GUILD_TAG, guildId: context.channel.guild.id }),
-            context.database.tagVariables.getScope({ type: TagVariableType.LOCAL_CC, guildId: context.channel.guild.id })
+            context.database.guilds.get(context.channel.guild.id)//,
+            // context.database.tagVariables.getScope({ type: TagVariableType.GUILD_CC, guildId: context.channel.guild.id }),
+            // context.database.tagVariables.getScope({ ownerId: context.channel.guild.id, scope: 'public:tag' }),
+            // context.database.tagVariables.getScope({ type: TagVariableType.LOCAL_CC, guildId: context.channel.guild.id })
         ]);
 
         return {
@@ -130,13 +130,13 @@ export class ServerCommand extends GlobalCommand {
     async #dumpUser(context: PrivateCommandContext): Promise<CommandResult> {
         const userPromise = context.database.users.get(context.author.id);
         const tagsPromise = context.database.tags.getAllByAuthor(context.author.id);
-        const authorVarsPromise = context.database.tagVariables.getScope({ type: TagVariableType.AUTHOR, authorId: context.author.id });
+        // const authorVarsPromise = context.database.tagVariables.getScope({ ownerId: context.author.id, scope: 'global' });
 
         const tags = await tagsPromise;
         const [user, ...variables] = await Promise.all([
-            userPromise,
-            authorVarsPromise,
-            context.database.tagVariables.getScope({ type: TagVariableType.LOCAL_TAG, name: tags.map(t => t.name) })
+            userPromise//,
+            // authorVarsPromise,
+            // context.database.tagVariables.getScope({ type: TagVariableType.LOCAL_TAG, name: tags.map(t => t.name) })
         ]);
 
         return {

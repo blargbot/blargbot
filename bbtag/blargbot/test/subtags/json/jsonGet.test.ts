@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, TagVariableType } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { JsonGetSubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
@@ -51,7 +51,7 @@ function* generateTestCases(source: JToken, path: string, expected: string): Ite
         expected: expected,
         setup(ctx) {
             ctx.entrypoint.name = 'testTag';
-            ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myJsonVar' }, source);
+            ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'myJsonVar' }, source);
         }
     };
     yield {
@@ -59,7 +59,7 @@ function* generateTestCases(source: JToken, path: string, expected: string): Ite
         expected: typeof source === 'string' ? source : JSON.stringify(source),
         setup(ctx) {
             ctx.entrypoint.name = 'testTag';
-            ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myJsonVar' }, source);
+            ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'myJsonVar' }, source);
         }
     };
 }

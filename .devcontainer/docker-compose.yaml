@@ -55,6 +55,10 @@ x-user-warnings-env:
   &user-warnings-env
   USER_WARNINGS_URL: http://user-warnings
 
+x-bbtag-variables-env:
+  &bbtag-variables-env
+  BBTAG_VARIABLES_URL: http://bbtag-variables
+
 x-rabbit-env:
   &rabbit-env
   RABBITMQ_HOST: rabbitmq
@@ -280,6 +284,15 @@ services:
       <<: *postgres-env
     depends_on:
       rabbitmq:
+        condition: service_healthy
+
+  bbtag-variables:
+    image: blargbot/bbtag-variables
+    environment:
+      <<: *metrics-env
+      <<: *postgres-env
+    depends_on:
+      postgres:
         condition: service_healthy
 
   image-generator:

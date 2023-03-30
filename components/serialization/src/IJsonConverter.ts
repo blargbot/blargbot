@@ -5,4 +5,6 @@ export interface IJsonConverter<T> extends IJsonConverterImpl<T>, ISerializer<T>
     readonly optional: IJsonConverter<T | undefined>;
     readonly nullable: IJsonConverter<T | null>;
     readonly nullish: IJsonConverter<T | undefined | null>;
+    fromBlob(this: void, blob: Blob): Promise<T>;
+    toBlob(this: void, value: T): Blob;
 }

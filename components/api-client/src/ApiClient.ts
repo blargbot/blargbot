@@ -180,7 +180,7 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
             let url = route(request, config);
             if (query.length > 0) {
                 const queryString = Object.entries(
-                    query.reduce<Record<string, string[]>>((p, c) => {
+                    query.reduce<Partial<Record<string, string[]>>>((p, c) => {
                         for (const [key, value] of Object.entries(c(request, config))) {
                             const values = p[key] ??= [];
                             for (const v of Array.isArray(value) ? value : [value])
@@ -189,9 +189,9 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
                         }
                         return p;
                     }, {}))
-                    .flatMap(e => e[1].map(v => `${encodeURIComponent(e[0])}=${encodeURIComponent(v)}`))
+                    .flatMap(e => (e[1] ?? []).map(v => `${encodeURIComponent(e[0])}=${encodeURIComponent(v)}`))
                     .join('&');
-                if (queryString.length === 0)
+                if (queryString.length > 0)
                     url += `${url.includes('?') ? '&' : '?'}${queryString}`;
             }
 
@@ -199,7 +199,7 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
                 method,
                 url,
                 content: await body?.(request, config),
-                headers: headers.reduce<Record<string, string[]>>((acc, h) => {
+                headers: headers.reduce<Partial<Record<string, string[]>>>((acc, h) => {
                     for (const [header, value] of Object.entries(h(request, config))) {
                         const values = acc[header] ??= [];
                         if (typeof value === 'string')

@@ -1,4 +1,4 @@
-import { NotANumberError, TagVariableType } from '@bbtag/blargbot';
+import { NotANumberError } from '@bbtag/blargbot';
 import { JsonStringifySubtag, JsonSubtag } from '@bbtag/blargbot/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -79,7 +79,7 @@ runSubtagTests({
 }`,
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVar' }, { abc: 123, def: { ghi: [1, 2, 3] } });
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'myVar' }, { abc: 123, def: { ghi: [1, 2, 3] } });
             }
         },
         {

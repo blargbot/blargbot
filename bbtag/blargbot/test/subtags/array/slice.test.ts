@@ -1,4 +1,4 @@
-import { NotAnArrayError, NotANumberError, TagVariableType } from '@bbtag/blargbot';
+import { NotAnArrayError, NotANumberError } from '@bbtag/blargbot';
 import { SliceSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
@@ -50,10 +50,10 @@ runSubtagTests({
             expected: '[2,3,4]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
                 chai.expect((await bbctx.runtime.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
             }
         },
@@ -62,10 +62,10 @@ runSubtagTests({
             expected: '[2,3]',
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
                 chai.expect((await bbctx.runtime.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
             }
         }

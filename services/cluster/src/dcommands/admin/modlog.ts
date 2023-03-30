@@ -56,7 +56,7 @@ export class ModlogCommand extends GuildCommand {
         const missingChannel: number[] = [];
         const missingMessage: number[] = [];
         const noperms: number[] = [];
-        const toDelete: Record<string, CaseMessageRef[]> = {};
+        const toDelete = new Map<string, CaseMessageRef[]>();
         for (const modlog of modlogs) {
             if (modlog.msgid === undefined) {
                 missingMessage.push(modlog.caseid);
@@ -68,10 +68,13 @@ export class ModlogCommand extends GuildCommand {
                 missingChannel.push(modlog.caseid);
                 continue;
             }
-            (toDelete[channelId] ??= []).push({ msgid: modlog.msgid, caseid: modlog.caseid });
+            let channels = toDelete.get(channelId);
+            if (channels === undefined)
+                toDelete.set(channelId, channels = []);
+            channels.push({ msgid: modlog.msgid, caseid: modlog.caseid });
         }
 
-        for (const [channelid, cases] of Object.entries(toDelete)) {
+        for (const [channelid, cases] of toDelete) {
             const channel = await context.util.getChannel(context.channel.guild, channelid);
             if (channel === undefined || !isTextableChannel(channel)) {
                 missingChannel.push(...cases.map(c => c.caseid));

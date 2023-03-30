@@ -1,6 +1,7 @@
 import type { BBTagRuntimeConfig, InjectionContext, SubtagInvocationMiddleware } from '@bbtag/blargbot';
 import { BBTagRuntime, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, DefaultLockService, DistributedCooldownService, smartStringCompare, Subtag, subtags, tagVariableScopeProviders } from '@bbtag/blargbot';
 import { VariableNameParser, VariableProvider } from '@bbtag/variables';
+import type { BBTagVariableHttpClient } from '@blargbot/bbtag-variables-client';
 import type { MessageHub } from '@blargbot/message-hub';
 import { ModLogMessageBroker } from '@blargbot/mod-log-client';
 import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
@@ -79,7 +80,7 @@ export function createBBTagEngine(options: BBTagEngineOptions): (config: BBTagRu
     const s = Object.values(subtags).map(s => Subtag.createInstance<Subtag>(s, injectionContext));
     const variables = new VariableProvider(
         new VariableNameParser(tagVariableScopeProviders),
-        new VariablesStore()
+        new VariablesStore(options.variables)
     );
     const sources = new SourceProvider();
     const cooldowns = new DistributedCooldownService({
@@ -117,6 +118,7 @@ export function createBBTagEngine(options: BBTagEngineOptions): (config: BBTagRu
 export interface BBTagEngineOptions {
     readonly metrics: MetricsApi;
     readonly messages: MessageHub;
+    readonly variables: BBTagVariableHttpClient;
 }
 
 export interface MetricsApi {

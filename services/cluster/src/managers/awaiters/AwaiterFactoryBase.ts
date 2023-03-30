@@ -5,7 +5,7 @@ import { Awaiter } from './Awaiter.js';
 
 export abstract class AwaiterFactoryBase<T> {
     readonly #awaiters: Record<string, Array<Awaiter<T>> | undefined>;
-    readonly #poolLocks: Record<string, Semaphore>;
+    readonly #poolLocks: Partial<Record<string, Semaphore>>;
 
     protected constructor(protected readonly logger: Logger) {
         this.#awaiters = {};

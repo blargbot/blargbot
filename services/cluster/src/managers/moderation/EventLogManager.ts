@@ -1,3 +1,4 @@
+import type { ChatLog } from '@blargbot/chatlog-types';
 import type { Cluster } from '@blargbot/cluster';
 import { ModlogColour } from '@blargbot/cluster/utils/index.js';
 import type { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
@@ -155,7 +156,7 @@ export class EventLogManager {
         if (logChannel === undefined || await this.#isExempt(guildId, message.author.id))
             return;
 
-        const oldContent = oldMessage?.content ?? (await this.#cluster.database.chatlogs.getByMessageId(message.id))?.content;
+        const oldContent = oldMessage?.content; //?? (await this.#cluster.database.chatlogs.getByMessageId(message.id))?.content;
         if (oldContent === undefined || message.content === oldContent)
             return;
 
@@ -353,7 +354,7 @@ export class EventLogManager {
         if ('content' in message)
             return { ...message, authorId: message.author.id, channelId: message.channel.id };
 
-        const chatlog = await this.#cluster.database.chatlogs.getByMessageId(message.id);
+        const chatlog = undefined as ChatLog | undefined;// await this.#cluster.database.chatlogs.getByMessageId(message.id);
         if (chatlog === undefined) {
             return {
                 id: message.id,

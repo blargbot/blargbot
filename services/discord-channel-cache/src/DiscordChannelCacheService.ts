@@ -56,12 +56,12 @@ export class DiscordChannelCacheService {
         if (channelGuildMap.size > 0)
             promises.push(this.#channelGuildMap.setAll(channelGuildMap));
 
-        const byGuild = channels.reduce<Record<string, bigint[]>>((acc, c) => {
+        const byGuild = channels.reduce<Partial<Record<string, bigint[]>>>((acc, c) => {
             if (isGuildChannel(c) && c.guild_id !== undefined)
                 (acc[c.guild_id] ??= []).push(BigInt(c.id));
             return acc;
         }, {});
-        for (const [guildId, channels] of Object.entries(byGuild))
+        for (const [guildId, channels = []] of Object.entries(byGuild))
             promises.push(this.#guildIndex.addAll(BigInt(guildId), channels));
         await Promise.all(promises);
     }

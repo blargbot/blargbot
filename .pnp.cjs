@@ -208,6 +208,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/bbtag-runner/src"\
       },\
       {\
+        "name": "@blargbot/bbtag-variables-client",\
+        "reference": "workspace:services/bbtag-variables/client"\
+      },\
+      {\
+        "name": "@blargbot/bbtag-variables",\
+        "reference": "workspace:services/bbtag-variables/src"\
+      },\
+      {\
         "name": "@blargbot/cluster",\
         "reference": "workspace:services/cluster/src"\
       },\
@@ -389,6 +397,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/async-tools", ["workspace:components/async-tools/src"]],\
       ["@blargbot/bbtag", ["workspace:services/bbtag-runner/src"]],\
       ["@blargbot/bbtag-runner-client", ["workspace:services/bbtag-runner/client"]],\
+      ["@blargbot/bbtag-variables", ["workspace:services/bbtag-variables/src"]],\
+      ["@blargbot/bbtag-variables-client", ["workspace:services/bbtag-variables/client"]],\
       ["@blargbot/catch-decorators", ["workspace:components/catch-decorators/src"]],\
       ["@blargbot/chatlog-types", ["workspace:components/chatlog-types/src"]],\
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
@@ -712,6 +722,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@bbtag/variables", "workspace:bbtag/variables/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/bbtag-runner-client", "workspace:services/bbtag-runner/client"],\
+            ["@blargbot/bbtag-variables-client", "workspace:services/bbtag-variables/client"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
@@ -732,6 +743,33 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag-runner-client", "workspace:services/bbtag-runner/client"],\
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/bbtag-variables", [\
+        ["workspace:services/bbtag-variables/src", {\
+          "packageLocation": "./services/bbtag-variables/src/",\
+          "packageDependencies": [\
+            ["@blargbot/bbtag-variables", "workspace:services/bbtag-variables/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/bbtag-variables-client", "workspace:services/bbtag-variables/client"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/bbtag-variables-client", [\
+        ["workspace:services/bbtag-variables/client", {\
+          "packageLocation": "./services/bbtag-variables/client/",\
+          "packageDependencies": [\
+            ["@blargbot/bbtag-variables-client", "workspace:services/bbtag-variables/client"],\
+            ["@blargbot/api-client", "workspace:components/api-client/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

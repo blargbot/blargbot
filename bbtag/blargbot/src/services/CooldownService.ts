@@ -29,7 +29,7 @@ export class InProcessCooldownService implements CooldownService {
     }
 
     #getKey(script: BBTagScript): string {
-        return `${script.runtime.guild.id}:${script.runtime.isCC ? 'cc' : 'tag'}:${script.runtime.user.id}:${script.name}`;
+        return `${script.runtime.guild.id}:${script.runtime.type}:${script.runtime.user.id}:${script.name}`;
     }
 }
 
@@ -58,6 +58,6 @@ export class DistributedCooldownService implements CooldownService {
     }
 
     #getKey(script: BBTagScript): string {
-        return `${script.runtime.guild.id}:${script.runtime.isCC ? 'cc' : 'tag'}:${script.runtime.user.id}:${script.name}`;
+        return `${script.runtime.guild.id}:${script.runtime.type}:${script.runtime.user.id}:${script.name}`;
     }
 }

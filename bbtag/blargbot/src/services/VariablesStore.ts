@@ -1,6 +1,6 @@
-import type { TagVariableScope } from '../variables/TagVariableScope.js';
+import type { BBTagScope } from '../variables/BBTagScope.js';
 
 export interface VariablesStore {
-    get(scope: TagVariableScope, name: string): Promise<JToken | undefined>;
-    set(entries: Iterable<{ scope: TagVariableScope; name: string; value: JToken | undefined; }>): Promise<void>;
+    get(scope: BBTagScope, name: string): Promise<JToken>;
+    set(entries: Iterable<{ scope: BBTagScope; name: string; value: JToken; }>): Promise<void>;
 }

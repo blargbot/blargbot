@@ -205,14 +205,14 @@ function createLiteralBindingBuilder<TContext extends CommandContext>(depth: num
 }
 
 function createSingleVarBindingBuilder<TContext extends CommandContext>(depth: number): BindingBuilder<TContext> {
-    const parameters: Record<string, {
+    const parameters = new Map<string, {
         parameter: CommandSingleParameter<CommandVariableTypeName, false>;
         handlers: Array<CommandSignatureHandler<TContext>>;
-    }> = {};
+    }>();
 
     return {
         * create() {
-            for (const [sort, { parameter, handlers }] of Object.entries(parameters))
+            for (const [sort, { parameter, handlers }] of parameters)
                 yield { binding: new bindings.SingleBinding(parameter, buildBindings(handlers, depth + 1)), sort };
         },
         add(parameter, signature) {
@@ -222,21 +222,24 @@ function createSingleVarBindingBuilder<TContext extends CommandContext>(depth: n
             if (parameter.kind !== 'singleVar')
                 throw new Error('Can only merge single variables');
 
-            (parameters[getSortKey(parameter)] ??= { parameter, handlers: [] })
-                .handlers.push(signature);
+            const key = getSortKey(parameter);
+            let ref = parameters.get(key);
+            if (ref === undefined)
+                parameters.set(key, ref = { parameter, handlers: [] });
+            ref.handlers.push(signature);
         }
     };
 }
 
 function createConcatVarBindingBuilder<TContext extends CommandContext>(depth: number): BindingBuilder<TContext> {
-    const parameters: Record<string, {
+    const parameters = new Map<string, {
         parameter: CommandSingleParameter<CommandVariableTypeName, true>;
         handlers: Array<CommandSignatureHandler<TContext>>;
-    }> = {};
+    }>();
 
     return {
         * create() {
-            for (const [sort, { parameter, handlers }] of Object.entries(parameters))
+            for (const [sort, { parameter, handlers }] of parameters)
                 yield { binding: new bindings.ConcatBinding(parameter, buildBindings(handlers, depth + 1)), sort };
         },
         add(parameter, signature) {
@@ -246,23 +249,26 @@ function createConcatVarBindingBuilder<TContext extends CommandContext>(depth: n
             if (parameter.kind !== 'concatVar')
                 throw new Error('Can only merge concat variables');
 
-            (parameters[getSortKey(parameter)] ??= { parameter, handlers: [] })
-                .handlers.push(signature);
+            const key = getSortKey(parameter);
+            let ref = parameters.get(key);
+            if (ref === undefined)
+                parameters.set(key, ref = { parameter, handlers: [] });
+            ref.handlers.push(signature);
         }
     };
 }
 
 function createGreedyVarBindingBuilder<TContext extends CommandContext>(depth: number): BindingBuilder<TContext> {
-    const parameters: Record<string, {
+    const parameters = new Map<string, {
         parameter: CommandGreedyParameter<CommandVariableTypeName>;
         handlers: {
-            [greedyMin: number]: Array<CommandSignatureHandler<TContext>>;
+            [greedyMin: number]: Array<CommandSignatureHandler<TContext>> | undefined;
         };
-    }> = {};
+    }>();
 
     return {
         * create() {
-            for (const [sort, { parameter, handlers }] of Object.entries(parameters))
+            for (const [sort, { parameter, handlers }] of parameters)
                 yield { binding: new bindings.GreedyBinding(parameter, mapKeys(handlers, value => buildBindings(value, depth + 1))), sort };
         },
         add(parameter, signature) {
@@ -272,8 +278,12 @@ function createGreedyVarBindingBuilder<TContext extends CommandContext>(depth: n
             if (parameter.kind !== 'greedyVar')
                 throw new Error('Can only merge greedy variables');
 
-            const { handlers } = parameters[getSortKey(parameter)] ??= { parameter, handlers: {} };
-            (handlers[parameter.minLength] ??= []).push(signature);
+            const key = getSortKey(parameter);
+            let ref = parameters.get(key);
+            if (ref === undefined)
+                parameters.set(key, ref = { parameter, handlers: {} });
+            const handlers = ref.handlers[parameter.minLength] ??= [];
+            handlers.push(signature);
         }
     };
 }

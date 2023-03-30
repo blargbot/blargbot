@@ -1,42 +1,49 @@
 import textTemplates from '../text.js';
 import type { TagVariableScopeProvider } from './TagVariableScopeProvider.js';
-import { TagVariableType } from './TagVariableType.js';
 
 export const tagVariableScopeProviders: readonly TagVariableScopeProvider[] = [
     {
         name: textTemplates.subtag.variables.server.name,
         prefix: '_',
         description: textTemplates.subtag.variables.server.description,
-        getScope: (context) => context.tagVars
-            ? { type: TagVariableType.GUILD_TAG, guildId: context.guild.id }
-            : { type: TagVariableType.GUILD_CC, guildId: context.guild.id }
+        getScope: (context) => ({
+            ownerId: BigInt(context.guild.id),
+            scope: context.isTrusted ? 'secret' : `public:${context.type}`
+        })
     },
     {
         name: textTemplates.subtag.variables.author.name,
         prefix: '@',
         description: textTemplates.subtag.variables.author.description,
         getScope: (context) => context.authorId !== null
-            ? { type: TagVariableType.AUTHOR, authorId: context.authorId }
-            : { type: TagVariableType.TEMP }
+            ? { ownerId: BigInt(context.authorId), scope: 'global' }
+            : { ownerId: 0n, scope: `temp:${context.id}` }
     },
     {
         name: textTemplates.subtag.variables.global.name,
         prefix: '*',
         description: textTemplates.subtag.variables.global.description,
-        getScope: () => ({ type: TagVariableType.GLOBAL })
+        getScope: () => ({
+            ownerId: 0n,
+            scope: 'global'
+        })
     },
     {
         name: textTemplates.subtag.variables.temporary.name,
         prefix: '~',
         description: textTemplates.subtag.variables.temporary.description,
-        getScope: () => ({ type: TagVariableType.TEMP })
+        getScope: context => ({
+            ownerId: 0n,
+            scope: `temp:${context.id}`
+        })
     },
     {
         name: textTemplates.subtag.variables.local.name,
         prefix: '',
         description: textTemplates.subtag.variables.local.description,
-        getScope: (context) => context.tagVars
-            ? { type: TagVariableType.LOCAL_TAG, name: context.entrypoint.name }
-            : { type: TagVariableType.LOCAL_CC, name: context.entrypoint.name, guildId: context.guild.id }
+        getScope: (context) => ({
+            ownerId: context.isTrusted ? BigInt(context.guild.id) : 0n,
+            scope: `local:${context.type}:${context.entrypoint.name}`
+        })
     }
 ];

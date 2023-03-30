@@ -7,7 +7,7 @@ export class BBTagRuntimeMetrics {
     readonly #dbTimer: Timer;
     readonly #dbManager: ContextManager;
     readonly #subtagManager: ContextManager<[id: string], number>;
-    readonly #subtags: Record<string, number[]>;
+    readonly #subtags: Partial<Record<string, number[]>>;
 
     public dbObjectsCommitted: number;
 
@@ -20,7 +20,7 @@ export class BBTagRuntimeMetrics {
     }
 
     public get subtags(): Readonly<Record<string, readonly number[]>> {
-        return Object.fromEntries(Object.entries(this.#subtags).map(x => [x[0], [...x[1]] as const] as const));
+        return Object.fromEntries(Object.entries(this.#subtags).map(x => [x[0], [...x[1] ?? []] as const] as const));
     }
 
     public constructor() {

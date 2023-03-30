@@ -854,7 +854,8 @@ function setProp<Target, Key extends keyof Target>(target: Target, key: Key, val
     return value;
 }
 
-function setIfUndefined<Target, Key extends keyof Target>(target: Target, key: Key, value: Exclude<Target[Key], undefined>): Exclude<Target[Key], undefined> {
+function setIfUndefined<Target, Key extends keyof Target>(target: Target, key: Key, value: Exclude<Target[Key], undefined>): Exclude<Target[Key], undefined>
+function setIfUndefined<Key extends PropertyKey, Target extends { [P in Key]?: unknown }>(target: Target, key: Key, value: Exclude<Target[Key], undefined>): Exclude<Target[Key], undefined> {
     return (target[key] ??= value) as Exclude<Target[Key], undefined>;
 }
 

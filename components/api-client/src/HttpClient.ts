@@ -40,7 +40,7 @@ export class HttpClient {
     }
 
     #resolveHeaders(headers: HttpHeaders | undefined): HttpHeaders {
-        const result = { ...this.#defaultHeaders };
+        const result: Partial<Record<string, string[]>> = { ...this.#defaultHeaders };
         if (headers === undefined)
             return result;
 
@@ -94,7 +94,7 @@ async function sendHttpRequest(message: HttpRequestContext): Promise<HttpRespons
     }
     request.end();
     const result = await response;
-    let content: Promise<Blob>;
+    let content: Promise<Blob> | undefined;
     return {
         headers: result.headers,
         statusCode: result.statusCode ?? 0,

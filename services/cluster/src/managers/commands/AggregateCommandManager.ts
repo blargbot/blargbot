@@ -111,10 +111,10 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         if ('author' in message)
             author = message.author;
         else {
-            const chatlog = await this.#cluster.database.chatlogs.getByMessageId(message.id);
-            if (chatlog !== undefined) {
-                author = await this.#cluster.util.getUser(chatlog.userid);
-            }
+            // const chatlog = await this.#cluster.database.chatlogs.getByMessageId(message.id);
+            // if (chatlog !== undefined) {
+            //     author = await this.#cluster.util.getUser(chatlog.userid);
+            // }
         }
 
         if (author !== undefined)

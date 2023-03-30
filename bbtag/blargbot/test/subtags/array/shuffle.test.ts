@@ -1,4 +1,4 @@
-import { NotAnArrayError, TagVariableType } from '@bbtag/blargbot';
+import { NotAnArrayError } from '@bbtag/blargbot';
 import { GetSubtag, ShuffleSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
@@ -35,7 +35,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'var1' }, 'this is var1');
             }
         },
         {
@@ -55,10 +55,10 @@ runSubtagTests({
             setupSaveVariables: false,
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             async assert(bbctx, _, ctx) {
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4, 5, 6]);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4, 5, 6]);
                 const result = (await bbctx.runtime.variables.get('arr1')).value;
                 chai.expect(result).to.not.deep.equal([1, 2, 3, 4, 5, 6]);
                 chai.expect(result).to.have.members([1, 2, 3, 4, 5, 6]);

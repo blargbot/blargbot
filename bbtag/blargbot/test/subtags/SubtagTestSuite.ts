@@ -1,6 +1,6 @@
 import { inspect } from 'node:util';
 
-import type { BBTagArray, BBTagArrayTools, BBTagRuntimeConfig, BBTagRuntimeScope, BBTagScript, BBTagScriptOptions, BBTagValueConverter, CooldownService, Entities, InjectionContext, LocatedRuntimeError, SourceProvider, SubtagDescriptor, TagVariableScope, VariablesStore } from '@bbtag/blargbot';
+import type { BBTagArray, BBTagArrayTools, BBTagRuntimeConfig, BBTagRuntimeScope, BBTagScope, BBTagScript, BBTagScriptOptions, BBTagValueConverter, CooldownService, Entities, InjectionContext, LocatedRuntimeError, SourceProvider, SubtagDescriptor, VariablesStore } from '@bbtag/blargbot';
 import { BaseRuntimeLimit, BBTagRuntime, BBTagRuntimeError, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, InternalServerError, NotEnoughArgumentsError, smartStringCompare, Subtag, SubtagType, tagVariableScopeProviders, TooManyArgumentsError } from '@bbtag/blargbot';
 import type { SourceMarker } from '@bbtag/language';
 import type { IVariableStore } from '@bbtag/variables';
@@ -87,7 +87,7 @@ export class SubtagTestContext {
     public readonly timer = new Timer();
     public readonly code: string;
     public readonly subtags: Array<new (...args: never) => Subtag>;
-    public readonly variables = this.createMock<IVariableStore<TagVariableScope>>();
+    public readonly variables = this.createMock<IVariableStore<BBTagScope>>();
     public readonly cooldowns = this.createMock<CooldownService>();
     public readonly sources = this.createMock<SourceProvider>();
     get #converter(): BBTagValueConverter {
@@ -138,7 +138,7 @@ export class SubtagTestContext {
 
     public readonly ccommands: Record<string, { content: string; cooldown: number; }>;
     public readonly tags: Record<string, { content: string; cooldown: number; }>;
-    public readonly tagVariables: MapByValue<{ scope: TagVariableScope; name: string; }, JToken>;
+    public readonly tagVariables: MapByValue<{ scope: BBTagScope; name: string; }, JToken>;
     public readonly rootScope: BBTagRuntimeScope = { inLock: false };
 
     public readonly options: Mutable<Partial<Omit<BBTagRuntimeConfig, 'entrypoint'>>>;
@@ -211,7 +211,7 @@ export class SubtagTestContext {
             .thenCall((...[scope, name]: Parameters<VariablesStore['get']>) => this.tagVariables.get({ scope, name }));
         if (this.testCase.setupSaveVariables !== false) {
             this.variables.setup(m => m.set(tsMockito.anything() as never), false)
-                .thenCall((...[values]: Parameters<IVariableStore<TagVariableScope>['set']>) => {
+                .thenCall((...[values]: Parameters<IVariableStore<BBTagScope>['set']>) => {
                     for (const { name, scope, value } of values) {
                         if (value !== undefined)
                             this.tagVariables.set({ scope, name }, value);
@@ -270,13 +270,18 @@ export class SubtagTestContext {
             bot: this.users.bot,
             channel: this.channels.command,
             guild: this.guild,
-            isCC: false,
+            type: 'tag',
             isStaff: this.isStaff,
             limit: this.limit.instance,
             message: this.message,
             prefix: 'b!',
             silent: false,
-            tagVars: this.options.isCC !== true,
+            get allowMentions() {
+                return this.type !== 'tag';
+            },
+            get isTrusted() {
+                return this.type !== 'tag';
+            },
             user: this.users.command,
             ...this.options,
             entrypoint: {
@@ -856,7 +861,12 @@ class MapByValue<Key, Value> implements Map<Key, Value> {
         switch (typeof key) {
             case 'object': return key === null
                 ? null
-                : JSON.stringify(Object.entries(key).sort((a, b) => a[0] < b[0] ? 1 : -1).map(x => [x[0], this.#fromKey(x[1])]));
+                : JSON.stringify(
+                    Object.entries(key)
+                        .sort((a, b) => a[0] < b[0] ? 1 : -1)
+                        .map(x => [x[0], this.#fromKey(x[1])]),
+                    (_, v: unknown) => typeof v === 'bigint' ? `${v}n` : v
+                );
             case 'string':
                 return JSON.stringify(key);
             default:

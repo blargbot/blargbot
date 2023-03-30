@@ -14,8 +14,7 @@ import type { SubtagType } from './utils/index.js';
 
 export * as Entities from './types.entities.js';
 
-export * from './variables/TagVariableScope.js';
-export * from './variables/TagVariableType.js';
+export * from './variables/BBTagScope.js';
 
 export interface AnalysisResults {
     readonly errors: AnalysisResult[];

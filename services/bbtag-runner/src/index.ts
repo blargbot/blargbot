@@ -1,5 +1,6 @@
 import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { BBTagExecutionMessageBroker } from '@blargbot/bbtag-runner-client';
+import { BBTagVariableHttpClient } from '@blargbot/bbtag-variables-client';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
@@ -10,6 +11,9 @@ import { createBBTagEngine } from './createBBTagEngine.js';
 
 @hostIfEntrypoint(() => [{
     defaultPrefix: env.get(String, 'COMMAND_PREFIX'),
+    variables: {
+        url: env.bbtagVariablesUrl
+    },
     messages: {
         prefetch: env.rabbitPrefetch,
         hostname: env.rabbitHost,
@@ -17,9 +21,9 @@ import { createBBTagEngine } from './createBBTagEngine.js';
         password: env.rabbitPassword
     }
 }])
-export class ImageGeneratorApplication extends ServiceHost {
+export class BBTagRunnerApplication extends ServiceHost {
 
-    public constructor(options: ImageGeneratorApplicationOptions) {
+    public constructor(options: BBTagRunnerApplicationOptions) {
         const serviceName = 'bbtag-runner';
         const hub = new MessageHub(options.messages);
         const executeBroker = new BBTagExecutionMessageBroker(hub, serviceName);
@@ -37,6 +41,7 @@ export class ImageGeneratorApplication extends ServiceHost {
         });
         const engine = createBBTagEngine({
             messages: hub,
+            variables: new BBTagVariableHttpClient(options.variables.url),
             metrics: {
                 subtagUsed(name, duration) {
                     subtagLatency.labels(name).observe(duration);
@@ -57,7 +62,10 @@ export class ImageGeneratorApplication extends ServiceHost {
     }
 }
 
-export interface ImageGeneratorApplicationOptions {
+export interface BBTagRunnerApplicationOptions {
     readonly messages: ConnectionOptions;
+    readonly variables: {
+        readonly url: string;
+    };
     readonly defaultPrefix: string;
 }

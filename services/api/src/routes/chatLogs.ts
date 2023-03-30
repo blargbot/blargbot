@@ -25,7 +25,7 @@ export class ChatLogsRoute extends BaseRoute {
             return this.notFound();
         }
 
-        const messages = await this.#api.database.chatlogs.getAll(logIndex.channel, logIndex.ids);
+        const messages = [] as ChatLog[];//await this.#api.database.chatlogs.getAll(logIndex.channel, logIndex.ids);
         const tags = await this.#api.util.discoverMessagesEntities(messages.map(message => ({
             guildId: message.guildid,
             content: [

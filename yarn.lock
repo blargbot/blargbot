@@ -196,6 +196,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/bbtag-variables-client@workspace:^, @blargbot/bbtag-variables-client@workspace:services/bbtag-variables/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/bbtag-variables-client@workspace:services/bbtag-variables/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/bbtag-variables@workspace:services/bbtag-variables/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/bbtag-variables@workspace:services/bbtag-variables/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/bbtag-variables-client": "workspace:^"
+    "@blargbot/container-id": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/sequelize": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/bbtag@workspace:services/bbtag-runner/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/bbtag@workspace:services/bbtag-runner/src"
@@ -205,6 +228,7 @@ __metadata:
     "@bbtag/variables": "workspace:^"
     "@blargbot/application": "workspace:^"
     "@blargbot/bbtag-runner-client": "workspace:^"
+    "@blargbot/bbtag-variables-client": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
     "@blargbot/env": "workspace:^"

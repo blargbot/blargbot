@@ -72,9 +72,9 @@ export class BBTagScript {
             return;
 
         if (this.runtime.entrypoint === this)
-            await this.runtime.output(`This ${this.runtime.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again ${markup.timestamp.relative(cooldownMs - now)}.`);
+            await this.runtime.output(`This ${this.runtime.type} is currently under cooldown. Please try again ${markup.timestamp.relative(cooldownMs - now)}.`);
 
-        throw new TagCooldownError(this.name, this.runtime.isCC, now - cooldownMs);
+        throw new TagCooldownError(this.name, this.runtime.type, now - cooldownMs);
     }
 
     public async eval(statement: BBTagStatementToken): Promise<string> {

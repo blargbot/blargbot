@@ -13,7 +13,7 @@ export function parseInput(definitions: Iterable<Flag>, text: string, strict = f
     let currentFlag: keyof FlagResult = '_';
     let currentGroup: StringRange[] = [];
     const defArr = [...definitions];
-    const resultGroups: FlagResultGroups = { _: [] };
+    const resultGroups: Required<Pick<FlagResultGroups, '_'>> & Omit<FlagResultGroups, '_'> = { _: [] };
     const flagMap = new Map(defArr.map(d => [d.word, d.flag]));
     const flagKeys = new Set<string>(defArr.map(d => d.flag));
     const args = [];
@@ -74,7 +74,7 @@ export function parseInput(definitions: Iterable<Flag>, text: string, strict = f
 }
 
 type StringRange = { start: number; end: number; value: string; };
-type FlagResultGroups = { -readonly [P in keyof FlagResult]: StringRange[][] }
+type FlagResultGroups = { -readonly [P in keyof FlagResult]?: StringRange[][] }
 
 function pushFlagGroup(groupsMap: FlagResultGroups, flag: keyof FlagResult, group: StringRange[]): void {
     const groups = groupsMap[flag] ??= [];

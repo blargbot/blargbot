@@ -174,13 +174,15 @@ async function* fetchMessages(context: GuildCommandContext): AsyncGenerator<Eris
     } while (messages.length === 100);
 }
 function buildBreakdown(messages: Iterable<Eris.KnownMessage>): Array<{ user: Eris.User; count: number; }> {
-    const grouped = {} as Record<string, { user: Eris.User; count: number; }>;
+    const grouped = new Map<string, { user: Eris.User; count: number; }>();
     for (const message of messages) {
-        grouped[message.author.id] ??= { user: message.author, count: 0 };
-        grouped[message.author.id].count++;
+        let group = grouped.get(message.author.id);
+        if (group === undefined)
+            grouped.set(message.author.id, group = { user: message.author, count: 0 });
+        group.count++;
     }
 
-    return Object.values(grouped)
+    return [...grouped.values()]
         .sort((a, b) => b.count - a.count)
         .map(({ user, count }) => ({ user, count }));
 }

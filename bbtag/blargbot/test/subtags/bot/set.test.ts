@@ -1,5 +1,4 @@
-import type { TagVariableScope } from '@bbtag/blargbot';
-import { TagVariableType } from '@bbtag/blargbot';
+import type { BBTagScope } from '@bbtag/blargbot';
 import { SetSubtag } from '@bbtag/blargbot/subtags';
 import { snowflake } from '@blargbot/discord-util';
 import { argument } from '@blargbot/test-util/mock.js';
@@ -20,7 +19,7 @@ runSubtagTests({
             // },
             {
                 prefix: '',
-                db: { name: 'testTag', type: TagVariableType.LOCAL_TAG },
+                db: { ownerId: 0n, scope: 'local:tag:testTag' },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.entrypoint.name = 'testTag';
@@ -28,17 +27,17 @@ runSubtagTests({
             },
             {
                 prefix: '',
-                db: { guildId: '234983689742643223984', name: 'testTag', type: TagVariableType.LOCAL_CC },
+                db: { ownerId: 234983689742643223984n, scope: 'local:cc:testTag' },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.entrypoint.name = 'testTag';
                     ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
-                    ctx.options.isCC = true;
+                    ctx.options.type = 'cc';
                 }
             },
             {
                 prefix: '@',
-                db: { authorId: '23987462839463642947', type: TagVariableType.AUTHOR },
+                db: { ownerId: 23987462839463642947n, scope: 'global' },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.users.command.id = '23987462839463642947';
@@ -46,21 +45,21 @@ runSubtagTests({
             },
             {
                 prefix: '*',
-                db: { type: TagVariableType.GLOBAL },
+                db: { ownerId: 0n, scope: 'global' },
                 varName: 'varName'
             },
             {
                 prefix: '_',
-                db: { guildId: '234983689742643223984', type: TagVariableType.GUILD_CC },
+                db: { ownerId: 234983689742643223984n, scope: 'secret' },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
-                    ctx.options.isCC = true;
+                    ctx.options.type = 'cc';
                 }
             },
             {
                 prefix: '_',
-                db: { guildId: '234983689742643223984', type: TagVariableType.GUILD_TAG },
+                db: { ownerId: 234983689742643223984n, scope: 'public:tag' },
                 varName: 'varName',
                 setup(ctx) {
                     ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
@@ -78,7 +77,7 @@ runSubtagTests({
     ]
 });
 
-function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: TagVariableScope; setup?: SubtagTestCase['setup']; }>, cases: Array<{ args: string[]; value: JToken | undefined; }>): Generator<SubtagTestCase> {
+function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: BBTagScope; setup?: SubtagTestCase['setup']; }>, cases: Array<{ args: string[]; value: JToken | undefined; }>): Generator<SubtagTestCase> {
     for (const { varName, prefix, db, setup } of setups) {
         for (const { args, value } of cases) {
             yield {

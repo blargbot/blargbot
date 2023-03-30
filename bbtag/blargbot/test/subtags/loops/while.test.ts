@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, BBTagRuntimeState, TagVariableType } from '@bbtag/blargbot';
+import { BBTagRuntimeError, BBTagRuntimeState } from '@bbtag/blargbot';
 import { DecrementSubtag, GetSubtag, IfSubtag, IncrementSubtag, OperatorSubtag, ReturnSubtag, SetSubtag, WhileSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
 
@@ -14,7 +14,7 @@ runSubtagTests({
             subtags: [GetSubtag, IncrementSubtag, OperatorSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -24,7 +24,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(10);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(10);
             }
         },
         {
@@ -33,7 +33,7 @@ runSubtagTests({
             subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -43,7 +43,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(10);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(10);
             }
         },
         {
@@ -52,7 +52,7 @@ runSubtagTests({
             subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -62,7 +62,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(10);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(10);
             }
         },
         {
@@ -71,7 +71,7 @@ runSubtagTests({
             subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -81,7 +81,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(10);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(10);
             }
         },
         {
@@ -90,7 +90,7 @@ runSubtagTests({
             subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -100,7 +100,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(10);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(10);
             }
         },
         {
@@ -109,7 +109,7 @@ runSubtagTests({
             subtags: [GetSubtag, DecrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '10');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '10');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -119,7 +119,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(0);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(0);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(0);
             }
         },
         {
@@ -128,7 +128,7 @@ runSubtagTests({
             subtags: [GetSubtag, SetSubtag, OperatorSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '1');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '1');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -138,7 +138,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal('1024');
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('1024');
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal('1024');
             }
         },
         {
@@ -150,7 +150,7 @@ runSubtagTests({
             subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -160,7 +160,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(4);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(4);
             }
         },
         {
@@ -172,7 +172,7 @@ runSubtagTests({
             subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -182,7 +182,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(4);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(4);
             }
         },
         {
@@ -194,7 +194,7 @@ runSubtagTests({
             subtags: [GetSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -204,7 +204,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(4);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(4);
             }
         },
         {
@@ -213,7 +213,7 @@ runSubtagTests({
             subtags: [GetSubtag, IfSubtag, ReturnSubtag, IncrementSubtag],
             setup(ctx) {
                 ctx.entrypoint.name = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                ctx.tagVariables.set({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx.runtime, 'while:loops'))
@@ -223,7 +223,7 @@ runSubtagTests({
             },
             async assert(bbctx, _, ctx) {
                 chai.expect((await bbctx.runtime.variables.get('index')).value).to.equal(6);
-                chai.expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(6);
+                chai.expect(ctx.tagVariables.get({ scope: { ownerId: 0n, scope: 'local:tag:testTag' }, name: 'index' })).to.equal(6);
                 chai.expect(bbctx.runtime.state).to.equal(BBTagRuntimeState.ABORT);
             }
         }

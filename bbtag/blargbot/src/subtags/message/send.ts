@@ -69,16 +69,14 @@ export class SendSubtag extends CompiledSubtag {
                 file.file = Buffer.from(file.file).toString('base64');
         }
 
-        const disableEveryone = !context.runtime.isCC || !context.runtime.outputOptions.allowEveryone;
-
         const result = await this.#messages.create(context.runtime, channel.id, {
             content: message,
             embeds: embed !== undefined ? embed : undefined,
-            allowed_mentions: {
-                parse: disableEveryone ? [] : [Discord.AllowedMentionsTypes.Everyone],
-                roles: context.runtime.isCC ? [...context.runtime.outputOptions.mentionRoles] : undefined,
-                users: context.runtime.isCC ? [...context.runtime.outputOptions.mentionUsers] : undefined
-            },
+            allowed_mentions: context.runtime.allowMentions ? {
+                parse: context.runtime.outputOptions.allowEveryone ? [Discord.AllowedMentionsTypes.Everyone] : [],
+                roles: [...context.runtime.outputOptions.mentionRoles],
+                users: [...context.runtime.outputOptions.mentionUsers]
+            } : { parse: [] },
             files: file !== undefined ? [file] : undefined
         });
 

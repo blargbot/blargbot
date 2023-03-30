@@ -279,24 +279,24 @@ export class BaseUtilities {
     }
 
     public async discoverMessagesEntities(messages: Iterable<{ guildId?: string; content?: string; embeds?: Discord.APIEmbed[]; }>): Promise<DiscordTagSet> {
-        const parsedChannels = {} as Record<string, Promise<DiscordChannelTag>>;
-        const parsedRoles = {} as Record<string, Promise<DiscordUserTag>>;
-        const parsedUsers = {} as Record<string, Promise<DiscordRoleTag>>;
+        const parsedChannels = new Map<string, Promise<DiscordChannelTag>>();
+        const parsedRoles = new Map<string, Promise<DiscordUserTag>>();
+        const parsedUsers = new Map<string, Promise<DiscordRoleTag>>();
 
         for (const { guildId, ...message } of messages) {
             for (const content of this.#getMessageMarkdownContent(message)) {
                 for (const roleId of markup.user.findAll(content))
-                    parsedRoles[roleId] ??= this.#getDiscordRoleTag(roleId, guildId);
+                    ensure(parsedRoles, roleId, () => this.#getDiscordRoleTag(roleId, guildId));
                 for (const userId of markup.user.findAll(content))
-                    parsedUsers[userId] ??= this.#getDiscordUserTag(userId);
+                    ensure(parsedUsers, userId, () => this.#getDiscordUserTag(userId));
                 for (const channelId of markup.channel.findAll(content))
-                    parsedChannels[channelId] ??= this.#getDiscordChannelTag(channelId);
+                    ensure(parsedChannels, channelId, () => this.#getDiscordChannelTag(channelId));
             }
         }
 
-        const parsedChannelsResults = Promise.all(Object.entries(parsedChannels).map(async e => [e[0], await e[1]] as const));
-        const parsedRolesResults = Promise.all(Object.entries(parsedRoles).map(async e => [e[0], await e[1]] as const));
-        const parsedUsersResults = Promise.all(Object.entries(parsedUsers).map(async e => [e[0], await e[1]] as const));
+        const parsedChannelsResults = Promise.all([...parsedChannels].map(async e => [e[0], await e[1]] as const));
+        const parsedRolesResults = Promise.all([...parsedRoles].map(async e => [e[0], await e[1]] as const));
+        const parsedUsersResults = Promise.all([...parsedUsers].map(async e => [e[0], await e[1]] as const));
 
         return {
             parsedChannels: Object.fromEntries(await parsedChannelsResults),
@@ -437,6 +437,7 @@ export class BaseUtilities {
             } else {
                 if (guard.isUncached(channel.guild)) {
                     channel.guild = await this.getGuild(channel.guild.id) ?? channel.guild;
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     channel.guild.channels ??= new Eris.Collection(Eris.GuildChannel as new (...args: unknown[]) => Eris.AnyGuildChannel);
                 }
                 if (channel.guild.channels.get(channel.id) !== channel)
@@ -927,3 +928,9 @@ Eris.RequestHandler.prototype.request = function (...args) {
     }
     return erisRequest.call(this, ...args);
 };
+
+function ensure<Key, Value>(map: Map<Key, Value>, key: Key, factory: (key: Key) => Value): void {
+    if (map.has(key))
+        return;
+    map.set(key, factory(key));
+}

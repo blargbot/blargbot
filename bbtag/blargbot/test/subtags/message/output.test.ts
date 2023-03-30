@@ -18,7 +18,7 @@ runSubtagTests({
             code: '{output}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.isCC = true;
+                ctx.options.allowMentions = true;
             },
             postSetup(bbctx, ctx) {
                 const embeds = [{ title: 'abc' }];
@@ -60,7 +60,7 @@ runSubtagTests({
             code: '{output}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const embeds = [{ title: 'abc' }];
@@ -101,7 +101,7 @@ runSubtagTests({
             code: '{output;This is my message content}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.isCC = true;
+                ctx.options.allowMentions = true;
             },
             postSetup(bbctx, ctx) {
                 const embeds = [{ title: 'abc' }];
@@ -144,7 +144,7 @@ runSubtagTests({
             code: '{output;This is my message content}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const embeds = [{ title: 'abc' }];
@@ -185,7 +185,7 @@ runSubtagTests({
             code: '{output;This is my message content}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const message = SubtagTestContext.createMessage({
@@ -224,7 +224,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.options.output ??= {};
                 ctx.options.output.id = '0987654331234567';
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             assert(bbctx) {
                 chai.expect(bbctx.runtime.outputOptions.id).to.equal('0987654331234567');
@@ -237,7 +237,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.options.output ??= {};
                 ctx.options.output.id = '0987654331234567';
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             errors: [
                 { start: 0, end: 35, error: new BBTagRuntimeError('Cannot send multiple outputs') }

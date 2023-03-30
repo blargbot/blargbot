@@ -27,7 +27,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Test error') }
             ],
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -61,7 +61,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to send: Test error') }
             ],
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -95,7 +95,7 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to send: UNKNOWN') }
             ],
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -127,7 +127,7 @@ runSubtagTests({
             code: '{send;1923681361978632931;abc}',
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
+                ctx.options.allowMentions = true;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -167,7 +167,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
+                ctx.options.allowMentions = true;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -206,7 +206,7 @@ runSubtagTests({
             code: '{send;1923681361978632931;abc}',
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -244,7 +244,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -282,7 +282,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
+                ctx.options.allowMentions = true;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -322,7 +322,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -360,7 +360,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
+                ctx.options.allowMentions = true;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -400,7 +400,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -438,7 +438,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
+                ctx.options.allowMentions = true;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -481,7 +481,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -522,7 +522,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
+                ctx.options.allowMentions = true;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -562,7 +562,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -600,7 +600,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
+                ctx.options.allowMentions = true;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -643,7 +643,7 @@ runSubtagTests({
             subtags: [EscapeBBTagSubtag],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.options.allowMentions = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];

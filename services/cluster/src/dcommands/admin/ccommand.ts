@@ -297,15 +297,19 @@ export class CustomCommandCommand extends GuildCommand {
     }
 
     public async listCommands(context: GuildCommandContext): Promise<CommandResult> {
-        const grouped: Record<string, string[]> = {};
+        const grouped = new Map<string, string[]>();
         const any = [];
         for await (const command of context.cluster.commands.custom.list(context.channel.guild)) {
             if (command.state === 'ALLOWED') {
                 for await (const role of this.#getRoles(context, command.detail.command)) {
                     if (role === undefined)
                         any.push(command.detail.command.name);
-                    else
-                        (grouped[role] ??= []).push(command.detail.command.name);
+                    else {
+                        let group = grouped.get(role);
+                        if (group === undefined)
+                            grouped.set(role, group = []);
+                        group.push(command.detail.command.name);
+                    }
                 }
             }
         }
@@ -319,7 +323,7 @@ export class CustomCommandCommand extends GuildCommand {
                             name: cmd.list.embed.field.anyRole.name,
                             commands: any
                         },
-                        ...Object.entries(grouped)
+                        ...[...grouped]
                             .map(([role, commands]) => ({ name: util.literal(role), commands }))
                     ].filter(x => x.commands.length > 0)
                         .map(x => ({
