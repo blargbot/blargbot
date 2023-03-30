@@ -1,6 +1,6 @@
-export function jsonToBlob<T>(value: T, serializer: { write(value: T): string; } = jsonSerializer): Blob {
+export async function jsonToBlob<T>(value: T, serializer: { write(value: T): Awaitable<string>; } = jsonSerializer): Promise<Blob> {
     try {
-        return new Blob([serializer.write(value)], { type: 'application/json' });
+        return new Blob([await serializer.write(value)], { type: 'application/json' });
     } catch {
         throw new Error('Failed to convert value to a JSON blob');
     }

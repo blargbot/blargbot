@@ -14,11 +14,11 @@ export class DiscordGatewayIPCMessageBroker {
     }
 
     public async sendWorkerCommand<Type extends keyof WorkerMessageTypes>(type: Type, workerId: number, message: WorkerMessageTypes[Type]): Promise<void> {
-        await this.#messages.publish(ipcExchange, `${this.managerId}.worker.${workerId}.${type}`, jsonToBlob(message));
+        await this.#messages.publish(ipcExchange, `${this.managerId}.worker.${workerId}.${type}`, await jsonToBlob(message));
     }
 
     public async sendManagerCommand<Type extends keyof ManagerMessageTypes>(type: Type, message: ManagerMessageTypes[Type]): Promise<void> {
-        await this.#messages.publish(ipcExchange, `${this.managerId}.manager.${type}`, jsonToBlob(message));
+        await this.#messages.publish(ipcExchange, `${this.managerId}.manager.${type}`, await jsonToBlob(message));
     }
 
     public async handleWorkerCommand<Type extends keyof WorkerMessageTypes>(type: Type, workerId: number | '*', handler: (message: WorkerMessageTypes[Type], msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {

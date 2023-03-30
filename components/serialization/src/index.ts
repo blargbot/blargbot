@@ -1,4 +1,5 @@
 import { bigintConverter } from './converters/bigintConverter.js';
+import { blobConverter } from './converters/blobConverter.js';
 import { booleanConverter } from './converters/booleanConverter.js';
 import { bufferConverter } from './converters/bufferConverter.js';
 import { createJsonArrayConverter } from './converters/createJsonArrayConverter.js';
@@ -36,6 +37,7 @@ export const json = {
     regex: regexConverter,
     date: dateConverter,
     buffer: bufferConverter,
+    blob: blobConverter,
     unknown: unknownConverter,
     jToken: jTokenConverter
 } as const;

@@ -75,7 +75,7 @@ export class DiscordGatewayMessageBroker implements PartialDiscordGatewayMessage
             payload: payload,
             shard: shardId
         };
-        await this.#messages.publish(dedupeExchange, `${shardId}/${lastShardId}.${payload.op}.${'t' in payload ? payload.t ?? '-' : '-'}`, jsonToBlob(message), {
+        await this.#messages.publish(dedupeExchange, `${shardId}/${lastShardId}.${payload.op}.${'t' in payload ? payload.t ?? '-' : '-'}`, await jsonToBlob(message), {
             headers: {
                 'x-deduplication-header': createHash('md5').update(JSON.stringify(payload.d)).digest('hex')
             }

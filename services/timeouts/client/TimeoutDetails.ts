@@ -9,8 +9,7 @@ export interface TimeoutDetails {
     readonly start: Date;
     readonly end: Date;
     readonly queue: string;
-    readonly data: Buffer;
-    readonly dataType: string;
+    readonly data: Blob;
     readonly options: amqplib.Options.Publish;
 }
 
@@ -22,8 +21,7 @@ export const timeoutDetailsSerializerOpts = {
     start: json.date,
     end: json.date,
     queue: json.string,
-    data: json.buffer,
-    dataType: json.string,
+    data: json.blob,
     options: json.object<amqplib.Options.Publish>({
         appId: json.string.optional,
         BCC: json.choice(json.string, json.array(json.string)).optional,

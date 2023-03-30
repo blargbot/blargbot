@@ -5,17 +5,17 @@ import type { IJsonConverter } from './IJsonConverter.js';
 import type { IJsonConverterImpl } from './IJsonConverterImpl.js';
 
 export function makeJsonConverter<T, Conv extends IJsonConverterImpl<T> = IJsonConverterImpl<T>>(converter: Conv): IJsonConverter<T> {
-    function read(value: string): T {
+    async function read(value: string): Promise<T> {
         const v = JSON.parse(value);
-        const result = converter.fromJson(v);
+        const result = await converter.fromJson(v);
         if (!result.success)
             throw new Error(`Reading failed: ${result.reason}`);
         return result.value;
     }
-    function write(value: T): string {
+    async function write(value: T): Promise<string> {
         if (!converter.test(value))
             throw new Error('Writing failed: Value isnt compatible');
-        const result = converter.toJson(value);
+        const result = await converter.toJson(value);
         if (result === undefined)
             throw new Error('Writing failed: Cannot stringify undefined');
         return JSON.stringify(result);
@@ -28,12 +28,12 @@ export function makeJsonConverter<T, Conv extends IJsonConverterImpl<T> = IJsonC
                 const mediaType = blob.type.split(';')[0];
                 if (mediaType !== 'application/json')
                     throw new Error(`Cannot read content of type ${blob.type}`);
-                return read(await blob.text());
+                return await read(await blob.text());
             }
         },
         toBlob: {
-            value: function toBlob(value: T): Blob {
-                return new Blob([write(value)], { type: 'application/json' });
+            value: async function toBlob(value: T): Promise<Blob> {
+                return new Blob([await write(value)], { type: 'application/json' });
             }
         },
         optional: {

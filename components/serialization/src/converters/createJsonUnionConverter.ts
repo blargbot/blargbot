@@ -25,11 +25,11 @@ export function createJsonUnionConverter(...converters: Array<IJsonConverterImpl
 
     return makeJsonConverter<unknown, IUnionJsonConverter<unknown>>({
         [children]: Object.freeze(converters),
-        fromJson(value) {
+        async fromJson(value) {
+            const results = await Promise.all(converters.map(c => c.fromJson(value)));
             const reasons = [];
-            for (const converter of converters) {
-                const result = converter.fromJson(value);
-                if (result.success === true)
+            for (const result of results) {
+                if (result.success)
                     return result;
                 reasons.push(result.reason);
             }

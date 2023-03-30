@@ -30,16 +30,15 @@ export function createJsonObjectConverter(properties: JsonObjectConverterOptions
     });
 
     return makeJsonConverter({
-        fromJson(value) {
+        async fromJson(value) {
             if (typeof value !== 'object' || value === null || Array.isArray(value))
                 return failed(`Value is not an object ${String(value)}`);
 
+            const results = await Promise.all(props.map(async p => [p, await p.convert.fromJson(value[p.src])] as const));
             const result: Record<PropertyKey, unknown> = {};
-            for (const prop of props) {
-                const res = prop.convert.fromJson(value[prop.src]);
+            for (const [prop, res] of results) {
                 if (!res.success)
                     return res;
-
                 if (res.value !== undefined)
                     result[prop.dest] = res.value;
             }
@@ -55,10 +54,10 @@ export function createJsonObjectConverter(properties: JsonObjectConverterOptions
             }
             return true;
         },
-        toJson(value) {
+        async toJson(value) {
+            const results = await Promise.all(props.map(async p => [p, await p.convert.toJson(value[p.dest])] as const));
             const result: JObject = {};
-            for (const prop of props) {
-                const res = prop.convert.toJson(value[prop.dest]);
+            for (const [prop, res] of results) {
                 if (res !== undefined)
                     result[prop.src] = res;
             }

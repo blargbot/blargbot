@@ -4,6 +4,7 @@ import { VariableNameParser, VariableProvider } from '@bbtag/variables';
 import type { BBTagVariableHttpClient } from '@blargbot/bbtag-variables-client';
 import type { MessageHub } from '@blargbot/message-hub';
 import { ModLogMessageBroker } from '@blargbot/mod-log-client';
+import type { TimeoutHttpClient } from '@blargbot/timeouts-client';
 import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
 import { UserWarningsHttpClient } from '@blargbot/user-warnings-client';
 
@@ -49,7 +50,7 @@ export function createBBTagEngine(options: BBTagEngineOptions): (config: BBTagRu
         }),
         warnings: new WarningService(warnings),
         timezones: new TimezoneProvider(userSettings),
-        defer: new DeferredExecutionService(),
+        defer: new DeferredExecutionService(options.timeout, options.timeoutQueue),
         domains: new DomainFilterService(),
         dump: new DumpService(),
         modLog: new ModLogService(modLog),
@@ -119,6 +120,8 @@ export interface BBTagEngineOptions {
     readonly metrics: MetricsApi;
     readonly messages: MessageHub;
     readonly variables: BBTagVariableHttpClient;
+    readonly timeout: TimeoutHttpClient;
+    readonly timeoutQueue: string;
 }
 
 export interface MetricsApi {

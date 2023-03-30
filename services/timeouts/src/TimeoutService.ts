@@ -61,7 +61,7 @@ export class TimeoutService {
 
     public async handleProcessTimeout(timeout: TimeoutDetails): Promise<void> {
         try {
-            await this.#messages.send(timeout.queue, new Blob([timeout.data], { type: timeout.dataType }), timeout.options);
+            await this.#messages.send(timeout.queue, timeout.data, timeout.options);
         } catch (err) {
             const { data: _, ...slimTimeout } = timeout;
             console.error('Error while processing timeout', slimTimeout, err);

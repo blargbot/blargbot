@@ -23,7 +23,7 @@ export function createTimeoutRequestHandler(service: TimeoutService): express.Re
             res.status(200).send({ timers, total } satisfies TimeoutListResponse);
         }))
         .post(asyncHandler(async (req, res): Promise<void> => {
-            const body = timeoutDetailsCreateSerializer.fromJson(req.body as JToken | undefined);
+            const body = await timeoutDetailsCreateSerializer.fromJson(req.body as JToken | undefined);
             if (!body.success)
                 return void res.status(400).send({ error: 'Invalid request body' });
 

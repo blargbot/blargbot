@@ -2,7 +2,14 @@ import type { IJsonConverter, IJsonConverterType } from '@blargbot/serialization
 import { json } from '@blargbot/serialization';
 import type * as discordeno from 'discordeno';
 
-export function* discoverFields(metadata: Record<string, JToken>): Iterable<discordeno.DiscordEmbedField> {
+export async function discoverFields(metadata: Record<string, JToken>): Promise<Iterable<discordeno.DiscordEmbedField>> {
+    const result = [];
+    for await (const field of discoverFieldsIter(metadata))
+        result.push(field);
+    return result;
+}
+
+async function* discoverFieldsIter(metadata: Record<string, JToken>): AsyncIterable<discordeno.DiscordEmbedField> {
     yield* processMetadata(metadata, modLogWarningMetadataSerializer, createWarningEmbedFields);
     yield* processMetadata(metadata, modLogPardonMetadataSerializer, createPardonEmbedFields);
 }
@@ -35,8 +42,8 @@ function* createPardonEmbedFields({ pardon: { count, total } }: IJsonConverterTy
     };
 }
 
-function* processMetadata<T>(metadata: Record<string, JToken>, serializer: IJsonConverter<T>, reader: (value: T) => Iterable<discordeno.DiscordEmbedField>): Iterable<discordeno.DiscordEmbedField> {
-    const result = serializer.fromJson(metadata);
+async function* processMetadata<T>(metadata: Record<string, JToken>, serializer: IJsonConverter<T>, reader: (value: T) => Iterable<discordeno.DiscordEmbedField>): AsyncIterable<discordeno.DiscordEmbedField> {
+    const result = await serializer.fromJson(metadata);
     if (result.success)
         yield* reader(result.value);
 }

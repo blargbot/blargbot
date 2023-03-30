@@ -3,7 +3,7 @@ import { makeJsonConverter } from '../makeJsonConverter.js';
 import { failed, success } from '../result.js';
 
 export const jTokenConverter: IJsonConverter<JToken> = makeJsonConverter<JToken>({
-    fromJson(value) {
+    async fromJson(value) {
         switch (typeof value) {
             case 'number': return success(value);
             case 'boolean': return success(value);
@@ -14,16 +14,16 @@ export const jTokenConverter: IJsonConverter<JToken> = makeJsonConverter<JToken>
                 if (Array.isArray(value)) {
                     const result = [];
                     for (const element of value) {
-                        const res = jTokenConverter.fromJson(element);
+                        const res = await jTokenConverter.fromJson(element);
                         if (!res.success)
                             return res;
                         result.push(res.value);
                     }
                     return success(result);
                 }
+                const results = await Promise.all(Object.entries(value).map(async x => [x[0], await jTokenConverter.fromJson(x[1])] as const));
                 const result: JObject = {};
-                for (const [k, v] of Object.entries(value)) {
-                    const res = jTokenConverter.fromJson(v);
+                for (const [k, res] of results) {
                     if (!res.success)
                         return res;
                     result[k] = res.value;
@@ -51,7 +51,7 @@ export const jTokenConverter: IJsonConverter<JToken> = makeJsonConverter<JToken>
                     .every((v: unknown) => v === undefined || jTokenConverter.test(v));
         }
     },
-    toJson(value) {
+    async toJson(value) {
         switch (typeof value) {
             case 'bigint': return undefined;
             case 'string': return value;
@@ -64,10 +64,12 @@ export const jTokenConverter: IJsonConverter<JToken> = makeJsonConverter<JToken>
                 if (value === null)
                     return null;
                 if (Array.isArray(value))
-                    return value.map(v => jTokenConverter.toJson(v)) as JArray;
+                    return await Promise.all(value.map(v => jTokenConverter.toJson(v))) as JArray;
                 return Object.fromEntries(
-                    Object.entries(value)
-                        .map(([k, v]) => [k, jTokenConverter.toJson(v)])
+                    await Promise.all(
+                        Object.entries(value)
+                            .map(async ([k, v]) => [k, await jTokenConverter.toJson(v)] as const)
+                    )
                 ) as JObject;
         }
     }

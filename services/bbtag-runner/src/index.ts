@@ -6,6 +6,7 @@ import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { Metrics, MetricsPushService } from '@blargbot/metrics-client';
+import { TimeoutHttpClient } from '@blargbot/timeouts-client';
 
 import { createBBTagEngine } from './createBBTagEngine.js';
 
@@ -13,6 +14,9 @@ import { createBBTagEngine } from './createBBTagEngine.js';
     defaultPrefix: env.get(String, 'COMMAND_PREFIX'),
     variables: {
         url: env.bbtagVariablesUrl
+    },
+    timeout: {
+        url: env.timeoutUrl
     },
     messages: {
         prefetch: env.rabbitPrefetch,
@@ -42,6 +46,8 @@ export class BBTagRunnerApplication extends ServiceHost {
         const engine = createBBTagEngine({
             messages: hub,
             variables: new BBTagVariableHttpClient(options.variables.url),
+            timeout: new TimeoutHttpClient(options.timeout.url),
+            timeoutQueue: executeBroker.executeQueueName,
             metrics: {
                 subtagUsed(name, duration) {
                     subtagLatency.labels(name).observe(duration);
@@ -65,6 +71,9 @@ export class BBTagRunnerApplication extends ServiceHost {
 export interface BBTagRunnerApplicationOptions {
     readonly messages: ConnectionOptions;
     readonly variables: {
+        readonly url: string;
+    };
+    readonly timeout: {
         readonly url: string;
     };
     readonly defaultPrefix: string;

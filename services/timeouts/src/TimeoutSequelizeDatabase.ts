@@ -5,17 +5,22 @@ import { randomBytes } from 'crypto';
 
 import type { ITimeoutRecordDatabase } from './ITimeoutRecordDatabase.js';
 
+interface TimeoutTable extends Omit<TimeoutDetails, 'data'> {
+    readonly data: Buffer;
+    readonly dataType: string;
+}
+
 export default class TimeoutSequelizeDatabase implements ITimeoutRecordDatabase {
-    readonly #model: ModelStatic<Model<TimeoutDetails>>;
+    readonly #model: ModelStatic<Model<TimeoutTable>>;
 
     public constructor(sequelize: Pick<Sequelize, 'define'>) {
-        const x: Partial<TimeoutDetails> = {};
-        this.#model = sequelize.define<Model<TimeoutDetails>>('timeouts', {
+        const x: Partial<TimeoutTable> = {};
+        this.#model = sequelize.define<Model<TimeoutTable>>('timeouts', {
             ...makeColumn('id', DataTypes.STRING, x, { primaryKey: true, unique: true }),
             ...makeColumn('ownerId', DataTypes.BIGINT, x, { primaryKey: true }),
             ...makeColumn('data', DataTypes.BLOB, x),
             ...makeColumn('dataType', DataTypes.STRING, x),
-            ...makeColumn('display', DataTypes.STRING, x),
+            ...makeColumn('display', DataTypes.TEXT, x),
             ...makeColumn('end', DataTypes.DATE, x),
             ...makeColumn('options', DataTypes.STRING, x, {
                 get() {
@@ -34,14 +39,27 @@ export default class TimeoutSequelizeDatabase implements ITimeoutRecordDatabase 
     public async create(record: Omit<TimeoutDetails, 'id'>): Promise<string> {
         const model = await this.#model.create({
             ...record,
+            data: Buffer.from(await record.data.arrayBuffer()),
+            dataType: record.data.type,
             id: randomBytes(8).toString('hex')
         });
         return model.get().id;
     }
 
+    #toResult(model: TimeoutTable): TimeoutDetails
+    #toResult(model?: TimeoutTable): TimeoutDetails | undefined
+    #toResult(model?: TimeoutTable): TimeoutDetails | undefined {
+        if (model === undefined)
+            return undefined;
+        return {
+            ...model,
+            data: new Blob([model.data], { type: model.dataType })
+        };
+    }
+
     public async get(ownerId: bigint, id: string): Promise<TimeoutDetails | undefined> {
         const model = await this.#model.findOne({ where: { ownerId, id } });
-        return model?.get();
+        return this.#toResult(model?.get());
     }
 
     public async list(ownerId: bigint, offset: number, count: number): Promise<TimeoutDetails[]> {
@@ -53,7 +71,7 @@ export default class TimeoutSequelizeDatabase implements ITimeoutRecordDatabase 
             offset,
             limit: count
         });
-        return models.map(m => m.get());
+        return models.map(m => this.#toResult(m.get()));
     }
 
     public async count(ownerId: bigint): Promise<number> {
@@ -78,7 +96,7 @@ export default class TimeoutSequelizeDatabase implements ITimeoutRecordDatabase 
 
     public async pending(): Promise<TimeoutDetails[]> {
         const models = await this.#model.findAll({ where: { end: { [Op.lte]: new Date() } } });
-        return models.map(m => m.get());
+        return models.map(m => this.#toResult(m.get()));
     }
 
 }

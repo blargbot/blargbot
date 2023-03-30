@@ -24,7 +24,7 @@ export class ModLogMessageBroker {
     }
 
     public async createModlog(options: ModLogCreateRequest): Promise<void> {
-        return await this.#messages.publish(requests, 'create', jsonToBlob(options, modLogCreateRequestSerializer));
+        return await this.#messages.publish(requests, 'create', await jsonToBlob(options, modLogCreateRequestSerializer));
     }
 
     public async handleCreateModLog(handler: (modLog: ModLogCreateRequest, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
@@ -39,7 +39,7 @@ export class ModLogMessageBroker {
     }
 
     public async updateModlog(options: ModLogUpdateRequest): Promise<void> {
-        return await this.#messages.publish(requests, 'update', jsonToBlob(options, modLogUpdateRequestSerializer));
+        return await this.#messages.publish(requests, 'update', await jsonToBlob(options, modLogUpdateRequestSerializer));
     }
 
     public async handleUpdateModLog(handler: (modLog: ModLogUpdateRequest, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
@@ -54,7 +54,7 @@ export class ModLogMessageBroker {
     }
 
     public async deleteModLog(options: ModLogDeleteRequest): Promise<void> {
-        return await this.#messages.publish(requests, 'delete', jsonToBlob(options, modLogDeleteRequestSerializer));
+        return await this.#messages.publish(requests, 'delete', await jsonToBlob(options, modLogDeleteRequestSerializer));
     }
 
     public async handleDeleteModLog(handler: (modLog: ModLogDeleteRequest, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
@@ -69,7 +69,7 @@ export class ModLogMessageBroker {
     }
 
     public async modLogCreated(options: ModLogCreatedEvent): Promise<void> {
-        return await this.#messages.publish(events, 'created', jsonToBlob(options, modLogCreatedEventSerializer));
+        return await this.#messages.publish(events, 'created', await jsonToBlob(options, modLogCreatedEventSerializer));
     }
 
     public async handleModLogCreated(handler: (modLog: ModLogCreatedEvent, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
@@ -84,7 +84,7 @@ export class ModLogMessageBroker {
     }
 
     public async modLogUpdated(options: ModLogUpdatedEvent): Promise<void> {
-        return await this.#messages.publish(events, 'updated', jsonToBlob(options, modLogUpdatedEventSerializer));
+        return await this.#messages.publish(events, 'updated', await jsonToBlob(options, modLogUpdatedEventSerializer));
     }
 
     public async handleModLogUpdated(handler: (modLog: ModLogUpdatedEvent, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
@@ -99,7 +99,7 @@ export class ModLogMessageBroker {
     }
 
     public async modLogDeleted(options: ModLogDeletedEvent): Promise<void> {
-        return await this.#messages.publish(events, 'deleted', jsonToBlob(options, modLogDeletedEventSerializer));
+        return await this.#messages.publish(events, 'deleted', await jsonToBlob(options, modLogDeletedEventSerializer));
     }
 
     public async handleModLogDeleted(handler: (modLog: ModLogDeletedEvent, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {

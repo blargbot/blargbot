@@ -7,7 +7,7 @@ import { timeoutDetailsCreateSerializer } from './TimeoutDetails.js';
 export * from './TimeoutDetails.js';
 
 export interface TimeoutOwnerParams {
-    readonly ownerId: string | bigint;
+    readonly ownerId: bigint;
 }
 
 export interface TimeoutListParams extends TimeoutOwnerParams {

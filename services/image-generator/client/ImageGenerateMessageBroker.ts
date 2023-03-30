@@ -34,6 +34,6 @@ export class ImageGenerateMessageBroker {
     }
 
     public async requestImage<P extends keyof ImageOptionsMap>(type: P, payload: ImageOptionsMap[P]): Promise<Blob> {
-        return await this.#messages.request(exchange, type, jsonToBlob(payload));
+        return await this.#messages.request(exchange, type, await jsonToBlob(payload));
     }
 }

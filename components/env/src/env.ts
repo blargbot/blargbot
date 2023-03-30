@@ -11,6 +11,7 @@ const envVarDeclaration = {
     discordUserCacheUrl: [String, 'DISCORD_USER_CACHE_URL'],
     discordChannelCacheUrl: [String, 'DISCORD_CHANNEL_CACHE_URL'],
     bbtagVariablesUrl: [String, 'BBTAG_VARIABLES_URL'],
+    timeoutUrl: [String, 'TIMEOUT_URL'],
 
     appPort: [Number, 'APP_PORT', '80'],
     discordToken: [String, 'DISCORD_TOKEN'],

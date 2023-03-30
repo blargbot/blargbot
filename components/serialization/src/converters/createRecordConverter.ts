@@ -11,12 +11,12 @@ export type JsonObjectConverterOptions<T> = {
 
 export function createRecordConverter<T>(serializer: IJsonConverter<T>): IJsonConverter<Record<PropertyKey, T>> {
     return makeJsonConverter({
-        fromJson(value) {
+        async fromJson(value) {
             if (typeof value !== 'object' || value === null || Array.isArray(value))
                 return failed('Value is not a record type');
+            const results = await Promise.all(Object.entries(value).map(async x => [x[0], await serializer.fromJson(x[1])] as const));
             const result: Record<PropertyKey, T> = {};
-            for (const [k, v] of Object.entries(value)) {
-                const res = serializer.fromJson(v);
+            for (const [k, res] of results) {
                 if (!res.success)
                     return res;
                 result[k] = res.value;
@@ -28,10 +28,12 @@ export function createRecordConverter<T>(serializer: IJsonConverter<T>): IJsonCo
                 return false;
             return Object.values(value).every(v => serializer.test(v));
         },
-        toJson(value) {
+        async toJson(value) {
             return Object.fromEntries(
-                Object.entries(value)
-                    .map(([k, v]) => [k, serializer.toJson(v)])
+                await Promise.all(
+                    Object.entries(value)
+                        .map(async ([k, v]) => [k, await serializer.toJson(v)])
+                )
             ) as JObject;
         }
     });

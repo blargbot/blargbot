@@ -44,23 +44,23 @@ export class RedisKKVCache<Key1, Key2, Value> implements IKKVCache<Key1, Key2, V
         const resultStr = await this.#redis.hGet(this.#toKey1(key1), this.#toKey2(key2));
         if (resultStr === undefined)
             return undefined;
-        return this.#serializer.read(resultStr);
+        return await this.#serializer.read(resultStr);
     }
 
     public async getAll(key1: Key1): Promise<Map<Key2, Value>> {
         const result = await this.#redis.hGetAll(this.#toKey1(key1));
-        return this.#toMap(result);
+        return await this.#toMap(result);
     }
 
     public async set(key1: Key1, key2: Key2, value: Value): Promise<void> {
         const strKey1 = this.#toKey1(key1);
-        await this.#redis.hSet(strKey1, this.#toKey2(key2), this.#serializer.write(value));
+        await this.#redis.hSet(strKey1, this.#toKey2(key2), await this.#serializer.write(value));
         await this.#expire(strKey1);
     }
 
     public async setAll(key1: Key1, entries: Iterable<[key2: Key2, value: Value]>): Promise<void> {
         const strKey1 = this.#toKey1(key1);
-        await this.#redis.hSet(strKey1, this.#toRecord(entries));
+        await this.#redis.hSet(strKey1, await this.#toRecord(entries));
         await this.#expire(strKey1);
     }
 
@@ -90,18 +90,24 @@ export class RedisKKVCache<Key1, Key2, Value> implements IKKVCache<Key1, Key2, V
         return size;
     }
 
-    #toRecord(items: Iterable<[Key2, Value]>): Record<string, string> {
-        return Object.fromEntries(this.#toEntries(items));
+    async #toRecord(items: Iterable<[Key2, Value]>): Promise<Record<string, string>> {
+        return Object.fromEntries(await this.#toEntries(items));
     }
 
-    *#toEntries(items: Iterable<[Key2, Value]>): Iterable<[string, string]> {
-        for (const [key, value] of items)
-            yield [this.#toKey2(key), this.#serializer.write(value)];
+    async #toEntries(items: Iterable<[Key2, Value]>): Promise<Iterable<[string, string]>> {
+        return await Promise.all(
+            Array.from(items)
+                .map(async ([key, value]) => [key, await this.#serializer.write(value)] as [string, string])
+        );
     }
 
-    #toMap(items: Record<string, string>): Map<Key2, Value> {
-        return new Map(Object.entries(items)
-            .map(e => [this.#fromKey2(e[0]), this.#serializer.read(e[1])]));
+    async #toMap(items: Record<string, string>): Promise<Map<Key2, Value>> {
+        return new Map(
+            await Promise.all(
+                Object.entries(items)
+                    .map(async e => [this.#fromKey2(e[0]), await this.#serializer.read(e[1])] as const)
+            )
+        );
     }
 }
 

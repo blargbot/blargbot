@@ -119,7 +119,7 @@ export class DiscordModLogService {
                     name: 'Reason',
                     value: options.reason ?? `Responsible moderator, please do \`${this.#prefix}reason ${options.caseId}\` to set.`
                 },
-                ...discoverFields(options.metadata)
+                ...await discoverFields(options.metadata)
             ],
             footer: moderator === undefined ? undefined : {
                 text: this.#userTag(moderator),

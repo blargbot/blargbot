@@ -22,7 +22,7 @@ export class TimeoutMessageBroker {
     }
 
     public async requestProcessTimeout(timeout: TimeoutDetails): Promise<void> {
-        const serialized = timeoutDetailsSerializer.write(timeout);
+        const serialized = await timeoutDetailsSerializer.write(timeout);
         await this.#messages.send(TimeoutMessageBroker.#pendingTimeouts, new Blob([serialized], { type: 'application/json' }), {
             headers: {
                 'x-deduplication-header': timeout.id

@@ -52,14 +52,15 @@ export class RedisKVCache<Key, Value> implements IKVCache<Key, Value> {
         const resultStr = await this.#redis.get(this.#toKey(key));
         if (resultStr === null)
             return undefined;
-        return this.#serializer.read(resultStr);
+        return await this.#serializer.read(resultStr);
     }
 
     public async set(key: Key, value: Value): Promise<void> {
-        await this.#redis.set(this.#toKey(key), this.#serializer.write(value), { EX: this.#ttlS });
+        await this.#redis.set(this.#toKey(key), await this.#serializer.write(value), { EX: this.#ttlS });
     }
+
     public async setAll(values: Iterable<[key: Key, value: Value]>): Promise<void> {
-        const setArg = Array.from(values, ([key, value]) => [this.#toKey(key), this.#serializer.write(value)] as [string, string]);
+        const setArg = await Promise.all(Array.from(values, async ([key, value]) => [this.#toKey(key), await this.#serializer.write(value)] as [string, string]));
         if (setArg.length > 0)
             await this.#redis.mSet(setArg);
     }

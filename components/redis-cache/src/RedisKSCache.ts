@@ -36,35 +36,35 @@ export class RedisKSCache<Key, Value> implements IKSCache<Key, Value> {
         const result = [];
         for await (const element of this.#redis.sScanIterator(this.#toKey(key)))
             result.push(this.#serializer.read(element));
-        return result;
+        return await Promise.all(result);
     }
 
     public async add(key: Key, value: Value): Promise<void> {
         const strKey = this.#toKey(key);
-        await this.#redis.sAdd(strKey, this.#serializer.write(value));
+        await this.#redis.sAdd(strKey, await this.#serializer.write(value));
         await this.#expire(strKey);
     }
 
     public async addAll(key: Key, values: Iterable<Value>): Promise<void> {
         const strKey = this.#toKey(key);
-        await this.#redis.sAdd(strKey, Array.from(values, v => this.#serializer.write(v)));
+        await this.#redis.sAdd(strKey, await Promise.all(Array.from(values, v => this.#serializer.write(v))));
         await this.#expire(strKey);
     }
 
     public async remove(key: Key, value: Value): Promise<void> {
         const strKey = this.#toKey(key);
-        await this.#redis.sRem(strKey, this.#serializer.write(value));
+        await this.#redis.sRem(strKey, await this.#serializer.write(value));
         await this.#expire(strKey);
     }
 
     public async removeAll(key: Key, values: Iterable<Value>): Promise<void> {
         const strKey = this.#toKey(key);
-        await this.#redis.sRem(strKey, Array.from(values, v => this.#serializer.write(v)));
+        await this.#redis.sRem(strKey, await Promise.all(Array.from(values, v => this.#serializer.write(v))));
         await this.#expire(strKey);
     }
 
     public async has(key: Key, value: Value): Promise<boolean> {
-        return await this.#redis.sIsMember(this.#toKey(key), this.#serializer.write(value));
+        return await this.#redis.sIsMember(this.#toKey(key), await this.#serializer.write(value));
     }
 
     public async hasAll(key: Key, values: Iterable<Value>): Promise<boolean> {
@@ -78,7 +78,7 @@ export class RedisKSCache<Key, Value> implements IKSCache<Key, Value> {
     }
 
     async #hasEach(key: Key, values: Iterable<Value>): Promise<boolean[]> {
-        return await this.#redis.smIsMember(this.#toKey(key), Array.from(values, v => this.#serializer.write(v)));
+        return await this.#redis.smIsMember(this.#toKey(key), await Promise.all(Array.from(values, v => this.#serializer.write(v))));
     }
 
     public async clear(key?: Key): Promise<void> {

@@ -35,7 +35,7 @@ export class CommandMessageParserMessageBroker {
     }
 
     public async sendCommand(details: MessageCommandDetails): Promise<void> {
-        await this.#messages.publish(exchange, `${details.guild_id ?? 'dm'}.${details.command}`, jsonToBlob(details));
+        await this.#messages.publish(exchange, `${details.guild_id ?? 'dm'}.${details.command}`, await jsonToBlob(details));
     }
 }
 

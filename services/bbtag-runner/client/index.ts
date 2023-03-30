@@ -7,19 +7,28 @@ export class BBTagExecutionMessageBroker {
     readonly #messages: MessageHub;
     readonly #serviceName: string;
 
+    public get executeQueueName(): string {
+        return MessageHub.makeQueueName(this.#serviceName, exchange);
+    }
+
     public constructor(messages: MessageHub, serviceName: string) {
         this.#messages = messages;
         this.#serviceName = serviceName;
         this.#messages.onConnected(c => c.assertExchange(exchange, 'direct'));
     }
 
+    public async requestBBTagExecution(request: BBTagExecutionRequest): Promise<BBTagExecutionResponse> {
+        const response = await this.#messages.request(exchange, '', await jsonToBlob(request));
+        return await blobToJson(response);
+    }
+
     public async handleBBTagExecutionRequest(handler: (message: BBTagExecutionRequest, msg: ConsumeMessage) => Awaitable<BBTagExecutionResponse>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: exchange,
-            queue: MessageHub.makeQueueName(this.#serviceName, exchange),
+            queue: this.executeQueueName,
             filter: '*',
             async handle(data, msg) {
-                return jsonToBlob(await handler(await blobToJson(data), msg));
+                return await jsonToBlob(await handler(await blobToJson(data), msg));
             }
         });
     }

@@ -113,19 +113,19 @@ export function defineApiClient<Config, Methods extends ApiClientEndpointFactori
     return ApiClient as unknown as ApiClientConstructor<ApiClientEndpointFactoriesToEndpoints<Config, Methods>, Config>;
 }
 
-type ValueOrFactory<T, Args extends readonly unknown[]> = T | ((...args: Args) => T)
+type ValueOrFactory<T, Args extends readonly unknown[]> = T | ((...args: Args) => Awaitable<T>)
 type QueryValue = string | number | boolean | bigint | null | undefined
 
 class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClientEndpointBuilder<Config, Request, Response> {
     readonly #method: string;
-    readonly #route: (request: Request, config: Config) => string;
-    readonly #headers: Array<(request: Request, config: Config) => HttpHeaders> = [];
+    readonly #route: (request: Request, config: Config) => Awaitable<string>;
+    readonly #headers: Array<(request: Request, config: Config) => Awaitable<HttpHeaders>> = [];
     readonly #responses: Record<number, (content: Blob, headers: HttpHeaders, config: Config) => Awaitable<Response>> = {};
     readonly #validators: Array<(request: Request, config: Config) => void> = [];
-    readonly #query: Array<(request: Request, config: Config) => Record<string, QueryValue | QueryValue[]>> = [];
+    readonly #query: Array<(request: Request, config: Config) => Awaitable<Record<string, QueryValue | QueryValue[]>>> = [];
     #body?: (request: Request, config: Config) => Awaitable<Blob>;
 
-    public constructor(method: string, route: (request: Request, config: Config) => string) {
+    public constructor(method: string, route: (request: Request, config: Config) => Awaitable<string>) {
         this.#method = method;
         this.#route = route;
     }
@@ -150,7 +150,7 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
         return this;
     }
 
-    public body(content: ValueOrFactory<Awaitable<Blob>, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response> {
+    public body(content: ValueOrFactory<Blob, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response> {
         if (this.#body !== undefined)
             throw new Error('Content has already been set');
         this.#body = typeof content === 'function' ? content : () => content;
@@ -177,7 +177,7 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
             for (const validator of validators)
                 validator(request, config);
 
-            let url = route(request, config);
+            let url = await route(request, config);
             if (query.length > 0) {
                 const queryString = Object.entries(
                     query.reduce<Partial<Record<string, string[]>>>((p, c) => {
@@ -195,20 +195,22 @@ class ApiClientEndpointBuilderImpl<Config, Request, Response> implements ApiClie
                     url += `${url.includes('?') ? '&' : '?'}${queryString}`;
             }
 
+            const realHeaders: Partial<Record<string, string[]>> = {};
+            await Promise.all(headers.map(async h => {
+                for (const [header, value] of Object.entries(await h(request, config))) {
+                    const values = realHeaders[header] ??= [];
+                    if (typeof value === 'string')
+                        values.push(value);
+                    else if (Array.isArray(value))
+                        values.push(...value);
+                }
+            }));
+
             const response = await client.send({
                 method,
                 url,
                 content: await body?.(request, config),
-                headers: headers.reduce<Partial<Record<string, string[]>>>((acc, h) => {
-                    for (const [header, value] of Object.entries(h(request, config))) {
-                        const values = acc[header] ??= [];
-                        if (typeof value === 'string')
-                            values.push(value);
-                        else if (Array.isArray(value))
-                            values.push(...value);
-                    }
-                    return acc;
-                }, {})
+                headers: realHeaders
             }, abort);
 
             if (response.statusCode in responses)

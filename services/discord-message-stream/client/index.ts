@@ -32,7 +32,7 @@ export class DiscordMessageStreamMessageBroker {
     }
 
     public async pushMessage(message: ExtendedMessage): Promise<void> {
-        await this.#messages.publish(exchange, `${message.guild_id ?? 'dm'}.${message.channel_id}.${message.author.id}`, jsonToBlob(message));
+        await this.#messages.publish(exchange, `${message.guild_id ?? 'dm'}.${message.channel_id}.${message.author.id}`, await jsonToBlob(message));
     }
 }
 
