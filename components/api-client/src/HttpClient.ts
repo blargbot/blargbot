@@ -1,8 +1,7 @@
+import type { ClientRequest, IncomingMessage } from 'node:http';
+import { request } from 'node:http';
 import type { Readable } from 'node:stream';
 import { Writable } from 'node:stream';
-
-import type { ClientRequest, IncomingMessage } from 'http';
-import { request } from 'http';
 
 export class HttpClient {
     readonly #defaultHeaders: { readonly [x: string]: string[]; };
