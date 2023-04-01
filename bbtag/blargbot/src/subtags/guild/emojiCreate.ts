@@ -1,10 +1,10 @@
 import Discord from '@blargbot/discord-types';
 import { hasFlag, isUrl } from '@blargbot/guards';
-import fetch from 'node-fetch';
 
 import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { FetchService } from '../../services/FetchService.js';
 import type { GuildService } from '../../services/GuildService.js';
 import type { RoleService } from '../../services/RoleService.js';
 import { Subtag } from '../../Subtag.js';
@@ -21,13 +21,14 @@ interface EmojiCreateOptions {
 }
 
 @Subtag.id('emojiCreate')
-@Subtag.ctorArgs('arrayTools', 'roles', 'guild')
+@Subtag.ctorArgs('arrayTools', 'roles', 'guild', 'fetch')
 export class EmojiCreateSubtag extends CompiledSubtag {
     readonly #arrayTools: BBTagArrayTools;
     readonly #roles: RoleService;
     readonly #guilds: GuildService;
+    readonly #fetch: FetchService;
 
-    public constructor(arrayTools: BBTagArrayTools, roles: RoleService, guilds: GuildService) {
+    public constructor(arrayTools: BBTagArrayTools, roles: RoleService, guilds: GuildService, fetch: FetchService) {
         super({
             category: SubtagType.GUILD,
             definition: [
@@ -45,6 +46,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         this.#arrayTools = arrayTools;
         this.#roles = roles;
         this.#guilds = guilds;
+        this.#fetch = fetch;
     }
 
     public async createEmoji(
@@ -68,7 +70,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         if (imageStr.startsWith('<') && imageStr.endsWith('>'))
             imageStr = imageStr.slice(1, -1);
         if (isUrl(imageStr)) {
-            const res = await fetch(imageStr);
+            const res = await this.#fetch.send(imageStr);
             const contentType = res.headers.get('content-type');
             options.image = `data:${contentType ?? ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
         } else if (!imageStr.startsWith('data:')) {

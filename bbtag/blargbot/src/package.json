@@ -25,13 +25,11 @@
         "brainfuck-node": "^1.0.2",
         "color": "^4.2.3",
         "html-entities": "^2.3.3",
-        "moment-timezone": "^0.5.42",
-        "node-fetch": "^3.3.1"
+        "moment-timezone": "^0.5.42"
     },
     "devDependencies": {
         "@blargbot/application": "workspace:^",
         "@types/brainfuck-node": "workspace:^",
-        "@types/color": "^3.0.3",
-        "@types/node-fetch": "^2.6.2"
+        "@types/color": "^3.0.3"
     }
 }

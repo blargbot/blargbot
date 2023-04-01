@@ -74,14 +74,12 @@ __metadata:
     "@blargbot/timer": "workspace:^"
     "@types/chai": ^4.3.4
     "@types/chai-datetime": ^0.0.37
-    "@types/express": ^4.17.17
     "@types/mocha": ^10.0.1
     chai: ^4.3.7
     chai-bytes: ^0.1.2
     chai-datetime: ^1.8.0
     chai-exclude: ^2.1.0
     cross-env: ^7.0.3
-    express: ^4.18.2
     mocha: ^10.2.0
     moment-timezone: ^0.5.42
     ts-mockito: ^2.6.1
@@ -110,12 +108,10 @@ __metadata:
     "@blargbot/user-regex": "workspace:^"
     "@types/brainfuck-node": "workspace:^"
     "@types/color": ^3.0.3
-    "@types/node-fetch": ^2.6.2
     brainfuck-node: ^1.0.2
     color: ^4.2.3
     html-entities: ^2.3.3
     moment-timezone: ^0.5.42
-    node-fetch: ^3.3.1
   languageName: unknown
   linkType: soft
 

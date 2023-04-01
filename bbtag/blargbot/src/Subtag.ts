@@ -5,8 +5,7 @@ import type { BBTagCall } from './BBTagCall.js';
 import type { BBTagScript } from './BBTagScript.js';
 import type { BBTagRuntimeError } from './errors/index.js';
 import type { ISubtag } from './ISubtag.js';
-import type { BBTagLogger, ChannelService, DeferredExecutionService, DomainFilterService, DumpService, GuildService, LockService, MessageService, ModLogService, RoleService, StaffService, TimezoneProvider, UserService, WarningService } from './services/index.js';
-import type { SubtagDescriptor } from './services/SubtagDescriptor.js';
+import type { BBTagLogger, ChannelService, DeferredExecutionService, DumpService, FetchService, GuildService, LockService, MessageService, ModLogService, RoleService, StaffService, SubtagDescriptor, TimezoneProvider, UserService, WarningService } from './services/index.js';
 import type { SubtagOptions, SubtagSignature } from './types.js';
 import type { BBTagArrayTools, BBTagJsonTools, BBTagOperators, BBTagValueConverter } from './utils/index.js';
 import type { SubtagType } from './utils/subtagType.js';
@@ -137,8 +136,8 @@ export interface InjectionContext {
     readonly warnings: WarningService;
     readonly modLog: ModLogService;
     readonly dump: DumpService;
-    readonly domains: DomainFilterService;
     readonly defer: DeferredExecutionService;
     readonly staff: StaffService;
     readonly logger: BBTagLogger;
+    readonly fetch: FetchService;
 }

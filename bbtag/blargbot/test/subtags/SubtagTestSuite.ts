@@ -127,10 +127,10 @@ export class SubtagTestContext {
         warnings: this.createMock(),
         modLog: this.createMock(),
         dump: this.createMock(),
-        domains: this.createMock(),
         defer: this.createMock(),
         staff: this.createMock(),
-        logger: this.createMock()
+        logger: this.createMock(),
+        fetch: this.createMock()
     } satisfies { [P in keyof InjectionContext]-?: Mock<NonNullable<InjectionContext[P]>> | InjectionContext[P] };
     public readonly limit = this.createMock(BaseRuntimeLimit);
     public isStaff = false;

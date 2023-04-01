@@ -1,4 +1,4 @@
-import type { BBTagRuntimeConfig, BBTagScope, ChannelService, CooldownService, DeferredExecutionService, DomainFilterService, DumpService, GuildService, InjectionContext, LockService, MessageService, ModLogService, RoleService, SourceProvider, StaffService, SubtagInvocationMiddleware, TimezoneProvider, UserService, WarningService } from '@bbtag/blargbot';
+import type { BBTagRuntimeConfig, BBTagScope, ChannelService, CooldownService, DeferredExecutionService, DumpService, FetchService, GuildService, InjectionContext, LockService, MessageService, ModLogService, RoleService, SourceProvider, StaffService, SubtagInvocationMiddleware, TimezoneProvider, UserService, WarningService } from '@bbtag/blargbot';
 import { BBTagRuntime, createBBTagArrayTools, createBBTagJsonTools, createBBTagOperators, createValueConverter, smartStringCompare, Subtag } from '@bbtag/blargbot';
 import { VariableProvider } from '@bbtag/variables';
 
@@ -25,7 +25,6 @@ export function createBBTagEngine(options: BBTagEngineOptions): (config: BBTagRu
         }),
         channels: options.channels,
         defer: options.defer,
-        domains: options.domains,
         dump: options.dump,
         guild: options.guild,
         lock: options.lock,
@@ -35,7 +34,8 @@ export function createBBTagEngine(options: BBTagEngineOptions): (config: BBTagRu
         staff: options.staff,
         timezones: options.timezones,
         users: options.users,
-        warnings: options.warnings
+        warnings: options.warnings,
+        fetch: options.fetch
     };
 
     const { subtags: subtagTypes, middleware, variables, cooldowns, sources } = options
@@ -51,7 +51,6 @@ export interface BBTagEngineOptions {
     readonly warnings: WarningService,
     readonly timezones: TimezoneProvider,
     readonly defer: DeferredExecutionService,
-    readonly domains: DomainFilterService,
     readonly dump: DumpService,
     readonly modLog: ModLogService,
     readonly staff: StaffService,
@@ -61,6 +60,7 @@ export interface BBTagEngineOptions {
     readonly guild: GuildService,
     readonly messages: MessageService,
     readonly lock: LockService,
+    readonly fetch: FetchService,
     readonly middleware: Iterable<SubtagInvocationMiddleware>;
     readonly subtags: Iterable<new (...args: never) => Subtag>;
 }

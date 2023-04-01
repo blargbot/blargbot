@@ -593,12 +593,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/user-regex", "workspace:components/user-regex/src"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
             ["@types/color", "npm:3.0.3"],\
-            ["@types/node-fetch", "npm:2.6.2"],\
             ["brainfuck-node", "npm:1.0.2"],\
             ["color", "npm:4.2.3"],\
             ["html-entities", "npm:2.3.3"],\
-            ["moment-timezone", "npm:0.5.42"],\
-            ["node-fetch", "npm:3.3.1"]\
+            ["moment-timezone", "npm:0.5.42"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -626,14 +624,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@types/chai", "npm:4.3.4"],\
             ["@types/chai-datetime", "npm:0.0.37"],\
-            ["@types/express", "npm:4.17.17"],\
             ["@types/mocha", "patch:@types/mocha@npm%3A10.0.1#./.yarn/patches/@types-mocha-npm-10.0.1-7c94e9e170.patch::version=10.0.1&hash=480b76&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.7"],\
             ["chai-bytes", "virtual:e6aeaad380db906b19e865f983912ae96550f14294f158aa1d5d333edf816d29c715109d0a3cad211b8b60a107c5f760fafb62633b420a6cec96c45516951e0d#npm:0.1.2"],\
             ["chai-datetime", "npm:1.8.0"],\
             ["chai-exclude", "virtual:e6aeaad380db906b19e865f983912ae96550f14294f158aa1d5d333edf816d29c715109d0a3cad211b8b60a107c5f760fafb62633b420a6cec96c45516951e0d#npm:2.1.0"],\
             ["cross-env", "npm:7.0.3"],\
-            ["express", "npm:4.18.2"],\
             ["mocha", "npm:10.2.0"],\
             ["moment-timezone", "npm:0.5.42"],\
             ["ts-mockito", "npm:2.6.1"]\

@@ -1,10 +1,9 @@
 import type { TypeMapping } from '@blargbot/mapping';
 import { mapping } from '@blargbot/mapping';
-import fetch from 'node-fetch';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import type { DomainFilterService } from '../../services/DomainFilterService.js';
+import { FetchService } from '../../services/FetchService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
@@ -12,16 +11,15 @@ import type { BBTagValueConverter } from '../../utils/valueConverter.js';
 
 const tag = textTemplates.subtags.request;
 
-const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
 @Subtag.id('request')
-@Subtag.ctorArgs('domains', 'converter')
+@Subtag.ctorArgs('converter', 'fetch')
 export class RequestSubtag extends CompiledSubtag {
-    readonly #domains: DomainFilterService;
     readonly #converter: BBTagValueConverter;
     readonly #mapOptions: TypeMapping<RequestOptions>;
+    readonly #fetch: FetchService;
 
-    public constructor(domains: DomainFilterService, converter: BBTagValueConverter) {
+    public constructor(converter: BBTagValueConverter, fetch: FetchService) {
         super({
             category: SubtagType.BOT,
             description: tag.description,
@@ -37,9 +35,9 @@ export class RequestSubtag extends CompiledSubtag {
             ]
         });
 
-        this.#domains = domains;
         this.#converter = converter;
         this.#mapOptions = createMapOptions(this.#converter);
+        this.#fetch = fetch;
     }
 
     public async requestUrl(
@@ -47,14 +45,6 @@ export class RequestSubtag extends CompiledSubtag {
         optionsStr: string,
         dataStr: string
     ): Promise<JObject> {
-        const domainMatch = domainRegex.exec(url);
-        if (domainMatch === null)
-            throw new BBTagRuntimeError(`A domain could not be extracted from url: ${url}`);
-
-        const domain = domainMatch[1];
-        if (!this.#domains.canRequestDomain(domain))
-            throw new BBTagRuntimeError(`Domain is not whitelisted: ${domain}`);
-
         const request = {
             method: 'GET',
             headers: {} as Record<string, string>,
@@ -88,8 +78,10 @@ export class RequestSubtag extends CompiledSubtag {
         } else {
             request.body = dataStr;
         }
+        if (query !== undefined)
+            url += url.includes('?') ? `&${query}` : `?${query}`;
 
-        const response = await fetch(url + (query !== undefined ? `?${query}` : ''), request);
+        const response = await this.#fetch.send(url, request);
         const result = {
             status: response.status,
             statusText: response.statusText,
@@ -99,10 +91,10 @@ export class RequestSubtag extends CompiledSubtag {
         };
 
         /*
-                I personally absolutely hate how blarg decides to error if a status code is not consider 'ok'
-                A lot of APIs actually have meaningful errors, coupled with a 'not-ok' status and it's ass that blarg doesn't return it.
-                TODO change this to return always regardless of statusCode OR add a parameter like [rawResponse] for getting the response object always without breaking bbtag.
-            */
+            I personally absolutely hate how blarg decides to error if a status code is not consider 'ok'
+            A lot of APIs actually have meaningful errors, coupled with a 'not-ok' status and it's ass that blarg doesn't return it.
+            TODO change this to return always regardless of statusCode OR add a parameter like [rawResponse] for getting the response object always without breaking bbtag.
+        */
         if (!(response.status >= 200 && response.status < 400))
             throw new BBTagRuntimeError(`${response.status} ${response.statusText}`);
 

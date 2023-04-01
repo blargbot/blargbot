@@ -20,7 +20,7 @@ import { createBBTagEngine } from './createBBTagEngine.js';
 import { ChannelService } from './services/ChannelService.js';
 import { CooldownService } from './services/CooldownService.js';
 import { DeferredExecutionService } from './services/DeferredExecutionService.js';
-import { DomainFilterService } from './services/DomainFilterService.js';
+import { FetchService } from './services/FetchService.js';
 import { DumpService } from './services/DumpService.js';
 import { GuildService } from './services/GuildService.js';
 import { LockService } from './services/LockService.js';
@@ -91,7 +91,7 @@ export class BBTagRunnerApplication extends ServiceHost {
             modLog: new ModLogService(new ModLogMessageBroker(hub, serviceName)),
             timezones: new TimezoneProvider(new UserSettingsHttpClient(options.userSettings.url)),
             warnings: new WarningService(new UserWarningsHttpClient(options.userWarnings.url)),
-            domains: new DomainFilterService(),
+            fetch: new FetchService(),
             lock: new LockService(),
             staff: new StaffService(),
             sources: new SourceProvider(),

@@ -1,10 +1,10 @@
 import Discord from '@blargbot/discord-types';
 import { hasFlag, isUrl } from '@blargbot/guards';
-import fetch from 'node-fetch';
 
 import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
+import { FetchService } from '../../services/FetchService.js';
 import type { GuildService } from '../../services/GuildService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';
@@ -13,11 +13,12 @@ import { SubtagType } from '../../utils/index.js';
 const tag = textTemplates.subtags.guildSetIcon;
 
 @Subtag.id('guildSetIcon')
-@Subtag.ctorArgs('guild')
+@Subtag.ctorArgs('guild', 'fetch')
 export class GuildSetIconSubtag extends CompiledSubtag {
     readonly #guilds: GuildService;
+    readonly #fetch: FetchService;
 
-    public constructor(guilds: GuildService) {
+    public constructor(guilds: GuildService, fetch: FetchService) {
         super({
             category: SubtagType.GUILD,
             definition: [
@@ -34,6 +35,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
         });
 
         this.#guilds = guilds;
+        this.#fetch = fetch;
     }
 
     public async setGuildIcon(context: BBTagScript, image: string): Promise<void> {
@@ -43,7 +45,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
         if (image.startsWith('<') && image.endsWith('>'))
             image = image.slice(1, -1);
         if (isUrl(image)) {
-            const res = await fetch(image);
+            const res = await this.#fetch.send(image);
             const contentType = res.headers.get('content-type');
             image = `data:${contentType !== null ? contentType : ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
