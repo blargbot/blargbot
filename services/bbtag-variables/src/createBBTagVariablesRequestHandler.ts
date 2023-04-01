@@ -18,7 +18,7 @@ export function createBBTagVariablesRequestHandler(service: BBTagVariablesServic
             const result = await service.getAllVariables(BigInt(req.params.ownerId), req.params.scope, names);
             res.status(200)
                 .contentType('application/json')
-                .end(getBBTagVariablesResponseSerializer.write(result));
+                .end(await getBBTagVariablesResponseSerializer.write(result));
         }))
         .put(asyncHandler(async (req, res) => {
             if (typeof req.body !== 'object' || req.body === null)
@@ -35,7 +35,7 @@ export function createBBTagVariablesRequestHandler(service: BBTagVariablesServic
             const result = await service.getVariable(BigInt(req.params.ownerId), req.params.scope, req.params.name);
             res.status(200)
                 .contentType('application/json')
-                .end(bbtagVariableSerializer.write(result));
+                .end(await bbtagVariableSerializer.write(result));
         }))
         .put(asyncHandler(async (req, res) => {
             await service.setVariable(BigInt(req.params.ownerId), req.params.scope, req.params.name, (req.body as { value: JToken; }).value);

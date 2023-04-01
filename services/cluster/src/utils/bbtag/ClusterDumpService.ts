@@ -7,7 +7,7 @@ export class ClusterDumpService implements DumpService {
     public constructor(public readonly cluster: Cluster) {
     }
 
-    public async generateDumpPage(payload: Entities.MessageCreateOptions, channel: Entities.Channel): Promise<string> {
+    public async generateDumpPage(payload: Entities.MessageCreateOptions, channel: Entities.Channel): Promise<URL> {
         // @ts-expect-error This is only a reference file for now
         const id = (await this.cluster.util.generateDumpPage(payload, channel)).toString();
         return this.cluster.util.websiteLink(`dumps/${id}`);

@@ -1,6 +1,6 @@
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -40,7 +40,7 @@ export class RespondCommand extends GlobalCommand {
 
         const msg = await context.send(feedback.Channel, cmd.default.alert({
             description: feedback.Description,
-            link: context.util.websiteLink(`feedback/${id}`),
+            link: context.util.websiteLink(`feedback/${id}`).toString(),
             respondent: context.author,
             response,
             submitterId: author.ID,

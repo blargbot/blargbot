@@ -1,6 +1,6 @@
 import { MessageTypeSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
-import { snowflake } from '@blargbot/discord-util';
+import snowflake from '@blargbot/snowflakes';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
@@ -40,7 +40,7 @@ const messageTypes: { [P in string & keyof typeof Discord.MessageType]: typeof D
     ['GuildApplicationPremiumSubscription']: Discord.MessageType.GuildApplicationPremiumSubscription
 };
 
-const createSnowflake = snowflake.nextFactory();
+const createSnowflake = snowflake.nextFactory().create;
 runSubtagTests({
     subtag: MessageTypeSubtag,
     argCountBounds: { min: 0, max: 2 },

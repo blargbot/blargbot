@@ -1,4 +1,4 @@
-import type { ChatLogIndex } from '@blargbot/chatlog-types';
+import type { ChatLogIndex } from '@blargbot/chat-log-client';
 import type { ChatLogIndexStore } from '@blargbot/domain/stores/index.js';
 import type { Logger } from '@blargbot/logger';
 

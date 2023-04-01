@@ -24,6 +24,7 @@
         "@blargbot/formatting": "workspace:^",
         "@blargbot/input": "workspace:^",
         "@blargbot/logger": "workspace:^",
+        "@blargbot/snowflakes": "workspace:^",
         "@blargbot/test-util": "workspace:^",
         "@blargbot/timer": "workspace:^",
         "chai": "^4.3.7",

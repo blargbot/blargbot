@@ -1,5 +1,5 @@
 import { Emote } from '@blargbot/discord-emote';
-import { snowflake } from '@blargbot/discord-util';
+import snowflake from '@blargbot/snowflakes';
 
 import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';

@@ -1,5 +1,7 @@
 import type { HttpClient, HttpClientOptions } from '@blargbot/api-client';
-import { defineApiClient, jsonBody } from '@blargbot/api-client';
+import { defineApiClient } from '@blargbot/api-client';
+
+import { guildSettingsSerializer, guildSettingsUpdateSerializer } from './serializer.js';
 
 export * from './serializer.js';
 
@@ -11,7 +13,7 @@ export interface GuildSettings {
     readonly disableEveryone: boolean;
     readonly disableNoPerms: boolean;
     readonly dmHelp: boolean;
-    readonly enableChatlogging: boolean;
+    readonly enableChatLogging: boolean;
     readonly noCleverBot: boolean;
     readonly prefixes: readonly string[];
     readonly enableSocialCommands: boolean;
@@ -45,37 +47,9 @@ export interface GuildSettingsUpdateRequest extends GuildSettingsUpdateBody, Gui
 
 export class GuildSettingsHttpClient extends defineApiClient({
     getSettings: b => b.route<GuildSettingsParameters>(x => `${x.guildId}`)
-        .response<GuildSettings>(200),
+        .response<GuildSettings>(200, guildSettingsSerializer.fromBlob),
     updateSettings: b => b.route<GuildSettingsUpdateRequest>('PATCH', x => `${x.guildId}`)
-        .body(x => jsonBody({
-            maxAllowedMentions: x.maxAllowedMentions,
-            actOnLimitsOnly: x.actOnLimitsOnly,
-            cahNsfw: x.cahNsfw,
-            notifyCommandMessageDelete: x.notifyCommandMessageDelete,
-            disableEveryone: x.disableEveryone,
-            disableNoPerms: x.disableNoPerms,
-            dmHelp: x.dmHelp,
-            enableChatlogging: x.enableChatlogging,
-            noCleverBot: x.noCleverBot,
-            prefixes: x.prefixes,
-            enableSocialCommands: x.enableSocialCommands,
-            tableFlip: x.tableFlip,
-            language: x.language,
-            staffPerms: x.staffPerms,
-            banOverridePerms: x.banOverridePerms,
-            kickOverridePerms: x.kickOverridePerms,
-            timeoutOverridePerms: x.timeoutOverridePerms,
-            greetChannel: x.greetChannel,
-            farewellChannel: x.farewellChannel,
-            modLogChannel: x.modLogChannel,
-            adminRole: x.adminRole,
-            mutedRole: x.mutedRole,
-            banWarnCount: x.banWarnCount,
-            kickWarnCount: x.kickWarnCount,
-            timeoutWarnCount: x.timeoutWarnCount,
-            announceChannel: x.announceChannel,
-            announceRole: x.announceRole
-        } satisfies { [P in keyof GuildSettings]: GuildSettings[P] | undefined }))
+        .body(guildSettingsUpdateSerializer.toBlob)
         .response(204),
     resetSettings: b => b.route<GuildSettingsParameters>('DELETE', x => `${x.guildId}`)
         .response(204)

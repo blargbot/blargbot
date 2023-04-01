@@ -16,9 +16,11 @@
         "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
         "@blargbot/env": "workspace:^",
+        "@blargbot/message-dumps-client": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
         "@blargbot/mod-log-client": "workspace:^",
+        "@blargbot/snowflakes": "workspace:^",
         "@blargbot/timeouts-client": "workspace:^",
         "@blargbot/user-settings-client": "workspace:^",
         "@blargbot/user-warnings-client": "workspace:^"

@@ -1,3 +1,4 @@
+import type { IJsonConverter } from '@blargbot/serialization';
 import { json } from '@blargbot/serialization';
 
 import type { GuildSettings } from './index.js';
@@ -10,7 +11,7 @@ export const guildSettingsSerializerOptions = {
     disableEveryone: json.boolean,
     disableNoPerms: json.boolean,
     dmHelp: json.boolean,
-    enableChatlogging: json.boolean,
+    enableChatLogging: json.boolean,
     noCleverBot: json.boolean,
     prefixes: json.array(json.string),
     enableSocialCommands: json.boolean,
@@ -32,4 +33,15 @@ export const guildSettingsSerializerOptions = {
     announceRole: json.bigint.nullable
 };
 
+export const guildSettingsUpdateSerializerOptions = Object.fromEntries(
+    Object.entries(guildSettingsSerializerOptions)
+        .map(x => [x[0], x[1].optional] as const)
+) as {
+        [P in keyof typeof guildSettingsSerializerOptions]: typeof guildSettingsSerializerOptions[P] extends IJsonConverter<infer R>
+        ? IJsonConverter<R | undefined>
+        : never
+    };
+
 export const guildSettingsSerializer = json.object<GuildSettings>(guildSettingsSerializerOptions);
+
+export const guildSettingsUpdateSerializer = json.object<Partial<GuildSettings>>(guildSettingsUpdateSerializerOptions);

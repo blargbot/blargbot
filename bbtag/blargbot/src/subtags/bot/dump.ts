@@ -31,6 +31,7 @@ export class DumpSubtag extends CompiledSubtag {
     }
 
     public async createDump(context: BBTagScript, text: string): Promise<string> {
-        return await this.#dump.generateDumpPage({ content: text }, context.runtime.channel);
+        const url = await this.#dump.generateDumpPage({ content: text }, context.runtime.channel);
+        return url.toString();
     }
 }

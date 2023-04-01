@@ -1,14 +1,14 @@
 import { randomInt } from 'node:crypto';
 
-import type { ChatLog, ChatLogMessage } from '@blargbot/chatlog-types';
-import { ChatLogType } from '@blargbot/chatlog-types';
+import type { ChatLog, ChatLogMessage } from '@blargbot/chat-log-client';
+import { ChatLogType } from '@blargbot/chat-log-client';
 import { mapping } from '@blargbot/mapping';
 import cassandra from 'cassandra-driver';
 
-export default class DiscordChatlogDatabase {
+export default class ChatLogDatabase {
     readonly #database: cassandra.Client;
 
-    public constructor(options: DiscordChatlogDatabaseOptions) {
+    public constructor(options: ChatLogDatabaseOptions) {
         this.#database = new cassandra.Client({
             localDataCenter: 'datacenter1',
             contactPoints: [...options.contactPoints],
@@ -35,7 +35,7 @@ export default class DiscordChatlogDatabase {
 
     public async add(message: ChatLogMessage, type: ChatLogType, lifespanS: number | moment.Duration = 604800): Promise<void> {
         const lifespan = typeof lifespanS === 'number' ? lifespanS : lifespanS.asSeconds();
-        const chatlog: ChatLogRecord = {
+        const chatLog: ChatLogRecord = {
             ...message,
             id: randomInt(maxInt).toString(),
             msgtime: new Date(),
@@ -43,8 +43,8 @@ export default class DiscordChatlogDatabase {
             embeds: JSON.stringify(message.embeds),
             attachment: JSON.stringify(message.attachments)
         };
-        await this.#database.execute(insertChatlogQuery(lifespan), chatlog, { prepare: true });
-        await this.#database.execute(insertChatlogMapQuery(lifespan), chatlog, { prepare: true });
+        await this.#database.execute(insertChatLogQuery(lifespan), chatLog, { prepare: true });
+        await this.#database.execute(insertChatLogMapQuery(lifespan), chatLog, { prepare: true });
     }
 
     public async get(messageIds: string[], channelId: string): Promise<ChatLog[]> {
@@ -57,7 +57,7 @@ export default class DiscordChatlogDatabase {
 
         return await idBatches.reduce(async (resultPromise, idBatch) => {
             const resultSet = await this.#database.execute(
-                getChatlogQuery(),
+                getChatLogQuery(),
                 { channelid: channelId, ids: idBatch },
                 { prepare: true, readTimeout: 200000 });
 
@@ -74,31 +74,35 @@ export default class DiscordChatlogDatabase {
     async #assertDb(): Promise<void> {
         console.log('Asserting CQL schema');
         await Promise.all([
-            this.#database.execute(createChatlogsTableQuery()),
-            this.#database.execute(createChatlogsMapTableQuery())
+            this.#database.execute(createChatLogsTableQuery()),
+            this.#database.execute(createChatLogsMapTableQuery())
         ]);
     }
 }
 
 const maxInt = Math.pow(2, 48) - 1;
-const mapLongToString = mapping.instanceof(cassandra.types.Long).map(v => v.toString());
+const mapCQLBigIntToJs = mapping.choice(
+    mapping.instanceof(cassandra.types.Long),
+    mapping.number,
+    mapping.bigInt
+).map(x => x.toString());
 const mapChatLog = mapping.object<ChatLog>({
     attachments: ['attachment', mapping.choice(
         mapping.json(mapping.array(mapping.string)),
         mapping.string.nullish.map(s => typeof s === 'string' ? [s] : [])
     )],
-    channelid: mapLongToString,
+    channelid: mapCQLBigIntToJs,
     content: mapping.string,
     embeds: mapping.json(mapping.array(mapping.typeof('object'))),
-    guildid: mapLongToString,
-    id: mapLongToString,
-    msgid: mapLongToString,
+    guildid: mapCQLBigIntToJs,
+    id: mapCQLBigIntToJs,
+    msgid: mapCQLBigIntToJs,
     msgtime: mapping.instanceof(Date),
     type: mapping.in(ChatLogType.CREATE, ChatLogType.DELETE, ChatLogType.UPDATE),
-    userid: mapLongToString
+    userid: mapCQLBigIntToJs
 });
 
-export interface DiscordChatlogDatabaseOptions {
+export interface ChatLogDatabaseOptions {
     readonly contactPoints: Iterable<string>;
     readonly keyspace: string;
     readonly username: string;
@@ -118,7 +122,7 @@ interface ChatLogRecord {
     readonly attachment: string;
 }
 
-const createChatlogsTableQuery = (): string => `
+const createChatLogsTableQuery = (): string => `
 CREATE TABLE IF NOT EXISTS chatlogs (
     id BIGINT,
     channelid BIGINT,
@@ -134,7 +138,7 @@ CREATE TABLE IF NOT EXISTS chatlogs (
 )
 WITH CLUSTERING ORDER BY(id DESC);`;
 
-const createChatlogsMapTableQuery = (): string => `
+const createChatLogsMapTableQuery = (): string => `
 CREATE TABLE IF NOT EXISTS chatlogs_map (
     id BIGINT,
     msgid BIGINT,
@@ -143,17 +147,17 @@ CREATE TABLE IF NOT EXISTS chatlogs_map (
 )
 WITH CLUSTERING ORDER BY(id DESC);`;
 
-const insertChatlogQuery = (ttl: number): string => `
+const insertChatLogQuery = (ttl: number): string => `
 INSERT INTO chatlogs ( id,  content,  attachment,  userid,  msgid,  channelid,  guildid,  msgtime,  type,  embeds)
 VALUES               (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)
 USING TTL ${ttl}`;
 
-const insertChatlogMapQuery = (ttl: number): string => `
+const insertChatLogMapQuery = (ttl: number): string => `
 INSERT INTO chatlogs_map ( id,  msgid,  channelid)
 VALUES                   (:id, :msgid, :channelid)
 USING TTL ${ttl}`;
 
-const getChatlogQuery = (): string => `
+const getChatLogQuery = (): string => `
 SELECT * FROM chatlogs 
 WHERE channelid = :channelid 
 AND id IN :ids`;

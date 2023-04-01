@@ -168,7 +168,7 @@ export class FeedbackCommand extends GlobalCommand {
         if (record === undefined)
             return cmd.general.unexpectedError;
 
-        const websiteLink = context.util.websiteLink(`feedback/${record}`);
+        const websiteLink = context.util.websiteLink(`feedback/${record}`).toString();
         await context.send(channelId, {
             embeds: [
                 {

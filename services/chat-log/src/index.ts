@@ -6,9 +6,9 @@ import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsPushService } from '@blargbot/metrics-client';
 
-import type { DiscordChatlogDatabaseOptions } from './DiscordChatlogDatabase.js';
-import DiscordChatlogDatabase from './DiscordChatlogDatabase.js';
-import { DiscordChatlogService } from './DiscordChatlogService.js';
+import type { ChatLogDatabaseOptions } from './ChatLogDatabase.js';
+import ChatLogDatabase from './ChatLogDatabase.js';
+import { ChatLogService } from './ChatLogService.js';
 
 @hostIfEntrypoint(() => [{
     messages: {
@@ -27,13 +27,13 @@ import { DiscordChatlogService } from './DiscordChatlogService.js';
         url: env.guildSettingsUrl
     }
 }])
-export class DiscordChatlogApplication extends ServiceHost {
-    public constructor(options: DiscordChatlogApplicationOptions) {
-        const serviceName = 'discord-chatlog';
+export class ChatLogApplication extends ServiceHost {
+    public constructor(options: ChatLogApplicationOptions) {
+        const serviceName = 'chat-log';
         const hub = new MessageHub(options.messages);
-        const database = new DiscordChatlogDatabase(options.database);
+        const database = new ChatLogDatabase(options.database);
         const gateway = new DiscordGatewayMessageBroker(hub, serviceName);
-        const service = new DiscordChatlogService(
+        const service = new ChatLogService(
             database,
             {
                 guildSettingsUrl: options.guildSettings.url
@@ -55,9 +55,9 @@ export class DiscordChatlogApplication extends ServiceHost {
     }
 }
 
-export interface DiscordChatlogApplicationOptions {
+export interface ChatLogApplicationOptions {
     readonly messages: ConnectionOptions;
-    readonly database: DiscordChatlogDatabaseOptions;
+    readonly database: ChatLogDatabaseOptions;
     readonly guildSettings: {
         readonly url: string;
     };

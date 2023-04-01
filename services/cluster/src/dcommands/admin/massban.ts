@@ -1,8 +1,9 @@
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { markup, snowflake } from '@blargbot/discord-util';
+import { markup } from '@blargbot/discord-util';
 import { util } from '@blargbot/formatting';
 import type { FlagResult } from '@blargbot/input';
+import snowflake from '@blargbot/snowflakes';
 
 import { GuildCommand } from '../../command/index.js';
 import templates from '../../text.js';

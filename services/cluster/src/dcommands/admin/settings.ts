@@ -17,7 +17,7 @@ export class SettingsCommand extends GuildCommand {
         super({
             name: 'settings',
             category: CommandType.ADMIN,
-            description: cmd.description({ website: cluster.util.websiteLink('/guilds/settings') }),
+            description: cmd.description({ website: cluster.util.websiteLink('/guilds/settings').toString() }),
             definitions: [
                 {
                     parameters: '',

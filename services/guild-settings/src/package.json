@@ -15,7 +15,6 @@
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
         "@blargbot/guild-settings-client": "workspace:^",
-        "@blargbot/mapping": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
         "@blargbot/redis-cache": "workspace:^",
         "@blargbot/sequelize": "workspace:^",

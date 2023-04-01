@@ -19,6 +19,7 @@
         "@blargbot/guards": "workspace:^",
         "@blargbot/input": "workspace:^",
         "@blargbot/mapping": "workspace:^",
+        "@blargbot/snowflakes": "workspace:^",
         "@blargbot/timer": "workspace:^",
         "@blargbot/user-regex": "workspace:^",
         "brainfuck-node": "^1.0.2",

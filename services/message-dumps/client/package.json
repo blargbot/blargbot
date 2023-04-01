@@ -1,0 +1,16 @@
+{
+    "name": "@blargbot/message-dumps-client",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "@blargbot/api-client": "workspace:^",
+        "@blargbot/serialization": "workspace:^"
+    },
+    "devDependencies": {
+        "@blargbot/discord-types": "workspace:^"
+    }
+}

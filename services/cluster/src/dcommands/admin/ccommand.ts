@@ -33,8 +33,8 @@ export class CustomCommandCommand extends GuildCommand {
             aliases: ['cc'],
             category: CommandType.ADMIN,
             description: cmd.description({
-                tos: cluster.util.websiteLink('/bbtag/subtags/tos'),
-                subtags: cluster.util.websiteLink('/bbtag/subtags')
+                tos: cluster.util.websiteLink('/bbtag/subtags/tos').toString(),
+                subtags: cluster.util.websiteLink('/bbtag/subtags').toString()
             }),
             definitions: [
                 {

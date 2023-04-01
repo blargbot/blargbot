@@ -1,7 +1,7 @@
 import type { BBTagRuntimeError, BBTagScript, Entities, FindEntityOptions } from '@bbtag/blargbot';
 import { ChannelNotFoundError, MessageNotFoundError } from '@bbtag/blargbot';
 import type Discord from '@blargbot/discord-types';
-import { snowflake } from '@blargbot/discord-util';
+import snowflake from '@blargbot/snowflakes';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
@@ -115,7 +115,7 @@ interface GetMessagePropTestCase {
     assert?: (result: string, channel: Entities.Channel, message: Entities.Message, context: BBTagScript, test: SubtagTestContext) => void;
 }
 
-const createSnowflake = snowflake.nextFactory();
+const createSnowflake = snowflake.nextFactory().create;
 function createTestCase(data: GetMessagePropTestData, isQuiet: boolean, testCase: GetMessagePropTestCase, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetMessagePropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     const messageMap = new WeakMap<SubtagTestContext, Entities.Message>();

@@ -40,7 +40,9 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
             tags: [''],
             embed: {
                 color: 0xefff00,
-                description: doc.index.description({ editorLink: this.#cluster.util.websiteLink('bbtag/editor') }),
+                description: doc.index.description({
+                    editorLink: this.#cluster.util.websiteLink('bbtag/editor').toString()
+                }),
                 fields: [
                     {
                         name: doc.index.topics.name,

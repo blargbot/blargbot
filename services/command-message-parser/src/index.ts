@@ -29,7 +29,7 @@ import { CommandMessageParserService } from './CommandMessageParserService.js';
     }
 }])
 export class CommandMessageParserApplication extends ServiceHost {
-    public constructor(options: DiscordChatlogApplicationOptions) {
+    public constructor(options: CommandMessageParserApplicationOptions) {
         const serviceName = 'command-message-parser';
         const hub = new MessageHub(options.messages);
         const messageStream = new DiscordMessageStreamMessageBroker(hub, serviceName);
@@ -57,7 +57,7 @@ export class CommandMessageParserApplication extends ServiceHost {
     }
 }
 
-export interface DiscordChatlogApplicationOptions {
+export interface CommandMessageParserApplicationOptions {
     readonly defaultPrefix: string;
     readonly messages: ConnectionOptions;
     readonly guildSettings: {

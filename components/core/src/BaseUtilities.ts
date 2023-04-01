@@ -4,13 +4,14 @@ import { CrowdinTranslationSource } from '@blargbot/crowdin';
 import type { Database } from '@blargbot/database';
 import type { Emote } from '@blargbot/discord-emote';
 import type Discord from '@blargbot/discord-types';
-import type { Snowflake } from '@blargbot/discord-util';
-import { checkEmbedSize, checkMessageSize, isGuildChannel, isPrivateChannel, isTextableChannel, isVoiceChannel, markup, snowflake } from '@blargbot/discord-util';
+import { checkEmbedSize, checkMessageSize, isGuildChannel, isPrivateChannel, isTextableChannel, isVoiceChannel, markup } from '@blargbot/discord-util';
 import type { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models/index.js';
 import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format, Formatter, TranslationMiddleware, util } from '@blargbot/formatting';
 import { hasProperty, hasValue } from '@blargbot/guards';
 import type { Logger } from '@blargbot/logger';
+import type { Snowflake } from '@blargbot/snowflakes';
+import snowflake from '@blargbot/snowflakes';
 import * as Eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -69,12 +70,12 @@ export class BaseUtilities {
         );
     }
 
-    public websiteLink(path?: string): string {
+    public websiteLink(path?: string): URL {
         path = path?.replace(/^[/\\]+/, '');
         const scheme = this.config.website.secure ? 'https' : 'http';
         const host = this.config.website.host;
         const port = this.config.website.port === 80 ? '' : `:${this.config.website.port}`;
-        return `${scheme}://${host}${port}/${path ?? ''}`;
+        return new URL(`${scheme}://${host}${port}/${path ?? ''}`);
     }
 
     public embedifyAuthor(target: Eris.Member | Eris.User | Eris.Guild | StoredUser, includeId = false): FormatEmbedAuthor<IFormattable<string>> {
@@ -152,7 +153,7 @@ export class BaseUtilities {
 
         if (!checkEmbedSize(content.embeds)) {
             const id = await this.generateDumpPage(content, channel);
-            const output = this.websiteLink(`/dumps/${id}`);
+            const output = this.websiteLink(`/dumps/${id}`).toString();
             content.content = `Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n\nTo see what I would have said, please visit ${output}`;
             if (content.embeds !== undefined)
                 delete content.embeds;

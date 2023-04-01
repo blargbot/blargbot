@@ -1,14 +1,40 @@
+import { subtags, tagVariableScopeProviders } from '@bbtag/blargbot';
+import { VariableNameParser, VariableProvider } from '@bbtag/variables';
 import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { BBTagExecutionMessageBroker } from '@blargbot/bbtag-runner-client';
 import { BBTagVariableHttpClient } from '@blargbot/bbtag-variables-client';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
+import { MessageDumpsHttpClient } from '@blargbot/message-dumps-client';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { Metrics, MetricsPushService } from '@blargbot/metrics-client';
+import { ModLogMessageBroker } from '@blargbot/mod-log-client';
+import snowflake from '@blargbot/snowflakes';
 import { TimeoutHttpClient } from '@blargbot/timeouts-client';
+import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
+import { UserWarningsHttpClient } from '@blargbot/user-warnings-client';
+import { createHash } from 'crypto';
 
 import { createBBTagEngine } from './createBBTagEngine.js';
+import { ChannelService } from './services/ChannelService.js';
+import { CooldownService } from './services/CooldownService.js';
+import { DeferredExecutionService } from './services/DeferredExecutionService.js';
+import { DomainFilterService } from './services/DomainFilterService.js';
+import { DumpService } from './services/DumpService.js';
+import { GuildService } from './services/GuildService.js';
+import { LockService } from './services/LockService.js';
+import { MessageDumpUrlFactory } from './services/MessageDumpUrlFactory.js';
+import { MessageService } from './services/MessageService.js';
+import { MetricsService } from './services/MetricsService.js';
+import { ModLogService } from './services/ModLogService.js';
+import { RoleService } from './services/RoleService.js';
+import { SourceProvider } from './services/SourceProvider.js';
+import { StaffService } from './services/StaffService.js';
+import { TimezoneProvider } from './services/TimezoneProvider.js';
+import { UserService } from './services/UserService.js';
+import { VariablesStore } from './services/VariablesStore.js';
+import { WarningService } from './services/WarningService.js';
 
 @hostIfEntrypoint(() => [{
     defaultPrefix: env.get(String, 'COMMAND_PREFIX'),
@@ -23,37 +49,58 @@ import { createBBTagEngine } from './createBBTagEngine.js';
         hostname: env.rabbitHost,
         username: env.rabbitUsername,
         password: env.rabbitPassword
+    },
+    messageDumps: {
+        url: env.messageDumpsUrl,
+        websiteUrl: env.messageDumpsWebsiteUrl
+    },
+    userSettings: {
+        url: env.userSettingsUrl
+    },
+    userWarnings: {
+        url: env.userWarningsUrl
     }
 }])
 export class BBTagRunnerApplication extends ServiceHost {
 
     public constructor(options: BBTagRunnerApplicationOptions) {
         const serviceName = 'bbtag-runner';
+        const snowflakes = snowflake.createFactory(parseInt(fullContainerId, 16), parseInt(createHash('sha256').update(serviceName).digest().toString('hex'), 16));
         const hub = new MessageHub(options.messages);
         const executeBroker = new BBTagExecutionMessageBroker(hub, serviceName);
         const metrics = new Metrics({ serviceName, instanceId: fullContainerId });
-        const subtagLatency = metrics.histogram({
-            name: 'bot_subtag_latency_ms',
-            help: 'Latency of subtag execution',
-            labelNames: ['subtag'],
-            buckets: [0, 5, 10, 100, 500, 1000, 2000, 5000]
-        });
-        const subtagCount = metrics.counter({
-            name: 'bot_subtag_counter',
-            help: 'Subtags executed',
-            labelNames: ['subtag']
-        });
+        const timeouts = new BBTagExecutionMessageBroker(hub, serviceName);
         const engine = createBBTagEngine({
-            messages: hub,
-            variables: new BBTagVariableHttpClient(options.variables.url),
-            timeout: new TimeoutHttpClient(options.timeout.url),
-            timeoutQueue: executeBroker.executeQueueName,
-            metrics: {
-                subtagUsed(name, duration) {
-                    subtagLatency.labels(name).observe(duration);
-                    subtagCount.labels(name).inc();
-                }
-            }
+            subtags: Object.values(subtags),
+            middleware: [
+                new MetricsService(metrics).subtagMiddleware
+            ],
+            variables: new VariableProvider(
+                new VariableNameParser(tagVariableScopeProviders),
+                new VariablesStore(new BBTagVariableHttpClient(options.variables.url))
+            ),
+            defer: new DeferredExecutionService(
+                new TimeoutHttpClient(options.timeout.url),
+                timeouts.executeQueueName
+            ),
+            dump: new DumpService(
+                new MessageDumpsHttpClient(options.messageDumps.url),
+                snowflakes,
+                new MessageDumpUrlFactory(options.messageDumps.websiteUrl)
+            ),
+            modLog: new ModLogService(new ModLogMessageBroker(hub, serviceName)),
+            timezones: new TimezoneProvider(new UserSettingsHttpClient(options.userSettings.url)),
+            warnings: new WarningService(new UserWarningsHttpClient(options.userWarnings.url)),
+            domains: new DomainFilterService(),
+            lock: new LockService(),
+            staff: new StaffService(),
+            sources: new SourceProvider(),
+            channels: new ChannelService(),
+            cooldowns: new CooldownService(),
+            guild: new GuildService(),
+            messages: new MessageService(),
+            roles: new RoleService(),
+            users: new UserService()
         });
 
         super([
@@ -74,6 +121,16 @@ export interface BBTagRunnerApplicationOptions {
         readonly url: string;
     };
     readonly timeout: {
+        readonly url: string;
+    };
+    readonly messageDumps: {
+        readonly url: string;
+        readonly websiteUrl: string;
+    };
+    readonly userSettings: {
+        readonly url: string;
+    };
+    readonly userWarnings: {
         readonly url: string;
     };
     readonly defaultPrefix: string;

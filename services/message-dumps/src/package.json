@@ -1,0 +1,22 @@
+{
+    "name": "@blargbot/message-dumps",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "scripts": {
+        "start": "node ./index.js"
+    },
+    "dependencies": {
+        "@blargbot/application": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
+        "@blargbot/env": "workspace:^",
+        "@blargbot/express": "workspace:^",
+        "@blargbot/mapping": "workspace:^",
+        "@blargbot/message-dumps-client": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
+        "cassandra-driver": "^4.6.4"
+    }
+}

@@ -173,8 +173,8 @@ services:
       rabbitmq:
         condition: service_healthy
 
-  discord-chatlog:
-    image: blargbot/discord-chatlog
+  chat-log:
+    image: blargbot/chat-log
     environment:
       <<: *metrics-env
       <<: *cassandra-env
@@ -400,6 +400,15 @@ services:
       <<: *rabbit-env
     depends_on:
       postgres:
+        condition: service_healthy
+
+  message-dumps:
+    image: blargbot/message-dumps
+    environment:
+      <<: *metrics-env
+      <<: *cassandra-env
+    depends_on:
+      cassandra:
         condition: service_healthy
 
   rabbitmq:

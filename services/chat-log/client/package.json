@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/chatlog-types",
+    "name": "@blargbot/chat-log-client",
     "version": "1.0.0",
     "private": true,
     "type": "module",

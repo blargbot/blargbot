@@ -67,12 +67,17 @@ declare global {
         entries(value: object): Array<[string, unknown]>;
         create<T, U>(o: T, properties: { [P in keyof U]: TypedPropertyDescriptor<U[P]> }): T & U;
         create<T extends object>(value: T): T;
-        fromEntries<TKey extends PropertyKey, TValue>(entries: Iterable<readonly [TKey, TValue]>): { [P in TKey]: TValue };
-        fromEntries<TProp extends readonly [PropertyKey, unknown]>(entries: Iterable<TProp>): { [P in TProp as P[0]]: P[1]; };
+        fromEntries<Entries extends Iterable<readonly [PropertyKey, unknown]>>(entries: Entries): FromEntries<Entries>
 
         defineProperties<T, U>(o: T, properties: { [P in keyof U]: TypedPropertyDescriptor<U[P]> }): T & U;
         defineProperty<T, Key extends PropertyKey, U>(o: T, key: Key, attributes: TypedPropertyDescriptor<U>): T & { [P in Key]: U; };
     }
+
+    type KVPToDict<KVP extends readonly [PropertyKey, unknown]> = { [P in KVP as P[0]]: P[1] }
+    type FromEntries<Entries extends Iterable<readonly [PropertyKey, unknown]>> =
+        Entries extends Iterable<infer R>
+        ? KVPToDict<R>
+        : never
 
     interface Boolean {
         toString(): 'true' | 'false';

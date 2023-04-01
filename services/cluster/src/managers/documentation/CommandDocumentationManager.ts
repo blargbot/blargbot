@@ -85,8 +85,8 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
                     {
                         name: util.literal('\u200B'),
                         value: doc.index.footer({
-                            commandsLink: this.#cluster.util.websiteLink('/commands'),
-                            donateLink: this.#cluster.util.websiteLink('/donate')
+                            commandsLink: this.#cluster.util.websiteLink('/commands').toString(),
+                            donateLink: this.#cluster.util.websiteLink('/donate').toString()
                         })
                     }
                 ]

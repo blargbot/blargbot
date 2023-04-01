@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import type { ChatLog, ChatLogIndex, ChatLogSearchOptions } from '@blargbot/chatlog-types';
+import type { ChatLog, ChatLogIndex, ChatLogSearchOptions } from '@blargbot/chat-log-client';
 import type { Cluster } from '@blargbot/cluster';
 import { isGuildChannel } from '@blargbot/discord-util';
 

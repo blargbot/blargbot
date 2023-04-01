@@ -11,7 +11,8 @@
 				"dbaeumer.vscode-eslint",
 				"gamunu.vscode-yarn",
 				"arcanis.vscode-zipfs",
-				"eamodio.gitlens"
+				"eamodio.gitlens",
+				"ms-azuretools.vscode-docker"
 			]
 		}
 	},

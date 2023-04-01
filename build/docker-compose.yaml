@@ -21,9 +21,9 @@ services:
     build: ../services/discord-interaction-stream/src
     image: blargbot/discord-interaction-stream
 
-  discord-chatlog:
-    build: ../services/discord-chatlog/src
-    image: blargbot/discord-chatlog
+  chat-log:
+    build: ../services/chat-log/src
+    image: blargbot/chat-log
 
   discord-guild-cache:
     build: ../services/discord-guild-cache/src
@@ -100,6 +100,10 @@ services:
   user-warnings:
     build: ../services/user-warnings/src
     image: blargbot/user-warnings
+
+  message-dumps:
+    build: ../services/message-dumps/src
+    image: blargbot/message-dumps
 
   rabbitmq:
     build: ../infra/rabbitmq

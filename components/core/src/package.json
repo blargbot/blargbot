@@ -24,6 +24,7 @@
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "@blargbot/res": "workspace:^",
+        "@blargbot/snowflakes": "workspace:^",
         "@blargbot/timer": "workspace:^",
         "@blargbot/user-regex": "workspace:^",
         "airtable": "^0.11.6",

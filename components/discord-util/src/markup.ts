@@ -1,5 +1,5 @@
-import type { Snowflake } from './snowflake.js';
-import { snowflake } from './snowflake.js';
+import type { Snowflake } from '@blargbot/snowflakes';
+import snowflake from '@blargbot/snowflakes';
 
 const userFindRegex = /<@!?(\d+)>/g;
 const userNicknameFindRegex = /<@(\d+)>/g;
@@ -128,13 +128,14 @@ function createMarkupTool<Impl extends (...args: never) => string, Result, Rest 
 function createStyledTimestampMarkupTools<Style extends DiscordTimeStyle, Alias extends PropertyKey>(
     style: Style,
     ...aliases: Alias[]
-): { [P in Style | Alias]: MarkupTool<(timeMs: number | Date) => `<t:${number}:${Style}>`, Date> } {
+): KVPToDict<[Style | Alias, MarkupTool<(timeMs: number | Date) => `<t:${number}:${Style}>`, Date>]> {
     const tool = createMarkupTool(
         (timeMs: number | Date) => `<t:${Math.floor(timeMs.valueOf() / 1000)}:${style}>` as const,
         createTimestampRegex(style),
         m => new Date(Number(m[1]) * 1000)
     );
-    return Object.fromEntries([style, ...aliases].map(x => [x, tool] as const));
+    const keys = [style, ...aliases];
+    return Object.fromEntries(keys.map(x => [x, tool]));
 }
 function createTimestampRegex<T extends string>(style: T): RegExp {
     return new RegExp(`<t:(\\d+):(${style})>`, 'g');

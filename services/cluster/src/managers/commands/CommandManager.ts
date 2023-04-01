@@ -2,9 +2,10 @@ import type { Cluster } from '@blargbot/cluster';
 import type { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster/types.js';
 import { defaultStaff } from '@blargbot/cluster/utils/index.js';
 import { parse } from '@blargbot/core/utils/index.js';
-import { isGuildChannel, markup, snowflake } from '@blargbot/discord-util';
+import { isGuildChannel, markup } from '@blargbot/discord-util';
 import type { CommandPermissions } from '@blargbot/domain/models/index.js';
 import { hasValue } from '@blargbot/guards';
+import snowflake from '@blargbot/snowflakes';
 import * as Eris from 'eris';
 
 export abstract class CommandManager<T> implements ICommandManager<T> {

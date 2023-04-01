@@ -1,4 +1,4 @@
-import { snowflake } from '@blargbot/discord-util';
+import snowflake from '@blargbot/snowflakes';
 import moment from 'moment-timezone';
 
 import type { BBTagScript } from '../../BBTagScript.js';

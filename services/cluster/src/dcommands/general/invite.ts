@@ -1,6 +1,6 @@
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 
-import type { CommandContext} from '../../command/index.js';
+import type { CommandContext } from '../../command/index.js';
 import { GlobalCommand } from '../../command/index.js';
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -25,7 +25,7 @@ export class InviteCommand extends GlobalCommand {
 
     public invite(context: CommandContext): CommandResult {
         return cmd.default.success({
-            inviteLink: context.util.websiteLink('invite'),
+            inviteLink: context.util.websiteLink('invite').toString(),
             guildLink: 'https://discord.gg/015GVxZxI8rtlJgXF'
         });
     }

@@ -1,4 +1,4 @@
-import type { ChatLogIndex } from '@blargbot/chatlog-types';
+import type { ChatLogIndex } from '@blargbot/chat-log-client';
 
 export interface ChatLogIndexStore {
     add(index: ChatLogIndex): Promise<boolean>;

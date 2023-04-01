@@ -1,4 +1,4 @@
-import type { ChatLog } from '@blargbot/chatlog-types';
+import type { ChatLog } from '@blargbot/chat-log-client';
 import type { Cluster } from '@blargbot/cluster';
 import { ModlogColour } from '@blargbot/cluster/utils/index.js';
 import type { BaseUtilities } from '@blargbot/core/BaseUtilities.js';

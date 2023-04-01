@@ -1,6 +1,6 @@
 import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
-import type { Snowflake } from '@blargbot/discord-util';
 import { findRoleColor } from '@blargbot/discord-util';
+import type { Snowflake } from '@blargbot/snowflakes';
 import type * as Eris from 'eris';
 
 import type { CommandContext } from '../../command/index.js';

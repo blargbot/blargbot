@@ -26,7 +26,7 @@ export default class GuildSettingsSequelizeDatabase implements IGuildSettingsDat
             ...makeColumn('disableEveryone', DataTypes.BOOLEAN, x),
             ...makeColumn('disableNoPerms', DataTypes.BOOLEAN, x),
             ...makeColumn('dmHelp', DataTypes.BOOLEAN, x),
-            ...makeColumn('enableChatlogging', DataTypes.BOOLEAN, x),
+            ...makeColumn('enableChatLogging', DataTypes.BOOLEAN, x),
             ...makeColumn('noCleverBot', DataTypes.BOOLEAN, x),
             ...makeColumn('prefixes', DataTypes.ARRAY(DataTypes.STRING), x),
             ...makeColumn('enableSocialCommands', DataTypes.BOOLEAN, x),

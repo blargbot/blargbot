@@ -6,7 +6,7 @@ import type { SourceMarker } from '@bbtag/language';
 import type { IVariableStore } from '@bbtag/variables';
 import { VariableNameParser, VariableProvider } from '@bbtag/variables';
 import Discord from '@blargbot/discord-types';
-import { snowflake } from '@blargbot/discord-util';
+import snowflake from '@blargbot/snowflakes';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
 import { Timer } from '@blargbot/timer';
 import chai from 'chai';
@@ -78,7 +78,7 @@ export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends
 
 type ArgCountBound = number | { count: number; noEval: number[]; };
 
-const createSnowflake = snowflake.nextFactory();
+const createSnowflake = snowflake.nextFactory().create;
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export class SubtagTestContext {

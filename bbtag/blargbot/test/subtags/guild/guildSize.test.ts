@@ -1,9 +1,9 @@
 import { GuildSizeSubtag } from '@bbtag/blargbot/subtags';
-import { snowflake } from '@blargbot/discord-util';
+import snowflake from '@blargbot/snowflakes';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
-const createSnowflake = snowflake.nextFactory();
+const createSnowflake = snowflake.nextFactory().create;
 runSubtagTests({
     subtag: GuildSizeSubtag,
     argCountBounds: { min: 0, max: 0 },

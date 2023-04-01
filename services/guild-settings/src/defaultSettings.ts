@@ -6,7 +6,7 @@ export const defaultSettings = (): GuildSettings => ({
     disableEveryone: false,
     disableNoPerms: false,
     dmHelp: false,
-    enableChatlogging: false,
+    enableChatLogging: false,
     enableSocialCommands: false,
     noCleverBot: false,
     notifyCommandMessageDelete: false,

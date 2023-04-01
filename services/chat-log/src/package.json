@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/discord-chatlog",
+    "name": "@blargbot/chat-log",
     "version": "1.0.0",
     "private": true,
     "type": "module",
@@ -11,7 +11,7 @@
     },
     "dependencies": {
         "@blargbot/application": "workspace:^",
-        "@blargbot/chatlog-types": "workspace:^",
+        "@blargbot/chat-log-client": "workspace:^",
         "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-gateway-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",

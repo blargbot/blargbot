@@ -1,28 +1,28 @@
-import { ChatLogType } from '@blargbot/chatlog-types';
+import { ChatLogType } from '@blargbot/chat-log-client';
 import type Discord from '@blargbot/discord-types';
 import { GuildSettingsHttpClient } from '@blargbot/guild-settings-client';
 
-import type DiscordChatlogDatabase from './DiscordChatlogDatabase.js';
+import type ChatLogDatabase from './ChatLogDatabase.js';
 
-export class DiscordChatlogService {
-    readonly #database: DiscordChatlogDatabase;
+export class ChatLogService {
+    readonly #database: ChatLogDatabase;
     readonly #guildSettings: GuildSettingsHttpClient;
 
-    public constructor(database: DiscordChatlogDatabase, options: DiscordChatlogServiceOptions) {
+    public constructor(database: ChatLogDatabase, options: ChatLogServiceOptions) {
         this.#database = database;
         this.#guildSettings = GuildSettingsHttpClient.from(options.guildSettingsClient ?? options.guildSettingsUrl);
     }
 
-    async #shouldChatlog(message: Pick<Discord.GatewayMessageCreateDispatchData, 'guild_id' | 'channel_id'>): Promise<boolean> {
+    async #shouldLogMessage(message: Pick<Discord.GatewayMessageCreateDispatchData, 'guild_id' | 'channel_id'>): Promise<boolean> {
         if (message.guild_id === undefined)
             return false;
 
         const settings = await this.#guildSettings.getSettings({ guildId: message.guild_id });
-        return settings.enableChatlogging;
+        return settings.enableChatLogging;
     }
 
     public async handleMessageCreate(message: Discord.GatewayMessageCreateDispatchData): Promise<void> {
-        if (!await this.#shouldChatlog(message))
+        if (!await this.#shouldLogMessage(message))
             return;
 
         await this.#database.add({
@@ -37,7 +37,7 @@ export class DiscordChatlogService {
     }
 
     public async handleMessageUpdate(message: Discord.GatewayMessageUpdateDispatchData): Promise<void> {
-        if (!await this.#shouldChatlog(message))
+        if (!await this.#shouldLogMessage(message))
             return;
 
         await this.#database.add({
@@ -60,17 +60,17 @@ export class DiscordChatlogService {
     }
 
     public async handleMessageDeleteBulk(message: Discord.GatewayMessageDeleteBulkDispatchData): Promise<void> {
-        if (!await this.#shouldChatlog(message))
+        if (!await this.#shouldLogMessage(message))
             return;
 
-        const chatlogs = await this.#database.get(message.ids, message.channel_id);
+        const chatLogs = await this.#database.get(message.ids, message.channel_id);
         await Promise.all(
-            chatlogs.map(chatlog => this.#database.add(chatlog, ChatLogType.DELETE))
+            chatLogs.map(c => this.#database.add(c, ChatLogType.DELETE))
         );
     }
 }
 
-interface DiscordChatlogServiceOptions {
+interface ChatLogServiceOptions {
     readonly guildSettingsUrl?: string;
     readonly guildSettingsClient?: GuildSettingsHttpClient;
 }

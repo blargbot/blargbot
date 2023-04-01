@@ -28,7 +28,10 @@ export class TagCommand extends GuildCommand {
             name: 'tag',
             aliases: ['t'],
             category: CommandType.GENERAL,
-            description: cmd.description({ subtags: cluster.util.websiteLink('/bbtag'), tos: cluster.util.websiteLink('/bbtag/tos') }),
+            description: cmd.description({
+                subtags: cluster.util.websiteLink('/bbtag').toString(),
+                tos: cluster.util.websiteLink('/bbtag/tos').toString()
+            }),
             definitions: [
                 {
                     parameters: '{tagName} {~args+?}',

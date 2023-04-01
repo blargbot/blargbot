@@ -9,7 +9,7 @@
     },
     "dependencies": {
         "@bbtag/blargbot": "workspace:^",
-        "@blargbot/chatlog-types": "workspace:^",
+        "@blargbot/chat-log-client": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/input": "workspace:^",
         "moment-timezone": "^0.5.42"

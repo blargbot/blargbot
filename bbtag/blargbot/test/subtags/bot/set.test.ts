@@ -1,13 +1,13 @@
 import type { BBTagScope } from '@bbtag/blargbot';
 import { SetSubtag } from '@bbtag/blargbot/subtags';
-import { snowflake } from '@blargbot/discord-util';
+import snowflake from '@blargbot/snowflakes';
 import { argument } from '@blargbot/test-util/mock.js';
 import chai from 'chai';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const createSnowflake = snowflake.nextFactory();
+const createSnowflake = snowflake.nextFactory().create;
 runSubtagTests({
     subtag: SetSubtag,
     argCountBounds: { min: 1, max: Infinity },

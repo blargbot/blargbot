@@ -311,7 +311,7 @@ export abstract class DocumentationManager {
     #createDocumentationEmbed(documentation: Documentation, user: Eris.User, fields?: Array<FormatEmbedField<IFormattable<string>>>): FormatEmbedOptions<IFormattable<string>> {
         return {
             title: documentation.name,
-            url: documentation.embed.url === undefined ? undefined : this.#cluster.util.websiteLink(documentation.embed.url),
+            url: documentation.embed.url === undefined ? undefined : this.#cluster.util.websiteLink(documentation.embed.url).toString(),
             description: documentation.embed.description,
             color: documentation.embed.color,
             image: documentation.embed.image,

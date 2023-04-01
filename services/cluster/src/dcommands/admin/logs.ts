@@ -1,6 +1,6 @@
 import { sleep } from '@blargbot/async-tools';
-import type { ChatLogSearchOptions } from '@blargbot/chatlog-types';
-import { ChatLogType } from '@blargbot/chatlog-types';
+import type { ChatLogSearchOptions } from '@blargbot/chat-log-client';
+import { ChatLogType } from '@blargbot/chat-log-client';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { isGuildChannel } from '@blargbot/discord-util';
@@ -98,8 +98,13 @@ export class LogsCommand extends GuildCommand {
         if (!Array.isArray(logs)) {
             return {
                 content: slow
-                    ? cmd.default.generated.link.slow({ link: context.util.websiteLink(`logs/${logs.keycode}`), user: context.author })
-                    : cmd.default.generated.link.quick({ link: context.util.websiteLink(`logs/${logs.keycode}`) }),
+                    ? cmd.default.generated.link.slow({
+                        link: context.util.websiteLink(`logs/${logs.keycode}`).toString(),
+                        user: context.author
+                    })
+                    : cmd.default.generated.link.quick({
+                        link: context.util.websiteLink(`logs/${logs.keycode}`).toString()
+                    }),
                 allowedMentions: { users: [context.author.id] }
             };
         }

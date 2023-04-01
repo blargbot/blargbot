@@ -48,10 +48,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/catch-decorators/src"\
       },\
       {\
-        "name": "@blargbot/chatlog-types",\
-        "reference": "workspace:components/chatlog-types/src"\
-      },\
-      {\
         "name": "@blargbot/collections",\
         "reference": "workspace:components/collections/src"\
       },\
@@ -160,6 +156,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:components/serialization/src"\
       },\
       {\
+        "name": "@blargbot/snowflakes",\
+        "reference": "workspace:components/snowflakes/src"\
+      },\
+      {\
         "name": "@blargbot/test-util",\
         "reference": "workspace:components/test-util/src"\
       },\
@@ -216,6 +216,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/bbtag-variables/src"\
       },\
       {\
+        "name": "@blargbot/chat-log-client",\
+        "reference": "workspace:services/chat-log/client"\
+      },\
+      {\
+        "name": "@blargbot/chat-log",\
+        "reference": "workspace:services/chat-log/src"\
+      },\
+      {\
         "name": "@blargbot/cluster",\
         "reference": "workspace:services/cluster/src"\
       },\
@@ -238,10 +246,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@blargbot/discord-channel-cache",\
         "reference": "workspace:services/discord-channel-cache/src"\
-      },\
-      {\
-        "name": "@blargbot/discord-chatlog",\
-        "reference": "workspace:services/discord-chatlog/src"\
       },\
       {\
         "name": "@blargbot/discord-gateway-client",\
@@ -336,6 +340,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/master/src"\
       },\
       {\
+        "name": "@blargbot/message-dumps-client",\
+        "reference": "workspace:services/message-dumps/client"\
+      },\
+      {\
+        "name": "@blargbot/message-dumps",\
+        "reference": "workspace:services/message-dumps/src"\
+      },\
+      {\
         "name": "@blargbot/metrics-client",\
         "reference": "workspace:services/metrics/client"\
       },\
@@ -400,7 +412,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/bbtag-variables", ["workspace:services/bbtag-variables/src"]],\
       ["@blargbot/bbtag-variables-client", ["workspace:services/bbtag-variables/client"]],\
       ["@blargbot/catch-decorators", ["workspace:components/catch-decorators/src"]],\
-      ["@blargbot/chatlog-types", ["workspace:components/chatlog-types/src"]],\
+      ["@blargbot/chat-log", ["workspace:services/chat-log/src"]],\
+      ["@blargbot/chat-log-client", ["workspace:services/chat-log/client"]],\
       ["@blargbot/cluster", ["workspace:services/cluster/src"]],\
       ["@blargbot/cluster-tests", ["workspace:services/cluster/test"]],\
       ["@blargbot/collections", ["workspace:components/collections/src"]],\
@@ -416,7 +429,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/decancer", ["workspace:components/decancer/src"]],\
       ["@blargbot/discord-channel-cache", ["workspace:services/discord-channel-cache/src"]],\
       ["@blargbot/discord-channel-cache-client", ["workspace:services/discord-channel-cache/client"]],\
-      ["@blargbot/discord-chatlog", ["workspace:services/discord-chatlog/src"]],\
       ["@blargbot/discord-emote", ["workspace:components/discord-emote/src"]],\
       ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
       ["@blargbot/discord-gateway-client", ["workspace:services/discord-gateway/client"]],\
@@ -453,6 +465,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/mapping", ["workspace:components/mapping/src"]],\
       ["@blargbot/master", ["workspace:services/master/src"]],\
       ["@blargbot/message-command-contract", ["workspace:contracts/message-command/src"]],\
+      ["@blargbot/message-dumps", ["workspace:services/message-dumps/src"]],\
+      ["@blargbot/message-dumps-client", ["workspace:services/message-dumps/client"]],\
       ["@blargbot/message-hub", ["workspace:components/message-hub/src"]],\
       ["@blargbot/metrics", ["workspace:services/metrics/src"]],\
       ["@blargbot/metrics-client", ["workspace:services/metrics/client"]],\
@@ -463,6 +477,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/res", ["workspace:components/res/src"]],\
       ["@blargbot/sequelize", ["workspace:components/sequelize/src"]],\
       ["@blargbot/serialization", ["workspace:components/serialization/src"]],\
+      ["@blargbot/snowflakes", ["workspace:components/snowflakes/src"]],\
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
       ["@blargbot/timeout-clock", ["workspace:services/timeout-clock/src"]],\
       ["@blargbot/timeout-clock-client", ["workspace:services/timeout-clock/client"]],\
@@ -573,6 +588,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/guards", "workspace:components/guards/src"],\
             ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/snowflakes", "workspace:components/snowflakes/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@blargbot/user-regex", "workspace:components/user-regex/src"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
@@ -605,6 +621,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["@blargbot/logger", "workspace:components/logger/src"],\
+            ["@blargbot/snowflakes", "workspace:components/snowflakes/src"],\
             ["@blargbot/test-util", "workspace:components/test-util/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@types/chai", "npm:4.3.4"],\
@@ -659,7 +676,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/api", "workspace:services/api/src"],\
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@blargbot/application", "workspace:components/application/src"],\
-            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
+            ["@blargbot/chat-log-client", "workspace:services/chat-log/client"],\
             ["@blargbot/cluster", "workspace:services/cluster/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
@@ -726,9 +743,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/message-dumps-client", "workspace:services/message-dumps/client"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/mod-log-client", "workspace:services/mod-log/client"],\
+            ["@blargbot/snowflakes", "workspace:components/snowflakes/src"],\
             ["@blargbot/timeouts-client", "workspace:services/timeouts/client"],\
             ["@blargbot/user-settings-client", "workspace:services/user-settings/client"],\
             ["@blargbot/user-warnings-client", "workspace:services/user-warnings/client"]\
@@ -783,11 +802,31 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@blargbot/chatlog-types", [\
-        ["workspace:components/chatlog-types/src", {\
-          "packageLocation": "./components/chatlog-types/src/",\
+      ["@blargbot/chat-log", [\
+        ["workspace:services/chat-log/src", {\
+          "packageLocation": "./services/chat-log/src/",\
           "packageDependencies": [\
-            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"]\
+            ["@blargbot/chat-log", "workspace:services/chat-log/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/chat-log-client", "workspace:services/chat-log/client"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/guild-settings-client", "workspace:services/guild-settings/client"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["cassandra-driver", "npm:4.6.4"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/chat-log-client", [\
+        ["workspace:services/chat-log/client", {\
+          "packageLocation": "./services/chat-log/client/",\
+          "packageDependencies": [\
+            ["@blargbot/chat-log-client", "workspace:services/chat-log/client"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -803,7 +842,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
             ["@blargbot/catch-decorators", "workspace:components/catch-decorators/src"],\
-            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
+            ["@blargbot/chat-log-client", "workspace:services/chat-log/client"],\
             ["@blargbot/collections", "workspace:components/collections/src"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
@@ -821,6 +860,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/modules", "workspace:components/modules/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
+            ["@blargbot/snowflakes", "workspace:components/snowflakes/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@blargbot/user-regex", "workspace:components/user-regex/src"],\
             ["@hunteroi/versioning", "npm:1.3.2"],\
@@ -953,6 +993,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/res", "workspace:components/res/src"],\
+            ["@blargbot/snowflakes", "workspace:components/snowflakes/src"],\
             ["@blargbot/timer", "workspace:components/timer/src"],\
             ["@blargbot/user-regex", "workspace:components/user-regex/src"],\
             ["@types/color", "npm:3.0.3"],\
@@ -1020,7 +1061,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/database", "workspace:components/database/src"],\
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
             ["@blargbot/async-tools", "workspace:components/async-tools/src"],\
-            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
+            ["@blargbot/chat-log-client", "workspace:services/chat-log/client"],\
             ["@blargbot/config", "workspace:components/config/src"],\
             ["@blargbot/core", "workspace:components/core/src"],\
             ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
@@ -1029,6 +1070,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/logger", "workspace:components/logger/src"],\
             ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
+            ["@blargbot/snowflakes", "workspace:components/snowflakes/src"],\
             ["@types/pg", "npm:8.6.6"],\
             ["@types/rethinkdb", "workspace:definitions/rethinkdb"],\
             ["@types/sequelize", "npm:4.28.14"],\
@@ -1083,26 +1125,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/discord-channel-cache-client", "workspace:services/discord-channel-cache/client"],\
             ["@blargbot/api-client", "workspace:components/api-client/src"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargbot/discord-chatlog", [\
-        ["workspace:services/discord-chatlog/src", {\
-          "packageLocation": "./services/discord-chatlog/src/",\
-          "packageDependencies": [\
-            ["@blargbot/discord-chatlog", "workspace:services/discord-chatlog/src"],\
-            ["@blargbot/application", "workspace:components/application/src"],\
-            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
-            ["@blargbot/container-id", "workspace:components/container-id/src"],\
-            ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
-            ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
-            ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/guild-settings-client", "workspace:services/guild-settings/client"],\
-            ["@blargbot/mapping", "workspace:components/mapping/src"],\
-            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
-            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["cassandra-driver", "npm:4.6.4"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1413,7 +1435,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         ["workspace:components/discord-util/src", {\
           "packageLocation": "./components/discord-util/src/",\
           "packageDependencies": [\
-            ["@blargbot/discord-util", "workspace:components/discord-util/src"]\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
+            ["@blargbot/snowflakes", "workspace:components/snowflakes/src"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1424,7 +1447,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/domain", "workspace:components/domain/src"],\
             ["@bbtag/blargbot", "workspace:bbtag/blargbot/src"],\
-            ["@blargbot/chatlog-types", "workspace:components/chatlog-types/src"],\
+            ["@blargbot/chat-log-client", "workspace:services/chat-log/client"],\
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["moment-timezone", "npm:0.5.42"]\
@@ -1516,7 +1539,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/guild-settings-client", "workspace:services/guild-settings/client"],\
-            ["@blargbot/mapping", "workspace:components/mapping/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
@@ -1659,6 +1681,35 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/message-dumps", [\
+        ["workspace:services/message-dumps/src", {\
+          "packageLocation": "./services/message-dumps/src/",\
+          "packageDependencies": [\
+            ["@blargbot/message-dumps", "workspace:services/message-dumps/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/message-dumps-client", "workspace:services/message-dumps/client"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["cassandra-driver", "npm:4.6.4"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/message-dumps-client", [\
+        ["workspace:services/message-dumps/client", {\
+          "packageLocation": "./services/message-dumps/client/",\
+          "packageDependencies": [\
+            ["@blargbot/message-dumps-client", "workspace:services/message-dumps/client"],\
+            ["@blargbot/api-client", "workspace:components/api-client/src"],\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/message-hub", [\
         ["workspace:components/message-hub/src", {\
           "packageLocation": "./components/message-hub/src/",\
@@ -1774,6 +1825,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/serialization/src/",\
           "packageDependencies": [\
             ["@blargbot/serialization", "workspace:components/serialization/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/snowflakes", [\
+        ["workspace:components/snowflakes/src", {\
+          "packageLocation": "./components/snowflakes/src/",\
+          "packageDependencies": [\
+            ["@blargbot/snowflakes", "workspace:components/snowflakes/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

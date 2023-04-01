@@ -1,8 +1,8 @@
 import type { ClusterStats, CommandResult, ShardStats } from '@blargbot/cluster/types.js';
 import { CommandType, getClusterStats, getGuildClusterStats, guard, statusEmojiMap } from '@blargbot/cluster/utils/index.js';
-import { snowflake } from '@blargbot/discord-util';
 import type { IFormattable } from '@blargbot/formatting';
 import { hasValue } from '@blargbot/guards';
+import snowflake from '@blargbot/snowflakes';
 import moment from 'moment-timezone';
 
 import type { CommandContext } from '../../command/index.js';
@@ -66,7 +66,7 @@ export class ShardsCommand extends GlobalCommand {
             embeds: [
                 {
                     title: cmd.all.embed.title,
-                    url: context.util.websiteLink('shards'),
+                    url: context.util.websiteLink('shards').toString(),
                     description: cmd.all.embed.description({ clusterCount, shardCount: shardConfig.max }),
                     fields: clusters.map(c => ({
                         name: cmd.all.embed.field.name({ clusterId: c.id }),
@@ -110,7 +110,7 @@ export class ShardsCommand extends GlobalCommand {
         return {
             embeds: [
                 {
-                    url: context.util.websiteLink('shards'),
+                    url: context.util.websiteLink('shards').toString(),
                     description: embedDesc,
                     fields: [
                         ...shard === undefined ? [] : [{
