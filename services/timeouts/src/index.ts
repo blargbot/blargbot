@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
@@ -13,23 +13,6 @@ import { TimeoutMessageBroker } from './TimeoutMessageBroker.js';
 import TimeoutSequelizeDatabase from './TimeoutSequelizeDatabase.js';
 import { TimeoutService } from './TimeoutService.js';
 
-@hostIfEntrypoint(() => [{
-    port: env.appPort,
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    },
-    postgres: {
-        user: env.postgresUser,
-        pass: env.postgresPassword,
-        database: env.postgresDatabase,
-        sequelize: {
-            host: env.postgresHost
-        }
-    }
-}])
 export class GuildSettingsApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
         const serviceName = 'timeouts';
@@ -72,6 +55,26 @@ export class GuildSettingsApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new GuildSettingsApplication({
+        port: env.appPort,
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        },
+        postgres: {
+            user: env.postgresUser,
+            pass: env.postgresPassword,
+            database: env.postgresDatabase,
+            sequelize: {
+                host: env.postgresHost
+            }
+        }
+    }));
 }
 
 export interface GuildSettingsApplicationOptions {

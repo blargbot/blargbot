@@ -1,4 +1,4 @@
-import { hostIfEntrypoint, ServiceHost, webService } from '@blargbot/application';
+import { host, isEntrypoint, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
@@ -9,12 +9,6 @@ import type { RestProxyOptions } from './RestProxyOptions.js';
 
 const requestLimit = 50 << 20; // 50MB
 
-@hostIfEntrypoint(() => [{
-    url: env.discordProxyUrl,
-    secret: env.discordProxySecret,
-    token: env.discordToken,
-    port: env.appPort
-}])
 export default class RestProxyApplication extends ServiceHost {
     public constructor(options: RestProxyApplicationOptions) {
         const serviceName = 'discord-proxy';
@@ -29,6 +23,16 @@ export default class RestProxyApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new RestProxyApplication({
+        url: env.discordProxyUrl,
+        secret: env.discordProxySecret,
+        token: env.discordToken,
+        port: env.appPort
+
+    }));
 }
 
 export interface RestProxyApplicationOptions extends RestProxyOptions {

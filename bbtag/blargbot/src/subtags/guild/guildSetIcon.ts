@@ -4,7 +4,7 @@ import { hasFlag, isUrl } from '@blargbot/guards';
 import type { BBTagScript } from '../../BBTagScript.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import { FetchService } from '../../services/FetchService.js';
+import type { FetchService } from '../../services/FetchService.js';
 import type { GuildService } from '../../services/GuildService.js';
 import { Subtag } from '../../Subtag.js';
 import textTemplates from '../../text.js';

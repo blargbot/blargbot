@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -9,14 +9,6 @@ import { MetricsPushService } from '@blargbot/metrics-client';
 import { DiscordReactionStreamMessageBroker } from './DiscordReactionStreamMessageBroker.js';
 import { DiscordReactionStreamService } from './DiscordReactionStreamService.js';
 
-@hostIfEntrypoint(() => [{
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    }
-}])
 export class DiscordReactionStreamApplication extends ServiceHost {
     public constructor(options: DiscordReactionStreamApplicationOptions) {
         const serviceName = 'discord-reaction-stream';
@@ -33,6 +25,18 @@ export class DiscordReactionStreamApplication extends ServiceHost {
             connectToService(() => gateway.handleMessageReactionAdd(m => service.handleMessageReactionAdd(m)), 'handleMessageReactionAdd')
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new DiscordReactionStreamApplication({
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        }
+
+    }));
 }
 
 export interface DiscordReactionStreamApplicationOptions {

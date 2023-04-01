@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -14,20 +14,6 @@ import { createPresenceCacheRequestHandler } from './createPresenceCacheRequestH
 import { DiscordPresenceCacheService } from './DiscordPresenceCacheService.js';
 import type { DiscordUserPresence } from './DiscordUserPresence.js';
 
-@hostIfEntrypoint(() => [{
-    port: env.appPort,
-    redis: {
-        url: env.redisUrl,
-        password: env.redisPassword,
-        username: env.redisUsername
-    },
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    }
-}])
 export class DiscordPresenceCacheApplication extends ServiceHost {
     public constructor(options: DiscordPresenceCacheApplicationOptions) {
         const serviceName = 'discord-presence-cache';
@@ -69,6 +55,24 @@ export class DiscordPresenceCacheApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new DiscordPresenceCacheApplication({
+        port: env.appPort,
+        redis: {
+            url: env.redisUrl,
+            password: env.redisPassword,
+            username: env.redisUsername
+        },
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        }
+
+    }));
 }
 
 export interface DiscordPresenceCacheApplicationOptions {

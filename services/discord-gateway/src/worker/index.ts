@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import containerId, { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -13,18 +13,6 @@ import { createDiscordShardManager } from './DiscordShardManager.js';
 
 export const workerPath = fileURLToPath(import.meta.url);
 
-@hostIfEntrypoint(() => [{
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        password: env.rabbitPassword,
-        username: env.rabbitUsername
-    },
-    managerId: containerId,
-    lastShardId: env.get(Number, 'LAST_SHARD_ID'),
-    workerId: env.get(Number, 'WORKER_ID'),
-    token: env.discordToken
-}])
 export class DiscordGatewayWorkerApplication extends ServiceHost {
     public constructor(options: DiscordGatewayWorkerApplicationOptions) {
         const serviceName = 'discord-gateway-worker';
@@ -53,6 +41,22 @@ export class DiscordGatewayWorkerApplication extends ServiceHost {
             }
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new DiscordGatewayWorkerApplication({
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            password: env.rabbitPassword,
+            username: env.rabbitUsername
+        },
+        managerId: containerId,
+        lastShardId: env.get(Number, 'LAST_SHARD_ID'),
+        workerId: env.get(Number, 'WORKER_ID'),
+        token: env.discordToken
+
+    }));
 }
 
 interface DiscordGatewayWorkerApplicationOptions {

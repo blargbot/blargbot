@@ -1,6 +1,8 @@
-import { BBTagRuntimeError, FetchRequest, FetchResponse, FetchService as BBTagFetchService } from "@bbtag/blargbot";
-import fetch from "node-fetch";
-import { Cluster } from "../../Cluster.js";
+import type { FetchRequest, FetchResponse, FetchService as BBTagFetchService } from '@bbtag/blargbot';
+import { BBTagRuntimeError } from '@bbtag/blargbot';
+import fetch from 'node-fetch';
+
+import type { Cluster } from '../../Cluster.js';
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 

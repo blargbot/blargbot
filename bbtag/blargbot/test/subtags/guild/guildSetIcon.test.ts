@@ -2,8 +2,8 @@ import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { GuildSetIconSubtag, SemiSubtag } from '@bbtag/blargbot/subtags';
 import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
-import { setupRequestResponse } from '../setupRequestResponse.js';
 
+import { setupRequestResponse } from '../setupRequestResponse.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({

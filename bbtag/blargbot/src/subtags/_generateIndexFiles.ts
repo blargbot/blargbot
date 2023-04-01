@@ -2,9 +2,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { hostIfEntrypoint, ScriptHost } from '@blargbot/application';
+import { host, isEntrypoint, ScriptHost } from '@blargbot/application';
 
-@hostIfEntrypoint()
 export class GenerateIndexFilesScript extends ScriptHost {
     public constructor() {
         super();
@@ -47,4 +46,8 @@ export default all;
         global.console.log('Creating root index file');
         await fs.writeFile(path.join(dir, 'index.ts'), content);
     }
+}
+
+if (isEntrypoint()) {
+    host(new GenerateIndexFilesScript());
 }

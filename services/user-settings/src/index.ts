@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
@@ -13,23 +13,6 @@ import { createUserSettingsRequestHandler } from './createUserSettingsRequestHan
 import UserSettingsSequelizeDatabase from './UserSettingsSequelizeDatabase.js';
 import { UserSettingsService } from './UserSettingsService.js';
 
-@hostIfEntrypoint(() => [{
-    port: env.appPort,
-    redis: {
-        url: env.redisUrl,
-        password: env.redisPassword,
-        username: env.redisUsername,
-        ttl: env.redisTTL
-    },
-    postgres: {
-        user: env.postgresUser,
-        pass: env.postgresPassword,
-        database: env.postgresDatabase,
-        sequelize: {
-            host: env.postgresHost
-        }
-    }
-}])
 export class UserSettingsApplication extends ServiceHost {
     public constructor(options: UserSettingsApplicationOptions) {
         const serviceName = 'user-settings';
@@ -70,6 +53,26 @@ export class UserSettingsApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new UserSettingsApplication({
+        port: env.appPort,
+        redis: {
+            url: env.redisUrl,
+            password: env.redisPassword,
+            username: env.redisUsername,
+            ttl: env.redisTTL
+        },
+        postgres: {
+            user: env.postgresUser,
+            pass: env.postgresPassword,
+            database: env.postgresDatabase,
+            sequelize: {
+                host: env.postgresHost
+            }
+        }
+    }));
 }
 
 export interface UserSettingsApplicationOptions {

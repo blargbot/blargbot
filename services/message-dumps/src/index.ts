@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
@@ -9,17 +9,8 @@ import type { MessageDumpDatabaseOptions } from './MessageDumpDatabase.js';
 import MessageDumpDatabase from './MessageDumpDatabase.js';
 import { MessageDumpService } from './MessageDumpService.js';
 
-@hostIfEntrypoint(() => [{
-    port: env.appPort,
-    database: {
-        contactPoints: env.cassandraContactPoints,
-        keyspace: env.cassandraKeyspace,
-        username: env.cassandraUsername,
-        password: env.cassandraPassword
-    }
-}])
-export class ChatlogApplication extends ServiceHost {
-    public constructor(options: ChatlogApplicationOptions) {
+export class MessageDumpApplication extends ServiceHost {
+    public constructor(options: MessageDumpApplicationOptions) {
         const serviceName = 'chatlog';
         const database = new MessageDumpDatabase(options.database);
         super([
@@ -40,7 +31,19 @@ export class ChatlogApplication extends ServiceHost {
     }
 }
 
-export interface ChatlogApplicationOptions {
+if (isEntrypoint()) {
+    host(new MessageDumpApplication({
+        port: env.appPort,
+        database: {
+            contactPoints: env.cassandraContactPoints,
+            keyspace: env.cassandraKeyspace,
+            username: env.cassandraUsername,
+            password: env.cassandraPassword
+        }
+    }));
+}
+
+export interface MessageDumpApplicationOptions {
     readonly port: number;
     readonly database: MessageDumpDatabaseOptions;
 }

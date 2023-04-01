@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import containerId, { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
@@ -9,21 +9,6 @@ import { DiscordGatewayIPCMessageBroker } from '../DiscordGatewayIPCMessageBroke
 import { createDiscordGatewayManager } from './DiscordGatewayManager.js';
 import { createDiscordRestClient } from './DiscordRestClient.js';
 
-@hostIfEntrypoint(() => [{
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    },
-    managerId: containerId,
-    rest: {
-        url: env.discordProxyUrl,
-        secret: env.discordProxySecret
-    },
-    token: env.discordToken,
-    shardsPerWorker: env.shardsPerWorker
-}])
 export class DiscordGatewayApplication extends ServiceHost {
     public constructor(options: DiscordGatewayApplicationOptions) {
         const serviceName = 'discord-gateway-manager';
@@ -47,6 +32,25 @@ export class DiscordGatewayApplication extends ServiceHost {
             manager
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new DiscordGatewayApplication({
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        },
+        managerId: containerId,
+        rest: {
+            url: env.discordProxyUrl,
+            secret: env.discordProxySecret
+        },
+        token: env.discordToken,
+        shardsPerWorker: env.shardsPerWorker
+
+    }));
 }
 
 export interface DiscordGatewayApplicationOptions {

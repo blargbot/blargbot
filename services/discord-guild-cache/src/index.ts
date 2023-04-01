@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type { SlimDiscordGuild } from '@blargbot/discord-guild-cache-client';
@@ -14,20 +14,6 @@ import { createClient as createRedisClient } from 'redis';
 import { createGuildCacheRequestHandler } from './createGuildCacheRequestHandler.js';
 import { DiscordGuildCacheService } from './DiscordGuildCacheService.js';
 
-@hostIfEntrypoint(() => [{
-    port: env.appPort,
-    redis: {
-        url: env.redisUrl,
-        password: env.redisPassword,
-        username: env.redisUsername
-    },
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    }
-}])
 export class DiscordGuildCacheApplication extends ServiceHost {
     public constructor(options: DiscordGuildCacheApplicationOptions) {
         const serviceName = 'discord-guild-cache';
@@ -65,6 +51,24 @@ export class DiscordGuildCacheApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new DiscordGuildCacheApplication({
+        port: env.appPort,
+        redis: {
+            url: env.redisUrl,
+            password: env.redisPassword,
+            username: env.redisUsername
+        },
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        }
+
+    }));
 }
 
 export interface DiscordGuildCacheApplicationOptions {

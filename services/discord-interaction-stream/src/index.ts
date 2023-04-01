@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -9,14 +9,6 @@ import { MetricsPushService } from '@blargbot/metrics-client';
 import { DiscordInteractionStreamMessageBroker } from './DiscordInteractionStreamMessageBroker.js';
 import { DiscordInteractionStreamService } from './DiscordInteractionStreamService.js';
 
-@hostIfEntrypoint(() => [{
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    }
-}])
 export class DiscordInteractionStreamApplication extends ServiceHost {
     public constructor(options: DiscordInteractionStreamApplicationOptions) {
         const serviceName = 'discord-interaction-stream';
@@ -34,6 +26,18 @@ export class DiscordInteractionStreamApplication extends ServiceHost {
             connectToService(() => gateway.handleInteractionCreate(m => service.handleInteractionCreate(m)), 'handleInteractionCreate')
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new DiscordInteractionStreamApplication({
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        }
+
+    }));
 }
 
 export interface DiscordInteractionStreamApplicationOptions {

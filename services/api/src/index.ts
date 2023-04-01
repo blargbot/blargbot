@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 
 import { ApiWorker } from '@blargbot/api/ApiWorker.js';
-import { hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { host, isEntrypoint, ServiceHost } from '@blargbot/application';
 import type { Configuration } from '@blargbot/config';
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
@@ -12,7 +12,6 @@ export * from './ApiWorker.js';
 export * from './Api.js';
 export const entrypoint = fileURLToPath(import.meta.url);
 
-@hostIfEntrypoint(() => [config])
 export class ClusterApp extends ServiceHost {
     public constructor(config: Configuration) {
         super([
@@ -22,4 +21,8 @@ export class ClusterApp extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new ClusterApp(config));
 }

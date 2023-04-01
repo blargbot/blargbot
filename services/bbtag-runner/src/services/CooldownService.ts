@@ -1,4 +1,4 @@
-import { DistributedCooldownService } from "@bbtag/blargbot";
+import { DistributedCooldownService } from '@bbtag/blargbot';
 
 export class CooldownService extends DistributedCooldownService {
     public constructor() {
@@ -11,7 +11,7 @@ export class CooldownService extends DistributedCooldownService {
                 key;
                 value;
                 throw null;
-            },
-        })
+            }
+        });
     }
 }

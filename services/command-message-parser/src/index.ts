@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { CommandMessageParserMessageBroker } from '@blargbot/command-message-parser-client';
 import { fullContainerId } from '@blargbot/container-id';
 import { CurrentUserAccessor } from '@blargbot/current-user-accessor';
@@ -10,24 +10,6 @@ import { MetricsPushService } from '@blargbot/metrics-client';
 
 import { CommandMessageParserService } from './CommandMessageParserService.js';
 
-@hostIfEntrypoint(() => [{
-    defaultPrefix: env.get(String, 'COMMAND_PREFIX'),
-    discordUserCache: {
-        url: env.discordUserCacheUrl
-    },
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    },
-    guildSettings: {
-        url: env.guildSettingsUrl
-    },
-    userSettings: {
-        url: env.userSettingsUrl
-    }
-}])
 export class CommandMessageParserApplication extends ServiceHost {
     public constructor(options: CommandMessageParserApplicationOptions) {
         const serviceName = 'command-message-parser';
@@ -55,6 +37,28 @@ export class CommandMessageParserApplication extends ServiceHost {
             connectToService(() => messageStream.handleMessage(m => service.handleMessage(m)), 'handleMessage')
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new CommandMessageParserApplication({
+        defaultPrefix: env.get(String, 'COMMAND_PREFIX'),
+        discordUserCache: {
+            url: env.discordUserCacheUrl
+        },
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        },
+        guildSettings: {
+            url: env.guildSettingsUrl
+        },
+        userSettings: {
+            url: env.userSettingsUrl
+        }
+
+    }));
 }
 
 export interface CommandMessageParserApplicationOptions {

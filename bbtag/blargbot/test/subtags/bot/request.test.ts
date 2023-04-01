@@ -1,10 +1,9 @@
 import { BBTagRuntimeError } from '@bbtag/blargbot';
 import { EscapeBBTagSubtag, RequestSubtag } from '@bbtag/blargbot/subtags';
 import chai from 'chai';
+
 import { setupRequestResponse } from '../setupRequestResponse.js';
-
 import { runSubtagTests } from '../SubtagTestSuite.js';
-
 
 runSubtagTests({
     subtag: RequestSubtag,
@@ -30,7 +29,7 @@ runSubtagTests({
                         },
                         json: { response: 'get-test success' }
                     }
-                )
+                );
             },
             assert(_, result) {
                 assertResult(result, {
@@ -64,7 +63,7 @@ runSubtagTests({
                         },
                         json: { response: 'empty-post success' }
                     }
-                )
+                );
             },
             assert(_, result) {
                 assertResult(result, {
@@ -74,7 +73,7 @@ runSubtagTests({
                     contentType: 'application/json',
                     date: 'def456',
                     url: 'http://localhost:19000/empty-post'
-                })
+                });
             }
         },
         {
@@ -101,7 +100,7 @@ runSubtagTests({
                         },
                         json: { response: 'post-with-json success' }
                     }
-                )
+                );
             },
             assert(_, result) {
                 assertResult(result, {
@@ -111,7 +110,7 @@ runSubtagTests({
                     contentType: 'application/json',
                     date: 'ghi789',
                     url: 'http://localhost:19000/post-with-json'
-                })
+                });
             }
         },
         {
@@ -137,7 +136,7 @@ runSubtagTests({
                         },
                         json: { response: 'post-with-text success' }
                     }
-                )
+                );
             },
             assert(_, result) {
                 assertResult(result, {
@@ -147,7 +146,7 @@ runSubtagTests({
                     contentType: 'application/json',
                     date: 'jkl012',
                     url: 'http://localhost:19000/post-with-text'
-                })
+                });
             }
         },
         {
@@ -174,7 +173,7 @@ runSubtagTests({
                         },
                         json: { response: 'post-with-text-json success' }
                     }
-                )
+                );
             },
             assert(_, result) {
                 assertResult(result, {
@@ -184,7 +183,7 @@ runSubtagTests({
                     contentType: 'application/json',
                     date: 'mno345',
                     url: 'http://localhost:19000/post-with-text-json'
-                })
+                });
             }
         },
         {
@@ -210,7 +209,7 @@ runSubtagTests({
                         },
                         json: { response: 'get-with-query success' }
                     }
-                )
+                );
             },
             assert(_, result) {
                 assertResult(result, {
@@ -220,7 +219,7 @@ runSubtagTests({
                     contentType: 'application/json',
                     date: 'pqr678',
                     url: 'http://localhost:19000/get-with-query?age=123'
-                })
+                });
             }
         },
         {
@@ -247,7 +246,7 @@ runSubtagTests({
                         },
                         text: ''
                     }
-                )
+                );
             }
         },
         {

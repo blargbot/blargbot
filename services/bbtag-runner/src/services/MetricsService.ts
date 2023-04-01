@@ -1,11 +1,11 @@
-import { SubtagInvocationContext, SubtagInvocationMiddleware } from "@bbtag/blargbot";
-import { Counter, Histogram, Metrics } from "@blargbot/metrics-client";
+import type { SubtagInvocationContext, SubtagInvocationMiddleware } from '@bbtag/blargbot';
+import type { Counter, Histogram, Metrics } from '@blargbot/metrics-client';
 
 export class MetricsService {
-    readonly #subtagLatency: Histogram<"subtag">;
-    readonly #subtagCount: Counter<"subtag">;
+    readonly #subtagLatency: Histogram<'subtag'>;
+    readonly #subtagCount: Counter<'subtag'>;
 
-    public readonly subtagMiddleware: SubtagInvocationMiddleware
+    public readonly subtagMiddleware: SubtagInvocationMiddleware;
 
     public constructor(metrics: Metrics) {
         this.#subtagLatency = metrics.histogram({
@@ -18,11 +18,10 @@ export class MetricsService {
             name: 'bot_subtag_counter',
             help: 'Subtags executed',
             labelNames: ['subtag']
-        })
+        });
 
         this.subtagMiddleware = this.#subtagMiddleware.bind(this);
     }
-
 
     async #subtagMiddleware({ subtag }: SubtagInvocationContext, next: () => Awaitable<string>): Promise<string> {
         const start = performance.now();

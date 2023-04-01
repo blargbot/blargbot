@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
@@ -12,23 +12,6 @@ import { createModLogRequestHandler } from './createUserWarningRequestHandler.js
 import UserWarningSequelizeDatabase from './UserWarningSequelizeDatabase.js';
 import { UserWarningService } from './UserWarningService.js';
 
-@hostIfEntrypoint(() => [{
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    },
-    port: env.appPort,
-    postgres: {
-        user: env.postgresUser,
-        pass: env.postgresPassword,
-        database: env.postgresDatabase,
-        sequelize: {
-            host: env.postgresHost
-        }
-    }
-}])
 export class UserWarningsApplication extends ServiceHost {
     public constructor(options: UserWarningsApplicationOptions) {
         const serviceName = 'user-warnings';
@@ -65,6 +48,26 @@ export class UserWarningsApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new UserWarningsApplication({
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        },
+        port: env.appPort,
+        postgres: {
+            user: env.postgresUser,
+            pass: env.postgresPassword,
+            database: env.postgresDatabase,
+            sequelize: {
+                host: env.postgresHost
+            }
+        }
+    }));
 }
 
 export interface UserWarningsApplicationOptions {

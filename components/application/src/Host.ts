@@ -1,8 +1,7 @@
-import getCallerImportMeta from './getCallerImportMeta.js';
 import type { IHost } from './IHost.js';
-import isEntrypoint from './isEntrypoint.js';
 
 const hosts = new Set<IHost>();
+let blockingHosts = 0;
 
 export function getRunningHosts(): IHost[] {
     const result = [];
@@ -15,53 +14,26 @@ export function getRunningHosts(): IHost[] {
     return result;
 }
 
-function hostCore(app?: IHost | (() => readonly unknown[]) | HostingOptions, options?: HostingOptions): void | (<T extends new (...args: readonly unknown[]) => IHost>(target: T) => T) {
-    if (app === undefined) {
-        return t => {
-            setImmediate(() => hostApp(new t()));
-            return t;
-        };
-    }
-
-    if (typeof app === 'function') {
-        const getArgs = app;
-        return t => {
-            setImmediate(() => hostApp(new t(...getArgs()), options));
-            return t;
-        };
-    }
-
-    if (!('run' in app && 'shutdown' in app))
-        return t => {
-            options = app;
-            setImmediate(() => hostApp(new t(), options));
-            return t;
-        };
-
-    hostApp(app, options);
-
+export function host(app: IHost, options?: HostingOptions): void {
+    void hostAsync(app, options);
 }
 
-function hostApp(app: IHost, options?: HostingOptions): void {
+async function hostAsync(app: IHost, options?: HostingOptions): Promise<void> {
+    const { keepAlive = true, shutdownOn = ['SIGTERM'] } = options ?? {};
     hosts.add(app);
-    for (const trigger of options?.shutdownOn ?? ['SIGTERM'])
+    for (const trigger of shutdownOn)
         process.once(trigger, shutdownIfRunning.bind(null, app));
-    app.run().catch(err => console.error('Error while running host', err));
-}
-
-export function host(options?: HostingOptions): <T extends new () => IHost>(target: T) => T
-export function host(app: IHost, options?: HostingOptions): void
-export function host<Args extends readonly unknown[]>(args: () => Args, options?: HostingOptions): <T extends new (...args: Args) => IHost>(target: T) => T
-export function host(...args: Parameters<typeof hostCore>): ReturnType<typeof hostCore> {
-    return hostCore(...args);
-}
-
-export function hostIfEntrypoint(options?: HostingOptions): <T extends new () => IHost>(target: T) => T
-export function hostIfEntrypoint(app: IHost, options?: HostingOptions): void
-export function hostIfEntrypoint<Args extends readonly unknown[]>(args: () => Args, options?: HostingOptions): <T extends new (...args: Args) => IHost>(target: T) => T
-export function hostIfEntrypoint(...args: Parameters<typeof hostCore>): ReturnType<typeof hostCore> {
-    if (isEntrypoint(getCallerImportMeta()))
-        return hostCore(...args);
+    let exitCode = 0;
+    try {
+        if (keepAlive)
+            blockingHosts++;
+        await app.run();
+    } catch (err) {
+        console.error('Error while running host', err);
+        exitCode = -1;
+    }
+    if (keepAlive && --blockingHosts === 0)
+        process.exit(exitCode);
 }
 
 function shutdownIfRunning(host: IHost): void {
@@ -73,5 +45,6 @@ function shutdownIfRunning(host: IHost): void {
 }
 
 export interface HostingOptions {
+    readonly keepAlive?: boolean;
     readonly shutdownOn?: ReadonlyArray<NodeJS.Signals | 'uncaughtException' | 'unhandledRejection'>;
 }

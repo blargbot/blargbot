@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import { ImageGenerateMessageBroker } from '@blargbot/image-generator-client';
@@ -29,23 +29,6 @@ import TheSearchGenerator from './generators/thesearch.js';
 import TruthGenerator from './generators/truth.js';
 import ImageGeneratorService from './ImageGeneratorService.js';
 
-export interface ImageGeneratorApplicationOptions {
-    readonly messages: ConnectionOptions;
-    readonly api: ApiImageGeneratorConfig;
-}
-
-@hostIfEntrypoint(() => [{
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    },
-    api: {
-        url: env.imageApiUrl,
-        token: env.imageApiToken
-    }
-}])
 export class ImageGeneratorApplication extends ServiceHost {
     public constructor(options: ImageGeneratorApplicationOptions) {
         const serviceName = 'image-generator';
@@ -82,4 +65,24 @@ export class ImageGeneratorApplication extends ServiceHost {
             connectToService(() => requests.handleImageRequest((t, p) => service.generate(t, p)), 'handleImageRequest')
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new ImageGeneratorApplication({
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        },
+        api: {
+            url: env.imageApiUrl,
+            token: env.imageApiToken
+        }
+    }));
+}
+
+export interface ImageGeneratorApplicationOptions {
+    readonly messages: ConnectionOptions;
+    readonly api: ApiImageGeneratorConfig;
 }

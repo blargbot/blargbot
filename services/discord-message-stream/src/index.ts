@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import { DiscordMessageStreamMessageBroker } from '@blargbot/discord-message-stream-client';
@@ -9,23 +9,6 @@ import { Metrics, MetricsPushService } from '@blargbot/metrics-client';
 
 import { DiscordMessageStreamService } from './DiscordMessageStreamService.js';
 
-@hostIfEntrypoint(() => [{
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    },
-    discordChannelCache: {
-        url: env.discordChannelCacheUrl
-    },
-    discordGuildCache: {
-        url: env.discordGuildCacheUrl
-    },
-    discordRoleCache: {
-        url: env.discordRoleCacheUrl
-    }
-}])
 export class DiscordMessageStreamApplication extends ServiceHost {
     public constructor(options: DiscordMessageStreamApplicationOptions) {
         const serviceName = 'discord-message-stream';
@@ -50,6 +33,27 @@ export class DiscordMessageStreamApplication extends ServiceHost {
             connectToService(() => gateway.handleMessageCreate(m => service.handleMessageCreate(m)), 'handleMessageCreate')
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new DiscordMessageStreamApplication({
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        },
+        discordChannelCache: {
+            url: env.discordChannelCacheUrl
+        },
+        discordGuildCache: {
+            url: env.discordGuildCacheUrl
+        },
+        discordRoleCache: {
+            url: env.discordRoleCacheUrl
+        }
+
+    }));
 }
 
 export interface DiscordMessageStreamApplicationOptions {

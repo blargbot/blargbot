@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -10,23 +10,6 @@ import type { ChatLogDatabaseOptions } from './ChatLogDatabase.js';
 import ChatLogDatabase from './ChatLogDatabase.js';
 import { ChatLogService } from './ChatLogService.js';
 
-@hostIfEntrypoint(() => [{
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    },
-    database: {
-        contactPoints: env.cassandraContactPoints,
-        keyspace: env.cassandraKeyspace,
-        username: env.cassandraUsername,
-        password: env.cassandraPassword
-    },
-    guildSettings: {
-        url: env.guildSettingsUrl
-    }
-}])
 export class ChatLogApplication extends ServiceHost {
     public constructor(options: ChatLogApplicationOptions) {
         const serviceName = 'chat-log';
@@ -53,6 +36,26 @@ export class ChatLogApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new ChatLogApplication({
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        },
+        database: {
+            contactPoints: env.cassandraContactPoints,
+            keyspace: env.cassandraKeyspace,
+            username: env.cassandraUsername,
+            password: env.cassandraPassword
+        },
+        guildSettings: {
+            url: env.guildSettingsUrl
+        }
+    }));
 }
 
 export interface ChatLogApplicationOptions {

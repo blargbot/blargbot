@@ -1,4 +1,4 @@
-import { DefaultLockService } from "@bbtag/blargbot";
+import { DefaultLockService } from '@bbtag/blargbot';
 
 export class LockService extends DefaultLockService {
     public constructor() {
@@ -6,7 +6,7 @@ export class LockService extends DefaultLockService {
             createLock(id) {
                 id;
                 throw null;
-            },
-        })
+            }
+        });
     }
 }

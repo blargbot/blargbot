@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
@@ -10,22 +10,6 @@ import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 import ModLogSequelizeDatabase from './ModLogSequelizeDatabase.js';
 import { ModLogService } from './ModLogService.js';
 
-@hostIfEntrypoint(() => [{
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    },
-    postgres: {
-        user: env.postgresUser,
-        pass: env.postgresPassword,
-        database: env.postgresDatabase,
-        sequelize: {
-            host: env.postgresHost
-        }
-    }
-}])
 export class ModLogApplication extends ServiceHost {
     public constructor(options: ModLogApplicationOptions) {
         const serviceName = 'mod-log';
@@ -57,6 +41,25 @@ export class ModLogApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new ModLogApplication({
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        },
+        postgres: {
+            user: env.postgresUser,
+            pass: env.postgresPassword,
+            database: env.postgresDatabase,
+            sequelize: {
+                host: env.postgresHost
+            }
+        }
+    }));
 }
 
 export interface ModLogApplicationOptions {

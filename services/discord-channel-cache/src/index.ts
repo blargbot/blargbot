@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
@@ -15,20 +15,6 @@ import { createClient as createRedisClient } from 'redis';
 import { createMemberCacheRequestHandler } from './createChannelCacheRequestHandler.js';
 import { DiscordChannelCacheService } from './DiscordChannelCacheService.js';
 
-@hostIfEntrypoint(() => [{
-    port: env.appPort,
-    redis: {
-        url: env.redisUrl,
-        password: env.redisPassword,
-        username: env.redisUsername
-    },
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    }
-}])
 export class DiscordChannelCacheApplication extends ServiceHost {
     public constructor(options: DiscordChannelCacheApplicationOptions) {
         const serviceName = 'discord-channel-cache';
@@ -82,6 +68,24 @@ export class DiscordChannelCacheApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new DiscordChannelCacheApplication({
+        port: env.appPort,
+        redis: {
+            url: env.redisUrl,
+            password: env.redisPassword,
+            username: env.redisUsername
+        },
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        }
+
+    }));
 }
 
 export interface DiscordChannelCacheApplicationOptions {

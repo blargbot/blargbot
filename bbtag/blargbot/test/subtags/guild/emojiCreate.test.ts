@@ -3,8 +3,8 @@ import { EmojiCreateSubtag, SemiSubtag } from '@bbtag/blargbot/subtags';
 import { Emote } from '@blargbot/discord-emote';
 import Discord from '@blargbot/discord-types';
 import { argument } from '@blargbot/test-util/mock.js';
-import { setupRequestResponse } from '../setupRequestResponse.js';
 
+import { setupRequestResponse } from '../setupRequestResponse.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({

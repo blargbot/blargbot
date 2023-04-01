@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import { GuildSettingsHttpClient } from '@blargbot/guild-settings-client';
@@ -12,31 +12,6 @@ import DiscordModLogSequelizeDatabase from './DiscordModLogSequelizeDatabase.js'
 import { DiscordModLogService } from './DiscordModLogService.js';
 import { createDiscordRestClient } from './DiscordRestClient.js';
 
-@hostIfEntrypoint(() => [{
-    guildSettings: {
-        url: env.guildSettingsUrl
-    },
-    prefix: env.get(String, 'COMMAND_PREFIX'),
-    rest: {
-        url: env.discordProxyUrl,
-        secret: env.discordProxySecret
-    },
-    token: env.discordToken,
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    },
-    postgres: {
-        user: env.postgresUser,
-        pass: env.postgresPassword,
-        database: env.postgresDatabase,
-        sequelize: {
-            host: env.postgresHost
-        }
-    }
-}])
 export class DiscordModLogApplication extends ServiceHost {
     public constructor(options: DiscordModLogApplicationOptions) {
         const serviceName = 'discord-mod-log';
@@ -79,6 +54,35 @@ export class DiscordModLogApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new DiscordModLogApplication({
+        guildSettings: {
+            url: env.guildSettingsUrl
+        },
+        prefix: env.get(String, 'COMMAND_PREFIX'),
+        rest: {
+            url: env.discordProxyUrl,
+            secret: env.discordProxySecret
+        },
+        token: env.discordToken,
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        },
+        postgres: {
+            user: env.postgresUser,
+            pass: env.postgresPassword,
+            database: env.postgresDatabase,
+            sequelize: {
+                host: env.postgresHost
+            }
+        }
+
+    }));
 }
 
 export interface DiscordModLogApplicationOptions {

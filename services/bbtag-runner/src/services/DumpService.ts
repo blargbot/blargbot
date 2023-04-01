@@ -1,7 +1,8 @@
 import type { DumpService as BBTagDumpService, Entities } from '@bbtag/blargbot';
 import type { MessageDumpsHttpClient } from '@blargbot/message-dumps-client';
 import type { SnowflakeFactory } from '@blargbot/snowflakes';
-import { MessageDumpUrlFactory } from './MessageDumpUrlFactory.js';
+
+import type { MessageDumpUrlFactory } from './MessageDumpUrlFactory.js';
 
 export class DumpService implements BBTagDumpService {
     readonly #client: MessageDumpsHttpClient;

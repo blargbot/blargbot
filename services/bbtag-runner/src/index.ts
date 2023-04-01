@@ -1,6 +1,6 @@
 import { subtags, tagVariableScopeProviders } from '@bbtag/blargbot';
 import { VariableNameParser, VariableProvider } from '@bbtag/variables';
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { BBTagExecutionMessageBroker } from '@blargbot/bbtag-runner-client';
 import { BBTagVariableHttpClient } from '@blargbot/bbtag-variables-client';
 import { fullContainerId } from '@blargbot/container-id';
@@ -20,8 +20,8 @@ import { createBBTagEngine } from './createBBTagEngine.js';
 import { ChannelService } from './services/ChannelService.js';
 import { CooldownService } from './services/CooldownService.js';
 import { DeferredExecutionService } from './services/DeferredExecutionService.js';
-import { FetchService } from './services/FetchService.js';
 import { DumpService } from './services/DumpService.js';
+import { FetchService } from './services/FetchService.js';
 import { GuildService } from './services/GuildService.js';
 import { LockService } from './services/LockService.js';
 import { MessageDumpUrlFactory } from './services/MessageDumpUrlFactory.js';
@@ -36,33 +36,7 @@ import { UserService } from './services/UserService.js';
 import { VariablesStore } from './services/VariablesStore.js';
 import { WarningService } from './services/WarningService.js';
 
-@hostIfEntrypoint(() => [{
-    defaultPrefix: env.get(String, 'COMMAND_PREFIX'),
-    variables: {
-        url: env.bbtagVariablesUrl
-    },
-    timeout: {
-        url: env.timeoutUrl
-    },
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    },
-    messageDumps: {
-        url: env.messageDumpsUrl,
-        websiteUrl: env.messageDumpsWebsiteUrl
-    },
-    userSettings: {
-        url: env.userSettingsUrl
-    },
-    userWarnings: {
-        url: env.userWarningsUrl
-    }
-}])
 export class BBTagRunnerApplication extends ServiceHost {
-
     public constructor(options: BBTagRunnerApplicationOptions) {
         const serviceName = 'bbtag-runner';
         const snowflakes = snowflake.createFactory(parseInt(fullContainerId, 16), parseInt(createHash('sha256').update(serviceName).digest().toString('hex'), 16));
@@ -113,6 +87,34 @@ export class BBTagRunnerApplication extends ServiceHost {
         executeBroker;
         engine;
     }
+}
+
+if (isEntrypoint()) {
+    host(new BBTagRunnerApplication({
+        defaultPrefix: env.get(String, 'COMMAND_PREFIX'),
+        variables: {
+            url: env.bbtagVariablesUrl
+        },
+        timeout: {
+            url: env.timeoutUrl
+        },
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        },
+        messageDumps: {
+            url: env.messageDumpsUrl,
+            websiteUrl: env.messageDumpsWebsiteUrl
+        },
+        userSettings: {
+            url: env.userSettingsUrl
+        },
+        userWarnings: {
+            url: env.userWarningsUrl
+        }
+    }));
 }
 
 export interface BBTagRunnerApplicationOptions {

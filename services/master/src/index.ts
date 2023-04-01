@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
-import { hostIfEntrypoint, ServiceHost } from '@blargbot/application';
+import { host, isEntrypoint, ServiceHost } from '@blargbot/application';
 import type { Configuration } from '@blargbot/config';
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
@@ -10,7 +10,6 @@ export * from './Master.js';
 export * from './MasterWorker.js';
 export const entrypoint = fileURLToPath(import.meta.url);
 
-@hostIfEntrypoint(() => [config])
 export class MasterApp extends ServiceHost {
     public constructor(config: Configuration) {
         super([
@@ -23,4 +22,8 @@ export class MasterApp extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new MasterApp(config));
 }

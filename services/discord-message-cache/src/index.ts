@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import env from '@blargbot/env';
@@ -14,21 +14,6 @@ import { createClient as createRedisClient } from 'redis';
 import { createMessageCacheRequestHandler } from './createMessageCacheRequestHandler.js';
 import { DiscordMessageCacheService } from './DiscordMessageCacheService.js';
 
-@hostIfEntrypoint(() => [{
-    port: env.appPort,
-    redis: {
-        url: env.redisUrl,
-        password: env.redisPassword,
-        username: env.redisUsername,
-        ttl: env.redisTTL
-    },
-    messages: {
-        prefetch: env.rabbitPrefetch,
-        hostname: env.rabbitHost,
-        username: env.rabbitUsername,
-        password: env.rabbitPassword
-    }
-}])
 export class DiscordMessageCacheApplication extends ServiceHost {
     public constructor(options: DiscordMessageCacheApplicationOptions) {
         const serviceName = 'discord-message-cache';
@@ -68,6 +53,25 @@ export class DiscordMessageCacheApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new DiscordMessageCacheApplication({
+        port: env.appPort,
+        redis: {
+            url: env.redisUrl,
+            password: env.redisPassword,
+            username: env.redisUsername,
+            ttl: env.redisTTL
+        },
+        messages: {
+            prefetch: env.rabbitPrefetch,
+            hostname: env.rabbitHost,
+            username: env.rabbitUsername,
+            password: env.rabbitPassword
+        }
+
+    }));
 }
 
 export interface DiscordMessageCacheApplicationOptions {

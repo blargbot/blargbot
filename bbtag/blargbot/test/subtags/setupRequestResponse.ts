@@ -1,6 +1,7 @@
-import { FetchRequest, FetchResponse } from '@bbtag/blargbot';
-import { SubtagTestContext } from './SubtagTestSuite.js';
+import type { FetchRequest, FetchResponse } from '@bbtag/blargbot';
 import { argument } from '@blargbot/test-util/mock.js';
+
+import type { SubtagTestContext } from './SubtagTestSuite.js';
 
 interface TestFetchResponse {
     readonly status?: number;

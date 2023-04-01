@@ -1,4 +1,4 @@
-import { hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
@@ -9,17 +9,6 @@ import BBTagVariablesSequelizeDatabase from './BBTagVariablesSequelizeDatabase.j
 import { BBTagVariablesService } from './BBTagVariablesService.js';
 import { createBBTagVariablesRequestHandler } from './createBBTagVariablesRequestHandler.js';
 
-@hostIfEntrypoint(() => [{
-    port: env.appPort,
-    postgres: {
-        user: env.postgresUser,
-        pass: env.postgresPassword,
-        database: env.postgresDatabase,
-        sequelize: {
-            host: env.postgresHost
-        }
-    }
-}])
 export class BBTagVariablesApplication extends ServiceHost {
     public constructor(options: BBTagVariablesApplicationOptions) {
         const serviceName = 'user-settings';
@@ -51,6 +40,20 @@ export class BBTagVariablesApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new BBTagVariablesApplication({
+        port: env.appPort,
+        postgres: {
+            user: env.postgresUser,
+            pass: env.postgresPassword,
+            database: env.postgresDatabase,
+            sequelize: {
+                host: env.postgresHost
+            }
+        }
+    }));
 }
 
 export interface BBTagVariablesApplicationOptions {

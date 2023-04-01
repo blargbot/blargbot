@@ -1,5 +1,5 @@
 export interface FetchService {
-    send(url: string, init?: FetchRequest): Promise<FetchResponse>
+    send(url: string, init?: FetchRequest): Promise<FetchResponse>;
 }
 
 export interface FetchRequest {

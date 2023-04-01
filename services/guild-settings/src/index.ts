@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
@@ -14,23 +14,6 @@ import { createGuildSettingsRequestHandler } from './createGuildSettingsRequestH
 import GuildSettingsSequelizeDatabase from './GuildSettingsSequelizeDatabase.js';
 import { GuildSettingsService } from './GuildSettingsService.js';
 
-@hostIfEntrypoint(() => [{
-    port: env.appPort,
-    redis: {
-        url: env.redisUrl,
-        password: env.redisPassword,
-        username: env.redisUsername,
-        ttl: env.redisTTL
-    },
-    postgres: {
-        user: env.postgresUser,
-        pass: env.postgresPassword,
-        database: env.postgresDatabase,
-        sequelize: {
-            host: env.postgresHost
-        }
-    }
-}])
 export class GuildSettingsApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
         const serviceName = 'guild-settings';
@@ -72,6 +55,26 @@ export class GuildSettingsApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new GuildSettingsApplication({
+        port: env.appPort,
+        redis: {
+            url: env.redisUrl,
+            password: env.redisPassword,
+            username: env.redisUsername,
+            ttl: env.redisTTL
+        },
+        postgres: {
+            user: env.postgresUser,
+            pass: env.postgresPassword,
+            database: env.postgresDatabase,
+            sequelize: {
+                host: env.postgresHost
+            }
+        }
+    }));
 }
 
 export interface GuildSettingsApplicationOptions {

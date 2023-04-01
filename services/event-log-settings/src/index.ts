@@ -1,4 +1,4 @@
-import { connectToService, hostIfEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
+import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import env from '@blargbot/env';
 import express from '@blargbot/express';
@@ -13,23 +13,6 @@ import { createModLogRequestHandler } from './createUserWarningRequestHandler.js
 import GuildEventLogSequelizeDatabase from './GuildEventLogSequelizeDatabase.js';
 import { GuildEventLogService } from './GuildEventLogService.js';
 
-@hostIfEntrypoint(() => [{
-    port: env.appPort,
-    redis: {
-        url: env.redisUrl,
-        password: env.redisPassword,
-        username: env.redisUsername,
-        ttl: env.redisTTL
-    },
-    postgres: {
-        user: env.postgresUser,
-        pass: env.postgresPassword,
-        database: env.postgresDatabase,
-        sequelize: {
-            host: env.postgresHost
-        }
-    }
-}])
 export class EventLogSettingsApplication extends ServiceHost {
     public constructor(options: EventLogSettingsApplicationOptions) {
         const serviceName = 'event-log-settings';
@@ -73,6 +56,27 @@ export class EventLogSettingsApplication extends ServiceHost {
             )
         ]);
     }
+}
+
+if (isEntrypoint()) {
+    host(new EventLogSettingsApplication({
+        port: env.appPort,
+        redis: {
+            url: env.redisUrl,
+            password: env.redisPassword,
+            username: env.redisUsername,
+            ttl: env.redisTTL
+        },
+        postgres: {
+            user: env.postgresUser,
+            pass: env.postgresPassword,
+            database: env.postgresDatabase,
+            sequelize: {
+                host: env.postgresHost
+            }
+        }
+
+    }));
 }
 
 export interface EventLogSettingsApplicationOptions {
