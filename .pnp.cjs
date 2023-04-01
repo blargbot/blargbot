@@ -316,6 +316,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-user-cache/src"\
       },\
       {\
+        "name": "@blargbot/domain-whitelist-client",\
+        "reference": "workspace:services/domain-whitelist/client"\
+      },\
+      {\
+        "name": "@blargbot/domain-whitelist",\
+        "reference": "workspace:services/domain-whitelist/src"\
+      },\
+      {\
         "name": "@blargbot/event-log-settings",\
         "reference": "workspace:services/event-log-settings/src"\
       },\
@@ -450,6 +458,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-user-cache-client", ["workspace:services/discord-user-cache/client"]],\
       ["@blargbot/discord-util", ["workspace:components/discord-util/src"]],\
       ["@blargbot/domain", ["workspace:components/domain/src"]],\
+      ["@blargbot/domain-whitelist", ["workspace:services/domain-whitelist/src"]],\
+      ["@blargbot/domain-whitelist-client", ["workspace:services/domain-whitelist/client"]],\
       ["@blargbot/env", ["workspace:components/env/src"]],\
       ["@blargbot/event-log-settings", ["workspace:services/event-log-settings/src"]],\
       ["@blargbot/express", ["workspace:components/express/src"]],\
@@ -738,6 +748,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag-variables-client", "workspace:services/bbtag-variables/client"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
+            ["@blargbot/domain-whitelist-client", "workspace:services/domain-whitelist/client"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-dumps-client", "workspace:services/message-dumps/client"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
@@ -746,7 +757,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/snowflakes", "workspace:components/snowflakes/src"],\
             ["@blargbot/timeouts-client", "workspace:services/timeouts/client"],\
             ["@blargbot/user-settings-client", "workspace:services/user-settings/client"],\
-            ["@blargbot/user-warnings-client", "workspace:services/user-warnings/client"]\
+            ["@blargbot/user-warnings-client", "workspace:services/user-warnings/client"],\
+            ["node-fetch", "npm:3.3.1"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -1447,6 +1459,35 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/formatting", "workspace:components/formatting/src"],\
             ["@blargbot/input", "virtual:cf051536715ef432581a40e1a224bf54352084c4e731e8832a7e2ddcdd6843f1543136d7799e5c13f253d11702141c9c19bbd0199752c98a66c221db452a56d2#workspace:components/input/src"],\
             ["moment-timezone", "npm:0.5.42"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/domain-whitelist", [\
+        ["workspace:services/domain-whitelist/src", {\
+          "packageLocation": "./services/domain-whitelist/src/",\
+          "packageDependencies": [\
+            ["@blargbot/domain-whitelist", "workspace:services/domain-whitelist/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/domain-whitelist-client", "workspace:services/domain-whitelist/client"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/mapping", "workspace:components/mapping/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/redis-cache", "workspace:components/redis-cache/src"],\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
+            ["redis", "npm:4.6.5"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/domain-whitelist-client", [\
+        ["workspace:services/domain-whitelist/client", {\
+          "packageLocation": "./services/domain-whitelist/client/",\
+          "packageDependencies": [\
+            ["@blargbot/domain-whitelist-client", "workspace:services/domain-whitelist/client"],\
+            ["@blargbot/api-client", "workspace:components/api-client/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

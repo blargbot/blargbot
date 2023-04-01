@@ -5,9 +5,9 @@ import { ImageGenerateMessageBroker } from '@blargbot/image-generator-client';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsPushService } from '@blargbot/metrics-client';
+import fetch from 'node-fetch';
 
 import ArtGenerator from './generators/art.js';
-import type { ApiImageGeneratorConfig } from './generators/base/ApiImageGenerator.js';
 import CardsAgainstHumanityGenerator from './generators/cah.js';
 import CaptionGenerator from './generators/caption.js';
 import ClintGenerator from './generators/clint.js';
@@ -35,27 +35,29 @@ export class ImageGeneratorApplication extends ServiceHost {
         const hub = new MessageHub(options.messages);
 
         const requests = new ImageGenerateMessageBroker(hub, serviceName);
+        const apiOptions = { ...options.api, fetch };
+        const inProcessOptions = { fetch };
         const service = new ImageGeneratorService({
-            art: new ArtGenerator(),
-            cah: new CardsAgainstHumanityGenerator(),
-            caption: new CaptionGenerator(),
-            clint: new ClintGenerator(options.api),
-            clippy: new ClippyGenerator(),
-            clyde: new ClydeGenerator(),
-            color: new ColorGenerator(options.api),
-            delete: new DeleteGenerator(options.api),
-            distort: new DistortGenerator(),
-            emoji: new EmojiGenerator(),
-            free: new FreeGenerator(),
-            linus: new LinusGenerator(options.api),
-            pcCheck: new PCCheckGenerator(options.api),
-            pixelate: new PixelateGenerator(),
-            shit: new ShitGenerator(options.api),
-            sonicSays: new SonicSaysGenerator(options.api),
-            starVsTheForcesOf: new StarVsTheForcesOfGenerator(),
-            stupid: new StupidGenerator(),
-            theSearch: new TheSearchGenerator(options.api),
-            truth: new TruthGenerator()
+            art: new ArtGenerator(inProcessOptions),
+            cah: new CardsAgainstHumanityGenerator(inProcessOptions),
+            caption: new CaptionGenerator(inProcessOptions),
+            clint: new ClintGenerator(apiOptions),
+            clippy: new ClippyGenerator(inProcessOptions),
+            clyde: new ClydeGenerator(inProcessOptions),
+            color: new ColorGenerator(apiOptions),
+            delete: new DeleteGenerator(apiOptions),
+            distort: new DistortGenerator(inProcessOptions),
+            emoji: new EmojiGenerator(inProcessOptions),
+            free: new FreeGenerator(inProcessOptions),
+            linus: new LinusGenerator(apiOptions),
+            pcCheck: new PCCheckGenerator(apiOptions),
+            pixelate: new PixelateGenerator(inProcessOptions),
+            shit: new ShitGenerator(apiOptions),
+            sonicSays: new SonicSaysGenerator(apiOptions),
+            starVsTheForcesOf: new StarVsTheForcesOfGenerator(inProcessOptions),
+            stupid: new StupidGenerator(inProcessOptions),
+            theSearch: new TheSearchGenerator(apiOptions),
+            truth: new TruthGenerator(inProcessOptions)
         });
         super([
             parallelServices(
@@ -84,5 +86,8 @@ if (isEntrypoint()) {
 
 export interface ImageGeneratorApplicationOptions {
     readonly messages: ConnectionOptions;
-    readonly api: ApiImageGeneratorConfig;
+    readonly api: {
+        readonly url: string;
+        readonly token: string;
+    };
 }

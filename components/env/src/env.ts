@@ -15,6 +15,7 @@ const envVarDeclaration = {
     timeoutUrl: [String, 'TIMEOUT_URL'],
     messageDumpsUrl: [String, 'MESSAGE_DUMPS_URL'],
     messageDumpsWebsiteUrl: [String, 'MESSAGE_DUMPS_WEBSITE_URL'],
+    domainWhitelistUrl: [String, 'DOMAIN_WHITELIST_URL'],
 
     appPort: [Number, 'APP_PORT', '80'],
     discordToken: [String, 'DISCORD_TOKEN'],

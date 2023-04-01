@@ -1,20 +1,24 @@
-import fetch from 'node-fetch';
+import type fetch from 'node-fetch';
 
 import ImageGenerator from './ImageGenerator.js';
 
 export default class ApiImageGenerator<Options> extends ImageGenerator<Options> {
-    readonly #config: ApiImageGeneratorConfig;
+    readonly #url: string;
+    readonly #token: string;
+    readonly #fetch: typeof fetch;
 
     public constructor(config: ApiImageGeneratorConfig) {
         super();
-        this.#config = config;
+        this.#url = config.url;
+        this.#token = config.token;
+        this.#fetch = config.fetch;
     }
 
     public override async generate(options: Options): Promise<Blob> {
-        const response = await fetch(this.#config.url, {
+        const response = await this.#fetch(this.#url, {
             method: 'POST',
             headers: {
-                ['Authorization']: this.#config.token,
+                ['Authorization']: this.#token,
                 ['Content-Type']: 'application/json'
             },
             body: JSON.stringify(options)
@@ -34,4 +38,5 @@ export default class ApiImageGenerator<Options> extends ImageGenerator<Options> 
 export interface ApiImageGeneratorConfig {
     readonly url: string;
     readonly token: string;
+    readonly fetch: typeof fetch;
 }

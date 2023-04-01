@@ -6,7 +6,7 @@ import { promisify } from 'node:util';
 import { getCallerImportMeta } from '@blargbot/application';
 import type { ValidFont } from '@blargbot/image-generator-client';
 import gm from 'gm';
-import fetch from 'node-fetch';
+import type fetch from 'node-fetch';
 import sharp from 'sharp';
 
 import ImageGenerator from './ImageGenerator.js';
@@ -15,6 +15,12 @@ const emptyBuffer = Buffer.from([]);
 
 export default abstract class InProcessImageGenerator<Options> extends ImageGenerator<Options> {
     protected readonly imageMagick = gm.subClass({ imageMagick: true });
+    readonly #fetch: typeof fetch;
+
+    public constructor(options: InProcessImageGeneratorOptions) {
+        super();
+        this.#fetch = options.fetch;
+    }
 
     protected getRemoteImage(url: string, transform?: (value: sharp.Sharp) => Buffer): Promise<Blob>
     protected getRemoteImage<T>(url: string, transform: (value: sharp.Sharp) => Awaitable<T>): Promise<T>
@@ -34,7 +40,7 @@ export default abstract class InProcessImageGenerator<Options> extends ImageGene
         }
 
         console.debug('Fetching remote data', url);
-        const response = await fetch(url);
+        const response = await this.#fetch(url);
         if (!response.ok)
             throw new Error(`Failed to get content, received ${response.status}`);
 
@@ -83,6 +89,10 @@ export default abstract class InProcessImageGenerator<Options> extends ImageGene
     protected async magickToBuffer(state: gm.State, format: string): Promise<Buffer> {
         return await promisify<Buffer>(cb => state.toBuffer(format, cb))();
     }
+}
+
+export interface InProcessImageGeneratorOptions {
+    fetch: typeof fetch;
 }
 
 export class LocalResource {

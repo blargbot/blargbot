@@ -6,4 +6,4 @@ repoDir="$(dirname "$buildDir")"
 
 docker image rm blargbot/repo || true
 docker build -t blargbot/repo "$repoDir"
-docker compose -f "$buildDir/docker-compose.yaml" build
+# docker compose -f "$buildDir/docker-compose.yaml" build

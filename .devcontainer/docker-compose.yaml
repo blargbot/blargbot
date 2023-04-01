@@ -411,6 +411,18 @@ services:
       cassandra:
         condition: service_healthy
 
+  domain-whitelist:
+    image: blargbot/domain-whitelist
+    environment:
+      <<: *metrics-env
+      <<: *postgres-env
+      <<: *redis-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   rabbitmq:
     image: blargbot/rabbitmq
     <<: *health-check

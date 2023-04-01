@@ -229,6 +229,7 @@ __metadata:
     "@blargbot/bbtag-variables-client": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/domain-whitelist-client": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/message-dumps-client": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
@@ -238,6 +239,7 @@ __metadata:
     "@blargbot/timeouts-client": "workspace:^"
     "@blargbot/user-settings-client": "workspace:^"
     "@blargbot/user-warnings-client": "workspace:^"
+    node-fetch: ^3.3.1
   languageName: unknown
   linkType: soft
 
@@ -805,6 +807,31 @@ __metadata:
   resolution: "@blargbot/discord-util@workspace:components/discord-util/src"
   dependencies:
     "@blargbot/snowflakes": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/domain-whitelist-client@workspace:^, @blargbot/domain-whitelist-client@workspace:services/domain-whitelist/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/domain-whitelist-client@workspace:services/domain-whitelist/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/domain-whitelist@workspace:services/domain-whitelist/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/domain-whitelist@workspace:services/domain-whitelist/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/container-id": "workspace:^"
+    "@blargbot/domain-whitelist-client": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
+    "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/redis-cache": "workspace:^"
+    "@blargbot/sequelize": "workspace:^"
+    redis: ^4.6.5
   languageName: unknown
   linkType: soft
 

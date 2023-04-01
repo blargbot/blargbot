@@ -1,0 +1,24 @@
+{
+    "name": "@blargbot/domain-whitelist",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "scripts": {
+        "start": "node ./index.js"
+    },
+    "dependencies": {
+        "@blargbot/application": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
+        "@blargbot/domain-whitelist-client": "workspace:^",
+        "@blargbot/env": "workspace:^",
+        "@blargbot/express": "workspace:^",
+        "@blargbot/mapping": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
+        "@blargbot/redis-cache": "workspace:^",
+        "@blargbot/sequelize": "workspace:^",
+        "redis": "^4.6.5"
+    }
+}

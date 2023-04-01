@@ -15,6 +15,7 @@
         "@blargbot/bbtag-variables-client": "workspace:^",
         "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
+        "@blargbot/domain-whitelist-client": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/message-dumps-client": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
@@ -23,6 +24,7 @@
         "@blargbot/snowflakes": "workspace:^",
         "@blargbot/timeouts-client": "workspace:^",
         "@blargbot/user-settings-client": "workspace:^",
-        "@blargbot/user-warnings-client": "workspace:^"
+        "@blargbot/user-warnings-client": "workspace:^",
+        "node-fetch": "^3.3.1"
     }
 }

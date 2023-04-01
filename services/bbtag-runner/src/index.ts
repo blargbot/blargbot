@@ -4,6 +4,7 @@ import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } f
 import { BBTagExecutionMessageBroker } from '@blargbot/bbtag-runner-client';
 import { BBTagVariableHttpClient } from '@blargbot/bbtag-variables-client';
 import { fullContainerId } from '@blargbot/container-id';
+import { DomainWhitelistHttpClient } from '@blargbot/domain-whitelist-client';
 import env from '@blargbot/env';
 import { MessageDumpsHttpClient } from '@blargbot/message-dumps-client';
 import type { ConnectionOptions } from '@blargbot/message-hub';
@@ -15,6 +16,7 @@ import { TimeoutHttpClient } from '@blargbot/timeouts-client';
 import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
 import { UserWarningsHttpClient } from '@blargbot/user-warnings-client';
 import { createHash } from 'crypto';
+import fetch from 'node-fetch';
 
 import { createBBTagEngine } from './createBBTagEngine.js';
 import { ChannelService } from './services/ChannelService.js';
@@ -65,7 +67,7 @@ export class BBTagRunnerApplication extends ServiceHost {
             modLog: new ModLogService(new ModLogMessageBroker(hub, serviceName)),
             timezones: new TimezoneProvider(new UserSettingsHttpClient(options.userSettings.url)),
             warnings: new WarningService(new UserWarningsHttpClient(options.userWarnings.url)),
-            fetch: new FetchService(),
+            fetch: new FetchService(new DomainWhitelistHttpClient(options.domainWhitelist.url), { fetch }),
             lock: new LockService(),
             staff: new StaffService(),
             sources: new SourceProvider(),
@@ -113,6 +115,9 @@ if (isEntrypoint()) {
         },
         userWarnings: {
             url: env.userWarningsUrl
+        },
+        domainWhitelist: {
+            url: env.domainWhitelistUrl
         }
     }));
 }
@@ -133,6 +138,9 @@ export interface BBTagRunnerApplicationOptions {
         readonly url: string;
     };
     readonly userWarnings: {
+        readonly url: string;
+    };
+    readonly domainWhitelist: {
         readonly url: string;
     };
     readonly defaultPrefix: string;

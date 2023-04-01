@@ -105,6 +105,10 @@ services:
     build: ../services/message-dumps/src
     image: blargbot/message-dumps
 
+  domain-whitelist:
+    build: ../services/domain-whitelist/src
+    image: blargbot/domain-whitelist
+
   rabbitmq:
     build: ../infra/rabbitmq
     image: blargbot/rabbitmq
