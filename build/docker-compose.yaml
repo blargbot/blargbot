@@ -61,6 +61,10 @@ services:
     build: ../services/bbtag-variables/src
     image: blargbot/bbtag-variables
 
+  bbtag-source:
+    build: ../services/bbtag-source/src
+    image: blargbot/bbtag-source
+
   image-generator:
     build: ../services/image-generator/src
     image: blargbot/image-generator

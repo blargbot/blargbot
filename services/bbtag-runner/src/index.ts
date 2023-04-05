@@ -2,7 +2,7 @@ import { subtags, tagVariableScopeProviders } from '@bbtag/blargbot';
 import { VariableNameParser, VariableProvider } from '@bbtag/variables';
 import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { BBTagExecutionMessageBroker } from '@blargbot/bbtag-runner-client';
-import { BBTagSourceHttpClient } from '@blargbot/bbtag-source-client';
+import { BBTagSourceMessageBroker } from '@blargbot/bbtag-source-client';
 import { BBTagVariableHttpClient } from '@blargbot/bbtag-variables-client';
 import { fullContainerId } from '@blargbot/container-id';
 import { DomainWhitelistHttpClient } from '@blargbot/domain-whitelist-client';
@@ -71,7 +71,7 @@ export class BBTagRunnerApplication extends ServiceHost {
             fetch: new FetchService(new DomainWhitelistHttpClient(options.domainWhitelist.url), { fetch }),
             lock: new LockService(),
             staff: new StaffService(),
-            sources: new SourceProvider(new BBTagSourceHttpClient(options.bbtagSource.url)),
+            sources: new SourceProvider(new BBTagSourceMessageBroker(hub, serviceName)),
             channels: new ChannelService(),
             cooldowns: new CooldownService(),
             guild: new GuildService(),
@@ -119,9 +119,6 @@ if (isEntrypoint()) {
         },
         domainWhitelist: {
             url: env.domainWhitelistUrl
-        },
-        bbtagSource: {
-            url: env.bbtagSourceUrl
         }
     }));
 }
@@ -145,9 +142,6 @@ export interface BBTagRunnerApplicationOptions {
         readonly url: string;
     };
     readonly domainWhitelist: {
-        readonly url: string;
-    };
-    readonly bbtagSource: {
         readonly url: string;
     };
     readonly defaultPrefix: string;

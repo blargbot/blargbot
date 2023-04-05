@@ -198,7 +198,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/bbtag-source-client@workspace:services/bbtag-source/client"
   dependencies:
-    "@blargbot/api-client": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -210,10 +210,8 @@ __metadata:
     "@blargbot/bbtag-source-client": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/env": "workspace:^"
-    "@blargbot/express": "workspace:^"
-    "@blargbot/mapping": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
-    "@blargbot/sequelize": "workspace:^"
   languageName: unknown
   linkType: soft
 

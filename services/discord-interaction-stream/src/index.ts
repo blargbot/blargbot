@@ -36,7 +36,6 @@ if (isEntrypoint()) {
             username: env.rabbitUsername,
             password: env.rabbitPassword
         }
-
     }));
 }
 

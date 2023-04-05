@@ -7,6 +7,6 @@
         ".": "./index.js"
     },
     "dependencies": {
-        "@blargbot/api-client": "workspace:^"
+        "@blargbot/message-hub": "workspace:^"
     }
 }

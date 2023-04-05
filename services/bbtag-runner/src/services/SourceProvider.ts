@@ -1,15 +1,15 @@
 import type { BBTagRuntime, SourceProvider as BBTagSourceProvider } from '@bbtag/blargbot';
-import type { BBTagSourceHttpClient } from '@blargbot/bbtag-source-client';
+import type { BBTagSourceMessageBroker } from '@blargbot/bbtag-source-client';
 
 export class SourceProvider implements BBTagSourceProvider {
-    readonly #client: BBTagSourceHttpClient;
+    readonly #client: BBTagSourceMessageBroker;
 
-    public constructor(client: BBTagSourceHttpClient) {
+    public constructor(client: BBTagSourceMessageBroker) {
         this.#client = client;
     }
 
     public async get(context: BBTagRuntime, type: string, name: string): Promise<{ content: string; cooldown: number; } | undefined> {
-        const result = await this.#client.get({ ownerId: BigInt(context.guild.id), type, name });
+        const result = await this.#client.requestBBTagSource(BigInt(context.guild.id), type, name);
         if (result === undefined)
             return undefined;
 

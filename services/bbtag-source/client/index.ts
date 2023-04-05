@@ -1,57 +1,65 @@
-import type { HttpClient, HttpClientOptions } from '@blargbot/api-client';
-import { defineApiClient, jsonBody } from '@blargbot/api-client';
-
-export interface BBTagSourceIndex {
-    readonly ownerId: bigint;
-    readonly type: string;
-    readonly name: string;
-}
+import type { ConsumeMessage, MessageHandle } from '@blargbot/message-hub';
+import { blobToJson, jsonToBlob, MessageHub } from '@blargbot/message-hub';
 
 export interface BBTagSource {
     readonly value: string;
     readonly cooldown: number;
 }
 
-export interface BBTagSourceFilter {
-    readonly ownerId: bigint;
-    readonly type?: string;
-    readonly name?: string;
-}
+const requests = 'bbtag-source-requests';
+const dropped = 'bbtag-source-unknown';
+export class BBTagSourceMessageBroker {
+    readonly #messages: MessageHub;
+    readonly #serviceName: string;
 
-export interface BBTagSetRequest extends BBTagSource, BBTagSourceIndex {
+    public constructor(messages: MessageHub, serviceName: string) {
+        this.#messages = messages;
+        this.#serviceName = serviceName;
 
-}
+        this.#messages.onConnected(c => Promise.all([
+            c.assertExchange(requests, 'topic', { alternateExchange: dropped, durable: true }),
+            c.assertExchange(dropped, 'fanout', { durable: true })
+        ]));
+    }
 
-export interface BBTagAliasRequest {
-    readonly alias: BBTagSourceIndex;
-    readonly source: BBTagSourceIndex;
-}
+    public async requestBBTagSource(ownerId: bigint, type: string, name: string): Promise<BBTagSource | undefined> {
+        const response = await this.#messages.request(requests, type, await jsonToBlob<SourceRequest>({ ownerId: ownerId.toString(), name }));
+        if (response.size === 0)
+            return undefined;
 
-function getUrl(p: BBTagSourceFilter): string {
-    return [p.ownerId.toString(), p.type, p.name]
-        .filter((v): v is Exclude<typeof v, undefined> => v !== undefined)
-        .map(v => encodeURIComponent(v))
-        .join('/');
-}
+        return await blobToJson(response);
+    }
 
-export class BBTagSourceHttpClient extends defineApiClient({
-    get: b => b.route<BBTagSourceIndex>(getUrl)
-        .response<BBTagSource>(200)
-        .response(404),
-    set: b => b.route<BBTagSetRequest>('PUT', getUrl)
-        .body(({ value, cooldown }) => jsonBody({ value, cooldown }))
-        .response(204),
-    remove: b => b.route<BBTagSourceFilter>('DELETE', getUrl)
-        .response(204),
-    alias: b => b.route<BBTagAliasRequest>('PUT', x => getUrl(x.alias))
-        .body(({ source }) => jsonBody({ source }))
-        .response(204)
-}) {
-    public static from(options: BBTagSourceHttpClient | HttpClient | HttpClientOptions | string | URL | undefined): BBTagSourceHttpClient {
-        if (options instanceof BBTagSourceHttpClient)
-            return options;
-        if (options === undefined)
-            throw new Error('No configuration provided for client');
-        return new BBTagSourceHttpClient(options);
+    public async handleBBTagSourceRequest(type: string, handler: (name: string, ownerId: bigint, message: ConsumeMessage) => Awaitable<BBTagSource | undefined>): Promise<MessageHandle> {
+        return await this.#messages.handleMessage({
+            exchange: requests,
+            queue: MessageHub.makeQueueName(this.#serviceName, requests, type),
+            filter: type,
+            handle: async (data, msg) => {
+                const { name, ownerId } = await blobToJson<SourceRequest>(data);
+                const response = await handler(name, BigInt(ownerId), msg);
+                return response === undefined ? emptyResponse : await jsonToBlob(response);
+            }
+        });
+    }
+
+    public async handleDroppedBBTagSourceRequest(handler: (type: string, name: string, ownerId: bigint, message: ConsumeMessage) => Awaitable<BBTagSource | undefined>): Promise<MessageHandle> {
+        return await this.#messages.handleMessage({
+            exchange: dropped,
+            queue: MessageHub.makeQueueName(this.#serviceName, dropped),
+            filter: '#',
+            handle: async (data, msg) => {
+                const { name, ownerId } = await blobToJson<SourceRequest>(data);
+                const response = await handler(msg.fields.routingKey, name, BigInt(ownerId), msg);
+                return response === undefined ? emptyResponse : await jsonToBlob(response);
+            }
+        });
     }
 }
+
+interface SourceRequest {
+    readonly ownerId: string;
+    readonly name: string;
+}
+
+const emptyResponse = new Blob([]);

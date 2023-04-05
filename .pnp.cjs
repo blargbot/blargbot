@@ -794,10 +794,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag-source-client", "workspace:services/bbtag-source/client"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/mapping", "workspace:components/mapping/src"],\
-            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["@blargbot/sequelize", "workspace:components/sequelize/src"]\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -807,7 +805,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./services/bbtag-source/client/",\
           "packageDependencies": [\
             ["@blargbot/bbtag-source-client", "workspace:services/bbtag-source/client"],\
-            ["@blargbot/api-client", "workspace:components/api-client/src"]\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

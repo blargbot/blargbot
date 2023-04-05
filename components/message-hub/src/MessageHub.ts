@@ -44,12 +44,10 @@ export class MessageHub {
     async #connect(): Promise<amqplib.Channel> {
         try {
             this.#attemptReconnect = false;
-            console.log(`Connecting to message bus at ${this.#options.hostname ?? 'UNDEFINED'}`);
             const connection = await amqplib.connect(this.#options, this.#socketOptions);
             connection.once('close', () => void this.#onClose().catch(console.error));
             const channel = await connection.createChannel();
             channel.once('close', () => void connection.close().catch(console.error));
-            console.log('Connected to message bus');
 
             await this.#emitConnected(channel);
             await this.#prefetch(channel);
@@ -104,7 +102,7 @@ export class MessageHub {
                     this.#replies.get(responseId)?.res(msg);
                     this.#replies.delete(responseId);
                 }
-            });
+            }, { noAck: true });
         } catch (err) {
             this.#replyListener = undefined;
             throw err;
@@ -112,11 +110,14 @@ export class MessageHub {
     }
 
     async #listenForReply(replyId: string): Promise<Blob> {
-        await this.#ensureReplyListener();
         const message = await new Promise<amqplib.ConsumeMessage>((res, rej) => {
             this.#replies.set(replyId, { res, rej });
         });
         return new Blob([message.content], { type: message.properties.contentType as string });
+    }
+
+    async #getBuffer(blob: Blob): Promise<Buffer> {
+        return Buffer.from(await blob.arrayBuffer());
     }
 
     public async connect(): Promise<void> {
@@ -132,30 +133,28 @@ export class MessageHub {
     }
 
     public async publish(exchange: string, filter: string, message: Blob, options?: amqplib.Options.Publish): Promise<void> {
-        const channel = await this.getChannel();
-        const buffer = Buffer.from(await message.arrayBuffer());
-        channel.publish(exchange, filter, buffer, { ...options, contentType: message.type });
+        const [channel, data] = await Promise.all([this.getChannel(), this.#getBuffer(message)]);
+        channel.publish(exchange, filter, data, { ...options, contentType: message.type });
     }
 
     public async send(queue: string, message: Blob, options?: amqplib.Options.Publish): Promise<void> {
-        const channel = await this.getChannel();
-        const buffer = Buffer.from(await message.arrayBuffer());
-        channel.sendToQueue(queue, buffer, { ...options, contentType: message.type });
+        const [channel, data] = await Promise.all([this.getChannel(), this.#getBuffer(message)]);
+        channel.sendToQueue(queue, data, { ...options, contentType: message.type });
     }
 
     public async request(exchange: string, filter: string, message: Blob, options?: amqplib.Options.Publish): Promise<Blob> {
         const id = randomUUID();
-        const channel = await this.getChannel();
-        const buffer = Buffer.from(await message.arrayBuffer());
-        const reply = this.#listenForReply(id);
-        channel.publish(exchange, filter, buffer, {
+        const [channel, data] = await Promise.all([this.getChannel(), this.#getBuffer(message), this.#ensureReplyListener()]);
+        const replyPromise = this.#listenForReply(id);
+        channel.publish(exchange, filter, data, {
             ...options,
             contentType: message.type,
+            replyTo: 'amq.rabbitmq.reply-to',
             headers: {
                 ['x-request-id']: id
             }
         });
-        return await reply;
+        return await replyPromise;
     }
 
     async #handleMessage(impl: (data: Blob, message: ConsumeMessage) => Awaitable<Blob | void>, msg: ConsumeMessage): Promise<void> {
@@ -177,7 +176,6 @@ export class MessageHub {
     }
 
     public async handleMessage(options: HandleMessageOptions): Promise<MessageHandle> {
-        const h = this.#handleMessage.bind(this, options.handle);
         const channel = await this.getChannel();
         await channel.assertQueue(options.queue, options.queueArgs);
         if ('exchange' in options) {
@@ -185,12 +183,13 @@ export class MessageHub {
             for (const filter of filters)
                 await channel.bindQueue(options.queue, options.exchange, filter);
         }
+        const { handle, consumeArgs: { noAck = false } = {} } = options;
         const tag = await channel.consume(options.queue, msg => {
             if (msg === null)
                 return;
 
-            const message = new ConsumeMessage(channel, msg, options.consumeArgs?.noAck !== true);
-            void h(message).catch(console.error);
+            const message = new ConsumeMessage(channel, msg, !noAck);
+            void this.#handleMessage(handle, message).catch(console.error);
         }, options.consumeArgs);
         return {
             disconnect: async () => {

@@ -297,6 +297,15 @@ services:
       postgres:
         condition: service_healthy
 
+  bbtag-source:
+    image: blargbot/bbtag-source
+    environment:
+      <<: *metrics-env
+      <<: *rabbit-env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   image-generator:
     image: blargbot/image-generator
     <<: *env-file

@@ -14,9 +14,7 @@
         "@blargbot/bbtag-source-client": "workspace:^",
         "@blargbot/container-id": "workspace:^",
         "@blargbot/env": "workspace:^",
-        "@blargbot/express": "workspace:^",
-        "@blargbot/mapping": "workspace:^",
-        "@blargbot/metrics-client": "workspace:^",
-        "@blargbot/sequelize": "workspace:^"
+        "@blargbot/message-hub": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^"
     }
 }
