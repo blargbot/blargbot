@@ -13,7 +13,7 @@ export class SourceProvider implements BBTagSourceProvider {
         if (result === undefined)
             return undefined;
 
-        return { content: result.value, cooldown: 0 };
+        return { content: result.value, cooldown: result.cooldown };
     }
 }
 // {
