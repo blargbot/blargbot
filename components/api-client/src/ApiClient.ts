@@ -32,8 +32,8 @@ export interface ApiClientEndpointBuilder<Config, Request = void, Response = nev
     header(name: string, value: string, ...values: string[]): ApiClientEndpointBuilder<Config, Request, Response>;
     headers(headers: ValueOrFactory<HttpHeaders, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response>;
     body(content: ValueOrFactory<Blob, [request: Request, config: Config]>): ApiClientEndpointBuilder<Config, Request, Response>;
-    response<R = void>(code: number): ApiClientEndpointBuilder<Config, Request, Response | R>;
-    response<R>(code: number, reader: (content: Blob, headers: HttpHeaders, config: Config) => Awaitable<R>): ApiClientEndpointBuilder<Config, Request, Response | R>;
+    response(code: number): ApiClientEndpointBuilder<Config, Request, Response | undefined>;
+    response<R>(code: number, reader?: (content: Blob, headers: HttpHeaders, config: Config) => Awaitable<R>): ApiClientEndpointBuilder<Config, Request, Response | R>;
 }
 
 export interface ApiClientEndpointFactory<Config, Request, Response> {

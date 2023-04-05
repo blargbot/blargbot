@@ -121,6 +121,8 @@ services:
       <<: *rethinkdb-env
       <<: *redis-env
       <<: *command-prefix
+    ports:
+      - 4999:80
 
   discord-proxy:
     image: blargbot/discord-proxy

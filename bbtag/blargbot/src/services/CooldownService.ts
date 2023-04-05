@@ -38,10 +38,19 @@ export interface IDistributedMap<Key, Value> {
     set(key: Key, value: Value): Awaitable<void>;
 }
 
-export class DistributedCooldownService implements CooldownService {
-    readonly #cooldowns: IDistributedMap<string, Date>;
+export interface CooldownContext {
+    readonly guildId: string;
+    readonly userId: string;
+    readonly script: {
+        readonly type: string;
+        readonly name: string;
+    };
+}
 
-    public constructor(cooldowns: IDistributedMap<string, Date>) {
+export class DistributedCooldownService implements CooldownService {
+    readonly #cooldowns: IDistributedMap<CooldownContext, Date>;
+
+    public constructor(cooldowns: IDistributedMap<CooldownContext, Date>) {
         this.#cooldowns = cooldowns;
     }
 
@@ -57,7 +66,14 @@ export class DistributedCooldownService implements CooldownService {
         await this.#cooldowns.set(this.#getKey(script), new Date());
     }
 
-    #getKey(script: BBTagScript): string {
-        return `${script.runtime.guild.id}:${script.runtime.type}:${script.runtime.user.id}:${script.name}`;
+    #getKey(script: BBTagScript): CooldownContext {
+        return {
+            guildId: script.runtime.guild.id,
+            userId: script.runtime.user.id,
+            script: {
+                name: script.runtime.entrypoint.name,
+                type: script.runtime.type
+            }
+        };
     }
 }

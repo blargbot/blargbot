@@ -25,7 +25,7 @@ export function makeColumn<Name extends keyof M, M extends object>(name: Name, t
         [name]: {
             type,
             allowNull: base[name] as unknown === null,
-            defaultValue: base[name],
+            defaultValue: base[name] as unknown ?? undefined,
             ...rest
         }
     } as { [P in Name]: AttributeOptions<Model<M>> };

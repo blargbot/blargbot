@@ -12,6 +12,7 @@
         "@bbtag/variables": "workspace:^",
         "@blargbot/application": "workspace:^",
         "@blargbot/bbtag-runner-client": "workspace:^",
+        "@blargbot/bbtag-source-client": "workspace:^",
         "@blargbot/bbtag-variables-client": "workspace:^",
         "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-emote": "workspace:^",
