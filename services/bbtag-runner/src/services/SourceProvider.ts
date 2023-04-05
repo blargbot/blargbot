@@ -16,19 +16,3 @@ export class SourceProvider implements BBTagSourceProvider {
         return { content: result.value, cooldown: result.cooldown };
     }
 }
-// {
-//     get: async (ctx, type, name) => {
-//         if (type === 'cc') {
-//             const ccommand = await this.database.guilds.getCommand(ctx.guild.id, name);
-//             if (ccommand === undefined)
-//                 return undefined;
-
-//             if (!('alias' in ccommand))
-//                 return ccommand;
-
-//             name = ccommand.alias;
-//         }
-
-//         return await this.database.tags.get(name);
-//     }
-// }
