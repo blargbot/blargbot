@@ -44,20 +44,23 @@ export interface PermissionOverwrite extends Discord.APIOverwrite {
 
 }
 
-export interface CreateChannel {
-    name: string;
-    type: Channel['type'];
+export interface ChannelOptions {
     bitrate?: number;
     nsfw?: boolean;
     parentID?: string;
-    permissionOverwrites?: Discord.APIOverwrite[];
     position?: number;
     rateLimitPerUser?: number;
     topic?: string;
     userLimit?: number;
 }
 
-export interface EditChannel extends Omit<CreateChannel, 'name' | 'type' | 'permissionOverwrites'> {
+export interface CreateChannel extends ChannelOptions {
+    name: string;
+    type: Channel['type'];
+    permissionOverwrites?: Discord.APIOverwrite[];
+}
+
+export interface EditChannel extends ChannelOptions {
     archived?: boolean;
     autoArchiveDuration?: Discord.ThreadAutoArchiveDuration;
     defaultAutoArchiveDuration?: Discord.ThreadAutoArchiveDuration;

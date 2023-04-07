@@ -1155,6 +1155,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/search-client@workspace:^, @blargbot/search-client@workspace:services/search/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/search-client@workspace:services/search/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/search@workspace:services/search/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/search@workspace:services/search/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/container-id": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+    "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/search-client": "workspace:^"
+    "@blargbot/sequelize": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/sequelize@workspace:^, @blargbot/sequelize@workspace:components/sequelize/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/sequelize@workspace:components/sequelize/src"

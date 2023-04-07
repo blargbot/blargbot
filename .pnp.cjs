@@ -380,6 +380,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/mod-log/src"\
       },\
       {\
+        "name": "@blargbot/search-client",\
+        "reference": "workspace:services/search/client"\
+      },\
+      {\
+        "name": "@blargbot/search",\
+        "reference": "workspace:services/search/src"\
+      },\
+      {\
         "name": "@blargbot/timeout-clock-client",\
         "reference": "workspace:services/timeout-clock/client"\
       },\
@@ -495,6 +503,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/modules", ["workspace:components/modules/src"]],\
       ["@blargbot/redis-cache", ["workspace:components/redis-cache/src"]],\
       ["@blargbot/res", ["workspace:components/res/src"]],\
+      ["@blargbot/search", ["workspace:services/search/src"]],\
+      ["@blargbot/search-client", ["workspace:services/search/client"]],\
       ["@blargbot/sequelize", ["workspace:components/sequelize/src"]],\
       ["@blargbot/serialization", ["workspace:components/serialization/src"]],\
       ["@blargbot/snowflakes", ["workspace:components/snowflakes/src"]],\
@@ -1876,6 +1886,34 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./components/res/src/",\
           "packageDependencies": [\
             ["@blargbot/res", "workspace:components/res/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/search", [\
+        ["workspace:services/search/src", {\
+          "packageLocation": "./services/search/src/",\
+          "packageDependencies": [\
+            ["@blargbot/search", "workspace:services/search/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/search-client", "workspace:services/search/client"],\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/search-client", [\
+        ["workspace:services/search/client", {\
+          "packageLocation": "./services/search/client/",\
+          "packageDependencies": [\
+            ["@blargbot/search-client", "workspace:services/search/client"],\
+            ["@blargbot/api-client", "workspace:components/api-client/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

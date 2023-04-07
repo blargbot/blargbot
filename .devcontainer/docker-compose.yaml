@@ -368,6 +368,18 @@ services:
     environment:
       <<: *metrics-env
 
+  search:
+    image: blargbot/search
+    environment:
+      <<: *metrics-env
+      <<: *postgres-env
+      <<: *rabbit-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
   timeouts:
     image: blargbot/timeouts
     environment:

@@ -4,7 +4,7 @@ import { userWarningsUpdateRequestBodySerializer } from '@blargbot/user-warnings
 
 import type { UserWarningService } from './UserWarningService.js';
 
-export function createModLogRequestHandler(service: UserWarningService): express.RequestHandler {
+export function createUserWarningRequestHandler(service: UserWarningService): express.RequestHandler {
     const router = express.Router();
 
     router.route('/:guildId(\\d+)')

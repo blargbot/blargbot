@@ -5,16 +5,16 @@ import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsPushService } from '@blargbot/metrics-client';
-import { ModLogMessageBroker } from '@blargbot/mod-log-client';
+import { SearchMessageBroker } from '@blargbot/search-client';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 
-import { createUserWarningRequestHandler } from './createUserWarningRequestHandler.js';
-import UserWarningSequelizeDatabase from './UserWarningSequelizeDatabase.js';
-import { UserWarningService } from './UserWarningService.js';
+import { createSearchRequestHandler } from './createSearchRequestHandler.js';
+import { SearchDatabase } from './SearchDatabase.js';
+import { SearchService } from './SearchService.js';
 
-export class UserWarningsApplication extends ServiceHost {
-    public constructor(options: UserWarningsApplicationOptions) {
-        const serviceName = 'user-warnings';
+export class SearchApplication extends ServiceHost {
+    public constructor(options: SearchApplicationOptions) {
+        const serviceName = 'search';
         const hub = new MessageHub(options.messages);
         const database = new Sequelize(
             options.postgres.database,
@@ -26,9 +26,9 @@ export class UserWarningsApplication extends ServiceHost {
             }
         );
 
-        const service = new UserWarningService(
-            new ModLogMessageBroker(hub, serviceName),
-            new UserWarningSequelizeDatabase(database)
+        const messages = new SearchMessageBroker(hub, serviceName);
+        const service = new SearchService(
+            new SearchDatabase(database)
         );
 
         super([
@@ -39,11 +39,15 @@ export class UserWarningsApplication extends ServiceHost {
                 }),
                 new MetricsPushService({ serviceName, instanceId: fullContainerId })
             ),
+            parallelServices(
+                connectToService(() => messages.handleSearchTermDelete(d => service.delete(d)), 'handleSearchTermDelete'),
+                connectToService(() => messages.handleSearchTermSet(d => service.set(d)), 'handleSearchTermSet')
+            ),
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))
                     .use(express.json())
-                    .all('/*', createUserWarningRequestHandler(service)),
+                    .all('/*', createSearchRequestHandler(service)),
                 options.port
             )
         ]);
@@ -51,7 +55,7 @@ export class UserWarningsApplication extends ServiceHost {
 }
 
 if (isEntrypoint()) {
-    host(new UserWarningsApplication({
+    host(new SearchApplication({
         messages: {
             prefetch: env.rabbitPrefetch,
             hostname: env.rabbitHost,
@@ -70,7 +74,7 @@ if (isEntrypoint()) {
     }));
 }
 
-export interface UserWarningsApplicationOptions {
+export interface SearchApplicationOptions {
     readonly messages: ConnectionOptions;
     readonly port: number;
     readonly postgres: {
