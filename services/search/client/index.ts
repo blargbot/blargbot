@@ -9,15 +9,45 @@ export interface SearchOptions {
     readonly types: Iterable<string>;
 }
 
-export interface SearchKey {
+export interface SearchData {
     readonly scope: string;
     readonly type: string;
     readonly key: string;
-}
-
-export interface SearchData extends SearchKey {
     readonly value: string;
 }
+
+export class SearchClient {
+    readonly #client: SearchHttpClient;
+    readonly #messages: SearchMessageBroker;
+
+    public constructor(options: SearchClientOptions) {
+        this.#client = SearchHttpClient.from(options.http);
+        this.#messages = 'hub' in options ? new SearchMessageBroker(options.hub, options.serviceName) : options.broker;
+    }
+
+    public async search(request: SearchOptions, signal?: AbortSignal): Promise<string[]> {
+        return await this.#client.search(request, signal);
+    }
+
+    public async setSearchTerm(value: SearchData): Promise<void> {
+        await this.#messages.setSearchTerm(value);
+    }
+
+    public async deleteSearchTerm(value: Partial<SearchData>): Promise<void> {
+        await this.#messages.deleteSearchTerm(value);
+    }
+}
+
+type SearchClientOptions =
+    & SearchClientHttpOptions
+    & SearchClientBrokerOptions
+
+type SearchClientHttpOptions =
+    | { readonly http: Parameters<typeof SearchHttpClient['from']>[0]; }
+
+type SearchClientBrokerOptions =
+    | { readonly hub: MessageHub; readonly serviceName: string; }
+    | { readonly broker: SearchMessageBroker; }
 
 export class SearchHttpClient extends defineApiClient({
     search: b => b.route<SearchOptions>(x => `${x.scope}`)
@@ -49,7 +79,7 @@ export class SearchMessageBroker {
         await this.#messages.publish(exchange, 'set', await jsonToBlob(value));
     }
 
-    public async deleteSearchTerm(value: Partial<SearchKey>): Promise<void> {
+    public async deleteSearchTerm(value: Partial<SearchData>): Promise<void> {
         await this.#messages.publish(exchange, 'delete', await jsonToBlob(value));
     }
 
@@ -64,7 +94,7 @@ export class SearchMessageBroker {
         });
     }
 
-    public async handleSearchTermDelete(handler: (data: Partial<SearchKey>, message: ConsumeMessage) => Promise<void>): Promise<MessageHandle> {
+    public async handleSearchTermDelete(handler: (data: Partial<SearchData>, message: ConsumeMessage) => Promise<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange,
             queue: MessageHub.makeQueueName(this.#serviceName, exchange, 'delete'),

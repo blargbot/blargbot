@@ -59,6 +59,10 @@ x-bbtag-variables-env:
   &bbtag-variables-env
   BBTAG_VARIABLES_URL: http://bbtag-variables
 
+x-search-env:
+  &search-env
+  SEARCH_URL: http://search
+
 x-rabbit-env:
   &rabbit-env
   RABBITMQ_HOST: rabbitmq
@@ -120,6 +124,7 @@ services:
       <<: *postgres-env
       <<: *rethinkdb-env
       <<: *redis-env
+      <<: *search-env
       <<: *command-prefix
     ports:
       - 4999:80
@@ -212,6 +217,16 @@ services:
       rabbitmq:
         condition: service_healthy
       redis:
+        condition: service_healthy
+
+  discord-channel-search:
+    image: blargbot/discord-channel-search
+    environment:
+      <<: *metrics-env
+      <<: *rabbit-env
+      <<: *search-env
+    depends_on:
+      rabbitmq:
         condition: service_healthy
 
   discord-message-cache:

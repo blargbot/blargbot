@@ -1,5 +1,6 @@
 import { connectToService, host, isEntrypoint, parallelServices, ServiceHost, webService } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
+import { DiscordChannelCacheMessageBroker } from '@blargbot/discord-channel-cache-client';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
 import env from '@blargbot/env';
@@ -39,7 +40,8 @@ export class DiscordChannelCacheApplication extends ServiceHost {
                 ttlS: null,
                 keyspace: 'discord_channels:channel_to_guild',
                 serializer: json.bigint
-            })
+            }),
+            new DiscordChannelCacheMessageBroker(hub, serviceName)
         );
 
         super([

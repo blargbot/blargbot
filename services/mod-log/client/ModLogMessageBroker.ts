@@ -30,7 +30,7 @@ export class ModLogMessageBroker {
     public async handleCreateModLog(handler: (modLog: ModLogCreateRequest, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: requests,
-            queue: MessageHub.makeQueueName(this.#serviceName, 'create'),
+            queue: MessageHub.makeQueueName(this.#serviceName, requests, 'create'),
             filter: 'create',
             async handle(data, message) {
                 await handler(await blobToJson(data, modLogCreateRequestSerializer), message);
@@ -45,7 +45,7 @@ export class ModLogMessageBroker {
     public async handleUpdateModLog(handler: (modLog: ModLogUpdateRequest, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: requests,
-            queue: MessageHub.makeQueueName(this.#serviceName, 'update'),
+            queue: MessageHub.makeQueueName(this.#serviceName, requests, 'update'),
             filter: 'update',
             async handle(data, message) {
                 await handler(await blobToJson(data, modLogUpdateRequestSerializer), message);
@@ -60,7 +60,7 @@ export class ModLogMessageBroker {
     public async handleDeleteModLog(handler: (modLog: ModLogDeleteRequest, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: requests,
-            queue: MessageHub.makeQueueName(this.#serviceName, 'delete'),
+            queue: MessageHub.makeQueueName(this.#serviceName, requests, 'delete'),
             filter: 'delete',
             async handle(data, message) {
                 await handler(await blobToJson(data, modLogDeleteRequestSerializer), message);
@@ -75,7 +75,7 @@ export class ModLogMessageBroker {
     public async handleModLogCreated(handler: (modLog: ModLogCreatedEvent, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: events,
-            queue: MessageHub.makeQueueName(this.#serviceName, 'created'),
+            queue: MessageHub.makeQueueName(this.#serviceName, events, 'created'),
             filter: 'created',
             async handle(data, message) {
                 await handler(await blobToJson(data, modLogCreatedEventSerializer), message);
@@ -90,7 +90,7 @@ export class ModLogMessageBroker {
     public async handleModLogUpdated(handler: (modLog: ModLogUpdatedEvent, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: events,
-            queue: MessageHub.makeQueueName(this.#serviceName, 'updated'),
+            queue: MessageHub.makeQueueName(this.#serviceName, events, 'updated'),
             filter: 'updated',
             async handle(data, message) {
                 await handler(await blobToJson(data, modLogUpdatedEventSerializer), message);
@@ -105,7 +105,7 @@ export class ModLogMessageBroker {
     public async handleModLogDeleted(handler: (modLog: ModLogDeletedEvent, message: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: events,
-            queue: MessageHub.makeQueueName(this.#serviceName, 'deleted'),
+            queue: MessageHub.makeQueueName(this.#serviceName, events, 'deleted'),
             filter: 'deleted',
             async handle(data, message) {
                 await handler(await blobToJson(data, modLogDeletedEventSerializer), message);

@@ -8,10 +8,10 @@ import type { HandleMessageOptions } from './HandleMessageOptions.js';
 import type { MessageHandle } from './MessageHandle.js';
 
 export class MessageHub {
-    public static makeQueueName(service: string, type: string, id?: string): string {
-        return id === undefined
-            ? `[${service}]${type}`
-            : `[${service}]${type}(${id})`;
+    public static makeQueueName(service: string, name: string, constraint?: string): string {
+        return constraint === undefined
+            ? `[${service}]${name}`
+            : `[${service}]${name}(${constraint})`;
     }
 
     readonly #replies: Map<string, { res(value: amqplib.ConsumeMessage): void; rej(err: unknown): void; }>;

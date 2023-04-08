@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/discord-channel-cache-client",
+    "name": "@blargbot/discord-channel-search-client",
     "version": "1.0.0",
     "private": true,
     "type": "module",
@@ -8,7 +8,6 @@
     },
     "dependencies": {
         "@blargbot/api-client": "workspace:^",
-        "@blargbot/discord-types": "workspace:^",
-        "@blargbot/message-hub": "workspace:^"
+        "@blargbot/serialization": "workspace:^"
     }
 }

@@ -24,7 +24,7 @@ export class DiscordGatewayIPCMessageBroker {
     public async handleWorkerCommand<Type extends keyof WorkerMessageTypes>(type: Type, workerId: number | '*', handler: (message: WorkerMessageTypes[Type], msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: ipcExchange,
-            queue: MessageHub.makeQueueName('discord-gateway-worker', type, `${this.managerId}_${workerId}`),
+            queue: MessageHub.makeQueueName('discord-gateway-worker', ipcExchange, `${type}:${this.managerId}_${workerId}`),
             queueArgs: { autoDelete: true },
             filter: `${this.managerId}.worker.${workerId}.${type}`,
             async handle(data, msg) {
@@ -37,7 +37,7 @@ export class DiscordGatewayIPCMessageBroker {
     public async handleManagerCommand<Type extends keyof ManagerMessageTypes>(type: Type, handler: (message: ManagerMessageTypes[Type], msg: ConsumeMessage) => Awaitable<void>): Promise<MessageHandle> {
         return await this.#messages.handleMessage({
             exchange: ipcExchange,
-            queue: MessageHub.makeQueueName('discord-gateway-manager', type, this.managerId),
+            queue: MessageHub.makeQueueName('discord-gateway-manager', ipcExchange, `${type}:${this.managerId}`),
             queueArgs: { autoDelete: true },
             filter: `${this.managerId}.manager.${type}`,
             async handle(data, msg) {

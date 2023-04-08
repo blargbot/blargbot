@@ -536,6 +536,7 @@ __metadata:
   dependencies:
     "@blargbot/api-client": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -557,6 +558,33 @@ __metadata:
     "@blargbot/redis-cache": "workspace:^"
     "@blargbot/serialization": "workspace:^"
     redis: ^4.6.5
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-channel-search-client@workspace:^, @blargbot/discord-channel-search-client@workspace:services/discord-channel-search/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-channel-search-client@workspace:services/discord-channel-search/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-channel-search@workspace:services/discord-channel-search/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-channel-search@workspace:services/discord-channel-search/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/container-id": "workspace:^"
+    "@blargbot/discord-channel-cache-client": "workspace:^"
+    "@blargbot/discord-channel-search-client": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+    "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/search-client": "workspace:^"
   languageName: unknown
   linkType: soft
 

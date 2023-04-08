@@ -256,6 +256,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-channel-cache/src"\
       },\
       {\
+        "name": "@blargbot/discord-channel-search-client",\
+        "reference": "workspace:services/discord-channel-search/client"\
+      },\
+      {\
+        "name": "@blargbot/discord-channel-search",\
+        "reference": "workspace:services/discord-channel-search/src"\
+      },\
+      {\
         "name": "@blargbot/discord-gateway-client",\
         "reference": "workspace:services/discord-gateway/client"\
       },\
@@ -455,6 +463,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/decancer", ["workspace:components/decancer/src"]],\
       ["@blargbot/discord-channel-cache", ["workspace:services/discord-channel-cache/src"]],\
       ["@blargbot/discord-channel-cache-client", ["workspace:services/discord-channel-cache/client"]],\
+      ["@blargbot/discord-channel-search", ["workspace:services/discord-channel-search/src"]],\
+      ["@blargbot/discord-channel-search-client", ["workspace:services/discord-channel-search/client"]],\
       ["@blargbot/discord-emote", ["workspace:components/discord-emote/src"]],\
       ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
       ["@blargbot/discord-gateway-client", ["workspace:services/discord-gateway/client"]],\
@@ -1178,7 +1188,39 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-channel-cache-client", "workspace:services/discord-channel-cache/client"],\
             ["@blargbot/api-client", "workspace:components/api-client/src"],\
-            ["@blargbot/discord-types", "workspace:components/discord-types/src"]\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-channel-search", [\
+        ["workspace:services/discord-channel-search/src", {\
+          "packageLocation": "./services/discord-channel-search/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-channel-search", "workspace:services/discord-channel-search/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/discord-channel-cache-client", "workspace:services/discord-channel-cache/client"],\
+            ["@blargbot/discord-channel-search-client", "workspace:services/discord-channel-search/client"],\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/search-client", "workspace:services/search/client"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-channel-search-client", [\
+        ["workspace:services/discord-channel-search/client", {\
+          "packageLocation": "./services/discord-channel-search/client/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-channel-search-client", "workspace:services/discord-channel-search/client"],\
+            ["@blargbot/api-client", "workspace:components/api-client/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

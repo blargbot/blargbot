@@ -3,6 +3,7 @@ export interface IKVCache<Key, Value> {
     set(key: Key, value: Value): Awaitable<void>;
     setAll(values: Iterable<readonly [key: Key, value: Value]>): Awaitable<void>;
     delete(key: Key): Awaitable<void>;
+    pop(key: Key): Awaitable<Value | undefined>;
     clear(): Awaitable<void>;
     size(): Awaitable<number>;
     lock(key: Key): Promise<() => Promise<void>>;

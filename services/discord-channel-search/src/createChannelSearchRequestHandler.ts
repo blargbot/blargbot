@@ -1,17 +1,16 @@
 import express, { asyncHandler } from '@blargbot/express';
 
-import type { SearchService } from './SearchService.js';
+import type { ChannelSearchService } from './ChannelSearchService.js';
 
-export function createSearchRequestHandler(service: SearchService): express.RequestHandler {
+export function createChannelSearchRequestHandler(service: ChannelSearchService): express.RequestHandler {
     const router = express.Router();
 
-    router.route('/:scope')
+    router.route('/:ownerId(\\d+)')
         .get(asyncHandler(async (req, res) => {
-            const types = toStringArray(req.query.types);
-            const query = toStringArray(req.query.query);
+            const query = toStringArray(req.query.term);
             if (query.length === 0)
                 return void res.status(200).send([]);
-            const result = await service.search(req.params.scope, query[0], types);
+            const result = await service.search(BigInt(req.params.ownerId), query[0]);
             return void res.status(200).send(result.map(v => v.toString()));
         }));
 

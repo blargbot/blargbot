@@ -16,6 +16,7 @@ const envVarDeclaration = {
     messageDumpsUrl: [String, 'MESSAGE_DUMPS_URL'],
     messageDumpsWebsiteUrl: [String, 'MESSAGE_DUMPS_WEBSITE_URL'],
     domainWhitelistUrl: [String, 'DOMAIN_WHITELIST_URL'],
+    searchUrl: [String, 'SEARCH_URL'],
 
     appPort: [Number, 'APP_PORT', '80'],
     discordToken: [String, 'DISCORD_TOKEN'],

@@ -1,4 +1,4 @@
-import type { SearchData, SearchKey } from '@blargbot/search-client';
+import type { SearchData } from '@blargbot/search-client';
 
 import type { SearchDatabase } from './SearchDatabase.js';
 
@@ -17,7 +17,7 @@ export class SearchService {
         await this.#database.set(data);
     }
 
-    public async delete(data: Partial<SearchKey>): Promise<void> {
+    public async delete(data: Partial<SearchData>): Promise<void> {
         await this.#database.delete(data);
     }
 }

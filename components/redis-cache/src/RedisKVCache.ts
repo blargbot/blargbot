@@ -68,6 +68,13 @@ export class RedisKVCache<Key, Value> implements IKVCache<Key, Value> {
     public async delete(key: Key): Promise<void> {
         await this.#redis.del(this.#toKey(key));
     }
+
+    public async pop(key: Key): Promise<Value | undefined> {
+        const resultStr = await this.#redis.getDel(this.#toKey(key));
+        if (resultStr === null)
+            return undefined;
+        return await this.#serializer.read(resultStr);
+    }
 }
 
 export type RedisKVCacheOptions<Key, Value> = RedisKVCacheOptionsBase<Value>
