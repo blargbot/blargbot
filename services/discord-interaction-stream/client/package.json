@@ -1,0 +1,12 @@
+{
+    "name": "@blargbot/discord-interaction-stream-client",
+    "version": "1.0.0",
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "devDependencies": {
+        "@blargbot/discord-types": "workspace:^",
+        "@blargbot/message-hub": "workspace:^"
+    }
+}

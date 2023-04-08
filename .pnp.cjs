@@ -280,6 +280,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-guild-cache/src"\
       },\
       {\
+        "name": "@blargbot/discord-interaction-stream-client",\
+        "reference": "workspace:services/discord-interaction-stream/client"\
+      },\
+      {\
         "name": "@blargbot/discord-interaction-stream",\
         "reference": "workspace:services/discord-interaction-stream/src"\
       },\
@@ -471,6 +475,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/discord-guild-cache", ["workspace:services/discord-guild-cache/src"]],\
       ["@blargbot/discord-guild-cache-client", ["workspace:services/discord-guild-cache/client"]],\
       ["@blargbot/discord-interaction-stream", ["workspace:services/discord-interaction-stream/src"]],\
+      ["@blargbot/discord-interaction-stream-client", ["workspace:services/discord-interaction-stream/client"]],\
       ["@blargbot/discord-member-cache", ["workspace:services/discord-member-cache/src"]],\
       ["@blargbot/discord-message-cache", ["workspace:services/discord-message-cache/src"]],\
       ["@blargbot/discord-message-stream", ["workspace:services/discord-message-stream/src"]],\
@@ -1303,11 +1308,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/application", "workspace:components/application/src"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
             ["@blargbot/discord-gateway-client", "workspace:services/discord-gateway/client"],\
+            ["@blargbot/discord-interaction-stream-client", "workspace:services/discord-interaction-stream/client"],\
             ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/express", "workspace:components/express/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-interaction-stream-client", [\
+        ["workspace:services/discord-interaction-stream/client", {\
+          "packageLocation": "./services/discord-interaction-stream/client/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-interaction-stream-client", "workspace:services/discord-interaction-stream/client"],\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
           ],\
           "linkType": "SOFT"\
         }]\

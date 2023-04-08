@@ -648,6 +648,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-interaction-stream-client@workspace:^, @blargbot/discord-interaction-stream-client@workspace:services/discord-interaction-stream/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-interaction-stream-client@workspace:services/discord-interaction-stream/client"
+  dependencies:
+    "@blargbot/discord-types": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-interaction-stream@workspace:services/discord-interaction-stream/src":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-interaction-stream@workspace:services/discord-interaction-stream/src"
@@ -655,6 +664,7 @@ __metadata:
     "@blargbot/application": "workspace:^"
     "@blargbot/container-id": "workspace:^"
     "@blargbot/discord-gateway-client": "workspace:^"
+    "@blargbot/discord-interaction-stream-client": "workspace:^"
     "@blargbot/discord-types": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/express": "workspace:^"

@@ -1,12 +1,12 @@
 import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
+import { DiscordInteractionStreamMessageBroker } from '@blargbot/discord-interaction-stream-client';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsPushService } from '@blargbot/metrics-client';
 
-import { DiscordInteractionStreamMessageBroker } from './DiscordInteractionStreamMessageBroker.js';
 import { DiscordInteractionStreamService } from './DiscordInteractionStreamService.js';
 
 export class DiscordInteractionStreamApplication extends ServiceHost {
@@ -15,7 +15,7 @@ export class DiscordInteractionStreamApplication extends ServiceHost {
         const hub = new MessageHub(options.messages);
         const gateway = new DiscordGatewayMessageBroker(hub, serviceName);
         const service = new DiscordInteractionStreamService(
-            new DiscordInteractionStreamMessageBroker(hub)
+            new DiscordInteractionStreamMessageBroker(hub, serviceName)
         );
 
         super([

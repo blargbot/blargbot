@@ -1,6 +1,5 @@
+import type { DiscordInteractionStreamMessageBroker } from '@blargbot/discord-interaction-stream-client';
 import type Discord from '@blargbot/discord-types';
-
-import type { DiscordInteractionStreamMessageBroker } from './DiscordInteractionStreamMessageBroker.js';
 
 export class DiscordInteractionStreamService {
     readonly #messages: DiscordInteractionStreamMessageBroker;
