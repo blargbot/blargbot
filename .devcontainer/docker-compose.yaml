@@ -43,6 +43,10 @@ x-discord-channel-cache-env:
   &discord-channel-cache-env
   DISCORD_CHANNEL_CACHE_URL: http://discord-channel-cache
 
+x-discord-channel-search-env:
+  &discord-channel-search-env
+  DISCORD_CHANNEL_SEARCH_URL: http://discord-channel-search
+
 x-event-log-settings-env:
   &event-log-settings-env
   EVENT_LOG_SETTINGS_URL: http://event-log-settings
@@ -117,6 +121,7 @@ services:
       <<: *user-settings-env
       <<: *discord-user-cache-env
       <<: *discord-channel-cache-env
+      <<: *discord-channel-search-env
       <<: *mod-log-env
       <<: *user-warnings-env
       <<: *rabbit-env
@@ -229,6 +234,17 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  discord-channel-query:
+    image: blargbot/discord-channel-query
+    environment:
+      <<: *metrics-env
+      <<: *rabbit-env
+      <<: *discord-channel-search-env
+      <<: *discord-channel-cache-env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
   discord-message-cache:
     image: blargbot/discord-message-cache
     environment:
@@ -301,6 +317,23 @@ services:
       <<: *postgres-env
     depends_on:
       rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  discord-choice-query:
+    image: blargbot/discord-choice-query
+    <<: *env-file
+    environment:
+      <<: *metrics-env
+      <<: *rabbit-env
+      <<: *postgres-env
+      <<: *discord-proxy-env
+      <<: *discord-channel-cache-env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
 
   bbtag-variables:

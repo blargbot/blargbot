@@ -37,6 +37,10 @@ services:
     build: ../services/discord-channel-search/src
     image: blargbot/discord-channel-search
 
+  discord-channel-query:
+    build: ../services/discord-channel-query/src
+    image: blargbot/discord-channel-query
+
   discord-message-cache:
     build: ../services/discord-message-cache/src
     image: blargbot/discord-message-cache
@@ -60,6 +64,10 @@ services:
   discord-mod-log:
     build: ../services/discord-mod-log/src
     image: blargbot/discord-mod-log
+
+  discord-choice-query:
+    build: ../services/discord-choice-query/src
+    image: blargbot/discord-choice-query
 
   search:
     build: ../services/search/src

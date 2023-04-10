@@ -79,10 +79,12 @@ export class BBTagRuntime {
     public readonly type: string;
     public readonly silent: boolean;
     public readonly prefix: string;
-    public readonly queryCache: BBTagRuntimeQueryCache;
+    public readonly locale: string;
+    public readonly queryCache: Record<string, Record<string, string | undefined | null>>;
     public readonly metrics = new BBTagRuntimeMetrics();
 
     public state = BBTagRuntimeState.RUNNING;
+    public lookupCount: number;
     public readonly ownedMessageIds = new Set<string>();
     public readonly errors: LocatedRuntimeError[] = [];
     public readonly debug: RuntimeDebugEntry[] = [];
@@ -150,7 +152,9 @@ export class BBTagRuntime {
         this.silent = config.silent;
         this.type = config.type;
         this.isTrusted = config.isTrusted;
+        this.lookupCount = config.lookupCount;
         this.prefix = config.prefix;
+        this.locale = config.locale;
         this.queryCache = config.queryCache;
         this.outputOptions = {
             allowEveryone: false,
@@ -318,6 +322,7 @@ export class BBTagRuntime {
 }
 
 export interface BBTagRuntimeConfig {
+    readonly locale: string;
     readonly isTrusted: boolean;
     readonly allowMentions: boolean;
     readonly authorId: string | null;
@@ -332,7 +337,8 @@ export interface BBTagRuntimeConfig {
     readonly type: string;
     readonly limit: RuntimeLimit;
     readonly prefix: string;
-    readonly queryCache: BBTagRuntimeQueryCache;
+    readonly lookupCount: number;
+    readonly queryCache: Record<string, Record<string, string | null>>;
     readonly entrypoint: BBTagScriptOptions;
     readonly output?: Partial<OutputOptions>;
 }
@@ -345,13 +351,6 @@ export interface BBTagRuntimeServices {
     readonly variables: IVariableProvider<BBTagRuntime, BBTagScope>;
     readonly middleware: Iterable<SubtagInvocationMiddleware>;
     readonly subtags: Iterable<ISubtag>;
-}
-
-export interface BBTagRuntimeQueryCache {
-    count: number;
-    readonly user: Record<string, string | undefined>;
-    readonly role: Record<string, string | undefined>;
-    readonly channel: Record<string, string | undefined>;
 }
 
 export interface OutputOptions {

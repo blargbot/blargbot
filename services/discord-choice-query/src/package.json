@@ -1,0 +1,26 @@
+{
+    "name": "@blargbot/discord-choice-query",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "scripts": {
+        "start": "node ./index.js"
+    },
+    "dependencies": {
+        "@blargbot/application": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
+        "@blargbot/discord-choice-query-client": "workspace:^",
+        "@blargbot/discord-interaction-stream-client": "workspace:^",
+        "@blargbot/discord-types": "workspace:^",
+        "@blargbot/discord-util": "workspace:^",
+        "@blargbot/env": "workspace:^",
+        "@blargbot/message-hub": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^",
+        "@blargbot/sequelize": "workspace:^",
+        "@blargbot/serialization": "workspace:^",
+        "discordeno": "^18.0.1"
+    }
+}

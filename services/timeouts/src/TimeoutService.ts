@@ -47,16 +47,19 @@ export class TimeoutService {
         if (pending.length === 0)
             return;
 
-        const deletePending = this.#database.deleteAll(pending);
-        for (const timeout of pending) {
-            try {
-                await this.#timeouts.requestProcessTimeout(timeout);
-            } catch (error) {
-                const { data, ...debug } = timeout;
-                console.error('Failed to process timeout', debug, error);
-            }
+        await Promise.all([
+            this.#database.deleteAll(pending),
+            ...pending.map(t => this.#queueTimeout(t))
+        ]);
+    }
+
+    async #queueTimeout(timeout: TimeoutDetails): Promise<void> {
+        try {
+            await this.#timeouts.requestProcessTimeout(timeout);
+        } catch (error) {
+            const { data, ...debug } = timeout;
+            console.error('Failed to process timeout', debug, error);
         }
-        await deletePending;
     }
 
     public async handleProcessTimeout(timeout: TimeoutDetails): Promise<void> {

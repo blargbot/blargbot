@@ -7,6 +7,8 @@ import { ConsumeMessage } from './ConsumeMessage.js';
 import type { HandleMessageOptions } from './HandleMessageOptions.js';
 import type { MessageHandle } from './MessageHandle.js';
 
+const responseHeader = 'x-response-id';
+
 export class MessageHub {
     public static makeQueueName(service: string, name: string, constraint?: string): string {
         return constraint === undefined
@@ -97,7 +99,7 @@ export class MessageHub {
             await channel.consume('amq.rabbitmq.reply-to', msg => {
                 if (msg === null)
                     return;
-                const responseId = msg.properties.headers['x-response-id'] as unknown;
+                const responseId = msg.properties.headers[responseHeader] as unknown;
                 if (typeof responseId === 'string') {
                     this.#replies.get(responseId)?.res(msg);
                     this.#replies.delete(responseId);
@@ -151,23 +153,28 @@ export class MessageHub {
             contentType: message.type,
             replyTo: 'amq.rabbitmq.reply-to',
             headers: {
-                ['x-request-id']: id
+                [ConsumeMessage.requestHeader]: id
             }
         });
         return await replyPromise;
+    }
+
+    public async respond(replyTo: string, requestId: string | undefined, message: Blob, options?: amqplib.Options.Publish): Promise<void> {
+        await this.publish('', replyTo, message, {
+            ...options,
+            headers: {
+                ...options?.headers as Record<string, unknown>,
+                [responseHeader]: requestId
+            }
+        });
     }
 
     async #handleMessage(impl: (data: Blob, message: ConsumeMessage) => Awaitable<Blob | void>, msg: ConsumeMessage): Promise<void> {
         try {
             const payload = new Blob([msg.content], { type: msg.properties.contentType as string });
             const result = await impl(payload, msg);
-            if (result !== undefined && typeof msg.properties.replyTo === 'string') {
-                await this.publish('', msg.properties.replyTo, result, {
-                    headers: {
-                        ['x-response-id']: msg.properties.headers['x-request-id'] as string | undefined
-                    }
-                });
-            }
+            if (result !== undefined && typeof msg.replyTo === 'string')
+                await this.respond(msg.replyTo, msg.requestId, result);
             msg.ack();
         } catch (err) {
             msg.nack({ requeue: false });

@@ -256,12 +256,24 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/discord-channel-cache/src"\
       },\
       {\
+        "name": "@blargbot/discord-channel-query",\
+        "reference": "workspace:services/discord-channel-query/src"\
+      },\
+      {\
         "name": "@blargbot/discord-channel-search-client",\
         "reference": "workspace:services/discord-channel-search/client"\
       },\
       {\
         "name": "@blargbot/discord-channel-search",\
         "reference": "workspace:services/discord-channel-search/src"\
+      },\
+      {\
+        "name": "@blargbot/discord-choice-query-client",\
+        "reference": "workspace:services/discord-choice-query/client"\
+      },\
+      {\
+        "name": "@blargbot/discord-choice-query",\
+        "reference": "workspace:services/discord-choice-query/src"\
       },\
       {\
         "name": "@blargbot/discord-gateway-client",\
@@ -467,8 +479,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/decancer", ["workspace:components/decancer/src"]],\
       ["@blargbot/discord-channel-cache", ["workspace:services/discord-channel-cache/src"]],\
       ["@blargbot/discord-channel-cache-client", ["workspace:services/discord-channel-cache/client"]],\
+      ["@blargbot/discord-channel-query", ["workspace:services/discord-channel-query/src"]],\
       ["@blargbot/discord-channel-search", ["workspace:services/discord-channel-search/src"]],\
       ["@blargbot/discord-channel-search-client", ["workspace:services/discord-channel-search/client"]],\
+      ["@blargbot/discord-choice-query", ["workspace:services/discord-choice-query/src"]],\
+      ["@blargbot/discord-choice-query-client", ["workspace:services/discord-choice-query/client"]],\
       ["@blargbot/discord-emote", ["workspace:components/discord-emote/src"]],\
       ["@blargbot/discord-gateway", ["workspace:services/discord-gateway/src"]],\
       ["@blargbot/discord-gateway-client", ["workspace:services/discord-gateway/client"]],\
@@ -783,7 +798,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag-source-client", "workspace:services/bbtag-source/client"],\
             ["@blargbot/bbtag-variables-client", "workspace:services/bbtag-variables/client"],\
             ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/discord-channel-cache-client", "workspace:services/discord-channel-cache/client"],\
+            ["@blargbot/discord-channel-search-client", "workspace:services/discord-channel-search/client"],\
+            ["@blargbot/discord-choice-query-client", "workspace:services/discord-choice-query/client"],\
             ["@blargbot/discord-emote", "workspace:components/discord-emote/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
             ["@blargbot/domain-whitelist-client", "workspace:services/domain-whitelist/client"],\
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-dumps-client", "workspace:services/message-dumps/client"],\
@@ -1199,6 +1218,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/discord-channel-query", [\
+        ["workspace:services/discord-channel-query/src", {\
+          "packageLocation": "./services/discord-channel-query/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-channel-query", "workspace:services/discord-channel-query/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/discord-channel-cache-client", "workspace:services/discord-channel-cache/client"],\
+            ["@blargbot/discord-choice-query-client", "workspace:services/discord-choice-query/client"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/discord-channel-search", [\
         ["workspace:services/discord-channel-search/src", {\
           "packageLocation": "./services/discord-channel-search/src/",\
@@ -1225,6 +1260,38 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/discord-channel-search-client", "workspace:services/discord-channel-search/client"],\
             ["@blargbot/api-client", "workspace:components/api-client/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-choice-query", [\
+        ["workspace:services/discord-choice-query/src", {\
+          "packageLocation": "./services/discord-choice-query/src/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-choice-query", "workspace:services/discord-choice-query/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/discord-choice-query-client", "workspace:services/discord-choice-query/client"],\
+            ["@blargbot/discord-interaction-stream-client", "workspace:services/discord-interaction-stream/client"],\
+            ["@blargbot/discord-types", "workspace:components/discord-types/src"],\
+            ["@blargbot/discord-util", "workspace:components/discord-util/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"],\
+            ["discordeno", "npm:18.0.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/discord-choice-query-client", [\
+        ["workspace:services/discord-choice-query/client", {\
+          "packageLocation": "./services/discord-choice-query/client/",\
+          "packageDependencies": [\
+            ["@blargbot/discord-choice-query-client", "workspace:services/discord-choice-query/client"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"]\
           ],\
           "linkType": "SOFT"\

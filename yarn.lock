@@ -250,7 +250,11 @@ __metadata:
     "@blargbot/bbtag-source-client": "workspace:^"
     "@blargbot/bbtag-variables-client": "workspace:^"
     "@blargbot/container-id": "workspace:^"
+    "@blargbot/discord-channel-cache-client": "workspace:^"
+    "@blargbot/discord-channel-search-client": "workspace:^"
+    "@blargbot/discord-choice-query-client": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
     "@blargbot/domain-whitelist-client": "workspace:^"
     "@blargbot/env": "workspace:^"
     "@blargbot/message-dumps-client": "workspace:^"
@@ -561,6 +565,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-channel-query@workspace:services/discord-channel-query/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-channel-query@workspace:services/discord-channel-query/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/container-id": "workspace:^"
+    "@blargbot/discord-channel-cache-client": "workspace:^"
+    "@blargbot/discord-choice-query-client": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+    "@blargbot/metrics-client": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/discord-channel-search-client@workspace:^, @blargbot/discord-channel-search-client@workspace:services/discord-channel-search/client":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-channel-search-client@workspace:services/discord-channel-search/client"
@@ -585,6 +603,34 @@ __metadata:
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/search-client": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-choice-query-client@workspace:^, @blargbot/discord-choice-query-client@workspace:services/discord-choice-query/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-choice-query-client@workspace:services/discord-choice-query/client"
+  dependencies:
+    "@blargbot/message-hub": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-choice-query@workspace:services/discord-choice-query/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-choice-query@workspace:services/discord-choice-query/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/container-id": "workspace:^"
+    "@blargbot/discord-choice-query-client": "workspace:^"
+    "@blargbot/discord-interaction-stream-client": "workspace:^"
+    "@blargbot/discord-types": "workspace:^"
+    "@blargbot/discord-util": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+    "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/sequelize": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+    discordeno: ^18.0.1
   languageName: unknown
   linkType: soft
 

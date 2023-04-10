@@ -5,6 +5,7 @@ import { bufferConverter } from './converters/bufferConverter.js';
 import { createJsonArrayConverter } from './converters/createJsonArrayConverter.js';
 import { createJsonObjectConverter } from './converters/createJsonObjectConverter.js';
 import { createJsonUnionConverter } from './converters/createJsonUnionConverter.js';
+import { createLiteralConverter } from './converters/createLiteralConverter.js';
 import { createRecordConverter } from './converters/createRecordConverter.js';
 import { dateConverter } from './converters/dateConverter.js';
 import { jTokenConverter } from './converters/jTokenConverter.js';
@@ -28,6 +29,7 @@ export const json = {
     record: createRecordConverter,
     choice: createJsonUnionConverter,
     array: createJsonArrayConverter,
+    literal: createLiteralConverter,
     boolean: booleanConverter,
     number: numberConverter,
     bigint: bigintConverter,

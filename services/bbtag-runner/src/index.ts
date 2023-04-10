@@ -5,6 +5,9 @@ import { BBTagExecutionMessageBroker } from '@blargbot/bbtag-runner-client';
 import { BBTagSourceMessageBroker } from '@blargbot/bbtag-source-client';
 import { BBTagVariableHttpClient } from '@blargbot/bbtag-variables-client';
 import { fullContainerId } from '@blargbot/container-id';
+import { DiscordChannelCacheHttpClient } from '@blargbot/discord-channel-cache-client';
+import { DiscordChannelSearchHttpClient } from '@blargbot/discord-channel-search-client';
+import { DiscordChoiceQueryMessageBroker } from '@blargbot/discord-choice-query-client';
 import { DomainWhitelistHttpClient } from '@blargbot/domain-whitelist-client';
 import env from '@blargbot/env';
 import { MessageDumpsHttpClient } from '@blargbot/message-dumps-client';
@@ -72,7 +75,11 @@ export class BBTagRunnerApplication extends ServiceHost {
             lock: new LockService(),
             staff: new StaffService(),
             sources: new SourceProvider(new BBTagSourceMessageBroker(hub, serviceName)),
-            channels: new ChannelService(),
+            channels: new ChannelService(
+                new DiscordChannelSearchHttpClient(options.channelSearch.url),
+                new DiscordChannelCacheHttpClient(options.channelCache.url),
+                new DiscordChoiceQueryMessageBroker(hub, serviceName)
+            ),
             cooldowns: new CooldownService(),
             guild: new GuildService(),
             messages: new MessageService(),
@@ -117,6 +124,12 @@ if (isEntrypoint()) {
         userWarnings: {
             url: env.userWarningsUrl
         },
+        channelCache: {
+            url: env.discordChannelCacheUrl
+        },
+        channelSearch: {
+            url: env.discordChannelSearchUrl
+        },
         domainWhitelist: {
             url: env.domainWhitelistUrl
         }
@@ -139,6 +152,12 @@ export interface BBTagRunnerApplicationOptions {
         readonly url: string;
     };
     readonly userWarnings: {
+        readonly url: string;
+    };
+    readonly channelCache: {
+        readonly url: string;
+    };
+    readonly channelSearch: {
         readonly url: string;
     };
     readonly domainWhitelist: {

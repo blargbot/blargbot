@@ -1,6 +1,7 @@
 import type amqplib from 'amqplib';
 
 export class ConsumeMessage implements amqplib.ConsumeMessage {
+    public static readonly requestHeader = 'x-request-id' as const;
     readonly #channel: amqplib.Channel;
     readonly #message: amqplib.ConsumeMessage;
     #ackSent: boolean;
@@ -13,6 +14,16 @@ export class ConsumeMessage implements amqplib.ConsumeMessage {
     }
     public get properties(): amqplib.MessageProperties {
         return this.#message.properties;
+    }
+
+    public get replyTo(): string | undefined {
+        const value = this.#message.properties.replyTo as unknown;
+        return typeof value === 'string' ? value : undefined;
+    }
+
+    public get requestId(): string | undefined {
+        const value = this.#message.properties.headers[ConsumeMessage.requestHeader] as unknown;
+        return typeof value === 'string' ? value : undefined;
     }
 
     public constructor(channel: amqplib.Channel, message: amqplib.ConsumeMessage, canNack: boolean) {

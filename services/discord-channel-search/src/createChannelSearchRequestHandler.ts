@@ -7,7 +7,7 @@ export function createChannelSearchRequestHandler(service: ChannelSearchService)
 
     router.route('/:ownerId(\\d+)')
         .get(asyncHandler(async (req, res) => {
-            const query = toStringArray(req.query.term);
+            const query = toStringArray(req.query.query);
             if (query.length === 0)
                 return void res.status(200).send([]);
             const result = await service.search(BigInt(req.params.ownerId), query[0]);

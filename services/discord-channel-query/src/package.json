@@ -1,0 +1,21 @@
+{
+    "name": "@blargbot/discord-channel-query",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "scripts": {
+        "start": "node ./index.js"
+    },
+    "dependencies": {
+        "@blargbot/application": "workspace:^",
+        "@blargbot/container-id": "workspace:^",
+        "@blargbot/discord-channel-cache-client": "workspace:^",
+        "@blargbot/discord-choice-query-client": "workspace:^",
+        "@blargbot/env": "workspace:^",
+        "@blargbot/message-hub": "workspace:^",
+        "@blargbot/metrics-client": "workspace:^"
+    }
+}

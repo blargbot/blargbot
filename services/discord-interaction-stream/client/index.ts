@@ -19,13 +19,15 @@ export class DiscordInteractionStreamMessageBroker {
         await this.#messages.publish(exchange, route, await jsonToBlob(interaction));
     }
 
+    public async handleInteraction<T extends keyof InteractionTypeMap>(type: T, handler: (interaction: InteractionTypeMap[T], message: ConsumeMessage) => Awaitable<void>, options?: HandleInteractionOptions): Promise<MessageHandle>
+    public async handleInteraction<T extends keyof InteractionTypeMap>(type: Iterable<T>, handler: (interaction: InteractionTypeMap[T], message: ConsumeMessage) => Awaitable<void>, options?: HandleInteractionOptions): Promise<MessageHandle>
     public async handleInteraction<T extends keyof InteractionTypeMap>(type: T | Iterable<T>, handler: (interaction: InteractionTypeMap[T], message: ConsumeMessage) => Awaitable<void>, options?: HandleInteractionOptions): Promise<MessageHandle> {
         const types = typeof type === 'string' ? [type] : [...type];
         const { id, userId, channelId } = options ?? {};
         const ids = toNonEmptyArray(id, '*');
         const userIds = toNonEmptyArray(userId, '*');
         const channelIds = toNonEmptyArray(channelId, '*');
-        const filters = types.flatMap(type => ids.flatMap(id => userIds.flatMap(userId => channelIds.map(channelId => `${type}.${id}.${channelId}.${userId}`))));
+        const filters = types.flatMap(type => ids.flatMap(id => userIds.flatMap(userId => channelIds.map(channelId => `${nameToInteractionTypeMap[type]}.${id}.${channelId}.${userId}`))));
         const name = options?.name ?? types.join(',');
 
         return await this.#messages.handleMessage({
@@ -65,13 +67,16 @@ function toNonEmptyArray(values: undefined | string | bigint | Iterable<string |
 export type InteractionTypeMap = {
     [P in Discord.GatewayInteractionCreateDispatchData as InteractionTypeToNameMap[P['type']]]: P
 }
-type InteractionTypeToNameMap = {
-    [Discord.InteractionType.ApplicationCommand]: 'command';
-    [Discord.InteractionType.ApplicationCommandAutocomplete]: 'autocomplete';
-    [Discord.InteractionType.MessageComponent]: 'component';
-    [Discord.InteractionType.ModalSubmit]: 'modal';
-    [Discord.InteractionType.Ping]: 'ping';
-}
+
+const nameToInteractionTypeMap = {
+    command: Discord.InteractionType.ApplicationCommand,
+    autocomplete: Discord.InteractionType.ApplicationCommandAutocomplete,
+    component: Discord.InteractionType.MessageComponent,
+    modal: Discord.InteractionType.ModalSubmit,
+    ping: Discord.InteractionType.Ping
+} as const;
+type InteractionTypeToNameMap = { [P in keyof typeof nameToInteractionTypeMap as typeof nameToInteractionTypeMap[P]]: P }
+
 export interface HandleInteractionOptions {
     readonly id?: string | bigint | Iterable<string | bigint>;
     readonly channelId?: bigint | string | Iterable<string | bigint>;

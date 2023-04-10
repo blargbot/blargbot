@@ -11,6 +11,7 @@ const envVarDeclaration = {
     userWarningsUrl: [String, 'USER_WARNINGS_URL'],
     discordUserCacheUrl: [String, 'DISCORD_USER_CACHE_URL'],
     discordChannelCacheUrl: [String, 'DISCORD_CHANNEL_CACHE_URL'],
+    discordChannelSearchUrl: [String, 'DISCORD_CHANNEL_SEARCH_URL'],
     bbtagVariablesUrl: [String, 'BBTAG_VARIABLES_URL'],
     timeoutUrl: [String, 'TIMEOUT_URL'],
     messageDumpsUrl: [String, 'MESSAGE_DUMPS_URL'],
