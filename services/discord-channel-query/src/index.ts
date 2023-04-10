@@ -24,7 +24,7 @@ export class DiscordChannelQueryApplication extends ServiceHost {
                 new MetricsPushService({ serviceName, instanceId: fullContainerId })
             ),
             parallelServices(
-                connectToService(() => choices.handleSelectOptionsRequest(serviceName, m => service.renderChannelSelect(m)), 'handleQueryRequest')
+                connectToService(() => choices.handleSelectOptionsRequest('discord-channel', m => service.renderChannelSelect(m)), 'handleQueryRequest')
             )
         ]);
     }

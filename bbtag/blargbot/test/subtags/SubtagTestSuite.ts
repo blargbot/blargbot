@@ -292,9 +292,10 @@ export class SubtagTestContext {
                 cooldownMs: 0,
                 ...this.entrypoint
             },
+            locale: 'en-GB',
+            lookupCount: 0,
             queryCache: {
                 channel: {},
-                count: 0,
                 role: {},
                 user: {},
                 ...this.options.queryCache

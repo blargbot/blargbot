@@ -20,7 +20,7 @@ export class ChannelService implements BBTagChannelService {
             search: (ctx, query) => this.#find(ctx, query),
             resolve: (ctx, id) => this.get(ctx, id),
             choose,
-            type: 'discord-channel-query',
+            type: 'discord-channel',
             alertCancelled: (ctx) => `Channel query cancelled in ${ctx.type} \`${ctx.entrypoint.name}\``,
             alertFailed: (ctx, query) => `No channel matching \`${query}\` found in ${ctx.type} \`${ctx.entrypoint.name}\`.`
         });
