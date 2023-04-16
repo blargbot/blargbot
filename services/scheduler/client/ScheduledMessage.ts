@@ -1,7 +1,7 @@
 import { json } from '@blargbot/serialization';
 import type * as amqplib from 'amqplib';
 
-export interface TimeoutDetails {
+export interface ScheduledMessage {
     readonly id: string;
     readonly display: string;
     readonly userId: bigint;
@@ -13,7 +13,7 @@ export interface TimeoutDetails {
     readonly options: amqplib.Options.Publish;
 }
 
-export const timeoutDetailsSerializerOpts = {
+export const scheduledMessageSerializerOpts = {
     id: json.string,
     display: json.string,
     userId: json.bigint,
@@ -43,10 +43,10 @@ export const timeoutDetailsSerializerOpts = {
     })
 };
 
-export const timeoutDetailsCreateSerializerOpts = omit(timeoutDetailsSerializerOpts, 'id', 'ownerId');
+export const scheduledMessageCreateSerializerOpts = omit(scheduledMessageSerializerOpts, 'id', 'ownerId');
 
-export const timeoutDetailsSerializer = json.object<TimeoutDetails>(timeoutDetailsSerializerOpts);
-export const timeoutDetailsCreateSerializer = json.object<Omit<TimeoutDetails, 'id' | 'ownerId'>>(timeoutDetailsCreateSerializerOpts);
+export const scheduledMessageSerializer = json.object<ScheduledMessage>(scheduledMessageSerializerOpts);
+export const scheduledMessageCreateSerializer = json.object<Omit<ScheduledMessage, 'id' | 'ownerId'>>(scheduledMessageCreateSerializerOpts);
 
 function omit<T, Props extends keyof T>(source: T, ...props: Props[]): Omit<T, Props> {
     const res = { ...source };

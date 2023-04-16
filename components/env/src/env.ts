@@ -13,7 +13,7 @@ const envVarDeclaration = {
     discordChannelCacheUrl: [String, 'DISCORD_CHANNEL_CACHE_URL'],
     discordChannelSearchUrl: [String, 'DISCORD_CHANNEL_SEARCH_URL'],
     bbtagVariablesUrl: [String, 'BBTAG_VARIABLES_URL'],
-    timeoutUrl: [String, 'TIMEOUT_URL'],
+    schedulerUrl: [String, 'SCHEDULER_URL'],
     messageDumpsUrl: [String, 'MESSAGE_DUMPS_URL'],
     messageDumpsWebsiteUrl: [String, 'MESSAGE_DUMPS_WEBSITE_URL'],
     domainWhitelistUrl: [String, 'DOMAIN_WHITELIST_URL'],

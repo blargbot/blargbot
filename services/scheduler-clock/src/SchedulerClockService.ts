@@ -1,11 +1,11 @@
-import type { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
+import type { SchedulerClockMessageBroker } from '@blargbot/scheduler-clock-client';
 import { CronJob } from 'cron';
 
-export class TimeoutService {
-    readonly #messages: TimeoutClockMessageBroker;
+export class SchedulerClockService {
+    readonly #messages: SchedulerClockMessageBroker;
     readonly #cron: CronJob;
 
-    public constructor(cron: string, messages: TimeoutClockMessageBroker) {
+    public constructor(cron: string, messages: SchedulerClockMessageBroker) {
         this.#messages = messages;
         this.#cron = new CronJob(cron, this.#onCron.bind(this));
     }

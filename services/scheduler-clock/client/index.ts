@@ -1,8 +1,8 @@
 import type { ConsumeMessage, MessageHandle } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 
-const exchange = 'poll-timeouts';
-export class TimeoutClockMessageBroker {
+const exchange = 'poll-scheduler';
+export class SchedulerClockMessageBroker {
     readonly #messages: MessageHub;
     readonly #serviceName: string;
 

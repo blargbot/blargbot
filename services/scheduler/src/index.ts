@@ -5,17 +5,17 @@ import express from '@blargbot/express';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsPushService } from '@blargbot/metrics-client';
+import { SchedulerClockMessageBroker } from '@blargbot/scheduler-clock-client';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
-import { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
 
-import { createTimeoutRequestHandler } from './createTimeoutRequestHandler.js';
-import { TimeoutMessageBroker } from './TimeoutMessageBroker.js';
-import TimeoutSequelizeDatabase from './TimeoutSequelizeDatabase.js';
-import { TimeoutService } from './TimeoutService.js';
+import { createSchedulerRequestHandler } from './createSchedulerRequestHandler.js';
+import SchedulerSequelizeDatabase from './SchedulerDatabase.js';
+import { SchedulerMessageBroker } from './SchedulerMessageBroker.js';
+import { SchedulerService } from './SchedulerService.js';
 
-export class GuildSettingsApplication extends ServiceHost {
-    public constructor(options: GuildSettingsApplicationOptions) {
-        const serviceName = 'timeouts';
+export class SchedulerApplication extends ServiceHost {
+    public constructor(options: SchedulerApplicationOptions) {
+        const serviceName = 'scheduler';
         const hub = new MessageHub(options.messages);
         const database = new Sequelize(
             options.postgres.database,
@@ -26,11 +26,11 @@ export class GuildSettingsApplication extends ServiceHost {
                 dialect: 'postgres'
             }
         );
-        const clock = new TimeoutClockMessageBroker(hub, serviceName);
-        const timeouts = new TimeoutMessageBroker(hub);
-        const service = new TimeoutService(
-            new TimeoutSequelizeDatabase(database),
-            timeouts,
+        const clock = new SchedulerClockMessageBroker(hub, serviceName);
+        const scheduler = new SchedulerMessageBroker(hub);
+        const service = new SchedulerService(
+            new SchedulerSequelizeDatabase(database),
+            scheduler,
             hub
         );
 
@@ -44,13 +44,13 @@ export class GuildSettingsApplication extends ServiceHost {
             ),
             parallelServices(
                 connectToService(() => clock.handleTick(() => service.handleTick()), 'handleTick'),
-                connectToService(() => timeouts.handleProcessTimeout(m => service.handleProcessTimeout(m)), 'handleProcessTimeout')
+                connectToService(() => scheduler.processScheduledMessage(m => service.handleProcessTimeout(m)), 'handleProcessTimeout')
             ),
             webService(
                 express()
                     .use(express.urlencoded({ extended: true }))
                     .use(express.json())
-                    .all('/*', createTimeoutRequestHandler(service)),
+                    .all('/*', createSchedulerRequestHandler(service)),
                 options.port
             )
         ]);
@@ -58,7 +58,7 @@ export class GuildSettingsApplication extends ServiceHost {
 }
 
 if (isEntrypoint()) {
-    host(new GuildSettingsApplication({
+    host(new SchedulerApplication({
         port: env.appPort,
         messages: {
             prefetch: env.rabbitPrefetch,
@@ -77,7 +77,7 @@ if (isEntrypoint()) {
     }));
 }
 
-export interface GuildSettingsApplicationOptions {
+export interface SchedulerApplicationOptions {
     readonly port: number;
     readonly messages: ConnectionOptions;
     readonly postgres: {

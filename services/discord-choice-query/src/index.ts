@@ -6,6 +6,7 @@ import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsPushService } from '@blargbot/metrics-client';
+import { SchedulerClockMessageBroker } from '@blargbot/scheduler-clock-client';
 import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 
 import DiscordChoiceQueryDatabase from './DiscordChoiceQueryDatabase.js';
@@ -27,6 +28,7 @@ export class DiscordChoiceQueryApplication extends ServiceHost {
         const hub = new MessageHub(options.messages);
         const messages = new DiscordChoiceQueryMessageBroker(hub, serviceName);
         const interactions = new DiscordInteractionStreamMessageBroker(hub, serviceName);
+        const clock = new SchedulerClockMessageBroker(hub, serviceName);
         const customIds = {
             cancel: `${serviceName}-cancel`,
             select: `${serviceName}-select`,
@@ -63,7 +65,8 @@ export class DiscordChoiceQueryApplication extends ServiceHost {
                     name: 'lookup-components',
                     persistent: true,
                     id: Object.values(customIds)
-                }), 'handleInteraction')
+                }), 'handleInteraction'),
+                connectToService(() => clock.handleTick(() => service.sweepTimeouts()), 'handleTick')
             )
         ]);
     }

@@ -15,8 +15,8 @@ import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { Metrics, MetricsPushService } from '@blargbot/metrics-client';
 import { ModLogMessageBroker } from '@blargbot/mod-log-client';
+import { SchedulerHttpClient } from '@blargbot/scheduler-client';
 import snowflake from '@blargbot/snowflakes';
-import { TimeoutHttpClient } from '@blargbot/timeouts-client';
 import { UserSettingsHttpClient } from '@blargbot/user-settings-client';
 import { UserWarningsHttpClient } from '@blargbot/user-warnings-client';
 import { createHash } from 'crypto';
@@ -49,7 +49,7 @@ export class BBTagRunnerApplication extends ServiceHost {
         const hub = new MessageHub(options.messages);
         const executeBroker = new BBTagExecutionMessageBroker(hub, serviceName);
         const metrics = new Metrics({ serviceName, instanceId: fullContainerId });
-        const timeouts = new BBTagExecutionMessageBroker(hub, serviceName);
+        const scheduler = new BBTagExecutionMessageBroker(hub, serviceName);
         const engine = createBBTagEngine({
             subtags: Object.values(subtags),
             middleware: [
@@ -60,8 +60,8 @@ export class BBTagRunnerApplication extends ServiceHost {
                 new VariablesStore(new BBTagVariableHttpClient(options.variables.url))
             ),
             defer: new DeferredExecutionService(
-                new TimeoutHttpClient(options.timeout.url),
-                timeouts.executeQueueName
+                new SchedulerHttpClient(options.scheduler.url),
+                scheduler.executeQueueName
             ),
             dump: new DumpService(
                 new MessageDumpsHttpClient(options.messageDumps.url),
@@ -105,8 +105,8 @@ if (isEntrypoint()) {
         variables: {
             url: env.bbtagVariablesUrl
         },
-        timeout: {
-            url: env.timeoutUrl
+        scheduler: {
+            url: env.schedulerUrl
         },
         messages: {
             prefetch: env.rabbitPrefetch,
@@ -141,7 +141,7 @@ export interface BBTagRunnerApplicationOptions {
     readonly variables: {
         readonly url: string;
     };
-    readonly timeout: {
+    readonly scheduler: {
         readonly url: string;
     };
     readonly messageDumps: {

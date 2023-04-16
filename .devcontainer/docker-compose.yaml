@@ -428,8 +428,8 @@ services:
       rabbitmq:
         condition: service_healthy
 
-  timeouts:
-    image: blargbot/timeouts
+  scheduler:
+    image: blargbot/scheduler
     environment:
       <<: *metrics-env
       <<: *postgres-env
@@ -440,12 +440,12 @@ services:
       rabbitmq:
         condition: service_healthy
 
-  timeout-clock:
-    image: blargbot/timeout-clock
+  scheduler-clock:
+    image: blargbot/scheduler-clock
     environment:
       <<: *metrics-env
       <<: *rabbit-env
-      TIMEOUT_CRON: '*/10 * * * * *'
+      SCHEDULER_CRON: '*/10 * * * * *'
     depends_on:
       rabbitmq:
         condition: service_healthy

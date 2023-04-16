@@ -261,8 +261,8 @@ __metadata:
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
     "@blargbot/mod-log-client": "workspace:^"
+    "@blargbot/scheduler-client": "workspace:^"
     "@blargbot/snowflakes": "workspace:^"
-    "@blargbot/timeouts-client": "workspace:^"
     "@blargbot/user-settings-client": "workspace:^"
     "@blargbot/user-warnings-client": "workspace:^"
     node-fetch: ^3.3.1
@@ -628,6 +628,7 @@ __metadata:
     "@blargbot/env": "workspace:^"
     "@blargbot/message-hub": "workspace:^"
     "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/scheduler-clock-client": "workspace:^"
     "@blargbot/sequelize": "workspace:^"
     "@blargbot/serialization": "workspace:^"
     discordeno: ^18.0.1
@@ -1239,6 +1240,56 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/scheduler-client@workspace:^, @blargbot/scheduler-client@workspace:services/scheduler/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/scheduler-client@workspace:services/scheduler/client"
+  dependencies:
+    "@blargbot/api-client": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+    "@types/amqplib": ^0.10.1
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/scheduler-clock-client@workspace:^, @blargbot/scheduler-clock-client@workspace:services/scheduler-clock/client":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/scheduler-clock-client@workspace:services/scheduler-clock/client"
+  dependencies:
+    "@blargbot/message-hub": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/scheduler-clock@workspace:services/scheduler-clock/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/scheduler-clock@workspace:services/scheduler-clock/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/container-id": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+    "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/scheduler-clock-client": "workspace:^"
+    "@types/cron": ^2.0.1
+    cron: ^2.3.0
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/scheduler@workspace:services/scheduler/src":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/scheduler@workspace:services/scheduler/src"
+  dependencies:
+    "@blargbot/application": "workspace:^"
+    "@blargbot/container-id": "workspace:^"
+    "@blargbot/env": "workspace:^"
+    "@blargbot/express": "workspace:^"
+    "@blargbot/message-hub": "workspace:^"
+    "@blargbot/metrics-client": "workspace:^"
+    "@blargbot/scheduler-client": "workspace:^"
+    "@blargbot/scheduler-clock-client": "workspace:^"
+    "@blargbot/sequelize": "workspace:^"
+    "@blargbot/serialization": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/search-client@workspace:^, @blargbot/search-client@workspace:services/search/client":
   version: 0.0.0-use.local
   resolution: "@blargbot/search-client@workspace:services/search/client"
@@ -1298,56 +1349,6 @@ __metadata:
     chai: ^4.3.7
     mocha: ^10.2.0
     ts-mockito: ^2.6.1
-  languageName: unknown
-  linkType: soft
-
-"@blargbot/timeout-clock-client@workspace:^, @blargbot/timeout-clock-client@workspace:services/timeout-clock/client":
-  version: 0.0.0-use.local
-  resolution: "@blargbot/timeout-clock-client@workspace:services/timeout-clock/client"
-  dependencies:
-    "@blargbot/message-hub": "workspace:^"
-  languageName: unknown
-  linkType: soft
-
-"@blargbot/timeout-clock@workspace:services/timeout-clock/src":
-  version: 0.0.0-use.local
-  resolution: "@blargbot/timeout-clock@workspace:services/timeout-clock/src"
-  dependencies:
-    "@blargbot/application": "workspace:^"
-    "@blargbot/container-id": "workspace:^"
-    "@blargbot/env": "workspace:^"
-    "@blargbot/message-hub": "workspace:^"
-    "@blargbot/metrics-client": "workspace:^"
-    "@blargbot/timeout-clock-client": "workspace:^"
-    "@types/cron": ^2.0.1
-    cron: ^2.3.0
-  languageName: unknown
-  linkType: soft
-
-"@blargbot/timeouts-client@workspace:^, @blargbot/timeouts-client@workspace:services/timeouts/client":
-  version: 0.0.0-use.local
-  resolution: "@blargbot/timeouts-client@workspace:services/timeouts/client"
-  dependencies:
-    "@blargbot/api-client": "workspace:^"
-    "@blargbot/serialization": "workspace:^"
-    "@types/amqplib": ^0.10.1
-  languageName: unknown
-  linkType: soft
-
-"@blargbot/timeouts@workspace:services/timeouts/src":
-  version: 0.0.0-use.local
-  resolution: "@blargbot/timeouts@workspace:services/timeouts/src"
-  dependencies:
-    "@blargbot/application": "workspace:^"
-    "@blargbot/container-id": "workspace:^"
-    "@blargbot/env": "workspace:^"
-    "@blargbot/express": "workspace:^"
-    "@blargbot/message-hub": "workspace:^"
-    "@blargbot/metrics-client": "workspace:^"
-    "@blargbot/sequelize": "workspace:^"
-    "@blargbot/serialization": "workspace:^"
-    "@blargbot/timeout-clock-client": "workspace:^"
-    "@blargbot/timeouts-client": "workspace:^"
   languageName: unknown
   linkType: soft
 

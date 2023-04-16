@@ -1,21 +1,21 @@
+import type { ScheduledMessage } from '@blargbot/scheduler-client';
 import type { Model, ModelStatic, Sequelize } from '@blargbot/sequelize';
 import { col, DataTypes, fn, makeColumn, Op, where } from '@blargbot/sequelize';
-import type { TimeoutDetails } from '@blargbot/timeouts-client';
 import { randomBytes } from 'crypto';
 
-import type { ITimeoutRecordDatabase } from './ITimeoutRecordDatabase.js';
+import type { ISchedulerRecordDatabase } from './ISchedulerRecordDatabase.js';
 
-interface TimeoutTable extends Omit<TimeoutDetails, 'data'> {
+interface ScheduledMessageTable extends Omit<ScheduledMessage, 'data'> {
     readonly data: Buffer;
     readonly dataType: string;
 }
 
-export default class TimeoutSequelizeDatabase implements ITimeoutRecordDatabase {
-    readonly #model: ModelStatic<Model<TimeoutTable>>;
+export default class SchedulerSequelizeDatabase implements ISchedulerRecordDatabase {
+    readonly #model: ModelStatic<Model<ScheduledMessageTable>>;
 
     public constructor(sequelize: Pick<Sequelize, 'define'>) {
-        const x: Partial<TimeoutTable> = {};
-        this.#model = sequelize.define<Model<TimeoutTable>>('timeouts', {
+        const x: Partial<ScheduledMessageTable> = {};
+        this.#model = sequelize.define<Model<ScheduledMessageTable>>('scheduled_messages', {
             ...makeColumn('id', DataTypes.STRING, x, { primaryKey: true, unique: true }),
             ...makeColumn('ownerId', DataTypes.BIGINT, x, { primaryKey: true }),
             ...makeColumn('data', DataTypes.BLOB, x),
@@ -36,7 +36,7 @@ export default class TimeoutSequelizeDatabase implements ITimeoutRecordDatabase 
         });
     }
 
-    public async create(record: Omit<TimeoutDetails, 'id'>): Promise<string> {
+    public async create(record: Omit<ScheduledMessage, 'id'>): Promise<string> {
         const model = await this.#model.create({
             ...record,
             data: Buffer.from(await record.data.arrayBuffer()),
@@ -46,9 +46,9 @@ export default class TimeoutSequelizeDatabase implements ITimeoutRecordDatabase 
         return model.get().id;
     }
 
-    #toResult(model: TimeoutTable): TimeoutDetails
-    #toResult(model?: TimeoutTable): TimeoutDetails | undefined
-    #toResult(model?: TimeoutTable): TimeoutDetails | undefined {
+    #toResult(model: ScheduledMessageTable): ScheduledMessage
+    #toResult(model?: ScheduledMessageTable): ScheduledMessage | undefined
+    #toResult(model?: ScheduledMessageTable): ScheduledMessage | undefined {
         if (model === undefined)
             return undefined;
         return {
@@ -57,12 +57,12 @@ export default class TimeoutSequelizeDatabase implements ITimeoutRecordDatabase 
         };
     }
 
-    public async get(ownerId: bigint, id: string): Promise<TimeoutDetails | undefined> {
+    public async get(ownerId: bigint, id: string): Promise<ScheduledMessage | undefined> {
         const model = await this.#model.findOne({ where: { ownerId, id } });
         return this.#toResult(model?.get());
     }
 
-    public async list(ownerId: bigint, offset: number, count: number): Promise<TimeoutDetails[]> {
+    public async list(ownerId: bigint, offset: number, count: number): Promise<ScheduledMessage[]> {
         const models = await this.#model.findAll({
             where: { ownerId },
             order: [
@@ -94,7 +94,7 @@ export default class TimeoutSequelizeDatabase implements ITimeoutRecordDatabase 
         await this.#model.destroy({ where: { ownerId } });
     }
 
-    public async pending(): Promise<TimeoutDetails[]> {
+    public async pending(): Promise<ScheduledMessage[]> {
         const models = await this.#model.findAll({ where: { end: { [Op.lte]: new Date() } } });
         return models.map(m => this.#toResult(m.get()));
     }

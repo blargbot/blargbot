@@ -1,14 +1,14 @@
 import type { BBTagScript, DeferredExecutionService as BBTagDeferredExecutionService } from '@bbtag/blargbot';
 import type { BBTagExecutionRequest } from '@blargbot/bbtag-runner-client';
 import { jsonToBlob } from '@blargbot/message-hub';
-import type { TimeoutHttpClient } from '@blargbot/timeouts-client';
+import type { SchedulerHttpClient } from '@blargbot/scheduler-client';
 
 export class DeferredExecutionService implements BBTagDeferredExecutionService {
-    readonly #timeouts: TimeoutHttpClient;
+    readonly #scheduler: SchedulerHttpClient;
     readonly #queueName: string;
 
-    public constructor(timeouts: TimeoutHttpClient, queueName: string) {
-        this.#timeouts = timeouts;
+    public constructor(scheduler: SchedulerHttpClient, queueName: string) {
+        this.#scheduler = scheduler;
         this.#queueName = queueName;
     }
 
@@ -17,7 +17,7 @@ export class DeferredExecutionService implements BBTagDeferredExecutionService {
             user: context.runtime.user
         };
 
-        await this.#timeouts.createTimeout({
+        await this.#scheduler.scheduleMessage({
             data: await jsonToBlob(request),
             display: content,
             end: new Date(Date.now() + delayMs),

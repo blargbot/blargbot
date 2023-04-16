@@ -105,13 +105,13 @@ services:
     build: ../services/metrics/src
     image: blargbot/metrics
 
-  timeouts:
-    build: ../services/timeouts/src
-    image: blargbot/timeouts
+  scheduler:
+    build: ../services/scheduler/src
+    image: blargbot/scheduler
 
-  timeout-clock:
-    build: ../services/timeout-clock/src
-    image: blargbot/timeout-clock
+  scheduler-clock:
+    build: ../services/scheduler-clock/src
+    image: blargbot/scheduler-clock
 
   command-message-parser:
     build: ../services/command-message-parser/src

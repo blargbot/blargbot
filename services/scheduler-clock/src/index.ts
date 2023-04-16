@@ -4,13 +4,13 @@ import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
 import { MetricsPushService } from '@blargbot/metrics-client';
-import { TimeoutClockMessageBroker } from '@blargbot/timeout-clock-client';
+import { SchedulerClockMessageBroker } from '@blargbot/scheduler-clock-client';
 
-import { TimeoutService } from './TimeoutService.js';
+import { SchedulerClockService } from './SchedulerClockService.js';
 
-export class TimeoutClockApplication extends ServiceHost {
+export class SchedulerClockApplication extends ServiceHost {
     public constructor(options: GuildSettingsApplicationOptions) {
-        const serviceName = 'timeout-clock';
+        const serviceName = 'scheduler-clock';
         const hub = new MessageHub(options.messages);
 
         super([
@@ -18,17 +18,17 @@ export class TimeoutClockApplication extends ServiceHost {
                 connectToService(hub, 'rabbitmq'),
                 new MetricsPushService({ serviceName, instanceId: fullContainerId })
             ),
-            new TimeoutService(
+            new SchedulerClockService(
                 options.cron,
-                new TimeoutClockMessageBroker(hub, serviceName)
+                new SchedulerClockMessageBroker(hub, serviceName)
             )
         ]);
     }
 }
 
 if (isEntrypoint()) {
-    host(new TimeoutClockApplication({
-        cron: env.get(String, 'TIMEOUT_CRON'),
+    host(new SchedulerClockApplication({
+        cron: env.get(String, 'SCHEDULER_CRON'),
         messages: {
             prefetch: env.rabbitPrefetch,
             hostname: env.rabbitHost,

@@ -1,4 +1,4 @@
-import type { DiscordChoiceQueryMessageBroker, DiscordChoiceQueryRequest } from '@blargbot/discord-choice-query-client';
+import type { DiscordChoiceQueryMessageBroker, DiscordChoiceQueryRequest, DiscordChoiceQueryResponse } from '@blargbot/discord-choice-query-client';
 import Discord from '@blargbot/discord-types';
 import * as discordeno from 'discordeno';
 
@@ -54,32 +54,31 @@ export class DiscordChoiceQueryService {
             return await this.#handleIncorrectUser(interaction);
 
         switch (action.type) {
-            case 'cancel': return await this.#cancelQuery(action, query);
-            case 'select': return await this.#resolveQuery(action, query);
+            case 'cancel': return await this.#sendResponse(query, { type: 'cancelled' });
+            case 'select': return await this.#sendResponse(query, { type: 'success', result: action.values });
             case 'page': return await this.#changePage(interaction, action, query);
         }
     }
 
     public async sweepTimeouts(): Promise<void> {
         const queries = await this.#database.getTimedOut();
-        await Promise.all(queries.flatMap(q => [
-            this.#database.delete(q.channelId, q.messageId),
-            this.#messages.sendQueryResponse(q.replyTo, q.requestId, { type: 'timedOut' })
-        ]));
+        await Promise.all(queries.map(q => this.#sendResponse(q, { type: 'timedOut' })));
     }
 
-    async #cancelQuery(action: CancelLookupInteraction, query: QueryDetails): Promise<void> {
+    async #sendResponse(query: QueryDetails, response: DiscordChoiceQueryResponse): Promise<void> {
         await Promise.all([
-            this.#discord.helpers.deleteMessage(action.channelId, action.messageId),
-            this.#messages.sendQueryResponse(query.replyTo, query.requestId, { type: 'cancelled' })
+            this.#database.delete(query.channelId, query.messageId),
+            this.#deleteMessage(query.channelId, query.messageId),
+            this.#messages.sendQueryResponse(query.replyTo, query.requestId, response)
         ]);
     }
 
-    async #resolveQuery(action: SelectValueInteraction, query: QueryDetails): Promise<void> {
-        await Promise.all([
-            this.#discord.helpers.deleteMessage(action.channelId, action.messageId),
-            this.#messages.sendQueryResponse(query.replyTo, query.requestId, { type: 'success', result: action.values })
-        ]);
+    async #deleteMessage(channelId: bigint, messageId: bigint): Promise<void> {
+        try {
+            await this.#discord.helpers.deleteMessage(channelId, messageId);
+        } catch (err) {
+            console.error('Error while deleting query prompt', err);
+        }
     }
 
     #disableAllComponents(components?: Array<Discord.APIActionRowComponent<Discord.APIMessageActionRowComponent>>): discordeno.MessageComponents | undefined {

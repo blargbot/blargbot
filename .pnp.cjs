@@ -404,28 +404,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:services/mod-log/src"\
       },\
       {\
+        "name": "@blargbot/scheduler-clock-client",\
+        "reference": "workspace:services/scheduler-clock/client"\
+      },\
+      {\
+        "name": "@blargbot/scheduler-clock",\
+        "reference": "workspace:services/scheduler-clock/src"\
+      },\
+      {\
+        "name": "@blargbot/scheduler-client",\
+        "reference": "workspace:services/scheduler/client"\
+      },\
+      {\
+        "name": "@blargbot/scheduler",\
+        "reference": "workspace:services/scheduler/src"\
+      },\
+      {\
         "name": "@blargbot/search-client",\
         "reference": "workspace:services/search/client"\
       },\
       {\
         "name": "@blargbot/search",\
         "reference": "workspace:services/search/src"\
-      },\
-      {\
-        "name": "@blargbot/timeout-clock-client",\
-        "reference": "workspace:services/timeout-clock/client"\
-      },\
-      {\
-        "name": "@blargbot/timeout-clock",\
-        "reference": "workspace:services/timeout-clock/src"\
-      },\
-      {\
-        "name": "@blargbot/timeouts-client",\
-        "reference": "workspace:services/timeouts/client"\
-      },\
-      {\
-        "name": "@blargbot/timeouts",\
-        "reference": "workspace:services/timeouts/src"\
       },\
       {\
         "name": "@blargbot/user-settings-client",\
@@ -533,16 +533,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/modules", ["workspace:components/modules/src"]],\
       ["@blargbot/redis-cache", ["workspace:components/redis-cache/src"]],\
       ["@blargbot/res", ["workspace:components/res/src"]],\
+      ["@blargbot/scheduler", ["workspace:services/scheduler/src"]],\
+      ["@blargbot/scheduler-client", ["workspace:services/scheduler/client"]],\
+      ["@blargbot/scheduler-clock", ["workspace:services/scheduler-clock/src"]],\
+      ["@blargbot/scheduler-clock-client", ["workspace:services/scheduler-clock/client"]],\
       ["@blargbot/search", ["workspace:services/search/src"]],\
       ["@blargbot/search-client", ["workspace:services/search/client"]],\
       ["@blargbot/sequelize", ["workspace:components/sequelize/src"]],\
       ["@blargbot/serialization", ["workspace:components/serialization/src"]],\
       ["@blargbot/snowflakes", ["workspace:components/snowflakes/src"]],\
       ["@blargbot/test-util", ["workspace:components/test-util/src"]],\
-      ["@blargbot/timeout-clock", ["workspace:services/timeout-clock/src"]],\
-      ["@blargbot/timeout-clock-client", ["workspace:services/timeout-clock/client"]],\
-      ["@blargbot/timeouts", ["workspace:services/timeouts/src"]],\
-      ["@blargbot/timeouts-client", ["workspace:services/timeouts/client"]],\
       ["@blargbot/timer", ["workspace:components/timer/src"]],\
       ["@blargbot/user-regex", ["workspace:components/user-regex/src"]],\
       ["@blargbot/user-settings", ["workspace:services/user-settings/src"]],\
@@ -809,8 +809,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
             ["@blargbot/mod-log-client", "workspace:services/mod-log/client"],\
+            ["@blargbot/scheduler-client", "workspace:services/scheduler/client"],\
             ["@blargbot/snowflakes", "workspace:components/snowflakes/src"],\
-            ["@blargbot/timeouts-client", "workspace:services/timeouts/client"],\
             ["@blargbot/user-settings-client", "workspace:services/user-settings/client"],\
             ["@blargbot/user-warnings-client", "workspace:services/user-warnings/client"],\
             ["node-fetch", "npm:3.3.1"]\
@@ -1279,6 +1279,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/env", "workspace:components/env/src"],\
             ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
             ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/scheduler-clock-client", "workspace:services/scheduler-clock/client"],\
             ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
             ["@blargbot/serialization", "workspace:components/serialization/src"],\
             ["discordeno", "npm:18.0.1"]\
@@ -2016,6 +2017,64 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/scheduler", [\
+        ["workspace:services/scheduler/src", {\
+          "packageLocation": "./services/scheduler/src/",\
+          "packageDependencies": [\
+            ["@blargbot/scheduler", "workspace:services/scheduler/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/express", "workspace:components/express/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/scheduler-client", "workspace:services/scheduler/client"],\
+            ["@blargbot/scheduler-clock-client", "workspace:services/scheduler-clock/client"],\
+            ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/scheduler-client", [\
+        ["workspace:services/scheduler/client", {\
+          "packageLocation": "./services/scheduler/client/",\
+          "packageDependencies": [\
+            ["@blargbot/scheduler-client", "workspace:services/scheduler/client"],\
+            ["@blargbot/api-client", "workspace:components/api-client/src"],\
+            ["@blargbot/serialization", "workspace:components/serialization/src"],\
+            ["@types/amqplib", "npm:0.10.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/scheduler-clock", [\
+        ["workspace:services/scheduler-clock/src", {\
+          "packageLocation": "./services/scheduler-clock/src/",\
+          "packageDependencies": [\
+            ["@blargbot/scheduler-clock", "workspace:services/scheduler-clock/src"],\
+            ["@blargbot/application", "workspace:components/application/src"],\
+            ["@blargbot/container-id", "workspace:components/container-id/src"],\
+            ["@blargbot/env", "workspace:components/env/src"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
+            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
+            ["@blargbot/scheduler-clock-client", "workspace:services/scheduler-clock/client"],\
+            ["@types/cron", "npm:2.0.1"],\
+            ["cron", "npm:2.3.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/scheduler-clock-client", [\
+        ["workspace:services/scheduler-clock/client", {\
+          "packageLocation": "./services/scheduler-clock/client/",\
+          "packageDependencies": [\
+            ["@blargbot/scheduler-clock-client", "workspace:services/scheduler-clock/client"],\
+            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/search", [\
         ["workspace:services/search/src", {\
           "packageLocation": "./services/search/src/",\
@@ -2088,64 +2147,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai", "npm:4.3.7"],\
             ["mocha", "npm:10.2.0"],\
             ["ts-mockito", "npm:2.6.1"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargbot/timeout-clock", [\
-        ["workspace:services/timeout-clock/src", {\
-          "packageLocation": "./services/timeout-clock/src/",\
-          "packageDependencies": [\
-            ["@blargbot/timeout-clock", "workspace:services/timeout-clock/src"],\
-            ["@blargbot/application", "workspace:components/application/src"],\
-            ["@blargbot/container-id", "workspace:components/container-id/src"],\
-            ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
-            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["@blargbot/timeout-clock-client", "workspace:services/timeout-clock/client"],\
-            ["@types/cron", "npm:2.0.1"],\
-            ["cron", "npm:2.3.0"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargbot/timeout-clock-client", [\
-        ["workspace:services/timeout-clock/client", {\
-          "packageLocation": "./services/timeout-clock/client/",\
-          "packageDependencies": [\
-            ["@blargbot/timeout-clock-client", "workspace:services/timeout-clock/client"],\
-            ["@blargbot/message-hub", "workspace:components/message-hub/src"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargbot/timeouts", [\
-        ["workspace:services/timeouts/src", {\
-          "packageLocation": "./services/timeouts/src/",\
-          "packageDependencies": [\
-            ["@blargbot/timeouts", "workspace:services/timeouts/src"],\
-            ["@blargbot/application", "workspace:components/application/src"],\
-            ["@blargbot/container-id", "workspace:components/container-id/src"],\
-            ["@blargbot/env", "workspace:components/env/src"],\
-            ["@blargbot/express", "workspace:components/express/src"],\
-            ["@blargbot/message-hub", "workspace:components/message-hub/src"],\
-            ["@blargbot/metrics-client", "workspace:services/metrics/client"],\
-            ["@blargbot/sequelize", "workspace:components/sequelize/src"],\
-            ["@blargbot/serialization", "workspace:components/serialization/src"],\
-            ["@blargbot/timeout-clock-client", "workspace:services/timeout-clock/client"],\
-            ["@blargbot/timeouts-client", "workspace:services/timeouts/client"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@blargbot/timeouts-client", [\
-        ["workspace:services/timeouts/client", {\
-          "packageLocation": "./services/timeouts/client/",\
-          "packageDependencies": [\
-            ["@blargbot/timeouts-client", "workspace:services/timeouts/client"],\
-            ["@blargbot/api-client", "workspace:components/api-client/src"],\
-            ["@blargbot/serialization", "workspace:components/serialization/src"],\
-            ["@types/amqplib", "npm:0.10.1"]\
           ],\
           "linkType": "SOFT"\
         }]\

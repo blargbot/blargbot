@@ -1,28 +1,28 @@
 import type { MessageHub } from '@blargbot/message-hub';
-import type { TimeoutDetails } from '@blargbot/timeouts-client';
+import type { ScheduledMessage } from '@blargbot/scheduler-client';
 
-import type { ITimeoutRecordDatabase } from './ITimeoutRecordDatabase.js';
-import type { TimeoutMessageBroker } from './TimeoutMessageBroker.js';
+import type { ISchedulerRecordDatabase } from './ISchedulerRecordDatabase.js';
+import type { SchedulerMessageBroker } from './SchedulerMessageBroker.js';
 
-export class TimeoutService {
-    readonly #database: ITimeoutRecordDatabase;
-    readonly #timeouts: TimeoutMessageBroker;
+export class SchedulerService {
+    readonly #database: ISchedulerRecordDatabase;
+    readonly #scheduler: SchedulerMessageBroker;
     readonly #messages: MessageHub;
 
     public constructor(
-        database: ITimeoutRecordDatabase,
-        timeouts: TimeoutMessageBroker,
+        database: ISchedulerRecordDatabase,
+        scheduler: SchedulerMessageBroker,
         messages: MessageHub) {
         this.#database = database;
-        this.#timeouts = timeouts;
+        this.#scheduler = scheduler;
         this.#messages = messages;
     }
 
-    public async createTimeout(timeout: Omit<TimeoutDetails, 'id'>): Promise<string> {
+    public async createTimeout(timeout: Omit<ScheduledMessage, 'id'>): Promise<string> {
         return await this.#database.create(timeout);
     }
 
-    public async getTimeout(ownerId: bigint, id: string): Promise<TimeoutDetails | undefined> {
+    public async getTimeout(ownerId: bigint, id: string): Promise<ScheduledMessage | undefined> {
         return await this.#database.get(ownerId, id);
     }
 
@@ -30,7 +30,7 @@ export class TimeoutService {
         return await this.#database.delete(ownerId, id);
     }
 
-    public async listTimeout(ownerId: bigint, offset: number, count: number): Promise<TimeoutDetails[]> {
+    public async listTimeout(ownerId: bigint, offset: number, count: number): Promise<ScheduledMessage[]> {
         return await this.#database.list(ownerId, offset, count);
     }
 
@@ -53,16 +53,16 @@ export class TimeoutService {
         ]);
     }
 
-    async #queueTimeout(timeout: TimeoutDetails): Promise<void> {
+    async #queueTimeout(timeout: ScheduledMessage): Promise<void> {
         try {
-            await this.#timeouts.requestProcessTimeout(timeout);
+            await this.#scheduler.requestProcessScheduledMessage(timeout);
         } catch (error) {
             const { data, ...debug } = timeout;
             console.error('Failed to process timeout', debug, error);
         }
     }
 
-    public async handleProcessTimeout(timeout: TimeoutDetails): Promise<void> {
+    public async handleProcessTimeout(timeout: ScheduledMessage): Promise<void> {
         try {
             await this.#messages.send(timeout.queue, timeout.data, timeout.options);
         } catch (err) {
