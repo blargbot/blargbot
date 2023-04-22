@@ -2,6 +2,7 @@ import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } f
 import { fullContainerId } from '@blargbot/container-id';
 import { DiscordChoiceQueryMessageBroker } from '@blargbot/discord-choice-query-client';
 import { DiscordInteractionStreamMessageBroker } from '@blargbot/discord-interaction-stream-client';
+import discordeno from '@blargbot/discordeno';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
@@ -11,7 +12,6 @@ import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 
 import DiscordChoiceQueryDatabase from './DiscordChoiceQueryDatabase.js';
 import { DiscordChoiceQueryService } from './DiscordChoiceQueryService.js';
-import { createDiscordRestClient } from './DiscordRestClient.js';
 
 export class DiscordChoiceQueryApplication extends ServiceHost {
     public constructor(options: DiscordChoiceQueryApplicationOptions) {
@@ -38,11 +38,7 @@ export class DiscordChoiceQueryApplication extends ServiceHost {
         const service = new DiscordChoiceQueryService(
             messages,
             new DiscordChoiceQueryDatabase(database),
-            createDiscordRestClient({
-                token: options.token,
-                url: options.rest.url,
-                secret: options.rest.secret
-            }),
+            discordeno.useRestErrors(discordeno.createProxiedBot(options.discord)),
             {
                 customIds
             }
@@ -74,11 +70,13 @@ export class DiscordChoiceQueryApplication extends ServiceHost {
 
 if (isEntrypoint()) {
     host(new DiscordChoiceQueryApplication({
-        rest: {
-            url: env.discordProxyUrl,
-            secret: env.discordProxySecret
+        discord: {
+            token: env.discordToken,
+            rest: {
+                customUrl: env.discordProxyUrl,
+                secretKey: env.discordProxySecret
+            }
         },
-        token: env.discordToken,
         messages: {
             prefetch: env.rabbitPrefetch,
             hostname: env.rabbitHost,
@@ -98,11 +96,7 @@ if (isEntrypoint()) {
 }
 
 export interface DiscordChoiceQueryApplicationOptions {
-    readonly rest: {
-        readonly secret: string;
-        readonly url: string;
-    };
-    readonly token: string;
+    readonly discord: discordeno.CreateProxiedBotOptions;
     readonly messages: ConnectionOptions;
     readonly postgres: {
         readonly user: string;

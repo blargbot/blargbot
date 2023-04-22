@@ -12,9 +12,9 @@
         "@blargbot/application": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/container-id": "workspace:^",
+        "@blargbot/discordeno": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/express": "workspace:^",
-        "@blargbot/metrics-client": "workspace:^",
-        "discordeno": "^18.0.1"
+        "@blargbot/metrics-client": "workspace:^"
     }
 }

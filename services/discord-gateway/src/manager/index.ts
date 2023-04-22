@@ -1,5 +1,6 @@
 import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import containerId, { fullContainerId } from '@blargbot/container-id';
+import discordeno from '@blargbot/discordeno';
 import env from '@blargbot/env';
 import type { ConnectionOptions } from '@blargbot/message-hub';
 import { MessageHub } from '@blargbot/message-hub';
@@ -7,7 +8,6 @@ import { MetricsPushService } from '@blargbot/metrics-client';
 
 import { DiscordGatewayIPCMessageBroker } from '../DiscordGatewayIPCMessageBroker.js';
 import { createDiscordGatewayManager } from './DiscordGatewayManager.js';
-import { createDiscordRestClient } from './DiscordRestClient.js';
 
 export class DiscordGatewayApplication extends ServiceHost {
     public constructor(options: DiscordGatewayApplicationOptions) {
@@ -15,13 +15,8 @@ export class DiscordGatewayApplication extends ServiceHost {
         const hub = new MessageHub(options.messages);
         const manager = createDiscordGatewayManager({
             ipc: new DiscordGatewayIPCMessageBroker(hub, { managerId: options.managerId }),
-            client: createDiscordRestClient({
-                token: options.token,
-                url: options.rest.url,
-                secret: options.rest.secret
-            }),
-            shardsPerWorker: options.shardsPerWorker,
-            token: options.token
+            client: discordeno.useRestErrors(discordeno.createProxiedBot(options.discord)),
+            shardsPerWorker: options.shardsPerWorker
         });
 
         super([
@@ -43,11 +38,13 @@ if (isEntrypoint()) {
             password: env.rabbitPassword
         },
         managerId: containerId,
-        rest: {
-            url: env.discordProxyUrl,
-            secret: env.discordProxySecret
+        discord: {
+            token: env.discordToken,
+            rest: {
+                customUrl: env.discordProxyUrl,
+                secretKey: env.discordProxySecret
+            }
         },
-        token: env.discordToken,
         shardsPerWorker: env.shardsPerWorker
 
     }));
@@ -56,10 +53,6 @@ if (isEntrypoint()) {
 export interface DiscordGatewayApplicationOptions {
     readonly messages: ConnectionOptions;
     readonly managerId: string;
-    readonly rest: {
-        readonly secret: string;
-        readonly url: string;
-    };
-    readonly token: string;
+    readonly discord: discordeno.CreateProxiedBotOptions;
     readonly shardsPerWorker: number;
 }

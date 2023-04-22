@@ -1,5 +1,5 @@
+import discordeno from '@blargbot/discordeno';
 import type { MessageHandle } from '@blargbot/message-hub';
-import * as discordeno from 'discordeno';
 
 import type { DiscordGatewayIPCMessageBroker } from '../DiscordGatewayIPCMessageBroker.js';
 import { GatewayWorkerManager } from './GatewayWorkerManager.js';
@@ -12,7 +12,6 @@ export interface DiscordGatewayManager {
 export interface DiscordGatewayManagerOptions {
     readonly client: discordeno.Bot;
     readonly ipc: DiscordGatewayIPCMessageBroker;
-    readonly token: string;
     readonly shardsPerWorker: number;
 }
 
@@ -47,11 +46,11 @@ export function createDiscordGatewayManager(options: DiscordGatewayManagerOption
 }
 
 async function createGatewayManager(options: DiscordGatewayManagerOptions, workers: GatewayWorkerManager): Promise<discordeno.GatewayManager> {
-    const { client, token, shardsPerWorker } = options;
+    const { client, shardsPerWorker } = options;
     return discordeno.createGatewayManager({
         gatewayBot: await client.helpers.getGatewayBot(),
         gatewayConfig: {
-            token: token
+            token: client.token
         },
         shardsPerWorker: shardsPerWorker,
         handleDiscordPayload: () => { /* NO-OP */ },

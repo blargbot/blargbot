@@ -1,0 +1,12 @@
+{
+    "name": "@blargbot/discordeno",
+    "version": "18.0.1",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "discordeno": "^18.0.1"
+    }
+}

@@ -25,7 +25,7 @@
         "brainfuck-node": "^1.0.2",
         "color": "^4.2.3",
         "html-entities": "^2.3.3",
-        "moment-timezone": "^0.5.42"
+        "moment-timezone": "^0.5.43"
     },
     "devDependencies": {
         "@blargbot/application": "workspace:^",

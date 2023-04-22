@@ -15,9 +15,9 @@
         "@blargbot/container-id": "workspace:^",
         "@blargbot/discord-gateway-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
+        "@blargbot/discordeno": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
-        "@blargbot/metrics-client": "workspace:^",
-        "discordeno": "^18.0.1"
+        "@blargbot/metrics-client": "workspace:^"
     }
 }

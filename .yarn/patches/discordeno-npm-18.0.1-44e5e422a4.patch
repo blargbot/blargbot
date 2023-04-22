@@ -1,0 +1,181 @@
+diff --git a/esm/rest/convertRestError.js b/esm/rest/convertRestError.js
+index 1326a24d2747d7517f95f73cef4c5aabde9992b1..3c57bf46c722ddd76e326301216c50d6c4f94ac6 100644
+--- a/esm/rest/convertRestError.js
++++ b/esm/rest/convertRestError.js
+@@ -1,4 +1,6 @@
+-export function convertRestError(errorStack, data) {
++export function convertRestError(errorStack, data, result) {
++    if (!data?.body)
++        throw new Error(`Error: ${data?.message ?? result?.statusText ?? 'UNKNOWN'}`);
+     errorStack.message = `[${data.status}] ${data.error}\n${data.body}`;
+     return errorStack;
+ }
+diff --git a/esm/rest/runMethod.js b/esm/rest/runMethod.js
+index 2d92e8b39f44b583f9c1d21c5abbbef0532c1648..317e9ad34d366d1f415caa8b6f009ce7fcc7e289 100644
+--- a/esm/rest/runMethod.js
++++ b/esm/rest/runMethod.js
+@@ -32,10 +32,7 @@ export async function runMethod(rest, method, route, body, options) {
+         });
+         if (!result.ok) {
+             const err = await result.json().catch(() => { });
+-            // Legacy Handling to not break old code or when body is missing
+-            if (!err?.body)
+-                throw new Error(`Error: ${err.message ?? result.statusText}`);
+-            throw rest.convertRestError(errorStack, err);
++            throw rest.convertRestError(errorStack, err, result);
+         }
+         return result.status !== 204 ? await result.json() : undefined;
+     }
+@@ -44,8 +41,8 @@ export async function runMethod(rest, method, route, body, options) {
+         rest.processRequest(rest, {
+             url: route[0] === "/" ? `${BASE_URL}/v${API_VERSION}${route}` : route,
+             method,
+-            reject: (data) => {
+-                const restError = rest.convertRestError(errorStack, data);
++            reject: (data, response) => {
++                const restError = rest.convertRestError(errorStack, data, response);
+                 reject(restError);
+             },
+             respond: (data) => resolve(data.status !== 204 ? JSON.parse(data.body ?? "{}") : undefined),
+diff --git a/esm/rest/sendRequest.js b/esm/rest/sendRequest.js
+index 13e2f76aa92b3ddd8df6c827de06a1d18086f588..678a877300278004a0ca43084ee88bd3e2e85b04 100644
+--- a/esm/rest/sendRequest.js
++++ b/esm/rest/sendRequest.js
+@@ -49,7 +49,7 @@ export async function sendRequest(rest, options) {
+                     status: response.status,
+                     error,
+                     body,
+-                });
++                }, response);
+             }
+             else {
+                 const json = await response.json();
+@@ -61,7 +61,7 @@ export async function sendRequest(rest, options) {
+                         ok: false,
+                         status: response.status,
+                         error: "The options was rate limited and it maxed out the retries limit.",
+-                    });
++                    }, response);
+                     // @ts-ignore Code should never reach here
+                     return;
+                 } // RATE LIMITED, ADD BACK TO QUEUE
+diff --git a/script/rest/convertRestError.js b/script/rest/convertRestError.js
+index 196e9f23dd23ce55d4a0805ef1772a6401eb44e0..eab1a8dd2b3f4721a0025e53dbc6cbf433107078 100644
+--- a/script/rest/convertRestError.js
++++ b/script/rest/convertRestError.js
+@@ -1,7 +1,9 @@
+ "use strict";
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.convertRestError = void 0;
+-function convertRestError(errorStack, data) {
++function convertRestError(errorStack, data, result) {
++    if (!data?.body)
++        throw new Error(`Error: ${data?.message ?? result?.statusText ?? 'UNKNOWN'}`);
+     errorStack.message = `[${data.status}] ${data.error}\n${data.body}`;
+     return errorStack;
+ }
+diff --git a/script/rest/runMethod.js b/script/rest/runMethod.js
+index 0f862f96a60cf6872be3d8a040a276f111c89d33..f2dd8de7352372a812bc0f330a0a09276df58ab2 100644
+--- a/script/rest/runMethod.js
++++ b/script/rest/runMethod.js
+@@ -1,18 +1,18 @@
+ "use strict";
+-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
++var __createBinding = (this && this.__createBinding) || (Object.create ? (function (o, m, k, k2) {
+     if (k2 === undefined) k2 = k;
+     var desc = Object.getOwnPropertyDescriptor(m, k);
+     if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+-      desc = { enumerable: true, get: function() { return m[k]; } };
++        desc = { enumerable: true, get: function () { return m[k]; } };
+     }
+     Object.defineProperty(o, k2, desc);
+-}) : (function(o, m, k, k2) {
++}) : (function (o, m, k, k2) {
+     if (k2 === undefined) k2 = k;
+     o[k2] = m[k];
+ }));
+-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
++var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function (o, v) {
+     Object.defineProperty(o, "default", { enumerable: true, value: v });
+-}) : function(o, v) {
++}) : function (o, v) {
+     o["default"] = v;
+ });
+ var __importStar = (this && this.__importStar) || function (mod) {
+@@ -58,10 +58,7 @@ async function runMethod(rest, method, route, body, options) {
+         });
+         if (!result.ok) {
+             const err = await result.json().catch(() => { });
+-            // Legacy Handling to not break old code or when body is missing
+-            if (!err?.body)
+-                throw new Error(`Error: ${err.message ?? result.statusText}`);
+-            throw rest.convertRestError(errorStack, err);
++            throw rest.convertRestError(errorStack, err, result);
+         }
+         return result.status !== 204 ? await result.json() : undefined;
+     }
+@@ -70,8 +67,8 @@ async function runMethod(rest, method, route, body, options) {
+         rest.processRequest(rest, {
+             url: route[0] === "/" ? `${constants_js_1.BASE_URL}/v${constants_js_1.API_VERSION}${route}` : route,
+             method,
+-            reject: (data) => {
+-                const restError = rest.convertRestError(errorStack, data);
++            reject: (data, response) => {
++                const restError = rest.convertRestError(errorStack, data, response);
+                 reject(restError);
+             },
+             respond: (data) => resolve(data.status !== 204 ? JSON.parse(data.body ?? "{}") : undefined),
+diff --git a/script/rest/sendRequest.js b/script/rest/sendRequest.js
+index 844fbf359943fcc43ee5d5ad637fb5406be11edd..71646be1f37dd23a17f87d9d238338e143c02ba5 100644
+--- a/script/rest/sendRequest.js
++++ b/script/rest/sendRequest.js
+@@ -1,18 +1,18 @@
+ "use strict";
+-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
++var __createBinding = (this && this.__createBinding) || (Object.create ? (function (o, m, k, k2) {
+     if (k2 === undefined) k2 = k;
+     var desc = Object.getOwnPropertyDescriptor(m, k);
+     if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+-      desc = { enumerable: true, get: function() { return m[k]; } };
++        desc = { enumerable: true, get: function () { return m[k]; } };
+     }
+     Object.defineProperty(o, k2, desc);
+-}) : (function(o, m, k, k2) {
++}) : (function (o, m, k, k2) {
+     if (k2 === undefined) k2 = k;
+     o[k2] = m[k];
+ }));
+-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
++var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function (o, v) {
+     Object.defineProperty(o, "default", { enumerable: true, value: v });
+-}) : function(o, v) {
++}) : function (o, v) {
+     o["default"] = v;
+ });
+ var __importStar = (this && this.__importStar) || function (mod) {
+@@ -75,7 +75,7 @@ async function sendRequest(rest, options) {
+                     status: response.status,
+                     error,
+                     body,
+-                });
++                }, response);
+             }
+             else {
+                 const json = await response.json();
+@@ -87,7 +87,7 @@ async function sendRequest(rest, options) {
+                         ok: false,
+                         status: response.status,
+                         error: "The options was rate limited and it maxed out the retries limit.",
+-                    });
++                    }, response);
+                     // @ts-ignore Code should never reach here
+                     return;
+                 } // RATE LIMITED, ADD BACK TO QUEUE
+diff --git a/types/rest/convertRestError.d.ts b/types/rest/convertRestError.d.ts
+index 11704a2df020cdb293238e58d41e06b7e4ede64e..a77c7508cc8635d7bb477dd8216073db1e0ca4c4 100644
+--- a/types/rest/convertRestError.d.ts
++++ b/types/rest/convertRestError.d.ts
+@@ -1,2 +1,2 @@
+ import { RestRequestRejection } from "./rest.js";
+-export declare function convertRestError(errorStack: Error, data: RestRequestRejection): Error;
++export declare function convertRestError(errorStack: Error, data: RestRequestRejection, response: unknown): Error;

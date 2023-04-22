@@ -1,6 +1,6 @@
+import type discordeno from '@blargbot/discordeno';
 import type { IJsonConverter, IJsonConverterType } from '@blargbot/serialization';
 import { json } from '@blargbot/serialization';
-import type * as discordeno from 'discordeno';
 
 export async function discoverFields(metadata: Record<string, JToken>): Promise<Iterable<discordeno.DiscordEmbedField>> {
     const result = [];

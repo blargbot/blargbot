@@ -42,7 +42,7 @@ export interface DiscordConfiguration {
 }
 
 export interface EmotesConfiguration {
-    readonly beemovie: `:${string}:${bigint}`;
+    readonly beemovie: `:${string}:${bigint}` | string;
     readonly online: `:${string}:${bigint}`;
     readonly away: `:${string}:${bigint}`;
     readonly busy: `:${string}:${bigint}`;

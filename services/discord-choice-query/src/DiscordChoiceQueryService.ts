@@ -1,6 +1,6 @@
 import type { DiscordChoiceQueryMessageBroker, DiscordChoiceQueryRequest, DiscordChoiceQueryResponse } from '@blargbot/discord-choice-query-client';
 import Discord from '@blargbot/discord-types';
-import * as discordeno from 'discordeno';
+import discordeno from '@blargbot/discordeno';
 
 import type DiscordChoiceQueryDatabase from './DiscordChoiceQueryDatabase.js';
 import type { QueryDetails } from './DiscordChoiceQueryDatabase.js';

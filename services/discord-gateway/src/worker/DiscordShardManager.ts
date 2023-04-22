@@ -1,7 +1,7 @@
 import type { DiscordGatewayMessageBroker } from '@blargbot/discord-gateway-client';
 import type Discord from '@blargbot/discord-types';
+import discordeno from '@blargbot/discordeno';
 import type { MessageHandle } from '@blargbot/message-hub';
-import * as discordeno from 'discordeno';
 
 import type { DiscordGatewayIPCMessageBroker } from '../DiscordGatewayIPCMessageBroker.js';
 

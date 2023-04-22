@@ -363,7 +363,7 @@ export class SubtagTestContext {
                 joined_at: new Date().toISOString(),
                 mute: false,
                 roles: [],
-                flags: 0,
+                flags: 0 as Discord.GuildMemberFlags,
                 ...settings.member
             }
         };
@@ -408,7 +408,7 @@ export class SubtagTestContext {
             rules_channel_id: null,
             splash: null,
             stickers: [],
-            system_channel_flags: 0,
+            system_channel_flags: 0 as Discord.GuildSystemChannelFlags,
             system_channel_id: null,
             vanity_url_code: null,
             verification_level: 0,

@@ -16,12 +16,12 @@
         "@blargbot/discord-interaction-stream-client": "workspace:^",
         "@blargbot/discord-types": "workspace:^",
         "@blargbot/discord-util": "workspace:^",
+        "@blargbot/discordeno": "workspace:^",
         "@blargbot/env": "workspace:^",
         "@blargbot/message-hub": "workspace:^",
         "@blargbot/metrics-client": "workspace:^",
         "@blargbot/scheduler-clock-client": "workspace:^",
         "@blargbot/sequelize": "workspace:^",
-        "@blargbot/serialization": "workspace:^",
-        "discordeno": "^18.0.1"
+        "@blargbot/serialization": "workspace:^"
     }
 }

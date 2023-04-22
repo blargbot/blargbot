@@ -1,6 +1,6 @@
+import discordeno from '@blargbot/discordeno';
 import type express from '@blargbot/express';
 import { asyncHandler } from '@blargbot/express';
-import * as discordeno from 'discordeno';
 
 import type { RestProxyOptions } from './RestProxyOptions.js';
 
@@ -10,9 +10,7 @@ export default function createRestProxy(options: RestProxyOptions): express.Requ
         secretKey: options.secret,
         customUrl: options.url,
         debug: console.debug,
-        convertRestError(err, data) {
-            return new RestDataError(err, data);
-        }
+        convertRestError: discordeno.convertRestError
     });
 
     return asyncHandler(async (req, res) => {
@@ -27,7 +25,7 @@ export default function createRestProxy(options: RestProxyOptions): express.Requ
                 ? void res.status(204).json()
                 : void res.status(200).json(result);
         } catch (err: unknown) {
-            if (!(err instanceof RestDataError)) {
+            if (!(err instanceof discordeno.DiscordenoRestError)) {
                 console.error(req.method, req.url, 500, err);
                 return void res.status(500).json(err);
             }
@@ -38,15 +36,4 @@ export default function createRestProxy(options: RestProxyOptions): express.Requ
                 .send(err.data.body);
         }
     });
-}
-
-class RestDataError extends Error {
-    public constructor(
-        public readonly innerError: Error,
-        public readonly data: discordeno.RestRequestRejection
-    ) {
-        super(innerError.message);
-        this.stack = innerError.stack;
-        this.name = innerError.name;
-    }
 }

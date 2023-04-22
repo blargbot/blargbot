@@ -1,6 +1,6 @@
+import type discordeno from '@blargbot/discordeno';
 import type { GuildSettingsHttpClient } from '@blargbot/guild-settings-client';
 import type { ModLogCreatedEvent, ModLogDeletedEvent, ModLogDetails, ModLogUpdatedEvent } from '@blargbot/mod-log-client';
-import type * as discordeno from 'discordeno';
 
 import type { IDiscordModLogEntryDatabase } from './IDiscordModLogEntryDatabase.js';
 import { discoverFields } from './WellKnownModLogMetadata.js';
@@ -23,6 +23,10 @@ export class DiscordModLogService {
         this.#discord = discord;
         this.#prefix = options.prefix;
         this.#defaultModerator = discord.id;
+
+        this.#discord.helpers.editChannel('384765378445365', {}).catch(err => {
+            console.error(err);
+        });
     }
 
     public async handleModLogCreated(options: ModLogCreatedEvent): Promise<void> {

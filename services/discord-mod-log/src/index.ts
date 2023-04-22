@@ -1,5 +1,6 @@
 import { connectToService, host, isEntrypoint, parallelServices, ServiceHost } from '@blargbot/application';
 import { fullContainerId } from '@blargbot/container-id';
+import discordeno from '@blargbot/discordeno';
 import env from '@blargbot/env';
 import { GuildSettingsHttpClient } from '@blargbot/guild-settings-client';
 import type { ConnectionOptions } from '@blargbot/message-hub';
@@ -10,7 +11,6 @@ import { Sequelize, sequelizeToService } from '@blargbot/sequelize';
 
 import DiscordModLogSequelizeDatabase from './DiscordModLogSequelizeDatabase.js';
 import { DiscordModLogService } from './DiscordModLogService.js';
-import { createDiscordRestClient } from './DiscordRestClient.js';
 
 export class DiscordModLogApplication extends ServiceHost {
     public constructor(options: DiscordModLogApplicationOptions) {
@@ -29,11 +29,7 @@ export class DiscordModLogApplication extends ServiceHost {
         const service = new DiscordModLogService(
             new GuildSettingsHttpClient(options.guildSettings.url),
             new DiscordModLogSequelizeDatabase(database),
-            createDiscordRestClient({
-                token: options.token,
-                url: options.rest.url,
-                secret: options.rest.secret
-            }),
+            discordeno.useRestErrors(discordeno.createProxiedBot(options.discord)),
             {
                 prefix: options.prefix
             }
@@ -62,11 +58,13 @@ if (isEntrypoint()) {
             url: env.guildSettingsUrl
         },
         prefix: env.get(String, 'COMMAND_PREFIX'),
-        rest: {
-            url: env.discordProxyUrl,
-            secret: env.discordProxySecret
+        discord: {
+            token: env.discordToken,
+            rest: {
+                customUrl: env.discordProxyUrl,
+                secretKey: env.discordProxySecret
+            }
         },
-        token: env.discordToken,
         messages: {
             prefetch: env.rabbitPrefetch,
             hostname: env.rabbitHost,
@@ -90,11 +88,7 @@ export interface DiscordModLogApplicationOptions {
         readonly url: string;
     };
     readonly prefix: string;
-    readonly rest: {
-        readonly secret: string;
-        readonly url: string;
-    };
-    readonly token: string;
+    readonly discord: discordeno.CreateProxiedBotOptions;
     readonly messages: ConnectionOptions;
     readonly postgres: {
         readonly user: string;

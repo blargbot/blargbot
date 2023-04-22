@@ -32,7 +32,7 @@
         "chai-datetime": "^1.8.0",
         "chai-exclude": "^2.1.0",
         "mocha": "^10.2.0",
-        "moment-timezone": "^0.5.42",
+        "moment-timezone": "^0.5.43",
         "ts-mockito": "^2.6.1"
     },
     "devDependencies": {

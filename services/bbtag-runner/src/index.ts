@@ -8,6 +8,7 @@ import { fullContainerId } from '@blargbot/container-id';
 import { DiscordChannelCacheHttpClient } from '@blargbot/discord-channel-cache-client';
 import { DiscordChannelSearchHttpClient } from '@blargbot/discord-channel-search-client';
 import { DiscordChoiceQueryMessageBroker } from '@blargbot/discord-choice-query-client';
+import type discordeno from '@blargbot/discordeno';
 import { DomainWhitelistHttpClient } from '@blargbot/domain-whitelist-client';
 import env from '@blargbot/env';
 import { MessageDumpsHttpClient } from '@blargbot/message-dumps-client';
@@ -108,6 +109,13 @@ if (isEntrypoint()) {
         scheduler: {
             url: env.schedulerUrl
         },
+        discord: {
+            token: env.discordToken,
+            rest: {
+                secretKey: env.discordProxySecret,
+                customUrl: env.discordProxyUrl
+            }
+        },
         messages: {
             prefetch: env.rabbitPrefetch,
             hostname: env.rabbitHost,
@@ -138,6 +146,7 @@ if (isEntrypoint()) {
 
 export interface BBTagRunnerApplicationOptions {
     readonly messages: ConnectionOptions;
+    readonly discord: discordeno.CreateProxiedBotOptions;
     readonly variables: {
         readonly url: string;
     };

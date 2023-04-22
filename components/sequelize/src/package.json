@@ -7,7 +7,7 @@
         ".": "./index.js"
     },
     "dependencies": {
-        "@sequelize/core": "^7.0.0-alpha.23",
+        "@sequelize/core": "^7.0.0-alpha.26",
         "pg": "^8.10.0",
         "pg-hstore": "^2.3.4",
         "postgres-array": "^3.0.2"

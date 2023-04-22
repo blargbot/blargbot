@@ -3,4 +3,4 @@ import type { Configuration } from './Configuration.js';
 
 export * from './Configuration.js';
 
-export const config: Configuration = configJson;
+export const config: Configuration = configJson as Configuration;

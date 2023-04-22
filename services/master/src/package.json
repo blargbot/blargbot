@@ -24,13 +24,13 @@
         "@blargbot/res": "workspace:^",
         "@blargbot/timer": "workspace:^",
         "eris": "^0.17.2",
-        "moment-timezone": "^0.5.42",
+        "moment-timezone": "^0.5.43",
         "node-fetch": "^3.3.1",
         "prom-client": "^14.2.0",
         "strip-ansi": "^7.0.1"
     },
     "devDependencies": {
         "@types/eris": "workspace:^",
-        "@types/node-fetch": "^2.6.2"
+        "@types/node-fetch": "^2.6.3"
     }
 }
