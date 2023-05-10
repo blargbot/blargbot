@@ -50,6 +50,7 @@ export class StatusCommand extends GlobalCommand {
 
 const statusSites = {
     cat: 'https://http.cat/',
-    dog: 'https://httpstatusdogs.com/img/'
+    dog: 'https://http.dog/',
+    goat: 'https://httpgoats.com/'
 } as const;
 const statusKeys = new Set(Object.keys(statusSites));
