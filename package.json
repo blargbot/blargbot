@@ -54,6 +54,7 @@
         }
     },
     "resolutions": {
-        "@types/mocha@^10.0.0": "patch:@types/mocha@npm:10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch"
+        "@types/mocha@^10.0.0": "patch:@types/mocha@npm:10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch",
+        "eris@^0.17.1": "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch"
     }
 }
