@@ -1,0 +1,21 @@
+diff --git a/lib/structures/Channel.js b/lib/structures/Channel.js
+index f11098ead56563f33f5c2c9019ee29b649fd78c3..2c2c39902ae03dcf2e084823a44fe836c30ce0f6 100644
+--- a/lib/structures/Channel.js
++++ b/lib/structures/Channel.js
+@@ -60,13 +60,13 @@ class Channel extends Base {
+         }
+         if(data.guild_id) {
+             if(data.last_message_id !== undefined) {
+-                client.emit("warn", new Error(`Unknown guild text channel type: ${data.type}\n${JSON.stringify(data)}`));
++                // client.emit("warn", new Error(`Unknown guild text channel type: ${data.type}\n${JSON.stringify(data)}`));
+                 return new TextChannel(data, client);
+             }
+-            client.emit("warn", new Error(`Unknown guild channel type: ${data.type}\n${JSON.stringify(data)}`));
++            // client.emit("warn", new Error(`Unknown guild channel type: ${data.type}\n${JSON.stringify(data)}`));
+             return new GuildChannel(data, client);
+         }
+-        client.emit("warn", new Error(`Unknown channel type: ${data.type}\n${JSON.stringify(data)}`));
++        // client.emit("warn", new Error(`Unknown channel type: ${data.type}\n${JSON.stringify(data)}`));
+         return new Channel(data, client);
+     }
+ 

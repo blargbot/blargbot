@@ -3161,7 +3161,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eris@npm:^0.17.1":
+"eris@npm:0.17.1":
   version: 0.17.1
   resolution: "eris@npm:0.17.1"
   dependencies:
@@ -3174,6 +3174,22 @@ __metadata:
     tweetnacl:
       optional: true
   checksum: 1ec654a2e3c2e0b3957c5fd21648622a101c1d7f829d23825bb27c04b72790659f651fb7d702d9cdaa3bd721378cb4f197cf7dfb39401a16719d2af56dd9639b
+  languageName: node
+  linkType: hard
+
+"eris@patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::locator=blargbot%40workspace%3A.":
+  version: 0.17.1
+  resolution: "eris@patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."
+  dependencies:
+    opusscript: ^0.0.8
+    tweetnacl: ^1.0.3
+    ws: ^8.2.3
+  dependenciesMeta:
+    opusscript:
+      optional: true
+    tweetnacl:
+      optional: true
+  checksum: cb515182ddeacc1ab415d74f7138b0be3636402dc08653882338cf53ba6e3d20f98177d41f1cb4706a3b2ead212d1587cb8f74ea17abb75c799bfbb9ccc57a4b
   languageName: node
   linkType: hard
 
