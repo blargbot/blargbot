@@ -14,7 +14,7 @@
         "pg": "^8.8.0",
         "pg-hstore": "^2.3.4",
         "rethinkdb": "^2.4.2",
-        "sequelize": "^6.25.8"
+        "sequelize": "^6.29.0"
     },
     "devDependencies": {
         "@types/catflake": "workspace:^",
