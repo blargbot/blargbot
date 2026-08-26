@@ -1,7 +1,7 @@
-import { FileSubtag } from '@blargbot/bbtag/subtags/message/file';
+import { FileSubtag } from '@blargbot/bbtag/subtags/message/file.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new FileSubtag(),

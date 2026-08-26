@@ -1,35 +1,39 @@
-import { Configuration } from '@blargbot/config';
-import { BaseWorker } from '@blargbot/core/worker';
-import { Logger } from '@blargbot/logger';
-import holidays from '@blargbot/res/holidays.json';
+import type { Configuration } from '@blargbot/config';
+import { BaseWorker } from '@blargbot/core/worker/index.js';
+import type { Logger } from '@blargbot/logger';
+import { holidays } from '@blargbot/res';
+import type $fetch from 'node-fetch';
 
-import { Cluster } from './Cluster';
-import { ClusterIPCContract } from './types';
+import { Cluster } from './Cluster.js';
+import type { ClusterIPCContract } from './types.js';
+
+await holidays.ensureLoaded();
 
 export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
     public readonly cluster: Cluster;
 
     public constructor(
         logger: Logger,
-        public readonly config: Configuration
+        public readonly config: Configuration,
+        fetch: typeof $fetch
     ) {
         super(logger);
         const clusterId = envNumber(this.env, 'CLUSTER_ID');
 
         this.logger.init(`CLUSTER ${clusterId} (pid ${this.id}) PROCESS INITIALIZED`);
 
-        this.cluster = new Cluster(this, logger, config, {
+        this.cluster = new Cluster(this, logger, config, fetch, {
             id: clusterId,
             shardCount: envNumber(this.env, 'SHARDS_MAX'),
             firstShardId: envNumber(this.env, 'SHARDS_FIRST'),
             lastShardId: envNumber(this.env, 'SHARDS_LAST'),
-            holidays
+            holidays: holidays.data
         });
     }
 
     public async start(): Promise<void> {
         await this.cluster.start();
-        super.start();
+        await super.start();
     }
 
     public async stop(): Promise<void> {

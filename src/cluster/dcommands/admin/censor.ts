@@ -1,13 +1,14 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, ModerationType } from '@blargbot/cluster/utils';
-import { guard } from '@blargbot/core/utils';
-import { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models';
-import { IFormattable, util } from '@blargbot/formatting';
-import { KnownChannel, Role, User } from 'eris';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import type { GuildCensor, GuildTriggerTag } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import type * as eris from 'eris';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import templates from '../../text.js';
 
 const cmd = templates.commands.censor;
 
@@ -171,12 +172,12 @@ export class CensorCommand extends GuildCommand {
         return cmd.delete.success({ id });
     }
 
-    public async ignoreUser(context: GuildCommandContext, user: User, ignored: boolean): Promise<CommandResult> {
+    public async ignoreUser(context: GuildCommandContext, user: eris.User, ignored: boolean): Promise<CommandResult> {
         await context.database.guilds.censorIgnoreUser(context.channel.guild.id, user.id, ignored);
         return cmd.exception.user.success({ user });
     }
 
-    public async ignoreChannel(context: GuildCommandContext, channel: KnownChannel, ignored: boolean): Promise<CommandResult> {
+    public async ignoreChannel(context: GuildCommandContext, channel: eris.KnownChannel, ignored: boolean): Promise<CommandResult> {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
             return cmd.exception.channel.notOnServer;
 
@@ -184,7 +185,7 @@ export class CensorCommand extends GuildCommand {
         return cmd.exception.channel.success({ channel });
     }
 
-    public async ignoreRole(context: GuildCommandContext, role: Role, ignored: boolean): Promise<CommandResult> {
+    public async ignoreRole(context: GuildCommandContext, role: eris.Role, ignored: boolean): Promise<CommandResult> {
         await context.database.guilds.censorIgnoreRole(context.channel.guild.id, role.id, ignored);
         return cmd.exception.role.success({ role });
     }

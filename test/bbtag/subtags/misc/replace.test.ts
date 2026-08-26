@@ -1,7 +1,7 @@
-import { ReplaceSubtag } from '@blargbot/bbtag/subtags/misc/replace';
+import { ReplaceSubtag } from '@blargbot/bbtag/subtags/misc/replace.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ReplaceSubtag(),

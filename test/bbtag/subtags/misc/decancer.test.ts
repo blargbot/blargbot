@@ -1,6 +1,6 @@
-import { DecancerSubtag } from '@blargbot/bbtag/subtags/misc/decancer';
+import { DecancerSubtag } from '@blargbot/bbtag/subtags/misc/decancer.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new DecancerSubtag(),

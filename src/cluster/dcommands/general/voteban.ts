@@ -1,9 +1,9 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, discord } from '@blargbot/cluster/utils';
-import { Member, User } from 'eris';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType, discord } from '@blargbot/cluster/utils/index.js';
+import type * as eris from 'eris';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.voteBan;
 
@@ -62,7 +62,7 @@ export class VoteBanCommand extends GuildCommand {
         };
     }
 
-    public async getVotes(context: GuildCommandContext, user: Member): Promise<CommandResult> {
+    public async getVotes(context: GuildCommandContext, user: eris.Member): Promise<CommandResult> {
         const votes = await context.database.guilds.getVoteBans(context.channel.guild.id, user.id) ?? [];
         return {
             embeds: [
@@ -84,7 +84,7 @@ export class VoteBanCommand extends GuildCommand {
         };
     }
 
-    public async sign(context: GuildCommandContext, user: User, reason: string | undefined): Promise<CommandResult> {
+    public async sign(context: GuildCommandContext, user: eris.User, reason: string | undefined): Promise<CommandResult> {
         if (await context.database.guilds.hasVoteBanned(context.channel.guild.id, user.id, context.author.id))
             return cmd.sign.alreadySigned({ user });
 
@@ -100,7 +100,7 @@ export class VoteBanCommand extends GuildCommand {
         });
     }
 
-    public async unsign(context: GuildCommandContext, user: User): Promise<CommandResult> {
+    public async unsign(context: GuildCommandContext, user: eris.User): Promise<CommandResult> {
         if (!await context.database.guilds.hasVoteBanned(context.channel.guild.id, user.id, context.author.id))
             return cmd.forgive.notSigned({ user });
 

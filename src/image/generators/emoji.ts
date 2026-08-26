@@ -1,8 +1,8 @@
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
-import { ImageWorker } from '@blargbot/image/ImageWorker';
-import { EmojiOptions, ImageResult } from '@blargbot/image/types';
-import fetch from 'node-fetch';
-import path from 'path';
+import path from 'node:path';
+
+import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
+import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { EmojiOptions, ImageResult } from '@blargbot/image/types.js';
 import sharp from 'sharp';
 import twemoji from 'twemoji';
 
@@ -17,15 +17,15 @@ export class EmojiGenerator extends BaseImageGenerator<'emoji'> {
     public async execute({ name, svg, size }: EmojiOptions): Promise<ImageResult | undefined> {
         const codePoint = twemoji.convert.toCodePoint(name);
 
-        let file = await fetch(path.join(twemojiBase, `svg/${codePoint}.svg`));
+        let file = await this.fetch(path.join(twemojiBase, `svg/${codePoint}.svg`));
         if (file.status === 404) {
             if (codePoint.includes('-fe0f')) // remove variation selector-16 if present
-                file = await fetch(path.join(twemojiBase, `svg/${codePoint.replaceAll('-fe0f', '')}.svg`));
+                file = await this.fetch(path.join(twemojiBase, `svg/${codePoint.replaceAll('-fe0f', '')}.svg`));
         }
         if (!file.status.toString().startsWith('2'))
             return undefined;
 
-        const body = await file.buffer();
+        const body = Buffer.from(await file.arrayBuffer());
         if (svg)
             return { fileName: 'emoji.svg', data: body };
 

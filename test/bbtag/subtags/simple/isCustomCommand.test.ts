@@ -1,6 +1,6 @@
-import { IsCustomCommandSubtag } from '@blargbot/bbtag/subtags/simple/isCustomCommand';
+import { IsCustomCommandSubtag } from '@blargbot/bbtag/subtags/simple/isCustomCommand.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new IsCustomCommandSubtag(),

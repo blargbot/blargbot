@@ -1,11 +1,12 @@
-import { CommandType } from '@blargbot/cluster/utils';
-import { IFormatStringDefinition, IFormattable, util } from '@blargbot/formatting';
-import { User } from 'eris';
-import Wolken from 'wolken';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import type { IFormatStringDefinition, IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import type * as eris from 'eris';
+import wolken from 'wolken';
 
-import { CommandResult } from '../types';
-import { CommandContext } from './CommandContext';
-import { GlobalCommand } from './GlobalCommand';
+import type { CommandResult } from '../types.js';
+import type { CommandContext } from './CommandContext.js';
+import { GlobalCommand } from './GlobalCommand.js';
 
 export type WolkeOptions = WolkeSelfOptions | WolkeUserOptions;
 
@@ -16,16 +17,16 @@ export interface WolkeOptionsBase {
 }
 
 export interface WolkeSelfOptions extends WolkeOptionsBase {
-    action?: IFormatStringDefinition<{ self: User; }>;
+    action?: IFormatStringDefinition<{ self: eris.User; }>;
     user?: false;
 }
 export interface WolkeUserOptions extends WolkeOptionsBase {
-    action: IFormatStringDefinition<{ self: User; target?: User; }>;
+    action: IFormatStringDefinition<{ self: eris.User; target?: eris.User; }>;
     user: true;
 }
 
 export abstract class WolkenCommand extends GlobalCommand {
-    readonly #client: Wolken;
+    readonly #client: wolken;
 
     public constructor(
         name: string,
@@ -47,10 +48,10 @@ export abstract class WolkenCommand extends GlobalCommand {
             ]
         });
 
-        this.#client = new Wolken(options.wolkeKey, 'Wolke', 'blargbot/6.0.0');
+        this.#client = new wolken(options.wolkeKey, 'Wolke', 'blargbot/6.0.0');
     }
 
-    public async render(context: CommandContext, type: string, action: WolkeOptions['action'], target: User | undefined): Promise<CommandResult> {
+    public async render(context: CommandContext, type: string, action: WolkeOptions['action'], target: eris.User | undefined): Promise<CommandResult> {
         const image = await this.#client.getRandom({ type, allowNSFW: false, filetype: 'gif' });
         const self = context.author;
         return {

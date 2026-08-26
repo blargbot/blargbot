@@ -1,9 +1,10 @@
-import { snowflake } from '@blargbot/core/utils';
-import { Dump } from '@blargbot/domain/models';
-import { DumpStore } from '@blargbot/domain/stores';
-import { Logger } from '@blargbot/logger';
+import { snowflake } from '@blargbot/core/utils/index.js';
+import type { Dump } from '@blargbot/domain/models/index.js';
+import type { DumpStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
-import { Client as Cassandra, types } from 'cassandra-driver';
+import type { Client as Cassandra} from 'cassandra-driver';
+import { types } from 'cassandra-driver';
 
 export class CassandraDbDumpStore implements DumpStore {
     public constructor(

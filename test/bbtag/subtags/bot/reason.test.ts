@@ -1,7 +1,7 @@
-import { ReasonSubtag } from '@blargbot/bbtag/subtags/bot/reason';
+import { ReasonSubtag } from '@blargbot/bbtag/subtags/bot/reason.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ReasonSubtag(),

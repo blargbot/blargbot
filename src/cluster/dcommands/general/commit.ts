@@ -1,11 +1,12 @@
-import { GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, randInt } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
-import fetch, { Response } from 'node-fetch';
+import type { Response } from 'node-fetch';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.commit;
 
@@ -18,21 +19,21 @@ export class CommitCommand extends GlobalCommand {
                 {
                     parameters: '{commitNumber:integer?}',
                     description: cmd.default.description,
-                    execute: (_, [commitNumber]) => this.getCommit(commitNumber.asOptionalInteger)
+                    execute: (ctx, [commitNumber]) => this.getCommit(commitNumber.asOptionalInteger, ctx)
                 }
             ]
         });
     }
 
-    public async getCommit(commitNumber: number | undefined): Promise<CommandResult> {
-        const commitCount = await this.#fetchCommitCount();
+    public async getCommit(commitNumber: number | undefined, context: CommandContext): Promise<CommandResult> {
+        const commitCount = await this.#fetchCommitCount(context);
         if (commitCount === 0)
             return cmd.default.noCommits;
 
         commitNumber ??= randInt(1, commitCount);
         commitNumber = Math.min(commitCount, Math.max(commitNumber, 1));
 
-        const commit = await this.#fetchCommit(commitCount - commitNumber);
+        const commit = await this.#fetchCommit(commitCount - commitNumber, context);
         if (commit === undefined)
             return cmd.default.unknownCommit;
 
@@ -52,8 +53,8 @@ export class CommitCommand extends GlobalCommand {
         };
     }
 
-    async #fetchCommitCount(): Promise<number> {
-        const response = await this.#fetchCommitRaw(0);
+    async #fetchCommitCount(context: CommandContext): Promise<number> {
+        const response = await this.#fetchCommitRaw(0, context);
         const link = response.headers.get('Link');
         if (link === null)
             return 0;
@@ -65,9 +66,9 @@ export class CommitCommand extends GlobalCommand {
         return parseInt(match[1]) + 1;
     }
 
-    async #fetchCommit(commitNumber: number): Promise<CommitData | undefined> {
+    async #fetchCommit(commitNumber: number, context: CommandContext): Promise<CommitData | undefined> {
         try {
-            const response = await this.#fetchCommitRaw(commitNumber);
+            const response = await this.#fetchCommitRaw(commitNumber, context);
             const mapped = commitMapping(await response.json());
             return mapped.valid ? mapped.value[0] : undefined;
         } catch {
@@ -75,8 +76,8 @@ export class CommitCommand extends GlobalCommand {
         }
     }
 
-    async #fetchCommitRaw(commitNumber: number): Promise<Response> {
-        return await fetch(`https://api.github.com/repos/blargbot/blargbot/commits?per_page=1&page=${commitNumber}`);
+    async #fetchCommitRaw(commitNumber: number, context: CommandContext): Promise<Response> {
+        return await context.util.fetch(`https://api.github.com/repos/blargbot/blargbot/commits?per_page=1&page=${commitNumber}`);
     }
 }
 

@@ -1,9 +1,9 @@
-import { GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, randInt } from '@blargbot/cluster/utils';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.tokenify;
 

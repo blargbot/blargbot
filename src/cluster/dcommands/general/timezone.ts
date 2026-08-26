@@ -1,10 +1,11 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
-import { User } from 'eris';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.timeZone;
 
@@ -28,7 +29,7 @@ export class TimezoneCommand extends GlobalCommand {
         });
     }
 
-    public async getTimezone(context: CommandContext, user: User): Promise<CommandResult> {
+    public async getTimezone(context: CommandContext, user: eris.User): Promise<CommandResult> {
         const timezone = await context.database.users.getProp(user.id, 'timezone');
         if (timezone === undefined)
             return cmd.get.notSet;
@@ -40,7 +41,7 @@ export class TimezoneCommand extends GlobalCommand {
         return cmd.get.success({ timezone, now });
     }
 
-    public async setTimezone(context: CommandContext, user: User, timezone: string): Promise<CommandResult> {
+    public async setTimezone(context: CommandContext, user: eris.User, timezone: string): Promise<CommandResult> {
         const now = moment().tz(timezone);
         if (now.zoneAbbr() === '')
             return cmd.set.timezoneInvalid({ timezone });

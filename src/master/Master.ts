@@ -1,19 +1,25 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { inspect } from 'node:util';
+
 import { ApiPool } from '@blargbot/api';
 import { ClusterPool } from '@blargbot/cluster';
-import { Configuration } from '@blargbot/config';
-import { BaseClient } from '@blargbot/core/BaseClient';
-import { ModuleLoader } from '@blargbot/core/modules';
-import { BaseService } from '@blargbot/core/serviceTypes';
-import { EvalResult } from '@blargbot/core/types';
-import { Logger } from '@blargbot/logger';
-import { MasterOptions } from '@blargbot/master/types';
+import type { Configuration } from '@blargbot/config';
+import { BaseClient } from '@blargbot/core/BaseClient.js';
+import { ModuleLoader } from '@blargbot/core/modules/index.js';
+import { BaseService } from '@blargbot/core/serviceTypes/index.js';
+import type { EvalResult } from '@blargbot/core/types.js';
+import type { Logger } from '@blargbot/logger';
+import type { MasterOptions } from '@blargbot/master/types.js';
 import moment from 'moment-timezone';
-import fetch from 'node-fetch';
-import { metric } from 'prom-client';
-import { inspect } from 'util';
+import type $fetch from 'node-fetch';
+import type { metric } from 'prom-client';
 
-import { ClusterStatsManager } from './managers';
-import { MasterWorker } from './MasterWorker';
+import { ClusterStatsManager } from './managers/index.js';
+import type { MasterWorker } from './MasterWorker.js';
+
+const thisFile = fileURLToPath(import.meta.url);
+const thisDir = path.dirname(thisFile);
 
 export class Master extends BaseClient {
     public readonly clusters: ClusterPool;
@@ -28,11 +34,13 @@ export class Master extends BaseClient {
     public constructor(
         logger: Logger,
         config: Configuration,
+        fetch: typeof $fetch,
         options: MasterOptions
     ) {
         super({
             logger,
             config,
+            fetch,
             discordConfig: {
                 restMode: true,
                 intents: [],
@@ -46,8 +54,8 @@ export class Master extends BaseClient {
         this.clusterStats = new ClusterStatsManager(this.api);
         this.metrics = {};
         this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
-        this.eventHandlers = new ModuleLoader(`${__dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
-        this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
+        this.eventHandlers = new ModuleLoader(`${thisDir}/events`, BaseService, [this, options], this.logger, e => e.name);
+        this.services = new ModuleLoader(`${thisDir}/services`, BaseService, [this, options], this.logger, e => e.name);
 
         this.services.on('add', module => void module.start());
         this.services.on('remove', module => void module.stop());
@@ -68,11 +76,14 @@ export class Master extends BaseClient {
 
     async #hello(): Promise<void> {
         try {
-            await fetch(`https://discord.com/api/channels/${this.config.discord.channels.botlog}/messages`, {
+            let token = this.config.discord.token;
+            if (!token.startsWith('Bot '))
+                token = `Bot ${token}`;
+            await this.fetch(`https://discord.com/api/channels/${this.config.discord.channels.botlog}/messages`, {
                 method: 'POST',
                 headers: {
                     /* eslint-disable @typescript-eslint/naming-convention */
-                    'Authorization': this.config.discord.token,
+                    'Authorization': token,
                     'Content-Type': 'application/json'
                     /* eslint-enable @typescript-eslint/naming-convention */
                 },

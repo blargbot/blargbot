@@ -1,20 +1,20 @@
-import { CommandMap } from 'blargbot-image-api';
-import fetch from 'node-fetch';
+import type { CommandMap } from 'blargbot-image-api';
 
-import { BaseImageGenerator } from './BaseImageGenerator';
-import { ImageWorker } from './ImageWorker';
-import { ImageResult } from './types';
+import { BaseImageGenerator } from './BaseImageGenerator.js';
+import type { ImageWorker } from './ImageWorker.js';
+import type { ImageResult } from './types.js';
 
 export abstract class BaseApiImageGenerator<T extends keyof CommandMap> extends BaseImageGenerator<T> {
     protected constructor(
-        public readonly key: T,
-        protected readonly worker: ImageWorker) {
+        key: T,
+        worker: ImageWorker
+    ) {
         super(key, worker);
     }
 
     public async execute(message: CommandMap[T]): Promise<ImageResult | undefined> {
         try {
-            const response = await fetch(this.worker.config.blargbotApi.base + this.key, {
+            const response = await this.fetch(this.worker.config.blargbotApi.base + this.key, {
                 method: 'POST',
                 headers: {
                     ['Authorization']: this.worker.config.blargbotApi.token,
@@ -27,7 +27,7 @@ export abstract class BaseApiImageGenerator<T extends keyof CommandMap> extends 
             if (!response.ok || contentType?.[0] !== 'image' || contentType.length === 0)
                 return undefined;
 
-            const image = await response.buffer();
+            const image = Buffer.from(await response.arrayBuffer());
             if (image.length > 0)
                 return { data: image, fileName: `${this.key}.${contentType[1]}` };
             return undefined;

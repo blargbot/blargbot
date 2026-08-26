@@ -1,10 +1,10 @@
-import { Embed } from 'eris';
+import type * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import type * as BBTagContextJs from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.messageEmbeds;
 
@@ -43,11 +43,11 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
     }
 
     public async getMessageEmbeds(
-        context: BBTagContext,
+        context: BBTagContextJs.BBTagContext,
         channelStr: string,
         messageStr: string,
         quiet: boolean
-    ): Promise<Embed[]> {
+    ): Promise<eris.Embed[]> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {

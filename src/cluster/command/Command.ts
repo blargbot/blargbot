@@ -1,12 +1,12 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
-import { CommandBaseOptions, CommandResult, CommandSignature } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { FlagDefinition } from '@blargbot/domain/models';
-import { IFormattable } from '@blargbot/formatting';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import type { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
+import type { CommandBaseOptions, CommandResult, CommandSignature } from '@blargbot/cluster/types.js';
+import type { CommandType } from '@blargbot/cluster/utils/index.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { FlagDefinition } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import type * as eris from 'eris';
 
-import { CommandContext } from './CommandContext';
+import type { CommandContext } from './CommandContext.js';
 
 export abstract class Command implements CommandBaseOptions, IMiddleware<CommandContext, CommandResult> {
     public readonly name: string;
@@ -33,6 +33,6 @@ export abstract class Command implements CommandBaseOptions, IMiddleware<Command
         this.hidden = options.hidden ?? false;
     }
 
-    public abstract isVisible(util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User): Promise<boolean> | boolean;
+    public abstract isVisible(util: ClusterUtilities, location?: eris.Guild | eris.KnownTextableChannel, user?: eris.User): Promise<boolean> | boolean;
     public abstract execute(context: CommandContext, next: NextMiddleware<CommandResult>): Awaitable<CommandResult>;
 }

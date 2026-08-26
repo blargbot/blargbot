@@ -1,6 +1,6 @@
-import { GuildIconSubtag } from '@blargbot/bbtag/subtags/guild/guildIcon';
+import { GuildIconSubtag } from '@blargbot/bbtag/subtags/guild/guildIcon.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new GuildIconSubtag(),

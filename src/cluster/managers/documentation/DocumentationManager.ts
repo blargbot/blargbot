@@ -1,11 +1,12 @@
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { FormatActionRow, FormatButton, FormatEmbedField, FormatEmbedOptions, FormatSelectMenu, FormatSelectMenuOptions, SendContent } from '@blargbot/core/types';
-import { format, IFormattable, IFormatter } from '@blargbot/formatting';
-import { ComponentInteraction, Constants, KnownInteraction, KnownTextableChannel, User } from 'eris';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import type { FormatActionRow, FormatButton, FormatEmbedField, FormatEmbedOptions, FormatSelectMenu, FormatSelectMenuOptions, SendContent } from '@blargbot/core/types.js';
+import type { IFormattable, IFormatter } from '@blargbot/formatting';
+import { format } from '@blargbot/formatting';
+import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import { Cluster } from '../../Cluster';
-import templates from '../../text';
+import type { Cluster } from '../../Cluster.js';
+import templates from '../../text.js';
 
 export type Documentation = DocumentationGroup | DocumentationLeaf | DocumentationPaged;
 
@@ -107,12 +108,12 @@ export abstract class DocumentationManager {
         return BigInt(`0x${hex}`);
     }
 
-    protected abstract findDocumentation(term: string, user: User, channel: KnownTextableChannel, formatter: IFormatter): Awaitable<readonly Documentation[]>;
-    protected abstract getDocumentation(documentationId: string, user: User, channel: KnownTextableChannel): Awaitable<Documentation | undefined>;
-    protected abstract getParent(documentationId: string, user: User, channel: KnownTextableChannel): Awaitable<Documentation | undefined>;
-    protected abstract noMatches(term: string, user: User, channel: KnownTextableChannel): Awaitable<SendContent<IFormattable<string>>>;
+    protected abstract findDocumentation(term: string, user: eris.User, channel: eris.KnownTextableChannel, formatter: IFormatter): Awaitable<readonly Documentation[]>;
+    protected abstract getDocumentation(documentationId: string, user: eris.User, channel: eris.KnownTextableChannel): Awaitable<Documentation | undefined>;
+    protected abstract getParent(documentationId: string, user: eris.User, channel: eris.KnownTextableChannel): Awaitable<Documentation | undefined>;
+    protected abstract noMatches(term: string, user: eris.User, channel: eris.KnownTextableChannel): Awaitable<SendContent<IFormattable<string>>>;
 
-    public async createMessageContent(term: string, user: User, channel: KnownTextableChannel): Promise<SendContent<IFormattable<string>>> {
+    public async createMessageContent(term: string, user: eris.User, channel: eris.KnownTextableChannel): Promise<SendContent<IFormattable<string>>> {
         const formatter = await this.#cluster.util.getFormatter(channel);
         const choices = await this.findDocumentation(term, user, channel, formatter);
         const documentation = choices.length > 1 ? await this.#pickDocumentation(choices, term, user, channel) : choices[0];
@@ -121,13 +122,13 @@ export abstract class DocumentationManager {
         return await this.#renderDocumentation(documentation, 0, 0, user, channel);
     }
 
-    public handleInteraction(interaction: KnownInteraction): void {
+    public handleInteraction(interaction: eris.KnownInteraction): void {
         void this.#handleInteraction(interaction)
             .catch(err => this.#cluster.logger.error(err));
     }
 
-    async #handleInteraction(interaction: KnownInteraction): Promise<void> {
-        if (interaction.acknowledged || !(interaction instanceof ComponentInteraction))
+    async #handleInteraction(interaction: eris.KnownInteraction): Promise<void> {
+        if (interaction.acknowledged || !(interaction instanceof eris.ComponentInteraction))
             return;
 
         const idData = this.#tryReadCustomId(interaction.data.custom_id);
@@ -139,7 +140,7 @@ export abstract class DocumentationManager {
         if (user?.id !== idData.userId) {
             await interaction.createMessage({
                 content: templates.common.query.cantUse[format](formatter),
-                flags: Constants.MessageFlags.EPHEMERAL
+                flags: eris.Constants.MessageFlags.EPHEMERAL
             });
             return;
         }
@@ -153,12 +154,12 @@ export abstract class DocumentationManager {
             components: []
         });
 
-        const channel = interaction.channel as KnownTextableChannel;
+        const channel = interaction.channel as eris.KnownTextableChannel;
         const documentation = await this.getDocumentation(idData.documentationId, user, channel);
         if (documentation === undefined) {
             await interaction.createMessage({
                 content: this.#invalid[format](formatter),
-                flags: Constants.MessageFlags.EPHEMERAL
+                flags: eris.Constants.MessageFlags.EPHEMERAL
             });
             return;
         }
@@ -167,7 +168,7 @@ export abstract class DocumentationManager {
         await interaction.editParent(new FormattableMessageContent(content)[format](formatter));
     }
 
-    async #render(documentation: Documentation, idData: DocumentationPageIdData, user: User, channel: KnownTextableChannel, interaction: ComponentInteraction): Promise<SendContent<IFormattable<string>>> {
+    async #render(documentation: Documentation, idData: DocumentationPageIdData, user: eris.User, channel: eris.KnownTextableChannel, interaction: eris.ComponentInteraction): Promise<SendContent<IFormattable<string>>> {
         switch (interaction.data.component_type) {
             case 2: //ComponentType.Button
                 return await this.#renderDocumentation(documentation, idData.pageGroup, idData.pageNumber, user, channel);
@@ -188,7 +189,7 @@ export abstract class DocumentationManager {
         }
     }
 
-    async #pickDocumentation(choices: readonly Documentation[], term: string, user: User, channel: KnownTextableChannel): Promise<Documentation | undefined> {
+    async #pickDocumentation(choices: readonly Documentation[], term: string, user: eris.User, channel: eris.KnownTextableChannel): Promise<Documentation | undefined> {
         const selected = await this.#cluster.util.queryChoice({
             actors: [user],
             choices: choices.map(c => ({
@@ -210,12 +211,12 @@ export abstract class DocumentationManager {
         }
     }
 
-    async #renderDocumentation(documentation: Documentation, pageGroup: number, pageNumber: number, user: User, channel: KnownTextableChannel): Promise<SendContent<IFormattable<string>>> {
+    async #renderDocumentation(documentation: Documentation, pageGroup: number, pageNumber: number, user: eris.User, channel: eris.KnownTextableChannel): Promise<SendContent<IFormattable<string>>> {
         const parent = await this.getParent(documentation.id, user, channel);
         const gotoParent: FormatButton<IFormattable<string>> | undefined = parent === undefined ? undefined : {
-            type: Constants.ComponentTypes.BUTTON,
+            type: eris.Constants.ComponentTypes.BUTTON,
             custom_id: this.#createCustomId({ documentationId: parent.id, pageGroup: 0, pageNumber: 0, userId: user.id }),
-            style: Constants.ButtonStyles.PRIMARY,
+            style: eris.Constants.ButtonStyles.PRIMARY,
             emoji: { name: '⬆' },
             label: templates.documentation.paging.parent({ parent: parent.name })
         };
@@ -229,9 +230,9 @@ export abstract class DocumentationManager {
 
     #createPrevButton(id: string, pageGroup: number, pageNumber: number, userId: string): FormatButton<IFormattable<string>> {
         return {
-            type: Constants.ComponentTypes.BUTTON,
+            type: eris.Constants.ComponentTypes.BUTTON,
             custom_id: this.#createCustomId({ documentationId: id, pageGroup, pageNumber, userId }),
-            style: Constants.ButtonStyles.PRIMARY,
+            style: eris.Constants.ButtonStyles.PRIMARY,
             disabled: pageGroup <= 0,
             emoji: { name: '⬅' }
         };
@@ -239,9 +240,9 @@ export abstract class DocumentationManager {
 
     #createNextButton(id: string, pageGroup: number, pageNumber: number, userId: string, pageCount: number): FormatButton<IFormattable<string>> {
         return {
-            type: Constants.ComponentTypes.BUTTON,
+            type: eris.Constants.ComponentTypes.BUTTON,
             custom_id: this.#createCustomId({ documentationId: id, pageGroup, pageNumber, userId }),
-            style: Constants.ButtonStyles.PRIMARY,
+            style: eris.Constants.ButtonStyles.PRIMARY,
             disabled: pageGroup >= pageCount - 1,
             emoji: { name: '➡' }
         };
@@ -259,7 +260,7 @@ export abstract class DocumentationManager {
         selector: (doc: T, index: number) => FormatSelectMenuOptions<IFormattable<string>>
     ): FormatSelectMenu<IFormattable<string>> {
         return {
-            type: Constants.ComponentTypes.SELECT_MENU,
+            type: eris.Constants.ComponentTypes.SELECT_MENU,
             custom_id: this.#createCustomId({ documentationId: id, pageGroup, pageNumber, userId }),
             placeholder: options.length > pageSize
                 ? templates.documentation.paging.select.placeholder({
@@ -299,15 +300,15 @@ export abstract class DocumentationManager {
 
         const components = [];
         if (pageSelect.options.some(opt => opt.default !== true))
-            components.push({ type: Constants.ComponentTypes.ACTION_ROW, components: [pageSelect] });
+            components.push({ type: eris.Constants.ComponentTypes.ACTION_ROW, components: [pageSelect] });
 
         if (buttonRow.length > 0)
-            components.push({ type: Constants.ComponentTypes.ACTION_ROW, components: buttonRow });
+            components.push({ type: eris.Constants.ComponentTypes.ACTION_ROW, components: buttonRow });
 
         return components;
     }
 
-    #createDocumentationEmbed(documentation: Documentation, user: User, fields?: Array<FormatEmbedField<IFormattable<string>>>): FormatEmbedOptions<IFormattable<string>> {
+    #createDocumentationEmbed(documentation: Documentation, user: eris.User, fields?: Array<FormatEmbedField<IFormattable<string>>>): FormatEmbedOptions<IFormattable<string>> {
         return {
             title: documentation.name,
             url: documentation.embed.url === undefined ? undefined : this.#cluster.util.websiteLink(documentation.embed.url),
@@ -321,7 +322,7 @@ export abstract class DocumentationManager {
         };
     }
 
-    #renderDocumentationGroup(gotoParent: FormatButton<IFormattable<string>> | undefined, documentation: DocumentationGroup, pageGroup: number, pageNumber: number, user: User): SendContent<IFormattable<string>> {
+    #renderDocumentationGroup(gotoParent: FormatButton<IFormattable<string>> | undefined, documentation: DocumentationGroup, pageGroup: number, pageNumber: number, user: eris.User): SendContent<IFormattable<string>> {
         return {
             embeds: [
                 this.#createDocumentationEmbed(documentation, user, documentation.embed.fields)
@@ -343,7 +344,7 @@ export abstract class DocumentationManager {
         };
     }
 
-    #renderDocumentationPaged(gotoParent: FormatButton<IFormattable<string>> | undefined, documentation: DocumentationPaged, pageGroup: number, pageNumber: number, user: User): SendContent<IFormattable<string>> {
+    #renderDocumentationPaged(gotoParent: FormatButton<IFormattable<string>> | undefined, documentation: DocumentationPaged, pageGroup: number, pageNumber: number, user: eris.User): SendContent<IFormattable<string>> {
         return {
             embeds: [
                 this.#createDocumentationEmbed(documentation, user, documentation.pages[pageNumber]?.embed.fields)
@@ -365,14 +366,14 @@ export abstract class DocumentationManager {
             )
         };
     }
-    #renderDocumentationSingle(gotoParent: FormatButton<IFormattable<string>> | undefined, documentation: DocumentationLeaf, user: User): SendContent<IFormattable<string>> {
+    #renderDocumentationSingle(gotoParent: FormatButton<IFormattable<string>> | undefined, documentation: DocumentationLeaf, user: eris.User): SendContent<IFormattable<string>> {
         return {
             embeds: [
                 this.#createDocumentationEmbed(documentation, user, documentation.embed.fields)
             ],
             components: gotoParent === undefined ? undefined : [
                 {
-                    type: Constants.ComponentTypes.ACTION_ROW,
+                    type: eris.Constants.ComponentTypes.ACTION_ROW,
                     components: [
                         gotoParent
                     ]

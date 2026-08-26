@@ -1,8 +1,8 @@
-import { IValueResolverTransform } from '@blargbot/formatting';
-import Eris from 'eris';
+import type { IValueResolverTransform } from '@blargbot/formatting';
+import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import { Emote } from '../Emote';
+import { Emote } from '../Emote.js';
 
 export const tag: IValueResolverTransform = {
     transform(_compiler, source, ...args) {
@@ -40,7 +40,7 @@ export const tag: IValueResolverTransform = {
             }
             if (typeof value !== 'object' || value === null)
                 throw new Error('Value must be an object');
-            if (value instanceof Eris.Base && (value instanceof Eris.User || value instanceof Eris.Role || value instanceof Eris.Channel))
+            if (value instanceof eris.Base && (value instanceof eris.User || value instanceof eris.Role || value instanceof eris.Channel))
                 return value.mention;
             if (value instanceof Emote)
                 return value.toString();

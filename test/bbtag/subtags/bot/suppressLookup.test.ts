@@ -1,8 +1,8 @@
-import { NotABooleanError } from '@blargbot/bbtag/errors';
-import { SuppressLookupSubtag } from '@blargbot/bbtag/subtags/bot/suppressLookup';
+import { NotABooleanError } from '@blargbot/bbtag/errors/index.js';
+import { SuppressLookupSubtag } from '@blargbot/bbtag/subtags/bot/suppressLookup.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new SuppressLookupSubtag(),

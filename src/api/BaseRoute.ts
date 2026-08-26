@@ -1,12 +1,13 @@
-import { Api } from '@blargbot/api/Api';
-import { Lazy } from '@blargbot/core/Lazy';
-import { TypeMapping } from '@blargbot/mapping';
-import { IRoute } from 'express-serve-static-core';
-import { IncomingMessage } from 'http';
+import type { IncomingMessage } from 'node:http';
+
+import type { Api } from '@blargbot/api/Api.js';
+import { Lazy } from '@blargbot/core/Lazy.js';
+import type { TypeMapping } from '@blargbot/mapping';
+import type { IRoute } from 'express-serve-static-core';
 import { WebSocketServer } from 'ws';
 
-import Security from './Security';
-import { ApiResponse, AsyncRequestContext, AsyncRequestHandler, AsyncRequestMiddleware, AsyncWebsocketHandler, RequestHandlers, RequestMethods } from './types';
+import Security from './Security.js';
+import type { ApiResponse, AsyncRequestContext, AsyncRequestHandler, AsyncRequestMiddleware, AsyncWebsocketHandler, RequestHandlers, RequestMethods } from './types.js';
 
 type JoinRoutes<BaseRoutes extends Array<`/${string}`>, Route extends `/${string}`>
     = BaseRoutes[number] extends `${infer R}/` ? `${R}${Route}` : `${BaseRoutes[number]}${Route}`;

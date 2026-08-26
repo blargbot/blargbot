@@ -1,7 +1,7 @@
-import { WarnSubtag } from '@blargbot/bbtag/subtags/user/warn';
-import { Member } from 'eris';
+import { WarnSubtag } from '@blargbot/bbtag/subtags/user/warn.js';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new WarnSubtag(),
@@ -41,7 +41,7 @@ runSubtagTests({
             code: '{warn;other user}',
             expected: '5',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -65,7 +65,7 @@ runSubtagTests({
             code: '{warn;other user;9}',
             expected: '9',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -89,7 +89,7 @@ runSubtagTests({
             code: '{warn;other user;6;My custom reason}',
             expected: '22',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);

@@ -1,6 +1,6 @@
-import { CleanSubtag } from '@blargbot/bbtag/subtags/misc/clean';
+import { CleanSubtag } from '@blargbot/bbtag/subtags/misc/clean.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new CleanSubtag(),

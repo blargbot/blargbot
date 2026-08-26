@@ -1,20 +1,22 @@
-import { bbtag } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types';
-import { codeBlock, CommandType, guard, parse, snowflake } from '@blargbot/cluster/utils';
-import { Configuration } from '@blargbot/config';
-import { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
-import { IFormattable, util } from '@blargbot/formatting';
-import { mapping } from '@blargbot/mapping';
-import { createHmac } from 'crypto';
-import { Role } from 'eris';
-import moment, { Duration } from 'moment-timezone';
-import fetch from 'node-fetch';
+import { createHmac } from 'node:crypto';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager';
-import templates from '../../text';
+import { bbtag } from '@blargbot/bbtag';
+import type { Cluster } from '@blargbot/cluster';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types.js';
+import { codeBlock, CommandType, guard, parse, snowflake } from '@blargbot/cluster/utils/index.js';
+import type { Configuration } from '@blargbot/config';
+import type { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import { mapping } from '@blargbot/mapping';
+import type * as eris from 'eris';
+import moment from 'moment-timezone';
+
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager.js';
+import templates from '../../text.js';
 
 const cmd = templates.commands.ccommand;
 
@@ -342,7 +344,7 @@ export class CustomCommandCommand extends GuildCommand {
         }
     }
 
-    public async setCommandCooldown(context: GuildCommandContext, commandName: string, cooldown?: Duration): Promise<CommandResult> {
+    public async setCommandCooldown(context: GuildCommandContext, commandName: string, cooldown?: moment.Duration): Promise<CommandResult> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
             return cmd.cooldown.mustBePositive;
 
@@ -446,7 +448,7 @@ export class CustomCommandCommand extends GuildCommand {
         return cmd.hide.success({ name: match.name, hidden: isNowHidden });
     }
 
-    public async setCommandRoles(context: GuildCommandContext, commandName: string, roles: readonly Role[]): Promise<CommandResult> {
+    public async setCommandRoles(context: GuildCommandContext, commandName: string, roles: readonly eris.Role[]): Promise<CommandResult> {
         const match = await this.#requestEditableCommand(context, commandName);
         if ('response' in match)
             return match.response;
@@ -537,7 +539,7 @@ export class CustomCommandCommand extends GuildCommand {
             shrinkwrapUrl = context.message.attachments[0].url;
         }
 
-        const content = await requestSafe(shrinkwrapUrl);
+        const content = await requestSafe(context, shrinkwrapUrl);
         const signedShrinkwrap = mapSignedGuildShrinkwrap(content);
         if (!signedShrinkwrap.valid)
             return cmd.install.malformed;
@@ -752,10 +754,10 @@ function signShrinkwrap(shrinkwrap: GuildShrinkwrap, config: Configuration): str
     return createHmac('sha256', config.general.shrinkwrapKey).update(content).digest('hex');
 }
 
-async function requestSafe(url: string): Promise<unknown> {
+async function requestSafe(context: CommandContext, url: string): Promise<unknown> {
     try {
-        const response = await fetch(url);
-        return await response.json() as unknown;
+        const response = await context.util.fetch(url);
+        return await response.json();
     } catch {
         return undefined;
     }

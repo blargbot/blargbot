@@ -1,7 +1,7 @@
-import { NsfwSubtag } from '@blargbot/bbtag/subtags/bot/nsfw';
+import { NsfwSubtag } from '@blargbot/bbtag/subtags/bot/nsfw.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new NsfwSubtag(),

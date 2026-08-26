@@ -1,2 +1,2 @@
-export * from './Database';
-export * from './DatabaseOptions';
+export * from './Database.js';
+export * from './DatabaseOptions.js';

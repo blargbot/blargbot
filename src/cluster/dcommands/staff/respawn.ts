@@ -1,8 +1,9 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { ClusterRespawnRequest, CommandResult } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
+import type { CommandContext} from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import type { ClusterRespawnRequest, CommandResult } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.respawn;
 

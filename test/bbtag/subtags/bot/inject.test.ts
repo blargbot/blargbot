@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { InjectSubtag } from '@blargbot/bbtag/subtags/bot/inject';
-import { LbSubtag } from '@blargbot/bbtag/subtags/simple/lb';
-import { RbSubtag } from '@blargbot/bbtag/subtags/simple/rb';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { InjectSubtag } from '@blargbot/bbtag/subtags/bot/inject.js';
+import { LbSubtag } from '@blargbot/bbtag/subtags/simple/lb.js';
+import { RbSubtag } from '@blargbot/bbtag/subtags/simple/rb.js';
 import { expect } from 'chai';
 
-import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite';
+import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new InjectSubtag(),

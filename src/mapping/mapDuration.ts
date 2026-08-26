@@ -1,16 +1,16 @@
-import { Duration, duration } from 'moment-timezone';
+import moment from 'moment-timezone';
 
-import { createMapping } from './createMapping';
-import { result } from './result';
-import { TypeMapping } from './types';
+import { createMapping } from './createMapping.js';
+import { result } from './result.js';
+import type { TypeMapping } from './types.js';
 
-export const mapDuration: TypeMapping<Duration> = createMapping(value => {
+export const mapDuration: TypeMapping<moment.Duration> = createMapping(value => {
     try {
         switch (typeof value) {
             case 'string':
             case 'object':
             case 'number': {
-                const mapped = duration(value);
+                const mapped = moment.duration(value);
                 if (mapped.isValid())
                     return result.success(mapped);
             }

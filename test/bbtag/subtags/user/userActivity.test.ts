@@ -1,9 +1,9 @@
-import { UserActivitySubtag } from '@blargbot/bbtag/subtags/user/userActivity';
+import { UserActivitySubtag } from '@blargbot/bbtag/subtags/user/userActivity.js';
 import { ActivityType } from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new UserActivitySubtag(),

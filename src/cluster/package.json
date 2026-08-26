@@ -2,6 +2,7 @@
     "name": "@blargbot/cluster",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
     "dependencies": {
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",
@@ -19,7 +20,7 @@
         "eris": "^0.17.1",
         "eventemitter3": "^4.0.7",
         "moment-timezone": "^0.5.39",
-        "node-fetch": "^2.6.7",
+        "node-fetch": "^3.3.2",
         "prom-client": "^14.1.0",
         "require-reload": "^0.2.2",
         "wolken": "^0.2.1",
@@ -30,7 +31,6 @@
         "@types/eris": "workspace:^",
         "@types/md5": "^2.3.2",
         "@types/node-fetch": "^2.6.2",
-        "@types/require-reload": "workspace:^",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.11",
         "discord-api-types": "^0.37.20"

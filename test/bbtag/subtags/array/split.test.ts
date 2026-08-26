@@ -1,6 +1,6 @@
-import { SplitSubtag } from '@blargbot/bbtag/subtags/array/split';
+import { SplitSubtag } from '@blargbot/bbtag/subtags/array/split.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new SplitSubtag(),

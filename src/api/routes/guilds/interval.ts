@@ -1,6 +1,6 @@
-import { Api } from '@blargbot/api/Api';
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
+import type { Api } from '@blargbot/api/Api.js';
+import { BaseRoute } from '@blargbot/api/BaseRoute.js';
+import type { ApiResponse } from '@blargbot/api/types.js';
 import { mapping } from '@blargbot/mapping';
 
 export class IntervalRoute extends BaseRoute<['/guilds/:guildId/interval']> {

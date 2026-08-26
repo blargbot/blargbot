@@ -1,10 +1,10 @@
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { metrics } from '@blargbot/core/Metrics';
-import { Guild } from 'eris';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { metrics } from '@blargbot/core/Metrics.js';
+import type eris from 'eris';
 import moment from 'moment-timezone';
 
-import { Cluster } from '../Cluster';
-import templates from '../text';
+import type { Cluster } from '../Cluster.js';
+import templates from '../text.js';
 
 export class GuildManager {
     #blacklist: Record<string, boolean | undefined> | undefined;
@@ -37,14 +37,14 @@ export class GuildManager {
         }
     }
 
-    async #guildBlacklisted(guild: Guild): Promise<void> {
+    async #guildBlacklisted(guild: eris.Guild): Promise<void> {
         const user = await this.#cluster.util.getUser(guild.ownerID);
         if (user !== undefined)
             await this.#cluster.util.send(user, new FormattableMessageContent({ content: templates.guild.blacklisted({ guild }) }));
         await guild.leave();
     }
 
-    public async guildLoaded(guild: Guild): Promise<void> {
+    public async guildLoaded(guild: eris.Guild): Promise<void> {
         metrics.guildGauge.set(this.#cluster.discord.guilds.size);
         const blacklist = await this.#getBlacklist();
         if (blacklist[guild.id] === true) {

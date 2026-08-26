@@ -1,8 +1,8 @@
-import { UserNotFoundError } from '@blargbot/bbtag/errors';
-import { IsStaffSubtag } from '@blargbot/bbtag/subtags/user/isStaff';
-import { Member } from 'eris';
+import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { IsStaffSubtag } from '@blargbot/bbtag/subtags/user/isStaff.js';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new IsStaffSubtag(),
@@ -26,7 +26,7 @@ runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -39,7 +39,7 @@ runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'false',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);

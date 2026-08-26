@@ -1,10 +1,11 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, guard } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
-import { Constants } from 'eris';
+import * as eris from 'eris';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.patch;
 
@@ -77,7 +78,7 @@ export class PatchCommand extends GlobalCommand {
         if (changelog === undefined)
             return cmd.default.failed;
 
-        if (changelog.channel.type === Constants.ChannelTypes.GUILD_NEWS)
+        if (changelog.channel.type === eris.Constants.ChannelTypes.GUILD_NEWS)
             await changelog.crosspost();
 
         return cmd.default.success;

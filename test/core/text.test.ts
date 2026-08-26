@@ -1,15 +1,15 @@
-import * as coreTransformers from '@blargbot/core/formatting';
-import templates from '@blargbot/core/text';
+import * as coreTransformers from '@blargbot/core/formatting/index.js';
+import templates from '@blargbot/core/text.js';
 import { transformers, util } from '@blargbot/formatting';
-import { quickMock } from '@blargbot/test-util/quickMock';
-import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
-import Eris from 'eris';
+import { quickMock } from '@blargbot/test-util/quickMock.js';
+import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
+import * as eris from 'eris';
 import { describe } from 'mocha';
 
-const client = (): Eris.Client => new Eris.Client('');
-const guild = (): Eris.Guild => new Eris.Guild({ id: '' }, client());
-const channel = (): Eris.Channel => new Eris.Channel({ id: '' }, client());
-const guildChannel = (): Eris.GuildChannel => new Eris.GuildChannel({ id: '' }, client());
+const client = (): eris.Client => new eris.Client('');
+const guild = (): eris.Guild => new eris.Guild({ id: '' }, client());
+const channel = (): eris.Channel => new eris.Channel({ id: '' }, client());
+const guildChannel = (): eris.GuildChannel => new eris.GuildChannel({ id: '' }, client());
 
 describe('Core format strings', () => {
     runFormatTreeTests(templates, {

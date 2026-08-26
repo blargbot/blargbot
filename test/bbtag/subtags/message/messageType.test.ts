@@ -1,9 +1,9 @@
-import { MessageTypeSubtag } from '@blargbot/bbtag/subtags/message/messageType';
-import { snowflake } from '@blargbot/core/utils';
+import { MessageTypeSubtag } from '@blargbot/bbtag/subtags/message/messageType.js';
+import { snowflake } from '@blargbot/core/utils/index.js';
 import { MessageType } from 'discord-api-types/v9';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageType[P] } = {
     ['Default']: MessageType.Default,

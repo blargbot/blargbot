@@ -1,12 +1,11 @@
-import { parse } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
-import fetch, { FetchError } from 'node-fetch';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.request;
 
@@ -80,15 +79,7 @@ export class RequestSubtag extends CompiledSubtag {
         }
 
         try {
-            const response = await fetch(url + (query !== undefined ? `?${query}` : ''), request);
-            const result = {
-                status: response.status,
-                statusText: response.statusText,
-                contentType: response.headers.get('content-type'),
-                date: response.headers.get('date'),
-                url: response.url
-            };
-
+            const response = await context.fetch(url + (query !== undefined ? `?${query}` : ''), request);
             /*
                 I personally absolutely hate how blarg decides to error if a status code is not consider 'ok'
                 A lot of APIs actually have meaningful errors, coupled with a 'not-ok' status and it's ass that blarg doesn't return it.
@@ -97,22 +88,26 @@ export class RequestSubtag extends CompiledSubtag {
             if (!(response.status >= 200 && response.status < 400))
                 throw new BBTagRuntimeError(`${response.status} ${response.statusText}`);
 
+            const result = {
+                status: response.status,
+                statusText: response.statusText,
+                contentType: response.headers.get('content-type'),
+                date: response.headers.get('date'),
+                url: response.url
+            };
+
             if (result.contentType?.startsWith('text') !== false)
                 return { body: await response.text(), ...result };
 
             if (result.contentType.includes('application/json'))
                 return { body: await response.json() as JToken, ...result };
 
-            const body = await response.buffer();
-            return { body: body.toString('base64'), ...result };
+            const body = await response.arrayBuffer();
+            return { body: Buffer.from(body).toString('base64'), ...result };
         } catch (err: unknown) {
-            if (!(err instanceof FetchError))
-                throw err;
+            if (err instanceof Error && 'type' in err && err.type === 'max-size')
+                throw new BBTagRuntimeError('Response too large', err.message);
 
-            switch (err.type) {
-                case 'max-size':
-                    throw new BBTagRuntimeError('Response too large', err.message);
-            }
             throw err;
         }
     }

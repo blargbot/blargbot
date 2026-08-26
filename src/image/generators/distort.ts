@@ -1,7 +1,7 @@
-import { randChoose, randInt } from '@blargbot/core/utils';
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
-import { ImageWorker } from '@blargbot/image/ImageWorker';
-import { DistortOptions, ImageResult } from '@blargbot/image/types';
+import { randChoose, randInt } from '@blargbot/core/utils/index.js';
+import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
+import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { DistortOptions, ImageResult } from '@blargbot/image/types.js';
 import sharp from 'sharp';
 
 export class DistortGenerator extends BaseImageGenerator<'distort'> {

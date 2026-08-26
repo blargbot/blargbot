@@ -1,10 +1,16 @@
-import { WorkerConnection } from '@blargbot/core/worker';
-import { Logger } from '@blargbot/logger';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { ApiIPCContracts } from './types';
+import { WorkerConnection } from '@blargbot/core/worker/index.js';
+import type { Logger } from '@blargbot/logger';
+
+import type { ApiIPCContracts } from './types.js';
+
+const thisFile = fileURLToPath(import.meta.url);
+const thisDir = path.dirname(thisFile);
 
 export class ApiConnection extends WorkerConnection<ApiIPCContracts> {
     public constructor(id: number, logger: Logger) {
-        super(id, '@blargbot/api', require.resolve('@blargbot/api/start'), logger);
+        super(id, '@blargbot/api', path.join(thisDir, 'start.js'), logger);
     }
 }

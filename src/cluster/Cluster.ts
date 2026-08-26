@@ -1,25 +1,32 @@
-import { BBTagEngine, subtags } from '@blargbot/bbtag';
-import { ClusterOptions } from '@blargbot/cluster/types';
-import { Configuration } from '@blargbot/config';
-import { BaseClient } from '@blargbot/core/BaseClient';
-import { ModuleLoader } from '@blargbot/core/modules';
-import { BaseService } from '@blargbot/core/serviceTypes';
-import { EvalResult } from '@blargbot/core/types';
-import { ImagePool } from '@blargbot/image';
-import { Logger } from '@blargbot/logger';
-import { GatewayIntentBits } from 'discord-api-types/v9';
-import moment, { duration, Moment } from 'moment-timezone';
-import { inspect } from 'util';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { inspect } from 'node:util';
 
-import { ClusterBBTagUtilities } from './ClusterBBTagUtilities';
-import { ClusterUtilities } from './ClusterUtilities';
-import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
-import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager';
+import { BBTagEngine, subtags } from '@blargbot/bbtag';
+import type { ClusterOptions } from '@blargbot/cluster/types.js';
+import type { Configuration } from '@blargbot/config';
+import { BaseClient } from '@blargbot/core/BaseClient.js';
+import { ModuleLoader } from '@blargbot/core/modules/index.js';
+import { BaseService } from '@blargbot/core/serviceTypes/index.js';
+import type { EvalResult } from '@blargbot/core/types.js';
+import { ImagePool } from '@blargbot/image';
+import type { Logger } from '@blargbot/logger';
+import { GatewayIntentBits } from 'discord-api-types/v9';
+import moment from 'moment-timezone';
+import type $fetch from 'node-fetch';
+
+import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';
+import { ClusterUtilities } from './ClusterUtilities.js';
+import type { ClusterWorker } from './ClusterWorker.js';
+import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
+import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
+
+const thisFile = fileURLToPath(import.meta.url);
+const thisDir = path.dirname(thisFile);
 
 export class Cluster extends BaseClient {
     public readonly id: number;
-    public readonly createdAt: Moment;
+    public readonly createdAt: moment.Moment;
     public readonly worker: ClusterWorker;
     public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
@@ -48,11 +55,13 @@ export class Cluster extends BaseClient {
         worker: ClusterWorker,
         logger: Logger,
         config: Configuration,
+        fetch: typeof $fetch,
         options: ClusterOptions
     ) {
         super({
             logger,
             config,
+            fetch,
             discordConfig: {
                 autoreconnect: true,
                 allowedMentions: {
@@ -93,10 +102,10 @@ export class Cluster extends BaseClient {
         this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users, this.discord);
         this.commands = new AggregateCommandManager(this, {
             custom: new CustomCommandManager(this),
-            default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
+            default: new DefaultCommandManager(`${thisDir}/dcommands`, this)
         });
-        this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
-        this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
+        this.events = new ModuleLoader(`${thisDir}/events`, BaseService, [this], this.logger, e => e.name);
+        this.services = new ModuleLoader(`${thisDir}/services`, BaseService, [this, options], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
         this.timeouts = new TimeoutManager(this);
         this.autoresponses = new AutoresponseManager(this);
@@ -112,9 +121,10 @@ export class Cluster extends BaseClient {
             logger: this.logger,
             util: new ClusterBBTagUtilities(this),
             subtags: Object.values(subtags.all)
-                .map(subtag => new subtag())
+                .map(subtag => new subtag()),
+            fetch: this.fetch
         });
-        this.intervals = new IntervalManager(this, duration(10, 's'));
+        this.intervals = new IntervalManager(this, moment.duration(10, 's'));
         this.rolemes = new RolemeManager(this);
         this.help = new CommandDocumentationManager(this);
         this.awaiter = new AwaiterManager(this.logger);

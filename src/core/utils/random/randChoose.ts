@@ -1,4 +1,4 @@
-import { randInt } from './randInt';
+import { randInt } from './randInt.js';
 
 export function randChoose<T>(choices: Iterable<T>): T;
 export function randChoose<T>(choices: Iterable<T>, count: number): T[];

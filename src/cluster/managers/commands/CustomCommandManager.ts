@@ -1,14 +1,15 @@
-import { Cluster } from '@blargbot/cluster';
-import { CommandContext } from '@blargbot/cluster/command';
-import { CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster/types';
-import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster/utils';
-import { metrics } from '@blargbot/core/Metrics';
-import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
-import { IFormattable, util } from '@blargbot/formatting';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import type { Cluster } from '@blargbot/cluster';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import type { CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster/types.js';
+import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster/utils/index.js';
+import { metrics } from '@blargbot/core/Metrics.js';
+import type { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import * as eris from 'eris';
 
-import templates from '../../text';
-import { CommandManager } from './CommandManager';
+import templates from '../../text.js';
+import { CommandManager } from './CommandManager.js';
 
 export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
     public readonly size: number = 0;
@@ -17,11 +18,11 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
         super(cluster);
     }
 
-    protected async getCore(name: string, location?: Guild | KnownTextableChannel): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
+    protected async getCore(name: string, location?: eris.Guild | eris.KnownTextableChannel): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
         if (location === undefined)
             return { state: 'NOT_FOUND' };
 
-        const guild = location instanceof Guild ? location
+        const guild = location instanceof eris.Guild ? location
             : guard.isGuildChannel(location) ? location.guild
                 : undefined;
 
@@ -43,18 +44,18 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
         return Promise.resolve();
     }
 
-    protected async allCommandNames(location?: Guild | KnownTextableChannel): Promise<Iterable<string>> {
+    protected async allCommandNames(location?: eris.Guild | eris.KnownTextableChannel): Promise<Iterable<string>> {
         if (location === undefined)
             return [];
 
-        const guild = location instanceof Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
+        const guild = location instanceof eris.Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
         if (guild === undefined)
             return [];
 
         return await this.cluster.database.guilds.getCustomCommandNames(guild.id);
     }
 
-    public async configure(_user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
+    public async configure(_user: eris.User, names: string[], guild: eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         if (names.length === 0)
             return [];
 

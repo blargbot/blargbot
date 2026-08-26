@@ -1,6 +1,6 @@
-import { RbSubtag } from '@blargbot/bbtag/subtags/simple/rb';
+import { RbSubtag } from '@blargbot/bbtag/subtags/simple/rb.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RbSubtag(),

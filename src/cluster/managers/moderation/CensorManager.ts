@@ -1,14 +1,15 @@
 import { bbtag } from '@blargbot/bbtag';
-import { guard, ModerationType } from '@blargbot/cluster/utils';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models';
+import type { ModerationType } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import type { GuildCensor, GuildCensorExceptions } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
-import { KnownGuildTextableChannel, Message, PossiblyUncachedTextableChannel } from 'eris';
+import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { ModerationManager } from '../ModerationManager';
-import { ModerationManagerBase } from './ModerationManagerBase';
+import templates from '../../text.js';
+import type { ModerationManager } from '../ModerationManager.js';
+import { ModerationManagerBase } from './ModerationManagerBase.js';
 
 export class CensorManager extends ModerationManagerBase {
     readonly #debugOutput: Record<string, { channelId: string; messageId: string; } | undefined>;
@@ -22,7 +23,7 @@ export class CensorManager extends ModerationManagerBase {
         this.#debugOutput[this.#getDebugKey(guildId, id, userId, type)] = { channelId, messageId };
     }
 
-    public async censor(message: Message<PossiblyUncachedTextableChannel>): Promise<boolean> {
+    public async censor(message: eris.Message<eris.PossiblyUncachedTextableChannel>): Promise<boolean> {
         if (!guard.isGuildMessage(message) || !guard.isWellKnownMessage(message))
             return false;
 
@@ -85,7 +86,7 @@ export class CensorManager extends ModerationManagerBase {
         return true;
     }
 
-    async #censorMentions(message: Message<KnownGuildTextableChannel>): Promise<boolean> {
+    async #censorMentions(message: eris.Message<eris.KnownGuildTextableChannel>): Promise<boolean> {
         const antimention = await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'antimention');
         if (antimention === undefined)
             return false;
@@ -117,7 +118,7 @@ export class CensorManager extends ModerationManagerBase {
         }
     }
 
-    #isCensorExempt(message: Message<KnownGuildTextableChannel>, exemptions?: GuildCensorExceptions): boolean {
+    #isCensorExempt(message: eris.Message<eris.KnownGuildTextableChannel>, exemptions?: GuildCensorExceptions): boolean {
         if (exemptions === undefined)
             return false;
 

@@ -1,5 +1,5 @@
-import { ResettableStoredUserData } from './ResettableStoredUserData';
-import { StoredUsername } from './StoredUsername';
+import type { ResettableStoredUserData } from './ResettableStoredUserData.js';
+import type { StoredUsername } from './StoredUsername.js';
 
 export interface StoredUser extends ResettableStoredUserData {
     readonly userid: string;

@@ -1,6 +1,6 @@
-import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId';
+import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new MessageIdSubtag(),

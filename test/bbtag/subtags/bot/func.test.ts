@@ -1,10 +1,10 @@
-import { SubtagStackOverflowError, UnknownSubtagError } from '@blargbot/bbtag/errors';
-import { FunctionInvokeSubtag } from '@blargbot/bbtag/subtags/bot/func.';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { bbtag } from '@blargbot/bbtag/utils';
+import { SubtagStackOverflowError, UnknownSubtagError } from '@blargbot/bbtag/errors/index.js';
+import { FunctionInvokeSubtag } from '@blargbot/bbtag/subtags/bot/func..js';
+import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
+import { bbtag } from '@blargbot/bbtag/utils/index.js';
 import { expect } from 'chai';
 
-import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite';
+import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new FunctionInvokeSubtag(),

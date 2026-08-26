@@ -1,11 +1,11 @@
-import { guard } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError } from 'eris';
+import { guard } from '@blargbot/core/utils/index.js';
+import * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.delete;
 
@@ -66,7 +66,7 @@ export class DeleteSubtag extends CompiledSubtag {
         try {
             await msg.delete();
         } catch (e: unknown) {
-            if (e instanceof DiscordRESTError && e.code === ApiError.UNKNOWN_MESSAGE)
+            if (e instanceof eris.DiscordRESTError && e.code === eris.ApiError.UNKNOWN_MESSAGE)
                 return;
             context.logger.warn('Failed to delete message', e);
             // NOOP

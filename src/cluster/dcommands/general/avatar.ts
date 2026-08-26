@@ -1,11 +1,11 @@
-import { GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
-import { parse } from '@blargbot/core/utils';
-import { ImageFormat, User } from 'eris';
-import fetch from 'node-fetch';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { parse } from '@blargbot/core/utils/index.js';
+import type * as eris from 'eris';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.avatar;
 
@@ -22,12 +22,12 @@ export class AvatarCommand extends GlobalCommand {
                 {
                     parameters: '',
                     description: cmd.self.description,
-                    execute: (ctx, _, flags) => this.getAvatar(ctx.author, flags.f?.merge().value, flags.s?.merge().value)
+                    execute: (ctx, _, flags) => this.getAvatar(ctx.author, flags.f?.merge().value, flags.s?.merge().value, ctx)
                 },
                 {
                     parameters: '{user:user+}',
                     description: cmd.user.description,
-                    execute: (_, [user], flags) => this.getAvatar(user.asUser, flags.f?.merge().value, flags.s?.merge().value)
+                    execute: (ctx, [user], flags) => this.getAvatar(user.asUser, flags.f?.merge().value, flags.s?.merge().value, ctx)
                 }
             ]
         });
@@ -35,7 +35,7 @@ export class AvatarCommand extends GlobalCommand {
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    public async getAvatar(user: User, format: string | undefined, size = '512'): Promise<CommandResult> {
+    public async getAvatar(user: eris.User, format: string | undefined, size = '512', context: CommandContext): Promise<CommandResult> {
         if (format !== undefined && !allowedFormats.includes(format))
             return cmd.common.formatInvalid({ format, allowedFormats });
 
@@ -46,16 +46,16 @@ export class AvatarCommand extends GlobalCommand {
 
         const avatarUrl = user.dynamicAvatarURL(format, parsedSize ?? 512);
 
-        const avatar = await fetch(avatarUrl);
+        const avatar = await context.util.fetch(avatarUrl);
 
         return {
             content: cmd.common.success({ user }),
-            file: [{ file: await avatar.buffer(), name: new URL(avatarUrl).pathname.split('/').pop() ?? `${user.id}.${format ?? 'png'}` }]
+            file: [{ file: Buffer.from(await avatar.arrayBuffer()), name: new URL(avatarUrl).pathname.split('/').pop() ?? `${user.id}.${format ?? 'png'}` }]
         };
     }
 }
 
-const allowedFormats = Object.keys<ImageFormat>({
+const allowedFormats = Object.keys<eris.ImageFormat>({
     jpeg: 0,
     jpg: 0,
     png: 0,

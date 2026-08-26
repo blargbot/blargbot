@@ -1,7 +1,7 @@
-import { Cluster } from '@blargbot/cluster';
-import { Emote } from '@blargbot/core/Emote';
-import { DiscordEventService } from '@blargbot/core/serviceTypes';
-import { KnownMessage, Member, PossiblyUncachedMessage, Uncached, User } from 'eris';
+import type { Cluster } from '@blargbot/cluster';
+import { Emote } from '@blargbot/core/Emote.js';
+import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import * as eris from 'eris';
 
 export class DiscordMessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
     public constructor(public readonly cluster: Cluster) {
@@ -19,11 +19,11 @@ export class DiscordMessageReactionAddHandler extends DiscordEventService<'messa
         });
     }
 
-    protected async resolveMessage(message: PossiblyUncachedMessage): Promise<KnownMessage | undefined> {
+    protected async resolveMessage(message: eris.PossiblyUncachedMessage): Promise<eris.KnownMessage | undefined> {
         return await this.cluster.util.getMessage(message.channel.id, message.id);
     }
 
-    protected async resolveUser(maybeUser: Member | Uncached): Promise<User | undefined> {
-        return maybeUser instanceof Member ? maybeUser.user : await this.cluster.util.getUser(maybeUser.id);
+    protected async resolveUser(maybeUser: eris.Member | eris.Uncached): Promise<eris.User | undefined> {
+        return maybeUser instanceof eris.Member ? maybeUser.user : await this.cluster.util.getUser(maybeUser.id);
     }
 }

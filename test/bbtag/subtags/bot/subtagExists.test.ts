@@ -1,8 +1,8 @@
-import { FunctionSubtag } from '@blargbot/bbtag/subtags/bot/function';
-import { SubtagExistsSubtag } from '@blargbot/bbtag/subtags/bot/subtagExists';
-import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
+import { FunctionSubtag } from '@blargbot/bbtag/subtags/bot/function.js';
+import { SubtagExistsSubtag } from '@blargbot/bbtag/subtags/bot/subtagExists.js';
+import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new SubtagExistsSubtag(),

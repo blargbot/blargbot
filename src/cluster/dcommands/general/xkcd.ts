@@ -1,11 +1,11 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, randInt } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
-import fetch from 'node-fetch';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.xkcd;
 
@@ -26,13 +26,13 @@ export class XKCDCommand extends GlobalCommand {
 
     public async getComic(context: CommandContext, comicNumber: number | undefined): Promise<CommandResult> {
         if (comicNumber === undefined) {
-            const comic = await this.#requestComic(undefined);
+            const comic = await this.#requestComic(undefined, context);
             if (comic === undefined)
                 return cmd.default.down;
             comicNumber = randInt(0, comic.num);
         }
 
-        const comic = await this.#requestComic(comicNumber);
+        const comic = await this.#requestComic(comicNumber, context);
         if (comic === undefined)
             return cmd.default.down;
 
@@ -51,8 +51,8 @@ export class XKCDCommand extends GlobalCommand {
         };
     }
 
-    async #requestComic(comicNumber: number | undefined): Promise<ComicInfo | undefined> {
-        const response = await fetch(`http://xkcd.com/${comicNumber === undefined ? '' : `${comicNumber}/`}info.0.json`);
+    async #requestComic(comicNumber: number | undefined, context: CommandContext): Promise<ComicInfo | undefined> {
+        const response = await context.util.fetch(`http://xkcd.com/${comicNumber === undefined ? '' : `${comicNumber}/`}info.0.json`);
         try {
             const info = comicInfoMapping(await response.json());
             return info.valid ? info.value : undefined;

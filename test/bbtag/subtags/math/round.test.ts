@@ -1,7 +1,7 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { RoundSubtag } from '@blargbot/bbtag/subtags/math/round';
+import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { RoundSubtag } from '@blargbot/bbtag/subtags/math/round.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RoundSubtag(),

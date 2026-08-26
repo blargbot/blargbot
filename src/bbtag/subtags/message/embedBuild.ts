@@ -1,10 +1,11 @@
-import { discord, guard, MessageComponent, parse } from '@blargbot/core/utils';
-import { EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions } from 'eris';
+import type { MessageComponent } from '@blargbot/core/utils/index.js';
+import { discord, guard, parse } from '@blargbot/core/utils/index.js';
+import type * as eris from 'eris';
 
-import { CompiledSubtag } from '../../compilation/index';
-import { InvalidEmbedError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { InvalidEmbedError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.embedBuild;
 
@@ -53,7 +54,7 @@ export class EmbedBuildSubtag extends CompiledSubtag {
                     throw new InvalidEmbedError('Field missing name', `Field at index ${i}`);
             }
         }
-        if (!guard.checkEmbedSize([<EmbedOptions>embed]))
+        if (!guard.checkEmbedSize([<eris.EmbedOptions>embed]))
             throw new InvalidEmbedError('Embed too long', JSON.stringify(embed));
         return embed as JObject;
     }
@@ -68,10 +69,10 @@ export class EmbedBuildSubtag extends CompiledSubtag {
 
 type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 // custom message for fields missing values/names
-type EmbedBuildOptions = Overwrite<EmbedOptions, {
-    fields?: Array<Partial<EmbedField>>;
-    author?: Partial<EmbedAuthor>;
-    footer?: Partial<EmbedFooter>;
+type EmbedBuildOptions = Overwrite<eris.EmbedOptions, {
+    fields?: Array<Partial<eris.EmbedField>>;
+    author?: Partial<eris.EmbedAuthor>;
+    footer?: Partial<eris.EmbedFooter>;
 }>
 interface EmbedFieldDetails {
     readonly description?: string;
@@ -95,7 +96,7 @@ function parseOrError<T>(value: string, parse: (value: string) => T | undefined,
     return result;
 }
 
-function getCurrentField(embed: EmbedBuildOptions, errorText: string): Partial<EmbedField> {
+function getCurrentField(embed: EmbedBuildOptions, errorText: string): Partial<eris.EmbedField> {
     if (embed.fields === undefined || embed.fields.length === 0)
         throw new InvalidEmbedError(errorText);
     return embed.fields[embed.fields.length - 1];

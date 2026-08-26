@@ -1,9 +1,9 @@
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { guard } from '@blargbot/core/utils';
-import { KnownMessage } from 'eris';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import type * as eris from 'eris';
 
-export class IgnoreBotsMiddleware implements IMiddleware<KnownMessage, boolean> {
-    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
+export class IgnoreBotsMiddleware implements IMiddleware<eris.KnownMessage, boolean> {
+    public async execute(context: eris.KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         if (context.author.bot || guard.hasValue(context.webhookID))
             return false;
         return await next();

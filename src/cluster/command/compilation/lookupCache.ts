@@ -1,9 +1,9 @@
-import { CommandBinderParseResult, CommandBinderStateLookupCache, CommandVariableTypeMap, GuildCommandContext, PrivateCommandContext } from '@blargbot/cluster/types';
-import { guard } from '@blargbot/cluster/utils';
-import { Member } from 'eris';
+import type { CommandBinderParseResult, CommandBinderStateLookupCache, CommandVariableTypeMap, GuildCommandContext, PrivateCommandContext } from '@blargbot/cluster/types.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
+import * as eris from 'eris';
 
-import { CommandContext } from '../CommandContext';
-import { createCommandArgument } from './commandArgument';
+import type { CommandContext } from '../CommandContext.js';
+import { createCommandArgument } from './commandArgument.js';
 
 export function getLookupCache<TContext extends CommandContext>(context: TContext): CommandBinderStateLookupCache {
     if (guard.isGuildCommandContext(context))
@@ -38,7 +38,7 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
         findSender: createLookup(
             'sender',
             'a sender',
-            async query => (await context.util.findSenders(context.channel.guild, query)).map(s => s instanceof Member ? s.user : s),
+            async query => (await context.util.findSenders(context.channel.guild, query)).map(s => s instanceof eris.Member ? s.user : s),
             async (options, query) => {
                 const result = await context.querySender({ choices: options, filter: query });
                 return result.state === 'SUCCESS' ? result.value : undefined;

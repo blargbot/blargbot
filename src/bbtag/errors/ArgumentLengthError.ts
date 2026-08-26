@@ -1,4 +1,4 @@
-import { BBTagRuntimeError } from './BBTagRuntimeError';
+import { BBTagRuntimeError } from './BBTagRuntimeError.js';
 
 export class ArgumentLengthError extends BBTagRuntimeError {
     public constructor(public readonly argIndex: number, public readonly max: number, public readonly actual: number) {

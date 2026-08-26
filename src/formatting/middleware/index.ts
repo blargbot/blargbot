@@ -1,2 +1,2 @@
-export * from './CacheMiddleware';
-export * from './TranslationMiddleware';
+export * from './CacheMiddleware.js';
+export * from './TranslationMiddleware.js';

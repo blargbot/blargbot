@@ -1,8 +1,8 @@
-import { SubtagArgumentArray } from '../arguments';
-import { BBTagContext } from '../BBTagContext';
-import { BBTagRuntimeError } from '../errors';
-import { SubtagCall } from '../language';
-import { SubtagLogic } from './SubtagLogic';
+import type { SubtagArgumentArray } from '../arguments/index.js';
+import type { BBTagContext } from '../BBTagContext.js';
+import { BBTagRuntimeError } from '../errors/index.js';
+import type { SubtagCall } from '../language/index.js';
+import type { SubtagLogic } from './SubtagLogic.js';
 
 export abstract class SubtagLogicWrapper implements SubtagLogic {
     public async *execute(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string | undefined> {

@@ -1,17 +1,17 @@
-import { Logger } from '@blargbot/logger';
-import { Client as Discord, ClientEvents } from 'eris';
+import type { Logger } from '@blargbot/logger';
+import type * as eris from 'eris';
 
-import { BaseService } from './BaseService';
+import { BaseService } from './BaseService.js';
 
-export abstract class DiscordEventService<T extends keyof ClientEvents> extends BaseService {
-    readonly #execute: (...args: ClientEvents[T]) => void;
+export abstract class DiscordEventService<T extends keyof eris.ClientEvents> extends BaseService {
+    readonly #execute: (...args: eris.ClientEvents[T]) => void;
     public readonly type: string;
 
     protected constructor(
-        public readonly discord: Discord,
+        public readonly discord: eris.Client,
         public readonly event: T,
         public readonly logger: Logger,
-        handler: (...args: ClientEvents[T]) => Awaitable<void>
+        handler: (...args: eris.ClientEvents[T]) => Awaitable<void>
     ) {
         super();
         this.type = `DiscordEvent:${this.event}`;

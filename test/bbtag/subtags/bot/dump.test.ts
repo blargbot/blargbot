@@ -1,7 +1,7 @@
-import { DumpSubtag } from '@blargbot/bbtag/subtags/bot/dump';
-import { argument } from '@blargbot/test-util/mock';
+import { DumpSubtag } from '@blargbot/bbtag/subtags/bot/dump.js';
+import { argument } from '@blargbot/test-util/mock.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new DumpSubtag(),

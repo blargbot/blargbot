@@ -1,9 +1,9 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors';
-import { DeleteSubtag } from '@blargbot/bbtag/subtags/message/delete';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { DeleteSubtag } from '@blargbot/bbtag/subtags/message/delete.js';
 import { expect } from 'chai';
-import { KnownGuildChannel } from 'eris';
+import type * as eris from 'eris';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new DeleteSubtag(),
@@ -147,7 +147,7 @@ runSubtagTests({
 
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get('987654322123456142') as KnownGuildChannel;
+                const channel = bbctx.guild.channels.get('987654322123456142') as eris.KnownGuildChannel;
                 expect(channel).to.not.be.undefined;
 
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({

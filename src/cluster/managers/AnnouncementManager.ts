@@ -1,11 +1,11 @@
-import { GuildStore } from '@blargbot/domain/stores';
-import { Guild, KnownChannel, KnownGuildTextableChannel, KnownTextableChannel, Role, User } from 'eris';
+import type { GuildStore } from '@blargbot/domain/stores/index.js';
+import type eris from 'eris';
 
-import { ClusterUtilities } from '..';
-import { Command } from '../command';
-import templates from '../text';
-import { ICommandManager, Result } from '../types';
-import { guard } from '../utils';
+import type { ClusterUtilities } from '../ClusterUtilities.js';
+import type { Command } from '../command/index.js';
+import templates from '../text.js';
+import type { ICommandManager, Result } from '../types.js';
+import { guard } from '../utils/index.js';
 
 export class AnnouncementManager {
     readonly #database: GuildStore;
@@ -18,11 +18,11 @@ export class AnnouncementManager {
         this.#commands = commands;
     }
 
-    public async clearConfig(guild: Guild): Promise<void> {
+    public async clearConfig(guild: eris.Guild): Promise<void> {
         await this.#database.setAnnouncements(guild.id, undefined);
     }
 
-    public async getCurrentConfig(guild: Guild): Promise<Partial<AnnouncementConfigOptions>> {
+    public async getCurrentConfig(guild: eris.Guild): Promise<Partial<AnnouncementConfigOptions>> {
         const config = await this.#database.getAnnouncements(guild.id);
         if (config === undefined)
             return {};
@@ -36,7 +36,7 @@ export class AnnouncementManager {
         return { channel, role };
     }
 
-    public async loadConfig(guild: Guild, user: User, queryChannel: KnownTextableChannel, options?: Partial<AnnouncementConfigOptions>): Promise<AnnounceResult> {
+    public async loadConfig(guild: eris.Guild, user: eris.User, queryChannel: eris.KnownTextableChannel, options?: Partial<AnnouncementConfigOptions>): Promise<AnnounceResult> {
         const command = await this.#commands.get('announce', guild, user);
         if (command.state !== 'ALLOWED')
             return { state: 'NotAllowed' };
@@ -90,13 +90,13 @@ export class AnnouncementManager {
 }
 
 interface AnnouncementConfig {
-    readonly channel: KnownGuildTextableChannel;
-    readonly role: Role;
+    readonly channel: eris.KnownGuildTextableChannel;
+    readonly role: eris.Role;
 }
 
 interface AnnouncementConfigOptions {
-    readonly channel?: KnownChannel;
-    readonly role?: Role;
+    readonly channel?: eris.KnownChannel;
+    readonly role?: eris.Role;
 }
 
 type AnnounceResult =

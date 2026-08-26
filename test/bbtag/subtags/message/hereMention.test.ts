@@ -1,7 +1,7 @@
-import { HereMentionSubtag } from '@blargbot/bbtag/subtags/message/hereMention';
+import { HereMentionSubtag } from '@blargbot/bbtag/subtags/message/hereMention.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new HereMentionSubtag(),

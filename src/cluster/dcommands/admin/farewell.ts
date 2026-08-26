@@ -1,11 +1,11 @@
 import { bbtag } from '@blargbot/bbtag';
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, guard } from '@blargbot/cluster/utils';
-import { KnownChannel } from 'eris';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
+import type * as eris from 'eris';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import templates from '../../text.js';
 
 const cmd = templates.commands.farewell;
 
@@ -103,7 +103,7 @@ export class FarewellCommand extends GuildCommand {
         return cmd.setAuthorizer.success;
     }
 
-    public async setChannel(context: GuildCommandContext, channel: KnownChannel): Promise<CommandResult> {
+    public async setChannel(context: GuildCommandContext, channel: eris.KnownChannel): Promise<CommandResult> {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
             return cmd.setChannel.notOnGuild;
         if (!guard.isTextableChannel(channel))

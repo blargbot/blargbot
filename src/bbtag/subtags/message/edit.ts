@@ -1,11 +1,11 @@
-import { guard, parse } from '@blargbot/core/utils';
-import { EmbedOptions } from 'eris';
+import { guard, parse } from '@blargbot/core/utils/index.js';
+import type * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.edit;
 
@@ -89,7 +89,7 @@ export class EditSubtag extends CompiledSubtag {
             throw new ChannelNotFoundError(channelStr);
 
         let content: string | undefined;
-        let embeds: EmbedOptions[] | undefined;
+        let embeds: eris.EmbedOptions[] | undefined;
         if (embedStr !== undefined) {
             embeds = parse.embed(embedStr);
             content = contentStr;

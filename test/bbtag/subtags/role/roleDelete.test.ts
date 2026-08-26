@@ -1,15 +1,15 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleDeleteSubtag } from '@blargbot/bbtag/subtags/role/roleDelete';
-import { ApiError, Constants } from 'eris';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RoleDeleteSubtag } from '@blargbot/bbtag/subtags/role/roleDelete.js';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleDeleteSubtag(),
     argCountBounds: { min: 1, max: 2 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
+        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
         ctx.members.authorizer.roles.push(ctx.roles.top.id);
     },
     cases: [
@@ -65,7 +65,7 @@ runSubtagTests({
                 ctx.roles.other.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
+                const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
                 const role = bbctx.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');
@@ -86,7 +86,7 @@ runSubtagTests({
                 ctx.roles.other.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 const role = bbctx.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');

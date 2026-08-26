@@ -1,16 +1,16 @@
-import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag/errors';
-import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags/user/userSetRoles';
-import { argument } from '@blargbot/test-util/mock';
-import { Constants } from 'eris';
+import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags/user/userSetRoles.js';
+import { argument } from '@blargbot/test-util/mock.js';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new UserSetRolesSubtag(),
     argCountBounds: { min: 0, max: 3 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
+        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
         ctx.members.authorizer.roles.push(ctx.roles.top.id);
     },
     cases: [

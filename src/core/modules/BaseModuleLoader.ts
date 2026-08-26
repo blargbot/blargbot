@@ -1,13 +1,15 @@
-import { MultiKeyMap } from '@blargbot/core/MultiKeyMap';
-import { ModuleResult } from '@blargbot/core/types';
-import { guard, pluralise as p } from '@blargbot/core/utils';
-import { Logger } from '@blargbot/logger';
-import { EventEmitter } from 'eventemitter3';
-import { promises as fs } from 'fs';
-import path from 'path';
-import reloadFactory from 'require-reload';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const reload = reloadFactory(require);
+import { MultiKeyMap } from '@blargbot/core/MultiKeyMap.js';
+import type { ModuleResult } from '@blargbot/core/types.js';
+import { guard, pluralise as p } from '@blargbot/core/utils/index.js';
+import type { Logger } from '@blargbot/logger';
+import EventEmitter from 'eventemitter3';
+
+const thisFile = fileURLToPath(import.meta.url);
+const thisDir = path.dirname(thisFile);
 
 interface ModuleLoaderEvents<TModule> {
     add: [module: TModule];
@@ -52,17 +54,17 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
     }
 
     public async init(): Promise<void> {
-        this.#load(await toArray(this.#findFiles()));
+        await this.#load(await toArray(this.#findFiles()));
     }
 
-    #load(fileNames: Iterable<string>, loader = require): void {
+    async #load(fileNames: Iterable<string>): Promise<void> {
         const loaded = new Set<TModule>();
         if (typeof fileNames === 'string')
             fileNames = [fileNames];
 
         for (const fileName of fileNames) {
             try {
-                const rawModule = loader(path.join(this.#root, fileName)) as unknown;
+                const rawModule = await import(path.join(this.#root, fileName)) as unknown;
                 const modules = this.activate(fileName, rawModule);
                 for (const { names, module } of modules) {
                     const entry = { module, location: fileName };
@@ -106,7 +108,8 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
             case false:
                 return this.#load(this.sources());
             default:
-                return this.#load(fileNames, reload);
+                throw new Error('Hot reloading isnt supported in ESM');
+            // return this.#load(fileNames, reload);
         }
     }
 
@@ -166,7 +169,7 @@ function getAbsolutePath(...segments: string[]): string {
     const result = path.join(...segments);
     if (path.isAbsolute(result))
         return result;
-    return path.join(__dirname, '..', result);
+    return path.join(thisDir, '..', result);
 }
 
 function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {

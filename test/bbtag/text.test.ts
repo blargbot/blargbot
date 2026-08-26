@@ -1,9 +1,9 @@
 import { Subtag, SubtagType } from '@blargbot/bbtag';
-import templates from '@blargbot/bbtag/text';
-import * as coreTransformers from '@blargbot/core/formatting';
+import templates from '@blargbot/bbtag/text.js';
+import * as coreTransformers from '@blargbot/core/formatting/index.js';
 import { transformers, util } from '@blargbot/formatting';
-import { quickMock } from '@blargbot/test-util/quickMock';
-import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
+import { quickMock } from '@blargbot/test-util/quickMock.js';
+import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
 import { describe } from 'mocha';
 
 class TestSubtag extends Subtag {

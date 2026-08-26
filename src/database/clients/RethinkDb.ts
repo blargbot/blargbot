@@ -1,6 +1,5 @@
-import { RethinkConfiguration } from '@blargbot/config/Configuration';
-import * as r from 'rethinkdb';
-import { Cursor, Expression, Query, Time } from 'rethinkdb';
+import type { RethinkConfiguration } from '@blargbot/config';
+import r from 'rethinkdb';
 
 export class RethinkDb {
     #connection?: Promise<r.Connection>;
@@ -10,13 +9,13 @@ export class RethinkDb {
         this.#options = options;
     }
 
-    public async query<T>(query: Query<T>): Promise<T>
-    public async query<T>(query: Query<T | undefined>): Promise<T | undefined>
-    public async query<T>(query: Query<T | undefined>): Promise<T | undefined> {
+    public async query<T>(query: r.Query<T>): Promise<T>
+    public async query<T>(query: r.Query<T | undefined>): Promise<T | undefined>
+    public async query<T>(query: r.Query<T | undefined>): Promise<T | undefined> {
         return await query(r).run(await this.#getConnection());
     }
 
-    public async queryAll<T>(query: Query<Cursor<T>>): Promise<T[]> {
+    public async queryAll<T>(query: r.Query<r.Cursor<T>>): Promise<T[]> {
         const stream = this.stream<T>(query);
         const result = [];
         for await (const item of stream)
@@ -24,7 +23,7 @@ export class RethinkDb {
         return result;
     }
 
-    public async * stream<T>(query: Query<Cursor<T>>): AsyncIterableIterator<T> {
+    public async * stream<T>(query: r.Query<r.Cursor<T>>): AsyncIterableIterator<T> {
         const cursor = await this.query(query);
         while (true) {
             try {
@@ -64,7 +63,7 @@ export class RethinkDb {
         await connection?.close();
     }
 
-    public epochTime(time: number): Expression<Time> {
+    public epochTime(time: number): r.Expression<r.Time> {
         return r.epochTime(time);
     }
 
@@ -76,36 +75,36 @@ export class RethinkDb {
         return hackySanitize(value, true);
     }
 
-    public setExpr(value?: undefined): Expression<undefined>
-    public setExpr<T>(value: T): Expression<T>
-    public setExpr<T>(value?: T | undefined): Expression<T | undefined> {
+    public setExpr(value?: undefined): r.Expression<undefined>
+    public setExpr<T>(value: T): r.Expression<T>
+    public setExpr<T>(value?: T | undefined): r.Expression<T | undefined> {
         if (value === undefined)
             return r.literal();
         return r.literal(this.addExpr(value));
     }
 
-    public expr<T>(value: T): Expression<T> {
+    public expr<T>(value: T): r.Expression<T> {
         return r.expr(value);
     }
 
     public branchExpr<T>(
-        context: Expression<T>,
-        test: (context: Expression<T>) => Expression<boolean>,
-        ifTrue: (context: Expression<T>) => Expression<T>,
-        ifFalse?: (context: Expression<T>) => Expression<T>
-    ): Expression<T>;
+        context: r.Expression<T>,
+        test: (context: r.Expression<T>) => r.Expression<boolean>,
+        ifTrue: (context: r.Expression<T>) => r.Expression<T>,
+        ifFalse?: (context: r.Expression<T>) => r.Expression<T>
+    ): r.Expression<T>;
     public branchExpr<TContext, TResult>(
-        context: Expression<TContext>,
-        test: (context: Expression<TContext>) => Expression<boolean>,
-        ifTrue: (context: Expression<TContext>) => Expression<TResult>,
-        ifFalse: (context: Expression<TContext>) => Expression<TResult>
-    ): Expression<TResult>;
+        context: r.Expression<TContext>,
+        test: (context: r.Expression<TContext>) => r.Expression<boolean>,
+        ifTrue: (context: r.Expression<TContext>) => r.Expression<TResult>,
+        ifFalse: (context: r.Expression<TContext>) => r.Expression<TResult>
+    ): r.Expression<TResult>;
     public branchExpr<T>(
-        context: Expression<T>,
-        test: (context: Expression<T>) => Expression<boolean>,
-        ifTrue: (context: Expression<T>) => Expression<T>,
-        ifFalse: (context: Expression<T>) => Expression<T> = ctx => ctx
-    ): Expression<T> {
+        context: r.Expression<T>,
+        test: (context: r.Expression<T>) => r.Expression<boolean>,
+        ifTrue: (context: r.Expression<T>) => r.Expression<T>,
+        ifFalse: (context: r.Expression<T>) => r.Expression<T> = ctx => ctx
+    ): r.Expression<T> {
         return r.branch(test(context), ifTrue(context), ifFalse(context));
     }
 }

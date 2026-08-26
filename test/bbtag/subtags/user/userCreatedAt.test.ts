@@ -1,7 +1,7 @@
-import { UserCreatedAtSubtag } from '@blargbot/bbtag/subtags/user/userCreatedAt';
+import { UserCreatedAtSubtag } from '@blargbot/bbtag/subtags/user/userCreatedAt.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new UserCreatedAtSubtag(),

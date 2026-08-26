@@ -1,8 +1,8 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { TimeSubtag } from '@blargbot/bbtag/subtags/misc/time';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { TimeSubtag } from '@blargbot/bbtag/subtags/misc/time.js';
 import moment from 'moment-timezone';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new TimeSubtag(),

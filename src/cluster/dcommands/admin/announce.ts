@@ -1,11 +1,11 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, discord } from '@blargbot/cluster/utils';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType, discord } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
-import { AllowedMentions, Constants, KnownChannel, Role } from 'eris';
+import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.announce;
 
@@ -44,7 +44,7 @@ export class AnnounceCommand extends GuildCommand {
         return cmd.reset.success(context);
     }
 
-    public async configure(context: GuildCommandContext, channel: KnownChannel | undefined, role: Role | undefined): Promise<CommandResult> {
+    public async configure(context: GuildCommandContext, channel: eris.KnownChannel | undefined, role: eris.Role | undefined): Promise<CommandResult> {
         const result = await context.cluster.announcements.loadConfig(context.channel.guild, context.author, context.channel, { channel, role });
         return cmd.configure.state[result.state];
     }
@@ -56,7 +56,7 @@ export class AnnounceCommand extends GuildCommand {
 
         const config = configResult.detail;
         const colour = discord.getMemberColour(context.message.member);
-        const mentions: AllowedMentions = config.role.id === config.role.guild.id
+        const mentions: eris.AllowedMentions = config.role.id === config.role.guild.id
             ? { everyone: true }
             : { roles: [config.role.id] };
 
@@ -84,7 +84,7 @@ export class AnnounceCommand extends GuildCommand {
         if (announcement === undefined)
             return cmd.default.failed;
 
-        if (announcement.channel.type === Constants.ChannelTypes.GUILD_NEWS)
+        if (announcement.channel.type === eris.Constants.ChannelTypes.GUILD_NEWS)
             await announcement.crosspost();
 
         return cmd.default.success;

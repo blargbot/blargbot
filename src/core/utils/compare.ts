@@ -1,6 +1,6 @@
-import { guard } from '@blargbot/core/utils';
+import { guard } from '@blargbot/core/utils/index.js';
 
-import { toBlocks } from './toBlocks';
+import { toBlocks } from './toBlocks.js';
 
 export function compare(a: string, b: string): number {
     const aBlocks = toBlocks(a);

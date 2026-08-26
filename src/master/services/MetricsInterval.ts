@@ -1,5 +1,5 @@
-import { CronService } from '@blargbot/core/serviceTypes';
-import { Master } from '@blargbot/master';
+import { CronService } from '@blargbot/core/serviceTypes/index.js';
+import type { Master } from '@blargbot/master';
 
 export class MetricsInterval extends CronService {
     public readonly type = 'discord';

@@ -1,5 +1,5 @@
-import { CommandPermissions } from './CommandPermissions';
-import { GuildTagBase } from './GuildTagBase';
+import type { CommandPermissions } from './CommandPermissions.js';
+import type { GuildTagBase } from './GuildTagBase.js';
 
 export interface GuildCommandTagBase extends GuildTagBase, CommandPermissions {
     readonly id: string;

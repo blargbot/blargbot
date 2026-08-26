@@ -1,13 +1,13 @@
 import { bbtag } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
-import { WhitelistResponse } from '@blargbot/cluster/types';
-import { guard, humanize } from '@blargbot/cluster/utils';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { GuildTriggerTag } from '@blargbot/domain/models';
+import type { Cluster } from '@blargbot/cluster';
+import type { WhitelistResponse } from '@blargbot/cluster/types.js';
+import { guard, humanize } from '@blargbot/cluster/utils/index.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { mapping } from '@blargbot/mapping';
-import { KnownGuildTextableChannel, KnownMessage, Message, PartialEmoji, User } from 'eris';
+import type eris from 'eris';
 
-import templates from '../text';
+import templates from '../text.js';
 
 export class AutoresponseManager {
     readonly #guilds: Set<string>;
@@ -44,7 +44,7 @@ export class AutoresponseManager {
             this.#guilds.add(guildId);
     }
 
-    public async whitelist(guildId: string, channelId: string, requester: User, reason: string, whitelisted = true): Promise<WhitelistResponse> {
+    public async whitelist(guildId: string, channelId: string, requester: eris.User, reason: string, whitelisted = true): Promise<WhitelistResponse> {
         await this.refresh();
         const isChange = whitelisted !== this.#guilds.has(guildId);
         if (isChange) {
@@ -92,7 +92,7 @@ export class AutoresponseManager {
         this.#debugOutput[`${guildId}|${id}|${userId}`] = { channelId, messageId };
     }
 
-    public async execute(msg: KnownMessage, everything: boolean): Promise<void> {
+    public async execute(msg: eris.KnownMessage, everything: boolean): Promise<void> {
         if (!guard.isGuildMessage(msg))
             return;
 
@@ -106,7 +106,7 @@ export class AutoresponseManager {
         await Promise.all(promises);
     }
 
-    async #executeCore(msg: Message<KnownGuildTextableChannel>, id: `${number}` | 'everything', tag: GuildTriggerTag, args: string[]): Promise<void> {
+    async #executeCore(msg: eris.Message<eris.KnownGuildTextableChannel>, id: `${number}` | 'everything', tag: GuildTriggerTag, args: string[]): Promise<void> {
         this.#logAutoresponses(msg.channel.guild.id, id);
 
         const result = await this.#cluster.bbtag.execute(tag.content, {
@@ -129,7 +129,7 @@ export class AutoresponseManager {
         await this.#cluster.util.send(msg.author, new FormattableMessageContent(bbtag.createDebugOutput(result)));
     }
 
-    public async handleWhitelistApproval(message: KnownMessage, emoji: PartialEmoji, user: User): Promise<void> {
+    public async handleWhitelistApproval(message: eris.KnownMessage, emoji: eris.PartialEmoji, user: eris.User): Promise<void> {
         if (message.channel.id !== this.#cluster.config.discord.channels.autoresponse
             || !guard.hasProperty(emojiValues, emoji.name)
             || !this.#cluster.util.isBotStaff(user.id))
@@ -157,7 +157,7 @@ export class AutoresponseManager {
         await Promise.all(promises);
     }
 
-    async * #findAutoresponses(msg: Message<KnownGuildTextableChannel>, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | 'everything'; args: string[]; }> {
+    async * #findAutoresponses(msg: eris.Message<eris.KnownGuildTextableChannel>, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | 'everything'; args: string[]; }> {
         const ars = await this.#cluster.database.guilds.getAutoresponses(msg.channel.guild.id) ?? {};
         if (everything) {
             if (ars.everything !== undefined && ars.everything !== null)

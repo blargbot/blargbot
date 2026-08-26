@@ -1,7 +1,7 @@
-import { ClusterConnection } from '@blargbot/cluster';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/WorkerPoolEventService';
+import type { ClusterConnection } from '@blargbot/cluster';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/WorkerPoolEventService.js';
 
-import { Master } from '../../Master';
+import type { Master } from '../../Master.js';
 
 export class ClusterReloadTranslationsHandler extends WorkerPoolEventService<ClusterConnection, 'reloadTranslations'> {
     readonly #master: Master;

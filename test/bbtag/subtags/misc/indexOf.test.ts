@@ -1,8 +1,8 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { IndexOfSubtag } from '@blargbot/bbtag/subtags/misc/indexOf';
+import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { IndexOfSubtag } from '@blargbot/bbtag/subtags/misc/indexOf.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new IndexOfSubtag(),

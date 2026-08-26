@@ -1,7 +1,7 @@
-import { Cluster } from '@blargbot/cluster';
-import { DiscordEventService } from '@blargbot/core/serviceTypes';
+import type { Cluster } from '@blargbot/cluster';
+import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
 import { MessageFlags, MessageType } from 'discord-api-types/v9';
-import { Message, OldMessage, PossiblyUncachedTextableChannel } from 'eris';
+import type * as eris from 'eris';
 
 const reemitMessageTypes = new Set([
     MessageType.ChatInputCommand,
@@ -15,7 +15,7 @@ export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpd
         super(cluster.discord, 'messageUpdate', cluster.logger, (m, o) => this.execute(m, o));
     }
 
-    public async execute(message: Message<PossiblyUncachedTextableChannel>, oldMessage: OldMessage | null): Promise<void> {
+    public async execute(message: eris.Message<eris.PossiblyUncachedTextableChannel>, oldMessage: eris.OldMessage | null): Promise<void> {
         if (message.editedTimestamp !== undefined) {
             await Promise.all([
                 this.cluster.moderation.censors.censor(message),

@@ -1,6 +1,6 @@
-import { compare as compareFn, guard, parse } from '@blargbot/core/utils';
+import { compare as compareFn, guard, parse } from '@blargbot/core/utils/index.js';
 
-import { tagArray } from './tagArray';
+import { tagArray } from './tagArray.js';
 
 export type OrdinalOperator = '==' | '!=' | '>=' | '>' | '<=' | '<';
 export type StringOperator = 'startswith' | 'endswith' | 'includes' | 'contains';

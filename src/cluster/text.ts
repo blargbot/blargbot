@@ -1,10 +1,11 @@
-import { AnalysisResult } from '@blargbot/bbtag';
-import { FlagDefinition } from '@blargbot/domain/models/index';
-import { FormatString, IFormattable } from '@blargbot/formatting';
-import * as Eris from 'eris';
-import { Duration, Moment } from 'moment-timezone';
+import type { AnalysisResult } from '@blargbot/bbtag';
+import type { FlagDefinition } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { FormatString } from '@blargbot/formatting';
+import type * as eris from 'eris';
+import type moment from 'moment-timezone';
 
-import { Command } from './command/Command';
+import type { Command } from './command/Command.js';
 
 interface UserTag {
     readonly username?: string;
@@ -26,8 +27,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 },
                 placeholder: 'Select a user',
                 choice: {
-                    label: t<{ user: Eris.User; }>('{user.username}#{user.discriminator}'),
-                    description: t<{ user: Eris.User; }>('Id: {user.id}')
+                    label: t<{ user: eris.User; }>('{user.username}#{user.discriminator}'),
+                    description: t<{ user: eris.User; }>('Id: {user.id}')
                 }
             },
             member: {
@@ -37,8 +38,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 },
                 placeholder: 'Select a user',
                 choice: {
-                    label: t<{ member: Eris.Member; }>('{member.nick#bool({}|{~member.username})} ({member.username}#{member.discriminator})'),
-                    description: t<{ member: Eris.Member; }>('Id: {member.id}')
+                    label: t<{ member: eris.Member; }>('{member.nick#bool({}|{~member.username})} ({member.username}#{member.discriminator})'),
+                    description: t<{ member: eris.Member; }>('Id: {member.id}')
                 }
             },
             sender: {
@@ -49,10 +50,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 placeholder: 'Select a user or webhook',
                 choice: {
                     label: {
-                        user: t<{ user: Eris.User; }>('{user.username}#{user.discriminator}'),
-                        webhook: t<{ webhook: Eris.Webhook; }>('{webhook.name}')
+                        user: t<{ user: eris.User; }>('{user.username}#{user.discriminator}'),
+                        webhook: t<{ webhook: eris.Webhook; }>('{webhook.name}')
                     },
-                    description: t<{ sender: Eris.User | Eris.Webhook; }>('Id: {sender.id}')
+                    description: t<{ sender: eris.User | eris.Webhook; }>('Id: {sender.id}')
                 }
             },
             role: {
@@ -62,8 +63,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 },
                 placeholder: 'Select a role',
                 choice: {
-                    label: t<{ role: Eris.Role; }>('{role.name}'),
-                    description: t<{ role: Eris.Role; }>('Id: {role.id} Color: {role.color#color}')
+                    label: t<{ role: eris.Role; }>('{role.name}'),
+                    description: t<{ role: eris.Role; }>('Id: {role.id} Color: {role.color#color}')
                 }
             },
             channel: {
@@ -74,10 +75,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 placeholder: 'Select a channel',
                 choice: {
                     label: {
-                        guild: t<{ channel: Eris.GuildChannel; }>('{channel.name}'),
+                        guild: t<{ channel: eris.GuildChannel; }>('{channel.name}'),
                         dm: 'DM'
                     },
-                    description: t<{ channel: Eris.Channel; parent?: { label: IFormattable<string>; emoji: string; }; }>('Id: {channel.id}{parent#bool({emoji} {label}|)}')
+                    description: t<{ channel: eris.Channel; parent?: { label: IFormattable<string>; emoji: string; }; }>('Id: {channel.id}{parent#bool({emoji} {label}|)}')
                 }
             },
             paged: {
@@ -92,7 +93,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         matchesEverything: '❌ Your regex cannot match everything!'
     },
     respawn: {
-        success: t<{ duration: Duration; }>('Ok I\'m back. It took me {duration#duration(F)}')
+        success: t<{ duration: moment.Duration; }>('Ok I\'m back. It took me {duration#duration(F)}')
     },
     roleme: {
         failed: 'A roleme was triggered, but I don\'t have the permissions required to give you your role!'
@@ -110,11 +111,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
         }
     },
     guild: {
-        blacklisted: t<{ guild: Eris.Guild; }>('Greetings! I regret to inform you that your guild, **{guild.name}** ({guild.id}), is on my blacklist. Sorry about that! I\'ll be leaving now. I hope you have a nice day.'),
-        joined: t<{ guild: Eris.Guild; botGuild: boolean; size: number; userCount: number; botCount: number; botFraction: number; }>('☑️ Guild: `{guild.name}` (`{guild.id}`)! {botGuild#bool(- ***BOT GUILD***|)}\n    Total: **{size}** | Users: **{userCount}** | Bots: **{botCount}** | Percent: **{botFraction#percent}**')
+        blacklisted: t<{ guild: eris.Guild; }>('Greetings! I regret to inform you that your guild, **{guild.name}** ({guild.id}), is on my blacklist. Sorry about that! I\'ll be leaving now. I hope you have a nice day.'),
+        joined: t<{ guild: eris.Guild; botGuild: boolean; size: number; userCount: number; botCount: number; botFraction: number; }>('☑️ Guild: `{guild.name}` (`{guild.id}`)! {botGuild#bool(- ***BOT GUILD***|)}\n    Total: **{size}** | Users: **{userCount}** | Bots: **{botCount}** | Percent: **{botFraction#percent}**')
     },
     autoresponse: {
-        prompt: t<{ guild: Eris.Guild; channelId: string; reason: string; code: string; user: Eris.User; }>('New AR request from **{user.username}#{user.discriminator}** ({user#tag}):\n**Guild**: {guild.name} ({guild.id})\n**Channel**: {channelId}\n**Members**: {guild.members.size}\n\n{reason}\n\n```js\n{code}\n```'),
+        prompt: t<{ guild: eris.Guild; channelId: string; reason: string; code: string; user: eris.User; }>('New AR request from **{user.username}#{user.discriminator}** ({user#tag}):\n**Guild**: {guild.name} ({guild.id})\n**Channel**: {channelId}\n**Members**: {guild.members.size}\n\n{reason}\n\n```js\n{code}\n```'),
         whitelist: {
             approved: '✅ Congratz, your guild has been whitelisted for autoresponses! 🎉\n*It may take up to 15 minutes for them to become available*',
             rejected: '❌ Sorry, your guild has been rejected for autoresponses. 😿'
@@ -145,9 +146,9 @@ export const templates = FormatString.defineTree('cluster', t => ({
         },
         embed: {
             title: t<{ caseId: number; }>('Case {caseId}'),
-            description: t<{ users: Iterable<Eris.User>; }>('{users#map({username}#{discriminator} \\({id}\\))#join(\n)}'),
+            description: t<{ users: Iterable<eris.User>; }>('{users#map({username}#{discriminator} \\({id}\\))#join(\n)}'),
             footer: {
-                text: t<{ user: Eris.User; }>('{user.username}#{user.discriminator} ({user.id})')
+                text: t<{ user: eris.User; }>('{user.username}#{user.discriminator} ({user.id})')
             },
             field: {
                 type: {
@@ -167,17 +168,17 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 },
                 duration: {
                     name: 'Duration',
-                    value: t<{ duration: Duration; }>('{duration#duration(F)}')
+                    value: t<{ duration: moment.Duration; }>('{duration#duration(F)}')
                 },
                 user: {
                     name: 'User',
-                    value: t<{ user: Eris.User; }>('{user.username}#{user.discriminator} ({user.id})')
+                    value: t<{ user: eris.User; }>('{user.username}#{user.discriminator} ({user.id})')
                 }
             }
         }
     },
     eventLog: {
-        disabled: t<{ event: string; channel: Eris.Channel; }>('❌ Disabled logging of the `{event}` event because the channel {channel#tag} doesn\'t exist or I don\'t have permission to post messages in it!'),
+        disabled: t<{ event: string; channel: eris.Channel; }>('❌ Disabled logging of the `{event}` event because the channel {channel#tag} doesn\'t exist or I don\'t have permission to post messages in it!'),
         events: {
             timeoutAdded: 'ℹ️ User Was Timed Out',
             timeoutRemoved: 'ℹ️ User Timeout Was Removed',
@@ -218,11 +219,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 },
                 oldUsername: {
                     name: 'Old Name',
-                    value: t<{ user: Eris.User; }>('{user.username}#{user.discriminator}')
+                    value: t<{ user: eris.User; }>('{user.username}#{user.discriminator}')
                 },
                 newUsername: {
                     name: 'New Name',
-                    value: t<{ user: Eris.User; }>('{user.username}#{user.discriminator}')
+                    value: t<{ user: eris.User; }>('{user.username}#{user.discriminator}')
                 },
                 oldNickname: {
                     name: 'Old Nickname',
@@ -242,11 +243,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 },
                 created: {
                     name: 'Created',
-                    value: t<{ time: Moment; }>('{time#tag}')
+                    value: t<{ time: moment.Moment; }>('{time#tag}')
                 },
                 until: {
                     name: 'Until',
-                    value: t<{ time: Moment; }>('{time#tag}')
+                    value: t<{ time: moment.Moment; }>('{time#tag}')
                 },
                 count: {
                     name: 'Count',
@@ -289,23 +290,23 @@ export const templates = FormatString.defineTree('cluster', t => ({
         autoTimeout: t<{ warnings: number; limit: number; }>('[ Auto-Ban ] Exceeded ban limit ({warnings}/{limit})')
     },
     mute: {
-        autoUnmute: t<{ duration?: Duration; }>('Automatically unmuted after {duration#duration(F)=some time}.'),
+        autoUnmute: t<{ duration?: moment.Duration; }>('Automatically unmuted after {duration#duration(F)=some time}.'),
         createReason: 'Automatic muted role configuration'
     },
     moderation: {
-        auditLog: t<{ moderator: Eris.User; reason?: IFormattable<string>; }>('[{moderator.username}#{moderator.discriminator}]{reason#bool( {}|)}')
+        auditLog: t<{ moderator: eris.User; reason?: IFormattable<string>; }>('[{moderator.username}#{moderator.discriminator}]{reason#bool( {}|)}')
     },
     censor: {
         warnReason: 'Said a blacklisted phrase.',
         mentionSpam: {
             ban: {
                 reason: 'Mention Spam',
-                failed: t<{ user: Eris.User; }>('{user#tag} is mention spamming, but I lack the permissions to ban them!')
+                failed: t<{ user: eris.User; }>('{user#tag} is mention spamming, but I lack the permissions to ban them!')
             }
         }
     },
     ban: {
-        autoUnban: t<{ duration?: Duration; }>('Automatically unbanned after {duration#duration(F)=some time}.')
+        autoUnban: t<{ duration?: moment.Duration; }>('Automatically unbanned after {duration#duration(F)=some time}.')
     },
     documentation: {
         loading: 'Loading...',
@@ -669,12 +670,12 @@ export const templates = FormatString.defineTree('cluster', t => ({
             guildOnly: t<{ prefix: string; commandName: string; }>('❌ `{prefix}{commandName}` can only be used on guilds.'),
             privateOnly: t<{ prefix: string; commandName: string; }>('❌ `{prefix}{commandName}` can only be used in private messages.'),
             rateLimited: {
-                local: t<{ duration: Duration; }>('❌ Sorry, you ran this command too recently! Please try again in {duration#duration(S)} seconds.'),
-                global: t<{ duration: Duration; penalty: Duration; }>('❌ Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out for `{duration#duration(S)}s`.\n\nContinuing to spam commands will lengthen your timeout by `{penalty#duration(S)}s`!')
+                local: t<{ duration: moment.Duration; }>('❌ Sorry, you ran this command too recently! Please try again in {duration#duration(S)} seconds.'),
+                global: t<{ duration: moment.Duration; penalty: moment.Duration; }>('❌ Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out for `{duration#duration(S)}s`.\n\nContinuing to spam commands will lengthen your timeout by `{penalty#duration(S)}s`!')
             },
             missingPermission: {
                 generic: '❌ Oops, I don\'t seem to have permission to do that!',
-                guild: t<{ channel: Eris.GuildChannel; commandText: string; prefix: string; }>('❌ Hi! You asked me to do something, but I didn\'t have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: {channel.guild.name}\nChannel: {channel#tag}\nCommand: {commandText}\n\nIf you wish to stop seeing these messages, do the command `{prefix}dmerrors`.')
+                guild: t<{ channel: eris.GuildChannel; commandText: string; prefix: string; }>('❌ Hi! You asked me to do something, but I didn\'t have permission to do it! Please make sure I have permissions to do what you asked.\nGuild: {channel.guild.name}\nChannel: {channel#tag}\nCommand: {commandText}\n\nIf you wish to stop seeing these messages, do the command `{prefix}dmerrors`.')
             },
             arguments: {
                 invalid: t<{ value: string; types: Iterable<string>; }>('❌ Invalid arguments! `{value}` isn\'t {types#map(`{}`)#join(, | or )}'),
@@ -770,7 +771,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             info: {
                 description: 'Displays the current configuration for announcements on this server',
                 unconfigured: t<{ prefix: string; }>('ℹ️ Announcements are not yet configured for this server. Please use `{prefix}announce configure` to set them up'),
-                details: t<{ channel?: Eris.Channel; role?: Eris.Role; }>('ℹ️ Announcements will be sent in {channel#tag=`<unconfigured>`} and will mention {role#tag=`<unconfigured>`}')
+                details: t<{ channel?: eris.Channel; role?: eris.Role; }>('ℹ️ Announcements will be sent in {channel#tag=`<unconfigured>`} and will mention {role#tag=`<unconfigured>`}')
             }
         },
         autoResponse: {
@@ -892,26 +893,26 @@ export const templates = FormatString.defineTree('cluster', t => ({
             default: {
                 description: 'Bans a user, where `days` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.',
                 state: {
-                    alreadyBanned: t<{ user: Eris.User; }>('❌ **{user#tag}** is already banned!'),
-                    memberTooHigh: t<{ user: Eris.User; }>('❌ I don\'t have permission to ban **{user#tag}**! Their highest role is above my highest role.'),
-                    moderatorTooLow: t<{ user: Eris.User; }>('❌ You don\'t have permission to ban **{user#tag}**! Their highest role is above your highest role.'),
-                    noPerms: t<{ user: Eris.User; }>('❌ I don\'t have permission to ban **{user#tag}**! Make sure I have the `ban members` permission and try again.'),
-                    moderatorNoPerms: t<{ user: Eris.User; }>('❌ You don\'t have permission to ban **{user#tag}**! Make sure you have the `ban members` permission or one of the permissions specified in the `ban override` setting and try again.'),
-                    success: t<{ user: Eris.User; }>('✅ **{user#tag}** has been banned.')
+                    alreadyBanned: t<{ user: eris.User; }>('❌ **{user#tag}** is already banned!'),
+                    memberTooHigh: t<{ user: eris.User; }>('❌ I don\'t have permission to ban **{user#tag}**! Their highest role is above my highest role.'),
+                    moderatorTooLow: t<{ user: eris.User; }>('❌ You don\'t have permission to ban **{user#tag}**! Their highest role is above your highest role.'),
+                    noPerms: t<{ user: eris.User; }>('❌ I don\'t have permission to ban **{user#tag}**! Make sure I have the `ban members` permission and try again.'),
+                    moderatorNoPerms: t<{ user: eris.User; }>('❌ You don\'t have permission to ban **{user#tag}**! Make sure you have the `ban members` permission or one of the permissions specified in the `ban override` setting and try again.'),
+                    success: t<{ user: eris.User; }>('✅ **{user#tag}** has been banned.')
                 },
                 unbanSchedule: {
-                    success: t<{ user: Eris.User; unban: Duration; }>('✅ **{user#tag}** has been banned and will be unbanned **{unban#tag}**'),
-                    invalid: t<{ user: Eris.User; }>('⚠️ **{user#tag}** has been banned, but the duration was either 0 seconds or improperly formatted so they won\'t automatically be unbanned.')
+                    success: t<{ user: eris.User; unban: moment.Duration; }>('✅ **{user#tag}** has been banned and will be unbanned **{unban#tag}**'),
+                    invalid: t<{ user: eris.User; }>('⚠️ **{user#tag}** has been banned, but the duration was either 0 seconds or improperly formatted so they won\'t automatically be unbanned.')
                 }
             },
             clear: {
                 description: 'Unbans a user.\nIf mod-logging is enabled, the ban will be logged.',
                 userNotFound: '❌ I couldn\'t find that user!',
                 state: {
-                    notBanned: t<{ user: Eris.User; }>('❌ **{user#tag}** is not currently banned!'),
-                    noPerms: t<{ user: Eris.User; }>('❌ I don\'t have permission to unban **{user#tag}**! Make sure I have the `ban members` permission and try again.'),
-                    moderatorNoPerms: t<{ user: Eris.User; }>('❌ You don\'t have permission to unban **{user#tag}**! Make sure you have the `ban members` permission or one of the permissions specified in the `ban override` setting and try again.'),
-                    success: t<{ user: Eris.User; }>('✅ **{user#tag}** has been unbanned.')
+                    notBanned: t<{ user: eris.User; }>('❌ **{user#tag}** is not currently banned!'),
+                    noPerms: t<{ user: eris.User; }>('❌ I don\'t have permission to unban **{user#tag}**! Make sure I have the `ban members` permission and try again.'),
+                    moderatorNoPerms: t<{ user: eris.User; }>('❌ You don\'t have permission to unban **{user#tag}**! Make sure you have the `ban members` permission or one of the permissions specified in the `ban override` setting and try again.'),
+                    success: t<{ user: eris.User; }>('✅ **{user#tag}** has been unbanned.')
                 }
             }
         },
@@ -920,8 +921,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Blacklists the current channel, or the channel that you mention. The bot will not respond until you do `blacklist` again.',
                 notInServer: '❌ You cannot blacklist a channel outside of this server',
                 success: {
-                    added: t<{ channel: Eris.Channel; }>('✅ {channel#tag} is no longer blacklisted.'),
-                    removed: t<{ channel: Eris.Channel; }>('✅ {channel#tag} is now blacklisted')
+                    added: t<{ channel: eris.Channel; }>('✅ {channel#tag} is no longer blacklisted.'),
+                    removed: t<{ channel: eris.Channel; }>('✅ {channel#tag} is now blacklisted')
                 }
             }
         },
@@ -1036,7 +1037,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             cooldown: {
                 description: 'Sets the cooldown of a custom command, in milliseconds',
                 mustBePositive: '❌ The cooldown must be greater than 0ms',
-                success: t<{ name: string; cooldown: Duration; }>('✅ The custom command `{name}` now has a cooldown of `{cooldown#duration(MS)}ms`.')
+                success: t<{ name: string; cooldown: moment.Duration; }>('✅ The custom command `{name}` now has a cooldown of `{cooldown#duration(MS)}ms`.')
             },
             author: {
                 description: 'Displays the name of the custom command\'s author',
@@ -1070,7 +1071,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             setRole: {
                 description: 'Sets the roles that are allowed to use the command',
-                success: t<{ name: string; roles: Iterable<Eris.Role>; }>('✅ Roles for custom command `{name}` set to {roles#map({#tag})#join(, | and )}.')
+                success: t<{ name: string; roles: Iterable<eris.Role>; }>('✅ Roles for custom command `{name}` set to {roles#map({#tag})#join(, | and )}.')
             },
             shrinkwrap: {
                 description: 'Bundles up the given commands into a single file that you can download and install into another server',
@@ -1136,16 +1137,16 @@ export const templates = FormatString.defineTree('cluster', t => ({
             exception: {
                 user: {
                     description: 'Adds or removes a user from the list of users which all censors ignore',
-                    success: t<{ user: Eris.User; }>('✅ {user#tag} is now exempt from all censors')
+                    success: t<{ user: eris.User; }>('✅ {user#tag} is now exempt from all censors')
                 },
                 role: {
                     description: 'Adds or removes a role from the list of roles which all censors ignore',
-                    success: t<{ role: Eris.Role; }>('✅ Anyone with the role {role#tag} is now exempt from all censors')
+                    success: t<{ role: eris.Role; }>('✅ Anyone with the role {role#tag} is now exempt from all censors')
                 },
                 channel: {
                     description: 'Adds or removes a channel from the list of channels which all censors ignore',
                     notOnServer: '❌ The channel must be on this server!',
-                    success: t<{ channel: Eris.Channel; }>('✅ Messages sent in {channel#tag} are now exempt from all censors')
+                    success: t<{ channel: eris.Channel; }>('✅ Messages sent in {channel#tag} are now exempt from all censors')
                 }
             },
             setMessage: {
@@ -1267,7 +1268,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     title: 'ℹ️ Edited commands',
                     description: {
                         name: t<{ name: string; }>('**{name}**\n'),
-                        roles: t<{ roles: Iterable<Eris.Role>; }>('- Roles: {roles#map({#tag})#join(, )}\n'),
+                        roles: t<{ roles: Iterable<eris.Role>; }>('- Roles: {roles#map({#tag})#join(, )}\n'),
                         permissions: t<{ permission: string; }>('- Permission: {permission}\n'),
                         disabled: '- Disabled\n',
                         hidden: '- Hidden\n',
@@ -1323,7 +1324,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Sets the channel the farewell message will be sent in.',
                 notOnGuild: '❌ The farewell channel must be on this server!',
                 notTextChannel: '❌ The farewell channel must be a text channel!',
-                success: t<{ channel: Eris.Channel; }>('✅ Farewell messages will now be sent in {channel#tag}')
+                success: t<{ channel: eris.Channel; }>('✅ Farewell messages will now be sent in {channel#tag}')
             },
             debug: {
                 description: 'Executes the farewell message as if you left the server and provides the debug output.',
@@ -1360,7 +1361,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Sets the channel the greeting message will be sent in.',
                 notOnGuild: '❌ The greeting channel must be on this server!',
                 notTextChannel: '❌ The greeting channel must be a text channel!',
-                success: t<{ channel: Eris.Channel; }>('✅ Greeting messages will now be sent in {channel#tag}')
+                success: t<{ channel: eris.Channel; }>('✅ Greeting messages will now be sent in {channel#tag}')
             },
             debug: {
                 description: 'Executes the greeting message as if you left the server and provides the debug output.',
@@ -1402,7 +1403,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 failed: '❌ There was an error while running the interval!',
                 authorizerMissing: '❌ I couldn\'t find the user who authorizes the interval!',
                 channelMissing: '❌ I wasn\'t able to figure out which channel to run the interval in!',
-                timedOut: t<{ max: Duration; }>('❌ The interval took longer than the max allowed time ({max#duration(S)}s)'),
+                timedOut: t<{ max: moment.Duration; }>('❌ The interval took longer than the max allowed time ({max#duration(S)}s)'),
                 success: 'ℹ️ Ive sent the debug output in a DM'
             },
             info: {
@@ -1417,11 +1418,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
             default: {
                 description: 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.',
                 state: {
-                    memberTooHigh: t<{ user: Eris.User; }>('❌ I don\'t have permission to kick **{user#tag}**! Their highest role is above my highest role.'),
-                    moderatorTooLow: t<{ user: Eris.User; }>('❌ You don\'t have permission to kick **{user#tag}**! Their highest role is above your highest role.'),
-                    noPerms: t<{ user: Eris.User; }>('❌ I don\'t have permission to kick **{user#tag}**! Make sure I have the `kick members` permission and try again.'),
-                    moderatorNoPerms: t<{ user: Eris.User; }>('❌ You don\'t have permission to kick **{user#tag}**! Make sure you have the `kick members` permission or one of the permissions specified in the `kick override` setting and try again.'),
-                    success: t<{ user: Eris.User; }>('✅ **{user#tag}** has been kicked.')
+                    memberTooHigh: t<{ user: eris.User; }>('❌ I don\'t have permission to kick **{user#tag}**! Their highest role is above my highest role.'),
+                    moderatorTooLow: t<{ user: eris.User; }>('❌ You don\'t have permission to kick **{user#tag}**! Their highest role is above your highest role.'),
+                    noPerms: t<{ user: eris.User; }>('❌ I don\'t have permission to kick **{user#tag}**! Make sure I have the `kick members` permission and try again.'),
+                    moderatorNoPerms: t<{ user: eris.User; }>('❌ You don\'t have permission to kick **{user#tag}**! Make sure you have the `kick members` permission or one of the permissions specified in the `kick override` setting and try again.'),
+                    success: t<{ user: eris.User; }>('✅ **{user#tag}** has been kicked.')
                 }
             }
         },
@@ -1470,7 +1471,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 notOnGuild: '❌ The log channel must be on this server!',
                 notTextChannel: '❌ The log channel must be a text channel!',
                 eventInvalid: t<{ events: Iterable<string>; }>('❌ {events#join(, | and )} {events#plural(1:is not a valid event|are not valid events)}'),
-                success: t<{ channel: Eris.Channel; events: Iterable<string>; }>('✅ I will now log the following events in {channel#tag}:\n{events#join(\n)}')
+                success: t<{ channel: eris.Channel; events: Iterable<string>; }>('✅ I will now log the following events in {channel#tag}:\n{events#join(\n)}')
             },
             disable: {
                 description: {
@@ -1514,11 +1515,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 generated: {
                     link: {
                         quick: t<{ link: string; }>('✅ Your logs are available here: {link}'),
-                        slow: t<{ user: Eris.User; link: string; }>('✅ Sorry that took so long, {user#tag}.\nYour logs are available here: {link}')
+                        slow: t<{ user: eris.User; link: string; }>('✅ Sorry that took so long, {user#tag}.\nYour logs are available here: {link}')
                     },
                     json: {
                         quick: '✅ Here are your logs, in a JSON file!',
-                        slow: t<{ user: Eris.User; }>('✅ Sorry that took so long, {user#tag}.\nHere are your logs, in a JSON file!')
+                        slow: t<{ user: eris.User; }>('✅ Sorry that took so long, {user#tag}.\nHere are your logs, in a JSON file!')
                     }
                 }
             }
@@ -1537,7 +1538,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     moderatorNoPerms: '❌ You don\'t have permission to ban anyone! Make sure you have the `ban members` permission or one of the permissions specified in the `ban override` setting and try again.',
                     noUsers: '❌ None of the user ids you gave were valid users!'
                 },
-                success: t<{ users: Iterable<Eris.User>; }>('✅ The following user(s) have been banned:\n{users#map({#tag})#join(\n)}')
+                success: t<{ users: Iterable<eris.User>; }>('✅ The following user(s) have been banned:\n{users#map({#tag})#join(\n)}')
             }
         },
         modLog: {
@@ -1545,7 +1546,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Sets the channel to use as the modlog channel',
                 notOnGuild: '❌ The modlog channel must be on this server!',
                 notTextChannel: '❌ The modlog channel must be a text channel!',
-                success: t<{ channel: Eris.Channel; }>('✅ Modlog entries will now be sent in {channel#tag}')
+                success: t<{ channel: eris.Channel; }>('✅ Modlog entries will now be sent in {channel#tag}')
             },
             disable: {
                 description: 'Disables the modlog',
@@ -1570,7 +1571,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 createPermsMissing: '❌ I don\'t have enough permissions to create a `muted` role! Make sure I have the `manage roles` permission and try again.',
                 configurePermsMissing: '❌ I created a `muted` role, but don\'t have permissions to configure it! Either configure it yourself, or make sure I have the `manage channel` permission, delete the `muted` role, and try again.',
                 state: {
-                    alreadyMuted: t<{ user: Eris.User; }>('❌ {user#tag} is already muted'),
+                    alreadyMuted: t<{ user: eris.User; }>('❌ {user#tag} is already muted'),
                     noPerms: '❌ I don\'t have permission to mute users! Make sure I have the `manage roles` permission and try again.',
                     moderatorNoPerms: '❌ You don\'t have permission to mute users! Make sure you have the `manage roles` permission and try again.',
                     roleMissing: '❌ The muted role has been deleted! Please re-run this command to create a new one.',
@@ -1579,20 +1580,20 @@ export const templates = FormatString.defineTree('cluster', t => ({
 
                 },
                 success: {
-                    default: t<{ user: Eris.User; }>('✅ **{user#tag}** has been muted'),
-                    durationInvalid: t<{ user: Eris.User; }>('⚠️ **{user#tag}** has been muted, but the duration was either 0 seconds or improperly formatted so they won\'t automatically be unmuted.'),
-                    temporary: t<{ user: Eris.User; unmute: Duration; }>('✅ **{user#tag}** has been muted and will be unmuted **{unmute#tag}**')
+                    default: t<{ user: eris.User; }>('✅ **{user#tag}** has been muted'),
+                    durationInvalid: t<{ user: eris.User; }>('⚠️ **{user#tag}** has been muted, but the duration was either 0 seconds or improperly formatted so they won\'t automatically be unmuted.'),
+                    temporary: t<{ user: eris.User; unmute: moment.Duration; }>('✅ **{user#tag}** has been muted and will be unmuted **{unmute#tag}**')
                 }
             },
             clear: {
                 description: 'Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.',
                 state: {
-                    notMuted: t<{ user: Eris.User; }>('❌ {user#tag} is not currently muted'),
+                    notMuted: t<{ user: eris.User; }>('❌ {user#tag} is not currently muted'),
                     noPerms: '❌ I don\'t have permission to unmute users! Make sure I have the `manage roles` permission and try again.',
                     moderatorNoPerms: '❌ You don\'t have permission to unmute users! Make sure you have the `manage roles` permission and try again.',
                     roleTooHigh: '❌ I can\'t revoke the muted role! (it\'s higher than or equal to my top role)',
                     moderatorTooLow: '❌ You can\'t revoke the muted role! (it\'s higher than or equal to your top role)',
-                    success: t<{ user: Eris.User; }>('✅ **{user#tag}** has been unmuted')
+                    success: t<{ user: eris.User; }>('✅ **{user#tag}** has been unmuted')
                 }
             }
         },
@@ -1607,14 +1608,14 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     countNaN: t<{ text: string; }>('❌ {text} isn\'t a number!'),
                     countNegative: '❌ I cant give a negative amount of pardons!',
                     countZero: '❌ I cant give zero pardons!',
-                    success: t<{ user: Eris.User; count: number; warnings: number; }>('✅ **{user#tag}** has been given {count#plural(1:a warning|{} warnings)}. They now have {warnings#plural(1:1 warning|{} warnings)}.')
+                    success: t<{ user: eris.User; count: number; warnings: number; }>('✅ **{user#tag}** has been given {count#plural(1:a warning|{} warnings)}. They now have {warnings#plural(1:1 warning|{} warnings)}.')
                 }
             }
         },
         prefix: {
             list: {
                 description: 'Lists all the current prefixes on this server',
-                success: t<{ guild: Eris.Guild; prefixes: Iterable<string>; }>('ℹ️ {guild.name} has {prefixes#plural(0:no custom prefixes|the following prefixes:\n{#map( - {})#join(\n)})}')
+                success: t<{ guild: eris.Guild; prefixes: Iterable<string>; }>('ℹ️ {guild.name} has {prefixes#plural(0:no custom prefixes|the following prefixes:\n{#map( - {})#join(\n)})}')
             },
             add: {
                 description: 'Adds a command prefix to this server',
@@ -1745,7 +1746,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         removeVoteBan: {
             user: {
                 description: 'Deletes all the vote bans against the given user',
-                success: t<{ user: Eris.User; }>('✅ Votebans for {user#tag} have been cleared')
+                success: t<{ user: eris.User; }>('✅ Votebans for {user#tag} have been cleared')
             },
             all: {
                 description: 'Deletes all vote bans against all users',
@@ -1768,12 +1769,12 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Gets the current settings for this guild',
                 notConfigured: '❌ Your guild is not correctly configured yet! Please try again later',
                 channelValue: {
-                    default: t<{ channel: Eris.GuildChannel; }>('{channel.name} ({channel.id})'),
+                    default: t<{ channel: eris.GuildChannel; }>('{channel.name} ({channel.id})'),
                     unknown: t<{ channelId: string; }>('Unknown channel ({channelId})'),
                     none: 'Default Channel'
                 },
                 roleValue: {
-                    default: t<{ role: Eris.Role; }>('{role.name} ({role.id})'),
+                    default: t<{ role: eris.Role; }>('{role.name} ({role.id})'),
                     unknown: t<{ roleId: string; }>('Unknown role ({roleId})')
                 },
                 localeValue: t<{ name: string; completion: number; }>('{name}{completion#plural(1:| - {#percent} complete)}'),
@@ -1807,16 +1808,16 @@ export const templates = FormatString.defineTree('cluster', t => ({
             errors: {
                 notTextChannel: '❌ You can only set slowmode on text channels!',
                 notInGuild: '❌ You cant set slowmode on channels outside of a server',
-                botNoPerms: t<{ channel: Eris.Channel; }>('❌ I don\'t have permission to set slowmode in {channel#tag}!')
+                botNoPerms: t<{ channel: eris.Channel; }>('❌ I don\'t have permission to set slowmode in {channel#tag}!')
             },
             on: {
                 description: 'Sets the channel\'s slowmode to 1 message every `time` seconds, with a max of 6 hours',
-                timeTooLong: t<{ duration: Duration; }>('❌ `time` must be less than {duration#duration(S)}s'),
-                success: t<{ duration: Duration; channel: Eris.Channel; }>('✅ Slowmode has been set to 1 message every {duration#duration(S)}s in {channel#tag}')
+                timeTooLong: t<{ duration: moment.Duration; }>('❌ `time` must be less than {duration#duration(S)}s'),
+                success: t<{ duration: moment.Duration; channel: eris.Channel; }>('✅ Slowmode has been set to 1 message every {duration#duration(S)}s in {channel#tag}')
             },
             off: {
                 description: 'Turns off the channel\'s slowmode',
-                success: t<{ channel: Eris.Channel; }>('✅ Slowmode has been disabled in {channel#tag}')
+                success: t<{ channel: eris.Channel; }>('✅ Slowmode has been disabled in {channel#tag}')
             }
         },
         tidy: {
@@ -1839,8 +1840,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 noMessages: '❌ I couldn\'t find any matching messages!',
                 confirmQuery: {
                     prompt: {
-                        foundAll: t<{ total: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>('ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}'),
-                        foundSome: t<{ total: number; searched: number; breakdown: Iterable<{ user: Eris.User; count: number; }>; }>('ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)} after searching through {searched} {searched#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}')
+                        foundAll: t<{ total: number; breakdown: Iterable<{ user: eris.User; count: number; }>; }>('ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}'),
+                        foundSome: t<{ total: number; searched: number; breakdown: Iterable<{ user: eris.User; count: number; }>; }>('ℹ️ I am about to attempt to delete {total} {total#plural(1:message|messages)} after searching through {searched} {searched#plural(1:message|messages)}. Are you sure you wish to continue?\n{breakdown#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}')
                     },
                     cancel: 'Cancel',
                     continue: 'Continue'
@@ -1848,8 +1849,8 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 cancelled: '✅ Tidy cancelled, No messages will be deleted',
                 deleteFailed: '❌ I wasn\'t able to delete any of the messages! Please make sure I have permission to manage messages',
                 success: {
-                    default: t<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; }>('✅ Deleted {deleted} {deleted#plural(1:message|messages)}:\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}'),
-                    partial: t<{ deleted: number; success: Iterable<{ user: Eris.User; count: number; }>; failed: Iterable<{ user: Eris.User; count: number; }>; }>('⚠️ I managed to delete {deleted} of the messages I attempted to delete.\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}\n\nFailed:\n{failed#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}')
+                    default: t<{ deleted: number; success: Iterable<{ user: eris.User; count: number; }>; }>('✅ Deleted {deleted} {deleted#plural(1:message|messages)}:\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}'),
+                    partial: t<{ deleted: number; success: Iterable<{ user: eris.User; count: number; }>; failed: Iterable<{ user: eris.User; count: number; }>; }>('⚠️ I managed to delete {deleted} of the messages I attempted to delete.\n{success#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}\n\nFailed:\n{failed#map({user#tag} - {count} {count#plural(1:message|messages)})#join(\n)}')
                 }
             }
         },
@@ -1861,21 +1862,21 @@ export const templates = FormatString.defineTree('cluster', t => ({
             user: {
                 description: 'Timeouts a user.\nIf mod-logging is enabled, the timeout will be logged.',
                 state: {
-                    memberTooHigh: t<{ user: Eris.User; }>('❌ I don\'t have permission to timeout **{user#tag}**! Their highest role is above my highest role.'),
-                    moderatorTooLow: t<{ user: Eris.User; }>('❌ You don\'t have permission to timeout **{user#tag}**! Their highest role is above your highest role.'),
-                    noPerms: t<{ user: Eris.User; }>('❌ I don\'t have permission to timeout **{user#tag}**! Make sure I have the `moderate members` permission and try again.'),
-                    moderatorNoPerms: t<{ user: Eris.User; }>('❌ You don\'t have permission to timeout **{user#tag}**! Make sure you have the `moderate members` permission or one of the permissions specified in the `timeout override` setting and try again.'),
-                    alreadyTimedOut: t<{ user: Eris.User; }>('❌ **{user#tag}** has already been timed out.'),
-                    success: t<{ user: Eris.User; }>('✅ **{user#tag}** has been timed out.')
+                    memberTooHigh: t<{ user: eris.User; }>('❌ I don\'t have permission to timeout **{user#tag}**! Their highest role is above my highest role.'),
+                    moderatorTooLow: t<{ user: eris.User; }>('❌ You don\'t have permission to timeout **{user#tag}**! Their highest role is above your highest role.'),
+                    noPerms: t<{ user: eris.User; }>('❌ I don\'t have permission to timeout **{user#tag}**! Make sure I have the `moderate members` permission and try again.'),
+                    moderatorNoPerms: t<{ user: eris.User; }>('❌ You don\'t have permission to timeout **{user#tag}**! Make sure you have the `moderate members` permission or one of the permissions specified in the `timeout override` setting and try again.'),
+                    alreadyTimedOut: t<{ user: eris.User; }>('❌ **{user#tag}** has already been timed out.'),
+                    success: t<{ user: eris.User; }>('✅ **{user#tag}** has been timed out.')
                 }
             },
             clear: {
                 description: 'Removes the timeout of a user.\nIf mod-logging is enabled, the timeout removal will be logged.',
                 state: {
-                    notTimedOut: t<{ user: Eris.User; }>('❌ **{user#tag}** is not currently timed out.'),
-                    noPerms: t<{ user: Eris.User; }>('❌ I don\'t have permission to timeout **{user#tag}**! Make sure I have the `moderate members` permission and try again.'),
-                    moderatorNoPerms: t<{ user: Eris.User; }>('❌ You don\'t have permission to timeout **{user#tag}**! Make sure you have the `moderate members` permission or one of the permissions specified in the `timeout override` setting and try again.'),
-                    success: t<{ user: Eris.User; }>('✅ **{user#tag}** timeout has been removed.')
+                    notTimedOut: t<{ user: eris.User; }>('❌ **{user#tag}** is not currently timed out.'),
+                    noPerms: t<{ user: eris.User; }>('❌ I don\'t have permission to timeout **{user#tag}**! Make sure I have the `moderate members` permission and try again.'),
+                    moderatorNoPerms: t<{ user: eris.User; }>('❌ You don\'t have permission to timeout **{user#tag}**! Make sure you have the `moderate members` permission or one of the permissions specified in the `timeout override` setting and try again.'),
+                    success: t<{ user: eris.User; }>('✅ **{user#tag}** timeout has been removed.')
                 }
             }
         },
@@ -1892,15 +1893,15 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     },
                     elapsed: {
                         header: 'Elapsed',
-                        cell: t<{ startTime: Moment; }>('{startTime#duration(H)}')
+                        cell: t<{ startTime: moment.Moment; }>('{startTime#duration(H)}')
                     },
                     remain: {
                         header: 'Remain',
-                        cell: t<{ endTime: Moment; }>('{endTime#duration(H)}')
+                        cell: t<{ endTime: moment.Moment; }>('{endTime#duration(H)}')
                     },
                     user: {
                         header: 'User',
-                        cell: t<{ user?: Eris.User; }>('{user#bool({username}#{discriminator}|)}')
+                        cell: t<{ user?: eris.User; }>('{user#bool({username}#{discriminator}|)}')
                     },
                     type: {
                         header: 'Type',
@@ -1927,7 +1928,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         },
                         duration: {
                             name: 'Duration',
-                            value: t<{ start: Moment; end: Moment; }>('Started {start#tag}\nEnds {end#tag}')
+                            value: t<{ start: moment.Moment; end: moment.Moment; }>('Started {start#tag}\nEnds {end#tag}')
                         }
                     }
                 }
@@ -1959,10 +1960,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Unbans a user.\nIf mod-logging is enabled, the ban will be logged.',
                 userNotFound: '❌ I couldn\'t find that user!',
                 state: {
-                    notBanned: t<{ user: Eris.User; }>('❌ **{user#tag}** is not currently banned!'),
-                    noPerms: t<{ user: Eris.User; }>('❌ I don\'t have permission to unban **{user#tag}**! Make sure I have the `ban members` permission and try again.'),
-                    moderatorNoPerms: t<{ user: Eris.User; }>('❌ You don\'t have permission to unban **{user#tag}**! Make sure you have the `ban members` permission or one of the permissions specified in the `ban override` setting and try again.'),
-                    success: t<{ user: Eris.User; }>('✅ **{user#tag}** has been unbanned.')
+                    notBanned: t<{ user: eris.User; }>('❌ **{user#tag}** is not currently banned!'),
+                    noPerms: t<{ user: eris.User; }>('❌ I don\'t have permission to unban **{user#tag}**! Make sure I have the `ban members` permission and try again.'),
+                    moderatorNoPerms: t<{ user: eris.User; }>('❌ You don\'t have permission to unban **{user#tag}**! Make sure you have the `ban members` permission or one of the permissions specified in the `ban override` setting and try again.'),
+                    success: t<{ user: eris.User; }>('✅ **{user#tag}** has been unbanned.')
                 }
             }
         },
@@ -1973,12 +1974,12 @@ export const templates = FormatString.defineTree('cluster', t => ({
             default: {
                 description: 'Removes the special muted role from the user. \nIf mod-logging is enabled, the mute will be logged.',
                 state: {
-                    notMuted: t<{ user: Eris.User; }>('❌ {user#tag} is not currently muted'),
+                    notMuted: t<{ user: eris.User; }>('❌ {user#tag} is not currently muted'),
                     noPerms: '❌ I don\'t have permission to unmute users! Make sure I have the `manage roles` permission and try again.',
                     moderatorNoPerms: '❌ You don\'t have permission to unmute users! Make sure you have the `manage roles` permission and try again.',
                     roleTooHigh: '❌ I can\'t revoke the muted role! (it\'s higher than or equal to my top role)',
                     moderatorTooLow: '❌ You can\'t revoke the muted role! (it\'s higher than or equal to your top role)',
-                    success: t<{ user: Eris.User; }>('✅ **{user#tag}** has been unmuted')
+                    success: t<{ user: eris.User; }>('✅ **{user#tag}** has been unmuted')
                 }
             }
         },
@@ -1999,17 +2000,17 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     countNaN: t<{ value: string; }>('❌ {value} isn\'t a number!'),
                     countNegative: '❌ I cant give a negative amount of warnings!',
                     countZero: '❌ I cant give zero warnings!',
-                    memberTooHigh: t<{ user: Eris.User; count: number; action: IFormattable<string>; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above me so I couldn\'t {action} them.'),
-                    moderatorTooLow: t<{ user: Eris.User; count: number; action: IFormattable<string>; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above you so I didn\'t {action} them.'),
-                    noPerms: t<{ user: Eris.User; count: number; action: IFormattable<string>; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but I don\'t have permission to {action} them.'),
-                    moderatorNoPerms: t<{ user: Eris.User; count: number; action: IFormattable<string>; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but you don\'t have permission to {action} them.'),
-                    alreadyBanned: t<{ user: Eris.User; count: number; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for bans, but they were already banned.'),
-                    alreadyTimedOut: t<{ user: Eris.User; count: number; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for timeouts, but they were already timed out.'),
+                    memberTooHigh: t<{ user: eris.User; count: number; action: IFormattable<string>; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above me so I couldn\'t {action} them.'),
+                    moderatorTooLow: t<{ user: eris.User; count: number; action: IFormattable<string>; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but they are above you so I didn\'t {action} them.'),
+                    noPerms: t<{ user: eris.User; count: number; action: IFormattable<string>; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but I don\'t have permission to {action} them.'),
+                    moderatorNoPerms: t<{ user: eris.User; count: number; action: IFormattable<string>; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for {action}s but you don\'t have permission to {action} them.'),
+                    alreadyBanned: t<{ user: eris.User; count: number; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for bans, but they were already banned.'),
+                    alreadyTimedOut: t<{ user: eris.User; count: number; }>('⚠️ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}.\n⛔ They went over the limit for timeouts, but they were already timed out.'),
                     success: {
-                        delete: t<{ user: Eris.User; count: number; warnings: number; }>('✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They now have {warnings} {warnings#plural(1:warning|warnings)}.'),
-                        timeout: t<{ user: Eris.User; count: number; }>('✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They want over the limit for timeouts and so have been timed out.'),
-                        ban: t<{ user: Eris.User; count: number; }>('✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They went over the limit for bans and so have been banned.'),
-                        kick: t<{ user: Eris.User; count: number; }>('✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They went over the limit for kicks and so have been kicked.')
+                        delete: t<{ user: eris.User; count: number; warnings: number; }>('✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They now have {warnings} {warnings#plural(1:warning|warnings)}.'),
+                        timeout: t<{ user: eris.User; count: number; }>('✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They want over the limit for timeouts and so have been timed out.'),
+                        ban: t<{ user: eris.User; count: number; }>('✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They went over the limit for bans and so have been banned.'),
+                        kick: t<{ user: eris.User; count: number; }>('✅ **{user#tag}** has been given {count} {count#plural(1:warning|warnings)}. They went over the limit for kicks and so have been kicked.')
                     }
                 }
             }
@@ -2101,7 +2102,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             common: {
                 formatInvalid: t<{ format: string; allowedFormats: Iterable<string>; }>('❌ {format} is not a valid format! Supported formats are {allowedFormats#join(, | and )}'),
                 sizeInvalid: t<{ size: string; allowedSizes: Iterable<number>; }>('❌ {size} is not a valid image size! Supported sizes are {allowedSizes#join(, | and )}'),
-                success: t<{ user: Eris.User; }>('✅ {user#tag}\'s avatar')
+                success: t<{ user: eris.User; }>('✅ {user#tag}\'s avatar')
             },
             flags: {
                 format: t<{ formats: Iterable<string>; }>('The file format. Can be {formats#join(, | or )}.'),
@@ -2155,7 +2156,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         decancer: {
             user: {
                 description: 'Decancers a users display name. If you have permissions, this will also change their nickname',
-                success: t<{ user: Eris.User; result: string; }>('✅ Successfully decancered **{user#tag}**\'s name to: `{result}`')
+                success: t<{ user: eris.User; result: string; }>('✅ Successfully decancered **{user#tag}**\'s name to: `{result}`')
             },
             text: {
                 description: 'Decancers some text to plain ASCII',
@@ -2298,7 +2299,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 notReady: '⚠️ Im still waking up! Try again in a minute or two',
                 embed: {
                     title: 'About me!',
-                    description: t<{ age: Duration; }>('I am a multi-purpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).\n\n🎂 I am currently {age#duration(F)} old!'),
+                    description: t<{ age: moment.Duration; }>('I am a multi-purpose bot with new features implemented regularly, written in typescript using [Eris](https://abal.moe/Eris/).\n\n🎂 I am currently {age#duration(F)} old!'),
                     field: {
                         patron: {
                             name: '️️️️️️️️❤️ Special thanks to my patrons! ❤️',
@@ -2359,19 +2360,19 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     field: {
                         online: {
                             name: t<{ emote: string; }>('{emote} Online'),
-                            value: t<{ users: Iterable<Eris.User>; }>('{users#map({#tag})#join(\n)}')
+                            value: t<{ users: Iterable<eris.User>; }>('{users#map({#tag})#join(\n)}')
                         },
                         away: {
                             name: t<{ emote: string; }>('{emote} Away'),
-                            value: t<{ users: Iterable<Eris.User>; }>('{users#map({#tag})#join(\n)}')
+                            value: t<{ users: Iterable<eris.User>; }>('{users#map({#tag})#join(\n)}')
                         },
                         busy: {
                             name: t<{ emote: string; }>('{emote} Do not disturb'),
-                            value: t<{ users: Iterable<Eris.User>; }>('{users#map({#tag})#join(\n)}')
+                            value: t<{ users: Iterable<eris.User>; }>('{users#map({#tag})#join(\n)}')
                         },
                         offline: {
                             name: t<{ emote: string; }>('{emote} Offline'),
-                            value: t<{ users: Iterable<Eris.User>; }>('{users#map({#tag})#join(\n)}')
+                            value: t<{ users: Iterable<eris.User>; }>('{users#map({#tag})#join(\n)}')
                         }
                     }
                 }
@@ -2400,18 +2401,18 @@ export const templates = FormatString.defineTree('cluster', t => ({
             list: {
                 description: 'Returns the names that I\'ve seen the specified user have in the past 30 days.',
                 none: {
-                    ever: t<{ user: Eris.User; }>('ℹ️ I haven\'t seen any usernames for {user#tag} yet!'),
-                    since: t<{ user: Eris.User; from: Moment; }>('ℹ️ I haven\'t seen {user#tag} change their username since {from#tag}!')
+                    ever: t<{ user: eris.User; }>('ℹ️ I haven\'t seen any usernames for {user#tag} yet!'),
+                    since: t<{ user: eris.User; from: moment.Moment; }>('ℹ️ I haven\'t seen {user#tag} change their username since {from#tag}!')
                 },
                 embed: {
                     title: 'Historical usernames',
                     description: {
                         since: {
-                            detailed: t<{ from: Moment; usernames: Iterable<{ name: string; time: Moment; }>; }>('Since {from#tag}\n{usernames#map({name} - {time#tag(R)})#join(\n)}'),
-                            simple: t<{ from: Moment; usernames: Iterable<{ name: string; }>; }>('Since {from#tag}\n{usernames#map({name})#join(\n)}')
+                            detailed: t<{ from: moment.Moment; usernames: Iterable<{ name: string; time: moment.Moment; }>; }>('Since {from#tag}\n{usernames#map({name} - {time#tag(R)})#join(\n)}'),
+                            simple: t<{ from: moment.Moment; usernames: Iterable<{ name: string; }>; }>('Since {from#tag}\n{usernames#map({name})#join(\n)}')
                         },
                         ever: {
-                            detailed: t<{ usernames: Iterable<{ name: string; time: Moment; }>; }>('{usernames#map({name} - {time#tag(R)})#join(\n)}'),
+                            detailed: t<{ usernames: Iterable<{ name: string; time: moment.Moment; }>; }>('{usernames#map({name} - {time#tag(R)})#join(\n)}'),
                             simple: t<{ usernames: Iterable<{ name: string; }>; }>('{usernames#map({name})#join(\n)}')
                         }
                     }
@@ -2466,7 +2467,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             default: {
                 description: 'Gets the current latency.',
                 pending: 'ℹ️ {#rand(Existence is a lie.|You\'re going to die some day, perhaps soon.|Nothing matters.|Where do you get off?|There is nothing out there.|You are all alone in an infinite void.|Truth is false.|Forsake everything.|Your existence is pitiful.|We are all already dead.)}',
-                success: t<{ ping: Duration; }>('✅ Pong! ({ping#duration(MS)}ms)')
+                success: t<{ ping: moment.Duration; }>('✅ Pong! ({ping#duration(MS)}ms)')
             }
         },
         poll: {
@@ -2486,7 +2487,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 announceNotSetUp: '❌ Announcements on this server aren\'t set up correctly. Please fix them before trying again.',
                 emojisMissing: '❌ You must provide some emojis to use in the poll.',
                 emojisInaccessible: '❌ I don\'t have access to some of the emojis you used! Please use different emojis or add me to the server that the emojis are from.',
-                tooShort: t<{ duration: Duration; }>('❌ {duration#duration(S)}s is too short for a poll! Use a longer time'),
+                tooShort: t<{ duration: moment.Duration; }>('❌ {duration#duration(S)}s is too short for a poll! Use a longer time'),
                 someEmojisMissing: '⚠️ I managed to create the poll, but wasn\'t able to add some of the emojis to it. Please add them manually (they will still be counted in the results)'
             }
         },
@@ -2500,10 +2501,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 durationRequired: '❌ The `-t` flag is required to set the duration of the reminder!',
                 durationZero: '❌ I cant set a timer for 0 seconds!',
                 reminderMissing: '❌ You need to say what you need reminding of!',
-                event: t<{ userId: string; start: Moment; content: string; }>('⏰ Hi, <@{userId}>! You asked me to remind you about this {start#tag(R)}:\n{content}'),
+                event: t<{ userId: string; start: moment.Moment; content: string; }>('⏰ Hi, <@{userId}>! You asked me to remind you about this {start#tag(R)}:\n{content}'),
                 success: {
-                    here: t<{ duration: Duration; }>('✅ Ok, ill ping you here {duration#tag}'),
-                    dm: t<{ duration: Duration; }>('✅ Ok, ill ping you in a DM {duration#tag}')
+                    here: t<{ duration: moment.Duration; }>('✅ Ok, ill ping you here {duration#tag}'),
+                    dm: t<{ duration: moment.Duration; }>('✅ Ok, ill ping you in a DM {duration#tag}')
                 }
             }
         },
@@ -2512,7 +2513,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Displays a list of roles and their IDs.',
                 embed: {
                     title: 'Roles',
-                    description: t<{ roles: Iterable<Eris.Role>; }>('{roles#map({#tag} - ({id}))#join(\n)}')
+                    description: t<{ roles: Iterable<eris.Role>; }>('{roles#map({#tag} - ({id}))#join(\n)}')
                 }
             }
         },
@@ -2562,11 +2563,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     field: {
                         shard: {
                             name: t<{ shardId: number; }>('Shard {shardId}'),
-                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: Moment; }>('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#time(LT)}\n```')
+                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: moment.Moment; }>('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#time(LT)}\n```')
                         },
                         cluster: {
                             name: t<{ clusterId: number; }>('Cluster {clusterId}'),
-                            value: t<{ cpu: number; guildCount: number; ram: number; startTime: Moment; }>('CPU usage: {cpu#percent(1)}\nGuilds: {guildCount}\nRam used: {ram#bytes}\nStarted {startTime#tag(R)}')
+                            value: t<{ cpu: number; guildCount: number; ram: number; startTime: moment.Moment; }>('CPU usage: {cpu#percent(1)}\nGuilds: {guildCount}\nRam used: {ram#bytes}\nStarted {startTime#tag(R)}')
                         },
                         shards: {
                             name: 'Shards',
@@ -2602,11 +2603,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     field: {
                         shard: {
                             name: t<{ shardId: number; }>('Shard {shardId}'),
-                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: Moment; }>('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#time(LT)}\n```')
+                            value: t<{ statusEmote: string; latency: number; guildCount: number; clusterId: number; lastUpdate: moment.Moment; }>('```\nStatus: {statusEmote}\nLatency: {latency}ms\nGuilds: {guildCount}\nCluster: {clusterId}\nLast update: {lastUpdate#time(LT)}\n```')
                         },
                         cluster: {
                             name: t<{ clusterId: number; }>('Cluster {clusterId}'),
-                            value: t<{ cpu: number; guildCount: number; ram: number; startTime: Moment; }>('CPU usage: {cpu#percent(1)}\nGuilds: {guildCount}\nRam used: {ram#bytes}\nStarted {startTime#tag(R)}')
+                            value: t<{ cpu: number; guildCount: number; ram: number; startTime: moment.Moment; }>('CPU usage: {cpu#percent(1)}\nGuilds: {guildCount}\nRam used: {ram#bytes}\nStarted {startTime#tag(R)}')
                         },
                         shards: {
                             name: 'Shards',
@@ -2627,7 +2628,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     description: t<{ clusterCount: number; shardCount: number; }>('I\'m running on `{clusterCount}` {clusterCount#plural(1:cluster|clusters)} and `{shardCount}` {shardCount#plural(1:shard|shards)}\n'),
                     field: {
                         name: t<{ clusterId: number; }>('Cluster {clusterId}'),
-                        value: t<{ startTime: Moment; ram: number; shards: Iterable<{ id: number; statusEmote: string; latency: number; }>; }>('Ready since: {startTime#tag(R)}\nRam: {ram#bytes}\n**Shards**:\n```\n{shards#map({id} {statusEmote} {latency}ms)#join(\n)}\n```')
+                        value: t<{ startTime: moment.Moment; ram: number; shards: Iterable<{ id: number; statusEmote: string; latency: number; }>; }>('Ready since: {startTime#tag(R)}\nRam: {ram#bytes}\n**Shards**:\n```\n{shards#map({id} {statusEmote} {latency}ms)#join(\n)}\n```')
                     }
                 }
             },
@@ -2727,7 +2728,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         },
                         uptime: {
                             name: 'Uptime',
-                            value: t<{ startTime: Moment; }>('{startTime#tag(R)}')
+                            value: t<{ startTime: moment.Moment; }>('{startTime#tag(R)}')
                         },
                         eris: {
                             name: 'Eris'
@@ -2821,7 +2822,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                     content: t<{ tags: Iterable<string>; }>('```fix\n{tags#join(, )}\n```'),
                     header: {
                         all: t<{ count: number; total: number; }>('Found {count}/{total} tags'),
-                        byUser: t<{ count: number; total: number; user: Eris.User; }>('Found {count}/{total} tags made by {user#tag}')
+                        byUser: t<{ count: number; total: number; user: eris.User; }>('Found {count}/{total} tags made by {user#tag}')
                     }
                 }
             },
@@ -2848,7 +2849,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
             cooldown: {
                 description: 'Sets the cooldown of a tag, in milliseconds',
                 cooldownZero: '❌ The cooldown must be greater than 0ms',
-                success: t<{ name: string; cooldown: Duration; }>('✅ The tag `{name}` now has a cooldown of `{cooldown#duration(MS)}ms`.')
+                success: t<{ name: string; cooldown: moment.Duration; }>('✅ The tag `{name}` now has a cooldown of `{cooldown#duration(MS)}ms`.')
             },
             author: {
                 description: 'Displays the name of the tag\'s author',
@@ -2859,7 +2860,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 embed: {
                     title: t<{ name: string; }>('__**Tag | {name}**__'),
                     footer: {
-                        text: t<{ user: Eris.User; }>('{user.username}#{user.discriminator}')
+                        text: t<{ user: eris.User; }>('{user.username}#{user.discriminator}')
                     },
                     field: {
                         author: {
@@ -2868,11 +2869,11 @@ export const templates = FormatString.defineTree('cluster', t => ({
                         },
                         cooldown: {
                             name: 'Cooldown',
-                            value: t<{ cooldown: Duration; }>('{cooldown#duration(F)}')
+                            value: t<{ cooldown: moment.Duration; }>('{cooldown#duration(F)}')
                         },
                         lastModified: {
                             name: 'Last Modified',
-                            value: t<{ lastModified: Moment; }>('{lastModified#tag}')
+                            value: t<{ lastModified: moment.Moment; }>('{lastModified#tag}')
                         },
                         usage: {
                             name: 'Used',
@@ -2903,7 +2904,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 unavailable: '❌ Sorry, you cannot report tags at this time. Please try again later!',
                 deleted: t<{ name: string; }>('✅ The `{name}` tag is no longer being reported by you.'),
                 added: t<{ name: string; }>('✅ The `{name}` tag has been reported.'),
-                notification: t<{ name: string; reason: string; user: Eris.User; }>('**{user.username}#{user.discriminator}** has reported the tag: {name}\n\n{reason}'),
+                notification: t<{ name: string; reason: string; user: eris.User; }>('**{user.username}#{user.discriminator}** has reported the tag: {name}\n\n{reason}'),
                 query: {
                     prompt: 'Please provide a reason for your report:'
                 }
@@ -2950,18 +2951,18 @@ export const templates = FormatString.defineTree('cluster', t => ({
             },
             user: {
                 description: 'Gets the current time for the user',
-                timezoneNotSet: t<{ user: Eris.User; prefix: string; }>('❌ {user#tag} has not set their timezone with the `{prefix}timezone` command yet.'),
-                timezoneInvalid: t<{ user: Eris.User; prefix: string; }>('❌ {user#tag} doesn\'t have a valid timezone set. They need to update it with the `{prefix}timezone` command'),
-                success: t<{ now: Moment; user: Eris.User; }>('ℹ️ It is currently **{now#time(LT)}** for **{user#tag}**.')
+                timezoneNotSet: t<{ user: eris.User; prefix: string; }>('❌ {user#tag} has not set their timezone with the `{prefix}timezone` command yet.'),
+                timezoneInvalid: t<{ user: eris.User; prefix: string; }>('❌ {user#tag} doesn\'t have a valid timezone set. They need to update it with the `{prefix}timezone` command'),
+                success: t<{ now: moment.Moment; user: eris.User; }>('ℹ️ It is currently **{now#time(LT)}** for **{user#tag}**.')
             },
             timezone: {
                 description: 'Gets the current time in the timezone',
-                success: t<{ now: Moment; timezone: string; }>('ℹ️ In **{timezone}**, it is currently **{now#time(LT)}**')
+                success: t<{ now: moment.Moment; timezone: string; }>('ℹ️ In **{timezone}**, it is currently **{now#time(LT)}**')
             },
             convert: {
                 description: 'Converts a `time` from `timezone1` to `timezone2`',
                 invalidTime: t<{ time: string; }>('❌ `{time}` is not a valid time! Please use the 12 or 24 hour format, e.g. 1:32pm or 13:32'),
-                success: t<{ source: Moment; dest: Moment; sourceTimezone: string; destTimezone: string; }>('ℹ️ When it\'s **{source#time(LT)}** in **{sourceTimezone}**, it\'s **{dest#time(LT)}** in **{destTimezone}**.')
+                success: t<{ source: moment.Moment; dest: moment.Moment; sourceTimezone: string; destTimezone: string; }>('ℹ️ When it\'s **{source#time(LT)}** in **{sourceTimezone}**, it\'s **{dest#time(LT)}** in **{destTimezone}**.')
             }
         },
         timer: {
@@ -2971,10 +2972,10 @@ export const templates = FormatString.defineTree('cluster', t => ({
             default: {
                 description: 'Sets a timer for the provided duration, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.',
                 durationZero: '❌ I cant set a timer for 0 seconds!',
-                event: t<{ userId: string; start: Moment; }>('⏰ *Bzzt!* <@{userId}>, the timer you set {start#tag(R)} has gone off! *Bzzt!* ⏰'),
+                event: t<{ userId: string; start: moment.Moment; }>('⏰ *Bzzt!* <@{userId}>, the timer you set {start#tag(R)} has gone off! *Bzzt!* ⏰'),
                 success: {
-                    here: t<{ duration: Duration; }>('✅ Ok, ill ping you here {duration#tag}'),
-                    dm: t<{ duration: Duration; }>('✅ Ok, ill ping you in a DM {duration#tag}')
+                    here: t<{ duration: moment.Duration; }>('✅ Ok, ill ping you here {duration#tag}'),
+                    dm: t<{ duration: moment.Duration; }>('✅ Ok, ill ping you in a DM {duration#tag}')
                 }
             }
         },
@@ -2983,12 +2984,12 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Gets your current timezone',
                 notSet: 'ℹ️ You haven\'t set a timezone yet.',
                 timezoneInvalid: t<{ timezone: string; }>('⚠️ Your stored timezone code is `{timezone}`, which isn\'t valid! Please update it when possible.'),
-                success: t<{ timezone: string; now: Moment; }>('ℹ️ Your stored timezone code is `{timezone}`, which is equivalent to {now#time(z \\(Z\\))}.')
+                success: t<{ timezone: string; now: moment.Moment; }>('ℹ️ Your stored timezone code is `{timezone}`, which is equivalent to {now#time(z \\(Z\\))}.')
             },
             set: {
                 description: 'Sets your current timezone. A list of [allowed time zones can be found on wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List) under the `TZ database name` column',
                 timezoneInvalid: t<{ timezone: string; }>('❌ `{timezone}` is not a valid timezone! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.'),
-                success: t<{ timezone: string; now: Moment; }>('✅ Ok, your timezone code is now set to `{timezone}`, which is equivalent to {now#time(z \\(Z\\))}.')
+                success: t<{ timezone: string; now: moment.Moment; }>('✅ Ok, your timezone code is now set to `{timezone}`, which is equivalent to {now#time(z \\(Z\\))}.')
             }
         },
         todo: {
@@ -3017,7 +3018,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
         uptime: {
             default: {
                 description: 'Gets how long ive been online for',
-                success: t<{ startTime: Moment; }>('ℹ️ I came online {startTime#tag(R)} at {startTime#tag}')
+                success: t<{ startTime: moment.Moment; }>('ℹ️ I came online {startTime#tag(R)} at {startTime#tag}')
             }
         },
         user: {
@@ -3025,28 +3026,28 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Gets information about a user',
                 activity: {
                     default: 'Not doing anything',
-                    5: t<Eris.Activity>('Competing in {name}'),
-                    4: t<Eris.Activity>('{emoji#bool({#emoji} |)}{name}'),
-                    2: t<Eris.Activity>('Listening to {name}'),
-                    0: t<Eris.Activity>('Playing {name}'),
-                    1: t<Eris.Activity>('Streaming {details}'),
-                    3: t<Eris.Activity>('Watching {name}')
+                    5: t<eris.Activity>('Competing in {name}'),
+                    4: t<eris.Activity>('{emoji#bool({#emoji} |)}{name}'),
+                    2: t<eris.Activity>('Listening to {name}'),
+                    0: t<eris.Activity>('Playing {name}'),
+                    1: t<eris.Activity>('Streaming {details}'),
+                    3: t<eris.Activity>('Watching {name}')
                 },
                 embed: {
                     author: {
                         name: {
-                            user: t<{ user: Eris.User; }>('{user.bot#bool(🤖 |)}{user.username}#{user.discriminator}'),
-                            member: t<{ user: Eris.Member; }>('{user.bot#bool(🤖 |)}{user.username}#{user.discriminator}{user.nick#bool( \\({}\\)|)}')
+                            user: t<{ user: eris.User; }>('{user.bot#bool(🤖 |)}{user.username}#{user.discriminator}'),
+                            member: t<{ user: eris.Member; }>('{user.bot#bool(🤖 |)}{user.username}#{user.discriminator}{user.nick#bool( \\({}\\)|)}')
                         }
                     },
                     description: {
-                        user: t<{ user: Eris.User; }>('**User Id**: {user.id}\n**Created**: {user.createdAt#bool({#tag(t)}|-)}'),
-                        member: t<{ user: Eris.Member; }>('**User Id**: {user.id}\n**Created**: {user.createdAt#bool({#tag(t)}|-)}\n**Joined** {user.joinedAt#bool({#tag(t)}|-)}')
+                        user: t<{ user: eris.User; }>('**User Id**: {user.id}\n**Created**: {user.createdAt#bool({#tag(t)}|-)}'),
+                        member: t<{ user: eris.Member; }>('**User Id**: {user.id}\n**Created**: {user.createdAt#bool({#tag(t)}|-)}\n**Joined** {user.joinedAt#bool({#tag(t)}|-)}')
                     },
                     field: {
                         roles: {
                             name: 'Roles',
-                            value: t<{ roles: Iterable<Eris.Role>; }>('{roles#plural(0:None|{#map({#tag})#join( )})}')
+                            value: t<{ roles: Iterable<eris.Role>; }>('{roles#plural(0:None|{#map({#tag})#join( )})}')
                         }
                     }
                 }
@@ -3074,23 +3075,23 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 description: 'Checks the status of the petition to ban someone.',
                 embed: {
                     title: 'ℹ️ Vote ban signatures',
-                    description: t<{ user: Eris.User; votes: Iterable<{ userId: string; reason?: string; }>; excess: number; }>('{votes#plural(0:No one has voted to ban {~user#tag} yet.|{#map(<@{userId}>{reason#bool( - {}|)})#join(\n)})}{excess#bool(\n... and {} more|)}')
+                    description: t<{ user: eris.User; votes: Iterable<{ userId: string; reason?: string; }>; excess: number; }>('{votes#plural(0:No one has voted to ban {~user#tag} yet.|{#map(<@{userId}>{reason#bool( - {}|)})#join(\n)})}{excess#bool(\n... and {} more|)}')
                 }
             },
             sign: {
                 description: 'Signs a petition to ban a someone',
-                alreadySigned: t<{ user: Eris.User; }>('❌ I know you\'re eager, but you have already signed the petition to ban {user#tag}!'),
-                success: t<{ user: Eris.User; target: Eris.User; total: number; reason?: string; }>('✅ {user#tag} has signed to ban {target#tag}! A total of **{total} {total#plural(1:person** has|people** have)} signed the petition now.{reason#bool(\n**Reason:** {}|)}')
+                alreadySigned: t<{ user: eris.User; }>('❌ I know you\'re eager, but you have already signed the petition to ban {user#tag}!'),
+                success: t<{ user: eris.User; target: eris.User; total: number; reason?: string; }>('✅ {user#tag} has signed to ban {target#tag}! A total of **{total} {total#plural(1:person** has|people** have)} signed the petition now.{reason#bool(\n**Reason:** {}|)}')
             },
             forgive: {
                 description: 'Removes your signature to ban someone',
-                notSigned: t<{ user: Eris.User; }>('❌ That\'s very kind of you, but you haven\'t even signed to ban {user#tag} yet!'),
-                success: t<{ user: Eris.User; target: Eris.User; total: number; }>('✅ {user#tag} reconsidered and forgiven {target#tag}! A total of **{total} {total#plural(1:person** has|people** have)} signed the petition now.')
+                notSigned: t<{ user: eris.User; }>('❌ That\'s very kind of you, but you haven\'t even signed to ban {user#tag} yet!'),
+                success: t<{ user: eris.User; target: eris.User; total: number; }>('✅ {user#tag} reconsidered and forgiven {target#tag}! A total of **{total} {total#plural(1:person** has|people** have)} signed the petition now.')
             }
         },
         warnings: {
             common: {
-                count: t<{ user: Eris.User; count: number; }>('{count#plural(0:🎉|⚠️)} **{user#tag}** {count#plural(0:doesn\'t have any warnings!|1:has accumulated 1 warning.|has accumulated {} warnings.)}'),
+                count: t<{ user: eris.User; count: number; }>('{count#plural(0:🎉|⚠️)} **{user#tag}** {count#plural(0:doesn\'t have any warnings!|1:has accumulated 1 warning.|has accumulated {} warnings.)}'),
                 untilTimeout: t<{ remaining: number; }>('- {remaining} more {remaining#plural(1:warning|warnings)} before being timed out.'),
                 untilKick: t<{ remaining: number; }>('- {remaining} more {remaining#plural(1:warning|warnings)} before being kicked.'),
                 untilBan: t<{ remaining: number; }>('- {remaining} more {remaining#plural(1:warning|warnings)} before being banned.'),
@@ -3382,118 +3383,118 @@ export const templates = FormatString.defineTree('cluster', t => ({
         },
         awoo: {
             description: 'Awoooooooooo!',
-            action: t<{ self: Eris.User; }>('**{self#tag}** awoos!')
+            action: t<{ self: eris.User; }>('**{self#tag}** awoos!')
         },
         bang: {
             description: 'Bang bang!',
-            action: t<{ self: Eris.User; }>('**{self#tag}** bangs!')
+            action: t<{ self: eris.User; }>('**{self#tag}** bangs!')
         },
         bite: {
             description: 'Give someone a bite!',
-            action: t<{ self: Eris.User; target?: Eris.User; }>('**{self#tag}** bites **{target#tag=themselves}**')
+            action: t<{ self: eris.User; target?: eris.User; }>('**{self#tag}** bites **{target#tag=themselves}**')
         },
         blush: {
             description: 'Show everyone that you\'re blushing.',
-            action: t<{ self: Eris.User; }>('**{self#tag}** blushes!')
+            action: t<{ self: eris.User; }>('**{self#tag}** blushes!')
         },
         cry: {
             description: 'Show everyone that you\'re crying.',
-            action: t<{ self: Eris.User; }>('**{self#tag}** cries!')
+            action: t<{ self: eris.User; }>('**{self#tag}** cries!')
         },
         cuddles: {
             description: 'Cuddle with someone.',
-            action: t<{ self: Eris.User; target?: Eris.User; }>('**{self#tag}** cuddles with **{target#tag=themselves}**')
+            action: t<{ self: eris.User; target?: eris.User; }>('**{self#tag}** cuddles with **{target#tag=themselves}**')
         },
         dance: {
             description: 'Break out some sweet, sweet dance moves.',
-            action: t<{ self: Eris.User; }>('**{self#tag}** dances!')
+            action: t<{ self: eris.User; }>('**{self#tag}** dances!')
         },
         hug: {
             description: 'Give somebody a hug.',
-            action: t<{ self: Eris.User; target?: Eris.User; }>('**{self#tag}** hugs **{target#tag=themselves}**')
+            action: t<{ self: eris.User; target?: eris.User; }>('**{self#tag}** hugs **{target#tag=themselves}**')
         },
         jojo: {
             description: 'This must be the work of an enemy stand!'
         },
         kiss: {
             description: 'Give somebody a kiss.',
-            action: t<{ self: Eris.User; target?: Eris.User; }>('**{self#tag}** kisses **{target#tag=themselves}**')
+            action: t<{ self: eris.User; target?: eris.User; }>('**{self#tag}** kisses **{target#tag=themselves}**')
         },
         lewd: {
             description: 'T-that\'s lewd...',
-            action: t<{ self: Eris.User; }>('**{self#tag}** is lewd 😳!')
+            action: t<{ self: eris.User; }>('**{self#tag}** is lewd 😳!')
         },
         lick: {
             description: 'Give someone a lick. Sluurrpppp!',
-            action: t<{ self: Eris.User; target?: Eris.User; }>('**{self#tag}** licks **{target#tag=themselves}**')
+            action: t<{ self: eris.User; target?: eris.User; }>('**{self#tag}** licks **{target#tag=themselves}**')
         },
         megumin: {
             description: 'Darkness blacker than black and darker than dark, I beseech thee, combine with my deep crimson. The time of awakening cometh. Justice, fallen upon the infallible boundary, appear now as an intangible distortion! Dance, Dance, Dance! I desire for my torrent of power a destructive force: a destructive force without equal! Return all creation to cinders, and come from the abyss!'
         },
         nom: {
             description: 'Nom on somebody.',
-            action: t<{ self: Eris.User; target?: Eris.User; }>('**{self#tag}** noms on **{target#tag=themselves}**')
+            action: t<{ self: eris.User; target?: eris.User; }>('**{self#tag}** noms on **{target#tag=themselves}**')
         },
         owo: {
             description: 'owo whats this?',
-            action: t<{ self: Eris.User; }>('**{self#tag}** owos!')
+            action: t<{ self: eris.User; }>('**{self#tag}** owos!')
         },
         pat: {
             description: 'Give somebody a lovely pat.',
-            action: t<{ self: Eris.User; target?: Eris.User; }>('**{self#tag}** pats **{target#tag=themselves}**')
+            action: t<{ self: eris.User; target?: eris.User; }>('**{self#tag}** pats **{target#tag=themselves}**')
         },
         poke: {
             description: 'Gives somebody a poke.',
-            action: t<{ self: Eris.User; target?: Eris.User; }>('**{self#tag}** pokes **{target#tag=themselves}**')
+            action: t<{ self: eris.User; target?: eris.User; }>('**{self#tag}** pokes **{target#tag=themselves}**')
         },
         pout: {
             description: 'Let everyone know that you\'re being pouty.',
-            action: t<{ self: Eris.User; }>('**{self#tag}** pouts!')
+            action: t<{ self: eris.User; }>('**{self#tag}** pouts!')
         },
         punch: {
             description: 'Punch someone. They probably deserved it.',
-            action: t<{ self: Eris.User; target?: Eris.User; }>('**{self#tag}** punches **{target#tag=themselves}**')
+            action: t<{ self: eris.User; target?: eris.User; }>('**{self#tag}** punches **{target#tag=themselves}**')
         },
         rem: {
             description: 'Worst girl'
         },
         shrug: {
             description: 'Let everyone know that you\'re a bit indifferent.',
-            action: t<{ self: Eris.User; }>('**{self#tag}** shrugs!')
+            action: t<{ self: eris.User; }>('**{self#tag}** shrugs!')
         },
         slap: {
             description: 'Slaps someone.',
-            action: t<{ self: Eris.User; target?: Eris.User; }>('**{self#tag}** slaps **{target#tag=themselves}**')
+            action: t<{ self: eris.User; target?: eris.User; }>('**{self#tag}** slaps **{target#tag=themselves}**')
         },
         sleepy: {
             description: 'Let everyone know that you\'re feeling tired.',
-            action: t<{ self: Eris.User; }>('**{self#tag}** is sleepy!')
+            action: t<{ self: eris.User; }>('**{self#tag}** is sleepy!')
         },
         smile: {
             description: 'Smile!',
-            action: t<{ self: Eris.User; }>('**{self#tag}** smiles!')
+            action: t<{ self: eris.User; }>('**{self#tag}** smiles!')
         },
         smug: {
             description: 'Let out your inner smugness.',
-            action: t<{ self: Eris.User; }>('**{self#tag}** is smug!')
+            action: t<{ self: eris.User; }>('**{self#tag}** is smug!')
         },
         stare: {
             description: 'Staaaaaaaaare',
-            action: t<{ self: Eris.User; }>('**{self#tag}** stares!')
+            action: t<{ self: eris.User; }>('**{self#tag}** stares!')
         },
         thumbsUp: {
             description: 'Give a thumbs up!',
-            action: t<{ self: Eris.User; }>('**{self#tag}** gives a thumbs up!')
+            action: t<{ self: eris.User; }>('**{self#tag}** gives a thumbs up!')
         },
         wag: {
             description: 'Wagwagwagwag',
-            action: t<{ self: Eris.User; }>('**{self#tag}** wags!')
+            action: t<{ self: eris.User; }>('**{self#tag}** wags!')
         },
         respawn: {
             description: 'Cluster respawning only for staff.',
             default: {
                 description: 'Respawns the cluster specified',
-                requested: t<{ user: Eris.User; clusterId: number; }>('**{user#tag}** has called for a respawn of cluster {clusterId}.'),
+                requested: t<{ user: eris.User; clusterId: number; }>('**{user#tag}** has called for a respawn of cluster {clusterId}.'),
                 success: t<{ clusterId: number; }>('✅ Cluster {clusterId} is being respawned and stuff now')
             }
         },
@@ -3504,7 +3505,7 @@ export const templates = FormatString.defineTree('cluster', t => ({
                 userNotFound: '⚠️ Feedback successfully updated\n⛔ I couldn\'t find the user who submitted that feedback',
                 alertFailed: '⚠️ Feedback successfully updated\n⛔ I wasn\'t able to send the response in the channel where the feedback was initially sent',
                 success: '✅ Feedback successfully updated and response has been sent.',
-                alert: t<{ submitterId: string; title: string; description: string; respondent: Eris.User; response: string; link: string; }>('**Hi, <@{submitterId}>!**  You recently made this suggestion:\n\n**{title}**{description#bool(\n\n{}|)}\n\n**{respondent#tag}** has responded to your feedback with this:\n\n{response}\n\nIf you have any further questions or concerns, please join my support guild so that they can talk to you directly. You can get a link by doing `b!invite`. Thanks for your time!\n\nYour card has been updated here: <{link}>')
+                alert: t<{ submitterId: string; title: string; description: string; respondent: eris.User; response: string; link: string; }>('**Hi, <@{submitterId}>!**  You recently made this suggestion:\n\n**{title}**{description#bool(\n\n{}|)}\n\n**{respondent#tag}** has responded to your feedback with this:\n\n{response}\n\nIf you have any further questions or concerns, please join my support guild so that they can talk to you directly. You can get a link by doing `b!invite`. Thanks for your time!\n\nYour card has been updated here: <{link}>')
             }
         }
     }

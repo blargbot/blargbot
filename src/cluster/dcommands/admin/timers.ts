@@ -1,11 +1,13 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, guard } from '@blargbot/cluster/utils';
-import { format, IFormattable, util } from '@blargbot/formatting';
-import { EmbedField, EmbedOptions } from 'eris';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { format, util } from '@blargbot/formatting';
+import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.timers;
 
@@ -114,8 +116,8 @@ export class TimersCommand extends GlobalCommand {
         if (timer === undefined)
             return cmd.info.notFound;
 
-        const embed: EmbedOptions = {};
-        const fields = embed.fields = [] as EmbedField[];
+        const embed: eris.EmbedOptions = {};
+        const fields = embed.fields = [] as eris.EmbedField[];
 
         embed.title = `Timer #${simpleId(timer.id)}`;
         embed.description = 'content' in timer ? timer.content.length > 2000 ? `${timer.content.slice(0, 1997)}...` : timer.content : undefined;

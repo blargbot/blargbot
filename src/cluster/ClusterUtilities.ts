@@ -1,14 +1,14 @@
-import { defaultStaff, discord, guard, parse, snowflake } from '@blargbot/cluster/utils';
-import { BaseUtilities } from '@blargbot/core/BaseUtilities';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, FormatSelectMenuOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, SendContent, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
-import { format, IFormattable, util } from '@blargbot/formatting';
-import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, KnownCategoryChannel, KnownChannel, KnownGuildChannel, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, SelectMenu, TextableChannel, User, Webhook } from 'eris';
-import fetch from 'node-fetch';
+import { defaultStaff, discord, guard, parse, snowflake } from '@blargbot/cluster/utils/index.js';
+import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import type { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, FormatSelectMenuOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, SendContent, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { format, util } from '@blargbot/formatting';
+import * as eris from 'eris';
 
-import { Cluster } from './Cluster';
-import { Awaiter } from './managers';
-import templates from './text';
+import type { Cluster } from './Cluster.js';
+import type { Awaiter } from './managers/index.js';
+import templates from './text.js';
 
 export class ClusterUtilities extends BaseUtilities {
     public constructor(
@@ -70,7 +70,7 @@ export class ClusterUtilities extends BaseUtilities {
             selectId: snowflake.create().toString()
         };
 
-        const channel = options.context instanceof Message ? options.context.channel : options.context;
+        const channel = options.context instanceof eris.Message ? options.context.channel : options.context;
         const formatter = await this.getFormatter(channel);
         const awaiter = this.createComponentAwaiter(options.actors, templates.common.query.cantUse, options.timeout, {
             [component.cancelId]: () => true,
@@ -104,7 +104,7 @@ export class ClusterUtilities extends BaseUtilities {
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
 
-                if (interaction.data.component_type === Constants.ComponentTypes.SELECT_MENU)
+                if (interaction.data.component_type === eris.Constants.ComponentTypes.SELECT_MENU)
                     return { state: 'SUCCESS', value: valueMap[interaction.data.values[0]] };
 
                 if (interaction.data.custom_id === component.cancelId)
@@ -188,7 +188,7 @@ export class ClusterUtilities extends BaseUtilities {
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
 
-                if (interaction.data.component_type === Constants.ComponentTypes.SELECT_MENU)
+                if (interaction.data.component_type === eris.Constants.ComponentTypes.SELECT_MENU)
                     return { state: 'SUCCESS', value: interaction.data.values.map(id => valueMap[id]) };
 
                 if (interaction.data.custom_id === component.cancelId)
@@ -281,9 +281,9 @@ export class ClusterUtilities extends BaseUtilities {
         };
 
         let parsed: { success: true; value: T | string; } | { success: false; } | undefined;
-        const messages: Message[] = [];
+        const messages: eris.Message[] = [];
         const parse = options.parse ?? (m => ({ success: true, value: m.content }));
-        const channel = options.context instanceof Message ? options.context.channel : options.context;
+        const channel = options.context instanceof eris.Message ? options.context.channel : options.context;
         const componentAwaiter = this.createComponentAwaiter(options.actors, templates.common.query.cantUse, options.timeout, { [component.cancelId]: () => true });
         const messageAwaiter = this.createMessageAwaiter(channel, options.actors, options.timeout, async message => {
             const parseResult = await parse(message);
@@ -345,21 +345,21 @@ export class ClusterUtilities extends BaseUtilities {
         };
     }
 
-    async #sendOrReply<T extends TextableChannel>(context: T | Message<T>, content: IFormattable<SendContent<string>>, author?: User): Promise<Message<T> | undefined> {
-        return context instanceof Message
+    async #sendOrReply<T extends eris.TextableChannel>(context: T | eris.Message<T>, content: IFormattable<SendContent<string>>, author?: eris.User): Promise<eris.Message<T> | undefined> {
+        return context instanceof eris.Message
             ? await this.reply(context, content, author)
             : await this.send(context, content, author);
     }
 
     public createComponentAwaiter(
-        actors: Iterable<string | User> | string | User,
+        actors: Iterable<string | eris.User> | string | eris.User,
         rejectMessage: IFormattable<string>,
         timeout: number | undefined,
-        options: Record<string, (interaction: ComponentInteraction) => boolean | Promise<boolean>>
-    ): Awaiter<ComponentInteraction> {
+        options: Record<string, (interaction: eris.ComponentInteraction) => boolean | Promise<boolean>>
+    ): Awaiter<eris.ComponentInteraction> {
         const actorFilter = createActorFilter(actors);
         const validIds = new Set(Object.keys(options));
-        const reject = new FormattableMessageContent({ content: rejectMessage, flags: Constants.MessageFlags.EPHEMERAL });
+        const reject = new FormattableMessageContent({ content: rejectMessage, flags: eris.Constants.MessageFlags.EPHEMERAL });
         return this.cluster.awaiter.components.getAwaiter(validIds, async (interaction) => {
             if (!actorFilter(interaction.member?.user ?? interaction.user)) {
                 const formatter = await this.getFormatter(interaction.channel);
@@ -371,21 +371,21 @@ export class ClusterUtilities extends BaseUtilities {
         }, timeout ?? 60000);
     }
 
-    public createMessageAwaiter<T extends TextableChannel>(
+    public createMessageAwaiter<T extends eris.TextableChannel>(
         channel: T,
-        actors: Iterable<string | User> | string | User,
+        actors: Iterable<string | eris.User> | string | eris.User,
         timeout: number | undefined,
-        filter: (message: Message<T>) => Promise<boolean> | boolean
-    ): Awaiter<Message<T>> {
+        filter: (message: eris.Message<T>) => Promise<boolean> | boolean
+    ): Awaiter<eris.Message<T>> {
         const actorFilter = createActorFilter(actors);
         return this.cluster.awaiter.messages.getAwaiter([channel], async message => {
             return actorFilter(message.author) && await filter(message);
         }, timeout ?? 60000);
     }
 
-    public async queryUser(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<User>>
-    public async queryUser(options: EntityPickQueryOptions<IFormattable<string>, User>): Promise<ChoiceQueryResult<User>>
-    public async queryUser(options: EntityQueryOptions<IFormattable<string>, User>): Promise<ChoiceQueryResult<User>> {
+    public async queryUser(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<eris.User>>
+    public async queryUser(options: EntityPickQueryOptions<IFormattable<string>, eris.User>): Promise<ChoiceQueryResult<eris.User>>
+    public async queryUser(options: EntityQueryOptions<IFormattable<string>, eris.User>): Promise<ChoiceQueryResult<eris.User>> {
         const matches = 'guild' in options ? await this.findUsers(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
@@ -406,7 +406,7 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async querySender(options: EntityPickQueryOptions<IFormattable<string>, User | Webhook>): Promise<ChoiceQueryResult<User | Webhook>> {
+    public async querySender(options: EntityPickQueryOptions<IFormattable<string>, eris.User | eris.Webhook>): Promise<ChoiceQueryResult<eris.User | eris.Webhook>> {
         return await this.queryChoice({
             ...options,
             prompt: options.prompt ?? (options.filter === undefined
@@ -414,22 +414,22 @@ export class ClusterUtilities extends BaseUtilities {
                 : templates.common.query.sender.prompt.filtered({ filter: options.filter })),
             placeholder: options.placeholder ?? templates.common.query.sender.placeholder,
             choices: [...options.choices]
-                .map(u => ({ u, sortKey: u instanceof User ? `${u.username}#${u.discriminator}` : u.name }))
+                .map(u => ({ u, sortKey: u instanceof eris.User ? `${u.username}#${u.discriminator}` : u.name }))
                 .sort((a, b) => a.sortKey > b.sortKey ? 1 : -1)
                 .map(({ u }) => ({
-                    label: u instanceof User
+                    label: u instanceof eris.User
                         ? templates.common.query.sender.choice.label.user({ user: u })
                         : templates.common.query.sender.choice.label.webhook({ webhook: u }),
-                    emoji: { name: u instanceof User ? u.bot ? '🤖' : '👤' : '🪝' },
+                    emoji: { name: u instanceof eris.User ? u.bot ? '🤖' : '👤' : '🪝' },
                     value: u,
                     description: templates.common.query.sender.choice.description({ sender: u })
                 }))
         });
     }
 
-    public async queryMember(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<Member>>
-    public async queryMember(options: EntityPickQueryOptions<IFormattable<string>, Member>): Promise<ChoiceQueryResult<Member>>
-    public async queryMember(options: EntityQueryOptions<IFormattable<string>, Member>): Promise<ChoiceQueryResult<Member>> {
+    public async queryMember(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<eris.Member>>
+    public async queryMember(options: EntityPickQueryOptions<IFormattable<string>, eris.Member>): Promise<ChoiceQueryResult<eris.Member>>
+    public async queryMember(options: EntityQueryOptions<IFormattable<string>, eris.Member>): Promise<ChoiceQueryResult<eris.Member>> {
         const matches = 'guild' in options ? await this.findMembers(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
@@ -450,9 +450,9 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async queryRole(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<Role>>
-    public async queryRole(options: EntityPickQueryOptions<IFormattable<string>, Role>): Promise<ChoiceQueryResult<Role>>
-    public async queryRole(options: EntityQueryOptions<IFormattable<string>, Role>): Promise<ChoiceQueryResult<Role>> {
+    public async queryRole(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<eris.Role>>
+    public async queryRole(options: EntityPickQueryOptions<IFormattable<string>, eris.Role>): Promise<ChoiceQueryResult<eris.Role>>
+    public async queryRole(options: EntityQueryOptions<IFormattable<string>, eris.Role>): Promise<ChoiceQueryResult<eris.Role>> {
         const matches = 'guild' in options ? await this.findRoles(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
@@ -472,9 +472,9 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async queryChannel(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<KnownGuildChannel>>;
-    public async queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<IFormattable<string>, T>): Promise<ChoiceQueryResult<T>>;
-    public async queryChannel(options: EntityQueryOptions<IFormattable<string>, KnownChannel>): Promise<ChoiceQueryResult<KnownChannel>> {
+    public async queryChannel(options: EntityFindQueryOptions<IFormattable<string>>): Promise<ChoiceQueryResult<eris.KnownGuildChannel>>;
+    public async queryChannel<T extends eris.KnownChannel>(options: EntityPickQueryOptions<IFormattable<string>, T>): Promise<ChoiceQueryResult<T>>;
+    public async queryChannel(options: EntityQueryOptions<IFormattable<string>, eris.KnownChannel>): Promise<ChoiceQueryResult<eris.KnownChannel>> {
         const matches = 'guild' in options ? await this.findChannels(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
@@ -507,8 +507,8 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async displayPaged(
-        channel: KnownTextableChannel,
-        user: User,
+        channel: eris.KnownTextableChannel,
+        user: eris.User,
         getPage: (page: number) => Promise<{
             content: IFormattable<string>;
             pageCount: number;
@@ -554,7 +554,7 @@ export class ClusterUtilities extends BaseUtilities {
         const promises = [];
         if (this.config.general.botlisttoken.length > 0) {
             promises.push(
-                fetch(`https://discord.bots.gg/api/v1/bots/${this.user.id}/stats`, {
+                this.fetch(`https://discord.bots.gg/api/v1/bots/${this.user.id}/stats`, {
                     method: 'POST',
                     headers: {
                         'content-type': 'application/json',
@@ -568,7 +568,7 @@ export class ClusterUtilities extends BaseUtilities {
 
         if (this.config.general.carbontoken.length > 0) {
             promises.push(
-                fetch('https://www.carbonitex.net/discord/data/botdata.php', {
+                this.fetch('https://www.carbonitex.net/discord/data/botdata.php', {
                     method: 'POST',
                     headers: {
                         'content-type': 'application/json'
@@ -590,7 +590,7 @@ export class ClusterUtilities extends BaseUtilities {
                 shards[shard.id] = this.discord.guilds.filter(g => g.shard.id === shard.id);
             }
             promises.push(
-                fetch(`https://discordbots.org/api/bots/${this.user.id}/stats`, {
+                this.fetch(`https://discordbots.org/api/bots/${this.user.id}/stats`, {
                     method: 'POST',
                     headers: {
                         'content-type': 'application/json',
@@ -615,7 +615,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
     /* eslint-enable @typescript-eslint/naming-convention */
 
-    public isBotHigher(member: Member): boolean {
+    public isBotHigher(member: eris.Member): boolean {
         const bot = member.guild.members.get(this.discord.user.id);
         if (bot === undefined)
             return false;
@@ -623,21 +623,21 @@ export class ClusterUtilities extends BaseUtilities {
         return discord.getMemberPosition(bot) > discord.getMemberPosition(member);
     }
 
-    public async isUserStaff(member: Member): Promise<boolean>;
-    public async isUserStaff(userId: string, guildId: string | Guild): Promise<boolean>;
-    public async isUserStaff(guildId: string | Guild): Promise<(member: Member) => boolean>;
+    public async isUserStaff(member: eris.Member): Promise<boolean>;
+    public async isUserStaff(userId: string, guildId: string | eris.Guild): Promise<boolean>;
+    public async isUserStaff(guildId: string | eris.Guild): Promise<(member: eris.Member) => boolean>;
     public async isUserStaff(
         ...args:
-            | [userId: string, guildId: string | Guild]
-            | [member: Member]
-            | [guildId: string | Guild]
-    ): Promise<boolean | ((member: Member) => boolean)> {
+            | [userId: string, guildId: string | eris.Guild]
+            | [member: eris.Member]
+            | [guildId: string | eris.Guild]
+    ): Promise<boolean | ((member: eris.Member) => boolean)> {
         let member;
         if (args.length === 2) {
             if (args[0] === args[1])
                 return true;
             member = await this.getMember(args[1], args[0]);
-        } else if (args[0] instanceof Member) {
+        } else if (args[0] instanceof eris.Member) {
             member = args[0];
         } else {
             const guildId = typeof args[0] === 'string' ? args[0] : args[0].id;
@@ -658,11 +658,11 @@ export class ClusterUtilities extends BaseUtilities {
         return allow !== undefined && this.hasPerms(member, allow);
     }
 
-    public hasPerms(member: Member, allow: bigint): boolean {
+    public hasPerms(member: eris.Member, allow: bigint): boolean {
         if (allow === 0n)
             return true;
 
-        allow |= Constants.Permissions.administrator;
+        allow |= eris.Constants.Permissions.administrator;
         return (allow & member.permissions.allow) !== 0n;
     }
 
@@ -708,7 +708,7 @@ interface TextComponentOptions<TString> {
     readonly cancelButton: QueryButton<TString>;
 }
 
-function createActorFilter(actors: Iterable<string | User | Member> | string | User | Member): (user?: User) => boolean {
+function createActorFilter(actors: Iterable<string | eris.User | eris.Member> | string | eris.User | eris.Member): (user?: eris.User) => boolean {
     const userIds = new Set<string>();
     if (typeof actors === 'string')
         userIds.add(actors);
@@ -730,34 +730,34 @@ function createActorFilter(actors: Iterable<string | User | Member> | string | U
     }
 }
 
-function createConfirmBody(options: ConfirmComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, 'components'>> {
+function createConfirmBody(options: ConfirmComponentOptions<IFormattable<string>>): IFormattable<Pick<eris.AdvancedMessageContent, 'components'>> {
     const confirm = {
-        style: Constants.ButtonStyles.SUCCESS,
+        style: eris.Constants.ButtonStyles.SUCCESS,
         ...util.isFormattable(options.confirmButton) ? { label: options.confirmButton } : options.confirmButton,
-        type: Constants.ComponentTypes.BUTTON,
+        type: eris.Constants.ComponentTypes.BUTTON,
         custom_id: options.confirmId
     };
 
     const cancel = {
-        style: Constants.ButtonStyles.DANGER,
+        style: eris.Constants.ButtonStyles.DANGER,
         ...util.isFormattable(options.cancelButton) ? { label: options.cancelButton } : options.cancelButton,
-        type: Constants.ComponentTypes.BUTTON,
+        type: eris.Constants.ComponentTypes.BUTTON,
         custom_id: options.cancelId
     };
 
     return new FormattableMessageContent({
         components: [
             {
-                type: Constants.ComponentTypes.ACTION_ROW,
+                type: eris.Constants.ComponentTypes.ACTION_ROW,
                 components: [confirm, cancel]
             }
         ]
     });
 }
 
-function createMultipleBody(options: MultipleComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, 'components'>> {
+function createMultipleBody(options: MultipleComponentOptions<IFormattable<string>>): IFormattable<Pick<eris.AdvancedMessageContent, 'components'>> {
     const select = {
-        type: Constants.ComponentTypes.SELECT_MENU,
+        type: eris.Constants.ComponentTypes.SELECT_MENU,
         custom_id: options.selectId,
         options: [...options.select],
         placeholder: options.placeholder,
@@ -765,78 +765,78 @@ function createMultipleBody(options: MultipleComponentOptions<IFormattable<strin
         min_values: options.minCount ?? 0
     };
     const cancel = {
-        type: Constants.ComponentTypes.BUTTON,
+        type: eris.Constants.ComponentTypes.BUTTON,
         custom_id: options.cancelId,
         emoji: { name: '✖️' },
-        style: Constants.ButtonStyles.DANGER
+        style: eris.Constants.ButtonStyles.DANGER
     };
 
     return new FormattableMessageContent({
         components: [
-            { type: Constants.ComponentTypes.ACTION_ROW, components: [select] },
-            { type: Constants.ComponentTypes.ACTION_ROW, components: [cancel] }
+            { type: eris.Constants.ComponentTypes.ACTION_ROW, components: [select] },
+            { type: eris.Constants.ComponentTypes.ACTION_ROW, components: [cancel] }
         ]
     });
 }
 
-function createChoiceBody(options: ChoiceComponentOptions<IFormattable<string>>): IFormattable<Pick<AdvancedMessageContent, 'components' | 'content'>> {
+function createChoiceBody(options: ChoiceComponentOptions<IFormattable<string>>): IFormattable<Pick<eris.AdvancedMessageContent, 'components' | 'content'>> {
     const select = {
-        type: Constants.ComponentTypes.SELECT_MENU,
+        type: eris.Constants.ComponentTypes.SELECT_MENU,
         custom_id: options.selectId,
         options: [...options.select],
         placeholder: options.placeholder
     };
     const cancel = {
-        type: Constants.ComponentTypes.BUTTON,
+        type: eris.Constants.ComponentTypes.BUTTON,
         custom_id: options.cancelId,
         emoji: { name: '✖️' },
-        style: Constants.ButtonStyles.DANGER
+        style: eris.Constants.ButtonStyles.DANGER
     };
 
     if (options.lastPage === 0) {
         return new FormattableMessageContent({
             content: options.content,
             components: [
-                { type: Constants.ComponentTypes.ACTION_ROW, components: [select] },
-                { type: Constants.ComponentTypes.ACTION_ROW, components: [cancel] }
+                { type: eris.Constants.ComponentTypes.ACTION_ROW, components: [select] },
+                { type: eris.Constants.ComponentTypes.ACTION_ROW, components: [cancel] }
             ]
         });
     }
 
     const prev = {
-        type: Constants.ComponentTypes.BUTTON,
+        type: eris.Constants.ComponentTypes.BUTTON,
         custom_id: options.prevId,
         emoji: { name: '⬅' },
-        style: Constants.ButtonStyles.PRIMARY,
+        style: eris.Constants.ButtonStyles.PRIMARY,
         disabled: options.page === 0
     };
 
     const next = {
-        type: Constants.ComponentTypes.BUTTON,
+        type: eris.Constants.ComponentTypes.BUTTON,
         custom_id: options.nextId,
         emoji: { name: '➡' },
-        style: Constants.ButtonStyles.PRIMARY,
+        style: eris.Constants.ButtonStyles.PRIMARY,
         disabled: options.page === options.lastPage
     };
 
     return new FormattableMessageContent({
         content: templates.common.query.choose.paged({ content: options.content, page: options.page, pageCount: options.lastPage }),
         components: [
-            { type: Constants.ComponentTypes.ACTION_ROW, components: [select] },
-            { type: Constants.ComponentTypes.ACTION_ROW, components: [prev, cancel, next] }
+            { type: eris.Constants.ComponentTypes.ACTION_ROW, components: [select] },
+            { type: eris.Constants.ComponentTypes.ACTION_ROW, components: [prev, cancel, next] }
         ]
     });
 }
 
-function createTextBody(options: TextComponentOptions<IFormattable<string>>, disabled = false): IFormattable<Pick<AdvancedMessageContent, 'components'>> {
+function createTextBody(options: TextComponentOptions<IFormattable<string>>, disabled = false): IFormattable<Pick<eris.AdvancedMessageContent, 'components'>> {
     return new FormattableMessageContent({
         components: [
             {
-                type: Constants.ComponentTypes.ACTION_ROW,
+                type: eris.Constants.ComponentTypes.ACTION_ROW,
                 components: [{
-                    style: Constants.ButtonStyles.SECONDARY,
+                    style: eris.Constants.ButtonStyles.SECONDARY,
                     ...util.isFormattable(options.cancelButton) ? { label: options.cancelButton } : options.cancelButton,
-                    type: Constants.ComponentTypes.BUTTON,
+                    type: eris.Constants.ComponentTypes.BUTTON,
                     custom_id: options.cancelId,
                     disabled: disabled
                 }]
@@ -845,26 +845,26 @@ function createTextBody(options: TextComponentOptions<IFormattable<string>>, dis
     });
 }
 
-function getChannelLookupSelect(channel: KnownChannel): { label: IFormattable<string>; emoji: string; } {
+function getChannelLookupSelect(channel: eris.KnownChannel): { label: IFormattable<string>; emoji: string; } {
     switch (channel.type) {
-        case Constants.ChannelTypes.DM: return { emoji: '🕵️', label: templates.common.query.channel.choice.label.dm };
-        case Constants.ChannelTypes.GROUP_DM: return { emoji: '👥', label: templates.common.query.channel.choice.label.dm };
-        case Constants.ChannelTypes.GUILD_CATEGORY: return { emoji: '📁', label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_NEWS: return { emoji: '📰', label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_NEWS_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_PRIVATE_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_PUBLIC_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_STAGE_VOICE: return { emoji: '🔈', label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_STORE: return { emoji: '🛒', label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_TEXT: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
-        case Constants.ChannelTypes.GUILD_VOICE: return { emoji: '🔈', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case eris.Constants.ChannelTypes.DM: return { emoji: '🕵️', label: templates.common.query.channel.choice.label.dm };
+        case eris.Constants.ChannelTypes.GROUP_DM: return { emoji: '👥', label: templates.common.query.channel.choice.label.dm };
+        case eris.Constants.ChannelTypes.GUILD_CATEGORY: return { emoji: '📁', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case eris.Constants.ChannelTypes.GUILD_NEWS: return { emoji: '📰', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case eris.Constants.ChannelTypes.GUILD_NEWS_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case eris.Constants.ChannelTypes.GUILD_STAGE_VOICE: return { emoji: '🔈', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case eris.Constants.ChannelTypes.GUILD_STORE: return { emoji: '🛒', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case eris.Constants.ChannelTypes.GUILD_TEXT: return { emoji: '✏️', label: templates.common.query.channel.choice.label.guild({ channel }) };
+        case eris.Constants.ChannelTypes.GUILD_VOICE: return { emoji: '🔈', label: templates.common.query.channel.choice.label.guild({ channel }) };
     }
 }
 
-async function cleanupQuery(...items: Array<Message | ComponentInteraction | undefined>): Promise<void> {
+async function cleanupQuery(...items: Array<eris.Message | eris.ComponentInteraction | undefined>): Promise<void> {
     const promises = [];
     for (const item of items) {
-        if (item instanceof ComponentInteraction)
+        if (item instanceof eris.ComponentInteraction)
             promises.push(item.editOriginalMessage({ components: disableComponents(item.message.components ?? []) }));
         else if (item?.components !== undefined && item.components.length > 0)
             promises.push(item.edit({ components: disableComponents(item.components) }));
@@ -873,28 +873,28 @@ async function cleanupQuery(...items: Array<Message | ComponentInteraction | und
     await Promise.allSettled(promises);
 }
 
-function disableComponents(components: Iterable<ActionRow>): ActionRow[] {
+function disableComponents(components: Iterable<eris.ActionRow>): eris.ActionRow[] {
     return [...disableComponentsCore(components)];
 }
 
-function disableComponentsCore<T extends ActionRow | Button | SelectMenu>(components: Iterable<T>): Iterable<T>;
-function disableComponentsCore(components: Iterable<ActionRow | Button | SelectMenu>): Iterable<ActionRow | Button | SelectMenu>;
-function* disableComponentsCore(components: Iterable<ActionRow | Button | SelectMenu>): Iterable<ActionRow | Button | SelectMenu> {
+function disableComponentsCore<T extends eris.ActionRow | eris.Button | eris.SelectMenu>(components: Iterable<T>): Iterable<T>;
+function disableComponentsCore(components: Iterable<eris.ActionRow | eris.Button | eris.SelectMenu>): Iterable<eris.ActionRow | eris.Button | eris.SelectMenu>;
+function* disableComponentsCore(components: Iterable<eris.ActionRow | eris.Button | eris.SelectMenu>): Iterable<eris.ActionRow | eris.Button | eris.SelectMenu> {
     for (const component of components) {
         switch (component.type) {
-            case Constants.ComponentTypes.ACTION_ROW:
+            case eris.Constants.ComponentTypes.ACTION_ROW:
                 yield {
-                    type: Constants.ComponentTypes.ACTION_ROW,
+                    type: eris.Constants.ComponentTypes.ACTION_ROW,
                     components: [...disableComponentsCore(component.components)]
                 };
                 break;
-            case Constants.ComponentTypes.BUTTON:
+            case eris.Constants.ComponentTypes.BUTTON:
                 yield {
                     ...component,
                     disabled: true
                 };
                 break;
-            case Constants.ComponentTypes.SELECT_MENU:
+            case eris.Constants.ComponentTypes.SELECT_MENU:
                 yield {
                     ...component,
                     disabled: true
@@ -904,11 +904,11 @@ function* disableComponentsCore(components: Iterable<ActionRow | Button | Select
     }
 }
 
-function sortChannels<T extends KnownChannel>(channels: Iterable<T>): T[] {
+function sortChannels<T extends eris.KnownChannel>(channels: Iterable<T>): T[] {
     const channelGroups = {
-        nonGuild: [] as Array<T & KnownPrivateChannel>,
-        nonGroup: [] as Array<T & KnownGuildChannel>,
-        groups: {} as Record<string, { parent: KnownCategoryChannel; includeParent: boolean; children: Array<T & KnownGuildChannel>; } | undefined>
+        nonGuild: [] as Array<T & eris.KnownPrivateChannel>,
+        nonGroup: [] as Array<T & eris.KnownGuildChannel>,
+        groups: {} as Record<string, { parent: eris.KnownCategoryChannel; includeParent: boolean; children: Array<T & eris.KnownGuildChannel>; } | undefined>
     };
 
     for (const channel of channels) {
@@ -951,7 +951,7 @@ function sortChannels<T extends KnownChannel>(channels: Iterable<T>): T[] {
     ];
 }
 
-function compareGuildChannels(left: KnownGuildChannel, right: KnownGuildChannel): number {
+function compareGuildChannels(left: eris.KnownGuildChannel, right: eris.KnownGuildChannel): number {
     return guard.isVoiceChannel(left) ? guard.isVoiceChannel(right)
         ? left.position - right.position
         : 1

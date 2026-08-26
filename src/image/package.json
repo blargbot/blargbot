@@ -2,6 +2,7 @@
     "name": "@blargbot/image",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
@@ -10,7 +11,7 @@
         "canvas": "^2.10.2",
         "gifencoder": "^2.0.1",
         "gm": "^1.25.0",
-        "node-fetch": "^2.6.7",
+        "node-fetch": "^3.3.2",
         "sharp": "^0.31.2",
         "twemoji": "^14.0.2"
     },

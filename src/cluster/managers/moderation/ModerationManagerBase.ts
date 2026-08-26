@@ -1,10 +1,10 @@
-import { Cluster } from '@blargbot/cluster';
-import { defaultStaff, discord, parse } from '@blargbot/cluster/utils';
-import { StoredGuildSettings } from '@blargbot/domain/models';
-import { Constants, Guild } from 'eris';
+import type { Cluster } from '@blargbot/cluster';
+import { defaultStaff, discord, parse } from '@blargbot/cluster/utils/index.js';
+import type { StoredGuildSettings } from '@blargbot/domain/models/index.js';
+import type * as eris from 'eris';
 
-import { ModerationManager } from '../ModerationManager';
-import { ModLogManager } from './ModLogManager';
+import type { ModerationManager } from '../ModerationManager.js';
+import type { ModLogManager } from './ModLogManager.js';
 
 export abstract class ModerationManagerBase {
     protected get cluster(): Cluster { return this.manager.cluster; }
@@ -13,9 +13,9 @@ export abstract class ModerationManagerBase {
     public constructor(public readonly manager: ModerationManager) {
     }
 
-    protected async checkModerator(guild: Guild, targetId: undefined, moderatorId: string, permission: keyof Constants['Permissions'], overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | undefined>;
-    protected async checkModerator(guild: Guild, targetId: string | undefined, moderatorId: string, permission: keyof Constants['Permissions'], overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | 'moderatorTooLow' | undefined>;
-    protected async checkModerator(guild: Guild, targetId: string | undefined, moderatorId: string, permission: keyof Constants['Permissions'], overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | 'moderatorTooLow' | undefined> {
+    protected async checkModerator(guild: eris.Guild, targetId: undefined, moderatorId: string, permission: keyof eris.Constants['Permissions'], overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | undefined>;
+    protected async checkModerator(guild: eris.Guild, targetId: string | undefined, moderatorId: string, permission: keyof eris.Constants['Permissions'], overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | 'moderatorTooLow' | undefined>;
+    protected async checkModerator(guild: eris.Guild, targetId: string | undefined, moderatorId: string, permission: keyof eris.Constants['Permissions'], overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | 'moderatorTooLow' | undefined> {
         if (guild.ownerID === moderatorId || moderatorId === this.cluster.discord.user.id)
             return undefined;
 
@@ -36,7 +36,7 @@ export abstract class ModerationManagerBase {
         return undefined;
     }
 
-    protected async isModeratorHigher(guild: Guild, targetId: string, moderatorId: string): Promise<boolean> {
+    protected async isModeratorHigher(guild: eris.Guild, targetId: string, moderatorId: string): Promise<boolean> {
         if (targetId === moderatorId)
             return true;
 
@@ -57,7 +57,7 @@ export abstract class ModerationManagerBase {
         return discord.getMemberPosition(targetMember) < discord.getMemberPosition(moderatorMember);
     }
 
-    async #getStaffPerms(guild: Guild, overrideKey?: keyof StoredGuildSettings): Promise<bigint> {
+    async #getStaffPerms(guild: eris.Guild, overrideKey?: keyof StoredGuildSettings): Promise<bigint> {
         if (overrideKey === undefined)
             return defaultStaff;
 

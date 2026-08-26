@@ -1,5 +1,5 @@
-import { AirtableConfiguration, CassandraConfiguration, PostgresConfiguration, RethinkConfiguration } from '@blargbot/config';
-import { Logger } from '@blargbot/logger';
+import type { AirtableConfiguration, CassandraConfiguration, PostgresConfiguration, RethinkConfiguration } from '@blargbot/config';
+import type { Logger } from '@blargbot/logger';
 
 export interface DatabaseOptions {
     readonly logger: Logger;

@@ -1,11 +1,13 @@
-import { metrics } from '@blargbot/core/Metrics';
-import { snowflake } from '@blargbot/core/utils';
-import { ChatLog, ChatLogMessage, ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models';
-import { ChatLogStore } from '@blargbot/domain/stores';
-import { Logger } from '@blargbot/logger';
+import { metrics } from '@blargbot/core/Metrics.js';
+import { snowflake } from '@blargbot/core/utils/index.js';
+import type { ChatLog, ChatLogMessage, ChatLogSearchOptions } from '@blargbot/domain/models/index.js';
+import { ChatLogType } from '@blargbot/domain/models/index.js';
+import type { ChatLogStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
-import { Client as Cassandra, types } from 'cassandra-driver';
-import { Duration } from 'moment-timezone';
+import type { Client as Cassandra } from 'cassandra-driver';
+import { types } from 'cassandra-driver';
+import type moment from 'moment-timezone';
 
 export class CassandraDbChatLogStore implements ChatLogStore {
     readonly #db: Cassandra;
@@ -83,7 +85,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
         return mapped.valid ? mapped.value : undefined;
     }
 
-    public async add(message: ChatLogMessage, type: ChatLogType, lifespanS: number | Duration = 604800): Promise<void> {
+    public async add(message: ChatLogMessage, type: ChatLogType, lifespanS: number | moment.Duration = 604800): Promise<void> {
         metrics.chatlogCounter.labels(stringifyType(type)).inc();
         const lifespan = typeof lifespanS === 'number' ? lifespanS : lifespanS.asSeconds();
         const chatlog = {

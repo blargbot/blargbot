@@ -2,6 +2,7 @@
     "name": "blargbot",
     "packageManager": "yarn@3.3.0",
     "private": true,
+    "type": "module",
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
     "main": "index.js",
     "workspaces": [
@@ -28,7 +29,7 @@
     "scripts": {
         "filecount": "cloc ./ --exclude-dir=node_modules --exclude-ext=js,msj,cjs",
         "start": "node index.js",
-        "test": "cross-env TZ=utc mocha --config mocharc.json --recursive --parallel --reporter dot",
+        "test": "cross-env TZ=utc mocha --recursive --reporter dot",
         "check": "yarn rebuild && yarn run rebuild && yarn run lint && yarn run test",
         "ci": "yarn rebuild && yarn run rebuild && yarn run lint && yarn run coverage",
         "coverage": "nyc yarn test",
@@ -48,11 +49,6 @@
         "url": "https://github.com/blargbot/blargbot/issues"
     },
     "homepage": "https://github.com/blargbot/blargbot#readme",
-    "dependenciesMeta": {
-        "mocha": {
-            "unplugged": true
-        }
-    },
     "resolutions": {
         "@types/mocha@^10.0.0": "patch:@types/mocha@npm:10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch",
         "eris@^0.17.1": "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch"

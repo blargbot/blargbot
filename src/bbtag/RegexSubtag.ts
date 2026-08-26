@@ -1,7 +1,7 @@
-import { createSafeRegExp } from '@blargbot/core/utils';
+import { createSafeRegExp } from '@blargbot/core/utils/index.js';
 
-import { CompiledSubtag } from './compilation/CompiledSubtag';
-import { BBTagRuntimeError } from './errors';
+import { CompiledSubtag } from './compilation/CompiledSubtag.js';
+import { BBTagRuntimeError } from './errors/index.js';
 
 export abstract class RegexSubtag extends CompiledSubtag {
 

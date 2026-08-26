@@ -1,10 +1,12 @@
-import { StoredGuild, StoredUser, TagVariableType } from '@blargbot/domain/models';
-import { Constants } from 'eris';
+import type { StoredGuild, StoredUser } from '@blargbot/domain/models/index.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
+import * as eris from 'eris';
 
-import { CommandContext, GlobalCommand } from '../../command';
-import templates from '../../text';
-import { CommandResult, GuildCommandContext, PrivateCommandContext } from '../../types';
-import { CommandType, guard } from '../../utils';
+import type { CommandContext } from '../../command/index.js';
+import { GlobalCommand } from '../../command/index.js';
+import templates from '../../text.js';
+import type { CommandResult, GuildCommandContext, PrivateCommandContext } from '../../types.js';
+import { CommandType, guard } from '../../utils/index.js';
 
 const cmd = templates.commands.bot;
 
@@ -49,11 +51,11 @@ export class ServerCommand extends GlobalCommand {
         if (await context.queryConfirm({
             prompt: text.confirm.prompt,
             cancel: {
-                style: Constants.ButtonStyles.SECONDARY,
+                style: eris.Constants.ButtonStyles.SECONDARY,
                 label: text.confirm.cancel
             },
             continue: {
-                style: Constants.ButtonStyles.DANGER,
+                style: eris.Constants.ButtonStyles.DANGER,
                 label: text.confirm.continue
             }
         }) !== true) {
@@ -73,11 +75,11 @@ export class ServerCommand extends GlobalCommand {
         if (await context.queryConfirm({
             prompt: text.confirm.prompt,
             cancel: {
-                style: Constants.ButtonStyles.SECONDARY,
+                style: eris.Constants.ButtonStyles.SECONDARY,
                 label: text.confirm.cancel
             },
             continue: {
-                style: Constants.ButtonStyles.DANGER,
+                style: eris.Constants.ButtonStyles.DANGER,
                 label: text.confirm.continue
             }
         }) !== true) {
@@ -96,11 +98,11 @@ export class ServerCommand extends GlobalCommand {
         if (await context.queryConfirm({
             prompt: cmd.dump.confirm.prompt,
             cancel: {
-                style: Constants.ButtonStyles.SECONDARY,
+                style: eris.Constants.ButtonStyles.SECONDARY,
                 label: cmd.dump.confirm.cancel
             },
             continue: {
-                style: Constants.ButtonStyles.DANGER,
+                style: eris.Constants.ButtonStyles.DANGER,
                 label: cmd.dump.confirm.continue
             }
         }) !== true) {

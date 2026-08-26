@@ -1,6 +1,6 @@
-import { GuildOwnerIdSubtag } from '@blargbot/bbtag/subtags/guild/guildOwnerId';
+import { GuildOwnerIdSubtag } from '@blargbot/bbtag/subtags/guild/guildOwnerId.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new GuildOwnerIdSubtag(),

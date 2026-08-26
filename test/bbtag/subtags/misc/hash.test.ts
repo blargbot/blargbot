@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { HashSubtag } from '@blargbot/bbtag/subtags/misc/hash';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { HashSubtag } from '@blargbot/bbtag/subtags/misc/hash.js';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 function hashMissing(algorithm: string): boolean {
     return !HashSubtag.methods.includes(algorithm);

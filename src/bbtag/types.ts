@@ -1,17 +1,17 @@
-import { Emote } from '@blargbot/core/Emote';
-import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
-import { IFormattable } from '@blargbot/formatting';
-import { Attachment, Embed, EmbedOptions, FileContent, KnownGuildTextableChannel, KnownMessage, Message, User } from 'eris';
-import ReadWriteLock from 'rwlock';
+import type { Emote } from '@blargbot/core/Emote.js';
+import type { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import type * as eris from 'eris';
+import type ReadWriteLock from 'rwlock';
 
-import { VariableCache } from './Caching';
-import { BBTagRuntimeError } from './errors';
-import { SourceMarker, Statement, SubtagCall } from './language';
-import type { limits, RuntimeLimit } from './limits';
-import { ScopeManager } from './ScopeManager';
-import { SubtagCallStack } from './SubtagCallStack';
-import { TagCooldownManager } from './TagCooldownManager';
-import { SubtagType } from './utils';
+import type { VariableCache } from './Caching.js';
+import type { BBTagRuntimeError } from './errors/index.js';
+import type { SourceMarker, Statement, SubtagCall } from './language/index.js';
+import type { limits, RuntimeLimit } from './limits/index.js';
+import type { ScopeManager } from './ScopeManager.js';
+import type { SubtagCallStack } from './SubtagCallStack.js';
+import type { TagCooldownManager } from './TagCooldownManager.js';
+import type { SubtagType } from './utils/index.js';
 
 export interface AnalysisResults {
     readonly errors: AnalysisResult[];
@@ -54,8 +54,8 @@ export interface SerializedBBTagContext {
         content: string;
         channel: { id: string; serialized: string; };
         member?: { id: string; serialized: string; };
-        attachments: Attachment[];
-        embeds: Embed[];
+        attachments: eris.Attachment[];
+        embeds: eris.Embed[];
     };
     isCC: boolean;
     scope: BBTagRuntimeScope;
@@ -72,7 +72,7 @@ export interface SerializedBBTagContext {
     limit: SerializedRuntimeLimit;
 }
 
-export type BBTagContextMessage = Pick<Message<KnownGuildTextableChannel>,
+export type BBTagContextMessage = Pick<eris.Message<eris.KnownGuildTextableChannel>,
     | 'id'
     | 'createdAt'
     | 'content'
@@ -93,8 +93,8 @@ export interface BBTagContextState {
     ownedMsgs: string[];
     state: BBTagRuntimeState;
     stackSize: number;
-    embeds: undefined | EmbedOptions[];
-    file: undefined | FileContent;
+    embeds: undefined | eris.EmbedOptions[];
+    file: undefined | eris.FileContent;
     reactions: string[];
     nsfw: undefined | string;
     replace: undefined | { regex: RegExp | string; with: string; };
@@ -121,14 +121,16 @@ export interface RuntimeDebugEntry {
     text: string;
 }
 
-export const enum BBTagRuntimeState {
+export type BBTagRuntimeState = typeof BBTagRuntimeState[keyof typeof BBTagRuntimeState];
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const BBTagRuntimeState = Object.freeze({
     /** Indicates bbtag should continue to be executed */
-    RUNNING,
+    RUNNING: 0,
     /** Indicates the current tag should be terminated */
-    RETURN,
+    RETURN: 1,
     /** Indicates the current execution should be terminated */
-    ABORT
-}
+    ABORT: 2
+});
 
 export interface FindEntityOptions {
     noLookup?: boolean;
@@ -224,7 +226,7 @@ type SubtagReturnTypeValueMap = {
     string: string;
     id: string;
     json: JToken;
-    embed: Embed;
+    embed: eris.Embed;
     nothing: undefined;
 }
 
@@ -275,7 +277,7 @@ export interface SubtagProperties<Id extends SubtagType = SubtagType> {
 }
 
 export interface AwaitReactionsResponse {
-    readonly message: KnownMessage;
+    readonly message: eris.KnownMessage;
     readonly reaction: Emote;
-    readonly user: User;
+    readonly user: eris.User;
 }

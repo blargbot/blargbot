@@ -1,12 +1,12 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils';
-import { guard } from '@blargbot/core/utils';
-import { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import type { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models/index.js';
 import { util } from '@blargbot/formatting';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import templates from '../../text.js';
 
 const cmd = templates.commands.autoResponse;
 

@@ -1,17 +1,17 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return';
-import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set';
-import { WhileSubtag } from '@blargbot/bbtag/subtags/loops/while';
-import { DecrementSubtag } from '@blargbot/bbtag/subtags/math/decrement';
-import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment';
-import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { TagVariableType } from '@blargbot/domain/models';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
+import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
+import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set.js';
+import { WhileSubtag } from '@blargbot/bbtag/subtags/loops/while.js';
+import { DecrementSubtag } from '@blargbot/bbtag/subtags/math/decrement.js';
+import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment.js';
+import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
+import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
+import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new WhileSubtag(),

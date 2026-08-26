@@ -1,8 +1,8 @@
-import { GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.insult;
 

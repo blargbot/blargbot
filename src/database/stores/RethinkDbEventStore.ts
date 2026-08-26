@@ -1,10 +1,10 @@
-import { EventOptionsTypeMap, EventType, StoredEvent, StoredEventOptions } from '@blargbot/domain/models';
-import { EventStore } from '@blargbot/domain/stores';
-import { Logger } from '@blargbot/logger';
-import moment, { Moment } from 'moment-timezone';
+import type { EventOptionsTypeMap, EventType, StoredEvent, StoredEventOptions } from '@blargbot/domain/models/index.js';
+import type { EventStore } from '@blargbot/domain/stores/index.js';
+import type { Logger } from '@blargbot/logger';
+import moment from 'moment-timezone';
 
-import { RethinkDb } from '../clients';
-import { RethinkDbTable } from '../tables/RethinkDbTable';
+import type { RethinkDb } from '../clients/index.js';
+import { RethinkDbTable } from '../tables/RethinkDbTable.js';
 
 export class RethinkDbEventStore implements EventStore {
     readonly #table: RethinkDbTable<StoredEvent>;
@@ -13,7 +13,7 @@ export class RethinkDbEventStore implements EventStore {
         this.#table = new RethinkDbTable('events', rethinkDb, logger);
     }
 
-    public async between(from: Date | Moment | number, to: Date | Moment | number): Promise<StoredEvent[]> {
+    public async between(from: Date | moment.Moment | number, to: Date | moment.Moment | number): Promise<StoredEvent[]> {
         const after = moment(from).valueOf();
         const before = moment(to).valueOf();
         return await this.#table.queryAll(t => t.between(after, before, { index: 'endtime' }));

@@ -1,4 +1,4 @@
-import { ReplacementContext } from './ReplacementContext';
+import type { ReplacementContext } from './ReplacementContext.js';
 
 export interface IValueResolver {
     (context: ReplacementContext): unknown;

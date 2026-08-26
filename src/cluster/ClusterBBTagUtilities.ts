@@ -1,12 +1,13 @@
-import { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities } from '@blargbot/bbtag';
-import { Emote } from '@blargbot/core/Emote';
-import { ChoiceQueryResult, EntityPickQueryOptions, SendContent } from '@blargbot/core/types';
-import { IFormattable, util } from '@blargbot/formatting';
-import { AdvancedMessageContent, Guild, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, Role, TextableChannel, User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import type { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities } from '@blargbot/bbtag';
+import type { Emote } from '@blargbot/core/Emote.js';
+import type { ChoiceQueryResult, EntityPickQueryOptions, SendContent } from '@blargbot/core/types.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import type * as eris from 'eris';
+import moment from 'moment-timezone';
 
-import { Cluster } from './Cluster';
-import { guard } from './utils/index';
+import type { Cluster } from './Cluster.js';
+import { guard } from './utils/index.js';
 
 export class ClusterBBTagUtilities implements BBTagUtilities {
     public get defaultPrefix(): string {
@@ -16,67 +17,67 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
     public constructor(public readonly cluster: Cluster) {
     }
 
-    public async send<T extends TextableChannel>(channel: T, payload: BBTagSendContent, author?: User | undefined): Promise<Message<T> | undefined> {
+    public async send<T extends eris.TextableChannel>(channel: T, payload: BBTagSendContent, author?: eris.User | undefined): Promise<eris.Message<T> | undefined> {
         return payload.nsfw !== undefined && guard.isGuildChannel(channel) && !channel.nsfw
             ? await this.cluster.util.send(channel, util.literal({ content: payload.nsfw, allowedMentions: payload.allowedMentions }))
             : await this.cluster.util.send(channel, util.literal(payload), author);
     }
 
-    public async getChannel(channelId: string): Promise<KnownChannel | undefined>;
-    public async getChannel(guild: string | Guild, channelId: string): Promise<KnownGuildChannel | undefined>;
-    public async getChannel(...args: [string] | [string | Guild, string]): Promise<KnownChannel | undefined> {
+    public async getChannel(channelId: string): Promise<eris.KnownChannel | undefined>;
+    public async getChannel(guild: string | eris.Guild, channelId: string): Promise<eris.KnownGuildChannel | undefined>;
+    public async getChannel(...args: [string] | [string | eris.Guild, string]): Promise<eris.KnownChannel | undefined> {
         return args.length === 1
             ? await this.cluster.util.getChannel(...args)
             : await this.cluster.util.getChannel(...args);
     }
 
-    public async findChannels(guild: string | Guild, query?: string | undefined): Promise<KnownGuildChannel[]> {
+    public async findChannels(guild: string | eris.Guild, query?: string | undefined): Promise<eris.KnownGuildChannel[]> {
         return await this.cluster.util.findChannels(guild, query);
     }
 
-    public async ensureMemberCache(guild: Guild): Promise<void> {
+    public async ensureMemberCache(guild: eris.Guild): Promise<void> {
         return await this.cluster.util.ensureMemberCache(guild);
     }
 
-    public async getMember(guild: string | Guild, userId: string): Promise<Member | undefined> {
+    public async getMember(guild: string | eris.Guild, userId: string): Promise<eris.Member | undefined> {
         return await this.cluster.util.getMember(guild, userId);
     }
 
-    public async findMembers(guild: string | Guild, query?: string | undefined): Promise<Member[]> {
+    public async findMembers(guild: string | eris.Guild, query?: string | undefined): Promise<eris.Member[]> {
         return await this.cluster.util.findMembers(guild, query);
     }
 
-    public async getUser(userId: string): Promise<User | undefined> {
+    public async getUser(userId: string): Promise<eris.User | undefined> {
         return await this.cluster.util.getUser(userId);
     }
 
-    public async getRole(guild: string | Guild, roleId: string): Promise<Role | undefined> {
+    public async getRole(guild: string | eris.Guild, roleId: string): Promise<eris.Role | undefined> {
         return await this.cluster.util.getRole(guild, roleId);
     }
 
-    public async findRoles(guild: string | Guild, query?: string | undefined): Promise<Role[]> {
+    public async findRoles(guild: string | eris.Guild, query?: string | undefined): Promise<eris.Role[]> {
         return await this.cluster.util.findRoles(guild, query);
     }
 
-    public async getMessage(channel: string, messageId: string, force?: boolean | undefined): Promise<KnownMessage | undefined>;
-    public async getMessage(channel: KnownChannel, messageId: string, force?: boolean | undefined): Promise<KnownMessage | undefined>;
-    public async getMessage(...args: [KnownChannel, string, boolean?] | [string, string, boolean?]): Promise<KnownMessage | undefined> {
+    public async getMessage(channel: string, messageId: string, force?: boolean | undefined): Promise<eris.KnownMessage | undefined>;
+    public async getMessage(channel: eris.KnownChannel, messageId: string, force?: boolean | undefined): Promise<eris.KnownMessage | undefined>;
+    public async getMessage(...args: [eris.KnownChannel, string, boolean?] | [string, string, boolean?]): Promise<eris.KnownMessage | undefined> {
         return isIndex0String(args)
             ? await this.cluster.util.getMessage(...args)
             : await this.cluster.util.getMessage(...args);
     }
 
-    public addReactions(context: Message<TextableChannel>, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
+    public addReactions(context: eris.Message<eris.TextableChannel>, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
         return this.cluster.util.addReactions(context, reactions);
     }
 
-    public async getBannedUsers(guild: Guild): Promise<string[]> {
+    public async getBannedUsers(guild: eris.Guild): Promise<string[]> {
         await this.cluster.util.ensureGuildBans(guild);
         const bans = this.cluster.util.getGuildBans(guild);
         return [...bans];
     }
 
-    public async generateDumpPage(payload: AdvancedMessageContent, channel: KnownChannel): Promise<string> {
+    public async generateDumpPage(payload: eris.AdvancedMessageContent, channel: eris.KnownChannel): Promise<string> {
         return (await this.cluster.util.generateDumpPage(payload, channel)).toString();
     }
 
@@ -84,15 +85,15 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return this.cluster.util.websiteLink(path);
     }
 
-    public timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: string | undefined): Promise<'noPerms' | 'success' | 'alreadyTimedOut' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+    public timeout(member: eris.Member, moderator: eris.User, authorizer: eris.User, duration: moment.Duration, reason?: string | undefined): Promise<'noPerms' | 'success' | 'alreadyTimedOut' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
         return this.cluster.moderation.timeouts.timeout(member, moderator, authorizer, duration, util.literal(reason));
     }
 
-    public clearTimeout(member: Member, moderator: User, authorizer: User, reason?: string | undefined): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
+    public clearTimeout(member: eris.Member, moderator: eris.User, authorizer: eris.User, reason?: string | undefined): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
         return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, util.literal(reason));
     }
 
-    public addModLog(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void> {
+    public addModLog(guild: eris.Guild, action: string, user: eris.User, moderator?: eris.User, reason?: string, color?: number): Promise<void> {
         return this.cluster.moderation.modLog.logCustom(guild, util.literal(action), user, moderator, util.literal(reason), color);
     }
 
@@ -100,11 +101,11 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return this.cluster.domains.isWhitelisted(domain);
     }
 
-    public isUserStaff(member: Member): Promise<boolean> {
+    public isUserStaff(member: eris.Member): Promise<boolean> {
         return this.cluster.util.isUserStaff(member);
     }
 
-    public queryMember(options: EntityPickQueryOptions<string, Member>): Promise<ChoiceQueryResult<Member>> {
+    public queryMember(options: EntityPickQueryOptions<string, eris.Member>): Promise<ChoiceQueryResult<eris.Member>> {
         return this.cluster.util.queryMember({
             ...options,
             placeholder: util.literal(options.placeholder),
@@ -112,7 +113,7 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         });
     }
 
-    public queryRole(options: EntityPickQueryOptions<string, Role>): Promise<ChoiceQueryResult<Role>> {
+    public queryRole(options: EntityPickQueryOptions<string, eris.Role>): Promise<ChoiceQueryResult<eris.Role>> {
         return this.cluster.util.queryRole({
             ...options,
             placeholder: util.literal(options.placeholder),
@@ -120,9 +121,9 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         });
     }
 
-    public queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<string, T>): Promise<ChoiceQueryResult<T>>
-    public queryChannel(options: EntityPickQueryOptions<string, KnownChannel>): Promise<ChoiceQueryResult<KnownChannel>>
-    public queryChannel(options: EntityPickQueryOptions<string, KnownChannel>): Promise<ChoiceQueryResult<KnownChannel>> {
+    public queryChannel<T extends eris.KnownChannel>(options: EntityPickQueryOptions<string, T>): Promise<ChoiceQueryResult<T>>
+    public queryChannel(options: EntityPickQueryOptions<string, eris.KnownChannel>): Promise<ChoiceQueryResult<eris.KnownChannel>>
+    public queryChannel(options: EntityPickQueryOptions<string, eris.KnownChannel>): Promise<ChoiceQueryResult<eris.KnownChannel>> {
         return this.cluster.util.queryChannel({
             ...options,
             placeholder: util.literal(options.placeholder),
@@ -130,25 +131,25 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         });
     }
 
-    public async warn(member: Member, moderator: User, count: number, reason?: string): Promise<number> {
+    public async warn(member: eris.Member, moderator: eris.User, count: number, reason?: string): Promise<number> {
         const result = await this.cluster.moderation.warns.warn(member, moderator, this.cluster.discord.user, count, util.literal(reason));
         return result.warnings;
     }
 
-    public async pardon(member: Member, moderator: User, count: number, reason?: string): Promise<number> {
+    public async pardon(member: eris.Member, moderator: eris.User, count: number, reason?: string): Promise<number> {
         const result = await this.cluster.moderation.warns.pardon(member, moderator, count, util.literal(reason));
         return result.warnings;
     }
 
-    public ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: string, duration: moment.Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+    public ban(guild: eris.Guild, user: eris.User, moderator: eris.User, authorizer: eris.User, deleteDays: number, reason: string, duration: moment.Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
         return this.cluster.moderation.bans.ban(guild, user, moderator, authorizer, deleteDays, util.literal(reason), duration);
     }
 
-    public unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'moderatorNoPerms' | 'notBanned'> {
+    public unban(guild: eris.Guild, user: eris.User, moderator: eris.User, authorizer: eris.User, reason?: string): Promise<'success' | 'noPerms' | 'moderatorNoPerms' | 'notBanned'> {
         return this.cluster.moderation.bans.unban(guild, user, moderator, authorizer, util.literal(reason));
     }
 
-    public kick(member: Member, moderator: User, authorizer: User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+    public kick(member: eris.Member, moderator: eris.User, authorizer: eris.User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
         return this.cluster.moderation.bans.kick(member, moderator, authorizer, util.literal(reason));
     }
 
@@ -156,11 +157,11 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return this.cluster.awaiter.reactions.getAwaiter(messages, filter, timeoutMs).wait();
     }
 
-    public awaitMessage(channels: string[], filter: (message: KnownMessage) => Awaitable<boolean>, timeoutMs: number): Promise<KnownMessage | undefined> {
+    public awaitMessage(channels: string[], filter: (message: eris.KnownMessage) => Awaitable<boolean>, timeoutMs: number): Promise<eris.KnownMessage | undefined> {
         return this.cluster.awaiter.messages.getAwaiter(channels, filter, timeoutMs).wait();
     }
 
-    public async setTimeout(context: BBTagContext, content: string, timeout: Duration): Promise<void> {
+    public async setTimeout(context: BBTagContext, content: string, timeout: moment.Duration): Promise<void> {
         await this.cluster.timeouts.insert('tag', {
             version: 4,
             source: context.guild.id,

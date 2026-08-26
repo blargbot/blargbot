@@ -1,9 +1,11 @@
-import colors from '@blargbot/res/colors.json';
+import { colors } from '@blargbot/res';
 
-import { randInt } from '../random';
-import { parseHex } from './parseHex';
+import { randInt } from '../random/index.js';
+import { parseHex } from './parseHex.js';
 
-const colorKeys = Object.keys(colors);
+await colors.ensureLoaded();
+
+const colorKeys = Object.keys(colors.data);
 
 export function parseColor(text: number | 'random' | string): number | undefined {
     if (typeof text === 'number')
@@ -17,7 +19,7 @@ export function parseColor(text: number | 'random' | string): number | undefined
 
     //By name
     if (colorKeys.includes(name))
-        return parseInt(colors[name], 16);
+        return parseInt(colors.data[name], 16);
 
     //RGB 256,256,256
     let match = /^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/.exec(text);

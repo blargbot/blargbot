@@ -1,8 +1,8 @@
-import { GuildFeaturesSubtag } from '@blargbot/bbtag/subtags/guild/guildFeatures';
-import { GuildFeature } from 'discord-api-types/v9';
-import { Constants } from 'eris';
+import { GuildFeaturesSubtag } from '@blargbot/bbtag/subtags/guild/guildFeatures.js';
+import type { GuildFeature } from 'discord-api-types/v9';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new GuildFeaturesSubtag(),
@@ -10,9 +10,9 @@ runSubtagTests({
     cases: [
         {
             code: '{guildfeatures}',
-            expected: JSON.stringify(Constants.GuildFeatures),
+            expected: JSON.stringify(eris.Constants.GuildFeatures),
             setup(ctx) {
-                ctx.guild.features = Constants.GuildFeatures as GuildFeature[];
+                ctx.guild.features = eris.Constants.GuildFeatures as GuildFeature[];
             }
         },
         {

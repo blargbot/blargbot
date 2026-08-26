@@ -1,29 +1,29 @@
-import { createMapping } from './createMapping';
-import { mapArray } from './mapArray';
-import { mapBase64 } from './mapBase64';
-import { mapBigInt } from './mapBigInt';
-import { mapBoolean } from './mapBoolean';
-import { mapChoice } from './mapChoice';
-import { mapDate } from './mapDate';
-import { mapDuration } from './mapDuration';
-import { mapFake } from './mapFake';
-import { mapGuard } from './mapGuard';
-import { mapIn } from './mapIn';
-import { mapInstanceof } from './mapInstanceof';
-import { mapJObject } from './mapJObject';
-import { mapJson } from './mapJson';
-import { mapJToken } from './mapJToken';
-import { mapNumber } from './mapNumber';
-import { mapObject } from './mapObject';
-import { mapRecord } from './mapRecord';
-import { mapRegex } from './mapRegex';
-import { mapString } from './mapString';
-import { mapTuple } from './mapTuple';
-import { mapTypeof } from './mapTypeof';
-import { mapUnknown } from './mapUnknown';
-import { result } from './result';
+import { createMapping } from './createMapping.js';
+import { mapArray } from './mapArray.js';
+import { mapBase64 } from './mapBase64.js';
+import { mapBigInt } from './mapBigInt.js';
+import { mapBoolean } from './mapBoolean.js';
+import { mapChoice } from './mapChoice.js';
+import { mapDate } from './mapDate.js';
+import { mapDuration } from './mapDuration.js';
+import { mapFake } from './mapFake.js';
+import { mapGuard } from './mapGuard.js';
+import { mapIn } from './mapIn.js';
+import { mapInstanceof } from './mapInstanceof.js';
+import { mapJObject } from './mapJObject.js';
+import { mapJson } from './mapJson.js';
+import { mapJToken } from './mapJToken.js';
+import { mapNumber } from './mapNumber.js';
+import { mapObject } from './mapObject.js';
+import { mapRecord } from './mapRecord.js';
+import { mapRegex } from './mapRegex.js';
+import { mapString } from './mapString.js';
+import { mapTuple } from './mapTuple.js';
+import { mapTypeof } from './mapTypeof.js';
+import { mapUnknown } from './mapUnknown.js';
+import { result } from './result.js';
 
-export * from './types';
+export * from './types.js';
 
 export const mapping = Object.seal({
     create: createMapping,

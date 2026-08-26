@@ -1,11 +1,11 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
-import { guard } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.slowMode;
 
@@ -29,7 +29,7 @@ export class SlowmodeCommand extends GuildCommand {
         });
     }
 
-    public async setSlowmode(time: number, channel: KnownChannel): Promise<CommandResult> {
+    public async setSlowmode(time: number, channel: eris.KnownChannel): Promise<CommandResult> {
         if (!guard.isGuildChannel(channel))
             return cmd.errors.notInGuild;
         if (!guard.isTextableChannel(channel))
@@ -45,9 +45,9 @@ export class SlowmodeCommand extends GuildCommand {
             await channel.edit({ rateLimitPerUser: time });
             return cmd.on.success({ duration: moment.duration(time, 's'), channel });
         } catch (err: unknown) {
-            if (err instanceof DiscordRESTError) {
+            if (err instanceof eris.DiscordRESTError) {
                 switch (err.code) {
-                    case ApiError.MISSING_PERMISSIONS:
+                    case eris.ApiError.MISSING_PERMISSIONS:
                         return cmd.errors.botNoPerms({ channel });
                 }
             }
@@ -55,7 +55,7 @@ export class SlowmodeCommand extends GuildCommand {
         }
     }
 
-    public async disableSlowmode(channel: KnownChannel): Promise<CommandResult> {
+    public async disableSlowmode(channel: eris.KnownChannel): Promise<CommandResult> {
         if (!guard.isGuildChannel(channel))
             return cmd.errors.notInGuild;
         if (!guard.isTextableChannel(channel))
@@ -65,9 +65,9 @@ export class SlowmodeCommand extends GuildCommand {
             await channel.edit({ rateLimitPerUser: 0 });
             return cmd.off.success({ channel });
         } catch (err: unknown) {
-            if (err instanceof DiscordRESTError) {
+            if (err instanceof eris.DiscordRESTError) {
                 switch (err.code) {
-                    case ApiError.MISSING_PERMISSIONS:
+                    case eris.ApiError.MISSING_PERMISSIONS:
                         return cmd.errors.botNoPerms({ channel });
                 }
             }

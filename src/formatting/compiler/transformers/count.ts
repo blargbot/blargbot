@@ -1,5 +1,5 @@
-import { toArray } from '../../util';
-import { IValueResolverTransform } from '../types';
+import { toArray } from '../../util/index.js';
+import type { IValueResolverTransform } from '../types.js';
 
 export const count: IValueResolverTransform = {
     transform(_compiler, source, ...args) {

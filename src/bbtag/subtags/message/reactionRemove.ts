@@ -1,12 +1,12 @@
-import { Emote } from '@blargbot/core/Emote';
-import { ApiError, DiscordRESTError } from 'eris';
+import { Emote } from '@blargbot/core/Emote.js';
+import * as eris from 'eris';
 
-import { SubtagArgumentArray } from '../../arguments/index';
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import type { SubtagArgumentArray } from '../../arguments/index.js';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.reactionRemove;
 
@@ -74,14 +74,14 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
                 await context.limit.check(context, 'reactremove:requests');
                 await message.removeReaction(reaction.toApi(), user.id);
             } catch (err: unknown) {
-                if (!(err instanceof DiscordRESTError))
+                if (!(err instanceof eris.DiscordRESTError))
                     throw err;
 
                 switch (err.code) {
-                    case ApiError.UNKNOWN_EMOJI:
+                    case eris.ApiError.UNKNOWN_EMOJI:
                         errored.push(reaction);
                         break;
-                    case ApiError.MISSING_PERMISSIONS:
+                    case eris.ApiError.MISSING_PERMISSIONS:
                         throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
                     default:
                         throw err;

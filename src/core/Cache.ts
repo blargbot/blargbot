@@ -1,13 +1,13 @@
-import moment, { Duration } from 'moment-timezone';
+import moment from 'moment-timezone';
 
 export class Cache<TKey, TValue> {
     readonly #entries: Map<TKey, { data: TValue; timeout: NodeJS.Timeout; }>;
     readonly #defaultTTL: number;
     readonly #timeout: (key: TKey) => void;
 
-    public constructor(defaultTimeToLive?: number | Duration);
+    public constructor(defaultTimeToLive?: number | moment.Duration);
     public constructor(...args: Parameters<typeof moment.duration>)
-    public constructor(...args: [number | Duration] | Parameters<typeof moment.duration>) {
+    public constructor(...args: [number | moment.Duration] | Parameters<typeof moment.duration>) {
         this.#defaultTTL = toMS(moment.duration(...args));
         this.#entries = new Map();
         this.#timeout = key => this.#entries.delete(key);
@@ -17,7 +17,7 @@ export class Cache<TKey, TValue> {
         return this.#entries.has(key);
     }
 
-    public get(key: TKey, resetTimeToLive: boolean | Duration | number = false): TValue | undefined {
+    public get(key: TKey, resetTimeToLive: boolean | moment.Duration | number = false): TValue | undefined {
         const entry = this.#entries.get(key);
         if (entry === undefined)
             return entry;
@@ -40,7 +40,7 @@ export class Cache<TKey, TValue> {
         return true;
     }
 
-    public set(key: TKey, value: TValue, timeToLive?: Duration | number): this {
+    public set(key: TKey, value: TValue, timeToLive?: moment.Duration | number): this {
         const entry = this.#entries.get(key);
         if (entry !== undefined)
             clearTimeout(entry.timeout);
@@ -54,7 +54,7 @@ export class Cache<TKey, TValue> {
     }
 }
 
-function toMS(duration: number | Duration): number {
+function toMS(duration: number | moment.Duration): number {
     return typeof duration === 'number'
         ? duration
         : duration.asMilliseconds();

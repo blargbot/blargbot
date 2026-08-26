@@ -1,6 +1,6 @@
-import { ArgsArraySubtag } from '@blargbot/bbtag/subtags/simple/argsArray';
+import { ArgsArraySubtag } from '@blargbot/bbtag/subtags/simple/argsArray.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ArgsArraySubtag(),

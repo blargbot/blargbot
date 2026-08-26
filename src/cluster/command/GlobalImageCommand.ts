@@ -1,16 +1,16 @@
-import { CommandOptions, CommandResult } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { ImageGeneratorMap } from '@blargbot/image/types';
-import { Duration, duration } from 'moment-timezone';
+import type { CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import type { ImageGeneratorMap } from '@blargbot/image/types.js';
+import moment from 'moment-timezone';
 
-import templates from '../text';
-import { CommandContext } from './CommandContext';
-import { GlobalCommand } from './GlobalCommand';
-import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware';
+import templates from '../text.js';
+import type { CommandContext } from './CommandContext.js';
+import { GlobalCommand } from './GlobalCommand.js';
+import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware/index.js';
 
 export interface GlobalImageCommandOptions extends Omit<CommandOptions<CommandContext>, 'category'> {
     dontLimitChannel?: boolean;
-    ratelimit?: Duration;
+    ratelimit?: moment.Duration;
 }
 
 export abstract class GlobalImageCommand extends GlobalCommand {
@@ -22,7 +22,7 @@ export abstract class GlobalImageCommand extends GlobalCommand {
 
         if (options.dontLimitChannel !== true)
             this.middleware.push(new SingleThreadMiddleware(c => c.channel.id));
-        this.middleware.push(new RatelimitMiddleware(options.ratelimit ?? duration(5, 'seconds'), c => c.author.id));
+        this.middleware.push(new RatelimitMiddleware(options.ratelimit ?? moment.duration(5, 'seconds'), c => c.author.id));
         this.middleware.push(new SendTypingMiddleware());
     }
 

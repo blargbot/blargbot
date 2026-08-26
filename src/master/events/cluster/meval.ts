@@ -1,9 +1,10 @@
-import { ClusterConnection } from '@blargbot/cluster';
-import { parse } from '@blargbot/cluster/utils';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
-import { EvalRequest, EvalResult, EvalType, GlobalEvalResult } from '@blargbot/core/types';
-import { Master } from '@blargbot/master';
-import { inspect } from 'util';
+import { inspect } from 'node:util';
+
+import type { ClusterConnection } from '@blargbot/cluster';
+import { parse } from '@blargbot/cluster/utils/index.js';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
+import type { EvalRequest, EvalResult, EvalType, GlobalEvalResult } from '@blargbot/core/types.js';
+import type { Master } from '@blargbot/master';
 
 export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnection, 'meval'> {
     readonly #master: Master;

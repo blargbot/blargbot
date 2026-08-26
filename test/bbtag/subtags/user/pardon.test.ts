@@ -1,9 +1,9 @@
-import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { PardonSubtag } from '@blargbot/bbtag/subtags/user/pardon';
-import { argument } from '@blargbot/test-util/mock';
-import { Guild, Member } from 'eris';
+import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { PardonSubtag } from '@blargbot/bbtag/subtags/user/pardon.js';
+import { argument } from '@blargbot/test-util/mock.js';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new PardonSubtag(),
@@ -43,7 +43,7 @@ runSubtagTests({
             code: '{pardon;other user}',
             expected: '7',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -67,7 +67,7 @@ runSubtagTests({
             code: '{pardon;other user;9}',
             expected: '0',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -81,7 +81,7 @@ runSubtagTests({
             code: '{pardon;other user;8;Because I felt like it}',
             expected: '6',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
+                const member = ctx.createMock(eris.Member);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
@@ -98,7 +98,7 @@ runSubtagTests({
                 { start: 0, end: 21, error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -110,8 +110,8 @@ runSubtagTests({
                 { start: 0, end: 23, error: new NotANumberError('abc') }
             ],
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
+                const member = ctx.createMock(eris.Member);
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
             }

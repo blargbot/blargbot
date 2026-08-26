@@ -1,33 +1,36 @@
-import { Configuration } from '@blargbot/config/Configuration';
-import { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types';
+import type { Configuration } from '@blargbot/config';
+import type { FormatEmbedAuthor, SendContent, SendContext } from '@blargbot/core/types.js';
 import { CrowdinTranslationSource } from '@blargbot/crowdin';
-import { Database } from '@blargbot/database';
-import { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models';
-import { format, Formatter, IFormattable, IFormatter, TranslationMiddleware, util } from '@blargbot/formatting';
-import { Logger } from '@blargbot/logger';
-import { Snowflake } from 'catflake';
-import { AdvancedMessageContent, AnyGuildChannel, ApiError, Channel, ChannelInteraction, Client as Discord, Collection, DiscordRESTError, ExtendedUser, Guild, GuildBan, GuildChannel, KnownChannel, KnownGuildChannel, KnownMessage, Member, Message, RequestHandler, Role, TextableChannel, User, UserChannelInteraction, Webhook } from 'eris';
+import type { Database } from '@blargbot/database';
+import type { DiscordChannelTag, DiscordRoleTag, DiscordTagSet, DiscordUserTag, StoredUser } from '@blargbot/domain/models/index.js';
+import type { IFormattable, IFormatter } from '@blargbot/formatting';
+import { format, Formatter, TranslationMiddleware, util } from '@blargbot/formatting';
+import type { Logger } from '@blargbot/logger';
+import type { Snowflake } from 'catflake';
+import * as eris from 'eris';
 import moment from 'moment-timezone';
+import type fetch from 'node-fetch';
 
-import { BaseClient } from './BaseClient';
-import { Emote } from './Emote';
-import { metrics } from './Metrics';
-import templates from './text';
-import { guard, humanize, parse, snowflake } from './utils';
+import type { BaseClient } from './BaseClient.js';
+import type { Emote } from './Emote.js';
+import { metrics } from './Metrics.js';
+import templates from './text.js';
+import { guard, humanize, parse, snowflake } from './utils/index.js';
 
 export class BaseUtilities {
     readonly #translator: TranslationMiddleware;
-    public get user(): ExtendedUser { return this.client.discord.user; }
-    public get discord(): Discord { return this.client.discord; }
+    public get user(): eris.ExtendedUser { return this.client.discord.user; }
+    public get discord(): eris.Client { return this.client.discord; }
     public get database(): Database { return this.client.database; }
     public get logger(): Logger { return this.client.logger; }
     public get config(): Configuration { return this.client.config; }
+    public get fetch(): typeof fetch { return this.client.fetch; }
     public readonly translator: CrowdinTranslationSource;
 
     public constructor(
         public readonly client: BaseClient
     ) {
-        this.translator = new CrowdinTranslationSource('a713aad8fe135bf923f9587yoka');
+        this.translator = new CrowdinTranslationSource('a713aad8fe135bf923f9587yoka', this.client.fetch);
         this.#translator = new TranslationMiddleware(this.translator, client.logger.error.bind(client.logger));
 
         client.discord.on('guildBanAdd', (guild, user) => {
@@ -40,7 +43,7 @@ export class BaseUtilities {
         });
     }
 
-    async #getSendChannel(context: SendContext): Promise<TextableChannel> {
+    async #getSendChannel(context: SendContext): Promise<eris.TextableChannel> {
         if (typeof context === 'string') {
             const channel = await this.getChannel(context);
             if (channel === undefined)
@@ -49,14 +52,14 @@ export class BaseUtilities {
                 return channel;
             throw new Error('Channel is not textable');
         }
-        if (context instanceof User) {
+        if (context instanceof eris.User) {
             return await context.getDMChannel();
         }
         return context;
     }
 
-    public async getFormatter(target?: Channel | Guild | string): Promise<IFormatter> {
-        const guildId = typeof target === 'object' ? target instanceof Guild ? target.id : guard.isGuildChannel(target) ? target.guild.id : undefined : target;
+    public async getFormatter(target?: eris.Channel | eris.Guild | string): Promise<IFormatter> {
+        const guildId = typeof target === 'object' ? target instanceof eris.Guild ? target.id : guard.isGuildChannel(target) ? target.guild.id : undefined : target;
         const localeStr = guildId === undefined ? undefined : await this.database.guilds.getSetting(guildId, 'language');
         return new Formatter(
             new Intl.Locale(localeStr ?? 'en'),
@@ -73,20 +76,20 @@ export class BaseUtilities {
         return `${scheme}://${host}${port}/${path ?? ''}`;
     }
 
-    public embedifyAuthor(target: Member | User | Guild | StoredUser, includeId = false): FormatEmbedAuthor<IFormattable<string>> {
-        if (target instanceof User) {
+    public embedifyAuthor(target: eris.Member | eris.User | eris.Guild | StoredUser, includeId = false): FormatEmbedAuthor<IFormattable<string>> {
+        if (target instanceof eris.User) {
             return {
                 icon_url: target.avatarURL,
                 name: util.literal(`${target.username}#${target.discriminator} ${includeId ? `(${target.id})` : ''}`)
                 // url: target === this.discord.user ? undefined : `https://discord.com/users/${target.id}`
             };
-        } else if (target instanceof Member) {
+        } else if (target instanceof eris.Member) {
             return {
                 icon_url: target.avatarURL,
                 name: util.literal(`${target.nick ?? target.username} ${includeId ? `(${target.id})` : ''}`)
                 // url: `https://discord.com/users/${target.id}`
             };
-        } else if (target instanceof Guild) {
+        } else if (target instanceof eris.Guild) {
             return {
                 icon_url: target.iconURL ?? undefined,
                 name: util.literal(target.name)
@@ -102,7 +105,7 @@ export class BaseUtilities {
         return target; // never
     }
 
-    public async reply<T extends TextableChannel>(message: Message<T>, payload: IFormattable<SendContent<string>>, author?: User): Promise<Message<T> | undefined> {
+    public async reply<T extends eris.TextableChannel>(message: eris.Message<T>, payload: IFormattable<SendContent<string>>, author?: eris.User): Promise<eris.Message<T> | undefined> {
         return await this.send(message.channel, {
             [format](formatter) {
                 return {
@@ -117,9 +120,9 @@ export class BaseUtilities {
         }, author);
     }
 
-    public async send<T extends TextableChannel>(context: T, payload: IFormattable<SendContent<string>>, author?: User): Promise<Message<T> | undefined>;
-    public async send(context: SendContext, payload: IFormattable<SendContent<string>>, author?: User): Promise<Message | undefined>;
-    public async send(context: SendContext, payload: IFormattable<SendContent<string>>, author?: User): Promise<Message | undefined> {
+    public async send<T extends eris.TextableChannel>(context: T, payload: IFormattable<SendContent<string>>, author?: eris.User): Promise<eris.Message<T> | undefined>;
+    public async send(context: SendContext, payload: IFormattable<SendContent<string>>, author?: eris.User): Promise<eris.Message | undefined>;
+    public async send(context: SendContext, payload: IFormattable<SendContent<string>>, author?: eris.User): Promise<eris.Message | undefined> {
         metrics.sendCounter.inc();
 
         const channel = await this.#getSendChannel(context);
@@ -167,7 +170,7 @@ export class BaseUtilities {
         try {
             return await channel.createMessage(content, files);
         } catch (error: unknown) {
-            if (!(error instanceof DiscordRESTError))
+            if (!(error instanceof eris.DiscordRESTError))
                 throw error;
 
             const code = error.code;
@@ -191,7 +194,7 @@ export class BaseUtilities {
         }
     }
 
-    public async addReactions(context: Message, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
+    public async addReactions(context: eris.Message, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
         const results = { success: [] as Emote[], failed: [] as Emote[] };
         const reacted = new Set<string>();
         let done = false;
@@ -209,14 +212,14 @@ export class BaseUtilities {
                 await context.addReaction(api);
                 results.success.push(reaction);
             } catch (e: unknown) {
-                if (e instanceof DiscordRESTError) {
+                if (e instanceof eris.DiscordRESTError) {
                     switch (e.code) {
-                        case ApiError.MAXIMUM_REACTIONS:
-                        case ApiError.MISSING_PERMISSIONS:
+                        case eris.ApiError.MAXIMUM_REACTIONS:
+                        case eris.ApiError.MISSING_PERMISSIONS:
                             done = true;
                         //fallthrough
-                        case ApiError.REACTION_BLOCKED:
-                        case ApiError.UNKNOWN_EMOJI:
+                        case eris.ApiError.REACTION_BLOCKED:
+                        case eris.ApiError.UNKNOWN_EMOJI:
                             results.failed.push(reaction);
                             continue;
                     }
@@ -228,7 +231,7 @@ export class BaseUtilities {
         return results;
     }
 
-    public async resolveTags(context: ChannelInteraction | UserChannelInteraction | KnownChannel, message: string): Promise<string> {
+    public async resolveTags(context: eris.ChannelInteraction | eris.UserChannelInteraction | eris.KnownChannel, message: string): Promise<string> {
         const regex = /<[^<>\s]+>/g;
         const promiseMap: { [tag: string]: Promise<string>; } = {};
         let match;
@@ -295,7 +298,7 @@ export class BaseUtilities {
         };
     }
 
-    public async resolveTag(context: KnownChannel, tag: string): Promise<string> {
+    public async resolveTag(context: eris.KnownChannel, tag: string): Promise<string> {
         let id = parse.entityId(tag, '@&');
         if (id !== undefined) { // ROLE
             const role = guard.isGuildChannel(context)
@@ -343,7 +346,7 @@ export class BaseUtilities {
         return tag;
     }
 
-    public async generateDumpPage(payload: AdvancedMessageContent, channel: Channel): Promise<Snowflake> {
+    public async generateDumpPage(payload: eris.AdvancedMessageContent, channel: eris.Channel): Promise<Snowflake> {
         const id = snowflake.create();
         await this.database.dumps.add({
             id: id,
@@ -387,9 +390,9 @@ export class BaseUtilities {
         return support?.value.includes(userId) ?? false;
     }
 
-    public async getChannel(channelId: string): Promise<KnownChannel | undefined>;
-    public async getChannel(guild: string | Guild, channelId: string): Promise<KnownGuildChannel | undefined>;
-    public async getChannel(...args: [string] | [string | Guild, string]): Promise<KnownChannel | undefined> {
+    public async getChannel(channelId: string): Promise<eris.KnownChannel | undefined>;
+    public async getChannel(guild: string | eris.Guild, channelId: string): Promise<eris.KnownGuildChannel | undefined>;
+    public async getChannel(...args: [string] | [string | eris.Guild, string]): Promise<eris.KnownChannel | undefined> {
         const [guildVal, channelVal] = args.length === 2 ? args : [undefined, args[0]] as const;
 
         const channelId = parse.entityId(channelVal, '@!?', true) ?? '';
@@ -405,7 +408,7 @@ export class BaseUtilities {
         return channel !== undefined && guard.isGuildChannel(channel) ? channel : undefined;
     }
 
-    async #getRestChannel(channelId: string): Promise<KnownChannel | undefined> {
+    async #getRestChannel(channelId: string): Promise<eris.KnownChannel | undefined> {
         try {
             const channel = await this.discord.getRESTChannel(channelId);
             if (guard.isPrivateChannel(channel)) {
@@ -414,20 +417,20 @@ export class BaseUtilities {
             } else {
                 if (guard.isUncached(channel.guild)) {
                     channel.guild = await this.getGuild(channel.guild.id) ?? channel.guild;
-                    channel.guild.channels ??= new Collection(GuildChannel as new (...args: unknown[]) => AnyGuildChannel);
+                    channel.guild.channels ??= new eris.Collection(eris.GuildChannel as new (...args: unknown[]) => eris.AnyGuildChannel);
                 }
                 if (channel.guild.channels.get(channel.id) !== channel)
                     channel.guild.channels.set(channel.id, channel);
             }
             return channel;
         } catch (err: unknown) {
-            if (err instanceof DiscordRESTError && err.code === ApiError.UNKNOWN_CHANNEL)
+            if (err instanceof eris.DiscordRESTError && err.code === eris.ApiError.UNKNOWN_CHANNEL)
                 return undefined;
             throw err;
         }
     }
 
-    public async findChannels(guild: string | Guild, query?: string): Promise<KnownGuildChannel[]> {
+    public async findChannels(guild: string | eris.Guild, query?: string): Promise<eris.KnownGuildChannel[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
@@ -445,7 +448,7 @@ export class BaseUtilities {
         return findBest(allChannels, (c) => this.channelMatchScore(c, query));
     }
 
-    public channelMatchScore(channel: KnownChannel, query: string): number {
+    public channelMatchScore(channel: eris.KnownChannel, query: string): number {
         const normalizedQuery = query.toLowerCase();
 
         if (guard.isGuildChannel(channel)) {
@@ -465,7 +468,7 @@ export class BaseUtilities {
 
     }
 
-    public async getUser(userId: string): Promise<User | undefined> {
+    public async getUser(userId: string): Promise<eris.User | undefined> {
         userId = parse.entityId(userId, '@!?', true) ?? '';
         if (userId === '')
             return undefined;
@@ -473,13 +476,13 @@ export class BaseUtilities {
         try {
             return this.discord.users.get(userId) ?? await this.discord.getRESTUser(userId);
         } catch (err: unknown) {
-            if (err instanceof DiscordRESTError) {
+            if (err instanceof eris.DiscordRESTError) {
                 switch (err.code) {
-                    case ApiError.INVALID_FORM_BODY:
+                    case eris.ApiError.INVALID_FORM_BODY:
                         this.logger.error('Error while getting user', userId, err);
                     // fallthrough
-                    case ApiError.MISSING_ACCESS:
-                    case ApiError.UNKNOWN_USER:
+                    case eris.ApiError.MISSING_ACCESS:
+                    case eris.ApiError.UNKNOWN_USER:
                         return undefined;
                 }
             }
@@ -487,7 +490,7 @@ export class BaseUtilities {
         }
     }
 
-    public async findUsers(guild: Guild | string, query?: string): Promise<User[]> {
+    public async findUsers(guild: eris.Guild | string, query?: string): Promise<eris.User[]> {
         if (query !== undefined) {
             const user = await this.getUser(query);
             if (user !== undefined)
@@ -497,7 +500,7 @@ export class BaseUtilities {
         return members.map(m => m.user);
     }
 
-    public async getGuild(guildId: string): Promise<Guild | undefined> {
+    public async getGuild(guildId: string): Promise<eris.Guild | undefined> {
         guildId = parse.entityId(guildId) ?? '';
         if (guildId === '')
             return undefined;
@@ -505,13 +508,13 @@ export class BaseUtilities {
         try {
             return this.discord.guilds.get(guildId) ?? await this.discord.getRESTGuild(guildId);
         } catch (err: unknown) {
-            if (err instanceof DiscordRESTError) {
+            if (err instanceof eris.DiscordRESTError) {
                 switch (err.code) {
-                    case ApiError.INVALID_FORM_BODY:
+                    case eris.ApiError.INVALID_FORM_BODY:
                         this.logger.error('Error while getting guild', guildId, err);
                     // fallthrough
-                    case ApiError.MISSING_ACCESS:
-                    case ApiError.UNKNOWN_GUILD:
+                    case eris.ApiError.MISSING_ACCESS:
+                    case eris.ApiError.UNKNOWN_GUILD:
                         return undefined;
                 }
             }
@@ -519,9 +522,9 @@ export class BaseUtilities {
         }
     }
 
-    public async getMessage(channel: string, messageId: string, force?: boolean): Promise<KnownMessage | undefined>;
-    public async getMessage(channel: KnownChannel, messageId: string, force?: boolean): Promise<KnownMessage | undefined>;
-    public async getMessage(channel: string | KnownChannel, messageId: string, force?: boolean): Promise<KnownMessage | undefined> {
+    public async getMessage(channel: string, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined>;
+    public async getMessage(channel: eris.KnownChannel, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined>;
+    public async getMessage(channel: string | eris.KnownChannel, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined> {
         messageId = parse.entityId(messageId) ?? '';
         if (messageId === '')
             return undefined;
@@ -536,13 +539,13 @@ export class BaseUtilities {
                 return await foundChannel.getMessage(messageId);
             return foundChannel.messages.get(messageId) ?? await foundChannel.getMessage(messageId);
         } catch (err: unknown) {
-            if (err instanceof DiscordRESTError) {
+            if (err instanceof eris.DiscordRESTError) {
                 switch (err.code) {
-                    case ApiError.INVALID_FORM_BODY:
+                    case eris.ApiError.INVALID_FORM_BODY:
                         this.logger.error('Error while getting message', messageId, 'in channel', foundChannel.id, err);
                     // fallthrough
-                    case ApiError.MISSING_ACCESS:
-                    case ApiError.UNKNOWN_MESSAGE:
+                    case eris.ApiError.MISSING_ACCESS:
+                    case eris.ApiError.UNKNOWN_MESSAGE:
                         return undefined;
                 }
             }
@@ -550,7 +553,7 @@ export class BaseUtilities {
         }
     }
 
-    public async getMember(guild: string | Guild, userId: string): Promise<Member | undefined> {
+    public async getMember(guild: string | eris.Guild, userId: string): Promise<eris.Member | undefined> {
         userId = parse.entityId(userId) ?? '';
         if (userId === '')
             return undefined;
@@ -564,12 +567,12 @@ export class BaseUtilities {
         try {
             return guild.members.get(userId) ?? await guild.getRESTMember(userId);
         } catch (error: unknown) {
-            if (error instanceof DiscordRESTError) {
+            if (error instanceof eris.DiscordRESTError) {
                 switch (error.code) {
-                    case ApiError.UNKNOWN_MEMBER:
-                    case ApiError.UNKNOWN_USER:
-                    case ApiError.MISSING_ACCESS:
-                    case ApiError.INVALID_FORM_BODY:
+                    case eris.ApiError.UNKNOWN_MEMBER:
+                    case eris.ApiError.UNKNOWN_USER:
+                    case eris.ApiError.MISSING_ACCESS:
+                    case eris.ApiError.INVALID_FORM_BODY:
                         return undefined;
                 }
             }
@@ -577,12 +580,12 @@ export class BaseUtilities {
         }
     }
 
-    readonly #guildsWithResolvedMembers = new WeakMap<Guild, Promise<void>>();
-    public ensureMemberCache(guild: Guild): Promise<void> {
+    readonly #guildsWithResolvedMembers = new WeakMap<eris.Guild, Promise<void>>();
+    public ensureMemberCache(guild: eris.Guild): Promise<void> {
         let resolve = this.#guildsWithResolvedMembers.get(guild);
         if (resolve === undefined) {
             this.#guildsWithResolvedMembers.set(guild, resolve = this.#ensureMemberCache(guild).catch(err => {
-                if (err instanceof DiscordRESTError)
+                if (err instanceof eris.DiscordRESTError)
                     this.#guildsWithResolvedMembers.delete(guild);
                 throw err;
             }));
@@ -590,13 +593,13 @@ export class BaseUtilities {
         return resolve;
     }
 
-    async #ensureMemberCache(guild: Guild): Promise<void> {
+    async #ensureMemberCache(guild: eris.Guild): Promise<void> {
         const initialSize = guild.members.size;
         await guild.fetchAllMembers();
         this.logger.info('Cached', guild.members.size - initialSize, 'members in guild', guild.id, '. Member cache now has', guild.members.size, 'entries');
     }
 
-    public async * streamAllBans(guild: Guild): AsyncGenerator<GuildBan, void, undefined> {
+    public async * streamAllBans(guild: eris.Guild): AsyncGenerator<eris.GuildBan, void, undefined> {
         let batch = [];
         let after;
         const bans = this.getGuildBans(guild);
@@ -609,7 +612,7 @@ export class BaseUtilities {
         } while (after !== undefined);
     }
 
-    public async requestAllBans(guild: Guild): Promise<GuildBan[]> {
+    public async requestAllBans(guild: eris.Guild): Promise<eris.GuildBan[]> {
         const result = [];
         for await (const ban of this.streamAllBans(guild))
             result.push(ban);
@@ -617,14 +620,14 @@ export class BaseUtilities {
     }
 
     readonly #guildsWithResolvedBans = new Map<string, Promise<void>>();
-    public ensureGuildBans(guild: Guild): Promise<void> {
+    public ensureGuildBans(guild: eris.Guild): Promise<void> {
         const hasPerms = guild.members.get(this.user.id)?.permissions.has('banMembers') ?? false;
         if (!hasPerms)
             this.#guildsWithResolvedBans.delete(guild.id);
         let resolve = this.#guildsWithResolvedBans.get(guild.id);
         if (resolve === undefined) {
             this.#guildsWithResolvedBans.set(guild.id, resolve = this.#ensureGuildBans(guild).catch(err => {
-                if (err instanceof DiscordRESTError)
+                if (err instanceof eris.DiscordRESTError)
                     this.#guildsWithResolvedBans.delete(guild.id);
                 throw err;
             }));
@@ -632,21 +635,21 @@ export class BaseUtilities {
         return resolve;
     }
 
-    async #ensureGuildBans(guild: Guild): Promise<void> {
+    async #ensureGuildBans(guild: eris.Guild): Promise<void> {
         for await (const _ of this.streamAllBans(guild)) {
             // NO-OP - streamAllBans caches each record as it encounters them, which is all we need to do here.
         }
     }
 
     readonly #guildBanCache = new Map<string, Set<string>>();
-    public getGuildBans(guild: Guild): Set<string> {
+    public getGuildBans(guild: eris.Guild): Set<string> {
         let cache = this.#guildBanCache.get(guild.id);
         if (cache === undefined)
             this.#guildBanCache.set(guild.id, cache = new Set<string>());
         return cache;
     }
 
-    public async findMembers(guild: string | Guild, query?: string): Promise<Member[]> {
+    public async findMembers(guild: string | eris.Guild, query?: string): Promise<eris.Member[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
@@ -666,7 +669,7 @@ export class BaseUtilities {
         return findBest(guild.members.values(), m => this.memberMatchScore(m, query));
     }
 
-    public async getWebhook(guild: string | Guild, webhookId: string): Promise<Webhook | undefined> {
+    public async getWebhook(guild: string | eris.Guild, webhookId: string): Promise<eris.Webhook | undefined> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
@@ -677,10 +680,10 @@ export class BaseUtilities {
             const webhooks = await guild.getWebhooks();
             return webhooks.find(w => w.id === webhookId);
         } catch (error: unknown) {
-            if (error instanceof DiscordRESTError) {
+            if (error instanceof eris.DiscordRESTError) {
                 switch (error.code) {
-                    case ApiError.MISSING_PERMISSIONS:
-                    case ApiError.MISSING_ACCESS:
+                    case eris.ApiError.MISSING_PERMISSIONS:
+                    case eris.ApiError.MISSING_ACCESS:
                         return undefined;
                 }
             }
@@ -688,21 +691,21 @@ export class BaseUtilities {
         }
     }
 
-    public async findWebhooks(guild: string | Guild, query?: string): Promise<Webhook[]> {
+    public async findWebhooks(guild: string | eris.Guild, query?: string): Promise<eris.Webhook[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
         if (typeof guild === 'string')
             return [];
 
-        let webhooks: Webhook[];
+        let webhooks: eris.Webhook[];
         try {
             webhooks = await guild.getWebhooks();
         } catch (error: unknown) {
-            if (error instanceof DiscordRESTError) {
+            if (error instanceof eris.DiscordRESTError) {
                 switch (error.code) {
-                    case ApiError.MISSING_PERMISSIONS:
-                    case ApiError.MISSING_ACCESS:
+                    case eris.ApiError.MISSING_PERMISSIONS:
+                    case eris.ApiError.MISSING_ACCESS:
                         return [];
                 }
             }
@@ -720,7 +723,7 @@ export class BaseUtilities {
         return findBest(webhooks, w => this.webhookMatchScore(w, query));
     }
 
-    public async getSender(guild: string | Guild, senderId: string): Promise<Member | Webhook | undefined> {
+    public async getSender(guild: string | eris.Guild, senderId: string): Promise<eris.Member | eris.Webhook | undefined> {
         senderId = parse.entityId(senderId) ?? '';
         if (senderId === '')
             return undefined;
@@ -738,7 +741,7 @@ export class BaseUtilities {
         return await this.getWebhook(guild, senderId);
     }
 
-    public async findSenders(guild: string | Guild, query?: string): Promise<Array<Member | Webhook>> {
+    public async findSenders(guild: string | eris.Guild, query?: string): Promise<Array<eris.Member | eris.Webhook>> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
@@ -751,7 +754,7 @@ export class BaseUtilities {
         ])).flat();
     }
 
-    public memberMatchScore(member: Member, query: string): number {
+    public memberMatchScore(member: eris.Member, query: string): number {
         let score = this.userMatchScore(member.user, query);
         const displayName = member.nick ?? member.username;
         const normalizedDisplayname = displayName.toLowerCase();
@@ -764,7 +767,7 @@ export class BaseUtilities {
         return score;
     }
 
-    public userMatchScore(user: User, query: string): number {
+    public userMatchScore(user: eris.User, query: string): number {
         let score = 0;
         const normalizedUsername = user.username.toLowerCase();
         const normalizedQuery = query.toLowerCase();
@@ -776,7 +779,7 @@ export class BaseUtilities {
         return score;
     }
 
-    public webhookMatchScore(webhook: Webhook, query: string): number {
+    public webhookMatchScore(webhook: eris.Webhook, query: string): number {
         let score = 0;
         const normalizedName = webhook.name.toLowerCase();
         const normalizedQuery = query.toLowerCase();
@@ -788,7 +791,7 @@ export class BaseUtilities {
         return score;
     }
 
-    public async getRole(guild: string | Guild, roleId: string): Promise<Role | undefined> {
+    public async getRole(guild: string | eris.Guild, roleId: string): Promise<eris.Role | undefined> {
         roleId = parse.entityId(roleId, '@&', true) ?? '';
         if (roleId === '')
             return undefined;
@@ -801,13 +804,13 @@ export class BaseUtilities {
         try {
             return guild.roles.get(roleId);
         } catch (error: unknown) {
-            if (error instanceof DiscordRESTError && error.code === ApiError.UNKNOWN_ROLE)
+            if (error instanceof eris.DiscordRESTError && error.code === eris.ApiError.UNKNOWN_ROLE)
                 return undefined;
             throw error;
         }
     }
 
-    public async findRoles(guild: string | Guild, query?: string): Promise<Role[]> {
+    public async findRoles(guild: string | eris.Guild, query?: string): Promise<eris.Role[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
@@ -824,7 +827,7 @@ export class BaseUtilities {
         return findBest(guild.roles.values(), r => this.roleMatchScore(r, query));
     }
 
-    public roleMatchScore(role: Role, query: string): number {
+    public roleMatchScore(role: eris.Role, query: string): number {
         const normalizedQuery = query.toLowerCase();
         const normalizedName = role.name.toLowerCase();
 
@@ -838,34 +841,34 @@ export class BaseUtilities {
 }
 
 const sendErrors = {
-    [ApiError.UNKNOWN_CHANNEL]() {
+    [eris.ApiError.UNKNOWN_CHANNEL]() {
         /* console.error('10003: Channel not found. ', channel); */
     },
-    [ApiError.CANNOT_SEND_EMPTY_MESSAGE](util: BaseUtilities, _: unknown, payload: AdvancedMessageContent) {
+    [eris.ApiError.CANNOT_SEND_EMPTY_MESSAGE](util: BaseUtilities, _: unknown, payload: eris.AdvancedMessageContent) {
         util.logger.error('50006: Tried to send an empty message:', payload);
     },
-    [ApiError.CANNOT_MESSAGE_USER]() {
+    [eris.ApiError.CANNOT_MESSAGE_USER]() {
         /* console.error('50007: Can\'t send a message to this user!'); */
     },
-    [ApiError.CANNOT_SEND_MESSAGES_IN_VOICE_CHANNEL]() {
+    [eris.ApiError.CANNOT_SEND_MESSAGES_IN_VOICE_CHANNEL]() {
         /* console.error('50008: Can\'t send messages in a voice channel!'); */
     },
-    [ApiError.MISSING_PERMISSIONS](util: BaseUtilities) {
+    [eris.ApiError.MISSING_PERMISSIONS](util: BaseUtilities) {
         util.logger.warn('50013: Tried sending a message, but had no permissions!');
         return templates.utils.send.errors.messageNoPerms;
     },
-    [ApiError.MISSING_ACCESS](util: BaseUtilities) {
+    [eris.ApiError.MISSING_ACCESS](util: BaseUtilities) {
         util.logger.warn('50001: Missing Access');
         return templates.utils.send.errors.channelNoPerms;
     },
-    [ApiError.EMBED_DISABLED](util: BaseUtilities) {
+    [eris.ApiError.EMBED_DISABLED](util: BaseUtilities) {
         util.logger.warn('50004: Tried embeding a link, but had no permissions!');
         return templates.utils.send.errors.embedNoPerms;
     },
 
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
-    [ApiError.INVALID_FORM_BODY](util: BaseUtilities, channel: TextableChannel, payload: AdvancedMessageContent, error: DiscordRESTError) {
+    [eris.ApiError.INVALID_FORM_BODY](util: BaseUtilities, channel: eris.TextableChannel, payload: eris.AdvancedMessageContent, error: eris.DiscordRESTError) {
         util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL'}|${JSON.stringify(payload)}`, error);
     }
 } as const;
@@ -891,8 +894,8 @@ function findBest<T>(options: Iterable<T>, evaluator: (value: T) => number): T[]
 }
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
-const erisRequest = RequestHandler.prototype.request;
-RequestHandler.prototype.request = function (...args) {
+const erisRequest = eris.RequestHandler.prototype.request;
+eris.RequestHandler.prototype.request = function (...args) {
     try {
         let url;
         if (args[1].includes('webhook')) {

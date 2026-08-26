@@ -1,9 +1,11 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
-import { exec } from 'child_process';
+import { exec } from 'node:child_process';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import type { CommandContext} from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.exec;
 

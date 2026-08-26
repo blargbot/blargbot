@@ -1,11 +1,12 @@
-import { parse } from '@blargbot/core/utils';
-import { IFormattable } from '@blargbot/formatting';
+import { parse } from '@blargbot/core/utils/index.js';
+import type { IFormattable } from '@blargbot/formatting';
 
-import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic, SubtagLogic } from '../logic';
-import { SubtagReturnTypeMap, SubtagSignature, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types';
-import { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions';
-import { SubtagSignatureCallable } from './SubtagSignatureCallable';
-import { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions';
+import type { SubtagLogic } from '../logic/index.js';
+import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic/index.js';
+import type { SubtagReturnTypeMap, SubtagSignature, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types.js';
+import type { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions.js';
+import type { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
+import type { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions.js';
 
 export function parseDefinitions(definitions: readonly AnySubtagSignatureOptions[]): ReadonlyArray<{
     readonly signature?: SubtagSignature<IFormattable<string>>;

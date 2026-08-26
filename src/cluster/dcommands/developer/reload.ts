@@ -1,9 +1,9 @@
-import { GlobalCommand } from '@blargbot/cluster/command';
-import { CommandResult, ICommandManager } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { ModuleLoader } from '@blargbot/core/modules';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, ICommandManager } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { ModuleLoader } from '@blargbot/core/modules/index.js';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.reload;
 

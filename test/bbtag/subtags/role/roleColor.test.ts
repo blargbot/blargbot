@@ -1,7 +1,7 @@
-import { RoleColorSubtag } from '@blargbot/bbtag/subtags/role/roleColor';
+import { RoleColorSubtag } from '@blargbot/bbtag/subtags/role/roleColor.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleColorSubtag(),

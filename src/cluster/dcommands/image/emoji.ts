@@ -1,9 +1,10 @@
-import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { Emote } from '@blargbot/core/Emote';
+import type { CommandContext} from '@blargbot/cluster/command/index.js';
+import { GlobalImageCommand } from '@blargbot/cluster/command/index.js';
+import { Emote } from '@blargbot/core/Emote.js';
 import { util } from '@blargbot/formatting';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.emoji;
 

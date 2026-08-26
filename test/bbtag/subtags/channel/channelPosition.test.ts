@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelPosition';
-import { APITextChannel } from 'discord-api-types/v9';
-import { Constants } from 'eris';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelPosition.js';
+import type { APITextChannel } from 'discord-api-types/v9';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new ChannelPositionSubtag(),
@@ -34,7 +34,7 @@ runSubtagTests({
             setup(ctx) {
                 ctx.channels.command.id = '23948762874624372942';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.channels.command.type = Constants.ChannelTypes.GUILD_PUBLIC_THREAD;
+                ctx.channels.command.type = eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD;
             }
         }
     ]

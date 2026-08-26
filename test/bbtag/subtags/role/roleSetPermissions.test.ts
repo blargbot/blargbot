@@ -1,16 +1,16 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleSetPermissionsSubtag } from '@blargbot/bbtag/subtags/role/roleSetPermissions';
-import { argument } from '@blargbot/test-util/mock';
-import { ApiError, Constants } from 'eris';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RoleSetPermissionsSubtag } from '@blargbot/bbtag/subtags/role/roleSetPermissions.js';
+import { argument } from '@blargbot/test-util/mock.js';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleSetPermissionsSubtag(),
     argCountBounds: { min: 1, max: 3 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
+        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
         ctx.members.authorizer.roles.push(ctx.roles.top.id);
     },
     cases: [
@@ -64,7 +64,7 @@ runSubtagTests({
                     title: 'Author is admin',
                     expected: '',
                     setup(_, ctx) {
-                        ctx.roles.authorizer.permissions = Constants.Permissions.administrator.toString();
+                        ctx.roles.authorizer.permissions = eris.Constants.Permissions.administrator.toString();
                     },
                     postSetup(role, _, ctx) {
                         ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 239748n }), 'Command User#0000'))
@@ -75,7 +75,7 @@ runSubtagTests({
                     title: 'Author has permissions',
                     expected: '',
                     setup(_, ctx) {
-                        ctx.roles.authorizer.permissions = (Constants.Permissions.all & ~Constants.Permissions.administrator).toString();
+                        ctx.roles.authorizer.permissions = (eris.Constants.Permissions.all & ~eris.Constants.Permissions.administrator).toString();
                     },
                     postSetup(role, _, ctx) {
                         ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 239748n }), 'Command User#0000'))
@@ -87,9 +87,9 @@ runSubtagTests({
                     expected: '',
                     setup(_, ctx) {
                         ctx.roles.authorizer.permissions = (
-                            Constants.Permissions.manageRoles
-                            | Constants.Permissions.viewAuditLog
-                            | Constants.Permissions.readMessageHistory
+                            eris.Constants.Permissions.manageRoles
+                            | eris.Constants.Permissions.viewAuditLog
+                            | eris.Constants.Permissions.readMessageHistory
                         ).toString();
                     },
                     postSetup(role, _, ctx) {
@@ -137,7 +137,7 @@ runSubtagTests({
                 ctx.roles.bot.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
+                const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
                 const role = bbctx.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');
@@ -158,7 +158,7 @@ runSubtagTests({
                 ctx.roles.bot.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 const role = bbctx.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');

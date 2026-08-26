@@ -1,12 +1,12 @@
-import { guard } from '@blargbot/core/utils';
-import { Embed, EmbedOptions } from 'eris';
+import { guard } from '@blargbot/core/utils/index.js';
+import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
-export function embed(embeds: ReadonlyArray<(EmbedOptions | Embed) & { asString?: string; }>): string {
+export function embed(embeds: ReadonlyArray<(eris.EmbedOptions | eris.Embed) & { asString?: string; }>): string {
     return [...embedsIter(embeds)].join('\n').trim();
 }
 
-function* embedsIter(embeds: ReadonlyArray<(EmbedOptions | Embed) & { asString?: string; }>): Generator<string> {
+function* embedsIter(embeds: ReadonlyArray<(eris.EmbedOptions | eris.Embed) & { asString?: string; }>): Generator<string> {
     for (const embed of embeds) {
         if ('asString' in embed && embed.asString !== undefined) {
             yield embed.asString;

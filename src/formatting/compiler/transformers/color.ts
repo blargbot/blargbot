@@ -1,4 +1,4 @@
-import { IValueResolverTransform } from '../types';
+import type { IValueResolverTransform } from '../types.js';
 
 export const color: IValueResolverTransform = {
     transform(_compiler, source) {

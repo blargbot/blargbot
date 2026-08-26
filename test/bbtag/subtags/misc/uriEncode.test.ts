@@ -1,7 +1,7 @@
-import { UriEncodeSubtag } from '@blargbot/bbtag/subtags/misc/uriEncode';
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi';
+import { UriEncodeSubtag } from '@blargbot/bbtag/subtags/misc/uriEncode.js';
+import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new UriEncodeSubtag(),

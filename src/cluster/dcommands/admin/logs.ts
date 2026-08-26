@@ -1,10 +1,11 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { guard, sleep } from '@blargbot/core/utils';
-import { ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { guard, sleep } from '@blargbot/core/utils/index.js';
+import type { ChatLogSearchOptions } from '@blargbot/domain/models/index.js';
+import { ChatLogType } from '@blargbot/domain/models/index.js';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.logs;
 

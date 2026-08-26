@@ -1,7 +1,8 @@
-import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
+import type { CommandContext} from '@blargbot/cluster/command/index.js';
+import { GlobalImageCommand } from '@blargbot/cluster/command/index.js';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.color;
 

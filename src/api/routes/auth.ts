@@ -1,11 +1,11 @@
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
+import { BaseRoute } from '@blargbot/api/BaseRoute.js';
+import type { ApiResponse } from '@blargbot/api/types.js';
 import { config } from '@blargbot/config';
 import { mapping } from '@blargbot/mapping';
-import { Request } from 'express-serve-static-core';
-import fetch from 'node-fetch';
+import type { Request } from 'express-serve-static-core';
 
-import Security from '../Security';
+import type { Api } from '../Api.js';
+import Security from '../Security.js';
 
 const baseEndpoint = 'https://discordapp.com/api/v9/';
 const tokenEndpoint = 'https://discordapp.com/api/oauth2/token';
@@ -26,11 +26,11 @@ export class AuthRoute extends BaseRoute<['/auth']> {
         super('/auth');
 
         this.addRoute('/validate', {
-            post: ({ request }) => this.validate(request)
+            post: ({ request, api }) => this.validate(request, api)
         });
     }
 
-    public async validate(request: Request): Promise<ApiResponse> {
+    public async validate(request: Request, api: Api): Promise<ApiResponse> {
         const body = this.mapRequestValue(request.body, mapValidateBody);
 
         const params = new URLSearchParams();
@@ -41,7 +41,7 @@ export class AuthRoute extends BaseRoute<['/auth']> {
         params.append('redirect_uri', config.website.callback);
         params.append('scope', 'identify');
 
-        const tokenRes = await fetch(tokenEndpoint, {
+        const tokenRes = await api.fetch(tokenEndpoint, {
             method: 'POST',
             headers: {
                 'content-type': 'application/x-www-form-urlencoded'
@@ -50,7 +50,7 @@ export class AuthRoute extends BaseRoute<['/auth']> {
         });
 
         const token = await tokenRes.json() as AccessTokenResponse;
-        const userRes = await fetch(userEndpoint, {
+        const userRes = await api.fetch(userEndpoint, {
             headers: {
                 authorization: `Bearer ${token.access_token}`
             }

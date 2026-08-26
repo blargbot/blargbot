@@ -1,9 +1,9 @@
-import { parse } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core/utils/index.js';
 
-import { CompiledSubtag } from '../../compilation/index';
-import { NotANumberError } from '../../errors/index';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils/index';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { NotANumberError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.absolute;
 

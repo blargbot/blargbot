@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ParamsArraySubtag } from '@blargbot/bbtag/subtags/bot/paramsArray';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ParamsArraySubtag } from '@blargbot/bbtag/subtags/bot/paramsArray.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ParamsArraySubtag(),

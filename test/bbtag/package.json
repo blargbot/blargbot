@@ -2,6 +2,7 @@
     "name": "@blargbot/bbtag-tests",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
     "dependencies": {
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",
@@ -18,6 +19,7 @@
         "eris": "^0.17.1",
         "mocha": "^10.1.0",
         "moment-timezone": "^0.5.39",
+        "node-fetch": "^3.3.2",
         "ts-mockito": "^2.6.1"
     },
     "devDependencies": {

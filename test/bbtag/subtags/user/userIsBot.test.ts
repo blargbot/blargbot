@@ -1,7 +1,7 @@
-import { UserIsBotSubtag } from '@blargbot/bbtag/subtags/user/userIsBot';
+import { UserIsBotSubtag } from '@blargbot/bbtag/subtags/user/userIsBot.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new UserIsBotSubtag(),

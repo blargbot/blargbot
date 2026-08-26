@@ -1,11 +1,11 @@
-import { guard } from '@blargbot/core/utils';
-import { GuildChannel } from 'eris';
+import { guard } from '@blargbot/core/utils/index.js';
+import type * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelPosition;
 
@@ -52,7 +52,7 @@ export class ChannelPositionSubtag extends CompiledSubtag {
         return this.#getChanelPosition(channel);
     }
 
-    #getChanelPosition(channel: GuildChannel): number {
+    #getChanelPosition(channel: eris.GuildChannel): number {
         if (guard.isThreadChannel(channel))
             throw new BBTagRuntimeError('Threads dont have a position', `${channel.mention} is a thread and doesnt have a position`);
 

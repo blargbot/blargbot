@@ -1,4 +1,4 @@
-import { IValueResolverTransform } from '../types';
+import type { IValueResolverTransform } from '../types.js';
 
 export const rand: IValueResolverTransform = {
     transform(_compiler, _, ...choices) {

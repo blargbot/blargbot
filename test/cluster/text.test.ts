@@ -1,12 +1,12 @@
-import { Command } from '@blargbot/cluster/command/index';
-import templates from '@blargbot/cluster/text';
-import { CommandType } from '@blargbot/cluster/utils/index';
-import * as coreTransformers from '@blargbot/core/formatting';
+import { Command } from '@blargbot/cluster/command/index.js';
+import templates from '@blargbot/cluster/text.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import * as coreTransformers from '@blargbot/core/formatting/index.js';
 import { transformers, util } from '@blargbot/formatting';
-import { quickMock } from '@blargbot/test-util/quickMock';
-import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
+import { quickMock } from '@blargbot/test-util/quickMock.js';
+import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
 import { expect } from 'chai';
-import Eris from 'eris';
+import * as eris from 'eris';
 import { describe } from 'mocha';
 import moment from 'moment-timezone';
 
@@ -23,22 +23,22 @@ const command = (): Command => new TestCommand({
     name: '',
     signatures: []
 });
-const client = (): Eris.Client => new Eris.Client('');
-const guild = (): Eris.Guild => Object.assign(new Eris.Guild({ id: '' }, client()), {
-    shard: new Eris.Shard(0, client())
+const client = (): eris.Client => new eris.Client('');
+const guild = (): eris.Guild => Object.assign(new eris.Guild({ id: '' }, client()), {
+    shard: new eris.Shard(0, client())
 });
-const user = (): Eris.User => new Eris.User({ id: '' }, client());
-const member = (): Eris.Member => new Eris.Member({ id: '', user: { id: '' } }, guild(), client());
-const role = (): Eris.Role => new Eris.Role({ id: '' }, guild());
-const channel = (): Eris.Channel => new Eris.Channel({ id: '' }, client());
-const guildChannel = (): Eris.GuildChannel => new Eris.GuildChannel({ id: '' }, client());
-const members = (): Eris.Collection<Eris.Member> => new Eris.Collection<Eris.Member>(Eris.Member);
-const activity: () => Eris.Activity = () => ({
+const user = (): eris.User => new eris.User({ id: '' }, client());
+const member = (): eris.Member => new eris.Member({ id: '', user: { id: '' } }, guild(), client());
+const role = (): eris.Role => new eris.Role({ id: '' }, guild());
+const channel = (): eris.Channel => new eris.Channel({ id: '' }, client());
+const guildChannel = (): eris.GuildChannel => new eris.GuildChannel({ id: '' }, client());
+const members = (): eris.Collection<eris.Member> => new eris.Collection<eris.Member>(eris.Member);
+const activity: () => eris.Activity = () => ({
     created_at: 0,
     name: '',
     type: 0
 });
-const webhook: () => Eris.Webhook = () => ({
+const webhook: () => eris.Webhook = () => ({
     application_id: '',
     avatar: '',
     channel_id: '',

@@ -1,7 +1,7 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { ChooseSubtag } from '@blargbot/bbtag/subtags/misc/choose';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { ChooseSubtag } from '@blargbot/bbtag/subtags/misc/choose.js';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ChooseSubtag(),

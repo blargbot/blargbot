@@ -1,15 +1,17 @@
-import { IPCContracts } from '@blargbot/core/types';
-import { getRange } from '@blargbot/core/utils';
-import { Logger } from '@blargbot/logger';
+import type { IPCContracts } from '@blargbot/core/types.js';
+import { getRange } from '@blargbot/core/utils/index.js';
+import type { Logger } from '@blargbot/logger';
 import EventEmitter from 'eventemitter3';
 
-import { Semaphore } from '../Semaphore';
-import { WorkerConnection } from './WorkerConnection';
+import { Semaphore } from '../Semaphore.js';
+import type { WorkerConnection } from './WorkerConnection.js';
 
-export const enum RespawnStrategy {
-    SPAWN_THEN_KILL,
-    KILL_THEN_SPAWN
-}
+export type RespawnStrategy = typeof RespawnStrategy[keyof typeof RespawnStrategy];
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const RespawnStrategy = Object.freeze({
+    SPAWN_THEN_KILL: 0,
+    KILL_THEN_SPAWN: 1
+});
 
 export interface WorkerPoolOptions {
     readonly type: string;

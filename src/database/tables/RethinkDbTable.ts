@@ -1,8 +1,8 @@
-import { guard } from '@blargbot/core/utils';
-import { Logger } from '@blargbot/logger';
-import { Cursor, Expression, TableQuery, UpdateRequest, WriteResult } from 'rethinkdb';
+import { guard } from '@blargbot/core/utils/index.js';
+import type { Logger } from '@blargbot/logger';
+import type { Cursor, Expression, TableQuery, UpdateRequest, WriteResult } from 'rethinkdb';
 
-import { RethinkDb } from '../clients';
+import type { RethinkDb } from '../clients/index.js';
 
 export class RethinkDbTable<Table> {
     readonly #rethinkDb: RethinkDb;

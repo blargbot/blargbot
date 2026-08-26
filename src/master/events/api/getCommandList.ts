@@ -1,7 +1,7 @@
-import { ApiConnection } from '@blargbot/api';
-import { CommandListResult } from '@blargbot/cluster/types';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
-import { Master } from '@blargbot/master';
+import type { ApiConnection } from '@blargbot/api';
+import type { CommandListResult } from '@blargbot/cluster/types.js';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
+import type { Master } from '@blargbot/master';
 
 export class ApiGetCommandListHandler extends WorkerPoolEventService<ApiConnection, 'getCommandList'> {
     #nextCluster: number;

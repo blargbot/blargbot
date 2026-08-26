@@ -1,14 +1,14 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
-import { CommandDefinition, CommandOptions, CommandResult } from '@blargbot/cluster/types';
-import { commandTypeDetails, runMiddleware } from '@blargbot/cluster/utils';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import type { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
+import type { CommandDefinition, CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
+import { commandTypeDetails, runMiddleware } from '@blargbot/cluster/utils/index.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type * as eris from 'eris';
 
-import templates from '../text';
-import { Command } from './Command';
-import { CommandContext } from './CommandContext';
-import { compileSignatures } from './compilation';
-import { InvokeCommandHandlerMiddleware } from './middleware';
+import templates from '../text.js';
+import { Command } from './Command.js';
+import type { CommandContext } from './CommandContext.js';
+import { compileSignatures } from './compilation/index.js';
+import { InvokeCommandHandlerMiddleware } from './middleware/index.js';
 
 export abstract class ScopedCommand<TContext extends CommandContext> extends Command {
     readonly #handler: InvokeCommandHandlerMiddleware<TContext>;
@@ -35,7 +35,7 @@ export abstract class ScopedCommand<TContext extends CommandContext> extends Com
         this.#handler = new InvokeCommandHandlerMiddleware(signatures, this);
     }
 
-    public async isVisible(util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User): Promise<boolean> {
+    public async isVisible(util: ClusterUtilities, location?: eris.Guild | eris.KnownTextableChannel, user?: eris.User): Promise<boolean> {
         return await commandTypeDetails[this.category].isVisible(util, location, user);
     }
 

@@ -1,12 +1,12 @@
-import { guard } from '@blargbot/core/utils';
+import { guard } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
-import { Constants, CreateChannelOptions, DiscordRESTError } from 'eris';
+import * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelCreate;
 
@@ -43,7 +43,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Invalid JSON');
         const options = mapped.value;
 
-        const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : Constants.ChannelTypes.GUILD_TEXT;
+        const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : eris.Constants.ChannelTypes.GUILD_TEXT;
 
         for (const permission of options.permissionOverwrites ?? [])
             if (!context.hasPermission((permission.allow as bigint) | (permission.deny as bigint)))
@@ -54,7 +54,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
             const channel = await context.guild.createChannel(name, type, options);
             return channel.id;
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof eris.DiscordRESTError))
                 throw err;
 
             throw new BBTagRuntimeError('Failed to create channel: no perms', err.message);
@@ -63,15 +63,15 @@ export class ChannelCreateSubtag extends CompiledSubtag {
 }
 
 const channelTypes = {
-    text: Constants.ChannelTypes.GUILD_TEXT,
-    voice: Constants.ChannelTypes.GUILD_VOICE,
-    category: Constants.ChannelTypes.GUILD_CATEGORY,
-    news: Constants.ChannelTypes.GUILD_NEWS,
-    store: Constants.ChannelTypes.GUILD_STORE
+    text: eris.Constants.ChannelTypes.GUILD_TEXT,
+    voice: eris.Constants.ChannelTypes.GUILD_VOICE,
+    category: eris.Constants.ChannelTypes.GUILD_CATEGORY,
+    news: eris.Constants.ChannelTypes.GUILD_NEWS,
+    store: eris.Constants.ChannelTypes.GUILD_STORE
 } as const;
 
 const mapOptions = mapping.json(
-    mapping.object<CreateChannelOptions>({
+    mapping.object<eris.CreateChannelOptions>({
         bitrate: mapping.number.optional,
         nsfw: mapping.boolean.optional,
         parentID: mapping.string.optional,
@@ -85,7 +85,7 @@ const mapOptions = mapping.json(
                 id: mapping.string,
                 type: mapping.in('role', 'member')
                     .map(v => v === 'member' ? 'user' : v)
-                    .map(v => Constants.PermissionOverwriteTypes[v.toUpperCase()])
+                    .map(v => eris.Constants.PermissionOverwriteTypes[v.toUpperCase()])
             })
         ).optional,
         reason: mapping.string.optional,

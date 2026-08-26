@@ -1,10 +1,10 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { CommandPermissions } from '@blargbot/domain/models';
-import { Role } from 'eris';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import type { CommandPermissions } from '@blargbot/domain/models/index.js';
+import type * as eris from 'eris';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.editCommand;
 
@@ -114,7 +114,7 @@ export class EditCommandCommand extends GuildCommand {
         };
     }
 
-    public async setRole(context: GuildCommandContext, commands: readonly string[], roles: readonly Role[] | undefined): Promise<CommandResult> {
+    public async setRole(context: GuildCommandContext, commands: readonly string[], roles: readonly eris.Role[] | undefined): Promise<CommandResult> {
         if (roles?.length === 0)
             roles = undefined;
 

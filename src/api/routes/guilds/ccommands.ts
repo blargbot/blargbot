@@ -1,8 +1,8 @@
-import { Api } from '@blargbot/api/Api';
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
-import { snowflake } from '@blargbot/core/utils/snowflake';
-import { GuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
+import type { Api } from '@blargbot/api/Api.js';
+import { BaseRoute } from '@blargbot/api/BaseRoute.js';
+import type { ApiResponse } from '@blargbot/api/types.js';
+import { snowflake } from '@blargbot/core/utils/snowflake.js';
+import type { GuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
 import { mapping } from '@blargbot/mapping';
 
 export class CCommandsRoute extends BaseRoute<['/guilds/:guildId/ccommands']> {

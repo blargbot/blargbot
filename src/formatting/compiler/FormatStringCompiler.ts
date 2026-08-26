@@ -1,7 +1,7 @@
-import { format } from '../types';
-import { isFormattable } from '../util';
-import { ReplacementContext } from './ReplacementContext';
-import { ICompiledFormatString, IFormatStringCompiler, IFormatStringCompilerMiddleware, IValueResolver, IValueResolverTransform } from './types';
+import { format } from '../types.js';
+import { isFormattable } from '../util/index.js';
+import type { ReplacementContext } from './ReplacementContext.js';
+import type { ICompiledFormatString, IFormatStringCompiler, IFormatStringCompilerMiddleware, IValueResolver, IValueResolverTransform } from './types.js';
 
 export interface FormatStringCompilerOptions {
     readonly middleware?: Iterable<IFormatStringCompilerMiddleware>;
@@ -118,18 +118,20 @@ export class FormatStringCompiler implements IFormatStringCompiler {
     }
 }
 
-const enum TemplateTokenType {
-    LITERAL,
-    REPLACEMENT_START,
-    REPLACEMENT_END,
-    PATH_SEPARATOR,
-    TRANSFORM_START,
-    TRANSFORM_ARGS_START,
-    TRANSFORM_ARGS_END,
-    TRANSFORM_ARGS_SEPARATOR,
-    DEFAULT_START,
-    ESCAPED
-}
+type TemplateTokenType = typeof TemplateTokenType[keyof typeof TemplateTokenType];
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const TemplateTokenType = Object.freeze({
+    LITERAL: 0,
+    REPLACEMENT_START: 1,
+    REPLACEMENT_END: 2,
+    PATH_SEPARATOR: 3,
+    TRANSFORM_START: 4,
+    TRANSFORM_ARGS_START: 5,
+    TRANSFORM_ARGS_END: 6,
+    TRANSFORM_ARGS_SEPARATOR: 7,
+    DEFAULT_START: 8,
+    ESCAPED: 9
+});
 
 interface TemplateToken {
     readonly type: TemplateTokenType;

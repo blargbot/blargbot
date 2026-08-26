@@ -1,8 +1,8 @@
-import { RoleNotFoundError } from '@blargbot/bbtag/errors';
-import { UserHasRoleSubtag } from '@blargbot/bbtag/subtags/user/userHasRole';
+import { RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { UserHasRoleSubtag } from '@blargbot/bbtag/subtags/user/userHasRole.js';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new UserHasRoleSubtag(),

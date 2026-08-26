@@ -1,13 +1,12 @@
-import { guard } from '@blargbot/core/utils';
-import { parse } from '@blargbot/core/utils/parse';
-import { DiscordRESTError } from 'eris';
-import fetch from 'node-fetch';
+import { guard } from '@blargbot/core/utils/index.js';
+import { parse } from '@blargbot/core/utils/parse/index.js';
+import * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { BBTagRuntimeError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildSetIcon;
 
@@ -36,9 +35,9 @@ export class GuildSetIconSubtag extends CompiledSubtag {
 
         image = parse.url(image);
         if (guard.isUrl(image)) {
-            const res = await fetch(image);
+            const res = await context.fetch(image);
             const contentType = res.headers.get('content-type');
-            image = `data:${contentType !== null ? contentType : ''};base64,${(await res.buffer()).toString('base64')}`;
+            image = `data:${contentType !== null ? contentType : ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
@@ -46,7 +45,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
         try {
             await context.guild.edit({ icon: image }, context.auditReason());
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof eris.DiscordRESTError))
                 throw err;
 
             const parts = err.message.split('\n').map(m => m.trim());

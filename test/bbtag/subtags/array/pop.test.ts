@@ -1,11 +1,11 @@
-import { NotAnArrayError } from '@blargbot/bbtag/errors';
-import { PopSubtag } from '@blargbot/bbtag/subtags/array/pop';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { TagVariableType } from '@blargbot/domain/models';
-import { argument } from '@blargbot/test-util/mock';
+import { NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
+import { PopSubtag } from '@blargbot/bbtag/subtags/array/pop.js';
+import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new PopSubtag(),

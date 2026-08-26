@@ -1,8 +1,8 @@
-import { RoleMentionSubtag } from '@blargbot/bbtag/subtags/role/roleMention';
+import { RoleMentionSubtag } from '@blargbot/bbtag/subtags/role/roleMention.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleMentionSubtag(),

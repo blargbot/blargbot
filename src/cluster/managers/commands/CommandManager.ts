@@ -1,9 +1,9 @@
-import { Cluster } from '@blargbot/cluster';
-import { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster/types';
-import { defaultStaff, guard } from '@blargbot/cluster/utils';
-import { parse } from '@blargbot/core/utils';
-import { CommandPermissions } from '@blargbot/domain/models';
-import { Collection, Guild, KnownGuildTextableChannel, Role, User } from 'eris';
+import type { Cluster } from '@blargbot/cluster';
+import type { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster/types.js';
+import { defaultStaff, guard } from '@blargbot/cluster/utils/index.js';
+import { parse } from '@blargbot/core/utils/index.js';
+import type { CommandPermissions } from '@blargbot/domain/models/index.js';
+import * as eris from 'eris';
 
 export abstract class CommandManager<T> implements ICommandManager<T> {
     public abstract readonly size: number;
@@ -14,11 +14,11 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
     }
 
     public abstract load(commands?: Iterable<string> | boolean): Promise<void>;
-    protected abstract getCore(name: string, location?: Guild | KnownGuildTextableChannel, user?: User): Promise<CommandGetCoreResult<T>>;
-    protected abstract allCommandNames(location?: Guild | KnownGuildTextableChannel): AsyncIterable<string> | Iterable<string> | Promise<Iterable<string>>;
-    public abstract configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
+    protected abstract getCore(name: string, location?: eris.Guild | eris.KnownGuildTextableChannel, user?: eris.User): Promise<CommandGetCoreResult<T>>;
+    protected abstract allCommandNames(location?: eris.Guild | eris.KnownGuildTextableChannel): AsyncIterable<string> | Iterable<string> | Promise<Iterable<string>>;
+    public abstract configure(user: eris.User, names: string[], guild: eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
 
-    public async get(name: string, location?: Guild | KnownGuildTextableChannel, user?: User): Promise<CommandGetResult<T>> {
+    public async get(name: string, location?: eris.Guild | eris.KnownGuildTextableChannel, user?: eris.User): Promise<CommandGetResult<T>> {
         const findResult = await this.getCore(name.toLowerCase(), location, user);
         if (findResult.state !== 'FOUND')
             return findResult;
@@ -38,15 +38,15 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
         }
     }
 
-    public async *list(location?: Guild | KnownGuildTextableChannel, user?: User): AsyncGenerator<CommandGetResult<T>> {
+    public async *list(location?: eris.Guild | eris.KnownGuildTextableChannel, user?: eris.User): AsyncGenerator<CommandGetResult<T>> {
         for await (const name of await this.allCommandNames(location)) {
             yield await this.get(name, location, user);
         }
     }
 
     protected async checkPermissions(
-        user: User,
-        location: Guild | KnownGuildTextableChannel,
+        user: eris.User,
+        location: eris.Guild | eris.KnownGuildTextableChannel,
         permissions: Required<CommandPermissions>
     ): Promise<PermissionCheckResult> {
         if (this.cluster.util.isBotOwner(user.id))
@@ -60,7 +60,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
             // Command is disabled
             return { state: 'DISABLED' };
 
-        const guild = location instanceof Guild ? location
+        const guild = location instanceof eris.Guild ? location
             : guard.isGuildChannel(location) ? location.guild
                 : undefined;
 
@@ -115,7 +115,7 @@ export abstract class CommandManager<T> implements ICommandManager<T> {
     }
 }
 
-function findRoleId(roles: Collection<Role>, roleSetting: string | undefined): string | undefined {
+function findRoleId(roles: eris.Collection<eris.Role>, roleSetting: string | undefined): string | undefined {
     if (roleSetting === undefined)
         return undefined;
 

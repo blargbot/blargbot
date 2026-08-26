@@ -1,7 +1,7 @@
-import { ApiConnection } from '@blargbot/api';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
-import { Master } from '@blargbot/master';
-import Prometheus, { metric } from 'prom-client';
+import type { ApiConnection } from '@blargbot/api';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
+import type { Master } from '@blargbot/master';
+import prometheus from 'prom-client';
 
 export class ApiGetMetricsHandler extends WorkerPoolEventService<ApiConnection, 'getMetrics'> {
     readonly #master: Master;
@@ -14,8 +14,8 @@ export class ApiGetMetricsHandler extends WorkerPoolEventService<ApiConnection, 
         this.#master = master;
     }
 
-    protected async getCommand(): Promise<Record<number | string, metric[]>> {
-        const metrics = { ...this.#master.metrics, master: await Prometheus.register.getMetricsAsJSON() };
+    protected async getCommand(): Promise<Record<number | string, prometheus.metric[]>> {
+        const metrics = { ...this.#master.metrics, master: await prometheus.register.getMetricsAsJSON() };
         return metrics;
     }
 }

@@ -1,11 +1,11 @@
-import { GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, shuffle } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType, shuffle } from '@blargbot/cluster/utils/index.js';
 import { mapping } from '@blargbot/mapping';
-import fetch from 'node-fetch';
 import xml2js from 'xml2js';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.rule34;
 
@@ -19,13 +19,13 @@ export class Rule34Command extends GlobalCommand {
                 {
                     parameters: '{tags[]}',
                     description: cmd.default.description,
-                    execute: (_, [tags]) => this.getRule34(tags.asStrings)
+                    execute: (ctx, [tags]) => this.getRule34(tags.asStrings, ctx)
                 }
             ]
         });
     }
 
-    public async getRule34(tags: readonly string[]): Promise<CommandResult> {
+    public async getRule34(tags: readonly string[], context: CommandContext): Promise<CommandResult> {
         if (tags.length === 0)
             return cmd.default.noTags;
 
@@ -37,7 +37,7 @@ export class Rule34Command extends GlobalCommand {
         if (tags.length === 0)
             return cmd.default.unsafeTags;
 
-        const response = await requestXmlSafe(`http://rule34.paheal.net/api/danbooru/find_posts/index.xml?tags=${tags.join('%20')}&limit=50`);
+        const response = await this.#requestXmlSafe(`http://rule34.paheal.net/api/danbooru/find_posts/index.xml?tags=${tags.join('%20')}&limit=50`, context);
         const doc = r34Mapping(response);
         if (!doc.valid)
             return cmd.default.noResults;
@@ -64,14 +64,14 @@ export class Rule34Command extends GlobalCommand {
             }))
         };
     }
-}
 
-async function requestXmlSafe(url: string): Promise<unknown> {
-    try {
-        const response = await fetch(url);
-        return await xml2js.parseStringPromise(await response.text()) as unknown;
-    } catch {
-        return undefined;
+    async #requestXmlSafe(url: string, context: CommandContext): Promise<unknown> {
+        try {
+            const response = await context.util.fetch(url);
+            return await xml2js.parseStringPromise(await response.text()) as unknown;
+        } catch {
+            return undefined;
+        }
     }
 }
 

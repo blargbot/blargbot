@@ -1,15 +1,15 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleCreateSubtag } from '@blargbot/bbtag/subtags/role/roleCreate';
-import { argument } from '@blargbot/test-util/mock';
-import { ApiError, Constants } from 'eris';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { RoleCreateSubtag } from '@blargbot/bbtag/subtags/role/roleCreate.js';
+import { argument } from '@blargbot/test-util/mock.js';
+import * as eris from 'eris';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RoleCreateSubtag(),
     argCountBounds: { min: 1, max: 5 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.all.toString();
+        ctx.roles.authorizer.permissions = eris.Constants.Permissions.all.toString();
     },
     cases: [
         {
@@ -190,9 +190,9 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = (
-                    Constants.Permissions.all
-                    & ~Constants.Permissions.administrator
-                    & ~Constants.Permissions.manageRoles
+                    eris.Constants.Permissions.all
+                    & ~eris.Constants.Permissions.administrator
+                    & ~eris.Constants.Permissions.manageRoles
                 ).toString();
             }
         },
@@ -210,7 +210,7 @@ runSubtagTests({
                 { start: 0, end: 47, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
+                ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
             }
         },
         {
@@ -220,7 +220,7 @@ runSubtagTests({
                 { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
+                const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
                 ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0xff0000,
@@ -237,7 +237,7 @@ runSubtagTests({
                 { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
                     name: 'My role name',
                     color: 0xff0000,

@@ -1,8 +1,8 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { UserTimeoutSubtag } from '@blargbot/bbtag/subtags/user/userTimeout';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { UserTimeoutSubtag } from '@blargbot/bbtag/subtags/user/userTimeout.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 runSubtagTests({
     subtag: new UserTimeoutSubtag(),

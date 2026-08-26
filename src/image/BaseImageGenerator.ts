@@ -1,19 +1,23 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { Readable } from 'node:stream';
+import { promisify } from 'node:util';
+
+import { resourceDirectory } from '@blargbot/res';
 import GIFEncoder from 'gifencoder';
 import gm from 'gm';
-import fetch from 'node-fetch';
-import path from 'path';
-import { Readable } from 'stream';
-import { promisify } from 'util';
+import type fetch from 'node-fetch';
 
-import { ImageWorker } from './ImageWorker';
-import { ImageGeneratorMap, ImageResult, TextOptions } from './types';
+import type { ImageWorker } from './ImageWorker.js';
+import type { ImageGeneratorMap, ImageResult, TextOptions } from './types.js';
 
 const im = gm.subClass({ imageMagick: true });
-const imgDir = path.join(path.dirname(require.resolve('@blargbot/res/package')), 'img');
+const imgDir = path.join(resourceDirectory, 'img');
 const emptyBuffer = Buffer.from([]);
 
 export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
+    protected get fetch(): typeof fetch { return this.worker.fetch; }
+
     public constructor(
         public readonly key: T,
         protected readonly worker: ImageWorker
@@ -51,14 +55,14 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
         }
 
         this.worker.logger.debug(url);
-        const response = await fetch(url);
+        const response = await this.fetch(url);
 
         switch (response.headers.get('content-type')) {
             case 'image/gif':
             case 'image/png':
             case 'image/jpeg':
             case 'image/bmp':
-                return await response.buffer();
+                return Buffer.from(await response.arrayBuffer());
             default:
                 throw new Error('Wrong file type!');
         }

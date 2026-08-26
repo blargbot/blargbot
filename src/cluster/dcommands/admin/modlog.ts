@@ -1,10 +1,10 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { guard } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import * as eris from 'eris';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.modLog;
 
@@ -33,7 +33,7 @@ export class ModlogCommand extends GuildCommand {
         });
     }
 
-    public async setChannel(context: GuildCommandContext, channel: KnownChannel | undefined): Promise<CommandResult> {
+    public async setChannel(context: GuildCommandContext, channel: eris.KnownChannel | undefined): Promise<CommandResult> {
         if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
             return cmd.setChannel.notOnGuild;
         if (channel !== undefined && !guard.isTextableChannel(channel))
@@ -81,7 +81,7 @@ export class ModlogCommand extends GuildCommand {
             try {
                 await channel.deleteMessages(cases.map(c => c.msgid));
             } catch (err: unknown) {
-                if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS) {
+                if (err instanceof eris.DiscordRESTError && err.code === eris.ApiError.MISSING_PERMISSIONS) {
                     noperms.push(...cases.map(c => c.caseid));
                     continue;
                 }

@@ -1,10 +1,10 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
-import { Member } from 'eris';
+import type * as eris from 'eris';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.kick;
 
@@ -26,7 +26,7 @@ export class KickCommand extends GuildCommand {
         });
     }
 
-    public async kick(context: GuildCommandContext, member: Member, reason: string | undefined): Promise<CommandResult> {
+    public async kick(context: GuildCommandContext, member: eris.Member, reason: string | undefined): Promise<CommandResult> {
         const state = await context.cluster.moderation.bans.kick(member, context.author, context.author, util.literal(reason));
         return cmd.default.state[state]({ user: member.user });
     }

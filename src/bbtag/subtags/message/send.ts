@@ -1,12 +1,12 @@
-import { MalformedEmbed } from '@blargbot/core/types';
-import { guard, parse } from '@blargbot/core/utils';
-import { DiscordRESTError, EmbedOptions, FileContent } from 'eris';
+import type { MalformedEmbed } from '@blargbot/core/types.js';
+import { guard, parse } from '@blargbot/core/utils/index.js';
+import * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.send;
 
@@ -45,7 +45,7 @@ export class SendSubtag extends CompiledSubtag {
         });
     }
 
-    public async send(context: BBTagContext, channelId: string, message?: string, embed?: EmbedOptions[] | MalformedEmbed[], file?: FileContent): Promise<string> {
+    public async send(context: BBTagContext, channelId: string, message?: string, embed?: eris.EmbedOptions[] | MalformedEmbed[], file?: eris.FileContent): Promise<string> {
         const channel = await context.queryChannel(channelId, { noLookup: true });
         if (channel === undefined || !guard.isTextableChannel(channel))
             throw new ChannelNotFoundError(channelId);
@@ -78,7 +78,7 @@ export class SendSubtag extends CompiledSubtag {
         } catch (err: unknown) {
             if (err instanceof BBTagRuntimeError)
                 throw err;
-            if (err instanceof DiscordRESTError)
+            if (err instanceof eris.DiscordRESTError)
                 throw new BBTagRuntimeError(`Failed to send: ${err.message}`);
             if (!(err instanceof Error && err.message === 'No content'))
                 context.logger.error('Failed to send!', err);
@@ -88,7 +88,7 @@ export class SendSubtag extends CompiledSubtag {
     }
 }
 
-function resolveContent(content: string): [string | undefined, EmbedOptions[] | undefined] {
+function resolveContent(content: string): [string | undefined, eris.EmbedOptions[] | undefined] {
     const embeds = parse.embed(content);
     if (embeds === undefined || 'malformed' in embeds[0])
         return [content, undefined];

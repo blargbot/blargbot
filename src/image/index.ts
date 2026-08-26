@@ -1,2 +1,2 @@
-export * from './ImageConnection';
-export * from './ImagePool';
+export * from './ImageConnection.js';
+export * from './ImagePool.js';

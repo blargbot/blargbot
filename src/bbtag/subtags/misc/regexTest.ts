@@ -1,6 +1,6 @@
-import { RegexSubtag } from '../../RegexSubtag';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import { RegexSubtag } from '../../RegexSubtag.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.regexTest;
 

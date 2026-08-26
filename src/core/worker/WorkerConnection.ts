@@ -1,19 +1,22 @@
-import { Timer } from '@blargbot/core/Timer';
-import { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types';
-import { Logger } from '@blargbot/logger';
-import child_process from 'child_process';
-import moment, { Moment } from 'moment-timezone';
-import { createInterface } from 'readline';
-import streams from 'stream';
+import child_process from 'node:child_process';
+import { createInterface } from 'node:readline';
+import streams from 'node:stream';
 
-import { IPCMessageEmitter } from './IPCMessageEmitter';
+import { Timer } from '@blargbot/core/Timer.js';
+import type { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types.js';
+import type { Logger } from '@blargbot/logger';
+import moment from 'moment-timezone';
 
-export const enum WorkerState {
-    READY,
-    RUNNING,
-    KILLED,
-    EXITED
-}
+import { IPCMessageEmitter } from './IPCMessageEmitter.js';
+
+export type WorkerState = typeof WorkerState[keyof typeof WorkerState];
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const WorkerState = Object.freeze({
+    READY: 0,
+    RUNNING: 1,
+    KILLED: 2,
+    EXITED: 3
+});
 
 export abstract class WorkerConnection<Contracts extends IPCContracts> {
     #killed: boolean;
@@ -35,7 +38,7 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
 
     public readonly args: string[];
     public readonly env: NodeJS.ProcessEnv;
-    public readonly created: Moment;
+    public readonly created: moment.Moment;
     public get logs(): readonly string[] { return [...this.#logs].reverse(); }
     public get stdout(): streams.Readable { return this.#stdout; }
     public get stderr(): streams.Readable { return this.#stderr; }
@@ -118,7 +121,7 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
 
     public async kill(code: NodeJS.Signals | number = 'SIGTERM'): Promise<void> {
         if (this.#ipc.process !== undefined) {
-            this.logger.worker('Killing', this.worker, 'worker ( ID:', this.id, 'PID:', this.#ipc.process.pid ?? 'NOT RUNNING');
+            this.logger.worker('Killing', this.worker, 'worker ( ID:', this.id, 'PID:', this.#ipc.process.pid ?? 'NOT RUNNING', ')');
 
             try {
                 await this.#ipc.request('stop', undefined);

@@ -1,9 +1,9 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { PadSubtag } from '@blargbot/bbtag/subtags/misc/pad';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { PadSubtag } from '@blargbot/bbtag/subtags/misc/pad.js';
 import { expect } from 'chai';
 import { it } from 'mocha';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new PadSubtag(),

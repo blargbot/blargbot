@@ -1,8 +1,8 @@
-import { UserNotFoundError } from '@blargbot/bbtag/errors';
-import { ModLogSubtag } from '@blargbot/bbtag/subtags/bot/modLog';
-import { Member, User } from 'eris';
+import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { ModLogSubtag } from '@blargbot/bbtag/subtags/bot/modLog.js';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ModLogSubtag(),
@@ -12,8 +12,8 @@ runSubtagTests({
             code: '{modlog;poke;023634983746234834}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const user = ctx.createMock(User);
-                const member = ctx.createMock(Member);
+                const user = ctx.createMock(eris.User);
+                const member = ctx.createMock(eris.Member);
                 member.setup(m => m.user).thenReturn(user.instance);
 
                 ctx.util.setup(m => m.getUser('023634983746234834')).thenResolve(undefined);
@@ -25,12 +25,12 @@ runSubtagTests({
             code: '{modlog;poke;023634983746234834;2365432687945234625}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const user1 = ctx.createMock(User);
-                const member1 = ctx.createMock(Member);
+                const user1 = ctx.createMock(eris.User);
+                const member1 = ctx.createMock(eris.Member);
                 member1.setup(m => m.user).thenReturn(user1.instance);
 
-                const user2 = ctx.createMock(User);
-                const member2 = ctx.createMock(Member);
+                const user2 = ctx.createMock(eris.User);
+                const member2 = ctx.createMock(eris.Member);
                 member2.setup(m => m.user).thenReturn(user2.instance);
 
                 ctx.util.setup(m => m.getUser('023634983746234834')).thenResolve(undefined);
@@ -44,12 +44,12 @@ runSubtagTests({
             code: '{modlog;poke;023634983746234834;2365432687945234625;power abuse is fun}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const user1 = ctx.createMock(User);
-                const member1 = ctx.createMock(Member);
+                const user1 = ctx.createMock(eris.User);
+                const member1 = ctx.createMock(eris.Member);
                 member1.setup(m => m.user).thenReturn(user1.instance);
 
-                const user2 = ctx.createMock(User);
-                const member2 = ctx.createMock(Member);
+                const user2 = ctx.createMock(eris.User);
+                const member2 = ctx.createMock(eris.Member);
                 member2.setup(m => m.user).thenReturn(user2.instance);
 
                 ctx.util.setup(m => m.getUser('023634983746234834')).thenResolve(undefined);
@@ -63,12 +63,12 @@ runSubtagTests({
             code: '{modlog;poke;023634983746234834;2365432687945234625;power abuse is fun;red}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const user1 = ctx.createMock(User);
-                const member1 = ctx.createMock(Member);
+                const user1 = ctx.createMock(eris.User);
+                const member1 = ctx.createMock(eris.Member);
                 member1.setup(m => m.user).thenReturn(user1.instance);
 
-                const user2 = ctx.createMock(User);
-                const member2 = ctx.createMock(Member);
+                const user2 = ctx.createMock(eris.User);
+                const member2 = ctx.createMock(eris.Member);
                 member2.setup(m => m.user).thenReturn(user2.instance);
 
                 ctx.util.setup(m => m.getUser('023634983746234834')).thenResolve(undefined);
@@ -82,8 +82,8 @@ runSubtagTests({
             code: '{modlog;poke;023634983746234834;;;}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const user = ctx.createMock(User);
-                const member = ctx.createMock(Member);
+                const user = ctx.createMock(eris.User);
+                const member = ctx.createMock(eris.Member);
                 member.setup(m => m.user).thenReturn(user.instance);
 
                 ctx.util.setup(m => m.getUser('023634983746234834')).thenResolve(undefined);

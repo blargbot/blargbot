@@ -1,6 +1,6 @@
-import { FlagSetSubtag } from '@blargbot/bbtag/subtags/bot/flagSet';
+import { FlagSetSubtag } from '@blargbot/bbtag/subtags/bot/flagSet.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new FlagSetSubtag(),

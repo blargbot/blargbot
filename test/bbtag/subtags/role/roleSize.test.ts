@@ -1,7 +1,7 @@
-import { RoleSizeSubtag } from '@blargbot/bbtag/subtags/role/roleSize';
+import { RoleSizeSubtag } from '@blargbot/bbtag/subtags/role/roleSize.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
 runSubtagTests({
     subtag: new RoleSizeSubtag(),

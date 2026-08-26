@@ -1,12 +1,14 @@
-import { ClusterUtilities } from '@blargbot/cluster';
-import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils';
-import cahData from '@blargbot/res/cah.json';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import type { ClusterUtilities } from '@blargbot/cluster';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalImageCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils/index.js';
+import { cah } from '@blargbot/res';
+import * as eris from 'eris';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
+await cah.ensureLoaded();
 const cmd = templates.commands.cah;
 
 export class CAHCommand extends GlobalImageCommand {
@@ -31,14 +33,14 @@ export class CAHCommand extends GlobalImageCommand {
         });
     }
 
-    public async isVisible(util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User): Promise<boolean> {
+    public async isVisible(util: ClusterUtilities, location?: eris.Guild | eris.KnownTextableChannel, user?: eris.User): Promise<boolean> {
         if (!await super.isVisible(util, location, user))
             return false;
 
         if (location === undefined)
             return true;
 
-        const guild = location instanceof Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
+        const guild = location instanceof eris.Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
         if (guild === undefined || await util.database.guilds.getSetting(guild.id, 'cahnsfw') !== true)
             return true;
 
@@ -47,13 +49,13 @@ export class CAHCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, unofficial: boolean): Promise<CommandResult> {
         const cardIds = unofficial ? packLookup.all : packLookup.official;
-        const black = cahData.black[randChoose(cardIds.black)];
+        const black = cah.data.black[randChoose(cardIds.black)];
 
         const whiteIds = new Set<number>();
         while (whiteIds.size < black.pick)
             whiteIds.add(randChoose(cardIds.white));
 
-        const white = [...whiteIds].map(id => cahData.white[id]);
+        const white = [...whiteIds].map(id => cah.data.white[id]);
 
         return await this.renderImage(context, 'cah', { black: black.text.replaceAll('_', '______'), white: white });
     }
@@ -82,7 +84,7 @@ interface PackLookupData {
     black: Set<number>;
 }
 
-const packLookup = Object.values(cahData.metadata)
+const packLookup = Object.values(cah.data.metadata)
     .reduce<PackLookup>(
         (p, m) => {
             for (const data of m.official ? [p.official, p.all] : [p.all]) {
@@ -97,7 +99,7 @@ const packLookup = Object.values(cahData.metadata)
         }
     );
 
-const packs = Object.values(cahData.metadata)
+const packs = Object.values(cah.data.metadata)
     .reduce<{ official: string[]; all: string[]; }>(
         (p, m) => {
             if (m.official)

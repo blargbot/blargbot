@@ -1,10 +1,14 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, randChoose } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType, randChoose } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
-import script from '@blargbot/res/beemovie.json';
+import { beemovie } from '@blargbot/res';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
+
+await beemovie.ensureLoaded();
+const script = beemovie.data;
 
 const cmd = templates.commands.beeMovie;
 

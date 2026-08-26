@@ -1,9 +1,10 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, discord, guard, parse } from '@blargbot/cluster/utils';
-import { Member, User } from 'eris';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType, discord, guard, parse } from '@blargbot/cluster/utils/index.js';
+import type * as eris from 'eris';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.user;
 
@@ -22,7 +23,7 @@ export class UserCommand extends GlobalCommand {
         });
     }
 
-    public async getUser(context: CommandContext, user: User): Promise<CommandResult> {
+    public async getUser(context: CommandContext, user: eris.User): Promise<CommandResult> {
         const member = guard.isGuildCommandContext(context) ? await context.util.getMember(context.channel.guild, user.id) : undefined;
         if (member === undefined) {
             return {
@@ -76,12 +77,12 @@ export class UserCommand extends GlobalCommand {
     }
 }
 
-function getStatusEmoteId(context: CommandContext, member: Member): string {
+function getStatusEmoteId(context: CommandContext, member: eris.Member): string {
     const emote = getStatusEmote(context, member);
     return parse.entityId(emote) ?? '';
 }
 
-function getStatusEmote(context: CommandContext, member: Member): string {
+function getStatusEmote(context: CommandContext, member: eris.Member): string {
     switch (member.status) {
         case 'dnd': return context.config.discord.emotes.busy;
         case 'idle': return context.config.discord.emotes.away;

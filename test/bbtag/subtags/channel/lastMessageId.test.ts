@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { LastMessageIdSubtag } from '@blargbot/bbtag/subtags/channel/lastMessageId';
-import { APITextChannel } from 'discord-api-types/v9';
-import { Constants } from 'eris';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { LastMessageIdSubtag } from '@blargbot/bbtag/subtags/channel/lastMessageId.js';
+import type { APITextChannel } from 'discord-api-types/v9';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new LastMessageIdSubtag(),
@@ -40,7 +40,7 @@ runSubtagTests({
                 { start: 0, end: 15, error: new BBTagRuntimeError('Channel must be a textable channel') }
             ],
             setup(ctx) {
-                ctx.channels.command.type = Constants.ChannelTypes.GUILD_STORE;
+                ctx.channels.command.type = eris.Constants.ChannelTypes.GUILD_STORE;
             }
         }
     ]

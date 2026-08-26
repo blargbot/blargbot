@@ -1,10 +1,11 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { mapping } from '@blargbot/mapping';
-import fetch, { RequestInit } from 'node-fetch';
+import type { RequestInit } from 'node-fetch';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.define;
 
@@ -24,7 +25,7 @@ export class DefineCommand extends GlobalCommand {
     }
 
     public async define(context: CommandContext, word: string): Promise<CommandResult> {
-        const response = await fetchSafe(`https://wordsapiv1.p.rapidapi.com/words/${word}`, {
+        const response = await fetchSafe(context, `https://wordsapiv1.p.rapidapi.com/words/${word}`, {
             headers: {
                 'x-rapidapi-key': context.config.general.mashape,
                 'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com'
@@ -69,10 +70,10 @@ function pronunciation(phonetic: string): { phonetic: string; pronunciation: str
     };
 }
 
-async function fetchSafe(url: string, init?: RequestInit): Promise<unknown> {
+async function fetchSafe(context: CommandContext, url: string, init?: RequestInit): Promise<unknown> {
     try {
-        const response = await fetch(url, init);
-        return await response.json() as unknown;
+        const response = await context.util.fetch(url, init);
+        return await response.json();
     } catch {
         return undefined;
     }

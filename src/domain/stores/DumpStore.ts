@@ -1,4 +1,4 @@
-import { Dump } from '../models';
+import type { Dump } from '../models/index.js';
 
 export interface DumpStore {
     add(dump: Dump): Promise<void>;

@@ -1,9 +1,9 @@
-import { GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, randChoose } from '@blargbot/cluster/utils';
-import fetch from 'node-fetch';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType, randChoose } from '@blargbot/cluster/utils/index.js';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.status;
 
@@ -16,32 +16,32 @@ export class StatusCommand extends GlobalCommand {
                 {
                     parameters: '{status:integer} {animal?}',
                     description: cmd.default.description,
-                    execute: (_, [status, animal]) => this.getStatus(status.asInteger, animal.asOptionalString)
+                    execute: (ctx, [status, animal]) => this.getStatus(status.asInteger, animal.asOptionalString, ctx)
                 }
             ]
         });
     }
 
-    public async getStatus(status: number, animal: string | undefined): Promise<CommandResult> {
+    public async getStatus(status: number, animal: string | undefined, context: CommandContext): Promise<CommandResult> {
         animal = animal?.toLowerCase();
         const service = statusKeys.has(animal) ? statusSites[animal] : randChoose(Object.values(statusSites));
-        const response = await fetch(`${service}${status}.jpg`);
+        const response = await context.util.fetch(`${service}${status}.jpg`);
         let content;
         if (response.ok && response.headers.get('content-type') === 'image/jpeg') {
-            content = await response.buffer();
+            content = await response.arrayBuffer();
         } else {
             status = 404;
-            const response = await fetch(`${service}404.jpg`);
+            const response = await context.util.fetch(`${service}404.jpg`);
             if (!response.ok || response.headers.get('content-type') !== 'image/jpeg')
                 return cmd.default.notFound;
-            content = await response.buffer();
+            content = await response.arrayBuffer();
         }
 
         return {
             file: [
                 {
                     name: `${status}.jpg`,
-                    file: content
+                    file: Buffer.from(content)
                 }
             ]
         };

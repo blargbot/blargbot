@@ -1,3 +1,3 @@
-export * from './AggregateCommandManager';
-export * from './CustomCommandManager';
-export * from './DefaultCommandManager';
+export * from './AggregateCommandManager.js';
+export * from './CustomCommandManager.js';
+export * from './DefaultCommandManager.js';

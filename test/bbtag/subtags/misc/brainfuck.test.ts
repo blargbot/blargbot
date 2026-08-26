@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { BrainfuckSubtag } from '@blargbot/bbtag/subtags/misc/brainfuck';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { BrainfuckSubtag } from '@blargbot/bbtag/subtags/misc/brainfuck.js';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new BrainfuckSubtag(),

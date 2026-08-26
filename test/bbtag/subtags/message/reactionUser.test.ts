@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ReactionUserSubtag(),

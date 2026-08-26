@@ -1,8 +1,8 @@
-import { UnknownSubtagError } from '@blargbot/bbtag/errors';
-import { FallbackSubtag } from '@blargbot/bbtag/subtags/bot/fallback';
+import { UnknownSubtagError } from '@blargbot/bbtag/errors/index.js';
+import { FallbackSubtag } from '@blargbot/bbtag/subtags/bot/fallback.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new FallbackSubtag(),

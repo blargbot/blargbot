@@ -1,12 +1,12 @@
-import { metrics } from '@blargbot/core/Metrics';
-import { Timer } from '@blargbot/core/Timer';
-import { guard } from '@blargbot/core/utils/index';
-import { IFormattable } from '@blargbot/formatting';
+import { metrics } from '@blargbot/core/Metrics.js';
+import { Timer } from '@blargbot/core/Timer.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import type { IFormattable } from '@blargbot/formatting';
 
-import { BBTagContext } from './BBTagContext';
-import { SubtagCall } from './language';
-import { SubtagOptions, SubtagSignature } from './types';
-import { SubtagType } from './utils';
+import type { BBTagContext } from './BBTagContext.js';
+import type { SubtagCall } from './language/index.js';
+import type { SubtagOptions, SubtagSignature } from './types.js';
+import type { SubtagType } from './utils/index.js';
 
 export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
     public readonly name: string;

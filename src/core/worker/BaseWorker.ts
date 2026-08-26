@@ -1,7 +1,7 @@
-import { GetWorkerProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types';
-import { Logger } from '@blargbot/logger';
+import type { GetWorkerProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types.js';
+import type { Logger } from '@blargbot/logger';
 
-import { IPCMessageEmitter } from './IPCMessageEmitter';
+import { IPCMessageEmitter } from './IPCMessageEmitter.js';
 
 export abstract class BaseWorker<Contracts extends IPCContracts> {
     protected readonly ipc: IPCMessageEmitter;
@@ -31,11 +31,11 @@ export abstract class BaseWorker<Contracts extends IPCContracts> {
         this.send('alive', new Date());
     }
 
-    public start(): void {
+    public start(): Awaitable<void> {
         this.send('ready', `Hello from process ${this.id}!`);
     }
 
-    public stop(): Promise<void> | void {
+    public stop(): Awaitable<void> {
         // NOOP
     }
 

@@ -1,8 +1,8 @@
-import { ChannelIsThreadSubtag } from '@blargbot/bbtag/subtags/channel/channelIsThread';
-import { Constants } from 'eris';
+import { ChannelIsThreadSubtag } from '@blargbot/bbtag/subtags/channel/channelIsThread.js';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new ChannelIsThreadSubtag(),
@@ -25,10 +25,10 @@ runSubtagTests({
                 ['GUILD_PRIVATE_THREAD']: true,
                 ['GUILD_STAGE_VOICE']: false
             }).map(([key, success]) => ({
-                title: `Channel is a ${key} (${Constants.ChannelTypes[key]})`,
+                title: `Channel is a ${key} (${eris.Constants.ChannelTypes[key]})`,
                 expected: success.toString(),
                 setup(channel) {
-                    channel.type = Constants.ChannelTypes[key];
+                    channel.type = eris.Constants.ChannelTypes[key];
                 }
             }))
 

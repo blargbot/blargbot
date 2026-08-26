@@ -1,6 +1,6 @@
-import { GuildIdSubtag } from '@blargbot/bbtag/subtags/guild/guildId';
+import { GuildIdSubtag } from '@blargbot/bbtag/subtags/guild/guildId.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new GuildIdSubtag(),

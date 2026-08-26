@@ -1,7 +1,7 @@
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
-import { ImageWorker } from '@blargbot/image/ImageWorker';
-import { CahOptions, ImageResult } from '@blargbot/image/types';
-import sharp, { OverlayOptions } from 'sharp';
+import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
+import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { CahOptions, ImageResult } from '@blargbot/image/types.js';
+import sharp from 'sharp';
 
 export class CahGenerator extends BaseImageGenerator<'cah'> {
     public constructor(worker: ImageWorker) {
@@ -17,7 +17,7 @@ export class CahGenerator extends BaseImageGenerator<'cah'> {
             ...white.map(text => ({ img: whiteCard, text, fill: 'black' }))
         ].map((c, i) => ({ ...c, left: i * 183, top: 0 }));
 
-        const overlays = await Promise.all(cards.map<Promise<OverlayOptions[]>>(async c => [
+        const overlays = await Promise.all(cards.map<Promise<sharp.OverlayOptions[]>>(async c => [
             { input: c.img, left: c.left, top: c.top },
             {
                 input: await this.renderText(c.text, {

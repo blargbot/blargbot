@@ -1,6 +1,6 @@
-import { MaxSubtag } from '@blargbot/bbtag/subtags/math/max';
+import { MaxSubtag } from '@blargbot/bbtag/subtags/math/max.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new MaxSubtag(),

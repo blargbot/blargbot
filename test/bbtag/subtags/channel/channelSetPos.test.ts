@@ -1,14 +1,14 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { ChannelSetPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPosition';
-import { ApiError, Constants } from 'eris';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
+import { ChannelSetPositionSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPosition.js';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ChannelSetPositionSubtag(),
     argCountBounds: { min: 2, max: 2 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
+        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
     },
     cases: [
         {
@@ -71,7 +71,7 @@ runSubtagTests({
                 { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
+                const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Could not find channel under test');
@@ -87,7 +87,7 @@ runSubtagTests({
                 { start: 0, end: 38, error: new BBTagRuntimeError('Failed to move channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Could not find channel under test');

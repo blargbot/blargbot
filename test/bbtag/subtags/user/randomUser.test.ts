@@ -1,7 +1,7 @@
-import { RandomUserSubtag } from '@blargbot/bbtag/subtags/user/randomUser';
+import { RandomUserSubtag } from '@blargbot/bbtag/subtags/user/randomUser.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RandomUserSubtag(),

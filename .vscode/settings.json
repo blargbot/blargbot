@@ -24,7 +24,6 @@
   "editor.insertSpaces": true,
   "editor.tabSize": 4,
   "prettier.useTabs": false,
-  "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "search.exclude": {
     "**/.yarn": true,
     "**/.pnp.*": true,
@@ -32,7 +31,6 @@
     "**/*.js.map": true
   },
   "eslint.nodePath": ".yarn/sdks",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
   "cSpell.language": "en-GB",
   "cSpell.words": [
     "blargbot",
@@ -41,5 +39,7 @@
     "subtag",
     "subtags",
     "timedout"
-  ]
+  ],
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "js/ts.tsdk.path": ".yarn/sdks/typescript/lib",
 }

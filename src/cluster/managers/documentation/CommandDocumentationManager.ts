@@ -1,14 +1,15 @@
-import { FormatEmbedField, SendContent } from '@blargbot/core/types';
-import { discord, guard } from '@blargbot/core/utils';
-import { format, IFormattable, util } from '@blargbot/formatting';
-import { KnownChannel, KnownTextableChannel, User } from 'eris';
+import type { FormatEmbedField, SendContent } from '@blargbot/core/types.js';
+import { discord, guard } from '@blargbot/core/utils/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { format, util } from '@blargbot/formatting';
+import type * as eris from 'eris';
 
-import { Cluster } from '../../Cluster';
-import templates from '../../text';
-import { CommandGetResult, CommandParameter, ICommand } from '../../types';
-import { humanize } from '../../utils';
-import { Documentation, DocumentationGroup, DocumentationPage } from './DocumentationManager';
-import { DocumentationTreeManager } from './DocumentationTreeManager';
+import type { Cluster } from '../../Cluster.js';
+import templates from '../../text.js';
+import type { CommandGetResult, CommandParameter, ICommand } from '../../types.js';
+import { humanize } from '../../utils/index.js';
+import type { Documentation, DocumentationGroup, DocumentationPage } from './DocumentationManager.js';
+import { DocumentationTreeManager } from './DocumentationTreeManager.js';
 
 const doc = templates.documentation.command;
 
@@ -20,7 +21,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
         this.#cluster = cluster;
     }
 
-    protected async getTree(user: User, channel: KnownTextableChannel): Promise<Documentation> {
+    protected async getTree(user: eris.User, channel: eris.KnownTextableChannel): Promise<Documentation> {
         const guild = guard.isGuildChannel(channel) ? channel.guild : undefined;
         const categories = new Map<string, DocumentationGroup & { items: Mutable<DocumentationGroup['items']>; }>();
         for await (const item of this.#cluster.commands.list(guild, user)) {
@@ -224,7 +225,7 @@ export class CommandDocumentationManager extends DocumentationTreeManager {
         }
     }
 
-    async *#getCategories(channel: KnownChannel, command: ICommand): AsyncGenerator<{ name: IFormattable<string>; id: string; }> {
+    async *#getCategories(channel: eris.KnownChannel, command: ICommand): AsyncGenerator<{ name: IFormattable<string>; id: string; }> {
         if (command.roles.length === 0)
             yield { name: command.category.name, id: `_${command.category.id}` };
 

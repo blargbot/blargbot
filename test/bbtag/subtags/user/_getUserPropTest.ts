@@ -1,10 +1,11 @@
-import { BBTagContext } from '@blargbot/bbtag';
-import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { argument } from '@blargbot/test-util/mock';
-import { APIGuildMember } from 'discord-api-types/v9';
-import { Guild, Member } from 'eris';
+import type { BBTagContext } from '@blargbot/bbtag';
+import type { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { argument } from '@blargbot/test-util/mock.js';
+import type { APIGuildMember } from 'discord-api-types/v9';
+import * as eris from 'eris';
 
-import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
+import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetUserPropTestCases(options: GetUserPropTestData): SubtagTestCase[] {
     return [...createGetUserPropTestCasesIter(options)];
@@ -32,7 +33,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
         ],
         setup(ctx) {
             ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
-            ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
+            ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                 .verifiable(1)
                 .thenResolve([]);
         }
@@ -46,7 +47,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
             ],
             setup(ctx) {
                 ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -59,7 +60,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
             ],
             setup(ctx) {
                 ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -80,8 +81,8 @@ interface GetUserPropTestCase {
     queryString?: string;
     generateCode?: (...args: [userStr?: string, quietStr?: string]) => string;
     setup?: (member: RequiredProps<APIGuildMember, 'user'>, context: SubtagTestContext) => void;
-    postSetup?: (member: Member, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, member: Member, context: BBTagContext, test: SubtagTestContext) => void;
+    postSetup?: (member: eris.Member, context: BBTagContext, test: SubtagTestContext) => void;
+    assert?: (result: string, member: eris.Member, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase, memberKey: keyof SubtagTestContext['members'], args: Parameters<GetUserPropTestData['generateCode']>): SubtagTestCase {

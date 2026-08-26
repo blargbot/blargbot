@@ -1,17 +1,18 @@
-import { Cluster } from '@blargbot/cluster';
-import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware } from '@blargbot/cluster/command';
-import { guard, runMiddleware, snowflake } from '@blargbot/cluster/utils';
-import { DiscordEventService } from '@blargbot/core/serviceTypes';
-import { IMiddleware } from '@blargbot/core/types';
-import { MessageFlags } from 'discord-api-types/v9';
-import { KnownMessage, Message, PossiblyUncachedTextableChannel } from 'eris';
-import moment from 'moment-timezone';
-import { performance } from 'perf_hooks';
+import { performance } from 'node:perf_hooks';
 
-import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatLogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware';
+import type { Cluster } from '@blargbot/cluster';
+import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware } from '@blargbot/cluster/command/index.js';
+import { guard, runMiddleware, snowflake } from '@blargbot/cluster/utils/index.js';
+import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import type { IMiddleware } from '@blargbot/core/types.js';
+import { MessageFlags } from 'discord-api-types/v9';
+import type * as eris from 'eris';
+import moment from 'moment-timezone';
+
+import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatLogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware/index.js';
 
 export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {
-    readonly #middleware: Array<IMiddleware<KnownMessage, boolean>>;
+    readonly #middleware: Array<IMiddleware<eris.KnownMessage, boolean>>;
 
     public constructor(
         public readonly cluster: Cluster
@@ -43,7 +44,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
         ];
     }
 
-    public async execute(message: Message<PossiblyUncachedTextableChannel>): Promise<void> {
+    public async execute(message: eris.Message<eris.PossiblyUncachedTextableChannel>): Promise<void> {
         if ((message.flags & MessageFlags.Loading) !== 0) {
             // Message is a loading message. Ignore this event, it will be re-raised by the update handler later once the message is no longer loading
             return;

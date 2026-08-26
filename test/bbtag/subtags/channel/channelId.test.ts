@@ -1,7 +1,7 @@
-import { ChannelIdSubtag } from '@blargbot/bbtag/subtags/channel/channelId';
+import { ChannelIdSubtag } from '@blargbot/bbtag/subtags/channel/channelId.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 runSubtagTests({
     subtag: new ChannelIdSubtag(),

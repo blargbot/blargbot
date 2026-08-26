@@ -32,10 +32,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:definitions/eris"\
       },\
       {\
-        "name": "@types/require-reload",\
-        "reference": "workspace:definitions/require-reload"\
-      },\
-      {\
         "name": "@types/rethinkdb",\
         "reference": "workspace:definitions/rethinkdb"\
       },\
@@ -141,7 +137,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
       ["@types/catflake", ["workspace:definitions/catflake"]],\
       ["@types/eris", ["workspace:definitions/eris"]],\
-      ["@types/require-reload", ["workspace:definitions/require-reload"]],\
       ["@types/rethinkdb", ["workspace:definitions/rethinkdb"]],\
       ["@types/wolken", ["workspace:definitions/wolken"]],\
       ["blargbot", ["workspace:."]]\
@@ -476,7 +471,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express", "npm:4.18.2"],\
             ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "npm:3.3.2"],\
             ["prom-client", "npm:14.1.0"],\
             ["ws", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:8.11.0"]\
           ],\
@@ -506,7 +501,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
             ["html-entities", "npm:2.3.3"],\
             ["moment-timezone", "npm:0.5.39"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "npm:3.3.2"],\
             ["rwlock", "npm:5.0.0"]\
           ],\
           "linkType": "SOFT"\
@@ -537,6 +532,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
             ["mocha", "npm:10.1.0"],\
             ["moment-timezone", "npm:0.5.39"],\
+            ["node-fetch", "npm:3.3.2"],\
             ["ts-mockito", "npm:2.6.1"]\
           ],\
           "linkType": "SOFT"\
@@ -562,7 +558,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/md5", "npm:2.3.2"],\
             ["@types/node-fetch", "npm:2.6.2"],\
-            ["@types/require-reload", "workspace:definitions/require-reload"],\
             ["@types/wolken", "workspace:definitions/wolken"],\
             ["@types/xml2js", "npm:0.4.11"],\
             ["brainfuck-node", "npm:1.0.2"],\
@@ -571,7 +566,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
             ["eventemitter3", "npm:4.0.7"],\
             ["moment-timezone", "npm:0.5.39"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "npm:3.3.2"],\
             ["prom-client", "npm:14.1.0"],\
             ["require-reload", "npm:0.2.2"],\
             ["wolken", "npm:0.2.1"],\
@@ -629,7 +624,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/color", "npm:3.0.3"],\
             ["@types/cron", "npm:2.0.0"],\
             ["@types/eris", "workspace:definitions/eris"],\
-            ["@types/require-reload", "workspace:definitions/require-reload"],\
             ["@types/safe-regex", "npm:1.1.4"],\
             ["@types/unorm", "npm:1.3.28"],\
             ["airtable", "npm:0.11.5"],\
@@ -640,8 +634,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eventemitter3", "npm:4.0.7"],\
             ["limax", "npm:3.0.0"],\
             ["moment-timezone", "npm:0.5.39"],\
+            ["node-fetch", "npm:3.3.2"],\
             ["prom-client", "npm:14.1.0"],\
-            ["require-reload", "npm:0.2.2"],\
             ["safe-regex", "npm:2.1.1"],\
             ["twemoji", "npm:14.0.2"],\
             ["unorm", "npm:1.6.0"]\
@@ -676,7 +670,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/crowdin", "workspace:src/crowdin"],\
             ["@blargbot/formatting", "workspace:src/formatting"],\
             ["@types/node-fetch", "npm:2.6.2"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"]\
+            ["node-fetch", "npm:3.3.2"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -744,7 +738,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["canvas", "npm:2.10.2"],\
             ["gifencoder", "npm:2.0.1"],\
             ["gm", "npm:1.25.0"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "npm:3.3.2"],\
             ["sharp", "npm:0.31.2"],\
             ["twemoji", "npm:14.0.2"]\
           ],\
@@ -791,7 +785,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node-fetch", "npm:2.6.2"],\
             ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
             ["moment-timezone", "npm:0.5.39"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "npm:3.3.2"],\
             ["prom-client", "npm:14.1.0"],\
             ["strip-ansi", "npm:6.0.1"]\
           ],\
@@ -999,7 +993,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["detect-libc", "npm:2.0.1"],\
             ["https-proxy-agent", "npm:5.0.1"],\
             ["make-dir", "npm:3.1.0"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"],\
             ["nopt", "npm:5.0.0"],\
             ["npmlog", "npm:5.0.1"],\
             ["rimraf", "npm:3.0.2"],\
@@ -1748,16 +1742,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["@types/require-reload", [\
-        ["workspace:definitions/require-reload", {\
-          "packageLocation": "./definitions/require-reload/",\
-          "packageDependencies": [\
-            ["@types/require-reload", "workspace:definitions/require-reload"],\
-            ["@types/node", "npm:16.18.3"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
       ["@types/responselike", [\
         ["npm:1.0.0", {\
           "packageLocation": "./.yarn/cache/@types-responselike-npm-1.0.0-85dd08af42-e99fc7cc62.zip/node_modules/@types/responselike/",\
@@ -2362,7 +2346,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["abort-controller", "npm:3.0.0"],\
             ["abortcontroller-polyfill", "npm:1.7.3"],\
             ["lodash", "npm:4.17.21"],\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"]\
+            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -3462,6 +3446,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["data-uri-to-buffer", [\
+        ["npm:4.0.1", {\
+          "packageLocation": "./.yarn/cache/data-uri-to-buffer-npm-4.0.1-5c66a78beb-0d0790b67f.zip/node_modules/data-uri-to-buffer/",\
+          "packageDependencies": [\
+            ["data-uri-to-buffer", "npm:4.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["dayjs", [\
         ["npm:1.11.5", {\
           "packageLocation": "./.yarn/cache/dayjs-npm-1.11.5-a825142dc5-e3bbaa7b48.zip/node_modules/dayjs/",\
@@ -4472,6 +4465,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["fetch-blob", [\
+        ["npm:3.2.0", {\
+          "packageLocation": "./.yarn/cache/fetch-blob-npm-3.2.0-28e01becfc-f19bc28a2a.zip/node_modules/fetch-blob/",\
+          "packageDependencies": [\
+            ["fetch-blob", "npm:3.2.0"],\
+            ["node-domexception", "npm:1.0.0"],\
+            ["web-streams-polyfill", "npm:3.3.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["file-entry-cache", [\
         ["npm:6.0.1", {\
           "packageLocation": "./.yarn/cache/file-entry-cache-npm-6.0.1-31965cf0af-f49701feaa.zip/node_modules/file-entry-cache/",\
@@ -4598,6 +4602,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["asynckit", "npm:0.4.0"],\
             ["combined-stream", "npm:1.0.8"],\
             ["mime-types", "npm:2.1.35"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["formdata-polyfill", [\
+        ["npm:4.0.10", {\
+          "packageLocation": "./.yarn/cache/formdata-polyfill-npm-4.0.10-e03013c013-82a34df292.zip/node_modules/formdata-polyfill/",\
+          "packageDependencies": [\
+            ["formdata-polyfill", "npm:4.0.10"],\
+            ["fetch-blob", "npm:3.2.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -6449,7 +6463,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],\
       ["mocha", [\
         ["npm:10.1.0", {\
-          "packageLocation": "./.yarn/unplugged/mocha-npm-10.1.0-206792a93c/node_modules/mocha/",\
+          "packageLocation": "./.yarn/cache/mocha-npm-10.1.0-206792a93c-c64c730576.zip/node_modules/mocha/",\
           "packageDependencies": [\
             ["mocha", "npm:10.1.0"],\
             ["ansi-colors", "npm:4.1.1"],\
@@ -6610,6 +6624,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["node-domexception", [\
+        ["npm:1.0.0", {\
+          "packageLocation": "./.yarn/cache/node-domexception-npm-1.0.0-e1e813b76f-ee1d37dd2a.zip/node_modules/node-domexception/",\
+          "packageDependencies": [\
+            ["node-domexception", "npm:1.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["node-fetch", [\
         ["npm:2.6.7", {\
           "packageLocation": "./.yarn/cache/node-fetch-npm-2.6.7-777aa2a6df-8d816ffd1e.zip/node_modules/node-fetch/",\
@@ -6618,10 +6641,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7", {\
-          "packageLocation": "./.yarn/__virtual__/node-fetch-virtual-363b95e335/0/cache/node-fetch-npm-2.6.7-777aa2a6df-8d816ffd1e.zip/node_modules/node-fetch/",\
+        ["npm:3.3.2", {\
+          "packageLocation": "./.yarn/cache/node-fetch-npm-3.3.2-5267e015f2-06a04095a2.zip/node_modules/node-fetch/",\
           "packageDependencies": [\
-            ["node-fetch", "virtual:eda6ccf92313b7dd52fb064974443bec78771455025cd09c544f7b4fc1acae66de48a245206c42e729961b69da9e3d6918150665525080cd30c2ab1b99b5cf41#npm:2.6.7"],\
+            ["node-fetch", "npm:3.3.2"],\
+            ["data-uri-to-buffer", "npm:4.0.1"],\
+            ["fetch-blob", "npm:3.2.0"],\
+            ["formdata-polyfill", "npm:4.0.10"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7", {\
+          "packageLocation": "./.yarn/__virtual__/node-fetch-virtual-e640b4159d/0/cache/node-fetch-npm-2.6.7-777aa2a6df-8d816ffd1e.zip/node_modules/node-fetch/",\
+          "packageDependencies": [\
+            ["node-fetch", "virtual:6856bb430e08360692d328390123b73ceffeaa762cfb620311d78e2963669a6317776ff34dabc7dea4e16844fce94c423a6ef09eb218b6492b32a11450760fb3#npm:2.6.7"],\
             ["@types/encoding", null],\
             ["encoding", null],\
             ["whatwg-url", "npm:5.0.0"]\
@@ -8855,6 +8888,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/vary-npm-1.1.2-b49f70ae63-ae0123222c.zip/node_modules/vary/",\
           "packageDependencies": [\
             ["vary", "npm:1.1.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["web-streams-polyfill", [\
+        ["npm:3.3.3", {\
+          "packageLocation": "./.yarn/cache/web-streams-polyfill-npm-3.3.3-f24b9f8c34-21ab5ea08a.zip/node_modules/web-streams-polyfill/",\
+          "packageDependencies": [\
+            ["web-streams-polyfill", "npm:3.3.3"]\
           ],\
           "linkType": "HARD"\
         }]\

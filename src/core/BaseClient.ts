@@ -1,18 +1,20 @@
-import { Configuration } from '@blargbot/config';
-import { BaseUtilities } from '@blargbot/core/BaseUtilities';
+import type { Configuration } from '@blargbot/config';
+import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
 import { Database } from '@blargbot/database';
 import * as Formatting from '@blargbot/formatting';
-import { Logger } from '@blargbot/logger';
-import { Client as Discord, ClientOptions as DiscordOptions, OAuthTeamMemberState } from 'eris';
+import type { Logger } from '@blargbot/logger';
+import * as eris from 'eris';
+import type fetch from 'node-fetch';
 
-import * as transformers from './formatting';
-import { getRange } from './utils';
+import * as transformers from './formatting/index.js';
+import { getRange } from './utils/index.js';
 
 export interface BaseClientOptions {
     readonly logger: Logger;
     readonly config: Configuration;
     readonly formatterOptions?: Formatting.FormatStringCompilerOptions;
-    readonly discordConfig: DiscordOptions;
+    readonly discordConfig: eris.ClientOptions;
+    readonly fetch: typeof fetch;
 }
 
 export class BaseClient {
@@ -22,12 +24,14 @@ export class BaseClient {
     public readonly util: BaseUtilities;
     public readonly formatCompiler: Formatting.IFormatStringCompiler;
     public readonly database: Database;
-    public readonly discord: Discord;
+    public readonly discord: eris.Client;
+    public readonly fetch: typeof fetch;
     public get ownerIds(): readonly string[] { return this.#owners; }
 
     public constructor(options: BaseClientOptions) {
         this.logger = options.logger;
         this.config = options.config;
+        this.fetch = options.fetch;
         this.formatCompiler = new Formatting.FormatStringCompiler({
             middleware: [...options.formatterOptions?.middleware ?? [], new Formatting.CacheMiddleware()],
             transformers: {
@@ -36,7 +40,10 @@ export class BaseClient {
                 ...options.formatterOptions?.transformers
             }
         });
-        this.discord = new Discord(this.config.discord.token, options.discordConfig);
+        let token = this.config.discord.token;
+        if (!token.startsWith('Bot '))
+            token = `Bot ${token}`;
+        this.discord = new eris.Client(token, options.discordConfig);
         this.database = new Database({
             logger: this.logger,
             rethink: this.config.rethink,
@@ -63,13 +70,13 @@ export class BaseClient {
     public async start(): Promise<void> {
         await this.database.connect().then(() => this.logger.init('database connected'));
         const application = await this.discord.getOAuthApplication();
-        this.#owners = application.team?.members.filter(m => m.membership_state === OAuthTeamMemberState.ACCEPTED).map(m => m.user.id)
+        this.#owners = application.team?.members.filter(m => m.membership_state === eris.OAuthTeamMemberState.ACCEPTED).map(m => m.user.id)
             ?? [application.owner.id];
         this.logger.init('Loaded', this.#owners, 'user(s) as owners');
     }
 }
 
-function createShardReadyWaiter(discord: Discord, shards: Set<number>, logger: Logger): Promise<void> {
+function createShardReadyWaiter(discord: eris.Client, shards: Set<number>, logger: Logger): Promise<void> {
     return new Promise(res => {
         function shardReady(shardId: number): void {
             if (!shards.delete(shardId))

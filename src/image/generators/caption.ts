@@ -1,7 +1,7 @@
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
-import { ImageWorker } from '@blargbot/image/ImageWorker';
-import { CaptionOptions, ImageResult, TextOptions } from '@blargbot/image/types';
-import sharp, { OverlayOptions } from 'sharp';
+import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
+import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { CaptionOptions, ImageResult, TextOptions } from '@blargbot/image/types.js';
+import sharp from 'sharp';
 
 export class CaptionGenerator extends BaseImageGenerator<'caption'> {
     public constructor(worker: ImageWorker) {
@@ -15,7 +15,7 @@ export class CaptionGenerator extends BaseImageGenerator<'caption'> {
 
         const width = imgData.info.width;
         const height = imgData.info.height / 6;
-        const overlays: OverlayOptions[] = [];
+        const overlays: sharp.OverlayOptions[] = [];
         const textOptions: TextOptions = {
             font,
             width,

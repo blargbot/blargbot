@@ -1,11 +1,11 @@
-import { ExecutionResult } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { guard } from '@blargbot/core/utils';
-import { GuildRolemeEntry } from '@blargbot/domain/models';
-import { KnownGuildTextableChannel, KnownMessage, Message } from 'eris';
+import type { ExecutionResult } from '@blargbot/bbtag';
+import type { Cluster } from '@blargbot/cluster';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import type { GuildRolemeEntry } from '@blargbot/domain/models/index.js';
+import type eris from 'eris';
 
-import templates from '../text';
+import templates from '../text.js';
 
 export class RolemeManager {
     readonly #cluster: Cluster;
@@ -16,7 +16,7 @@ export class RolemeManager {
         this.#cluster = cluster;
     }
 
-    public async execute(message: KnownMessage): Promise<void> {
+    public async execute(message: eris.KnownMessage): Promise<void> {
         if (!guard.isGuildMessage(message) || !guard.hasValue(message.member))
             return;
 
@@ -45,7 +45,7 @@ export class RolemeManager {
         }
     }
 
-    public async invokeMessage(trigger: Message<KnownGuildTextableChannel>, roleme: GuildRolemeEntry): Promise<ExecutionResult> {
+    public async invokeMessage(trigger: eris.Message<eris.KnownGuildTextableChannel>, roleme: GuildRolemeEntry): Promise<ExecutionResult> {
         const tag = roleme.output ?? {
             content: 'Your roles have been edited!',
             author: ''

@@ -1,10 +1,10 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { IFormattable } from '@blargbot/formatting';
-import { Member } from 'eris';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import type * as eris from 'eris';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.warnings;
 
@@ -28,7 +28,7 @@ export class WarningsCommand extends GuildCommand {
         });
     }
 
-    public async warnings(context: GuildCommandContext, member: Member): Promise<CommandResult> {
+    public async warnings(context: GuildCommandContext, member: eris.Member): Promise<CommandResult> {
         const { count, banAt, kickAt, timeoutAt } = await context.cluster.moderation.warns.details(member);
         const result: Array<IFormattable<string>> = [
             cmd.common.count({ user: member.user, count })

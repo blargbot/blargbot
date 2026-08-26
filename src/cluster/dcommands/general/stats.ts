@@ -1,11 +1,12 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { avatarColours, CommandType, randChoose } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { avatarColours, CommandType, randChoose } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
-import Eris from 'eris';
+import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.stats;
 
@@ -86,7 +87,7 @@ export class StatsCommand extends GlobalCommand {
                     },
                     {
                         name: cmd.default.embed.field.eris.name,
-                        value: util.literal(Eris.VERSION),
+                        value: util.literal(eris.VERSION),
                         inline: true
                     },
                     {

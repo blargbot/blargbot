@@ -1,19 +1,19 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
-import { guard } from '@blargbot/cluster/utils';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { KnownMessage } from 'eris';
+import type { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities.js';
+import { guard } from '@blargbot/cluster/utils/index.js';
+import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type * as eris from 'eris';
 
-import templates from '../../../text';
+import templates from '../../../text.js';
 
-export class TableflipMiddleware implements IMiddleware<KnownMessage, boolean> {
+export class TableflipMiddleware implements IMiddleware<eris.KnownMessage, boolean> {
     readonly #util: ClusterUtilities;
 
     public constructor(util: ClusterUtilities) {
         this.#util = util;
     }
 
-    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: eris.KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         const result = next();
         const flipDir = context.content.includes('(╯°□°）╯︵ ┻━┻') ? 'unflip'
             : context.content.includes('┬─┬ ノ( ゜-゜ノ)') ? 'flip'

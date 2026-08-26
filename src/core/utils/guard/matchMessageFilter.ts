@@ -1,10 +1,10 @@
-import { MessageFilter } from '@blargbot/domain/models';
-import { KnownMessage } from 'eris';
+import type { MessageFilter } from '@blargbot/domain/models/index.js';
+import type * as eris from 'eris';
 
-import { matchRegexSafe } from '../createRegExp';
-import { humanize } from '../humanize';
+import { matchRegexSafe } from '../createRegExp.js';
+import { humanize } from '../humanize/index.js';
 
-export function matchMessageFilter(filter: MessageFilter, message: KnownMessage): string[] | undefined {
+export function matchMessageFilter(filter: MessageFilter, message: eris.KnownMessage): string[] | undefined {
     let content = message.content;
     if (filter.decancer === true)
         content = humanize.decancer(content);

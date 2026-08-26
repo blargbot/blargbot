@@ -1,6 +1,6 @@
-import { Cluster } from '@blargbot/cluster';
-import { DiscordEventService } from '@blargbot/core/serviceTypes';
-import { ComponentInteraction, KnownInteraction } from 'eris';
+import type { Cluster } from '@blargbot/cluster';
+import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import * as eris from 'eris';
 
 export class DiscordInteractionCreateHandler extends DiscordEventService<'interactionCreate'> {
     public constructor(
@@ -9,8 +9,8 @@ export class DiscordInteractionCreateHandler extends DiscordEventService<'intera
         super(cluster.discord, 'interactionCreate', cluster.logger, (interaction) => this.execute(interaction));
     }
 
-    public async execute(interaction: KnownInteraction): Promise<void> {
-        if (interaction instanceof ComponentInteraction)
+    public async execute(interaction: eris.KnownInteraction): Promise<void> {
+        if (interaction instanceof eris.ComponentInteraction)
             await this.cluster.awaiter.components.tryConsume(interaction);
     }
 }

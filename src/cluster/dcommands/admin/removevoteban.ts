@@ -1,9 +1,9 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { User } from 'eris';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import type * as eris from 'eris';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.removeVoteBan;
 
@@ -28,7 +28,7 @@ export class RemoveVotebanCommand extends GuildCommand {
         });
     }
 
-    public async clearUser(context: GuildCommandContext, user: User): Promise<CommandResult> {
+    public async clearUser(context: GuildCommandContext, user: eris.User): Promise<CommandResult> {
         await context.database.guilds.clearVoteBans(context.channel.guild.id, user.id);
         return cmd.user.success({ user });
     }

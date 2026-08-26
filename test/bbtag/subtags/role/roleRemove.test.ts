@@ -1,15 +1,15 @@
-import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { RoleRemoveSubtag } from '@blargbot/bbtag/subtags/role/roleRemove';
-import { argument } from '@blargbot/test-util/mock';
-import { Constants } from 'eris';
+import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import { RoleRemoveSubtag } from '@blargbot/bbtag/subtags/role/roleRemove.js';
+import { argument } from '@blargbot/test-util/mock.js';
+import * as eris from 'eris';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new RoleRemoveSubtag(),
     argCountBounds: { min: 1, max: 3 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
+        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
     },
     cases: [
         {

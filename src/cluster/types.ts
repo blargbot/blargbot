@@ -1,14 +1,14 @@
-import { SubtagOptions } from '@blargbot/bbtag';
-import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
-import { CommandType, ModerationType } from '@blargbot/cluster/utils';
-import { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types';
-import { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models';
-import { IFormattable } from '@blargbot/formatting';
-import { Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Role, Shard, User, Webhook } from 'eris';
-import { Duration } from 'moment-timezone';
-import { metric } from 'prom-client';
+import type { SubtagOptions } from '@blargbot/bbtag';
+import type { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
+import type { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types.js';
+import type { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import type * as eris from 'eris';
+import type moment from 'moment-timezone';
+import type { metric } from 'prom-client';
 
-import { ClusterUtilities } from './ClusterUtilities';
+import type { ClusterUtilities } from './ClusterUtilities.js';
 
 export type ClusterIPCContract = {
     shardReady: { masterGets: number; workerGets: never; };
@@ -34,9 +34,9 @@ export type ClusterIPCContract = {
 
 export interface ICommandManager<T = unknown> {
     readonly size: number;
-    get(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetResult<T>>;
-    list(location?: Guild | KnownTextableChannel, user?: User): AsyncIterable<CommandGetResult<T>>;
-    configure(user: User, names: readonly string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
+    get(name: string, location?: eris.Guild | eris.KnownTextableChannel, user?: eris.User): Promise<CommandGetResult<T>>;
+    list(location?: eris.Guild | eris.KnownTextableChannel, user?: eris.User): AsyncIterable<CommandGetResult<T>>;
+    configure(user: eris.User, names: readonly string[], guild: eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
     load(commands?: Iterable<string> | boolean): Promise<void>;
 }
 
@@ -153,12 +153,12 @@ export type CommandVariableTypeMap = {
     bigint: bigint;
     integer: number;
     number: number;
-    role: Role;
-    channel: KnownChannel;
-    user: User;
-    sender: User | Webhook;
-    member: Member;
-    duration: Duration;
+    role: eris.Role;
+    channel: eris.KnownChannel;
+    user: eris.User;
+    sender: eris.User | eris.Webhook;
+    member: eris.Member;
+    duration: moment.Duration;
     boolean: boolean;
     string: string;
 }
@@ -302,7 +302,7 @@ export interface ClusterStats {
 
 export interface ShardStats {
     readonly id: number;
-    readonly status: Shard['status'];
+    readonly status: eris.Shard['status'];
     readonly latency: number;
     readonly guilds: number;
     readonly cluster: number;
@@ -321,20 +321,20 @@ export interface ClusterPoolOptions {
 }
 
 export interface BanDetails {
-    mod: User;
+    mod: eris.User;
     reason: string;
 }
 
 export interface MassBanDetails {
-    mod: User;
+    mod: eris.User;
     type: string;
-    users: User[];
-    newUsers: User[];
+    users: eris.User[];
+    newUsers: eris.User[];
     reason: string;
 }
 
-export type GuildCommandContext<TChannel extends KnownGuildTextableChannel = KnownGuildTextableChannel> = CommandContext<TChannel>;
-export type PrivateCommandContext<TChannel extends KnownPrivateChannel = KnownPrivateChannel> = CommandContext<TChannel>;
+export type GuildCommandContext<TChannel extends eris.KnownGuildTextableChannel = eris.KnownGuildTextableChannel> = CommandContext<TChannel>;
+export type PrivateCommandContext<TChannel extends eris.KnownPrivateChannel = eris.KnownPrivateChannel> = CommandContext<TChannel>;
 
 export type CommandPropertiesSet = { [P in CommandType]: CommandProperties; }
 export interface CommandProperties {
@@ -342,7 +342,7 @@ export interface CommandProperties {
     readonly name: IFormattable<string>;
     readonly description: IFormattable<string>;
     readonly defaultPerms: bigint;
-    readonly isVisible: (util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User) => boolean | Promise<boolean>;
+    readonly isVisible: (util: ClusterUtilities, location?: eris.Guild | eris.KnownTextableChannel, user?: eris.User) => boolean | Promise<boolean>;
     readonly color: number;
 }
 
@@ -363,14 +363,14 @@ export interface PollInvalidOption<T extends string = 'OPTIONS_INVALID'> extends
 }
 
 export interface PollSuccess extends PollInvalidOption<'SUCCESS'> {
-    readonly message: KnownMessage;
+    readonly message: eris.KnownMessage;
 }
 
 export type EnsureMutedRoleResult = 'success' | 'unconfigured' | 'noPerms';
 export type MuteResult = 'success' | 'alreadyMuted' | 'noPerms' | 'roleMissing' | 'roleTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type UnmuteResult = 'success' | 'notMuted' | 'noPerms' | 'roleTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type BanResult = 'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
-export type MassBanResult = User[] | Exclude<BanResult, 'success'> | 'noUsers';
+export type MassBanResult = eris.User[] | Exclude<BanResult, 'success'> | 'noUsers';
 export type KickResult = 'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type UnbanResult = 'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms';
 export type TimeoutResult = 'success' | 'alreadyTimedOut' | 'noPerms' | 'moderatorNoPerms' | 'memberTooHigh' | 'moderatorTooLow';

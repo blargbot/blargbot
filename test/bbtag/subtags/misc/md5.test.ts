@@ -1,8 +1,8 @@
-import { Md5Subtag } from '@blargbot/bbtag/subtags/misc/md5';
+import { Md5Subtag } from '@blargbot/bbtag/subtags/misc/md5.js';
 import { expect } from 'chai';
 import { it } from 'mocha';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new Md5Subtag(),

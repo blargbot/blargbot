@@ -1,7 +1,7 @@
-import { Cluster } from '@blargbot/cluster';
-import { WolkenCommand } from '@blargbot/cluster/command';
+import type { Cluster } from '@blargbot/cluster';
+import { WolkenCommand } from '@blargbot/cluster/command/index.js';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 export class LewdCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {

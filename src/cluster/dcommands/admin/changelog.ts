@@ -1,10 +1,11 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { IFormattable, util } from '@blargbot/formatting';
-import { Webhook } from 'eris';
+import { GuildCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import type * as eris from 'eris';
 
-import templates from '../../text';
+import templates from '../../text.js';
 
 const cmd = templates.commands.changeLog;
 
@@ -50,7 +51,7 @@ export class ChangelogCommand extends GuildCommand {
         return cmd.unsubscribe.success;
     }
 
-    async #getCurrentSubscription(context: GuildCommandContext): Promise<Webhook | IFormattable<string> | undefined> {
+    async #getCurrentSubscription(context: GuildCommandContext): Promise<eris.Webhook | IFormattable<string> | undefined> {
         const self = context.channel.guild.members.get(context.discord.user.id);
         if (self?.permissions.has('manageWebhooks') !== true)
             return cmd.errors.missingPermissions;

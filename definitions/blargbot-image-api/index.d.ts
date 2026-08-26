@@ -1,4 +1,4 @@
-export module 'blargbot-image-api' {
+declare module 'blargbot-image-api' {
     export interface ClintOptions {
         readonly image: string;
     }

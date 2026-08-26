@@ -1,8 +1,8 @@
-import { EmbedSubtag } from '@blargbot/bbtag/subtags/message/embed';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
+import { EmbedSubtag } from '@blargbot/bbtag/subtags/message/embed.js';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { expect } from 'chai';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new EmbedSubtag(),

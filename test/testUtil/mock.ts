@@ -1,11 +1,11 @@
 import { instance, verify, when } from 'ts-mockito';
-import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher';
-import { StrictEqualMatcher } from 'ts-mockito/lib/matcher/type/StrictEqualMatcher';
-import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
-import { MethodStubVerificator } from 'ts-mockito/lib/MethodStubVerificator';
-import { Mocker } from 'ts-mockito/lib/Mock';
-import { AbstractMethodStub } from 'ts-mockito/lib/stub/AbstractMethodStub';
-import { MethodStub } from 'ts-mockito/lib/stub/MethodStub';
+import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher.js';
+import { StrictEqualMatcher } from 'ts-mockito/lib/matcher/type/StrictEqualMatcher.js';
+import type { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter.js';
+import type { MethodStubVerificator } from 'ts-mockito/lib/MethodStubVerificator.js';
+import { Mocker } from 'ts-mockito/lib/Mock.js';
+import { AbstractMethodStub } from 'ts-mockito/lib/stub/AbstractMethodStub.js';
+import type { MethodStub } from 'ts-mockito/lib/stub/MethodStub.js';
 import { isProxy } from 'util/types';
 
 export class Mock<T> {
@@ -14,15 +14,6 @@ export class Mock<T> {
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     public constructor(clazz?: (new (...args: never[]) => T) | (Function & { prototype: T; }), strict = true) {
-        const ctx = {} as Record<PropertyKey, unknown>;
-
-        if (typeof clazz === 'function' && typeof clazz.prototype === 'object')
-            Object.setPrototypeOf(ctx, <object | null>clazz.prototype);
-
-        for (const symbol of [Symbol.toPrimitive, 'then', 'catch'])
-            if (!(symbol in ctx))
-                ctx[symbol] = undefined;
-
         const mock = new StrictMocker(clazz, strict);
         this.#expressionProvider = mock.getMock() as T;
         this.#assertions = [];
@@ -152,7 +143,9 @@ class StrictMocker extends Mocker {
     readonly #strict: boolean;
     // eslint-disable-next-line @typescript-eslint/ban-types
     public constructor(clazz?: (new (...args: never[]) => unknown) | (Function & { prototype: unknown; }), strict = false) {
-        const ctx = {} as Record<PropertyKey, unknown>;
+        const ctx = (function (): void {
+            throw new Error('Cannot mock a function directly sadly :(');
+        }) as unknown as Record<PropertyKey, unknown>;
 
         if (typeof clazz === 'function' && typeof clazz.prototype === 'object')
             Object.setPrototypeOf(ctx, <object | null>clazz.prototype);

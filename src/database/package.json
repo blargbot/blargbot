@@ -1,6 +1,8 @@
 {
     "name": "@blargbot/database",
     "version": "1.0.0",
+    "private": true,
+    "type": "module",
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",

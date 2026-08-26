@@ -1,10 +1,12 @@
-import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set';
-import { snowflake } from '@blargbot/core/utils';
-import { TagVariableScope, TagVariableType } from '@blargbot/domain/models';
-import { argument } from '@blargbot/test-util/mock';
+import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set.js';
+import { snowflake } from '@blargbot/core/utils/index.js';
+import type { TagVariableScope} from '@blargbot/domain/models/index.js';
+import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { argument } from '@blargbot/test-util/mock.js';
 import { expect } from 'chai';
 
-import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new SetSubtag(),

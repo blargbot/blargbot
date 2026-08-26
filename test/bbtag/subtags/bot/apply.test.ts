@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ApplySubtag } from '@blargbot/bbtag/subtags/bot/apply';
+import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
+import { ApplySubtag } from '@blargbot/bbtag/subtags/bot/apply.js';
 
-import { EchoArgsSubtag, MarkerError, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite';
+import { EchoArgsSubtag, MarkerError, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new ApplySubtag(),

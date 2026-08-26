@@ -1,11 +1,11 @@
-import { Member } from 'eris';
+import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userBoostDate;
 
@@ -49,7 +49,7 @@ export class UserBoostDateSubtag extends CompiledSubtag {
         return this.getUserBoostDate(member, format);
     }
 
-    public getUserBoostDate(user: Member, format: string): string {
+    public getUserBoostDate(user: eris.Member, format: string): string {
         if (typeof user.premiumSince !== 'number')
             throw new BBTagRuntimeError('User not boosting');
 

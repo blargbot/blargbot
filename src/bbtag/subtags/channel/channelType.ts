@@ -1,10 +1,10 @@
-import { Constants } from 'eris';
+import * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { ChannelNotFoundError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { ChannelNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelType;
 
@@ -48,15 +48,15 @@ export class ChannelTypeSubtag extends CompiledSubtag {
 }
 
 const channelTypes = {
-    [Constants.ChannelTypes.GUILD_TEXT]: 'text',
-    [Constants.ChannelTypes.DM]: 'dm',
-    [Constants.ChannelTypes.GUILD_VOICE]: 'voice',
-    [Constants.ChannelTypes.GROUP_DM]: 'group-dm',
-    [Constants.ChannelTypes.GUILD_CATEGORY]: 'category',
-    [Constants.ChannelTypes.GUILD_NEWS]: 'news',
-    [Constants.ChannelTypes.GUILD_STORE]: 'store',
-    [Constants.ChannelTypes.GUILD_NEWS_THREAD]: 'news-thread',
-    [Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: 'private-thread',
-    [Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: 'public-thread',
-    [Constants.ChannelTypes.GUILD_STAGE_VOICE]: 'stage-voice'
+    [eris.Constants.ChannelTypes.GUILD_TEXT]: 'text',
+    [eris.Constants.ChannelTypes.DM]: 'dm',
+    [eris.Constants.ChannelTypes.GUILD_VOICE]: 'voice',
+    [eris.Constants.ChannelTypes.GROUP_DM]: 'group-dm',
+    [eris.Constants.ChannelTypes.GUILD_CATEGORY]: 'category',
+    [eris.Constants.ChannelTypes.GUILD_NEWS]: 'news',
+    [eris.Constants.ChannelTypes.GUILD_STORE]: 'store',
+    [eris.Constants.ChannelTypes.GUILD_NEWS_THREAD]: 'news-thread',
+    [eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: 'private-thread',
+    [eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: 'public-thread',
+    [eris.Constants.ChannelTypes.GUILD_STAGE_VOICE]: 'stage-voice'
 } as const;

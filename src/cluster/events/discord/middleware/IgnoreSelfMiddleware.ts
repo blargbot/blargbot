@@ -1,19 +1,19 @@
-import { guard } from '@blargbot/cluster/utils';
-import { metrics } from '@blargbot/core/Metrics';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { Logger } from '@blargbot/logger';
-import { Client as Discord, KnownMessage } from 'eris';
+import { guard } from '@blargbot/cluster/utils/index.js';
+import { metrics } from '@blargbot/core/Metrics.js';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { Logger } from '@blargbot/logger';
+import type * as eris from 'eris';
 
-export class IgnoreSelfMiddleware implements IMiddleware<KnownMessage, boolean> {
-    readonly #discord: Discord;
+export class IgnoreSelfMiddleware implements IMiddleware<eris.KnownMessage, boolean> {
+    readonly #discord: eris.Client;
     readonly #logger: Logger;
 
-    public constructor(logger: Logger, discord: Discord) {
+    public constructor(logger: Logger, discord: eris.Client) {
         this.#discord = discord;
         this.#logger = logger;
     }
 
-    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: eris.KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         if (context.author.id !== this.#discord.user.id) {
             metrics.messageCounter.inc();
             return await next();

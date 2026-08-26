@@ -1,12 +1,13 @@
-import { TimeoutClearResult, TimeoutResult } from '@blargbot/cluster/types';
-import { clampBy } from '@blargbot/cluster/utils';
-import { format, IFormattable } from '@blargbot/formatting';
-import { Guild, Member, User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import type { TimeoutClearResult, TimeoutResult } from '@blargbot/cluster/types.js';
+import { clampBy } from '@blargbot/cluster/utils/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { format } from '@blargbot/formatting';
+import type * as eris from 'eris';
+import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { ModerationManager } from '../ModerationManager';
-import { ModerationManagerBase } from './ModerationManagerBase';
+import templates from '../../text.js';
+import type { ModerationManager } from '../ModerationManager.js';
+import { ModerationManagerBase } from './ModerationManagerBase.js';
 
 const maximumTimeoutDuration = moment.duration(28, 'd').subtract(10, 's'); //Discord throws a RESTError when the duration is too close to 28d
 
@@ -20,7 +21,7 @@ export class TimeoutManager extends ModerationManagerBase {
         this.#ignoreTimeoutClears = new Set();
     }
 
-    public async timeout(member: Member, moderator: User, authorizer: User, duration: Duration, reason?: IFormattable<string>): Promise<TimeoutResult> {
+    public async timeout(member: eris.Member, moderator: eris.User, authorizer: eris.User, duration: moment.Duration, reason?: IFormattable<string>): Promise<TimeoutResult> {
         const guild = member.guild;
         const result = await this.#updateUserTimeoutDate(guild, member.id, moderator, authorizer, duration, reason);
         if (result !== 'success') {
@@ -34,7 +35,7 @@ export class TimeoutManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async clearTimeout(member: Member, moderator: User, authorizer: User, reason?: IFormattable<string>): Promise<TimeoutClearResult> {
+    public async clearTimeout(member: eris.Member, moderator: eris.User, authorizer: eris.User, reason?: IFormattable<string>): Promise<TimeoutClearResult> {
         if (member.communicationDisabledUntil === null)
             return 'notTimedOut';
 
@@ -56,7 +57,7 @@ export class TimeoutManager extends ModerationManagerBase {
         return 'success';
     }
 
-    async #updateUserTimeoutDate(guild: Guild, userId: string, moderator: User, authorizer: User, duration: Duration, reason?: IFormattable<string>): Promise<TimeoutResult | { error: unknown; }> {
+    async #updateUserTimeoutDate(guild: eris.Guild, userId: string, moderator: eris.User, authorizer: eris.User, duration: moment.Duration, reason?: IFormattable<string>): Promise<TimeoutResult | { error: unknown; }> {
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('moderateMembers') !== true) {
             return 'noPerms';
@@ -85,12 +86,12 @@ export class TimeoutManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async userTimedOut(guild: Guild, user: User, duration: Duration): Promise<void> {
+    public async userTimedOut(guild: eris.Guild, user: eris.User, duration: moment.Duration): Promise<void> {
         if (!this.#ignoreTimeouts.delete(`${guild.id}:${user.id}`))
             await this.modLog.logTimeout(guild, user, duration);
     }
 
-    public async userTimeoutCleared(guild: Guild, user: User): Promise<void> {
+    public async userTimeoutCleared(guild: eris.Guild, user: eris.User): Promise<void> {
         if (!this.#ignoreTimeoutClears.delete(`${guild.id}:${user.id}`))
             await this.modLog.logTimeoutClear(guild, user);
     }

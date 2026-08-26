@@ -1,5 +1,5 @@
-import { CommandMap } from 'blargbot-image-api';
-import gm from 'gm';
+import type { CommandMap } from 'blargbot-image-api';
+import type gm from 'gm';
 
 export type ImageIPCContract = {
     [P in keyof ImageGeneratorMap]: { masterGets: ImageResult<string> | null; workerGets: ImageGeneratorMap[P]; };

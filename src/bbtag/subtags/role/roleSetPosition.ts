@@ -1,11 +1,11 @@
-import { parse } from '@blargbot/core/utils';
-import { DiscordRESTError } from 'eris';
+import { parse } from '@blargbot/core/utils/index.js';
+import * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSetPosition;
 
@@ -50,7 +50,7 @@ export class RoleSetPositionSubtag extends CompiledSubtag {
             await role.editPosition(pos);
             return true;
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof eris.DiscordRESTError))
                 throw err;
 
             if (quiet)

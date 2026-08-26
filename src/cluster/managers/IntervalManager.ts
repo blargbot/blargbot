@@ -1,16 +1,16 @@
-import { ExecutionResult } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
-import { guard, sleep, snowflake } from '@blargbot/cluster/utils';
-import { GuildTriggerTag } from '@blargbot/domain/models';
-import { Guild, KnownGuildTextableChannel, Member } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import type { ExecutionResult } from '@blargbot/bbtag';
+import type { Cluster } from '@blargbot/cluster';
+import { guard, sleep, snowflake } from '@blargbot/cluster/utils/index.js';
+import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
+import type eris from 'eris';
+import moment from 'moment-timezone';
 
 export class IntervalManager {
     readonly #cluster: Cluster;
 
     public constructor(
         cluster: Cluster,
-        public readonly timeLimit: Duration
+        public readonly timeLimit: moment.Duration
     ) {
         this.#cluster = cluster;
     }
@@ -20,7 +20,7 @@ export class IntervalManager {
 
         const intervals = (await this.#cluster.database.guilds.getIntervals())
             .map(i => ({ guild: this.#cluster.discord.guilds.get(i.guildId), interval: i.interval }))
-            .filter((i): i is { guild: Guild; interval: GuildTriggerTag; } => i.guild !== undefined);
+            .filter((i): i is { guild: eris.Guild; interval: GuildTriggerTag; } => i.guild !== undefined);
 
         this.#cluster.logger.info(`[${nonce}] Running intervals on ${intervals.length} guilds`);
 
@@ -53,9 +53,9 @@ export class IntervalManager {
         }
     }
 
-    public async invoke(guild: Guild): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
-    public async invoke(guild: Guild, interval: GuildTriggerTag): Promise<ExecutionResult | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
-    public async invoke(guild: Guild, interval?: GuildTriggerTag): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'> {
+    public async invoke(guild: eris.Guild): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
+    public async invoke(guild: eris.Guild, interval: GuildTriggerTag): Promise<ExecutionResult | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
+    public async invoke(guild: eris.Guild, interval?: GuildTriggerTag): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'> {
         interval ??= await this.#cluster.database.guilds.getInterval(guild.id);
         if (interval === undefined)
             return 'NO_INTERVAL';
@@ -74,7 +74,7 @@ export class IntervalManager {
         ]);
     }
 
-    async #invoke(member: Member, channel: KnownGuildTextableChannel, interval: GuildTriggerTag): Promise<ExecutionResult | 'FAILED'> {
+    async #invoke(member: eris.Member, channel: eris.KnownGuildTextableChannel, interval: GuildTriggerTag): Promise<ExecutionResult | 'FAILED'> {
         try {
             const result = await this.#cluster.bbtag.execute(interval.content, {
                 message: {

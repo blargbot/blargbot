@@ -1,5 +1,5 @@
-export module 'wolken' {
-    export class Handler {
+declare module 'wolken' {
+    export default class Handler {
         public constructor(key: string, keyType?: string, userAgent?: string);
 
         public getTags(hidden?: boolean): Promise<string[]>;
@@ -28,6 +28,4 @@ export module 'wolken' {
     interface WolkeTagQueryOptions extends WolkeQueryOptionsBase {
         tags: string[];
     }
-
-    export default Handler;
 }

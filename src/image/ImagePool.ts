@@ -1,9 +1,9 @@
-import { ImageWorkerConfiguration } from '@blargbot/config';
-import { WorkerPool } from '@blargbot/core/worker';
-import { ImageGeneratorMap, ImageResult } from '@blargbot/image/types';
-import { Logger } from '@blargbot/logger';
+import type { ImageWorkerConfiguration } from '@blargbot/config';
+import { WorkerPool } from '@blargbot/core/worker/index.js';
+import type { ImageGeneratorMap, ImageResult } from '@blargbot/image/types.js';
+import type { Logger } from '@blargbot/logger';
 
-import { ImageConnection } from './ImageConnection';
+import { ImageConnection } from './ImageConnection.js';
 
 export class ImagePool extends WorkerPool<ImageConnection> {
     readonly #clusterId: number;

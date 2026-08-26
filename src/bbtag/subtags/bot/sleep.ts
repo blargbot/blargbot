@@ -1,10 +1,10 @@
-import { parse, sleep } from '@blargbot/core/utils';
+import { parse, sleep } from '@blargbot/core/utils/index.js';
 import moment from 'moment-timezone';
 
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import templates from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.sleep;
 

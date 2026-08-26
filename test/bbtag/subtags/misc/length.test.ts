@@ -1,8 +1,8 @@
-import { UnknownSubtagError } from '@blargbot/bbtag/errors';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { LengthSubtag } from '@blargbot/bbtag/subtags/misc/length';
+import { UnknownSubtagError } from '@blargbot/bbtag/errors/index.js';
+import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { LengthSubtag } from '@blargbot/bbtag/subtags/misc/length.js';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 runSubtagTests({
     subtag: new LengthSubtag(),

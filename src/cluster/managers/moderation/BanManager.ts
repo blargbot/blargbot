@@ -1,14 +1,15 @@
-import { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types';
-import { guard, sleep } from '@blargbot/cluster/utils';
-import { UnbanEventOptions } from '@blargbot/domain/models';
-import { format, IFormattable, util } from '@blargbot/formatting';
+import type { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster/types.js';
+import { guard, sleep } from '@blargbot/cluster/utils/index.js';
+import type { UnbanEventOptions } from '@blargbot/domain/models/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { format, util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
-import { ApiError, AuditLogActionType, DiscordRESTError, Guild, GuildAuditLog, GuildAuditLogEntry, Member, User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import * as eris from 'eris';
+import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { ModerationManager } from '../ModerationManager';
-import { ModerationManagerBase } from './ModerationManagerBase';
+import templates from '../../text.js';
+import type { ModerationManager } from '../ModerationManager.js';
+import { ModerationManagerBase } from './ModerationManagerBase.js';
 
 export class BanManager extends ModerationManagerBase {
     readonly #ignoreBans: Set<`${string}:${string}`>;
@@ -22,7 +23,7 @@ export class BanManager extends ModerationManagerBase {
         this.#ignoreLeaves = new Set();
     }
 
-    public async ban(guild: Guild, user: User, moderator: User, authorizer: User, deleteDays: number, reason: IFormattable<string>, duration: Duration): Promise<BanResult> {
+    public async ban(guild: eris.Guild, user: eris.User, moderator: eris.User, authorizer: eris.User, deleteDays: number, reason: IFormattable<string>, duration: moment.Duration): Promise<BanResult> {
         const result = await this.#tryBanUser(guild, user.id, moderator, authorizer, deleteDays, reason);
         if (result !== 'success') {
             if (typeof result === 'string')
@@ -46,7 +47,7 @@ export class BanManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async massBan(guild: Guild, userIds: readonly string[], moderator: User, authorizer: User, deleteDays: number, reason: IFormattable<string>): Promise<MassBanResult> {
+    public async massBan(guild: eris.Guild, userIds: readonly string[], moderator: eris.User, authorizer: eris.User, deleteDays: number, reason: IFormattable<string>): Promise<MassBanResult> {
         if (userIds.length === 0)
             return 'noUsers';
 
@@ -81,7 +82,7 @@ export class BanManager extends ModerationManagerBase {
         return banned;
     }
 
-    async #tryBanUser(guild: Guild, userId: string, moderator: User, authorizer: User, deleteDays: number, reason: IFormattable<string>): Promise<BanResult | { error: unknown; }> {
+    async #tryBanUser(guild: eris.Guild, userId: string, moderator: eris.User, authorizer: eris.User, deleteDays: number, reason: IFormattable<string>): Promise<BanResult | { error: unknown; }> {
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('banMembers') !== true)
             return 'noPerms';
@@ -110,7 +111,7 @@ export class BanManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async unban(guild: Guild, user: User, moderator: User, authorizer: User, reason?: IFormattable<string>): Promise<UnbanResult> {
+    public async unban(guild: eris.Guild, user: eris.User, moderator: eris.User, authorizer: eris.User, reason?: IFormattable<string>): Promise<UnbanResult> {
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('banMembers') !== true)
             return 'noPerms';
@@ -122,7 +123,7 @@ export class BanManager extends ModerationManagerBase {
         try {
             await guild.getBan(user.id);
         } catch (err: unknown) {
-            if (err instanceof DiscordRESTError && err.code === ApiError.UNKNOWN_BAN)
+            if (err instanceof eris.DiscordRESTError && err.code === eris.ApiError.UNKNOWN_BAN)
                 return 'notBanned';
             throw err;
         }
@@ -135,7 +136,7 @@ export class BanManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async kick(member: Member, moderator: User, authorizer: User, reason?: IFormattable<string>): Promise<KickResult> {
+    public async kick(member: eris.Member, moderator: eris.User, authorizer: eris.User, reason?: IFormattable<string>): Promise<KickResult> {
         const self = member.guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('kickMembers') !== true)
             return 'noPerms';
@@ -174,34 +175,34 @@ export class BanManager extends ModerationManagerBase {
         await this.unban(guild, user, this.cluster.discord.user, this.cluster.discord.user, templates.ban.autoUnban({ duration }));
     }
 
-    public async userBanned(guild: Guild, user: User): Promise<void> {
+    public async userBanned(guild: eris.Guild, user: eris.User): Promise<void> {
         if (this.#ignoreBans.delete(`${guild.id}:${user.id}`))
             return;
 
-        const log = await this.#findAuditLog(guild, user.id, AuditLogActionType.MEMBER_BAN_ADD);
+        const log = await this.#findAuditLog(guild, user.id, eris.AuditLogActionType.MEMBER_BAN_ADD);
         await this.modLog.logBan(guild, user, log?.user, util.literal(log?.reason ?? undefined));
     }
 
-    public async userUnbanned(guild: Guild, user: User): Promise<void> {
+    public async userUnbanned(guild: eris.Guild, user: eris.User): Promise<void> {
         if (this.#ignoreUnbans.delete(`${guild.id}:${user.id}`))
             return;
 
-        const log = await this.#findAuditLog(guild, user.id, AuditLogActionType.MEMBER_BAN_REMOVE);
+        const log = await this.#findAuditLog(guild, user.id, eris.AuditLogActionType.MEMBER_BAN_REMOVE);
         await this.modLog.logUnban(guild, user, log?.user, util.literal(log?.reason ?? undefined));
     }
 
-    public async userLeft(member: Member): Promise<void> {
+    public async userLeft(member: eris.Member): Promise<void> {
         if (this.#ignoreLeaves.delete(`${member.guild.id}:${member.id}`))
             return;
 
-        const log = await this.#findAuditLog(member.guild, member.id, AuditLogActionType.MEMBER_KICK);
+        const log = await this.#findAuditLog(member.guild, member.id, eris.AuditLogActionType.MEMBER_KICK);
         if (log === undefined) // no kick audit log, so they probably just left. Dont log.
             return;
 
         await this.modLog.logKick(member.guild, member.user, log.user, util.literal(log.reason ?? undefined));
     }
 
-    async #findAuditLog(guild: Guild, targetId: string, type: AuditLogActionType): Promise<GuildAuditLogEntry | undefined> {
+    async #findAuditLog(guild: eris.Guild, targetId: string, type: eris.AuditLogActionType): Promise<eris.GuildAuditLogEntry | undefined> {
         const eventTime = moment().add(-30, 'seconds');
         await sleep(2000); // To ensure the audit log has appeared
         const auditLogs = await tryGetAuditLogs(guild, 50, undefined, type);
@@ -211,11 +212,11 @@ export class BanManager extends ModerationManagerBase {
     }
 }
 
-async function tryGetAuditLogs(guild: Guild, limit?: number, before?: string, type?: AuditLogActionType): Promise<GuildAuditLog | undefined> {
+async function tryGetAuditLogs(guild: eris.Guild, limit?: number, before?: string, type?: eris.AuditLogActionType): Promise<eris.GuildAuditLog | undefined> {
     try {
         return await guild.getAuditLog({ limit, before, actionType: type });
     } catch (err: unknown) {
-        if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS)
+        if (err instanceof eris.DiscordRESTError && err.code === eris.ApiError.MISSING_PERMISSIONS)
             return undefined;
         throw err;
     }

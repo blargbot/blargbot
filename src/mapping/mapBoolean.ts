@@ -1,5 +1,5 @@
-import { createMapping } from './createMapping';
-import { result } from './result';
+import { createMapping } from './createMapping.js';
+import { result } from './result.js';
 
 export const mapBoolean = createMapping<boolean>(value => {
     switch (typeof value) {

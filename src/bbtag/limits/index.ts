@@ -1,14 +1,14 @@
-import { CustomCommandLimit } from './CustomCommandLimit';
-import { EverythingAutoResponseLimit } from './EverythingAutoResponseLimit';
-import { GeneralAutoResponseLimit } from './GeneralAutoResponseLimit';
-import * as rules from './rules';
-import { TagLimit } from './TagLimit';
+import { CustomCommandLimit } from './CustomCommandLimit.js';
+import { EverythingAutoResponseLimit } from './EverythingAutoResponseLimit.js';
+import { GeneralAutoResponseLimit } from './GeneralAutoResponseLimit.js';
+import * as rules from './rules/index.js';
+import { TagLimit } from './TagLimit.js';
 
-export * from './CustomCommandLimit';
-export * from './EverythingAutoResponseLimit';
-export * from './GeneralAutoResponseLimit';
-export * from './TagLimit';
-export * from './RuntimeLimit';
+export * from './CustomCommandLimit.js';
+export * from './EverythingAutoResponseLimit.js';
+export * from './GeneralAutoResponseLimit.js';
+export * from './TagLimit.js';
+export * from './RuntimeLimit.js';
 export { rules };
 
 export const limits = {

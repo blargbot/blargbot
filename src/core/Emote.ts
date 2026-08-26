@@ -1,9 +1,11 @@
-import discordEmoteData from '@blargbot/res/discordEmoteData.json';
-import { Snowflake } from 'catflake';
-import { PartialEmoji } from 'eris';
+import { discordEmoteData } from '@blargbot/res';
+import type { Snowflake } from 'catflake';
+import type * as eris from 'eris';
 import twemoji from 'twemoji';
 
-import { snowflake } from './utils';
+import { snowflake } from './utils/index.js';
+
+await discordEmoteData.ensureLoaded();
 
 export class Emote {
     public static findAll(this: void, text: string): Emote[] {
@@ -18,7 +20,7 @@ export class Emote {
         return result[0];
     }
 
-    public static create(this: void, data: PartialEmoji): Emote {
+    public static create(this: void, data: eris.PartialEmoji): Emote {
         if (data.id === null)
             return Emote.parse(data.name);
         return Emote.parse(`<${data.animated === true ? 'a' : ''}:${data.name}:${data.id}>`);
@@ -87,7 +89,7 @@ const guildEmoteRegex = /<(?<animated>a?):(?<name>[\w_]{1,32}):(?<id>\d{17,23})>
 const guildApiEmoteRegex = /(?<name>[\w_]{1,32}):(?<id>\d{17,23})/g;
 const keycapEmote = /[#*0-9]\uFE0F?\u20E3/g;
 const otherEmotes = /©️/g;
-const discordEmotes = Object.values(discordEmoteData)
+const discordEmotes = Object.values(discordEmoteData.data)
     .flat()
     .flatMap(entry => 'diversityChildren' in entry ? [entry, ...entry.diversityChildren ?? []] : [entry])
     .map(entry => entry.surrogates);

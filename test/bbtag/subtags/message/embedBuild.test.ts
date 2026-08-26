@@ -1,9 +1,9 @@
-import { InvalidEmbedError } from '@blargbot/bbtag/errors';
-import { EmbedBuildSubtag } from '@blargbot/bbtag/subtags/message/embedBuild';
-import { repeat } from '@blargbot/core/utils';
+import { InvalidEmbedError } from '@blargbot/bbtag/errors/index.js';
+import { EmbedBuildSubtag } from '@blargbot/bbtag/subtags/message/embedBuild.js';
+import { repeat } from '@blargbot/core/utils/index.js';
 import moment from 'moment-timezone';
 
-import { runSubtagTests, TestDataSubtag } from '../SubtagTestSuite';
+import { runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
 
 const testData = {
     '256': repeat(256, 'a').join(''),

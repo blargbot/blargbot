@@ -1,7 +1,7 @@
-import { Api } from '@blargbot/api/Api';
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
-import { parse } from '@blargbot/core/utils';
+import type { Api } from '@blargbot/api/Api.js';
+import { BaseRoute } from '@blargbot/api/BaseRoute.js';
+import type { ApiResponse } from '@blargbot/api/types.js';
+import { parse } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
 
 export class RolemesRoute extends BaseRoute<['/guilds/:guildId/rolemes']> {

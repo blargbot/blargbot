@@ -1,12 +1,14 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
-import { guard } from '@blargbot/core/utils';
-import { IFormattable, util } from '@blargbot/formatting';
-import { User } from 'eris';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
+import { GlobalCommand } from '@blargbot/cluster/command/index.js';
+import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { guard } from '@blargbot/core/utils/index.js';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import templates from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.info;
 
@@ -76,8 +78,8 @@ export class InfoCommand extends GlobalCommand {
     }
 }
 
-function template(value: User | IFormattable<string>): IFormattable<string> {
-    return value instanceof User
+function template(value: eris.User | IFormattable<string>): IFormattable<string> {
+    return value instanceof eris.User
         ? util.literal(value.mention)
         : value;
 }
