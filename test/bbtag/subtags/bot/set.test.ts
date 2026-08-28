@@ -1,14 +1,15 @@
+import assert from 'node:assert/strict';
+
 import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set.js';
 import { snowflake } from '@blargbot/core/utils/index.js';
-import type { TagVariableScope} from '@blargbot/domain/models/index.js';
+import type { TagVariableScope } from '@blargbot/domain/models/index.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SetSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [
@@ -87,7 +88,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                 setupSaveVariables: false,
                 setup,
                 async assert(bbctx) {
-                    expect((await bbctx.variables.get(`${prefix}${varName}`)).value).to.deep.equal(value);
+                    assert.deepEqual((await bbctx.variables.get(`${prefix}${varName}`)).value, value);
                 }
             };
             yield {
@@ -104,7 +105,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                     await setup?.call(this, ctx, ...args);
                 },
                 async assert(bbctx) {
-                    expect((await bbctx.variables.get(`${prefix}${varName}`)).value).to.deep.equal(value);
+                    assert.deepEqual((await bbctx.variables.get(`${prefix}${varName}`)).value, value);
                 }
             };
             yield {
@@ -122,7 +123,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                     await setup?.call(this, ctx, ...args);
                 },
                 async assert(bbctx) {
-                    expect((await bbctx.variables.get(`${prefix}${varName}`)).value).to.deep.equal(value);
+                    assert.deepEqual((await bbctx.variables.get(`${prefix}${varName}`)).value, value);
                 }
             };
         }

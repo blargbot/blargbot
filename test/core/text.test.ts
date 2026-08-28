@@ -1,18 +1,19 @@
+import { describe } from 'node:test';
+
 import * as coreTransformers from '@blargbot/core/formatting/index.js';
 import templates from '@blargbot/core/text.js';
 import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
 import * as eris from 'eris';
-import { describe } from 'mocha';
 
 const client = (): eris.Client => new eris.Client('');
 const guild = (): eris.Guild => new eris.Guild({ id: '' }, client());
 const channel = (): eris.Channel => new eris.Channel({ id: '' }, client());
 const guildChannel = (): eris.GuildChannel => new eris.GuildChannel({ id: '' }, client());
 
-describe('Core format strings', () => {
-    runFormatTreeTests(templates, {
+await describe('Core format strings', async () => {
+    await runFormatTreeTests(templates, {
         transformers: {
             ...transformers,
             ...coreTransformers

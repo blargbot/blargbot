@@ -4,7 +4,7 @@ import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new GuildSizeSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

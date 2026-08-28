@@ -3,7 +3,7 @@ import { UserIsBotSubtag } from '@blargbot/bbtag/subtags/user/userIsBot.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UserIsBotSubtag(),
     argCountBounds: { min: 0, max: 2 },
     cases: [

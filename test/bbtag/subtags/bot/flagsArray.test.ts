@@ -2,7 +2,7 @@ import { FlagsArraySubtag } from '@blargbot/bbtag/subtags/bot/flagsArray.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new FlagsArraySubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

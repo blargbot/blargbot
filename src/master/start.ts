@@ -2,7 +2,6 @@ import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
 import { MasterWorker } from '@blargbot/master';
 import { devAvatars, prdAvatars } from '@blargbot/res';
-import fetch from 'node-fetch';
 
 const logger = createLogger(config, 'MS');
 logger.setGlobal();

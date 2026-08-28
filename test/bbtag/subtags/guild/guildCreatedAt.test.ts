@@ -2,7 +2,7 @@ import { GuildCreatedAtSubtag } from '@blargbot/bbtag/subtags/guild/guildCreated
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new GuildCreatedAtSubtag(),
     argCountBounds: { min: 0, max: 1 },
     setup(ctx) {

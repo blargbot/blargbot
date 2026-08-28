@@ -3,7 +3,7 @@ import { RandomIntSubtag } from '@blargbot/bbtag/subtags/math/randomInt.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RandomIntSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [

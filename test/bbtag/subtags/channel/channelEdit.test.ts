@@ -7,7 +7,7 @@ import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ChannelEditSubtag(),
     argCountBounds: { min: 1, max: 2 },
     setup(ctx) {

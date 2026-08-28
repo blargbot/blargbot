@@ -2,7 +2,7 @@ import { ParseFloatSubtag } from '@blargbot/bbtag/subtags/math/parseFloat.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ParseFloatSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

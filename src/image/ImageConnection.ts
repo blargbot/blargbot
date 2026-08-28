@@ -1,19 +1,13 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
 import { WorkerConnection } from '@blargbot/core/worker/index.js';
 import type { ImageGeneratorMap, ImageIPCContract, ImageResult } from '@blargbot/image/types.js';
 import type { Logger } from '@blargbot/logger';
-
-const thisFile = fileURLToPath(import.meta.url);
-const thisDir = path.dirname(thisFile);
 
 export class ImageConnection extends WorkerConnection<ImageIPCContract> {
     public constructor(
         id: number,
         logger: Logger
     ) {
-        super(id, '@blargbot/image', path.join(thisDir, 'start.js'), logger);
+        super(id, '@blargbot/image', import.meta.resolve('./start.js'), logger);
         this.env.IMAGE_ID = id.toString();
     }
 

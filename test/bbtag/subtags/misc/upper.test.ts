@@ -2,7 +2,7 @@ import { UpperSubtag } from '@blargbot/bbtag/subtags/misc/upper.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UpperSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

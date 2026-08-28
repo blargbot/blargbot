@@ -2,7 +2,7 @@ import { ParseIntSubtag } from '@blargbot/bbtag/subtags/math/parseInt.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ParseIntSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

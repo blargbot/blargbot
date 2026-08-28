@@ -3,7 +3,7 @@ import { SpaceSubtag } from '@blargbot/bbtag/subtags/misc/space.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SpaceSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [

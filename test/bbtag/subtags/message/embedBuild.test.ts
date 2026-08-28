@@ -16,7 +16,7 @@ const testData = {
     '4097': repeat(4097, 'a').join('')
 };
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new EmbedBuildSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [

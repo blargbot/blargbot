@@ -14,7 +14,7 @@ const startsWith = { 'startswith': true, 'endswith': false, 'includes': true, 'c
 const endsWith = { 'startswith': false, 'endswith': true, 'includes': true, 'contains': true } as const;
 const doesntContain = { 'startswith': false, 'endswith': false, 'includes': false, 'contains': false } as const;
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new BoolSubtag(),
     argCountBounds: { min: 3, max: 3 },
     cases: [

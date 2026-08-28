@@ -3,7 +3,7 @@ import { MessageReplySubtag } from '@blargbot/bbtag/subtags/message/messageReply
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new MessageReplySubtag(),
     argCountBounds: { min: 0, max: 3 },
     cases: [

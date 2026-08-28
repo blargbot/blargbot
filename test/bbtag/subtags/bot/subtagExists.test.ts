@@ -4,7 +4,7 @@ import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SubtagExistsSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

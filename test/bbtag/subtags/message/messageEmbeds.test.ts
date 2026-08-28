@@ -3,7 +3,7 @@ import { MessageEmbedsSubtag } from '@blargbot/bbtag/subtags/message/messageEmbe
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new MessageEmbedsSubtag(),
     argCountBounds: { min: 0, max: 3 },
     cases: [

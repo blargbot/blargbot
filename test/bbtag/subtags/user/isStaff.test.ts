@@ -4,7 +4,7 @@ import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new IsStaffSubtag(),
     argCountBounds: { min: 0, max: 2 },
     cases: [

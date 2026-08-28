@@ -3,7 +3,7 @@ import { UriDecodeSubtag } from '@blargbot/bbtag/subtags/misc/uriDecode.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UriDecodeSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

@@ -3,7 +3,7 @@ import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new WarnSubtag(),
     argCountBounds: { min: 0, max: 3 },
     cases: [

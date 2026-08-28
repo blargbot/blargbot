@@ -3,7 +3,7 @@ import { HtmlEncodeSubtag } from '@blargbot/bbtag/subtags/misc/htmlEncode.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new HtmlEncodeSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

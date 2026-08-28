@@ -3,7 +3,7 @@ import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UriEncodeSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

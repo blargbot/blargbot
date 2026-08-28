@@ -2,7 +2,6 @@ import type { CommandContext } from '@blargbot/cluster/command/index.js';
 import { GlobalCommand } from '@blargbot/cluster/command/index.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { mapping } from '@blargbot/mapping';
-import type { RequestInit } from 'node-fetch';
 
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';

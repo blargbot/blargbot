@@ -3,7 +3,7 @@ import { ReactionSubtag } from '@blargbot/bbtag/subtags/message/reaction.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ReactionSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

@@ -4,7 +4,7 @@ import { TagVariableType } from '@blargbot/domain/models/index.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ConcatSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [

@@ -1,22 +1,23 @@
-import type { FormatStringCompilerOptions, IFormattable} from '@blargbot/formatting';
-import { format, FormatString, FormatStringCompiler, Formatter, util } from '@blargbot/formatting';
-import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
-export function runFormatTreeTests<T extends object>(source: T, options: FormatStringCompilerOptions, cases: TestCasesHelper<T>): void {
-    runFormatTreeTestsCore([], source, options, cases);
+import type { FormatStringCompilerOptions, IFormattable } from '@blargbot/formatting';
+import { format, FormatString, FormatStringCompiler, Formatter, util } from '@blargbot/formatting';
+
+export async function runFormatTreeTests<T extends object>(source: T, options: FormatStringCompilerOptions, cases: TestCasesHelper<T>): Promise<void> {
+    await runFormatTreeTestsCore([], source, options, cases);
 }
 
-function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, options: FormatStringCompilerOptions, cases: TestCasesHelper<T>): void {
+async function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, options: FormatStringCompilerOptions, cases: TestCasesHelper<T>): Promise<void> {
     for (const [key, v] of Object.entries(source) as Array<[string & keyof T, T[string & keyof T]]>) {
         const path = [...prefix, key];
         if (typeof v === 'function') {
             const factory = v as (...args: unknown[]) => IFormattable<string>;
             const c = cases[key] as Array<{ name: string; input: unknown[]; expected: string | (() => string) | ((value: string) => void); }>;
             const name = path.join('.');
-            describe(name, () => {
+            await describe(name, async () => {
                 for (const scenario of c) {
-                    it(`should handle the "${scenario.name}" case`, () => {
+                    await it(`should handle the "${scenario.name}" case`, () => {
                         name;
                         //arrange
                         const compiler = new FormatStringCompiler(options);
@@ -30,17 +31,17 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, o
                         // assert
                         const expected = check(result) as string | void;
                         if (typeof expected === 'string') {
-                            expect(result).to.eq(expected);
+                            assert.equal(result, expected);
                             if (formattable instanceof FormatString)
-                                expect(formattable.template).not.to.eq(expected);
+                                assert.notEqual(formattable.template, expected);
                         }
                     });
                 }
             });
         } else if (util.isFormattable(v)) {
             const c = cases[key] as string | (() => string) | ((value: string) => void);
-            describe(path.join('.'), () => {
-                it('should display correctly', () => {
+            await describe(path.join('.'), async () => {
+                await it('should display correctly', () => {
                     //arrange
                     const compiler = new FormatStringCompiler(options);
                     const formatter = new Formatter(new Intl.Locale('en'), [], compiler);
@@ -52,12 +53,12 @@ function runFormatTreeTestsCore<T extends object>(prefix: string[], source: T, o
                     // assert
                     const expected = check(result) as string | void;
                     if (typeof expected === 'string')
-                        expect(result).to.eq(expected);
+                        assert.equal(result, expected);
 
                 });
             });
         } else if (typeof v === 'object' && v !== null) {
-            runFormatTreeTestsCore(path, v, options, cases[key] as TestCasesHelper<T[keyof T]>);
+            await runFormatTreeTestsCore(path, v, options, cases[key] as TestCasesHelper<T[keyof T]>);
         }
     }
 }

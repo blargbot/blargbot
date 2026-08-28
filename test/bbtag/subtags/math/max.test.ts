@@ -2,7 +2,7 @@ import { MaxSubtag } from '@blargbot/bbtag/subtags/math/max.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new MaxSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [

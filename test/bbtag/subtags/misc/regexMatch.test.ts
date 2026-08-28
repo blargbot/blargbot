@@ -3,7 +3,7 @@ import { RegexMatchSubtag } from '@blargbot/bbtag/subtags/misc/regexMatch.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RegexMatchSubtag(),
     argCountBounds: { min: 2, max: { count: 2, noEval: [1] } },
     cases: [

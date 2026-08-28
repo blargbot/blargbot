@@ -3,7 +3,7 @@ import { AbsoluteSubtag } from '@blargbot/bbtag/subtags/math/absolute.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new AbsoluteSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [

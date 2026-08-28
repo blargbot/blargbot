@@ -2,7 +2,7 @@ import { TagAuthorizerSubtag } from '@blargbot/bbtag/subtags/simple/tagAuthorize
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new TagAuthorizerSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

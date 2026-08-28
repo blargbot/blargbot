@@ -1,12 +1,13 @@
+import assert from 'node:assert/strict';
+
 import { SortSubtag } from '@blargbot/bbtag/subtags/array/sort.js';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SortSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [
@@ -53,8 +54,8 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal(['this', 'is', 'arr1']);
-                expect((await bbctx.variables.get('arr1')).value).to.deep.equal(['arr1', 'is', 'this']);
+                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), ['this', 'is', 'arr1']);
+                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['arr1', 'is', 'this']);
             }
         },
         {
@@ -67,8 +68,8 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal(['this', 'is', 'arr1']);
-                expect((await bbctx.variables.get('arr1')).value).to.deep.equal(['arr1', 'is', 'this']);
+                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), ['this', 'is', 'arr1']);
+                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['arr1', 'is', 'this']);
             }
         },
         {
@@ -82,7 +83,7 @@ runSubtagTests({
                 ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ arr1: ['arr1', 'is', 'this'] }), argument.isDeepEqual({ type: TagVariableType.LOCAL_TAG, name: 'testTag' }))).thenResolve(undefined);
             },
             async assert(bbctx) {
-                expect((await bbctx.variables.get('arr1')).value).to.deep.equal(['arr1', 'is', 'this']);
+                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['arr1', 'is', 'this']);
             }
         }
     ]

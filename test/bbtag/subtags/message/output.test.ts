@@ -1,15 +1,16 @@
+import assert from 'node:assert/strict';
+
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { OutputSubtag } from '@blargbot/bbtag/subtags/message/output.js';
 import { Emote } from '@blargbot/core/Emote.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
 import type * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 const emotes = [Emote.parse('<a:test:120272372032032937>'), Emote.parse('<:alsoatest:23094632472398746234>'), Emote.parse('🤔')];
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new OutputSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
@@ -53,7 +54,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+                assert.equal(bbctx.data.outputMessage, '0987654331234567');
             }
         },
         {
@@ -93,7 +94,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+                assert.equal(bbctx.data.outputMessage, '0987654331234567');
             }
         },
         {
@@ -136,7 +137,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+                assert.equal(bbctx.data.outputMessage, '0987654331234567');
             }
         },
         {
@@ -176,7 +177,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+                assert.equal(bbctx.data.outputMessage, '0987654331234567');
             }
         },
         {
@@ -212,7 +213,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+                assert.equal(bbctx.data.outputMessage, '0987654331234567');
             }
         },
         {
@@ -225,7 +226,7 @@ runSubtagTests({
                 ctx.options.isCC = false;
             },
             assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+                assert.equal(bbctx.data.outputMessage, '0987654331234567');
             }
         },
         {
@@ -241,7 +242,7 @@ runSubtagTests({
                 { start: 0, end: 35, error: new BBTagRuntimeError('Cannot send multiple outputs') }
             ],
             assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+                assert.equal(bbctx.data.outputMessage, '0987654331234567');
             }
         }
     ]

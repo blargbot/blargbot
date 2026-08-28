@@ -1,10 +1,11 @@
+import assert from 'node:assert/strict';
+
 import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ReturnSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
@@ -12,28 +13,28 @@ runSubtagTests({
             code: 'abc{return}def',
             expected: 'abc',
             assert(ctx) {
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                assert.equal(ctx.data.state, BBTagRuntimeState.ABORT);
             }
         },
         {
             code: '{return;true}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                assert.equal(ctx.data.state, BBTagRuntimeState.ABORT);
             }
         },
         {
             code: 'abc{return;false}def',
             expected: 'abc',
             assert(ctx) {
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.RETURN);
+                assert.equal(ctx.data.state, BBTagRuntimeState.RETURN);
             }
         },
         {
             code: '{return;abc}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                assert.equal(ctx.data.state, BBTagRuntimeState.ABORT);
             }
         }
     ]

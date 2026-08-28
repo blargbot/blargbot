@@ -3,7 +3,7 @@ import { NewlineSubtag } from '@blargbot/bbtag/subtags/misc/newline.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new NewlineSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [

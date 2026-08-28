@@ -1,13 +1,14 @@
+import assert from 'node:assert/strict';
+
 import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { SendSubtag } from '@blargbot/bbtag/subtags/message/send.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
 import type * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SendSubtag(),
     argCountBounds: { min: 2, max: 5 },
     cases: [
@@ -54,7 +55,7 @@ runSubtagTests({
                 }))).thenReject(new BBTagRuntimeError('Test error'));
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.be.empty;
+                assert.equal(bbctx.data.ownedMsgs.length, 0);
             }
         },
         {
@@ -90,7 +91,7 @@ runSubtagTests({
                 }))).thenReject(ctx.createRESTError(0, 'Test error'));
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.be.empty;
+                assert.equal(bbctx.data.ownedMsgs.length, 0);
             }
         },
         {
@@ -129,7 +130,7 @@ runSubtagTests({
                 }))).thenReject(error);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.be.empty;
+                assert.equal(bbctx.data.ownedMsgs.length, 0);
             }
         },
         {
@@ -171,7 +172,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -214,7 +215,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -253,7 +254,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -293,7 +294,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -336,7 +337,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -376,7 +377,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -419,7 +420,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -459,7 +460,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -494,8 +495,9 @@ runSubtagTests({
                     embeds: [{ title: 'New embed!' }],
                     file: [{
                         file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
-                                .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
+                            assert.equal(actual, expected);
                         }).value,
                         name: 'file.txt'
                     }],
@@ -508,7 +510,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -542,8 +544,9 @@ runSubtagTests({
                     embeds: [{ title: 'New embed!' }],
                     file: [{
                         file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
-                                .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
+                            assert.equal(actual, expected);
                         }).value,
                         name: 'file.txt'
                     }],
@@ -554,7 +557,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -597,7 +600,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -637,7 +640,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -672,8 +675,9 @@ runSubtagTests({
                     embeds: [{ title: 'New embed!' }],
                     file: [{
                         file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
-                                .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
+                            assert.equal(actual, expected);
                         }).value,
                         name: 'test.zip'
                     }],
@@ -686,7 +690,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -720,8 +724,9 @@ runSubtagTests({
                     embeds: [{ title: 'New embed!' }],
                     file: [{
                         file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
-                                .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
+                            assert.equal(actual, expected);
                         }).value,
                         name: 'test.zip'
                     }],
@@ -732,7 +737,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         }
     ]

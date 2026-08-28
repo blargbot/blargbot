@@ -2,7 +2,7 @@ import { LowerSubtag } from '@blargbot/bbtag/subtags/misc/lower.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new LowerSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

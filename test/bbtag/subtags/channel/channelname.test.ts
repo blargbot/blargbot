@@ -3,7 +3,7 @@ import { ChannelNameSubtag } from '@blargbot/bbtag/subtags/channel/channelName.j
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ChannelNameSubtag(),
     argCountBounds: { min: 0, max: 2 },
     cases: [

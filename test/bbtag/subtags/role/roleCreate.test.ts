@@ -5,7 +5,7 @@ import * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RoleCreateSubtag(),
     argCountBounds: { min: 1, max: 5 },
     setup(ctx) {

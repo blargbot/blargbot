@@ -1,20 +1,21 @@
+import assert from 'node:assert/strict';
+
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { InjectSubtag } from '@blargbot/bbtag/subtags/bot/inject.js';
 import { LbSubtag } from '@blargbot/bbtag/subtags/simple/lb.js';
 import { RbSubtag } from '@blargbot/bbtag/subtags/simple/rb.js';
-import { expect } from 'chai';
 
 import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new InjectSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {
             code: '{inject;{lb}assert{rb}}',
             subtags: [new LbSubtag(), new RbSubtag(), new AssertSubtag(ctx => {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.data.stackSize).to.equal(123);
+                assert.equal(ctx.parent, undefined);
+                assert.equal(ctx.data.stackSize, 123);
                 return 'Inject successful';
             })],
             expected: 'Inject successful',

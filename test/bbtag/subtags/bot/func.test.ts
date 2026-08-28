@@ -1,12 +1,13 @@
+import assert from 'node:assert/strict';
+
 import { SubtagStackOverflowError, UnknownSubtagError } from '@blargbot/bbtag/errors/index.js';
 import { FunctionInvokeSubtag } from '@blargbot/bbtag/subtags/bot/func..js';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
 import { bbtag } from '@blargbot/bbtag/utils/index.js';
-import { expect } from 'chai';
 
 import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new FunctionInvokeSubtag(),
     argCountBounds: { min: 0, max: Infinity },
     cases: [
@@ -14,8 +15,8 @@ runSubtagTests({
             code: '{func.test}',
             expected: 'Success!',
             subtags: [new AssertSubtag(ctx => {
-                expect(ctx.scopes.local.paramsarray).to.deep.equal([]);
-                expect(ctx.data.stackSize).to.equal(123);
+                assert.deepEqual(ctx.scopes.local.paramsarray, []);
+                assert.equal(ctx.data.stackSize, 123);
                 return 'Success!';
             })],
             setup(ctx) {
@@ -23,16 +24,16 @@ runSubtagTests({
                 ctx.options.data = { stackSize: 122 };
             },
             assert(ctx) {
-                expect(ctx.scopes.local.paramsarray).to.be.undefined;
-                expect(ctx.data.stackSize).to.equal(122);
+                assert.equal(ctx.scopes.local.paramsarray, undefined);
+                assert.equal(ctx.data.stackSize, 122);
             }
         },
         {
             code: '{func.test;arg1;arg2;["arg3","arg3"];arg4;}',
             expected: 'Success!',
             subtags: [new AssertSubtag(ctx => {
-                expect(ctx.scopes.local.paramsarray).to.deep.equal(['arg1', 'arg2', '["arg3","arg3"]', 'arg4', '']);
-                expect(ctx.data.stackSize).to.equal(123);
+                assert.deepEqual(ctx.scopes.local.paramsarray, ['arg1', 'arg2', '["arg3","arg3"]', 'arg4', '']);
+                assert.equal(ctx.data.stackSize, 123);
                 return 'Success!';
             })],
             setup(ctx) {
@@ -40,8 +41,8 @@ runSubtagTests({
                 ctx.options.data = { stackSize: 122 };
             },
             assert(ctx) {
-                expect(ctx.scopes.local.paramsarray).to.be.undefined;
-                expect(ctx.data.stackSize).to.equal(122);
+                assert.equal(ctx.scopes.local.paramsarray, undefined);
+                assert.equal(ctx.data.stackSize, 122);
             }
         },
         {
@@ -62,8 +63,8 @@ runSubtagTests({
                 ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
             },
             assert(ctx) {
-                expect(ctx.data.stackSize).to.equal(200);
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                assert.equal(ctx.data.stackSize, 200);
+                assert.equal(ctx.data.state, BBTagRuntimeState.ABORT);
             }
         }
     ]

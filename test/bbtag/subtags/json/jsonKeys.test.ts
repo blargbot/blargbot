@@ -4,7 +4,7 @@ import { JsonKeysSubtag } from '@blargbot/bbtag/subtags/json/jsonKeys.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new JsonKeysSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [

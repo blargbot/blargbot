@@ -5,7 +5,7 @@ import type { LogicOperator } from '@blargbot/bbtag/utils/index.js';
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new LogicSubtag(),
     argCountBounds: { min: 2, max: Infinity },
     cases: [

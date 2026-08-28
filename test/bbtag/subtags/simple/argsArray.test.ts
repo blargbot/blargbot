@@ -2,7 +2,7 @@ import { ArgsArraySubtag } from '@blargbot/bbtag/subtags/simple/argsArray.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ArgsArraySubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

@@ -3,7 +3,6 @@ import { GlobalCommand } from '@blargbot/cluster/command/index.js';
 import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
 import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
-import type { Response } from 'node-fetch';
 
 import templates from '../../text.js';
 import type { CommandResult } from '../../types.js';

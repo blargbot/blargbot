@@ -1,8 +1,9 @@
-import { between } from '@blargbot/core/utils/index.js';
-import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
-describe('between', () => {
+import { between } from '@blargbot/core/utils/index.js';
+
+await describe('between', async () => {
     const data: Array<[value: number, lower: number, upper: number, inclusive: boolean, expected: boolean]> = [
         [5, 0, 10, true, true],
         [5, 0, 10, false, true],
@@ -15,8 +16,8 @@ describe('between', () => {
     ];
 
     for (const [value, lower, upper, inclusive, expected] of data) {
-        it(`should identify ${value} as${expected ? '' : ' not'} being between ${lower} and ${upper} (${inclusive ? 'inclusive' : 'exclusive'})`, () => {
-            expect(between(value, lower, upper, inclusive)).to.eq(expected);
+        await it(`should identify ${value} as${expected ? '' : ' not'} being between ${lower} and ${upper} (${inclusive ? 'inclusive' : 'exclusive'})`, () => {
+            assert.equal(between(value, lower, upper, inclusive), expected);
         });
     }
 });

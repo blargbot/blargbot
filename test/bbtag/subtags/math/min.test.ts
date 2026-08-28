@@ -2,7 +2,7 @@ import { MinSubtag } from '@blargbot/bbtag/subtags/math/min.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new MinSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [

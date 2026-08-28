@@ -1,9 +1,10 @@
+import assert from 'node:assert/strict';
+
 import { QuietSubtag } from '@blargbot/bbtag/subtags/bot/quiet.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new QuietSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
@@ -11,35 +12,35 @@ runSubtagTests({
             code: '{quiet}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.true;
+                assert.equal(ctx.scopes.local.quiet, true);
             }
         },
         {
             code: '{quiet;}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.true;
+                assert.equal(ctx.scopes.local.quiet, true);
             }
         },
         {
             code: '{quiet;true}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.true;
+                assert.equal(ctx.scopes.local.quiet, true);
             }
         },
         {
             code: '{quiet;false}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.false;
+                assert.equal(ctx.scopes.local.quiet, false);
             }
         },
         {
             code: '{quiet;abc}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.undefined;
+                assert.equal(ctx.scopes.local.quiet, undefined);
             }
         }
     ]

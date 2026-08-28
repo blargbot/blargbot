@@ -4,7 +4,7 @@ import { LengthSubtag } from '@blargbot/bbtag/subtags/misc/length.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new LengthSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

@@ -1,12 +1,13 @@
+import assert from 'node:assert/strict';
+
 import { NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
 import { ShuffleSubtag } from '@blargbot/bbtag/subtags/array/shuffle.js';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ShuffleSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
@@ -18,8 +19,10 @@ runSubtagTests({
                 ctx.options.inputRaw = 'arg1 arg2 arg3 arg4';
             },
             assert(bbctx) {
-                expect(bbctx.input).to.not.deep.equal(['arg1', 'arg2', 'arg3', 'arg4']);
-                expect(bbctx.input).to.have.members(['arg1', 'arg2', 'arg3', 'arg4']);
+                assert.notDeepEqual(bbctx.input, ['arg1', 'arg2', 'arg3', 'arg4']);
+                assert.equal(bbctx.input.length, 4);
+                for (const value of ['arg1', 'arg2', 'arg3', 'arg4'])
+                    assert(bbctx.input.includes(value), `[${bbctx.input.join(',')}] is missing ${value}`);
             }
         },
         {
@@ -44,9 +47,12 @@ runSubtagTests({
             code: '{shuffle;[1,2,3,4,5,6]}',
             retries: 1,
             assert(_, result) {
-                expect(result).to.not.equal('[1,2,3,4,5,6]');
+                assert.notEqual(result, '[1,2,3,4,5,6]');
                 const jResult = JSON.parse(result);
-                expect(jResult).to.have.members([1, 2, 3, 4, 5, 6]);
+                assert(Array.isArray(jResult), `${result} should have been an array.`);
+                assert.equal(jResult.length, 6);
+                for (const value of [1, 2, 3, 4, 5, 6])
+                    assert(jResult.includes(value), `[${jResult.join(',')}] is missing ${value}`);
             }
         },
         {
@@ -60,10 +66,13 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4, 5, 6]);
+                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), [1, 2, 3, 4, 5, 6]);
                 const result = (await bbctx.variables.get('arr1')).value;
-                expect(result).to.not.deep.equal([1, 2, 3, 4, 5, 6]);
-                expect(result).to.have.members([1, 2, 3, 4, 5, 6]);
+                assert.notDeepEqual(result, [1, 2, 3, 4, 5, 6]);
+                assert(Array.isArray(result), `${JSON.stringify(result)} should have been an array.`);
+                assert.equal(result.length, 6);
+                for (const value of [1, 2, 3, 4, 5, 6])
+                    assert(result.includes(value), `[${result.join(',')}] is missing ${value}`);
             }
         }
     ]

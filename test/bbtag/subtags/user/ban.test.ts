@@ -11,7 +11,7 @@ function isDuration(ms: number): moment.Duration {
         x.asMilliseconds() === ms).value;
 }
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new BanSubtag(),
     argCountBounds: { min: 1, max: 5 },
     cases: [

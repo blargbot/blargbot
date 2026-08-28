@@ -1,15 +1,11 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { MultiKeyMap } from '@blargbot/core/MultiKeyMap.js';
 import type { ModuleResult } from '@blargbot/core/types.js';
 import { guard, pluralise as p } from '@blargbot/core/utils/index.js';
 import type { Logger } from '@blargbot/logger';
 import EventEmitter from 'eventemitter3';
-
-const thisFile = fileURLToPath(import.meta.url);
-const thisDir = path.dirname(thisFile);
 
 interface ModuleLoaderEvents<TModule> {
     add: [module: TModule];
@@ -169,7 +165,7 @@ function getAbsolutePath(...segments: string[]): string {
     const result = path.join(...segments);
     if (path.isAbsolute(result))
         return result;
-    return path.join(thisDir, '..', result);
+    return path.join(import.meta.dirname, '..', result);
 }
 
 function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {

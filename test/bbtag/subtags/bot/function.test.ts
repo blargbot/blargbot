@@ -1,11 +1,12 @@
+import assert from 'node:assert/strict';
+
 import type { Statement } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { FunctionSubtag } from '@blargbot/bbtag/subtags/bot/function.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new FunctionSubtag(),
     argCountBounds: { min: { count: 2, noEval: [1] }, max: { count: 2, noEval: [1] } },
     cases: [
@@ -13,7 +14,7 @@ runSubtagTests({
             code: '{function;test;{fail}}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.root.functions['test']).to.deep.equal(<Statement>{
+                assert.deepEqual(ctx.scopes.root.functions['test'], <Statement>{
                     values: [
                         {
                             name: {
@@ -38,7 +39,7 @@ runSubtagTests({
             code: '{function;func.test;{fail}}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.root.functions['test']).to.deep.equal(<Statement>{
+                assert.deepEqual(ctx.scopes.root.functions['test'], <Statement>{
                     values: [
                         {
                             name: {
@@ -66,7 +67,7 @@ runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Must provide a name') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.root.functions['']).to.be.undefined;
+                assert.equal(ctx.scopes.root.functions[''], undefined);
             }
         }
     ]

@@ -3,7 +3,7 @@ import { BaseNumberSubtag } from '@blargbot/bbtag/subtags/math/base.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new BaseNumberSubtag(),
     argCountBounds: { min: 2, max: 3 },
     cases: [

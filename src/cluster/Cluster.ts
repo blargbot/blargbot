@@ -1,5 +1,3 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { inspect } from 'node:util';
 
 import { BBTagEngine, subtags } from '@blargbot/bbtag';
@@ -13,16 +11,12 @@ import { ImagePool } from '@blargbot/image';
 import type { Logger } from '@blargbot/logger';
 import { GatewayIntentBits } from 'discord-api-types/v9';
 import moment from 'moment-timezone';
-import type $fetch from 'node-fetch';
 
 import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';
 import { ClusterUtilities } from './ClusterUtilities.js';
 import type { ClusterWorker } from './ClusterWorker.js';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
 import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
-
-const thisFile = fileURLToPath(import.meta.url);
-const thisDir = path.dirname(thisFile);
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -55,7 +49,7 @@ export class Cluster extends BaseClient {
         worker: ClusterWorker,
         logger: Logger,
         config: Configuration,
-        fetch: typeof $fetch,
+        fetch: typeof globalThis.fetch,
         options: ClusterOptions
     ) {
         super({
@@ -102,10 +96,10 @@ export class Cluster extends BaseClient {
         this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users, this.discord);
         this.commands = new AggregateCommandManager(this, {
             custom: new CustomCommandManager(this),
-            default: new DefaultCommandManager(`${thisDir}/dcommands`, this)
+            default: new DefaultCommandManager(`${import.meta.dirname}/dcommands`, this)
         });
-        this.events = new ModuleLoader(`${thisDir}/events`, BaseService, [this], this.logger, e => e.name);
-        this.services = new ModuleLoader(`${thisDir}/services`, BaseService, [this, options], this.logger, e => e.name);
+        this.events = new ModuleLoader(`${import.meta.dirname}/events`, BaseService, [this], this.logger, e => e.name);
+        this.services = new ModuleLoader(`${import.meta.dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
         this.timeouts = new TimeoutManager(this);
         this.autoresponses = new AutoresponseManager(this);

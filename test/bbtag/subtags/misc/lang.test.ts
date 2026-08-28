@@ -2,7 +2,7 @@ import { LangSubtag } from '@blargbot/bbtag/subtags/misc/lang.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new LangSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

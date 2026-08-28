@@ -1,3 +1,6 @@
+import assert from 'node:assert/strict';
+import { describe } from 'node:test';
+
 import { Command } from '@blargbot/cluster/command/index.js';
 import templates from '@blargbot/cluster/text.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
@@ -5,9 +8,7 @@ import * as coreTransformers from '@blargbot/core/formatting/index.js';
 import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
-import { expect } from 'chai';
 import * as eris from 'eris';
-import { describe } from 'mocha';
 import moment from 'moment-timezone';
 
 class TestCommand extends Command {
@@ -53,8 +54,8 @@ const webhook: () => eris.Webhook = () => ({
     type: 1
 });
 
-describe('Cluster format strings', () => {
-    runFormatTreeTests(templates, {
+await describe('Cluster format strings', async () => {
+    await runFormatTreeTests(templates, {
         transformers: {
             ...transformers,
             ...coreTransformers
@@ -1608,7 +1609,7 @@ describe('Cluster format strings', () => {
             }
         },
         tableflip: {
-            flip: v => expect(v).to.be.oneOf([
+            flip: v => assert([
                 'Whoops! Let me get that for you ┬──┬ ¯\\\\_(ツ)',
                 '(ヘ･_･)ヘ┳━┳ What are you, an animal?',
                 'Can you not? ヘ(´° □°)ヘ┳━┳',
@@ -1617,8 +1618,8 @@ describe('Cluster format strings', () => {
                 '┻━┻ ︵ヽ(`Д´)ﾉ︵ ┻━┻ Get these tables out of my face!',
                 '┻━┻ミ＼(≧ﾛ≦＼) Hey, catch!',
                 'Flipping tables with elegance! (/¯◡ ‿ ◡)/¯ ~ ┻━┻'
-            ]),
-            unflip: v => expect(v).to.be.oneOf([
+            ].includes(v)),
+            unflip: v => assert([
                 '┬──┬ ¯\\\\_(ツ) A table unflipped is a table saved!',
                 '┣ﾍ(≧∇≦ﾍ)… (≧∇≦)/┳━┳ Unflip that table!',
                 'Yay! Cleaning up! ┣ﾍ(^▽^ﾍ)Ξ(ﾟ▽ﾟ*)ﾉ┳━┳',
@@ -1627,7 +1628,7 @@ describe('Cluster format strings', () => {
                 'I\'m sorry, did you just pick that up? ༼ﾉຈل͜ຈ༽ﾉ︵┻━┻',
                 'Get back on the ground! (╯ರ ~ ರ)╯︵ ┻━┻',
                 'No need to be so serious! (ﾉ≧∇≦)ﾉ ﾐ ┸━┸'
-            ])
+            ].includes(v))
         },
         cleverbot: {
             unavailable: '❌ It seems that my clever brain isn\'t working right now, try again later'
@@ -5708,13 +5709,13 @@ describe('Cluster format strings', () => {
                         {
                             name: 'default',
                             input: [{ name: 'your mum' }],
-                            expected: v => expect(v).to.match(/^your mum's (mother|mom|father|dad|goat|cheese|dick|boob|eye|mouth|nose|ear|sister|sis|brother|bro|seagull|tea|mother-in-law|rabbit|dog|cat|left foot|body|brain|face|favourite thing) (smells like|looks like|is|sounds like|appears to be|wants to be|looks just like|smells oddly similar to|is jealous of|is as stupid as|laughs like) (a piece of cheese|a smelly fish|jam|tea|a skunk|a fart|a piece of toast|my mom|your mom|my dad|your dad|my sister|your sister|my brother|your brother|my cat|my dog|my lizard|my seagull|gross|farts|ugly|Captain America|javascript|C#|LUA|python3.5|a furry|an anthropomorphic horse|a tentacle monster|fuck|meow|mississippi|the entire UK|Japan|anime|dickgirls|a really stupid cat|a sentient robot|teaching a robot to love|anime girls with really large boobs who want to eat all of your cream|salty|smegma|mouldy cheese|obesity|Donald Trump|stupid people|crabcakes|firepoles|blue waffle|a really bad random insult generators|a terrible AI|cleverbot|b1nzy|a drunken goblin|poorly censored porn|an egg left in the sun for too long|#BREXIT|leaving the EU)/)
+                            expected: v => assert.match(v, /^your mum's (mother|mom|father|dad|goat|cheese|dick|boob|eye|mouth|nose|ear|sister|sis|brother|bro|seagull|tea|mother-in-law|rabbit|dog|cat|left foot|body|brain|face|favourite thing) (smells like|looks like|is|sounds like|appears to be|wants to be|looks just like|smells oddly similar to|is jealous of|is as stupid as|laughs like) (a piece of cheese|a smelly fish|jam|tea|a skunk|a fart|a piece of toast|my mom|your mom|my dad|your dad|my sister|your sister|my brother|your brother|my cat|my dog|my lizard|my seagull|gross|farts|ugly|Captain America|javascript|C#|LUA|python3.5|a furry|an anthropomorphic horse|a tentacle monster|fuck|meow|mississippi|the entire UK|Japan|anime|dickgirls|a really stupid cat|a sentient robot|teaching a robot to love|anime girls with really large boobs who want to eat all of your cream|salty|smegma|mouldy cheese|obesity|Donald Trump|stupid people|crabcakes|firepoles|blue waffle|a really bad random insult generators|a terrible AI|cleverbot|b1nzy|a drunken goblin|poorly censored porn|an egg left in the sun for too long|#BREXIT|leaving the EU)/)
                         }
                     ]
                 },
                 default: {
                     description: 'Generates a random insult.',
-                    success: v => expect(v).to.match(/^Your (mother|mom|father|dad|goat|cheese|dick|boob|eye|mouth|nose|ear|sister|sis|brother|bro|seagull|tea|mother-in-law|rabbit|dog|cat|left foot|body|brain|face|favourite thing) (smells like|looks like|is|sounds like|appears to be|wants to be|looks just like|smells oddly similar to|is jealous of|is as stupid as|laughs like) (a piece of cheese|a smelly fish|jam|tea|a skunk|a fart|a piece of toast|my mom|your mom|my dad|your dad|my sister|your sister|my brother|your brother|my cat|my dog|my lizard|my seagull|gross|farts|ugly|Captain America|javascript|C#|LUA|python3.5|a furry|an anthropomorphic horse|a tentacle monster|fuck|meow|mississippi|the entire UK|Japan|anime|dickgirls|a really stupid cat|a sentient robot|teaching a robot to love|anime girls with really large boobs who want to eat all of your cream|salty|smegma|mouldy cheese|obesity|Donald Trump|stupid people|crabcakes|firepoles|blue waffle|a really bad random insult generators|a terrible AI|cleverbot|b1nzy|a drunken goblin|poorly censored porn|an egg left in the sun for too long|#BREXIT|leaving the EU)/)
+                    success: v => assert.match(v, /^Your (mother|mom|father|dad|goat|cheese|dick|boob|eye|mouth|nose|ear|sister|sis|brother|bro|seagull|tea|mother-in-law|rabbit|dog|cat|left foot|body|brain|face|favourite thing) (smells like|looks like|is|sounds like|appears to be|wants to be|looks just like|smells oddly similar to|is jealous of|is as stupid as|laughs like) (a piece of cheese|a smelly fish|jam|tea|a skunk|a fart|a piece of toast|my mom|your mom|my dad|your dad|my sister|your sister|my brother|your brother|my cat|my dog|my lizard|my seagull|gross|farts|ugly|Captain America|javascript|C#|LUA|python3.5|a furry|an anthropomorphic horse|a tentacle monster|fuck|meow|mississippi|the entire UK|Japan|anime|dickgirls|a really stupid cat|a sentient robot|teaching a robot to love|anime girls with really large boobs who want to eat all of your cream|salty|smegma|mouldy cheese|obesity|Donald Trump|stupid people|crabcakes|firepoles|blue waffle|a really bad random insult generators|a terrible AI|cleverbot|b1nzy|a drunken goblin|poorly censored porn|an egg left in the sun for too long|#BREXIT|leaving the EU)/)
                 }
             },
             invite: {
@@ -5997,7 +5998,7 @@ describe('Cluster format strings', () => {
                 description: 'Pong!\nFind the command latency.',
                 default: {
                     description: 'Gets the current latency.',
-                    pending: v => expect(v).to.be.oneOf([
+                    pending: v => assert([
                         'ℹ️ Existence is a lie.',
                         'ℹ️ You\'re going to die some day, perhaps soon.',
                         'ℹ️ Nothing matters.',
@@ -6008,7 +6009,7 @@ describe('Cluster format strings', () => {
                         'ℹ️ Forsake everything.',
                         'ℹ️ Your existence is pitiful.',
                         'ℹ️ We are all already dead.'
-                    ]),
+                    ].includes(v)),
                     success: [
                         {
                             name: 'default',
@@ -6224,9 +6225,9 @@ describe('Cluster format strings', () => {
                         continue: 'Put the gun down',
                         cancel: 'Pull the trigger'
                     },
-                    chicken: v => expect(v).to.match(/^You chicken out and put the gun down.\n(Maybe try again when you're not feeling so wimpy\.|Its ok, fun isn't for everyone!)$/),
-                    died: v => expect(v).to.match(/^\*\*\*BOOM!\*\*\* (The gun goes off, splattering your brains across the wall\. Unlucky!|☠️💥⚰️😵💀💀☠️|Before you know it, it's all over\.|At least you had chicken!|I'm \*\*\*not\*\*\* cleaning that up\.|Guns are not toys!|Well, you can't win them all!|W-well\.\.\. If every porkchop were perfect, we wouldn't have hotdogs\? Too bad you're dead either way\.|Blame it on the lag!|Today just wasn't your lucky day\.|Pssh, foresight is for losers\.)$/),
-                    lived: v => expect(v).to.match(/^\*Click!\* (The gun clicks, empty\. You get to live another day\.|You breath a sign of relief as you realize that you aren't going to die today\.|As if it would ever go off! Luck is on your side\.|You thank RNGesus as you lower the gun.|👼🙏🚫⚰️👌👍👼|You smirk as you realize you survived\.)$/)
+                    chicken: v => assert.match(v, /^You chicken out and put the gun down.\n(Maybe try again when you're not feeling so wimpy\.|Its ok, fun isn't for everyone!)$/),
+                    died: v => assert.match(v, /^\*\*\*BOOM!\*\*\* (The gun goes off, splattering your brains across the wall\. Unlucky!|☠️💥⚰️😵💀💀☠️|Before you know it, it's all over\.|At least you had chicken!|I'm \*\*\*not\*\*\* cleaning that up\.|Guns are not toys!|Well, you can't win them all!|W-well\.\.\. If every porkchop were perfect, we wouldn't have hotdogs\? Too bad you're dead either way\.|Blame it on the lag!|Today just wasn't your lucky day\.|Pssh, foresight is for losers\.)$/),
+                    lived: v => assert.match(v, /^\*Click!\* (The gun clicks, empty\. You get to live another day\.|You breath a sign of relief as you realize that you aren't going to die today\.|As if it would ever go off! Luck is on your side\.|You thank RNGesus as you lower the gun.|👼🙏🚫⚰️👌👍👼|You smirk as you realize you survived\.)$/)
                 }
             },
             shard: {

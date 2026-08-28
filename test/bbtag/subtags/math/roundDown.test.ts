@@ -3,7 +3,7 @@ import { RoundDownSubtag } from '@blargbot/bbtag/subtags/math/roundDown.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RoundDownSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

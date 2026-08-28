@@ -16,7 +16,7 @@ const endsWith = { 'startswith': false, 'endswith': true, 'includes': true, 'con
 const doesntContain = { 'startswith': false, 'endswith': false, 'includes': false, 'contains': false } as const;
 const isFalse = { '!=': false, '<': false, '<=': false, '==': false, '>': false, '>=': false } as const;
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new OperatorSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [

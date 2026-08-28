@@ -1,5 +1,3 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { inspect } from 'node:util';
 
 import { ApiPool } from '@blargbot/api';
@@ -12,14 +10,10 @@ import type { EvalResult } from '@blargbot/core/types.js';
 import type { Logger } from '@blargbot/logger';
 import type { MasterOptions } from '@blargbot/master/types.js';
 import moment from 'moment-timezone';
-import type $fetch from 'node-fetch';
 import type { metric } from 'prom-client';
 
 import { ClusterStatsManager } from './managers/index.js';
 import type { MasterWorker } from './MasterWorker.js';
-
-const thisFile = fileURLToPath(import.meta.url);
-const thisDir = path.dirname(thisFile);
 
 export class Master extends BaseClient {
     public readonly clusters: ClusterPool;
@@ -34,7 +28,7 @@ export class Master extends BaseClient {
     public constructor(
         logger: Logger,
         config: Configuration,
-        fetch: typeof $fetch,
+        fetch: typeof globalThis.fetch,
         options: MasterOptions
     ) {
         super({
@@ -54,8 +48,8 @@ export class Master extends BaseClient {
         this.clusterStats = new ClusterStatsManager(this.api);
         this.metrics = {};
         this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
-        this.eventHandlers = new ModuleLoader(`${thisDir}/events`, BaseService, [this, options], this.logger, e => e.name);
-        this.services = new ModuleLoader(`${thisDir}/services`, BaseService, [this, options], this.logger, e => e.name);
+        this.eventHandlers = new ModuleLoader(`${import.meta.dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
+        this.services = new ModuleLoader(`${import.meta.dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
 
         this.services.on('add', module => void module.start());
         this.services.on('remove', module => void module.stop());

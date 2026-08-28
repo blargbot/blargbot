@@ -1,3 +1,5 @@
+import { callWithFinalize } from '@blargbot/core/utils/callWithFinalize.js';
+
 import type { BBTagRuntimeScope } from './types.js';
 
 export class ScopeManager {
@@ -19,12 +21,10 @@ export class ScopeManager {
 
     public withScope<T>(action: (scope: BBTagRuntimeScope) => T, isTag = false): T {
         const scope = this.#pushScope(isTag);
-        const result = action(scope);
-        if (result instanceof Promise)
-            result.finally(() => this.#popScope());
-        else
-            this.#popScope();
-        return result;
+        return callWithFinalize(
+            () => action(scope),
+            () => this.#popScope()
+        );
     }
 
     #pushScope(isTag = false): BBTagRuntimeScope {

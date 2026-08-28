@@ -3,7 +3,7 @@ import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new JsonSubtag(),
     argCountBounds: { min: 0, max: { count: 1, noEval: [0] } },
     cases: [

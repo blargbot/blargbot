@@ -3,7 +3,7 @@ import { RolePermissionsSubtag } from '@blargbot/bbtag/subtags/role/rolePermissi
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RolePermissionsSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [

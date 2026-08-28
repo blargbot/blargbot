@@ -3,7 +3,7 @@ import { UserDiscriminatorSubtag } from '@blargbot/bbtag/subtags/user/userDiscri
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UserDiscriminatorSubtag(),
     argCountBounds: { min: 0, max: 2 },
     cases: [

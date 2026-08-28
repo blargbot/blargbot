@@ -3,7 +3,7 @@ import { HtmlDecodeSubtag } from '@blargbot/bbtag/subtags/misc/htmlDecode.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new HtmlDecodeSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [

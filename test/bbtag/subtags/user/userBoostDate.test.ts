@@ -4,7 +4,7 @@ import { UserBoostDateSubtag } from '@blargbot/bbtag/subtags/user/userBoostDate.
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UserBoostDateSubtag(),
     argCountBounds: { min: 0, max: 3 },
     cases: [

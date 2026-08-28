@@ -4,7 +4,7 @@ import * as eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ChannelIsThreadSubtag(),
     argCountBounds: { min: 0, max: 2 },
     cases: [

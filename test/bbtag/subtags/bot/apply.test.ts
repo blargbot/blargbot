@@ -3,7 +3,7 @@ import { ApplySubtag } from '@blargbot/bbtag/subtags/bot/apply.js';
 
 import { EchoArgsSubtag, MarkerError, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ApplySubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [

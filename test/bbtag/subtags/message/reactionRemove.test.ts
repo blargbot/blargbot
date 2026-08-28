@@ -4,7 +4,7 @@ import * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ReactionRemoveSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     setup(ctx) {

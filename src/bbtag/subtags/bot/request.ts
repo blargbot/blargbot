@@ -1,3 +1,4 @@
+import { BufferWriterStream } from '@blargbot/core/BufferWriter.js';
 import { parse } from '@blargbot/core/utils/index.js';
 import { mapping } from '@blargbot/mapping';
 
@@ -47,7 +48,6 @@ export class RequestSubtag extends CompiledSubtag {
         const request = {
             method: 'GET',
             headers: {} as Record<string, string>,
-            size: 8000000,
             body: undefined as string | undefined
         };
 
@@ -102,10 +102,14 @@ export class RequestSubtag extends CompiledSubtag {
             if (result.contentType.includes('application/json'))
                 return { body: await response.json() as JToken, ...result };
 
-            const body = await response.arrayBuffer();
-            return { body: Buffer.from(body).toString('base64'), ...result };
+            if (response.body === null)
+                return { body: '', ...result };
+
+            const body = new BufferWriterStream({ maxSize: 8000000 });
+            await response.body.pipeTo(body);
+            return { body: (await body.getResult()).toString('base64'), ...result };
         } catch (err: unknown) {
-            if (err instanceof Error && 'type' in err && err.type === 'max-size')
+            if (err instanceof Error && err.message === 'Max size has been reached.')
                 throw new BBTagRuntimeError('Response too large', err.message);
 
             throw err;

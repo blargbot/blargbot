@@ -1,12 +1,13 @@
+import assert from 'node:assert/strict';
+
 import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
 import { JsonSortSubtag } from '@blargbot/bbtag/subtags/json/jsonSort.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new JsonSortSubtag(),
     argCountBounds: { min: 2, max: 3 },
     cases: [
@@ -34,7 +35,7 @@ runSubtagTests({
                 ]);
             },
             async assert(bbctx) {
-                expect((await bbctx.variables.get('arrayVar')).value).to.deep.equal([
+                assert.deepEqual((await bbctx.variables.get('arrayVar')).value, [
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
                     { points: 10, name: 'Blargbot' },
@@ -56,7 +57,7 @@ runSubtagTests({
                 ]);
             },
             async assert(bbctx) {
-                expect((await bbctx.variables.get('arrayVar')).value).to.deep.equal([
+                assert.deepEqual((await bbctx.variables.get('arrayVar')).value, [
                     { points: 12, name: 'Winner' },
                     { points: 10, name: 'Blargbot' },
                     { points: 6, name: 'Stupid cat' },

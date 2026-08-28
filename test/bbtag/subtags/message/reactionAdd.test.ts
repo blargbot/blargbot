@@ -1,8 +1,9 @@
+import assert from 'node:assert/strict';
+
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { ReactionAddSubtag } from '@blargbot/bbtag/subtags/message/reactionAdd.js';
 import { Emote } from '@blargbot/core/Emote.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
 import * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
@@ -11,7 +12,7 @@ import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 const unicodeEmote = Emote.parse('🤔');
 const guildEmote = Emote.parse('<:notlikecat:280110565161041921>');
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ReactionAddSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     setup(ctx) {
@@ -22,7 +23,7 @@ runSubtagTests({
             code: '{reactadd;🤔}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal(['🤔']);
+                assert.deepEqual(bbctx.data.reactions, ['🤔']);
             }
         },
         ...createGetMessagePropTestCases({
@@ -54,7 +55,7 @@ runSubtagTests({
                 ctx.roles.bot.permissions = eris.Constants.Permissions.addReactions.toString();
             },
             assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
+                assert.deepEqual(bbctx.data.reactions, [unicodeEmote.toString(), guildEmote.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
@@ -79,7 +80,7 @@ runSubtagTests({
                 ctx.roles.bot.permissions = eris.Constants.Permissions.addReactions.toString();
             },
             assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
+                assert.deepEqual(bbctx.data.reactions, [unicodeEmote.toString(), guildEmote.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
@@ -108,7 +109,7 @@ runSubtagTests({
             code: '{reactadd;abc;🤔;ghi}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal(['🤔']);
+                assert.deepEqual(bbctx.data.reactions, ['🤔']);
             }
         },
         {

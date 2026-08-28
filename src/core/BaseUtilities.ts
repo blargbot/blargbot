@@ -9,7 +9,6 @@ import type { Logger } from '@blargbot/logger';
 import type { Snowflake } from 'catflake';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
-import type fetch from 'node-fetch';
 
 import type { BaseClient } from './BaseClient.js';
 import type { Emote } from './Emote.js';

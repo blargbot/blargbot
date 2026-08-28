@@ -7,7 +7,7 @@ function hashMissing(algorithm: string): boolean {
     return !HashSubtag.methods.includes(algorithm);
 }
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new HashSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [

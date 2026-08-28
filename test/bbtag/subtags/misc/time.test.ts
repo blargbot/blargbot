@@ -4,7 +4,7 @@ import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new TimeSubtag(),
     argCountBounds: { min: 0, max: 5 },
     cases: [

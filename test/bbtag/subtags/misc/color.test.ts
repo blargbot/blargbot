@@ -1,12 +1,12 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import type { ColorFormat} from '@blargbot/bbtag/subtags/misc/color.js';
+import type { ColorFormat } from '@blargbot/bbtag/subtags/misc/color.js';
 import { ColorSubtag } from '@blargbot/bbtag/subtags/misc/color.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ColorSubtag(),
     argCountBounds: { min: 1, max: 3 },
     cases: [

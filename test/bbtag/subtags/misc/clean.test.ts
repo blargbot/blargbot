@@ -2,7 +2,7 @@ import { CleanSubtag } from '@blargbot/bbtag/subtags/misc/clean.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new CleanSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

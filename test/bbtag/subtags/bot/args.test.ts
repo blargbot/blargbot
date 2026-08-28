@@ -3,7 +3,7 @@ import { ArgsSubtag } from '@blargbot/bbtag/subtags/bot/args.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ArgsSubtag(),
     argCountBounds: { min: 0, max: 2 },
     setup(ctx) {

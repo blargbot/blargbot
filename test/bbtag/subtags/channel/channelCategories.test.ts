@@ -3,7 +3,7 @@ import { ChannelType } from 'discord-api-types/v9';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ChannelCategoriesSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

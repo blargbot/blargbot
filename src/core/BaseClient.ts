@@ -4,7 +4,6 @@ import { Database } from '@blargbot/database';
 import * as Formatting from '@blargbot/formatting';
 import type { Logger } from '@blargbot/logger';
 import * as eris from 'eris';
-import type fetch from 'node-fetch';
 
 import * as transformers from './formatting/index.js';
 import { getRange } from './utils/index.js';

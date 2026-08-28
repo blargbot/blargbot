@@ -2,7 +2,7 @@ import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new MessageIdSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

@@ -7,7 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const exp = Math.pow;
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new MathSubtag(),
     argCountBounds: { min: 2, max: Infinity },
     cases: [

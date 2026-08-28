@@ -3,7 +3,7 @@ import { RoundSubtag } from '@blargbot/bbtag/subtags/math/round.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RoundSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

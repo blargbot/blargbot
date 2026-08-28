@@ -4,7 +4,7 @@ import { UserHasRoleSubtag } from '@blargbot/bbtag/subtags/user/userHasRole.js';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UserHasRoleSubtag(),
     argCountBounds: { min: 1, max: 3 },
     cases: [

@@ -1,12 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { Readable } from 'node:stream';
 import { promisify } from 'node:util';
 
+import { BufferWriter } from '@blargbot/core/BufferWriter.js';
 import { resourceDirectory } from '@blargbot/res';
-import GIFEncoder from 'gifencoder';
+import gifEncoder from 'gif-encoder';
 import gm from 'gm';
-import type fetch from 'node-fetch';
 
 import type { ImageWorker } from './ImageWorker.js';
 import type { ImageGeneratorMap, ImageResult, TextOptions } from './types.js';
@@ -74,14 +73,18 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
         return await promisify<Buffer>(cb => result.toBuffer(cb))();
     }
 
-    protected async toGif(frames: Buffer[], options: GIFEncoder.GIFOptions & { width: number; height: number; }): Promise<Buffer> {
-        const encoder = new GIFEncoder(options.width, options.height);
-        const frameStream = Readable.from(frames);
-        const sr = frameStream.pipe(encoder.createWriteStream(options));
-        const chunks = [];
-        for await (const chunk of sr)
-            chunks.push(chunk);
-        return Buffer.concat(chunks);
+    protected async toGif(frames: Buffer[], options: GifOptions): Promise<Buffer> {
+        const encoder = new gifEncoder(options.width, options.height);
+        encoder.setDelay(options.delay ?? 50);
+        encoder.setQuality(options.quality ?? 10);
+        encoder.setRepeat(options.repeat ?? 0);
+        const result = new BufferWriter();
+        encoder.pipe(result);
+        encoder.writeHeader();
+        for (const frame of frames)
+            encoder.addFrame(frame);
+        encoder.finish();
+        return await result.getResult();
     }
 
     protected async renderText(text: string, options: TextOptions): Promise<Buffer> {
@@ -103,4 +106,12 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
             .out(caption, '-composite') // write text again, filling in removed region
         );
     }
+}
+
+export interface GifOptions {
+    readonly width: number;
+    readonly height: number;
+    readonly delay?: number;
+    readonly quality?: number;
+    readonly repeat?: number;
 }

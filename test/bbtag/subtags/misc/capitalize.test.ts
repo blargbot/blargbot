@@ -2,7 +2,7 @@ import { CapitalizeSubtag } from '@blargbot/bbtag/subtags/misc/capitalize.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new CapitalizeSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [

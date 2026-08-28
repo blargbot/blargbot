@@ -6,7 +6,7 @@ import * as eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new DMSubtag(),
     argCountBounds: { min: 2, max: 3 },
     cases: [

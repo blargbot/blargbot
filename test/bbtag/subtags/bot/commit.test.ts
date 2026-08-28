@@ -4,7 +4,7 @@ import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new CommitSubtag(),
     argCountBounds: { min: 0, max: Infinity },
     cases: [

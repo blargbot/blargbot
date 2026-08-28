@@ -42,4 +42,6 @@
   ],
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "js/ts.tsdk.path": ".yarn/sdks/typescript/lib",
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

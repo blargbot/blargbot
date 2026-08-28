@@ -1,13 +1,14 @@
+import assert from 'node:assert/strict';
+
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
 import { EditSubtag } from '@blargbot/bbtag/subtags/message/edit.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
 import type * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new EditSubtag(),
     argCountBounds: { min: 2, max: 4 },
     cases: [
@@ -201,7 +202,8 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('9876543212345678') as eris.KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                assert.notEqual(channel, undefined);
+                assert.notEqual(channel, null);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -226,7 +228,8 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('9876543212345678') as eris.KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                assert.notEqual(channel, undefined);
+                assert.notEqual(channel, null);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -251,7 +254,8 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('9876543212345678') as eris.KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                assert.notEqual(channel, undefined);
+                assert.notEqual(channel, null);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -275,7 +279,8 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('9876543212345678') as eris.KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                assert.notEqual(channel, undefined);
+                assert.notEqual(channel, null);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -300,7 +305,8 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = bbctx.guild.channels.get('9876543212345678') as eris.KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                assert.notEqual(channel, undefined);
+                assert.notEqual(channel, null);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',

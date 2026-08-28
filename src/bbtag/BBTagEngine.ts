@@ -4,7 +4,6 @@ import type { Database } from '@blargbot/database';
 import type { Logger } from '@blargbot/logger';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
-import type fetch from 'node-fetch';
 
 import { BBTagContext } from './BBTagContext.js';
 import type { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';

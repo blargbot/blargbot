@@ -2,7 +2,7 @@ import { CommandNameSubtag } from '@blargbot/bbtag/subtags/bot/commandName.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new CommandNameSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

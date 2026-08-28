@@ -1,7 +1,5 @@
 import http from 'node:http';
-import path from 'node:path';
 import { performance } from 'node:perf_hooks';
-import { fileURLToPath } from 'node:url';
 
 import type { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient.js';
@@ -9,14 +7,10 @@ import { ModuleLoader } from '@blargbot/core/modules/index.js';
 import type { Logger } from '@blargbot/logger';
 import express from 'express';
 import asyncRouter from 'express-promise-router';
-import type $fetch from 'node-fetch';
 
 import type { ApiWorker } from './ApiWorker.js';
 import { BaseRoute } from './BaseRoute.js';
 import type { ApiOptions } from './types.js';
-
-const thisFile = fileURLToPath(import.meta.url);
-const thisDir = path.dirname(thisFile);
 
 export class Api extends BaseClient {
     public readonly worker: ApiWorker;
@@ -27,7 +21,7 @@ export class Api extends BaseClient {
     public constructor(
         logger: Logger,
         config: Configuration,
-        fetch: typeof $fetch,
+        fetch: typeof globalThis.fetch,
         options: ApiOptions
     ) {
         super({
@@ -56,7 +50,7 @@ export class Api extends BaseClient {
     }
 
     public async start(): Promise<void> {
-        const routes = new ModuleLoader<Pick<BaseRoute<['/']>, 'install'>>(`${thisDir}/routes`, BaseRoute, [this], this.logger);
+        const routes = new ModuleLoader<Pick<BaseRoute<['/']>, 'install'>>(`${import.meta.dirname}/routes`, BaseRoute, [this], this.logger);
         routes.on('link', module => module.install(this));
         await routes.init();
 

@@ -1,26 +1,24 @@
+import assert from 'node:assert/strict';
+
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { RequestSubtag } from '@blargbot/bbtag/subtags/bot/request.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
-import { Headers } from 'node-fetch';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RequestSubtag(),
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {
             code: '{request;https://httpbin.org/status/200}',
-            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
                 const response = ctx.createFetchResponse();
                 ctx.dependencies.setup(m => m.fetch('https://httpbin.org/status/200', argument.isDeepEqual({
                     method: 'GET',
                     headers: {},
-                    size: 8000000,
                     body: undefined
                 })))
                     .thenResolve(response.instance);
@@ -35,7 +33,7 @@ runSubtagTests({
             },
             assert(_, result) {
                 const response = JSON.parse(result) as JObject;
-                expect(response).to.deep.equal({
+                assert.deepEqual(response, {
                     body: 'Success!',
                     status: 200,
                     statusText: 'OK',
@@ -48,14 +46,12 @@ runSubtagTests({
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post"}}}',
             subtags: [new EscapeBBTagSubtag()],
-            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
                 const response = ctx.createFetchResponse();
                 ctx.dependencies.setup(m => m.fetch('https://httpbin.org/post', argument.isDeepEqual({
                     method: 'POST',
                     headers: {},
-                    size: 8000000,
                     body: ''
                 })))
                     .thenResolve(response.instance);
@@ -72,7 +68,7 @@ runSubtagTests({
             },
             assert(_, result) {
                 const response = JSON.parse(result) as JObject;
-                expect(response).to.deep.equal({
+                assert.deepEqual(response, {
                     body: {
                         success: true
                     },
@@ -87,7 +83,6 @@ runSubtagTests({
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBBTagSubtag()],
-            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
                 const response = ctx.createFetchResponse();
@@ -97,7 +92,6 @@ runSubtagTests({
                         'x-test': 'true',
                         'Content-Type': 'application/json'
                     },
-                    size: 8000000,
                     body: '{"age":123}'
                 })))
                     .thenResolve(response.instance);
@@ -114,7 +108,7 @@ runSubtagTests({
             },
             assert(_, result) {
                 const response = JSON.parse(result) as JObject;
-                expect(response).to.deep.equal({
+                assert.deepEqual(response, {
                     body: {
                         success: true
                     },
@@ -129,7 +123,6 @@ runSubtagTests({
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;This isnt json}}',
             subtags: [new EscapeBBTagSubtag()],
-            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
                 const response = ctx.createFetchResponse();
@@ -138,7 +131,6 @@ runSubtagTests({
                     headers: {
                         'x-test': 'true'
                     },
-                    size: 8000000,
                     body: 'This isnt json'
                 })))
                     .thenResolve(response.instance);
@@ -155,7 +147,7 @@ runSubtagTests({
             },
             assert(_, result) {
                 const response = JSON.parse(result) as JObject;
-                expect(response).to.deep.equal({
+                assert.deepEqual(response, {
                     body: {
                         success: true
                     },
@@ -170,7 +162,6 @@ runSubtagTests({
         {
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true,"content-type":"text/plain"}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBBTagSubtag()],
-            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
                 const response = ctx.createFetchResponse();
@@ -180,7 +171,6 @@ runSubtagTests({
                         'x-test': 'true',
                         'content-type': 'text/plain'
                     },
-                    size: 8000000,
                     body: '{"age":123}'
                 })))
                     .thenResolve(response.instance);
@@ -197,7 +187,7 @@ runSubtagTests({
             },
             assert(_, result) {
                 const response = JSON.parse(result) as JObject;
-                expect(response).to.deep.equal({
+                assert.deepEqual(response, {
                     body: {
                         success: true
                     },
@@ -212,7 +202,6 @@ runSubtagTests({
         {
             code: '{request;https://httpbin.org/get;{escapebbtag;{"method":"get","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBBTagSubtag()],
-            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
                 const response = ctx.createFetchResponse();
@@ -221,7 +210,6 @@ runSubtagTests({
                     headers: {
                         'x-test': 'true'
                     },
-                    size: 8000000,
                     body: undefined
                 })))
                     .thenResolve(response.instance);
@@ -238,7 +226,7 @@ runSubtagTests({
             },
             assert(_, result) {
                 const response = JSON.parse(result) as JObject;
-                expect(response).to.deep.equal({
+                assert.deepEqual(response, {
                     body: {
                         success: true
                     },
@@ -252,14 +240,12 @@ runSubtagTests({
         },
         {
             code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png}',
-            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
                 const response = ctx.createFetchResponse();
                 ctx.dependencies.setup(m => m.fetch('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png', argument.isDeepEqual({
                     method: 'GET',
                     headers: {},
-                    size: 8000000,
                     body: undefined
                 })))
                     .thenResolve(response.instance);
@@ -270,11 +256,12 @@ runSubtagTests({
                     'Date': 'Wed, 26 Aug 2026 12:16:19 GMT'
                 }));
                 response.setup(m => m.url).thenReturn('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png');
-                response.setup(m => m.arrayBuffer()).thenResolve(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64'));
+                const body = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64');
+                response.setup(m => m.body).thenReturn(ReadableStream.from([body.subarray(0, 15), body.subarray(15)]));
             },
             assert(_, result) {
                 const response = JSON.parse(result) as JObject;
-                expect(response).to.deep.equal({
+                assert.deepEqual(response, {
                     body: 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf',
                     status: 200,
                     statusText: 'OK',
@@ -290,14 +277,12 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 124, error: new BBTagRuntimeError('403 Forbidden') }
             ],
-            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
                 const response = ctx.createFetchResponse();
                 ctx.dependencies.setup(m => m.fetch('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png', argument.isDeepEqual({
                     method: 'GET',
                     headers: {},
-                    size: 8000000,
                     body: undefined
                 })))
                     .thenResolve(response.instance);
@@ -318,7 +303,6 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 25, error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
             ],
-            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('test.com')).thenReturn(false);
             }
@@ -329,7 +313,6 @@ runSubtagTests({
             errors: [
                 { start: 0, end: 149, error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
             ],
-            timeout: 10000,
             setup(ctx) {
                 ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
             }

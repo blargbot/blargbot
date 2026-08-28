@@ -3,7 +3,7 @@ import { TrimSubtag } from '@blargbot/bbtag/subtags/misc/trim.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new TrimSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

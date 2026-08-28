@@ -122,4 +122,7 @@ declare global {
     }
 
     function setTimeout<TArgs extends unknown[]>(callback: (...args: TArgs) => void, ms: number, ...args: TArgs): NodeJS.Timeout;
+    interface Buffer<T = ArrayBufferLike> {
+        readonly buffer: T
+    }
 }

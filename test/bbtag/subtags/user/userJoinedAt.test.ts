@@ -3,7 +3,7 @@ import { UserJoinedAtSubtag } from '@blargbot/bbtag/subtags/user/userJoinedAt.js
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UserJoinedAtSubtag(),
     argCountBounds: { min: 0, max: 3 },
     cases: [

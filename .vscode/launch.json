@@ -99,15 +99,13 @@
             }
         },
         {
-            "name": "mocha: all",
+            "name": "test: all",
             "type": "node",
             "request": "launch",
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
             "runtimeArgs": [
-                "mocha",
-                "--no-timeouts",
-                "--recursive"
+                "test",
             ],
             "skipFiles": [
                 "<node_internals>/**",
@@ -122,14 +120,14 @@
             }
         },
         {
-            "name": "mocha: current",
+            "name": "test: current",
             "type": "node",
             "request": "launch",
             "console": "integratedTerminal",
             "runtimeExecutable": "yarn",
             "runtimeArgs": [
-                "mocha",
-                "--no-timeouts",
+                "node",
+                "--test",
                 "${fileDirname}/${fileBasenameNoExtension}.js"
             ],
             "skipFiles": [

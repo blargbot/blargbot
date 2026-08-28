@@ -3,7 +3,7 @@ import { UserCreatedAtSubtag } from '@blargbot/bbtag/subtags/user/userCreatedAt.
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UserCreatedAtSubtag(),
     argCountBounds: { min: 0, max: 3 },
     cases: [

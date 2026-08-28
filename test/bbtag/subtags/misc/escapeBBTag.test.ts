@@ -2,7 +2,7 @@ import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new EscapeBBTagSubtag(),
     argCountBounds: { min: 0, max: Infinity },
     cases: [

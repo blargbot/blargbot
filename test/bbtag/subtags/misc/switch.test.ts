@@ -2,7 +2,7 @@ import { SwitchSubtag } from '@blargbot/bbtag/subtags/misc/switch.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SwitchSubtag(),
     argCountBounds: { min: 3, max: Infinity },
     cases: [

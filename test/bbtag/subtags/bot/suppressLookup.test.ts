@@ -1,10 +1,11 @@
+import assert from 'node:assert/strict';
+
 import { NotABooleanError } from '@blargbot/bbtag/errors/index.js';
 import { SuppressLookupSubtag } from '@blargbot/bbtag/subtags/bot/suppressLookup.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SuppressLookupSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
@@ -12,21 +13,21 @@ runSubtagTests({
             code: '{suppresslookup}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.true;
+                assert.equal(bbctx.scopes.root.noLookupErrors, true);
             }
         },
         {
             code: '{suppresslookup;true}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.true;
+                assert.equal(bbctx.scopes.root.noLookupErrors, true);
             }
         },
         {
             code: '{suppresslookup;false}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.false;
+                assert.equal(bbctx.scopes.root.noLookupErrors, false);
             }
         },
         {
@@ -36,7 +37,7 @@ runSubtagTests({
                 { start: 0, end: 20, error: new NotABooleanError('abc') }
             ],
             assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.undefined;
+                assert.equal(bbctx.scopes.root.noLookupErrors, undefined);
             }
         }
     ]

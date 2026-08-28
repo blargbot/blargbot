@@ -4,7 +4,7 @@ import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ModLogSubtag(),
     argCountBounds: { min: 2, max: 5 },
     cases: [

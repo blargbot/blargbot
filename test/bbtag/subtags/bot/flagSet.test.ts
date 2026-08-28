@@ -2,7 +2,7 @@ import { FlagSetSubtag } from '@blargbot/bbtag/subtags/bot/flagSet.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new FlagSetSubtag(),
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {

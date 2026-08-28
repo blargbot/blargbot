@@ -5,7 +5,7 @@ import * as eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ReactionRemoveAllSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [

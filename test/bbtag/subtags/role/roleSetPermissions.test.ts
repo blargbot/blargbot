@@ -6,7 +6,7 @@ import * as eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RoleSetPermissionsSubtag(),
     argCountBounds: { min: 1, max: 3 },
     setup(ctx) {

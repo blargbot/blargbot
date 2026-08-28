@@ -9,8 +9,7 @@
 /config.json
 /src/res/avatars.json
 /test.bbtag
-/.nyc_output
-/coverage
+/test-results
 
 /.yarn/*
 !/.yarn/cache

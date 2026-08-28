@@ -1,11 +1,12 @@
+import assert from 'node:assert/strict';
+import { it } from 'node:test';
+
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { PadSubtag } from '@blargbot/bbtag/subtags/misc/pad.js';
-import { expect } from 'chai';
-import { it } from 'mocha';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new PadSubtag(),
     argCountBounds: { min: 3, max: 3 },
     cases: [
@@ -52,9 +53,9 @@ runSubtagTests({
             ]
         }
     ],
-    runOtherTests(s) {
-        it('Should be deprecated', () => {
-            expect(s.deprecated).to.equal('realpad');
+    async runOtherTests(s) {
+        await it('Should be deprecated', () => {
+            assert.equal(s.deprecated, 'realpad');
         });
     }
 });

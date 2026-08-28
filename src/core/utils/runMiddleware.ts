@@ -2,6 +2,8 @@ import { performance } from 'node:perf_hooks';
 
 import type { IMiddleware, MiddlewareOptions, NextMiddleware } from '@blargbot/core/types.js';
 
+import { callWithFinalize } from './callWithFinalize.js';
+
 const mw: unique symbol = Symbol();
 
 export type MethodMiddleware<Target, Method extends keyof Target> = Target extends { [P in Method]: (...args: infer Args) => infer Result }
@@ -67,17 +69,11 @@ export function runMiddleware<Context, Result>(middleware: ReadonlyArray<IMiddle
         const name = current.name === undefined ? current.constructor.name : `${current.constructor.name}(${current.name})`;
 
         options.logger.middleware('[', options.id, ']', name, 'started after', performance.now() - options.start, 'ms');
-        let result;
-        try {
-            result = current.execute(context, Object.assign(() => runMiddleware(context, index + 1), options));
-        } finally {
-            if (result instanceof Promise)
-                result = result.finally(() => logCompletion(name, options));
-            else
-                logCompletion(name, options);
-        }
 
-        return result;
+        return callWithFinalize(
+            () => current.execute(context, Object.assign(() => runMiddleware(context, index + 1), options)),
+            () => logCompletion(name, options)
+        );
     };
 
     return runMiddleware(context, 0);

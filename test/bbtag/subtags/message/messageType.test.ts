@@ -32,7 +32,7 @@ const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageTy
     ['AutoModerationAction']: MessageType.AutoModerationAction
 };
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new MessageTypeSubtag(),
     argCountBounds: { min: 0, max: 2 },
     cases: [

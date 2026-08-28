@@ -5,7 +5,7 @@ import moment from 'moment-timezone';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UserActivitySubtag(),
     argCountBounds: { min: 0, max: 2 },
     cases: [

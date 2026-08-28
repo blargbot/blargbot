@@ -3,7 +3,7 @@ import { MessageSenderSubtag } from '@blargbot/bbtag/subtags/message/messageSend
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new MessageSenderSubtag(),
     argCountBounds: { min: 0, max: 3 },
     cases: [

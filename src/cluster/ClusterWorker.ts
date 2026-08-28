@@ -2,7 +2,6 @@ import type { Configuration } from '@blargbot/config';
 import { BaseWorker } from '@blargbot/core/worker/index.js';
 import type { Logger } from '@blargbot/logger';
 import { holidays } from '@blargbot/res';
-import type $fetch from 'node-fetch';
 
 import { Cluster } from './Cluster.js';
 import type { ClusterIPCContract } from './types.js';
@@ -15,7 +14,7 @@ export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
     public constructor(
         logger: Logger,
         public readonly config: Configuration,
-        fetch: typeof $fetch
+        fetch: typeof globalThis.fetch
     ) {
         super(logger);
         const clusterId = envNumber(this.env, 'CLUSTER_ID');

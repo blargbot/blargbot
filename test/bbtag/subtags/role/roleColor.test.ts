@@ -3,7 +3,7 @@ import { RoleColorSubtag } from '@blargbot/bbtag/subtags/role/roleColor.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RoleColorSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [

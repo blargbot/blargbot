@@ -2,7 +2,7 @@ import { NumberFormatSubtag } from '@blargbot/bbtag/subtags/math/numberFormat.js
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new NumberFormatSubtag(),
     argCountBounds: { min: 2, max: 4 },
     cases: [

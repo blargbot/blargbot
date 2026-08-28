@@ -3,7 +3,7 @@ import { ParamsArraySubtag } from '@blargbot/bbtag/subtags/bot/paramsArray.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ParamsArraySubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

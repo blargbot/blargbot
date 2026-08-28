@@ -3,7 +3,7 @@ import { RegexSplitSubtag } from '@blargbot/bbtag/subtags/misc/regexSplit.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RegexSplitSubtag(),
     argCountBounds: { min: 2, max: { count: 2, noEval: [1] } },
     cases: [

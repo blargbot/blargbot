@@ -1,12 +1,13 @@
+import assert from 'node:assert/strict';
+
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { WebhookSubtag } from '@blargbot/bbtag/subtags/message/webhook.js';
 import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new WebhookSubtag(),
     argCountBounds: { min: 2, max: 8 },
     cases: [
@@ -158,7 +159,14 @@ runSubtagTests({
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0x70, 0x71, 0x72, 0x73])).value, name: 'file.txt' }]
+                    file: [{
+                        file: argument.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x70, 0x71, 0x72, 0x73]).toString();
+                            assert.equal(actual, expected);
+                        }).value,
+                        name: 'file.txt'
+                    }]
                 }))).thenResolve(undefined);
             }
         },
@@ -172,7 +180,14 @@ runSubtagTests({
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0xa6, 0xaa, 0xec])).value, name: 'file.txt' }]
+                    file: [{
+                        file: argument.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0xa6, 0xaa, 0xec]).toString();
+                            assert.equal(actual, expected);
+                        }).value,
+                        name: 'file.txt'
+                    }]
                 }))).thenResolve(undefined);
             }
         },
@@ -186,7 +201,14 @@ runSubtagTests({
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0x70, 0x71, 0x72, 0x73])).value, name: 'tuv' }]
+                    file: [{
+                        file: argument.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x70, 0x71, 0x72, 0x73]).toString();
+                            assert.equal(actual, expected);
+                        }).value,
+                        name: 'tuv'
+                    }]
                 }))).thenResolve(undefined);
             }
         },
@@ -200,7 +222,14 @@ runSubtagTests({
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0xa6, 0xaa, 0xec])).value, name: 'tuv' }]
+                    file: [{
+                        file: argument.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0xa6, 0xaa, 0xec]).toString();
+                            assert.equal(actual, expected);
+                        }).value,
+                        name: 'tuv'
+                    }]
                 }))).thenResolve(undefined);
             }
         }

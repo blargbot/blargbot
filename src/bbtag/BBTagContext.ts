@@ -2,13 +2,12 @@ import { Emote } from '@blargbot/core/Emote.js';
 import { Timer } from '@blargbot/core/Timer.js';
 import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
 import { discord } from '@blargbot/core/utils/discord/index.js';
-import { guard, hasFlag, humanize, parse } from '@blargbot/core/utils/index.js';
+import { callWithFinalize, guard, hasFlag, humanize, parse, sleep } from '@blargbot/core/utils/index.js';
 import type { Database } from '@blargbot/database';
 import type { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
 import type { Logger } from '@blargbot/logger';
 import * as eris from 'eris';
 import type moment from 'moment-timezone';
-import type fetch from 'node-fetch';
 import ReadWriteLock from 'rwlock';
 
 import type { BBTagEngine } from './BBTagEngine.js';
@@ -81,6 +80,7 @@ export class BBTagContext implements BBTagContextOptions {
     public get discord(): eris.Client { return this.engine.discord; }
     public get subtags(): ReadonlyMap<string, Subtag> { return this.engine.subtags; }
     public get cooldownEnd(): moment.Moment { return this.cooldowns.get(this); }
+    public get sleep(): typeof sleep { return sleep; }
 
     public get bot(): eris.Member {
         const member = this.guild.members.get(this.discord.user.id);
@@ -175,19 +175,11 @@ export class BBTagContext implements BBTagContextOptions {
         }
 
         this.data.stackSize++;
-        let result;
 
-        try {
-            result = action();
-        } finally {
-            if (result instanceof Promise)
-                result.finally(() => this.data.stackSize--);
-
-            else
-                this.data.stackSize--;
-        }
-
-        return result;
+        return callWithFinalize(
+            action,
+            () => this.data.stackSize--
+        );
     }
 
     public withScope<T>(action: (scope: BBTagRuntimeScope) => T): T;
@@ -205,18 +197,10 @@ export class BBTagContext implements BBTagContextOptions {
         });
         context.#parent = this;
 
-        let result;
-        try {
-            result = action(context);
-        } finally {
-            if (result instanceof Promise)
-                result.finally(() => this.errors.push(...context.errors));
-
-            else
-                this.errors.push(...context.errors);
-        }
-
-        return result;
+        return callWithFinalize(
+            () => action(context),
+            () => this.errors.push(...context.errors)
+        );
     }
 
     public hasPermission(permission: bigint | keyof eris.Constants['Permissions']): boolean;

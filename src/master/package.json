@@ -14,12 +14,10 @@
         "@blargbot/res": "workspace:^",
         "eris": "^0.17.1",
         "moment-timezone": "^0.5.39",
-        "node-fetch": "^3.3.2",
         "prom-client": "^14.1.0",
         "strip-ansi": "^6.0.1"
     },
     "devDependencies": {
-        "@types/eris": "workspace:^",
-        "@types/node-fetch": "^2.6.2"
+        "@types/eris": "workspace:^"
     }
 }

@@ -1,8 +1,9 @@
+import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import { ClientRequest, IncomingMessage } from 'node:http';
 import * as inspector from 'node:inspector';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { describe, it } from 'node:test';
 import { inspect } from 'node:util';
 
 import type { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
@@ -11,33 +12,17 @@ import type { BBTagUtilities, InjectionContext } from '@blargbot/bbtag/BBTagUtil
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/bbtag/errors/index.js';
 import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit.js';
 import { bbtag, SubtagType } from '@blargbot/bbtag/utils/index.js';
-import { Timer } from '@blargbot/core/Timer.js';
-import { pluralise as p, repeat, snowflake } from '@blargbot/core/utils/index.js';
+import { pluralise as p, repeat, sleep, snowflake } from '@blargbot/core/utils/index.js';
 import { Database } from '@blargbot/database';
 import type { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain/models/index.js';
 import type { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
 import type { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
-import * as chai from 'chai';
-import chaiBytes from 'chai-bytes';
-import chaiDateTime from 'chai-datetime';
-import chaiExclude from 'chai-exclude';
 import type { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIThreadChannel, APIUser, Snowflake } from 'discord-api-types/v9';
 import { ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types/v9';
 import * as eris from 'eris';
-import type { Context } from 'mocha';
-import { describe, it } from 'mocha';
 import moment from 'moment-timezone';
-import { Response } from 'node-fetch';
 import { anything } from 'ts-mockito';
-
-const thisFile = fileURLToPath(import.meta.url);
-const thisDir = path.dirname(thisFile);
-
-chai.use(chaiExclude);
-chai.use(chaiBytes);
-chai.use(chaiDateTime);
 
 type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${number}` | `${number}:${number}` | `${number}`;
 type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[keyof T];
@@ -85,17 +70,20 @@ export class MarkerError extends BBTagRuntimeError {
 export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends Pick<TestCase, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
     readonly cases: TestCase[];
     readonly subtag: T;
-    readonly runOtherTests?: (subtag: T) => void;
+    readonly runOtherTests?: (subtag: T) => Promise<void>;
     readonly argCountBounds: { min: ArgCountBound; max: ArgCountBound; };
 }
 
 type ArgCountBound = number | { count: number; noEval: number[]; };
-
+class SleepProxy {
+    public sleep(ms: number): Promise<void> {
+        return sleep(ms);
+    }
+}
 /* eslint-disable @typescript-eslint/naming-convention */
 export class SubtagTestContext {
     readonly #allMocks: Array<Mock<unknown>> = [];
     #isCreated = false;
-    public readonly timer = new Timer();
     public readonly dependencies = this.createMock<InjectionContext>();
     public readonly util = this.createMock<BBTagUtilities>();
     public readonly shard = this.createMock(eris.Shard);
@@ -111,6 +99,7 @@ export class SubtagTestContext {
     public readonly discordOptions: eris.ClientOptions;
     public isStaff = false;
     public readonly ownedMessages: string[] = [];
+    public readonly sleep = this.createMock(SleepProxy);
 
     public readonly ccommands: Record<string, GuildCommandTag>;
     public readonly tags: Record<string, StoredTag>;
@@ -294,6 +283,7 @@ export class SubtagTestContext {
 
         context.data.ownedMsgs.push(...this.ownedMessages);
         Object.assign(context.scopes.root, this.rootScope);
+        Object.defineProperty(context, 'sleep', { get: () => (ms: number) => this.sleep.instance.sleep(ms) });
 
         return context;
     }
@@ -465,9 +455,9 @@ export class SubtagTestContext {
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): void
-export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): void
-export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): void {
+export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): Promise<void>
+export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): Promise<void>
+export async function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): Promise<void> {
     const suite = new SubtagTestSuite(data.subtag);
     if (data.setup !== undefined)
         suite.setup(data.setup);
@@ -486,7 +476,8 @@ export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase
     if (max.count < Infinity)
         suite.addTestCases(tooManyArgumentsTestCases(data.subtag.name, max.count, max.noEval));
 
-    suite.run(() => data.runOtherTests?.(data.subtag));
+    const runOtherTests = data.runOtherTests;
+    await suite.run(runOtherTests === undefined ? undefined : () => runOtherTests(data.subtag));
 
     // Output a bbtag file that can be run on the live blargbot instance to find any errors
     if (inspector.url() !== undefined) {
@@ -501,7 +492,7 @@ Actual:
 |${c.code}|}`).join('\n')}}
 ---------------
 Finished!`;
-        fs.writeFileSync(path.join(thisDir, '../../../test.bbtag'), blargTestSuite);
+        fs.writeFileSync(path.join(import.meta.dirname, '../../../test.bbtag'), blargTestSuite);
     }
 }
 
@@ -679,21 +670,28 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
         return this;
     }
 
-    public run(otherTests?: () => void): void {
-        describe(`{${this.#subtag.name}}`, () => {
+    public async run(otherTests?: () => Promise<void>): Promise<void> {
+        await describe(`{${this.#subtag.name}}`, async () => {
             const subtag = this.#subtag;
             const config = this.#config;
             for (const testCase of this.#testCases) {
-                const test = it(getTestName(testCase), function () {
-                    return runTestCase(this, subtag, testCase, config);
+                const retries = Math.max(testCase.retries ?? 0, 0);
+                const timeout = testCase.timeout === undefined ? undefined : (retries + 1) * testCase.timeout;
+                await it(getTestName(testCase), { skip: await shouldSkip(testCase), timeout }, async () => {
+                    for (let attempt = 0; attempt < retries; attempt++) {
+                        try {
+                            await runTestCase(subtag, testCase, config);
+                            return;
+                        } catch {
+                            /* NO-OP */
+                        }
+                    }
+                    await runTestCase(subtag, testCase, config);
                 });
-                if (testCase.retries !== undefined)
-                    test.retries(testCase.retries);
-                if (testCase.timeout !== undefined)
-                    test.timeout(testCase.timeout);
             }
 
-            otherTests?.();
+            if (otherTests !== undefined)
+                await otherTests();
         });
     }
 }
@@ -726,10 +724,11 @@ function getTestName(testCase: SubtagTestCase): string {
     return result;
 }
 
-async function runTestCase<TestCase extends SubtagTestCase>(context: Context, subtag: Subtag, testCase: TestCase, config: TestSuiteConfig<TestCase>): Promise<void> {
-    if (typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false)
-        context.skip();
+async function shouldSkip(testCase: SubtagTestCase): Promise<boolean> {
+    return typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false;
+}
 
+async function runTestCase<TestCase extends SubtagTestCase>(subtag: Subtag, testCase: TestCase, config: TestSuiteConfig<TestCase>): Promise<void> {
     const subtags = [subtag, new EvalSubtag(), new FailTestSubtag(), ...testCase.subtags ?? []];
     const test = new SubtagTestContext(testCase, subtags);
     const actualTestCase = Object.create(testCase, { 'timestamp': { value: moment() } });
@@ -750,9 +749,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         const expected = getExpectation(testCase);
 
         // act
-        test.timer.start(true);
         const result = await runSafe(() => context.eval(code));
-        test.timer.end();
         if (!result.success) {
             if (actualTestCase.expectError === undefined)
                 throw result.error;
@@ -768,10 +765,10 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         // assert
         switch (typeof expected) {
             case 'string':
-                expect(result.value).to.equal(expected);
+                assert.equal(result.value, expected);
                 break;
             case 'object':
-                expect(result.value).to.match(expected);
+                assert.match(result.value, expected);
                 break;
         }
 
@@ -782,10 +779,17 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         if (typeof testCase.errors === 'function') {
             testCase.errors(context.errors);
         } else {
-            expect(context.errors.map(err => ({ error: err.error, start: err.subtag?.start, end: err.subtag?.end })))
-                .excludingEvery('stack')
-                .to.deep.equal(testCase.errors?.map(err => ({ error: err.error, start: sourceMarker(err.start), end: sourceMarker(err.end) })) ?? [],
-                    'Error details didnt match the expectation');
+            const errors = context.errors.map(err => ({
+                error: err.error,
+                start: err.subtag?.start,
+                end: err.subtag?.end
+            }));
+            const expected = testCase.errors?.map(err => ({
+                error: err.error,
+                start: sourceMarker(err.start),
+                end: sourceMarker(err.end)
+            })) ?? [];
+            assert.deepEqual(errors, expected);
         }
         test.verifyAll();
     } finally {
@@ -834,7 +838,9 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
         code: `{${[subtagName, ...codeParts.map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
         expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
-            expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
+            const errorTypes = new Set(err.map(x => x.error.constructor));
+            assert(!errorTypes.has(NotEnoughArgumentsError));
+            assert(!errorTypes.has(TooManyArgumentsError));
         },
         expectError: {
             handle() { /* NOOP */ }
@@ -853,7 +859,9 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
         code: `{${[subtagName, ...codeParts.slice(0, maxArgCount).map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
         expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
-            expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
+            const errorTypes = new Set(err.map(x => x.error.constructor));
+            assert(!errorTypes.has(NotEnoughArgumentsError));
+            assert(!errorTypes.has(TooManyArgumentsError));
         },
         expectError: {
             handle() { /* NOOP */ }

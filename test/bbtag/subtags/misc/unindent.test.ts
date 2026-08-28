@@ -2,7 +2,7 @@ import { UnindentSubtag } from '@blargbot/bbtag/subtags/misc/unindent.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UnindentSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [

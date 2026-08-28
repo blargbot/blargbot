@@ -2,7 +2,7 @@ import { TagAuthorSubtag } from '@blargbot/bbtag/subtags/simple/tagAuthor.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new TagAuthorSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

@@ -1,10 +1,11 @@
+import assert from 'node:assert/strict';
+
 import { UnknownSubtagError } from '@blargbot/bbtag/errors/index.js';
 import { FallbackSubtag } from '@blargbot/bbtag/subtags/bot/fallback.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new FallbackSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
@@ -15,7 +16,7 @@ runSubtagTests({
                 { start: 10, end: 15, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.be.undefined;
+                assert.equal(ctx.scopes.local.fallback, undefined);
             }
         },
         {
@@ -25,7 +26,7 @@ runSubtagTests({
                 { start: 14, end: 19, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.equal('abc');
+                assert.equal(ctx.scopes.local.fallback, 'abc');
             }
         },
         {
@@ -36,7 +37,7 @@ runSubtagTests({
                 { start: 44, end: 49, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.be.undefined;
+                assert.equal(ctx.scopes.local.fallback, undefined);
             }
         }
     ]

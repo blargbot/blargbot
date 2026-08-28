@@ -3,7 +3,7 @@ import { SubstringSubtag } from '@blargbot/bbtag/subtags/misc/substring.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SubstringSubtag(),
     argCountBounds: { min: 2, max: 3 },
     cases: [

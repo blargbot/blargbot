@@ -5,7 +5,7 @@ import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ChannelSetPermissionsSubtag(),
     argCountBounds: { min: 3, max: 5 },
     setup(ctx) {

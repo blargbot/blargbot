@@ -1,12 +1,13 @@
+import assert from 'node:assert/strict';
+
 import { BBTagRuntimeError, SubtagStackOverflowError } from '@blargbot/bbtag/errors/index.js';
 import { ExecTagSubtag } from '@blargbot/bbtag/subtags/bot/execTag.js';
 import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
-import { expect } from 'chai';
 
 import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ExecTagSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [
@@ -14,15 +15,15 @@ runSubtagTests({
             code: '{exec;otherSubtag}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('');
-                expect(ctx.input).to.deep.equal([]);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(101);
+                assert.notEqual(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'otherSubtag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 7);
+                assert.equal(ctx.inputRaw, '');
+                assert.deepEqual(ctx.input, []);
+                assert.notEqual(ctx.scopes.local, ctx.scopes.root);
+                assert.notEqual(ctx.scopes.tag, ctx.scopes.root);
+                assert.equal(ctx.data.stackSize, 101);
                 ctx.data.embeds = [{ title: 'abc' }];
                 return 'Success!';
             })],
@@ -45,30 +46,30 @@ runSubtagTests({
                 };
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(100);
-                expect(ctx.data.embeds).to.deep.equal([{ title: 'abc' }]);
+                assert.equal(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'test tag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 4);
+                assert.equal(ctx.inputRaw, 'This is some input text');
+                assert.equal(ctx.scopes.local, ctx.scopes.root);
+                assert.equal(ctx.scopes.tag, ctx.scopes.root);
+                assert.equal(ctx.data.stackSize, 100);
+                assert.deepEqual(ctx.data.embeds, [{ title: 'abc' }]);
             }
         },
         {
             code: '{exec;otherSubtag;}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(0);
-                expect(ctx.inputRaw).to.equal('');
-                expect(ctx.input).to.deep.equal([]);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(101);
+                assert.notEqual(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'otherSubtag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 0);
+                assert.equal(ctx.inputRaw, '');
+                assert.deepEqual(ctx.input, []);
+                assert.notEqual(ctx.scopes.local, ctx.scopes.root);
+                assert.notEqual(ctx.scopes.tag, ctx.scopes.root);
+                assert.equal(ctx.data.stackSize, 101);
                 return 'Success!';
             })],
             errors: [
@@ -89,29 +90,29 @@ runSubtagTests({
                 };
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(100);
+                assert.equal(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'test tag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 4);
+                assert.equal(ctx.inputRaw, 'This is some input text');
+                assert.equal(ctx.scopes.local, ctx.scopes.root);
+                assert.equal(ctx.scopes.tag, ctx.scopes.root);
+                assert.equal(ctx.data.stackSize, 100);
             }
         },
         {
             code: '{exec;otherSubtag;abc;\\"def\\";ghi}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('abc \\\\\\"def\\\\\\" ghi');
-                expect(ctx.input).to.deep.equal(['abc', '\\"def\\"', 'ghi']);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(101);
+                assert.notEqual(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'otherSubtag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 7);
+                assert.equal(ctx.inputRaw, 'abc \\\\\\"def\\\\\\" ghi');
+                assert.deepEqual(ctx.input, ['abc', '\\"def\\"', 'ghi']);
+                assert.notEqual(ctx.scopes.local, ctx.scopes.root);
+                assert.notEqual(ctx.scopes.tag, ctx.scopes.root);
+                assert.equal(ctx.data.stackSize, 101);
                 return 'Success!';
             })],
             errors: [
@@ -133,29 +134,29 @@ runSubtagTests({
                 };
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(100);
+                assert.equal(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'test tag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 4);
+                assert.equal(ctx.inputRaw, 'This is some input text');
+                assert.equal(ctx.scopes.local, ctx.scopes.root);
+                assert.equal(ctx.scopes.tag, ctx.scopes.root);
+                assert.equal(ctx.data.stackSize, 100);
             }
         },
         {
             code: '{exec;otherSubtag;abc;{j;{"def":123}}}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('abc {\\"def\\":123}');
-                expect(ctx.input).to.deep.equal(['abc', '{"def":123}']);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(101);
+                assert.notEqual(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'otherSubtag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 7);
+                assert.equal(ctx.inputRaw, 'abc {\\"def\\":123}');
+                assert.deepEqual(ctx.input, ['abc', '{"def":123}']);
+                assert.notEqual(ctx.scopes.local, ctx.scopes.root);
+                assert.notEqual(ctx.scopes.tag, ctx.scopes.root);
+                assert.equal(ctx.data.stackSize, 101);
                 return 'Success!';
             }), new JsonSubtag()],
             errors: [
@@ -177,14 +178,14 @@ runSubtagTests({
                 };
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(100);
+                assert.equal(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'test tag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 4);
+                assert.equal(ctx.inputRaw, 'This is some input text');
+                assert.equal(ctx.scopes.local, ctx.scopes.root);
+                assert.equal(ctx.scopes.tag, ctx.scopes.root);
+                assert.equal(ctx.data.stackSize, 100);
             }
         },
         {
@@ -212,25 +213,25 @@ runSubtagTests({
                 };
             },
             assert(ctx) {
-                expect(ctx.data.stackSize).to.equal(200);
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                assert.equal(ctx.data.stackSize, 200);
+                assert.equal(ctx.data.state, BBTagRuntimeState.ABORT);
             }
         },
         {
             code: '{exec;otherSubtag;arg1;arg2;-f flag value}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('arg1 arg2 "-f flag value"');
-                expect(ctx.input).to.deep.equal(['arg1', 'arg2', '-f flag value']);
-                expect(ctx.flaggedInput.f?.merge().raw).to.equal('flag value');
-                expect(ctx.flaggedInput._.merge().raw).to.equal('arg1 arg2');
-                expect(ctx.data.stackSize).to.equal(101);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
+                assert.notEqual(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'otherSubtag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 7);
+                assert.equal(ctx.inputRaw, 'arg1 arg2 "-f flag value"');
+                assert.deepEqual(ctx.input, ['arg1', 'arg2', '-f flag value']);
+                assert.equal(ctx.flaggedInput.f?.merge().raw, 'flag value');
+                assert.equal(ctx.flaggedInput._.merge().raw, 'arg1 arg2');
+                assert.equal(ctx.data.stackSize, 101);
+                assert.notEqual(ctx.scopes.local, ctx.scopes.root);
+                assert.notEqual(ctx.scopes.tag, ctx.scopes.root);
                 return 'Success!';
             })],
             errors: [
@@ -252,33 +253,33 @@ runSubtagTests({
                 };
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.flaggedInput.f?.merge().raw).to.be.undefined;
-                expect(ctx.flaggedInput._.merge().raw).to.equal('This is some input text');
-                expect(ctx.data.stackSize).to.equal(100);
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
+                assert.equal(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'test tag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 4);
+                assert.equal(ctx.inputRaw, 'This is some input text');
+                assert.equal(ctx.flaggedInput.f?.merge().raw, undefined);
+                assert.equal(ctx.flaggedInput._.merge().raw, 'This is some input text');
+                assert.equal(ctx.data.stackSize, 100);
+                assert.equal(ctx.scopes.local, ctx.scopes.root);
+                assert.equal(ctx.scopes.tag, ctx.scopes.root);
             }
         },
         {
             code: '{exec;otherSubtag;arg1 arg2 -f flag value}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('arg1 arg2 -f flag value');
-                expect(ctx.input).to.deep.equal(['arg1', 'arg2', '-f', 'flag', 'value']);
-                expect(ctx.flaggedInput.f?.merge().raw).to.equal('flag value');
-                expect(ctx.flaggedInput._.merge().raw).to.equal('arg1 arg2');
-                expect(ctx.data.stackSize).to.equal(101);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
+                assert.notEqual(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'otherSubtag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 7);
+                assert.equal(ctx.inputRaw, 'arg1 arg2 -f flag value');
+                assert.deepEqual(ctx.input, ['arg1', 'arg2', '-f', 'flag', 'value']);
+                assert.equal(ctx.flaggedInput.f?.merge().raw, 'flag value');
+                assert.equal(ctx.flaggedInput._.merge().raw, 'arg1 arg2');
+                assert.equal(ctx.data.stackSize, 101);
+                assert.notEqual(ctx.scopes.local, ctx.scopes.root);
+                assert.notEqual(ctx.scopes.tag, ctx.scopes.root);
                 return 'Success!';
             })],
             errors: [
@@ -300,33 +301,33 @@ runSubtagTests({
                 };
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.flaggedInput.f?.merge().raw).to.be.undefined;
-                expect(ctx.flaggedInput._.merge().raw).to.equal('This is some input text');
-                expect(ctx.data.stackSize).to.equal(100);
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
+                assert.equal(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'test tag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 4);
+                assert.equal(ctx.inputRaw, 'This is some input text');
+                assert.equal(ctx.flaggedInput.f?.merge().raw, undefined);
+                assert.equal(ctx.flaggedInput._.merge().raw, 'This is some input text');
+                assert.equal(ctx.data.stackSize, 100);
+                assert.equal(ctx.scopes.local, ctx.scopes.root);
+                assert.equal(ctx.scopes.tag, ctx.scopes.root);
             }
         },
         {
             code: '{exec;otherSubtag;arg1 arg2 \\-f flag value}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('arg1 arg2 \\-f flag value');
-                expect(ctx.input).to.deep.equal(['arg1', 'arg2', '-f', 'flag', 'value']);
-                expect(ctx.flaggedInput.f?.merge().raw).to.be.undefined;
-                expect(ctx.flaggedInput._.merge().raw).to.equal('arg1 arg2 \\-f flag value');
-                expect(ctx.data.stackSize).to.equal(101);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
+                assert.notEqual(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'otherSubtag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 7);
+                assert.equal(ctx.inputRaw, 'arg1 arg2 \\-f flag value');
+                assert.deepEqual(ctx.input, ['arg1', 'arg2', '-f', 'flag', 'value']);
+                assert.equal(ctx.flaggedInput.f?.merge().raw, undefined);
+                assert.equal(ctx.flaggedInput._.merge().raw, 'arg1 arg2 \\-f flag value');
+                assert.equal(ctx.data.stackSize, 101);
+                assert.notEqual(ctx.scopes.local, ctx.scopes.root);
+                assert.notEqual(ctx.scopes.tag, ctx.scopes.root);
                 return 'Success!';
             })],
             errors: [
@@ -348,16 +349,16 @@ runSubtagTests({
                 };
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.flaggedInput.f?.merge().raw).to.be.undefined;
-                expect(ctx.flaggedInput._.merge().raw).to.equal('This is some input text');
-                expect(ctx.data.stackSize).to.equal(100);
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
+                assert.equal(ctx.parent, undefined);
+                assert.equal(ctx.tagName, 'test tag');
+                assert.equal(ctx.rootTagName, 'test tag');
+                assert.equal(ctx.cooldown, 4);
+                assert.equal(ctx.inputRaw, 'This is some input text');
+                assert.equal(ctx.flaggedInput.f?.merge().raw, undefined);
+                assert.equal(ctx.flaggedInput._.merge().raw, 'This is some input text');
+                assert.equal(ctx.data.stackSize, 100);
+                assert.equal(ctx.scopes.local, ctx.scopes.root);
+                assert.equal(ctx.scopes.tag, ctx.scopes.root);
             }
         }
     ]

@@ -3,7 +3,7 @@ import { RealPadSubtag } from '@blargbot/bbtag/subtags/misc/realPad.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RealPadSubtag(),
     argCountBounds: { min: 2, max: 4 },
     cases: [

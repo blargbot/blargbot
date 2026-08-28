@@ -3,7 +3,7 @@ import { WarningsSubtag } from '@blargbot/bbtag/subtags/user/warnings.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new WarningsSubtag(),
     argCountBounds: { min: 0, max: 2 },
     cases: [

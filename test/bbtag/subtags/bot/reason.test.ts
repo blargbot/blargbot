@@ -1,9 +1,10 @@
+import assert from 'node:assert/strict';
+
 import { ReasonSubtag } from '@blargbot/bbtag/subtags/bot/reason.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ReasonSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
@@ -11,21 +12,21 @@ runSubtagTests({
             code: '{reason}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal('');
+                assert.equal(ctx.scopes.local.reason, '');
             }
         },
         {
             code: '{reason;}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal('');
+                assert.equal(ctx.scopes.local.reason, '');
             }
         },
         {
             code: '{reason;Because i can}',
             expected: '',
             assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal('Because i can');
+                assert.equal(ctx.scopes.local.reason, 'Because i can');
             }
         }
     ]

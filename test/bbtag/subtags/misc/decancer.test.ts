@@ -2,7 +2,7 @@ import { DecancerSubtag } from '@blargbot/bbtag/subtags/misc/decancer.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new DecancerSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

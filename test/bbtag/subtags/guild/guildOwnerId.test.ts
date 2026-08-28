@@ -2,7 +2,7 @@ import { GuildOwnerIdSubtag } from '@blargbot/bbtag/subtags/guild/guildOwnerId.j
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new GuildOwnerIdSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

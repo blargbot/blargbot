@@ -1,7 +1,6 @@
 import { existsSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import type $devAvatars from './avatars.dev.json';
 import type $prdAvatars from './avatars.prd.json';
@@ -12,9 +11,6 @@ import type $contributors from './contributors.json';
 import type $discordEmoteData from './discordEmoteData.json';
 import type $holidays from './holidays.json';
 import type $spells from './spells.json';
-
-const thisFile = fileURLToPath(import.meta.url);
-const thisDir = path.dirname(thisFile);
 
 class Resource<T> {
     readonly #path: string;
@@ -29,9 +25,9 @@ class Resource<T> {
     }
 
     public constructor(file: string, reviver: (buffer: ArrayBuffer) => Awaitable<T>) {
-        this.#path = path.resolve(path.join(thisDir, file));
+        this.#path = path.resolve(`${import.meta.dirname}/${file}`);
         if (!existsSync(this.#path))
-            throw new Error(`Cannot locate file ${file}. Relative paths are resolved with respect to ${thisDir}`);
+            throw new Error(`Cannot locate file ${file}. Relative paths are resolved with respect to ${import.meta.dirname}`);
         this.#reviver = reviver;
     }
 
@@ -49,7 +45,7 @@ function asJson<T>(value: ArrayBuffer): T {
     return JSON.parse(Buffer.from(value).toString()) as T;
 }
 
-export const resourceDirectory = thisDir;
+export const resourceDirectory = import.meta.dirname;
 export const devAvatars = new Resource<typeof $devAvatars>('./avatars.dev.json', asJson);
 export const prdAvatars = new Resource<typeof $prdAvatars>('./avatars.prd.json', asJson);
 export const beemovie = new Resource<typeof $beemovie>('./beemovie.json', asJson);

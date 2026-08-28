@@ -2,7 +2,7 @@ import { EmojisSubtag } from '@blargbot/bbtag/subtags/guild/emojis.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new EmojisSubtag(),
     argCountBounds: { min: 0, max: 1 },
     setup(ctx) {

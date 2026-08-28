@@ -1,6 +1,7 @@
-import { parse, sleep } from '@blargbot/core/utils/index.js';
+import { parse } from '@blargbot/core/utils/index.js';
 import moment from 'moment-timezone';
 
+import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import templates from '../../text.js';
@@ -22,13 +23,13 @@ export class SleepSubtag extends CompiledSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
-                    execute: (_, [duration]) => this.sleep(duration.value)
+                    execute: (ctx, [duration]) => this.sleep(ctx, duration.value)
                 }
             ]
         });
     }
 
-    public async sleep(duration: string): Promise<void> {
+    public async sleep(context: BBTagContext, duration: string): Promise<void> {
         let delay = parse.duration(duration);
         if (delay === undefined)
             throw new BBTagRuntimeError('Invalid duration');
@@ -36,6 +37,6 @@ export class SleepSubtag extends CompiledSubtag {
         if (delay.asMilliseconds() > maxSleep.asMilliseconds())
             delay = maxSleep;
 
-        await sleep(delay.asMilliseconds());
+        await context.sleep(delay.asMilliseconds());
     }
 }

@@ -2,7 +2,7 @@ import { GuildIdSubtag } from '@blargbot/bbtag/subtags/guild/guildId.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new GuildIdSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

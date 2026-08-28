@@ -2,7 +2,7 @@ import { VoidSubtag } from '@blargbot/bbtag/subtags/misc/void.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new VoidSubtag(),
     argCountBounds: { min: 0, max: Infinity },
     cases: [

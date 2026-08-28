@@ -4,7 +4,7 @@ import { IndexOfSubtag } from '@blargbot/bbtag/subtags/misc/indexOf.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new IndexOfSubtag(),
     argCountBounds: { min: 2, max: 3 },
     cases: [

@@ -3,7 +3,7 @@ import { ThrowSubtag } from '@blargbot/bbtag/subtags/bot/throw.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ThrowSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [

@@ -4,10 +4,6 @@
     "private": true,
     "type": "module",
     "dependencies": {
-        "@blargbot/formatting": "workspace:^",
-        "node-fetch": "^3.3.2"
-    },
-    "devDependencies": {
-        "@types/node-fetch": "^2.6.2"
+        "@blargbot/formatting": "workspace:^"
     }
 }

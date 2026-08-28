@@ -4,7 +4,7 @@ import { ChannelType } from 'discord-api-types/v9';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ChannelsSubtag(),
     argCountBounds: { min: 0, max: 2 },
     cases: [

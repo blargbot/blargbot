@@ -1,9 +1,10 @@
+import assert from 'node:assert/strict';
+
 import { HereMentionSubtag } from '@blargbot/bbtag/subtags/message/hereMention.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new HereMentionSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
@@ -11,21 +12,21 @@ runSubtagTests({
             code: '{heremention}',
             expected: '@here',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.true;
+                assert.equal(ctx.data.allowedMentions.everybody, true);
             }
         },
         {
             code: '{heremention;true}',
             expected: '@here',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.true;
+                assert.equal(ctx.data.allowedMentions.everybody, true);
             }
         },
         {
             code: '{heremention;false}',
             expected: '@here',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.false;
+                assert.equal(ctx.data.allowedMentions.everybody, false);
             }
         }
     ]

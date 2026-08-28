@@ -4,7 +4,7 @@ import { UserTimeoutSubtag } from '@blargbot/bbtag/subtags/user/userTimeout.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UserTimeoutSubtag(),
     argCountBounds: { min: 0, max: 3 },
     cases: [

@@ -5,7 +5,7 @@ import { TagVariableType } from '@blargbot/domain/models/index.js';
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new GetSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [

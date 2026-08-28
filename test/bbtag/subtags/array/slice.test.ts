@@ -1,11 +1,12 @@
+import assert from 'node:assert/strict';
+
 import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { SliceSubtag } from '@blargbot/bbtag/subtags/array/slice.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SliceSubtag(),
     argCountBounds: { min: 2, max: 3 },
     cases: [
@@ -54,8 +55,8 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
-                expect((await bbctx.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
+                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), [1, 2, 3, 4]);
+                assert.deepEqual((await bbctx.variables.get('arr1')).value, [1, 2, 3, 4]);
             }
         },
         {
@@ -66,8 +67,8 @@ runSubtagTests({
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
             },
             async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
-                expect((await bbctx.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
+                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), [1, 2, 3, 4]);
+                assert.deepEqual((await bbctx.variables.get('arr1')).value, [1, 2, 3, 4]);
             }
         }
     ]

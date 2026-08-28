@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+
 import type { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
 import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
@@ -5,7 +7,6 @@ import { WaitMessageSubtag } from '@blargbot/bbtag/subtags/message/waitMessage.j
 import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
 import type { Mock } from '@blargbot/test-util/mock.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
 import * as eris from 'eris';
 
 import type { SubtagTestContext } from '../SubtagTestSuite.js';
@@ -14,7 +15,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitMessage']>[1], undefined>;
 const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new WaitMessageSubtag(),
     argCountBounds: { min: 0, max: { count: 4, noEval: [2] } },
     cases: [
@@ -405,7 +406,7 @@ runSubtagTests({
 function createFakeAwaiterFactory(result: eris.KnownMessage | undefined, expectedFails: eris.KnownMessage[] = []): BBTagUtilities['awaitMessage'] {
     return async (_: unknown, condition: AwaitCondition) => {
         for (const value of expectedFails)
-            expect(await condition(value)).to.be.false;
+            assert.equal(await condition(value), false);
         if (result === undefined)
             return undefined;
         if (await condition(result))

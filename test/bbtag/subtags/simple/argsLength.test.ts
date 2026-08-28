@@ -2,7 +2,7 @@ import { ArgsLengthSubtag } from '@blargbot/bbtag/subtags/simple/argsLength.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ArgsLengthSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

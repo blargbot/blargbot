@@ -1,11 +1,12 @@
+import assert from 'node:assert/strict';
+
 import type { BBTagContext } from '@blargbot/bbtag';
 import { RollbackSubtag } from '@blargbot/bbtag/subtags/bot/rollback.js';
 import { TagVariableType } from '@blargbot/domain/models/index.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RollbackSubtag(),
     argCountBounds: { min: 0, max: Infinity },
     setup(ctx) {
@@ -73,5 +74,5 @@ runSubtagTests({
 
 async function assertCacheState(bbctx: BBTagContext, expected: Record<string, JToken | undefined>): Promise<void> {
     const values = await Promise.all(Object.keys(expected).map(async k => [k, (await bbctx.variables.get(k)).value] as const));
-    expect(Object.fromEntries(values)).to.deep.equal(expected);
+    assert.deepEqual(Object.fromEntries(values), expected);
 }

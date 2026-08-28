@@ -8,7 +8,7 @@ const isEqualTo = { '!=': false, '<': false, '<=': true, '==': true, '>': false,
 const isGreaterThan = { '!=': true, '<': false, '<=': false, '==': false, '>': true, '>=': true } as const;
 const isLessThan = { '!=': true, '<': true, '<=': true, '==': false, '>': false, '>=': false } as const;
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new IfSubtag(),
     argCountBounds: { min: 2, max: { count: 5, noEval: [3, 4] } },
     cases: [

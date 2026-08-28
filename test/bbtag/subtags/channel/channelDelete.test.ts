@@ -6,7 +6,7 @@ import * as eris from 'eris';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ChannelDeleteSubtag(),
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {

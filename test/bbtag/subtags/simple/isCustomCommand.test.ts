@@ -2,7 +2,7 @@ import { IsCustomCommandSubtag } from '@blargbot/bbtag/subtags/simple/isCustomCo
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new IsCustomCommandSubtag(),
     argCountBounds: { min: 0, max: 0 },
     cases: [

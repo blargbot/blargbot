@@ -1,11 +1,10 @@
-import 'chai-exclude';
+import assert from 'node:assert/strict';
 
 import { RandomChooseSubtag } from '@blargbot/bbtag/subtags/misc/randomChoose.js';
-import { expect } from 'chai';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RandomChooseSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     cases: [
@@ -45,15 +44,15 @@ runSubtagTests({
 {randchoose;{eval}1;{eval}2;{eval}3;{eval}4;{eval}5;{eval}6;{eval}7;{eval}8;{eval}9}`,
             expected: /^(\d)\n(?!\1)\d$/, // the 2 numbers picked should not be the same
             errors(errors) {
-                expect(errors).to.have.length(2);
+                assert.equal(errors.length, 2);
                 const err1 = errors[0];
-                expect(err1.subtag?.start.line).to.equal(0);
-                expect(err1.subtag?.end.line).to.equal(0);
-                expect(err1.error).to.be.instanceOf(MarkerError);
+                assert.equal(err1.subtag?.start.line, 0);
+                assert.equal(err1.subtag.end.line, 0);
+                assert(err1.error instanceof MarkerError);
                 const err2 = errors[1];
-                expect(err2.subtag?.start.line).to.equal(1);
-                expect(err2.subtag?.end.line).to.equal(1);
-                expect(err2.error).to.be.instanceOf(MarkerError);
+                assert.equal(err2.subtag?.start.line, 1);
+                assert.equal(err2.subtag.end.line, 1);
+                assert(err2.error instanceof MarkerError);
             },
             retries: 5
         }

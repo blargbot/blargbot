@@ -3,7 +3,7 @@ import { RoundUpSubtag } from '@blargbot/bbtag/subtags/math/roundUp.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RoundUpSubtag(),
     argCountBounds: { min: 1, max: 1 },
     cases: [

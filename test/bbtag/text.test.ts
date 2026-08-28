@@ -1,10 +1,11 @@
+import { describe } from 'node:test';
+
 import { Subtag, SubtagType } from '@blargbot/bbtag';
 import templates from '@blargbot/bbtag/text.js';
 import * as coreTransformers from '@blargbot/core/formatting/index.js';
 import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
-import { describe } from 'mocha';
 
 class TestSubtag extends Subtag {
     protected executeCore: Subtag['executeCore'] = () => {
@@ -17,8 +18,8 @@ const subtag = (): Subtag => new TestSubtag({
     signatures: []
 });
 
-describe('BBTag format strings', () => {
-    runFormatTreeTests(templates, {
+await describe('BBTag format strings', async () => {
+    await runFormatTreeTests(templates, {
         transformers: {
             ...transformers,
             ...coreTransformers

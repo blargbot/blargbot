@@ -3,7 +3,7 @@ import { UserRolesSubtag } from '@blargbot/bbtag/subtags/user/userRoles.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UserRolesSubtag(),
     argCountBounds: { min: 0, max: 2 },
     cases: [

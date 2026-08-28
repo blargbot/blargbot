@@ -3,7 +3,7 @@ import { ChooseSubtag } from '@blargbot/bbtag/subtags/misc/choose.js';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ChooseSubtag(),
     argCountBounds: { min: 2, max: Infinity },
     cases: [

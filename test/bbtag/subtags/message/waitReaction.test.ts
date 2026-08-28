@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+
 import type { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
 import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
@@ -8,7 +10,6 @@ import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
 import type { AwaitReactionsResponse } from '@blargbot/bbtag/types.js';
 import { Emote } from '@blargbot/core/Emote.js';
 import { argument } from '@blargbot/test-util/mock.js';
-import { expect } from 'chai';
 import * as eris from 'eris';
 
 import type { SubtagTestContext } from '../SubtagTestSuite.js';
@@ -17,7 +18,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitReaction']>[1], undefined>;
 const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new WaitReactionSubtag(),
     argCountBounds: { min: 1, max: { count: 5, noEval: [3] } },
     cases: [
@@ -547,7 +548,7 @@ runSubtagTests({
 function createFakeAwaiterFactory(result: AwaitReactionsResponse | undefined, expectedFails: AwaitReactionsResponse[] = []): BBTagUtilities['awaitReaction'] {
     return async (_: unknown, condition: AwaitCondition) => {
         for (const value of expectedFails)
-            expect(await condition(value)).to.be.false;
+            assert.equal(await condition(value), false);
         if (result === undefined)
             return undefined;
         if (await condition(result))

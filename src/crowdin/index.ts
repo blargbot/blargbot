@@ -1,10 +1,9 @@
 import path from 'node:path';
 
 import type { ITranslationSource, LanguageDetails } from '@blargbot/formatting';
-import type $fetch from 'node-fetch';
 
 export class CrowdinTranslationSource implements ITranslationSource {
-    readonly #fetch: typeof $fetch;
+    readonly #fetch: typeof globalThis.fetch;
     readonly #manifestUrl: string;
     readonly #contentUrl: (fileName: string, timestamp: number) => string;
     readonly #languageMapUrl: string;
@@ -14,7 +13,7 @@ export class CrowdinTranslationSource implements ITranslationSource {
 
     public readonly languages: ReadonlyMap<string, LanguageDetails>;
 
-    public constructor(distribution: string, fetch: typeof $fetch) {
+    public constructor(distribution: string, fetch: typeof globalThis.fetch) {
         this.#fetch = fetch;
         this.#manifestUrl = `https://distributions.crowdin.net/${distribution}/manifest.json`;
         this.#contentUrl = (fileName, timestamp) => `https://distributions.crowdin.net/${distribution}/content${fileName}?timestamp=${timestamp}`;

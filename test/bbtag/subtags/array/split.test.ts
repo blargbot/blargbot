@@ -2,7 +2,7 @@ import { SplitSubtag } from '@blargbot/bbtag/subtags/array/split.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SplitSubtag(),
     argCountBounds: { min: 1, max: 2 },
     cases: [

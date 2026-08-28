@@ -2,7 +2,6 @@ import type { Configuration } from '@blargbot/config';
 import { BaseWorker } from '@blargbot/core/worker/index.js';
 import type { Logger } from '@blargbot/logger';
 import type { MasterIPCContract, MasterOptions } from '@blargbot/master/types.js';
-import type $fetch from 'node-fetch';
 
 import { Master } from './Master.js';
 
@@ -12,7 +11,7 @@ export class MasterWorker extends BaseWorker<MasterIPCContract> {
     public constructor(
         logger: Logger,
         config: Configuration,
-        fetch: typeof $fetch,
+        fetch: typeof globalThis.fetch,
         options: Omit<MasterOptions, 'worker'>
     ) {
         super(logger);

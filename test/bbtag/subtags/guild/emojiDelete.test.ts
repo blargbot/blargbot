@@ -4,7 +4,7 @@ import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new EmojiDeleteSubtag(),
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {

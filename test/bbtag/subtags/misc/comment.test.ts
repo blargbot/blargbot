@@ -2,7 +2,7 @@ import { CommentSubtag } from '@blargbot/bbtag/subtags/misc/comment.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new CommentSubtag(),
     argCountBounds: { min: 0, max: Infinity },
     cases: [

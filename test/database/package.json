@@ -1,0 +1,10 @@
+{
+    "name": "@blargbot/database-tests",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@blargbot/database": "workspace:^",
+        "ts-mockito": "^2.6.1"
+    }
+}

@@ -22,3 +22,4 @@ export * from './runMiddleware.js';
 export * from './hasFlag.js';
 export * from './clamp.js';
 export * from './clampBy.js';
+export * from './callWithFinalize.js';

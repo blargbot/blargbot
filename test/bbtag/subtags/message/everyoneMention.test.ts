@@ -1,9 +1,10 @@
+import assert from 'node:assert/strict';
+
 import { EveryoneMentionSubtag } from '@blargbot/bbtag/subtags/message/everyoneMention.js';
-import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new EveryoneMentionSubtag(),
     argCountBounds: { min: 0, max: 1 },
     cases: [
@@ -11,21 +12,21 @@ runSubtagTests({
             code: '{everyonemention}',
             expected: '@everyone',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.true;
+                assert.equal(ctx.data.allowedMentions.everybody, true);
             }
         },
         {
             code: '{everyonemention;true}',
             expected: '@everyone',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.true;
+                assert.equal(ctx.data.allowedMentions.everybody, true);
             }
         },
         {
             code: '{everyonemention;false}',
             expected: '@everyone',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.false;
+                assert.equal(ctx.data.allowedMentions.everybody, false);
             }
         }
     ]

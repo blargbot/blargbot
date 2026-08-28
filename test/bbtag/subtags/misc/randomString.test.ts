@@ -3,7 +3,7 @@ import { RandomStringSubtag } from '@blargbot/bbtag/subtags/misc/randomString.js
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RandomStringSubtag(),
     argCountBounds: { min: 2, max: 2 },
     cases: [
