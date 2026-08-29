@@ -5,6 +5,15 @@
     "type": "module",
     "dependencies": {
         "@blargbot/database": "workspace:^",
+        "@blargbot/domain": "workspace:^",
+        "@blargbot/logger": "workspace:^",
+        "@blargbot/test-util": "workspace:^",
+        "airtable": "patch:airtable@npm%3A0.12.2#~/.yarn/patches/airtable-npm-0.12.2-ef934b1a03.patch",
+        "cassandra-driver": "^4.6.4",
+        "catflake": "^1.0.0",
+        "pg": "^8.8.0",
+        "rethinkdb": "^2.4.2",
+        "sequelize": "^6.25.8",
         "ts-mockito": "^2.6.1"
     }
 }

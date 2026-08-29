@@ -409,6 +409,15 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@blargbot/database", "workspace:src/database"],\
           ["@blargbot/database-tests", "workspace:test/database"],\
+          ["@blargbot/domain", "workspace:src/domain"],\
+          ["@blargbot/logger", "workspace:src/logger"],\
+          ["@blargbot/test-util", "workspace:test/testUtil"],\
+          ["airtable", "patch:airtable@npm%3A0.12.2#~/.yarn/patches/airtable-npm-0.12.2-ef934b1a03.patch::version=0.12.2&hash=535749"],\
+          ["cassandra-driver", "npm:4.6.4"],\
+          ["catflake", "npm:1.0.0"],\
+          ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\
+          ["rethinkdb", "npm:2.4.2"],\
+          ["sequelize", "virtual:8d54d45c5fbacbc5fbdef49d043be53f31b1d78235ae02008a9651ad6148906489cc37763776c18e118438102082b14a4a6f8a74e56919826aa06aef5a2f5328#npm:6.25.8"],\
           ["ts-mockito", "npm:2.6.1"]\
         ],\
         "linkType": "SOFT"\
@@ -5445,6 +5454,67 @@ const RAW_RUNTIME_STATE =
           ["retry-as-promised", "npm:6.1.0"],\
           ["semver", "npm:7.3.7"],\
           ["sequelize", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.25.8"],\
+          ["sequelize-pool", "npm:7.1.0"],\
+          ["snowflake-sdk", null],\
+          ["sqlite3", null],\
+          ["tedious", null],\
+          ["toposort-class", "npm:1.0.1"],\
+          ["uuid", "npm:8.3.2"],\
+          ["validator", "npm:13.7.0"],\
+          ["wkx", "npm:0.5.0"]\
+        ],\
+        "packagePeers": [\
+          "@types/ibm_db",\
+          "@types/mariadb",\
+          "@types/mysql2",\
+          "@types/oracledb",\
+          "@types/pg-hstore",\
+          "@types/pg",\
+          "@types/snowflake-sdk",\
+          "@types/sqlite3",\
+          "@types/tedious",\
+          "ibm_db",\
+          "mariadb",\
+          "mysql2",\
+          "oracledb",\
+          "pg-hstore",\
+          "pg",\
+          "snowflake-sdk",\
+          "sqlite3",\
+          "tedious"\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["virtual:8d54d45c5fbacbc5fbdef49d043be53f31b1d78235ae02008a9651ad6148906489cc37763776c18e118438102082b14a4a6f8a74e56919826aa06aef5a2f5328#npm:6.25.8", {\
+        "packageLocation": "./.yarn/__virtual__/sequelize-virtual-9d125fb7a9/0/cache/sequelize-npm-6.25.8-73ac6c564d-6f8d762ba2.zip/node_modules/sequelize/",\
+        "packageDependencies": [\
+          ["@types/debug", "npm:4.1.7"],\
+          ["@types/ibm_db", null],\
+          ["@types/mariadb", null],\
+          ["@types/mysql2", null],\
+          ["@types/oracledb", null],\
+          ["@types/pg", null],\
+          ["@types/pg-hstore", null],\
+          ["@types/snowflake-sdk", null],\
+          ["@types/sqlite3", null],\
+          ["@types/tedious", null],\
+          ["@types/validator", "npm:13.7.6"],\
+          ["debug", "virtual:9e3a462140b35a19ddb3d48ebde58d66740d97f4c0386bc195c327fc2c44fa59f43cbcb382dd9f194b16d0dd6c0a138aadd4a9de84088f88e25946598f97cb88#npm:4.3.4"],\
+          ["dottie", "npm:2.0.2"],\
+          ["ibm_db", null],\
+          ["inflection", "npm:1.13.4"],\
+          ["lodash", "npm:4.17.21"],\
+          ["mariadb", null],\
+          ["moment", "npm:2.29.4"],\
+          ["moment-timezone", "npm:0.5.37"],\
+          ["mysql2", null],\
+          ["oracledb", null],\
+          ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\
+          ["pg-connection-string", "npm:2.5.0"],\
+          ["pg-hstore", null],\
+          ["retry-as-promised", "npm:6.1.0"],\
+          ["semver", "npm:7.3.7"],\
+          ["sequelize", "virtual:8d54d45c5fbacbc5fbdef49d043be53f31b1d78235ae02008a9651ad6148906489cc37763776c18e118438102082b14a4a6f8a74e56919826aa06aef5a2f5328#npm:6.25.8"],\
           ["sequelize-pool", "npm:7.1.0"],\
           ["snowflake-sdk", null],\
           ["sqlite3", null],\

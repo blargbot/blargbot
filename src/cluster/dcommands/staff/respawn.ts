@@ -1,6 +1,6 @@
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
 import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import type { ClusterRespawnRequest, CommandResult } from '@blargbot/cluster/types.js';
+import type { CommandResult } from '@blargbot/cluster/types.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 
 import templates from '../../text.js';
@@ -25,7 +25,7 @@ export class RespawnCommand extends GlobalCommand {
 
     public async respawn(context: CommandContext, clusterId: number): Promise<CommandResult> {
         await context.send(context.config.discord.channels.shardlog, cmd.default.requested({ user: context.author, clusterId }));
-        context.cluster.worker.send('respawn', <ClusterRespawnRequest>{ id: clusterId, channel: context.channel.id });
+        context.cluster.worker.send('respawn', { id: clusterId, channel: context.channel.id });
         return cmd.default.success({ clusterId });
     }
 }

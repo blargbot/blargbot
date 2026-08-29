@@ -18,14 +18,14 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
     switch (def.type) {
         case 'string': return {
             success: true,
-            value: <StoredGuildSettings[T]>raw,
+            value: raw as StoredGuildSettings[T],
             display: `\`${raw}\``
         };
         case 'float': {
             const val = parse.float(raw, { strict: true });
             return {
                 success: val !== undefined,
-                value: <StoredGuildSettings[T]>val,
+                value: val as StoredGuildSettings[T],
                 display: `\`${val ?? NaN}\``
             };
         }
@@ -33,7 +33,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             const val = parse.int(raw, { strict: true });
             return {
                 success: val !== undefined,
-                value: <StoredGuildSettings[T]>val,
+                value: val as StoredGuildSettings[T],
                 display: `\`${val ?? NaN}\``
             };
         }
@@ -41,7 +41,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             const val = parse.bigInt(raw);
             return {
                 success: val !== undefined,
-                value: <StoredGuildSettings[T]>val?.toString(),
+                value: val?.toString() as StoredGuildSettings[T],
                 display: `\`${val ?? raw}\``
             };
         }
@@ -49,7 +49,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             const val = parse.boolean(raw, undefined);
             return {
                 success: val !== undefined,
-                value: <StoredGuildSettings[T]>val,
+                value: val as StoredGuildSettings[T],
                 display: `\`${val ?? 'undefined'}\``
             };
         }

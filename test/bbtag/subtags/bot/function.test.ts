@@ -14,7 +14,7 @@ await runSubtagTests({
             code: '{function;test;{fail}}',
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.scopes.root.functions['test'], <Statement>{
+                assert.deepEqual(ctx.scopes.root.functions['test'], {
                     values: [
                         {
                             name: {
@@ -32,14 +32,14 @@ await runSubtagTests({
                     source: '{fail}',
                     start: { column: 15, line: 0, index: 15 },
                     end: { column: 21, line: 0, index: 21 }
-                });
+                } as Statement);
             }
         },
         {
             code: '{function;func.test;{fail}}',
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.scopes.root.functions['test'], <Statement>{
+                assert.deepEqual(ctx.scopes.root.functions['test'], {
                     values: [
                         {
                             name: {
@@ -57,7 +57,7 @@ await runSubtagTests({
                     source: '{fail}',
                     start: { column: 20, line: 0, index: 20 },
                     end: { column: 26, line: 0, index: 26 }
-                });
+                } as Statement);
             }
         },
         {

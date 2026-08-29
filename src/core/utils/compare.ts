@@ -16,7 +16,7 @@ export function compare(a: string, b: string): number {
         if (!guard.hasProperty(sorter, key))
             continue;
 
-        const value = sorter[key](a, b);
+        const value = callSorter(key, a, b);
         if (value !== 0)
             return value;
     }
@@ -25,7 +25,6 @@ export function compare(a: string, b: string): number {
 }
 
 type BlockTypePairs = `${keyof BlockTypes}|${keyof BlockTypes}`;
-type BlockType = BlockTypes[keyof BlockTypes];
 type BlockTypes = {
     string: string;
     number: number;
@@ -37,9 +36,12 @@ type ExtractBlockTypeCalls<T extends string> = T extends `${infer A}|${infer B}`
     : never : never : never;
 
 type TypedSorter = { [P in ExtractBlockTypeCalls<BlockTypePairs> as P['name']]: (...args: P['args']) => number };
-type GenericSorter = { [P in BlockTypePairs]: (left: BlockType, right: BlockType) => number }
 
-const sorter = <GenericSorter><TypedSorter>{
+function callSorter<K extends keyof TypedSorter>(key: K, ...args: Parameters<TypedSorter[K]>): number {
+    return sorter[key](...args as [never, never]);
+}
+
+const sorter: TypedSorter = {
     'undefined|number': () => -1,
     'undefined|string': () => -1,
     'number|string': () => -1,

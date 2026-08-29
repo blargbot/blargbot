@@ -1,7 +1,7 @@
 import prometheus from 'prom-client';
 
 export const metrics = {
-    registryCache: <prometheus.metric[][]>[],
+    registryCache: [] as prometheus.metric[][],
     guildGauge: new prometheus.Gauge({
         name: 'bot_guild_gauge', help: 'How many guilds the bot is in'
     }),

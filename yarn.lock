@@ -200,6 +200,15 @@ __metadata:
   resolution: "@blargbot/database-tests@workspace:test/database"
   dependencies:
     "@blargbot/database": "workspace:^"
+    "@blargbot/domain": "workspace:^"
+    "@blargbot/logger": "workspace:^"
+    "@blargbot/test-util": "workspace:^"
+    airtable: "patch:airtable@npm%3A0.12.2#~/.yarn/patches/airtable-npm-0.12.2-ef934b1a03.patch"
+    cassandra-driver: "npm:^4.6.4"
+    catflake: "npm:^1.0.0"
+    pg: "npm:^8.8.0"
+    rethinkdb: "npm:^2.4.2"
+    sequelize: "npm:^6.25.8"
     ts-mockito: "npm:^2.6.1"
   languageName: unknown
   linkType: soft

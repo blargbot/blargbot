@@ -14,7 +14,7 @@ export function createLogger(config: Configuration, workerId: string): Logger {
         level: config.general.loglevel,
         shardLength: 6,
         levels: Object.entries(logLevels).map(([l, { color, isError, isTrace }]) => {
-            const level = new CatLogLevel(l, <Color><unknown>color);
+            const level = new CatLogLevel(l, color as Color);
             level.err = isError ?? false;
             level.trace = isTrace ?? false;
             return level;
