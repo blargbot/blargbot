@@ -72,11 +72,11 @@ export class Emote {
             throw new Error(`${id as string} is not a valid emote id`);
     }
 
-    public toApi(): `${string}:${Snowflake}` | string {
+    public toApi(): string {
         return this.id === undefined ? this.name : `${this.name}:${this.id}`;
     }
 
-    public toString(): `<${'a' | ''}:${string}:${Snowflake}>` | string {
+    public toString(): string {
         if (this.id === undefined)
             return this.name;
         if (this.animated)

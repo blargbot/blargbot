@@ -17,7 +17,7 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
     public constructor(public readonly cluster: Cluster) {
     }
 
-    public async send<T extends eris.TextableChannel>(channel: T, payload: BBTagSendContent, author?: eris.User | undefined): Promise<eris.Message<T> | undefined> {
+    public async send<T extends eris.TextableChannel>(channel: T, payload: BBTagSendContent, author?: eris.User  ): Promise<eris.Message<T> | undefined> {
         return payload.nsfw !== undefined && guard.isGuildChannel(channel) && !channel.nsfw
             ? await this.cluster.util.send(channel, util.literal({ content: payload.nsfw, allowedMentions: payload.allowedMentions }))
             : await this.cluster.util.send(channel, util.literal(payload), author);
@@ -31,7 +31,7 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
             : await this.cluster.util.getChannel(...args);
     }
 
-    public async findChannels(guild: string | eris.Guild, query?: string | undefined): Promise<eris.KnownGuildChannel[]> {
+    public async findChannels(guild: string | eris.Guild, query?: string  ): Promise<eris.KnownGuildChannel[]> {
         return await this.cluster.util.findChannels(guild, query);
     }
 
@@ -43,7 +43,7 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return await this.cluster.util.getMember(guild, userId);
     }
 
-    public async findMembers(guild: string | eris.Guild, query?: string | undefined): Promise<eris.Member[]> {
+    public async findMembers(guild: string | eris.Guild, query?: string  ): Promise<eris.Member[]> {
         return await this.cluster.util.findMembers(guild, query);
     }
 
@@ -55,12 +55,12 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return await this.cluster.util.getRole(guild, roleId);
     }
 
-    public async findRoles(guild: string | eris.Guild, query?: string | undefined): Promise<eris.Role[]> {
+    public async findRoles(guild: string | eris.Guild, query?: string  ): Promise<eris.Role[]> {
         return await this.cluster.util.findRoles(guild, query);
     }
 
-    public async getMessage(channel: string, messageId: string, force?: boolean | undefined): Promise<eris.KnownMessage | undefined>;
-    public async getMessage(channel: eris.KnownChannel, messageId: string, force?: boolean | undefined): Promise<eris.KnownMessage | undefined>;
+    public async getMessage(channel: string, messageId: string, force?: boolean  ): Promise<eris.KnownMessage | undefined>;
+    public async getMessage(channel: eris.KnownChannel, messageId: string, force?: boolean  ): Promise<eris.KnownMessage | undefined>;
     public async getMessage(...args: [eris.KnownChannel, string, boolean?] | [string, string, boolean?]): Promise<eris.KnownMessage | undefined> {
         return isIndex0String(args)
             ? await this.cluster.util.getMessage(...args)
@@ -81,15 +81,15 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return (await this.cluster.util.generateDumpPage(payload, channel)).toString();
     }
 
-    public websiteLink(path?: string | undefined): string {
+    public websiteLink(path?: string  ): string {
         return this.cluster.util.websiteLink(path);
     }
 
-    public timeout(member: eris.Member, moderator: eris.User, authorizer: eris.User, duration: moment.Duration, reason?: string | undefined): Promise<'noPerms' | 'success' | 'alreadyTimedOut' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
+    public timeout(member: eris.Member, moderator: eris.User, authorizer: eris.User, duration: moment.Duration, reason?: string  ): Promise<'noPerms' | 'success' | 'alreadyTimedOut' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
         return this.cluster.moderation.timeouts.timeout(member, moderator, authorizer, duration, util.literal(reason));
     }
 
-    public clearTimeout(member: eris.Member, moderator: eris.User, authorizer: eris.User, reason?: string | undefined): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
+    public clearTimeout(member: eris.Member, moderator: eris.User, authorizer: eris.User, reason?: string  ): Promise<'noPerms' | 'success' | 'moderatorNoPerms' | 'notTimedOut'> {
         return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, util.literal(reason));
     }
 

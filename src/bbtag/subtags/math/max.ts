@@ -26,12 +26,18 @@ export class MaxSubtag extends CompiledSubtag {
 
     public max(values: string[]): number {
         const flattenedArgs = bbtag.tagArray.flattenArray(values);
-        const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
-        const filteredArgs = parsedArgs.filter(guard.hasValue);
+        const parsedArgs = [];
+        for (const arg of flattenedArgs) {
+            if (!isValidArg(arg))
+                return NaN;
+            const parsed = parse.float(arg);
+            if (parsed === undefined)
+                return NaN;
+            parsedArgs.push(parsed);
+        }
 
-        if (filteredArgs.length < parsedArgs.length)
-            return NaN;
-
-        return Math.max(...filteredArgs);
+        return Math.max(...parsedArgs);
     }
 }
+
+const isValidArg = guard.isTypeOf('string', 'number');

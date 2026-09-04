@@ -18,7 +18,6 @@ async function runFormatTreeTestsCore<T extends object>(prefix: string[], source
             await describe(name, async () => {
                 for (const scenario of c) {
                     await it(`should handle the "${scenario.name}" case`, () => {
-                        name;
                         //arrange
                         const compiler = new FormatStringCompiler(options);
                         const formatter = new Formatter(new Intl.Locale('en'), [], compiler);

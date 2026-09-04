@@ -6,7 +6,7 @@ import type { RethinkDb } from '../clients/index.js';
 import { RethinkDbTable } from '../tables/RethinkDbTable.js';
 
 export class RethinkDbBotVariableStore implements BotVariableStore {
-    #table: RethinkDbTable<BotVariable>;
+    readonly #table: RethinkDbTable<BotVariable>;
 
     public constructor(rethinkDb: RethinkDb, logger: Logger) {
         this.#table = new RethinkDbTable('vars', rethinkDb, logger);

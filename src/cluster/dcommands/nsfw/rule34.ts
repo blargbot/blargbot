@@ -75,7 +75,6 @@ export class Rule34Command extends GlobalCommand {
     }
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
 const r34Mapping = mapping.object({
     posts: mapping.object({
         tag: mapping.array(mapping.object({
@@ -88,4 +87,3 @@ const r34Mapping = mapping.object({
         }))
     })
 });
-/* eslint-enable @typescript-eslint/naming-convention */

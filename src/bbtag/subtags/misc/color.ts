@@ -48,6 +48,7 @@ export class ColorSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Invalid color', 'value was empty');
 
         const arr = await bbtag.tagArray.deserializeOrGetArray(context, colorStr);
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
 
         const inputConverter = getConverter(inputStr ?? '');

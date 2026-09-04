@@ -6,7 +6,7 @@ import { isTypedArray } from 'node:util/types';
 import { PromiseCompletionSource } from './PromiseCompletionSource.js';
 
 export class BufferWriter extends Writable {
-    #core: BufferWriterCore;
+    readonly #core: BufferWriterCore;
 
     public constructor(options?: { maxSize?: number; }) {
         super();
@@ -17,7 +17,7 @@ export class BufferWriter extends Writable {
         return this.#core.getResult();
     }
 
-    public override _write(chunk: unknown, encoding: BufferEncoding, callback: (error?: null | Error | undefined) => void): void {
+    public override _write(chunk: unknown, encoding: BufferEncoding, callback: (error?: null | Error  ) => void): void {
         callback(this.#core.push(chunk, encoding));
     }
 
@@ -50,7 +50,7 @@ export class BufferWriterStream extends WritableStream<Buffer | string | DataVie
 
 class BufferWriterCore {
     readonly #maxSize: number;
-    #chunks: Buffer[] | null;
+    #chunks: Uint8Array[] | null;
     #size: number;
     readonly #result: PromiseCompletionSource<Buffer>;
 
@@ -70,28 +70,28 @@ class BufferWriterCore {
             return new Error('Stream is not in a state that can be written to.');
         }
 
-        let buffer: Buffer | undefined;
+        let buffer: Uint8Array | undefined;
         if (typeof chunk === 'string')
-            buffer = Buffer.from(chunk, encoding);
+            buffer = toUInt8Array(Buffer.from(chunk, encoding));
         else if (chunk instanceof Buffer)
-            buffer = chunk;
+            buffer = toUInt8Array(chunk);
         else if (chunk instanceof DataView)
-            buffer = Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength);
+            buffer = toUInt8Array(chunk);
         else if (chunk instanceof SharedArrayBuffer)
-            buffer = Buffer.from(chunk);
+            buffer = toUInt8Array(chunk);
         else if (chunk instanceof ArrayBuffer)
-            buffer = Buffer.from(chunk);
+            buffer = toUInt8Array(chunk);
         else if (isTypedArray(chunk))
-            buffer = Buffer.from(chunk);
+            buffer = toUInt8Array(chunk);
 
         let error: Error | undefined;
         if (buffer === undefined)
             error = new Error('Invalid chunk received.');
-        else if (this.#size + buffer.length > this.#maxSize)
+        else if (this.#size + buffer.byteLength > this.#maxSize)
             error = new Error('Max size has been reached.');
         else {
             this.#chunks.push(buffer);
-            this.#size += buffer.length;
+            this.#size += buffer.byteLength;
             return null;
         }
 
@@ -107,4 +107,10 @@ class BufferWriterCore {
         this.#result.resolve(Buffer.concat(this.#chunks));
         this.#chunks = null;
     }
+}
+
+function toUInt8Array(source: Pick<Uint8Array, 'buffer' | 'byteLength' | 'byteOffset'> | ArrayBufferLike): Uint8Array {
+    if ('buffer' in source)
+        return new Uint8Array(source.buffer, source.byteOffset, source.byteLength);
+    return new Uint8Array(source);
 }

@@ -172,7 +172,7 @@ function resolveRole(guild: eris.Guild, roleId: string | undefined): IFormattabl
         : cmd.list.roleValue.default({ role });
 }
 
-function settingGroup(values: Array<[key: string & keyof typeof guildSettings, value: string | IFormattable<string> | undefined | boolean | number]>): IFormattable<string> {
+function settingGroup(values: Array<[key: Extract<keyof typeof guildSettings, string>, value: string | IFormattable<string> | undefined | boolean | number]>): IFormattable<string> {
     return {
         [format](formatter) {
             const mapped = values.map(([key, value = cmd.list.notSet]) => {
@@ -193,7 +193,7 @@ function resolveLanguage(language: string | undefined, translator: ITranslationS
         return undefined;
 
     const details = translator.languages.get(language)
-        ?? translator.languages.get(language = 'en');
+        ?? translator.languages.get('en');
     if (details === undefined)
         return cmd.list.localeValue({ name: 'English', completion: 1 });
 

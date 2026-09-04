@@ -1,7 +1,8 @@
+import type { ReplacementValue } from './compiler/ReplacementContext.js';
 import type { IFormatString, IFormatStringDefinition, IFormatter } from './types.js';
 import { format } from './types.js';
 
-export class FormatString<T> implements IFormatString {
+export class FormatString<T extends ReplacementValue> implements IFormatString {
     static readonly #defined = new Set<IFormatStringDefinition<never>>();
     static readonly #idMap = new Map<string, IFormatStringDefinition<never>>();
 
@@ -26,7 +27,7 @@ export class FormatString<T> implements IFormatString {
             throw new Error('Unknown translation');
     }
 
-    public static define<T>(id: string, template: string): IFormatStringDefinition<T> {
+    public static define<T extends ReplacementValue>(id: string, template: string): IFormatStringDefinition<T> {
         if (FormatString.#idMap.has(id))
             throw new Error('Duplicate translation id');
 
@@ -64,7 +65,7 @@ export class FormatString<T> implements IFormatString {
         return result;
     }
 
-    public static create<T extends string>(id: string, template: T, value?: unknown): IFormatString {
+    public static create<T extends string>(id: string, template: T, value?: ReplacementValue): IFormatString {
         return FormatString.define(id, template)(value);
     }
 
@@ -75,12 +76,12 @@ export class FormatString<T> implements IFormatString {
 
 Object.freeze(FormatString);
 
-function treeUtil<T>(template: string): (id: string) => IFormatStringDefinition<T> {
+function treeUtil<T extends ReplacementValue>(template: string): (id: string) => IFormatStringDefinition<T> {
     return (id: string) => FormatString.define(id, template);
 }
 
 type FormatTreeUtil = typeof treeUtil;
-type FormatTreeEntryFactory<V = never> = (id: string) => IFormatStringDefinition<V>;
+type FormatTreeEntryFactory<V extends ReplacementValue = never> = (id: string) => IFormatStringDefinition<V>;
 type FormatTreeDefinition = {
     [P in string]: FormatTreeDefinition | FormatTreeEntryFactory | string
 };

@@ -17,6 +17,7 @@ export class PromiseCompletionSource<T> {
             this.#reject = reject;
 
             if (rejectVal !== undefined)
+                // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                 reject(rejectVal.value);
             if (resolveVal !== undefined)
                 resolve(resolveVal.value);

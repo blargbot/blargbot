@@ -1,5 +1,5 @@
 import { Timer } from '@blargbot/core/Timer.js';
-import { sleep } from '@blargbot/core/utils/index.js';
+import { guard, sleep } from '@blargbot/core/utils/index.js';
 import type { Database } from '@blargbot/database';
 import type { Logger } from '@blargbot/logger';
 import type * as eris from 'eris';
@@ -185,9 +185,7 @@ export class BBTagEngine {
         for (const call of getSubtagCalls(statement)) {
             if (call.name.values.length === 0)
                 result.warnings.push({ location: call.start, message: templates.analysis.unnamed });
-            else if (call.name.values.some(p => typeof p !== 'string'))
-                result.warnings.push({ location: call.start, message: templates.analysis.dynamic });
-            else {
+            else if (guard.every(call.name.values, guard.isTypeOf('string'))) {
                 const subtag = this.subtags.get(call.name.values.join(''));
                 // TODO Detect unknown subtags
                 switch (typeof subtag?.deprecated) {
@@ -198,7 +196,8 @@ export class BBTagEngine {
                     case 'string':
                         result.warnings.push({ location: call.start, message: templates.analysis.deprecated(subtag) });
                 }
-            }
+            } else
+                result.warnings.push({ location: call.start, message: templates.analysis.dynamic });
         }
 
         return result;

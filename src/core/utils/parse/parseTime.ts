@@ -2,7 +2,9 @@ import moment from 'moment-timezone';
 
 import { guard } from '../guard/index.js';
 
-export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC'): moment.Moment {
+export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday', format?: string, timezone?: string): moment.Moment;
+export function parseTime(text: string, format?: string, timezone?: string): moment.Moment;
+export function parseTime(text: string, format?: string, timezone = 'Etc/UTC'): moment.Moment {
     const now = moment.tz(timezone);
     if (text === '')
         return now;
@@ -34,7 +36,6 @@ export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | str
         : moment.tz(text, format, timezone);
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
 const prettyTimeMagnitudes = {
     //defaults
     year: 'year', years: 'years', y: 'y',
@@ -49,4 +50,3 @@ const prettyTimeMagnitudes = {
     //Custom
     mins: 'minutes', min: 'minute'
 } as const;
-/* eslint-enable @typescript-eslint/naming-convention */

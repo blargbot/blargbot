@@ -70,7 +70,7 @@ export class BBTagContext implements BBTagContextOptions {
     public get parent(): BBTagContext | undefined { return this.#parent; }
     public get totalDuration(): moment.Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
     public get channel(): eris.KnownGuildTextableChannel { return this.message.channel; }
-    public get member(): eris.Member | undefined { return (this.message.member as eris.Member | null) ?? undefined; }
+    public get member(): eris.Member | undefined { return this.message.member; }
     public get guild(): eris.Guild { return this.message.channel.guild; }
     public get user(): eris.User { return this.message.author; }
     public get database(): Database { return this.engine.database; }
@@ -383,7 +383,7 @@ export class BBTagContext implements BBTagContextOptions {
         try {
             const response = await this.engine.util.send(this.message.channel, {
                 content: text,
-                embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
+                embeds: this.data.embeds,
                 nsfw: this.data.nsfw,
                 allowedMentions: {
                     everyone: !disableEveryone,
@@ -406,7 +406,9 @@ export class BBTagContext implements BBTagContextOptions {
                 throw err;
             }
             this.logger.error('Failed to send message', err);
-            throw new Error('Failed to send message');
+            throw new Error('Failed to send message', {
+                cause: err
+            });
         }
     }
 

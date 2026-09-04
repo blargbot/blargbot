@@ -5,7 +5,7 @@ import type { Master } from '@blargbot/master';
 
 export class ApiGetCommandListHandler extends WorkerPoolEventService<ApiConnection, 'getCommandList'> {
     #nextCluster: number;
-    #master: Master;
+    readonly #master: Master;
 
     public constructor(master: Master) {
         super(

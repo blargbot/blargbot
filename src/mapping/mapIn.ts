@@ -9,7 +9,7 @@ export function mapIn<T extends readonly unknown[]>(...values: T): TypeMapping<T
 
     return createMapping(value => {
         if (valueSet.has(value))
-            return result.success(<T[number]>value);
+            return result.success(value);
         return result.failed;
     });
 }

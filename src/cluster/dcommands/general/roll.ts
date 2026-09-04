@@ -1,4 +1,4 @@
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
 import { GlobalCommand } from '@blargbot/cluster/command/index.js';
 import { CommandType, guard, parse, randChoose, randInt, repeat } from '@blargbot/cluster/utils/index.js';
 
@@ -51,7 +51,7 @@ export class RollCommand extends GlobalCommand {
         }
 
         const match = /^(\d+) ?d ?(\d+)$/.exec(dice);
-        if (match === null || match.length !== 3)
+        if (match?.length !== 3)
             return cmd.default.diceInvalid({ dice });
         const rollCount = parse.int(match[1], { strict: true });
         const faceCount = parse.int(match[2], { strict: true });

@@ -43,7 +43,7 @@ await runSubtagTests({
                 response.setup(m => m.headers).thenReturn(new Headers({
                     'Content-Type': 'image/png'
                 }));
-                response.setup(m => m.arrayBuffer()).thenResolve(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64'));
+                response.setup(m => m.arrayBuffer()).thenResolve(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64').buffer);
                 ctx.discord.setup(m => m.createGuildEmoji(ctx.guild.id, argument.isDeepEqual({
                     image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf',
                     name: 'My cool emoji',
@@ -67,7 +67,7 @@ await runSubtagTests({
                 ctx.dependencies.setup(m => m.fetch('https://cdn.discordapp.com/icons/194232473931087872/e88c2e966c6ca78f2268fa8aed4621ab.png?size=0'))
                     .thenResolve(response.instance);
                 response.setup(m => m.headers).thenReturn(new Headers({}));
-                response.setup(m => m.arrayBuffer()).thenResolve(new Uint8Array());
+                response.setup(m => m.arrayBuffer()).thenResolve(new ArrayBuffer(0));
                 ctx.discord.setup(m => m.createGuildEmoji(ctx.guild.id, argument.isDeepEqual({
                     image: 'data:;base64,',
                     name: 'My cool emoji',

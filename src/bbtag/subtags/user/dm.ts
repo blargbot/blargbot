@@ -72,9 +72,9 @@ export class DMSubtag extends CompiledSubtag {
                 cache = this.#dmCache[member.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
             }
 
-            context.data.nsfw === undefined
-                ? await context.util.send(channel, { content, embeds })
-                : await context.util.send(channel, { content: context.data.nsfw });
+            await (context.data.nsfw === undefined
+                ? context.util.send(channel, { content, embeds })
+                : context.util.send(channel, { content: context.data.nsfw }));
             cache.count++;
         } catch (e: unknown) {
             context.logger.error('DM failed', e);

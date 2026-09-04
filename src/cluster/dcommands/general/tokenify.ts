@@ -31,9 +31,10 @@ export class TokenifyCommand extends GlobalCommand {
                 ? pasta[i].toUpperCase()
                 : pasta[i].toLowerCase());
 
-            if (i === pasta.length - 1)
-                newPasta.length; // NOOP
-            else if (randInt(1, 20) === 1)
+            if (i !== pasta.length - 1)
+                continue;
+
+            if (randInt(1, 20) === 1)
                 newPasta.push('.');
             else if (randInt(1, 30) === 1)
                 newPasta.push('-');

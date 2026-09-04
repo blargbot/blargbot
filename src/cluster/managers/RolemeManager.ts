@@ -39,7 +39,7 @@ export class RolemeManager {
                 message.member.roles = newRoleList;
                 await this.invokeMessage(message, roleme);
 
-            } catch (err: unknown) {
+            } catch {
                 await this.#cluster.util.reply(message, new FormattableMessageContent({ content: templates.roleme.failed }));
             }
         }

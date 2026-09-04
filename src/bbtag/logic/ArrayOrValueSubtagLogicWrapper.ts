@@ -9,7 +9,7 @@ export class ArrayOrValueSubtagLogicWrapper<T extends { toString(): string; }> e
         super();
     }
 
-    protected async *getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string | undefined> {
+    protected async *getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string | undefined, void, void> {
         const values = await this.logic.execute(context, args, subtag);
         if (values === undefined)
             return;

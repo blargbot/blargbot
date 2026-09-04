@@ -76,10 +76,8 @@ export class Master extends BaseClient {
             await this.fetch(`https://discord.com/api/channels/${this.config.discord.channels.botlog}/messages`, {
                 method: 'POST',
                 headers: {
-                    /* eslint-disable @typescript-eslint/naming-convention */
                     'Authorization': token,
                     'Content-Type': 'application/json'
-                    /* eslint-enable @typescript-eslint/naming-convention */
                 },
                 body: JSON.stringify({ content: `My master process just initialized on <t:${moment().unix()}>.` })
             });

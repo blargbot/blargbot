@@ -8,7 +8,7 @@ import { RethinkDbTable } from './RethinkDbTable.js';
 
 export class RethinkDbCachedTable<Table extends { [P in KeyName]: string }, KeyName extends string> extends RethinkDbTable<Table> {
     public readonly cache: Cache<string, Table>;
-    #keyName: KeyName;
+    readonly #keyName: KeyName;
 
     public constructor(
         table: string,
@@ -114,7 +114,7 @@ export class RethinkDbCachedTable<Table extends { [P in KeyName]: string }, KeyN
 
     async #watchChangesCore(shouldCache: (id: string) => boolean = () => true): Promise<never> {
         this.logger.info(`Registering a ${this.table} changefeed!`);
-        // eslint-disable-next-line no-constant-condition
+
         while (true) {
             try {
                 const changefeed = this.stream(t => t.changes({ squash: true }));

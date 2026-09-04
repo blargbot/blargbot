@@ -22,7 +22,7 @@ export class UserBoostDateSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'string',
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
                     execute: (ctx, [format]) => this.getUserBoostDate(ctx.member!, format.value)
                 },
                 {

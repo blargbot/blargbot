@@ -68,7 +68,6 @@ export class RequestSubtag extends CompiledSubtag {
         if (request.method === 'GET') {
             if (typeof data === 'object' && data !== null) {
                 query = new URLSearchParams(Object.fromEntries(Object.entries(data).map(([k, v]) => [k, parse.string(v as JToken)] as const))).toString();
-                data = undefined;
             }
         } else if (data !== undefined) {
             if (!Object.keys(request.headers).map(h => h.toLowerCase()).includes('content-type'))

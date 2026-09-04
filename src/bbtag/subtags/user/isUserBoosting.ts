@@ -20,7 +20,7 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
                     execute: (ctx) => this.isUserBoosting(ctx.member!)
                 },
                 {

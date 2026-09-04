@@ -18,7 +18,7 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
 
         this.addRoute('/', {
             get: ({ request }) => this.listCensors(request.params.guildId),
-            post: ({ request }) => this.createCensor(request.params.guildId, request.body)
+            post: () => this.createCensor()
         });
 
         for (const type of ['delete', 'ban', 'kick'] as const) {
@@ -38,14 +38,11 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
         this.addRoute('/:id', {
             get: ({ request }) => this.getCensor(request.params.guildId, request.params.id),
             delete: ({ request }) => this.deleteCensor(request.params.guildId, request.params.id),
-            patch: ({ request }) => this.editCensor(request.params.guildId, request.params.id, request.body)
+            patch: () => this.editCensor()
         });
     }
 
-    public async createCensor(guildId: string, body: unknown): Promise<ApiResponse> {
-        guildId;
-        body;
-        await Promise.resolve();
+    public createCensor(): ApiResponse {
         return this.badRequest({ message: 'Creating censors via the API isnt supported yet!' });
     }
 
@@ -66,11 +63,7 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
         return this.noContent();
     }
 
-    public async editCensor(guildId: string, idStr: string, body: unknown): Promise<ApiResponse> {
-        guildId;
-        idStr;
-        body;
-        await Promise.resolve();
+    public editCensor(): ApiResponse {
         return this.badRequest({ message: 'Editing censors via the API isnt supported yet!' });
     }
 

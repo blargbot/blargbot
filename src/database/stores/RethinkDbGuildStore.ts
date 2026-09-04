@@ -460,7 +460,7 @@ export class RethinkDbGuildStore implements GuildStore {
             return [];
 
         const payload = commands.reduce<Record<string, CommandPermissions>>((p, c) => {
-            p[c] = this.#table.updateExpr(<CommandPermissions>permissions);
+            p[c] = this.#table.updateExpr(permissions);
             return p;
         }, {});
         if (commands.length === 0 || !await this.#table.update(guildId, { commandperms: payload }))

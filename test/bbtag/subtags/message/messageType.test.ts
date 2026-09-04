@@ -5,7 +5,7 @@ import { MessageType } from 'discord-api-types/v9';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageType[P] } = {
+const messageTypes: { [P in Extract<keyof typeof MessageType, string>]: typeof MessageType[P] } = {
     ['Default']: MessageType.Default,
     ['RecipientAdd']: MessageType.RecipientAdd,
     ['RecipientRemove']: MessageType.RecipientRemove,

@@ -1,6 +1,6 @@
 import { exec } from 'node:child_process';
 
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
 import { GlobalCommand } from '@blargbot/cluster/command/index.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 
@@ -44,18 +44,18 @@ export class ExecCommand extends GlobalCommand {
                 file: Buffer.from(cleanConsole(await execCommandline(command))),
                 name: 'output.txt'
             };
-            message === undefined
-                ? await context.reply({ content, file: [file] })
-                : await context.edit(message, { content, file: [file] });
+            await (message === undefined
+                ? context.reply({ content, file: [file] })
+                : context.edit(message, { content, file: [file] }));
         } catch (err: unknown) {
             const content = cmd.default.command.error({ command });
             const file = {
                 file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
                 name: 'output.txt'
             };
-            message === undefined
-                ? await context.reply({ content, file: [file] })
-                : await context.edit(message, { content, file: [file] });
+            await (message === undefined
+                ? context.reply({ content, file: [file] })
+                : context.edit(message, { content, file: [file] }));
         }
         return undefined;
     }

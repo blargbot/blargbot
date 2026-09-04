@@ -54,7 +54,7 @@ export class HashSubtag extends CompiledSubtag {
                 : Buffer.from(text);
 
         const hash = createHash(algorithm.toLowerCase());
-        return hash.update(data).digest('hex');
+        return hash.update(new Uint8Array(data.buffer, data.byteOffset, data.byteLength)).digest('hex');
     }
 }
 

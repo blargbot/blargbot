@@ -522,7 +522,7 @@ export class CustomCommandCommand extends GuildCommand {
             content: cmd.shrinkwrap.success,
             file: [
                 {
-                    file: JSON.stringify(<SignedGuildShrinkwrap>{
+                    file: JSON.stringify({
                         signature: signShrinkwrap(shrinkwrap, context.config),
                         payload: shrinkwrap
                     }, null, 2),

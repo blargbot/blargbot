@@ -89,12 +89,11 @@ export class ReactionListSubtag extends CompiledSubtag {
 
     #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
         let channel = context.channel.id;
-        let message = '';
 
         if (args.length >= 2 && snowflake.test(args[1]))
             channel = args.splice(0, 1)[0];
 
-        message = args.splice(0, 1)[0];
+        const message = args.splice(0, 1)[0];
 
         if (args.length === 0)
             return [channel, message, undefined];

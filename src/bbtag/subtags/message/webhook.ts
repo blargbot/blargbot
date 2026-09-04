@@ -55,10 +55,12 @@ export class WebhookSubtag extends CompiledSubtag {
     public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string): Promise<never>;
     public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void>;
     public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void> {
+        if (username === '') username = undefined;
+        if (avatar === '') avatar = undefined;
         try { //TODO Return the webhook message ID on success
             await context.discord.executeWebhook(webhookID, webhookToken, {
-                username: username ||= undefined,
-                avatarURL: avatar ||= undefined,
+                username: username,
+                avatarURL: avatar,
                 content: content,
                 embeds: parse.embed(embedStr),
                 file: fileStr === undefined ? undefined : [

@@ -1,6 +1,6 @@
 import { exec } from 'node:child_process';
 
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
+import type { CommandContext } from '@blargbot/cluster/command/index.js';
 import { GlobalCommand } from '@blargbot/cluster/command/index.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 
@@ -73,9 +73,9 @@ export class UpdateCommand extends GlobalCommand {
                 file: Buffer.from(result),
                 name: 'output.txt'
             };
-            message === undefined
-                ? await context.reply({ content, file: [file] })
-                : await context.edit(message, { content, file: [file] });
+            await (message === undefined
+                ? context.reply({ content, file: [file] })
+                : context.edit(message, { content, file: [file] }));
             return result;
         } catch (err: unknown) {
             const content = cmd.default.command.error({ command });
@@ -84,9 +84,9 @@ export class UpdateCommand extends GlobalCommand {
                 file: Buffer.from(result),
                 name: 'output.txt'
             };
-            message === undefined
-                ? await context.reply({ content, file: [file] })
-                : await context.edit(message, { content, file: [file] });
+            await (message === undefined
+                ? context.reply({ content, file: [file] })
+                : context.edit(message, { content, file: [file] }));
             throw err;
         }
     }

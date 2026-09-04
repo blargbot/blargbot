@@ -464,7 +464,7 @@ export class TagCommand extends GuildCommand {
                         },
                         {
                             name: cmd.info.embed.field.favourited.name,
-                            value: cmd.info.embed.field.favourited.value({ count: Object.values(match.favourites ?? {}).filter(v => v).length }),
+                            value: cmd.info.embed.field.favourited.value({ count: Object.values(match.favourites ?? {}).filter(Boolean).length }),
                             inline: true
                         },
                         ...match.reports === undefined || match.reports === 0 ? [] : [{

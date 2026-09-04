@@ -1,6 +1,6 @@
 import { format } from '../types.js';
 import { isFormattable } from '../util/index.js';
-import type { ReplacementContext } from './ReplacementContext.js';
+import type { ReplacementContext, ReplacementValue } from './ReplacementContext.js';
 import type { ICompiledFormatString, IFormatStringCompiler, IFormatStringCompilerMiddleware, IValueResolver, IValueResolverTransform } from './types.js';
 
 export interface FormatStringCompilerOptions {
@@ -89,7 +89,7 @@ export class FormatStringCompiler implements IFormatStringCompiler {
     }
 
     #createValueSource(...path: string[]): IValueResolver {
-        let getRoot = (v: readonly unknown[]): unknown => v[v.length - 1];
+        let getRoot = (v: readonly ReplacementValue[]): ReplacementValue => v[v.length - 1];
         if (path.length > 0 && path[0].startsWith('~')) {
             getRoot = v => v[0];
             path[0] = path[0].slice(1);
@@ -97,11 +97,13 @@ export class FormatStringCompiler implements IFormatStringCompiler {
         return ctx => {
             let value = getRoot(ctx.valueStack);
             for (const key of path) {
-                if (typeof value !== 'object' || value === null)
+                if (typeof value === 'object' && value !== null)
+                    value = (value as Record<PropertyKey, unknown>)[key];
+                else
                     return undefined;
-                value = (value as Record<string, unknown>)[key];
             }
             if (typeof value === 'function')
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 value = value();
             if (isFormattable(value))
                 value = value[format](ctx.formatter);

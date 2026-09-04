@@ -7,7 +7,9 @@ await colors.ensureLoaded();
 
 const colorKeys = Object.keys(colors.data);
 
-export function parseColor(text: number | 'random' | string): number | undefined {
+export function parseColor(text: 'random'): number;
+export function parseColor(text: number | string): number | undefined
+export function parseColor(text: number | string): number | undefined {
     if (typeof text === 'number')
         return text;
 

@@ -1,4 +1,4 @@
-import type { IFormatStringCompiler } from './compiler/index.js';
+import type { IFormatStringCompiler, ReplacementValue } from './compiler/index.js';
 import type { IFormatString, IFormatter } from './types.js';
 
 export interface IFormatterMiddleware {
@@ -26,7 +26,7 @@ export class Formatter implements IFormatter {
 
     #formatCore(string: IFormatString): string {
         const formatter = this.#compiler.compile(string.template);
-        const valueStack: unknown[] = [string.value];
+        const valueStack: ReplacementValue[] = [string.value];
         return formatter({
             formatter: this,
             valueStack: valueStack,

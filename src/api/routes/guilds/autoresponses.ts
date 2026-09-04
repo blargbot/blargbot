@@ -16,7 +16,7 @@ export class AutoresponsesRoute extends BaseRoute<['/guilds/:guildId/autorespons
 
         this.addRoute('/', {
             get: ({ request }) => this.listAutoresponses(request.params.guildId),
-            post: ({ request }) => this.createAutoresponse(request.params.guildId, request.body)
+            post: () => this.createAutoresponse()
         });
 
         this.addRoute('/:id', {
@@ -26,10 +26,7 @@ export class AutoresponsesRoute extends BaseRoute<['/guilds/:guildId/autorespons
         });
     }
 
-    public async createAutoresponse(guildId: string, body: unknown): Promise<ApiResponse> {
-        guildId;
-        body;
-        await Promise.resolve();
+    public createAutoresponse(): ApiResponse {
         return this.badRequest({ message: 'Creating autoresponses via the API isnt supported yet!' });
     }
 

@@ -2,7 +2,7 @@
     "compilerOptions": {
         "noImplicitAny": true,
         "strict": true,
-        "module": "esnext",
+        "module": "nodenext",
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "target": "ESNext",
@@ -21,8 +21,9 @@
         "allowUnusedLabels": false,
         "moduleResolution": "nodenext",
         "skipLibCheck": true,
+        "useUnknownInCatchVariables": true,
         "lib": [
-            "ES2021"
+            "ES2025"
         ]
     }
 }

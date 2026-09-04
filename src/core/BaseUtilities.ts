@@ -416,6 +416,7 @@ export class BaseUtilities {
             } else {
                 if (guard.isUncached(channel.guild)) {
                     channel.guild = await this.getGuild(channel.guild.id) ?? channel.guild;
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     channel.guild.channels ??= new eris.Collection(eris.GuildChannel as new (...args: unknown[]) => eris.AnyGuildChannel);
                 }
                 if (channel.guild.channels.get(channel.id) !== channel)
@@ -599,7 +600,7 @@ export class BaseUtilities {
     }
 
     public async * streamAllBans(guild: eris.Guild): AsyncGenerator<eris.GuildBan, void, undefined> {
-        let batch = [];
+        let batch;
         let after;
         const bans = this.getGuildBans(guild);
         do {

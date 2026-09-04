@@ -50,7 +50,8 @@ export class ChannelCreateSubtag extends CompiledSubtag {
                 throw new BBTagRuntimeError('Author missing requested permissions');
 
         try {
-            options.reason ||= context.auditReason();
+            if (options.reason === '') options.reason = undefined;
+            options.reason ??= context.auditReason();
             const channel = await context.guild.createChannel(name, type, options);
             return channel.id;
         } catch (err: unknown) {

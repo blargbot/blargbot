@@ -3,7 +3,7 @@ import { IntervalService } from '@blargbot/core/serviceTypes/index.js';
 
 export class DomainWhitelistInterval extends IntervalService {
     public readonly type: string = 'bbtag';
-    #cluster: Cluster;
+    readonly #cluster: Cluster;
 
     public constructor(cluster: Cluster) {
         super(15, 'minutes', cluster.logger, true);

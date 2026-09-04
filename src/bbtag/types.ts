@@ -122,7 +122,7 @@ export interface RuntimeDebugEntry {
 }
 
 export type BBTagRuntimeState = typeof BBTagRuntimeState[keyof typeof BBTagRuntimeState];
-// eslint-disable-next-line @typescript-eslint/naming-convention
+// eslint-disable-next-line @typescript-eslint/naming-convention, no-useless-assignment
 export const BBTagRuntimeState = Object.freeze({
     /** Indicates bbtag should continue to be executed */
     RUNNING: 0,
@@ -217,7 +217,7 @@ export interface SubtagSignature<TString> {
     readonly exampleOut: TString;
 }
 
-type AwaitableIterable<T> = (Iterable<T> | AsyncIterable<T>); // To exclude string
+type AwaitableIterable<T> = Iterable<T> | AsyncIterable<T>; // To exclude string
 
 type SubtagReturnTypeValueMap = {
     hex: number;

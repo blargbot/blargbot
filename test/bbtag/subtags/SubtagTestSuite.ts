@@ -18,7 +18,7 @@ import type { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/dom
 import type { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
 import type { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
-import type { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIThreadChannel, APIUser, Snowflake } from 'discord-api-types/v9';
+import type { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIUser, Snowflake } from 'discord-api-types/v9';
 import { ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types/v9';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
@@ -138,8 +138,8 @@ export class SubtagTestContext {
     };
 
     public readonly channels = {
-        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }) as APITextChannel | APIThreadChannel,
-        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' }) as APITextChannel | APIThreadChannel
+        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }),
+        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' })
     } as {
         command: Extract<APIChannel, { guild_id?: Snowflake; }>;
         general: Extract<APIChannel, { guild_id?: Snowflake; }>;
@@ -221,8 +221,8 @@ export class SubtagTestContext {
 
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    public createMock<T>(clazz?: (new (...args: never[]) => T) | (Function & { prototype: T; }), strict = true): Mock<T> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    public createMock<T>(clazz?: (new (...args: never[]) => T) | Function & { prototype: T; }, strict = true): Mock<T> {
         const mock = new Mock<T>(clazz, strict);
         this.#allMocks.push(mock);
         return mock;
@@ -390,7 +390,7 @@ export class SubtagTestContext {
 
     public createGuild(settings: APIGuild | RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): eris.Guild {
         const data = 'hub_type' in settings ? settings : SubtagTestContext.createApiGuild(settings);
-        const guild = new eris.Guild(<eris.BaseData><unknown>{ ...data, members: members, channels: channels }, this.discord.instance);
+        const guild = new eris.Guild({ ...data, members: members, channels: channels }, this.discord.instance);
         return guild;
     }
 
@@ -420,7 +420,7 @@ export class SubtagTestContext {
             rules_channel_id: null,
             splash: null,
             stickers: [],
-            system_channel_flags: 0,
+            system_channel_flags: 0 as never,
             system_channel_id: null,
             vanity_url_code: null,
             verification_level: GuildVerificationLevel.None,
@@ -806,7 +806,7 @@ async function runSafe<T>(action: () => Awaitable<T>): Promise<{ success: true; 
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 function getExpectation(testCase: SubtagTestCase): Exclude<SubtagTestCase['expected'], Function> {
     if (typeof testCase.expected === 'function')
         return testCase.expected();
@@ -878,7 +878,7 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
 }
 
 class MapByValue<Key, Value> implements Map<Key, Value> {
-    #inner: Map<unknown, Value>;
+    readonly #inner: Map<unknown, Value>;
 
     public readonly [Symbol.toStringTag] = '';
     public get size(): number {
@@ -930,19 +930,19 @@ class MapByValue<Key, Value> implements Map<Key, Value> {
         this.#inner.set(this.#fromKey(key), value);
         return this;
     }
-    public * entries(): IterableIterator<[Key, Value]> {
+    public * entries(): Generator<[Key, Value]> {
         for (const entry of this.#inner)
             yield [this.#toKey(entry[0]), entry[1]];
     }
-    public * keys(): IterableIterator<Key> {
+    public * keys(): Generator<Key> {
         for (const key of this.#inner.keys())
             yield this.#toKey(key);
     }
-    public * values(): IterableIterator<Value> {
+    public * values(): Generator<Value> {
         for (const value of this.#inner.values())
             yield value;
     }
-    public [Symbol.iterator](): IterableIterator<[Key, Value]> {
+    public [Symbol.iterator](): Generator<[Key, Value]> {
         return this.entries();
     }
 

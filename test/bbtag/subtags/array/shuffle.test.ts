@@ -52,7 +52,7 @@ await runSubtagTests({
                 assert(Array.isArray(jResult), `${result} should have been an array.`);
                 assert.equal(jResult.length, 6);
                 for (const value of [1, 2, 3, 4, 5, 6])
-                    assert(jResult.includes(value), `[${jResult.join(',')}] is missing ${value}`);
+                    assert(jResult.includes(value), `${result} is missing ${value}`);
             }
         },
         {
@@ -72,7 +72,7 @@ await runSubtagTests({
                 assert(Array.isArray(result), `${JSON.stringify(result)} should have been an array.`);
                 assert.equal(result.length, 6);
                 for (const value of [1, 2, 3, 4, 5, 6])
-                    assert(result.includes(value), `[${result.join(',')}] is missing ${value}`);
+                    assert(result.includes(value), `${JSON.stringify(result)} is missing ${value}`);
             }
         }
     ]

@@ -83,7 +83,7 @@ export class ModLogManager {
             try {
                 const banObject = await guild.getBan(user.id);
                 reason = util.literal(banObject.reason ?? undefined);
-            } catch (e: unknown) {
+            } catch {
                 //NOOP
             }
         }
@@ -245,7 +245,7 @@ export class ModLogManager {
             return 'SUCCESS_NO_MESSAGE';
 
         const message = await this.cluster.util.getMessage(channelId, modlog.msgid);
-        if (message === undefined || message.author.id !== this.cluster.discord.user.id)
+        if (message?.author.id !== this.cluster.discord.user.id)
             return 'SUCCESS_NO_MESSAGE';
 
         await message.edit({

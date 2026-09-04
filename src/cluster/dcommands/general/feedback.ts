@@ -94,7 +94,7 @@ export class FeedbackCommand extends GlobalCommand {
         description = res.description;
 
         await context.database.suggestions.update(caseNumber, {
-            /* eslint-disable @typescript-eslint/naming-convention */
+
             Type: subTypes,
             Title: title,
             Description: description,
@@ -102,7 +102,7 @@ export class FeedbackCommand extends GlobalCommand {
             Channel: context.channel.id,
             Edits: (suggestion.Edits ?? 0) + 1,
             'Last Edited': moment().valueOf()
-            /* eslint-enable @typescript-eslint/naming-convention */
+
         });
 
         return cmd.edit.success;
@@ -154,7 +154,7 @@ export class FeedbackCommand extends GlobalCommand {
             return cmd.general.unexpectedError;
 
         const record = await context.database.suggestions.create({
-            /* eslint-disable @typescript-eslint/naming-convention */
+
             AA: true,
             Bug: isBug,
             Title: title,
@@ -163,7 +163,7 @@ export class FeedbackCommand extends GlobalCommand {
             Author: [suggester],
             Channel: context.channel.id,
             Message: context.message.id
-            /* eslint-enable @typescript-eslint/naming-convention */
+
         });
         if (record === undefined)
             return cmd.general.unexpectedError;

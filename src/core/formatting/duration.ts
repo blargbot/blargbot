@@ -42,7 +42,7 @@ export const duration: IValueResolverTransform = {
                 : moment.isMoment(value) ? moment.duration(value.diff(moment()))
                     : typeof value === 'number' ? moment.duration(value)
                         : undefined;
-            if (asDuration === undefined || !asDuration.isValid())
+            if (asDuration?.isValid() !== true)
                 throw new Error('Invalid duration');
 
             return fmt(

@@ -78,10 +78,10 @@ export class IfSubtag extends CompiledSubtag {
             operator = evaluator;
         } else if (bbtag.isComparisonOperator(value1)) {
             operator = value1;
-            [value1, evaluator] = [evaluator, value1];
+            value1 = evaluator;
         } else if (bbtag.isComparisonOperator(value2)) {
             operator = value2;
-            [evaluator, value2] = [value2, evaluator];
+            value2 = evaluator;
         } else
             throw new InvalidOperatorError(evaluator);
 

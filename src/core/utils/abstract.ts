@@ -5,7 +5,7 @@ export interface AbstractDecorator extends ClassDecorator {
 const sealedMap = new Map<unknown, Set<PropertyKey>>();
 const abstractMap = new Map<unknown, Set<PropertyKey>>();
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 function abstractDecorator<T extends Function>(target: T): T;
 function abstractDecorator(target: new (...args: unknown[]) => object): new (...args: unknown[]) => object {
     const wrapper = {

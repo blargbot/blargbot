@@ -30,7 +30,7 @@ export class RespondCommand extends GlobalCommand {
             return cmd.default.notFound;
 
         await context.database.suggestions.update(id, {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+
             Notes: `${response} (${context.author.username}#${context.author.discriminator})${feedback.Notes !== undefined ? `\n\n${feedback.Notes}` : ''}`
         });
 

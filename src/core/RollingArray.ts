@@ -27,6 +27,6 @@ export class RollingArray<T> extends Array<T> {
 
     #normalize(shift = true): void {
         while (this.length > this.maxSize)
-            shift ? this.shift() : this.pop();
+            this[shift ? 'shift' : 'pop']();
     }
 }

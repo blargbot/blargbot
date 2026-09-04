@@ -37,7 +37,7 @@ export class I18nCommand extends GlobalCommand {
         const result: I18nExport = {};
         for (const entry of FormatString.list()) {
             const path = entry.id.split('.');
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
             const name = path.pop()!;
             let current = result;
             for (const key of path) {

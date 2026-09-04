@@ -1,3 +1,4 @@
+import { guard } from '@blargbot/core/utils/index.js';
 import { instance, verify, when } from 'ts-mockito';
 import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher.js';
 import { StrictEqualMatcher } from 'ts-mockito/lib/matcher/type/StrictEqualMatcher.js';
@@ -12,8 +13,8 @@ export class Mock<T> {
     readonly #expressionProvider: T;
     readonly #assertions: Array<() => void>;
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    public constructor(clazz?: (new (...args: never[]) => T) | (Function & { prototype: T; }), strict = true) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    public constructor(clazz?: (new (...args: never[]) => T) | Function & { prototype: T; }, strict = true) {
         const mock = new StrictMocker(clazz, strict);
         this.#expressionProvider = mock.getMock() as T;
         this.#assertions = [];
@@ -72,7 +73,7 @@ function createMockArgumentFilter<T>(assertion: (value: unknown) => value is T):
             return new SatisfiesMatcher<T>(assertion) as unknown as T;
         },
         and<R extends T>(next: (value: T) => value is R) {
-            return createMockArgumentFilter((value): value is R => assertion(value) && next(value));
+            return createMockArgumentFilter(guard.isAllOf(assertion, next));
         },
         array() {
             return createMockArgumentFilter((value): value is T[] => Array.isArray(value) && value.every(assertion)).value;
@@ -82,7 +83,7 @@ function createMockArgumentFilter<T>(assertion: (value: unknown) => value is T):
 
 export const argument = {
     any(): MockArgumentFilter<unknown> {
-        return this.is((_x): _x is unknown => true);
+        return createMockArgumentFilter(guard.isAllOf());
     },
     is<T>(assertion: (value: unknown) => value is T): MockArgumentFilter<T> {
         return createMockArgumentFilter(assertion);
@@ -135,14 +136,14 @@ type TypeofMap = {
     symbol: symbol;
     undefined: undefined;
     object: object | null;
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     function: Function;
 }
 
 class StrictMocker extends Mocker {
     readonly #strict: boolean;
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    public constructor(clazz?: (new (...args: never[]) => unknown) | (Function & { prototype: unknown; }), strict = false) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    public constructor(clazz?: (new (...args: never[]) => unknown) | Function & { prototype: unknown; }, strict = false) {
         const ctx = (function (): void {
             throw new Error('Cannot mock a function directly sadly :(');
         }) as unknown as Record<PropertyKey, unknown>;

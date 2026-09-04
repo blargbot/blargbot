@@ -26,12 +26,17 @@ export class MinSubtag extends CompiledSubtag {
 
     public min(args: string[]): number {
         const flattenedArgs = bbtag.tagArray.flattenArray(args);
-        const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
-        const filteredArgs = parsedArgs.filter(guard.hasValue);
+        const parsedArgs = [];
+        for (const arg of flattenedArgs) {
+            if (!isValidArg(arg))
+                return NaN;
+            const parsed = parse.float(arg);
+            if (parsed === undefined)
+                return NaN;
+            parsedArgs.push(parsed);
+        }
 
-        if (filteredArgs.length < parsedArgs.length)
-            return NaN;
-
-        return Math.min(...filteredArgs);
+        return Math.min(...parsedArgs);
     }
 }
+const isValidArg = guard.isTypeOf('string', 'number');

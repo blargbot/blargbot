@@ -33,7 +33,7 @@ await runSubtagTests({
                 response.setup(m => m.headers).thenReturn(new Headers({
                     'Content-Type': 'image/png'
                 }));
-                response.setup(m => m.arrayBuffer()).thenResolve(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64'));
+                response.setup(m => m.arrayBuffer()).thenResolve(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64').buffer);
                 ctx.discord.setup(m => m.editGuild(ctx.guild.id, argument.isDeepEqual({
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf'
                 }), 'Command User#0000')).thenResolve(bbctx.guild);
@@ -47,7 +47,7 @@ await runSubtagTests({
                 ctx.dependencies.setup(m => m.fetch('https://cdn.discordapp.com/icons/194232473931087872/e88c2e966c6ca78f2268fa8aed4621ab.png?size=0'))
                     .thenResolve(response.instance);
                 response.setup(m => m.headers).thenReturn(new Headers({}));
-                response.setup(m => m.arrayBuffer()).thenResolve(new Uint8Array());
+                response.setup(m => m.arrayBuffer()).thenResolve(new ArrayBuffer(0));
                 ctx.discord.setup(m => m.editGuild(ctx.guild.id, argument.isDeepEqual({
                     icon: 'data:;base64,'
                 }), 'Command User#0000')).thenResolve(bbctx.guild);

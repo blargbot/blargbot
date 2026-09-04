@@ -8,7 +8,7 @@ export const time: IValueResolverTransform = {
             const value = source(ctx);
             if (value === undefined)
                 return undefined;
-            const time = moment.isMoment(value) ? value : moment(value as moment.MomentInput);
+            const time = moment.isMoment(value) ? value : moment(value);
             if (!time.isValid())
                 throw new Error('Value is not a valid time');
             return time.locale(ctx.formatter.locale.language).format(format);

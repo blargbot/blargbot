@@ -37,7 +37,7 @@ class Resource<T> {
     }
 
     public async reload(): Promise<void> {
-        const buffer = await fs.readFile(this.#path);
+        const { buffer } = await fs.readFile(this.#path);
         this.#state = { value: await this.#reviver(buffer) };
     }
 }

@@ -13,7 +13,6 @@ await runSubtagTests({
             code: '{pardon}',
             expected: '0',
             postSetup(bbctx, ctx) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 ctx.util.setup(m => m.pardon(bbctx.member!, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(0);
@@ -23,7 +22,6 @@ await runSubtagTests({
             code: '{pardon}',
             expected: '5',
             postSetup(bbctx, ctx) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 ctx.util.setup(m => m.pardon(bbctx.member!, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(5);
@@ -33,7 +31,6 @@ await runSubtagTests({
             code: '{pardon;}',
             expected: '3',
             postSetup(bbctx, ctx) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 ctx.util.setup(m => m.pardon(bbctx.member!, bbctx.user, 1, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(3);
@@ -57,7 +54,6 @@ await runSubtagTests({
             code: '{pardon;;6}',
             expected: '26',
             postSetup(bbctx, ctx) {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 ctx.util.setup(m => m.pardon(bbctx.member!, bbctx.user, 6, 'Tag Pardon'))
                     .verifiable(1)
                     .thenResolve(26);

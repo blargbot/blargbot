@@ -1,20 +1,25 @@
 import * as checkEmbedSize from './checkEmbedSize.js';
 import * as checkMessageSize from './checkMessageSize.js';
+import * as every from './every.js';
 import * as hasInvite from './hasInvite.js';
 import * as hasProperty from './hasProperty.js';
 import * as hasValue from './hasValue.js';
-import * as instanceOf from './instanceOf.js';
+import * as invert from './invert.js';
+import * as isAllOf from './isAllOf.js';
+import * as isAnyOf from './isAnyOf.js';
 import * as isCategoryChannel from './isCategoryChannel.js';
 import * as isClass from './isClass.js';
 import * as isLetter from './isFlagChar.js';
 import * as isGuildChannel from './isGuildChannel.js';
 import * as isGuildMessage from './isGuildMessage.js';
 import * as isGuildRelated from './isGuildRelated.js';
+import * as isInstanceOf from './isInstanceOf.js';
 import * as isPrivateChannel from './isPrivateChannel.js';
 import * as isPrivateMessage from './isPrivateMessage.js';
 import * as isTextableChannel from './isTextableChannel.js';
 import * as isThreadableChannel from './isThreadableChannel.js';
 import * as isThreadChannel from './isThreadChannel.js';
+import * as isTypeOf from './isTypeOf.js';
 import * as isUncached from './isUncached.js';
 import * as isUrl from './isUrl.js';
 import * as isVoiceChannel from './isVoiceChannel.js';
@@ -49,5 +54,10 @@ export const guard = {
     ...isUrl,
     ...hasInvite,
     ...isThreadableChannel,
-    ...instanceOf
+    ...isInstanceOf,
+    ...isTypeOf,
+    ...isAllOf,
+    ...isAnyOf,
+    ...invert,
+    ...every
 };

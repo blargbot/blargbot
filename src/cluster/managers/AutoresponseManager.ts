@@ -52,7 +52,7 @@ export class AutoresponseManager {
                 const guild = this.#cluster.discord.guilds.get(guildId);
                 if (guild === undefined)
                     throw new Error('Failed to find guild');
-                const code = Buffer.from(JSON.stringify(<ArData>{ channel: channelId, guild: guildId })).toString('base64');
+                const code = Buffer.from(JSON.stringify({ channel: channelId, guild: guildId })).toString('base64');
                 const message = await this.#cluster.util.send(
                     this.#cluster.config.discord.channels.autoresponse,
                     new FormattableMessageContent({
@@ -65,7 +65,7 @@ export class AutoresponseManager {
                         })
                     })
                 );
-                await Promise.all(Object.keys(emojiValues).map(emoji => message?.addReaction(emoji)));
+                await Promise.all(Object.keys(emojiValues).map(emoji => message?.addReaction(emoji) ?? Promise.resolve()));
                 return 'requested';
             }
 

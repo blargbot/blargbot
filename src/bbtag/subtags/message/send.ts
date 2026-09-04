@@ -60,7 +60,7 @@ export class SendSubtag extends CompiledSubtag {
         try {
             const sent = await context.util.send(channel, {
                 content: message,
-                embeds: embed !== undefined ? embed : undefined,
+                embeds: embed,
                 nsfw: context.data.nsfw,
                 allowedMentions: {
                     everyone: !disableEveryone,

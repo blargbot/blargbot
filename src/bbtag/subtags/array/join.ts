@@ -30,6 +30,7 @@ export class JoinSubtag extends CompiledSubtag {
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);
 
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         return array.join(separator);
     }
 }

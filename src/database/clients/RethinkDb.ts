@@ -77,7 +77,7 @@ export class RethinkDb {
 
     public setExpr(value?: undefined): r.Expression<undefined>
     public setExpr<T>(value: T): r.Expression<T>
-    public setExpr<T>(value?: T | undefined): r.Expression<T | undefined> {
+    public setExpr<T>(value?: T  ): r.Expression<T | undefined> {
         if (value === undefined)
             return r.literal();
         return r.literal(this.addExpr(value));

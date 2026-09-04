@@ -542,7 +542,6 @@ export class ClusterUtilities extends BaseUtilities {
         return true;
     }
 
-    /* eslint-disable @typescript-eslint/naming-convention */
     public async postStats(): Promise<void> {
         const stats = {
             server_count: this.discord.guilds.size,
@@ -613,7 +612,6 @@ export class ClusterUtilities extends BaseUtilities {
             }
         }
     }
-    /* eslint-enable @typescript-eslint/naming-convention */
 
     public isBotHigher(member: eris.Member): boolean {
         const bot = member.guild.members.get(this.discord.user.id);

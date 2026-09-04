@@ -19,7 +19,6 @@ await runSubtagTests({
                 ['GUILD_VOICE']: 'voice',
                 ['GUILD_CATEGORY']: 'category',
                 ['GUILD_NEWS']: 'news',
-                ['GUILD_STORE']: 'store',
                 ['GUILD_NEWS_THREAD']: 'news-thread',
                 ['GUILD_PUBLIC_THREAD']: 'public-thread',
                 ['GUILD_PRIVATE_THREAD']: 'private-thread',

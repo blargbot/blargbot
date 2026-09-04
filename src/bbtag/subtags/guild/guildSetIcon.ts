@@ -37,7 +37,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
         if (guard.isUrl(image)) {
             const res = await context.fetch(image);
             const contentType = res.headers.get('content-type');
-            image = `data:${contentType !== null ? contentType : ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
+            image = `data:${contentType ?? ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }

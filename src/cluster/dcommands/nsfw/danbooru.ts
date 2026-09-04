@@ -67,13 +67,12 @@ export class DanbooruCommand extends GlobalCommand {
         try {
             const response = await context.util.fetch(url);
             return await response.json();
-        } catch (err: unknown) {
+        } catch {
             return undefined;
         }
     }
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
 const danbooruMapping = mapping.array(mapping.object({
     has_children: mapping.boolean.optional,
     file_url: mapping.string.optional,
@@ -81,4 +80,3 @@ const danbooruMapping = mapping.array(mapping.object({
     source: mapping.string.optional,
     created_at: mapping.date.optional
 }));
-/* eslint-enable @typescript-eslint/naming-convention */

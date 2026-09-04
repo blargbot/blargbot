@@ -1,4 +1,4 @@
-import child_process from 'node:child_process';
+import childProcess from 'node:child_process';
 import { createInterface } from 'node:readline';
 import streams from 'node:stream';
 
@@ -53,7 +53,7 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
         this.#ipc = new IPCMessageEmitter();
         this.created = moment();
         this.args = [...process.execArgv];
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+
         this.env = { ...process.env, WORKER_ID: id.toString() };
         this.env.FORCE_COLOR = '1';
 
@@ -86,7 +86,7 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
         const timer = new Timer();
         timer.start();
 
-        const process = this.#ipc.process = child_process.fork(this.entrypoint, {
+        const process = this.#ipc.process = childProcess.fork(this.entrypoint, {
             env: this.env,
             execArgv: this.args,
             stdio: 'pipe'
