@@ -55,6 +55,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:src/config"\
     },\
     {\
+      "name": "@blargbot/contracts",\
+      "reference": "workspace:src/contracts"\
+    },\
+    {\
       "name": "@blargbot/core",\
       "reference": "workspace:src/core"\
     },\
@@ -65,6 +69,10 @@ const RAW_RUNTIME_STATE =
     {\
       "name": "@blargbot/database",\
       "reference": "workspace:src/database"\
+    },\
+    {\
+      "name": "@blargbot/discord-rest-service",\
+      "reference": "workspace:src/discord-rest-service"\
     },\
     {\
       "name": "@blargbot/domain",\
@@ -125,11 +133,13 @@ const RAW_RUNTIME_STATE =
     ["@blargbot/cluster", ["workspace:src/cluster"]],\
     ["@blargbot/cluster-tests", ["workspace:test/cluster"]],\
     ["@blargbot/config", ["workspace:src/config"]],\
+    ["@blargbot/contracts", ["workspace:src/contracts"]],\
     ["@blargbot/core", ["workspace:src/core"]],\
     ["@blargbot/core-tests", ["workspace:test/core"]],\
     ["@blargbot/crowdin", ["workspace:src/crowdin"]],\
     ["@blargbot/database", ["workspace:src/database"]],\
     ["@blargbot/database-tests", ["workspace:test/database"]],\
+    ["@blargbot/discord-rest-service", ["workspace:src/discord-rest-service"]],\
     ["@blargbot/domain", ["workspace:src/domain"]],\
     ["@blargbot/formatting", ["workspace:src/formatting"]],\
     ["@blargbot/image", ["workspace:src/image"]],\
@@ -320,6 +330,17 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
+    ["@blargbot/contracts", [\
+      ["workspace:src/contracts", {\
+        "packageLocation": "./src/contracts/",\
+        "packageDependencies": [\
+          ["@blargbot/contracts", "workspace:src/contracts"],\
+          ["amqplib", "npm:2.0.1"],\
+          ["zod", "npm:4.5.4"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
     ["@blargbot/core", [\
       ["workspace:src/core", {\
         "packageLocation": "./src/core/",\
@@ -424,6 +445,22 @@ const RAW_RUNTIME_STATE =
           ["rethinkdb", "npm:2.4.2"],\
           ["sequelize", "virtual:8d54d45c5fbacbc5fbdef49d043be53f31b1d78235ae02008a9651ad6148906489cc37763776c18e118438102082b14a4a6f8a74e56919826aa06aef5a2f5328#npm:6.25.8"],\
           ["ts-mockito", "npm:2.6.1"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@blargbot/discord-rest-service", [\
+      ["workspace:src/discord-rest-service", {\
+        "packageLocation": "./src/discord-rest-service/",\
+        "packageDependencies": [\
+          ["@blargbot/config", "workspace:src/config"],\
+          ["@blargbot/contracts", "workspace:src/contracts"],\
+          ["@blargbot/discord-rest-service", "workspace:src/discord-rest-service"],\
+          ["@blargbot/logger", "workspace:src/logger"],\
+          ["@discordeno/rest", "npm:22.0.0-beta.2"],\
+          ["@discordeno/types", "npm:22.0.0-beta.2"],\
+          ["amqplib", "npm:2.0.1"],\
+          ["zod", "npm:4.5.4"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -534,6 +571,36 @@ const RAW_RUNTIME_STATE =
           ["ts-mockito", "npm:2.6.1"]\
         ],\
         "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@discordeno/rest", [\
+      ["npm:22.0.0-beta.2", {\
+        "packageLocation": "./.yarn/cache/@discordeno-rest-npm-22.0.0-beta.2-af12700b97-83e2cc4e3a.zip/node_modules/@discordeno/rest/",\
+        "packageDependencies": [\
+          ["@discordeno/rest", "npm:22.0.0-beta.2"],\
+          ["@discordeno/types", "npm:22.0.0-beta.2"],\
+          ["@discordeno/utils", "npm:22.0.0-beta.2"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@discordeno/types", [\
+      ["npm:22.0.0-beta.2", {\
+        "packageLocation": "./.yarn/cache/@discordeno-types-npm-22.0.0-beta.2-370319389c-8dabf2f691.zip/node_modules/@discordeno/types/",\
+        "packageDependencies": [\
+          ["@discordeno/types", "npm:22.0.0-beta.2"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@discordeno/utils", [\
+      ["npm:22.0.0-beta.2", {\
+        "packageLocation": "./.yarn/cache/@discordeno-utils-npm-22.0.0-beta.2-d9aad77376-d7d0183fae.zip/node_modules/@discordeno/utils/",\
+        "packageDependencies": [\
+          ["@discordeno/types", "npm:22.0.0-beta.2"],\
+          ["@discordeno/utils", "npm:22.0.0-beta.2"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["@emnapi/runtime", [\
@@ -2273,6 +2340,15 @@ const RAW_RUNTIME_STATE =
           ["fast-json-stable-stringify", "npm:2.1.0"],\
           ["json-schema-traverse", "npm:0.4.1"],\
           ["uri-js", "npm:4.4.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["amqplib", [\
+      ["npm:2.0.1", {\
+        "packageLocation": "./.yarn/cache/amqplib-npm-2.0.1-d26ea5ae55-731c9e8847.zip/node_modules/amqplib/",\
+        "packageDependencies": [\
+          ["amqplib", "npm:2.0.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -7398,6 +7474,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/yocto-queue-npm-0.1.0-c6c9a7db29-f77b3d8d00.zip/node_modules/yocto-queue/",\
         "packageDependencies": [\
           ["yocto-queue", "npm:0.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["zod", [\
+      ["npm:4.5.4", {\
+        "packageLocation": "./.yarn/cache/zod-npm-4.5.4-5303b3afef-b2fd4aaf35.zip/node_modules/zod/",\
+        "packageDependencies": [\
+          ["zod", "npm:4.5.4"]\
         ],\
         "linkType": "HARD"\
       }]\

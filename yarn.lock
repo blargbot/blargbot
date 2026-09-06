@@ -139,6 +139,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/contracts@workspace:^, @blargbot/contracts@workspace:src/contracts":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/contracts@workspace:src/contracts"
+  dependencies:
+    amqplib: "npm:^2.0.1"
+    zod: "npm:^4.5.4"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/core-tests@workspace:test/core":
   version: 0.0.0-use.local
   resolution: "@blargbot/core-tests@workspace:test/core"
@@ -237,6 +246,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/discord-rest-service@workspace:src/discord-rest-service":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-rest-service@workspace:src/discord-rest-service"
+  dependencies:
+    "@blargbot/config": "workspace:^"
+    "@blargbot/contracts": "workspace:^"
+    "@blargbot/logger": "workspace:^"
+    "@discordeno/rest": "npm:^22.0.0-beta.2"
+    "@discordeno/types": "npm:^22.0.0-beta.2"
+    amqplib: "npm:^2.0.1"
+    zod: "npm:^4.5.4"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/domain@workspace:^, @blargbot/domain@workspace:src/domain":
   version: 0.0.0-use.local
   resolution: "@blargbot/domain@workspace:src/domain"
@@ -326,6 +349,32 @@ __metadata:
     ts-mockito: "npm:^2.6.1"
   languageName: unknown
   linkType: soft
+
+"@discordeno/rest@npm:^22.0.0-beta.2":
+  version: 22.0.0-beta.2
+  resolution: "@discordeno/rest@npm:22.0.0-beta.2"
+  dependencies:
+    "@discordeno/types": "npm:^22.0.0-beta.2"
+    "@discordeno/utils": "npm:^22.0.0-beta.2"
+  checksum: 10/83e2cc4e3aa0e1ecc3090679ce5a3e124b35da3ed8cbf4e394dfe7aa5214fdc616339b58e6ef4706809cb1619dc6dbaf0d403960440aa5f7e38e2623c0647315
+  languageName: node
+  linkType: hard
+
+"@discordeno/types@npm:^22.0.0-beta.2":
+  version: 22.0.0-beta.2
+  resolution: "@discordeno/types@npm:22.0.0-beta.2"
+  checksum: 10/8dabf2f6912e0ff4292e23b5d7f7bebb03ac7b439589cbede7359caad10179f94bbdd092cb30550161089d964eef2d73c5fc0e41e65a1895fa7c66927b16e18c
+  languageName: node
+  linkType: hard
+
+"@discordeno/utils@npm:^22.0.0-beta.2":
+  version: 22.0.0-beta.2
+  resolution: "@discordeno/utils@npm:22.0.0-beta.2"
+  dependencies:
+    "@discordeno/types": "npm:^22.0.0-beta.2"
+  checksum: 10/d7d0183fae5eefb9fe1d5fe912c599b894d5e4c1b9f8ff1c7e5c79d2e04ac724a3a57a367b5b51a113ac99dc1bd491f4dcbbba1d22e0cb5d510c2dd05ebf9e55
+  languageName: node
+  linkType: hard
 
 "@emnapi/runtime@npm:^1.11.3":
   version: 1.11.3
@@ -1765,6 +1814,13 @@ __metadata:
     json-schema-traverse: "npm:^0.4.1"
     uri-js: "npm:^4.2.2"
   checksum: 10/0916dda09c152fb5857bc1cc7ce61718e9cec5b7faeff44a74f5e324eed8a556e1a84856724ea322a067b436ecad9f74ac8295fd395449788cca52f0c25bd5fb
+  languageName: node
+  linkType: hard
+
+"amqplib@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "amqplib@npm:2.0.1"
+  checksum: 10/731c9e8847c620d67e1546a4a98f9364e47c7b413c17d3eb35b38e4709da002e0da4d3f2186df3feb6123113e0a96aa684c2cce762bfbd415eab446ff385df52
   languageName: node
   linkType: hard
 
@@ -6176,5 +6232,12 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: 10/f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
+  languageName: node
+  linkType: hard
+
+"zod@npm:^4.5.4":
+  version: 4.5.4
+  resolution: "zod@npm:4.5.4"
+  checksum: 10/b2fd4aaf358359650a1f27f303a462f0f49b4e5582f517ad8894ed566fdceb9da391b59babffe3c70574c8064174883735657eb28e12db5c7021455a631866c4
   languageName: node
   linkType: hard

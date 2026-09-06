@@ -121,9 +121,9 @@ export interface RuntimeDebugEntry {
     text: string;
 }
 
-export type BBTagRuntimeState = typeof BBTagRuntimeState[keyof typeof BBTagRuntimeState];
-// eslint-disable-next-line @typescript-eslint/naming-convention, no-useless-assignment
-export const BBTagRuntimeState = Object.freeze({
+type BBTagRuntimeState = typeof BBTagRuntimeState[keyof typeof BBTagRuntimeState];
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const BBTagRuntimeState = Object.freeze({
     /** Indicates bbtag should continue to be executed */
     RUNNING: 0,
     /** Indicates the current tag should be terminated */
@@ -131,6 +131,7 @@ export const BBTagRuntimeState = Object.freeze({
     /** Indicates the current execution should be terminated */
     ABORT: 2
 });
+export { BBTagRuntimeState };
 
 export interface FindEntityOptions {
     noLookup?: boolean;

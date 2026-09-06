@@ -3,8 +3,6 @@ import type { QueuingStrategy } from 'node:stream/web';
 import { WritableStream } from 'node:stream/web';
 import { isTypedArray } from 'node:util/types';
 
-import { PromiseCompletionSource } from './PromiseCompletionSource.js';
-
 export class BufferWriter extends Writable {
     readonly #core: BufferWriterCore;
 
@@ -17,7 +15,7 @@ export class BufferWriter extends Writable {
         return this.#core.getResult();
     }
 
-    public override _write(chunk: unknown, encoding: BufferEncoding, callback: (error?: null | Error  ) => void): void {
+    public override _write(chunk: unknown, encoding: BufferEncoding, callback: (error?: null | Error) => void): void {
         callback(this.#core.push(chunk, encoding));
     }
 
@@ -52,13 +50,13 @@ class BufferWriterCore {
     readonly #maxSize: number;
     #chunks: Uint8Array[] | null;
     #size: number;
-    readonly #result: PromiseCompletionSource<Buffer>;
+    readonly #result: PromiseWithResolvers<Buffer>;
 
     public constructor(maxSize: number) {
         this.#maxSize = maxSize;
         this.#chunks = [];
         this.#size = 0;
-        this.#result = new PromiseCompletionSource();
+        this.#result = Promise.withResolvers();
     }
 
     public getResult(): Promise<Buffer> {

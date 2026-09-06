@@ -1,8 +1,6 @@
-import { PromiseCompletionSource } from '@blargbot/core/PromiseCompletionSource.js';
-
 export class Awaiter<T> {
     readonly #timeout: NodeJS.Timeout;
-    readonly #pcs: PromiseCompletionSource<T | undefined>;
+    readonly #pcs: PromiseWithResolvers<T | undefined>;
     readonly #poolIds: ReadonlySet<string>;
     readonly #pools: Record<string, Array<Awaiter<T>> | undefined>;
     readonly #check: (item: T) => Awaitable<boolean>;
@@ -13,7 +11,7 @@ export class Awaiter<T> {
         check: (item: T) => Awaitable<boolean>,
         timeout: number
     ) {
-        this.#pcs = new PromiseCompletionSource<T | undefined>();
+        this.#pcs = Promise.withResolvers();
         this.#poolIds = poolIds;
         this.#pools = pools;
         this.#check = check;

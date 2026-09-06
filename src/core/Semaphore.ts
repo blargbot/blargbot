@@ -1,7 +1,5 @@
-import { PromiseCompletionSource } from './PromiseCompletionSource.js';
-
 export class Semaphore {
-    readonly #waiters: Array<PromiseCompletionSource<void>>;
+    readonly #waiters: Array<PromiseWithResolvers<void>>;
     readonly #maxConcurrency: number;
     #heldLocks: number;
 
@@ -15,7 +13,7 @@ export class Semaphore {
         if (this.#heldLocks++ < this.#maxConcurrency)
             return;
 
-        const pcs = new PromiseCompletionSource<void>();
+        const pcs = Promise.withResolvers<void>();
         this.#waiters.push(pcs);
         await pcs.promise;
     }

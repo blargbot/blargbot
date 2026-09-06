@@ -9,6 +9,11 @@ export interface Configuration {
     readonly website: WebsiteConfiguration;
     readonly api: ApiWorkerConfiguration;
     readonly discord: DiscordConfiguration;
+    readonly amqp: AmqpConfiguration;
+}
+
+export interface AmqpConfiguration {
+    readonly url: string;
 }
 
 export interface RethinkConfiguration {
@@ -32,6 +37,7 @@ export interface SequelizeConfiguration {
 export interface DiscordConfiguration {
     readonly defaultPrefix: string;
     readonly token: string;
+    readonly applicationId?: string;
     readonly shards: ClusterWorkerConfiguration;
     readonly images: ImageWorkerConfiguration;
     readonly guilds: GuildsConfiguration;
