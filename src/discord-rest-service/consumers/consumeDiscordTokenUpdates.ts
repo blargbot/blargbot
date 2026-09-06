@@ -8,9 +8,9 @@ export interface DiscordTokenUpdatesOptions {
     readonly logger: Logger;
 }
 
-export async function consumeDiscordTokenUpdates(options: DiscordTokenUpdatesOptions): Promise<void> {
+export async function consumeDiscordTokenUpdates(options: DiscordTokenUpdatesOptions): Promise<AsyncDisposable> {
     const { exchange, discord, logger } = options;
-    await exchange.handle('set-discord-token', token => {
+    return await exchange.handle('set-discord-token', token => {
         discord.token = token;
         logger.warn('Discord token has been updated.');
     });

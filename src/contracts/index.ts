@@ -3,5 +3,6 @@ export { default as DiscordRequest } from './messages/DiscordRequest.js';
 export { default as DiscordResponse } from './messages/DiscordResponse.js';
 export * from './brokers/getConfigExchange.js';
 export * from './brokers/getDiscordRestQueue.js';
+export * from './brokers/getHealthReporter.js';
 
 export { asBuffer, asUint8Array } from './util.js';

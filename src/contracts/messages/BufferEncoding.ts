@@ -1,8 +1,10 @@
 import z from 'zod';
 
+import { cleanType } from '../util.js';
+
 type BufferEncoding = z.infer<typeof BufferEncoding>;
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const BufferEncoding = z.enum(Object.keys({
+const BufferEncoding = cleanType(z.enum(Object.keys({
     ascii: 'ascii',
     utf8: 'utf8',
     'utf-8': 'utf-8',
@@ -15,6 +17,6 @@ const BufferEncoding = z.enum(Object.keys({
     latin1: 'latin1',
     binary: 'binary',
     hex: 'hex'
-} satisfies { [P in NodeJS.BufferEncoding]: P }));
+} satisfies { [P in NodeJS.BufferEncoding]: P })));
 
 export { BufferEncoding };

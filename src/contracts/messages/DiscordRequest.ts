@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import z from 'zod';
 
-import { asBuffer, asUint8Array, bufferToJson, jsonToBuffer, takeBytes } from '../util.js';
+import { asBuffer, asUint8Array, bufferToJson, cleanType, jsonToBuffer, takeBytes } from '../util.js';
 import AmqpMessage from './AmqpMessage.js';
 
 const commonHeaders = z.object({
@@ -59,7 +59,7 @@ const metaSchema = z.intersection(
 );
 
 type DiscordRequest = z.infer<typeof DiscordRequest>;
-const DiscordRequest = z.codec(
+const DiscordRequest = cleanType(z.codec(
     AmqpMessage,
     output,
     {
@@ -186,6 +186,6 @@ const DiscordRequest = z.codec(
             };
         }
     }
-);
+));
 
 export default DiscordRequest;

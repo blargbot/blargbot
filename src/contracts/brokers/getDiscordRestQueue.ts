@@ -13,5 +13,10 @@ export interface DiscordRequestHandlerOptions {
 export type DiscordRestQueue = RpcQueue<DiscordRequest, DiscordResponse>;
 
 export async function getDiscordRestQueue(channel: Channel): Promise<DiscordRestQueue> {
-    return await defineRPCQueue(channel, 'discord-rest-requests', DiscordRequest, DiscordResponse);
+    return await defineRPCQueue({
+        channel,
+        queueName: 'discord-rest-requests',
+        request: DiscordRequest,
+        response: DiscordResponse
+    });
 }

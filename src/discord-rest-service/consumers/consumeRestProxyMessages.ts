@@ -1,19 +1,17 @@
 import type { DiscordResponse, DiscordRestQueue } from '@blargbot/contracts';
-import { type Logger } from '@blargbot/logger';
 import type { RestManager, RestRequestRejection } from '@discordeno/rest';
 import z from 'zod';
 
 export interface RestProxyOptions {
     readonly queue: DiscordRestQueue;
     readonly discord: RestManager;
-    readonly logger: Logger;
 }
 
-export async function consumeRestProxyMessages(options: RestProxyOptions): Promise<void> {
-    const { queue, discord, logger } = options;
+export async function consumeRestProxyMessages(options: RestProxyOptions): Promise<AsyncDisposable> {
+    const { queue, discord } = options;
     const discordError = function (): void { } as unknown as new () => RestRequestRejection;
     discordError.prototype = Object.getPrototypeOf(discord.createRequestError(new Error(), { ok: false, status: 0, statusText: '' }).cause) as RestRequestRejection;
-    await queue.handle(
+    return await queue.handle(
         async ({ method, url, ...options }) => {
             const response = await discord.makeRequest(method, url, options);
             if (response === undefined || response === null)
@@ -56,5 +54,4 @@ export async function consumeRestProxyMessages(options: RestProxyOptions): Promi
             }
         }
     );
-    logger.init(`Listening for AMQP messages on queue ${queue.name}`);
 }

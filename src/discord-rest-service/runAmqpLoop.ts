@@ -1,4 +1,4 @@
-import { getConfigExchange, getDiscordRestQueue } from '@blargbot/contracts';
+import { getConfigExchange, getDiscordRestQueue, getHealthReporter } from '@blargbot/contracts';
 import type { Logger } from '@blargbot/logger';
 import type { RestManager } from '@discordeno/rest';
 import type { ChannelModel } from 'amqplib';
@@ -27,8 +27,11 @@ export async function runAmqpLoop(options: AmqpLoopOptions): Promise<void> {
         const channel = await amqp.createChannel();
         const restQueue = await getDiscordRestQueue(channel);
         const configExchange = await getConfigExchange(channel);
+        const health = await getHealthReporter(channel);
 
-        await consumeRestProxyMessages({ queue: restQueue, discord, logger });
+        await using _healthRegistration = await health.register('discord-rest-service', () => undefined);
+
+        await consumeRestProxyMessages({ queue: restQueue, discord });
         await consumeDiscordTokenUpdates({ exchange: configExchange, discord, logger });
 
         const { promise, resolve } = Promise.withResolvers();

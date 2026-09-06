@@ -10,13 +10,13 @@ export type ConfigExchange = DirectExchange<{
 }>;
 
 export async function getConfigExchange(channel: Channel): Promise<ConfigExchange> {
-    return await defineDirectExchange(
+    return await defineDirectExchange({
         channel,
-        'config',
-        {
+        exchangeName: 'config',
+        types: {
             'set-discord-token': stringMessage
         }
-    );
+    });
 }
 
 const stringMessage = z.codec(

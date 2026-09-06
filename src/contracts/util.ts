@@ -3,6 +3,10 @@ import type { ImplicitArrayBuffer } from 'node:buffer';
 import type { Channel, ConsumeMessage, Options } from 'amqplib';
 import z from 'zod';
 
+export function cleanType<Schema extends z.ZodType>(schema: Schema): z.ZodType<Schema['_zod']['output'], Schema['_zod']['input']> {
+    return schema;
+}
+
 export const stringToNonNegativeInt = z.codec(
     z.templateLiteral([z.int().gte(0)]),
     z.int().gte(0),

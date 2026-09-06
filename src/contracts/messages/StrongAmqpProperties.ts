@@ -1,6 +1,7 @@
 import type { MessageProperties } from 'amqplib';
 import z from 'zod';
 
+import { cleanType } from '../util.js';
 import { BufferEncoding } from './BufferEncoding.js';
 
 const output = z.object({
@@ -38,7 +39,7 @@ const input = z.object<MessageProperties>({
 
 type AmqpMessageProperties = z.infer<typeof AmqpMessageProperties>;
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const AmqpMessageProperties = z.codec(
+const AmqpMessageProperties = cleanType(z.codec(
     input,
     output,
     {
@@ -49,6 +50,6 @@ const AmqpMessageProperties = z.codec(
             return output.parse(value);
         }
     }
-);
+));
 
 export { AmqpMessageProperties };
