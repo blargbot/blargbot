@@ -114,6 +114,7 @@ __metadata:
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/res": "workspace:^"
+    "@blargbot/util": "workspace:^"
     "@hunteroi/versioning": "npm:^1.3.2"
     "@types/brainfuck-node": "workspace:^"
     "@types/eris": "workspace:^"
@@ -143,6 +144,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/contracts@workspace:src/contracts"
   dependencies:
+    "@blargbot/logger": "workspace:*"
+    "@blargbot/util": "workspace:^"
+    "@discordeno/types": "npm:^22.0.0-beta.2"
     amqplib: "npm:^2.0.1"
     zod: "npm:^4.5.4"
   languageName: unknown
@@ -175,6 +179,7 @@ __metadata:
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
     "@blargbot/res": "workspace:^"
+    "@blargbot/util": "workspace:^"
     "@types/catflake": "workspace:^"
     "@types/color": "npm:^3.0.3"
     "@types/cron": "npm:^2.0.0"
@@ -246,13 +251,44 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/discord-rest-service@workspace:src/discord-rest-service":
+"@blargbot/discord-cluster-orchestrator@workspace:src/discord-cluster-orchestrator":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-cluster-orchestrator@workspace:src/discord-cluster-orchestrator"
+  dependencies:
+    "@blargbot/config": "workspace:^"
+    "@blargbot/contracts": "workspace:^"
+    "@blargbot/discord-rest-service": "workspace:^"
+    "@blargbot/logger": "workspace:^"
+    "@blargbot/util": "workspace:^"
+    "@discordeno/gateway": "npm:^22.0.0-beta.2"
+    "@discordeno/rest": "npm:^22.0.0-beta.2"
+    "@discordeno/types": "npm:^22.0.0-beta.2"
+    amqplib: "npm:^2.0.1"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-cluster-service@workspace:src/discord-cluster-service":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-cluster-service@workspace:src/discord-cluster-service"
+  dependencies:
+    "@blargbot/config": "workspace:^"
+    "@blargbot/contracts": "workspace:^"
+    "@blargbot/logger": "workspace:^"
+    "@blargbot/util": "workspace:^"
+    "@discordeno/gateway": "npm:^22.0.0-beta.2"
+    "@discordeno/types": "npm:^22.0.0-beta.2"
+    amqplib: "npm:^2.0.1"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-rest-service@workspace:^, @blargbot/discord-rest-service@workspace:src/discord-rest-service":
   version: 0.0.0-use.local
   resolution: "@blargbot/discord-rest-service@workspace:src/discord-rest-service"
   dependencies:
     "@blargbot/config": "workspace:^"
     "@blargbot/contracts": "workspace:^"
     "@blargbot/logger": "workspace:^"
+    "@blargbot/util": "workspace:^"
     "@discordeno/rest": "npm:^22.0.0-beta.2"
     "@discordeno/types": "npm:^22.0.0-beta.2"
     amqplib: "npm:^2.0.1"
@@ -294,7 +330,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/logger@workspace:^, @blargbot/logger@workspace:src/logger":
+"@blargbot/logger@workspace:*, @blargbot/logger@workspace:^, @blargbot/logger@workspace:src/logger":
   version: 0.0.0-use.local
   resolution: "@blargbot/logger@workspace:src/logger"
   dependencies:
@@ -349,6 +385,22 @@ __metadata:
     ts-mockito: "npm:^2.6.1"
   languageName: unknown
   linkType: soft
+
+"@blargbot/util@workspace:^, @blargbot/util@workspace:src/util":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/util@workspace:src/util"
+  languageName: unknown
+  linkType: soft
+
+"@discordeno/gateway@npm:^22.0.0-beta.2":
+  version: 22.0.0-beta.2
+  resolution: "@discordeno/gateway@npm:22.0.0-beta.2"
+  dependencies:
+    "@discordeno/types": "npm:^22.0.0-beta.2"
+    "@discordeno/utils": "npm:^22.0.0-beta.2"
+  checksum: 10/68d4a6a40586ea44499f311827b7a30c86f5053dd40cc7a0edf19ec4883b45453f8d3b9309ccdd3f0a155a61abc7152afac87601a9ed4c322884806545026601
+  languageName: node
+  linkType: hard
 
 "@discordeno/rest@npm:^22.0.0-beta.2":
   version: 22.0.0-beta.2

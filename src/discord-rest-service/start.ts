@@ -1,9 +1,10 @@
 import { config } from '@blargbot/config';
+import { AmqpConnection } from '@blargbot/contracts';
 import { createLogger } from '@blargbot/logger';
+import { whenAborted } from '@blargbot/util';
 import { createRestManager } from '@discordeno/rest';
-import amqplib from 'amqplib';
 
-import { runAmqpLoop } from './runAmqpLoop.js';
+import { setupAmqp } from './setupAmqp.js';
 
 const logger = createLogger(config, 'REST');
 logger.setGlobal();
@@ -14,9 +15,11 @@ const discord = createRestManager({
     logger
 });
 
-await runAmqpLoop({
-    connect: () => amqplib.connect(config.amqp.url),
-    discord,
-    logger,
-    signal: new AbortController().signal
+const amqp = new AmqpConnection(config.amqp.url);
+amqp.onError(err => logger.error('[AMQP]', err));
+amqp.onConnected(signal => {
+    logger.init('[AMQP] internal connection established.');
+    whenAborted(signal, () => logger.warn('[AMQP] internal connection closed.'));
 });
+const amqpChannel = amqp.createChannel();
+await setupAmqp(amqpChannel, discord, logger);

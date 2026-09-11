@@ -1,8 +1,8 @@
-import type { DiscordRestQueue } from '@blargbot/contracts';
+import type { DiscordRestChannel } from '@blargbot/contracts';
 import type { MakeRequestOptions, RequestMethods, RestManager, RestRequestRejection } from '@discordeno/rest';
 
 export interface RequestHandlerOptions {
-    queue: DiscordRestQueue;
+    queue: DiscordRestChannel;
     discord: RestManager;
 }
 

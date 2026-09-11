@@ -2,7 +2,7 @@
 import z from 'zod';
 
 import { asBuffer, asUint8Array, bufferToJson, cleanType, jsonToBuffer, takeBytes } from '../util.js';
-import AmqpMessage from './AmqpMessage.js';
+import { AmqpMessage } from './AmqpMessage.js';
 
 const commonHeaders = z.object({
     method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']),
@@ -24,7 +24,7 @@ const output = z.intersection(
     })
 );
 
-const metaSchema = z.intersection(
+const metaSchema = z.compile(z.intersection(
     commonHeaders,
     z.object({
         files: z.object({
@@ -56,10 +56,9 @@ const metaSchema = z.intersection(
             })
         ]).optional()
     })
-);
+));
 
-type DiscordRequest = z.infer<typeof DiscordRequest>;
-const DiscordRequest = cleanType(z.codec(
+export const DiscordRequest = cleanType(z.codec(
     AmqpMessage,
     output,
     {
@@ -118,29 +117,56 @@ const DiscordRequest = cleanType(z.codec(
             metaLength.writeInt32BE(metaChunk.length);
 
             return {
-                contentType: undefined,
-                contentEncoding: 'utf-8' as const,
                 content: asUint8Array(Buffer.concat([
                     asUint8Array(metaLength),
                     metaChunk,
                     ...await Promise.all(chunks)
-                ]))
+                ])),
+                properties: {
+                    contentType: undefined,
+                    contentEncoding: 'utf-8' as const
+                }
             };
         },
-        decode(value) {
+        decode(value, ctx) {
             let remain = value.content;
             function takeNextBytes(count: number): Uint8Array {
                 const result = takeBytes(remain, count);
                 remain = result[1];
                 return result[0];
             }
+            function notEnoughBytes(count: number): never {
+                const taken = value.content.byteLength - remain.byteLength;
+                ctx.issues.push({
+                    code: 'too_small',
+                    minimum: taken + count,
+                    input: value.content.byteLength,
+                    message: `Buffer too small. Attempted to take ${taken + count} bytes, but only ${value.content.byteLength} are available.`,
+                    origin: 'file'
+                });
+                return z.NEVER;
+            }
+
+            if (remain.byteLength < 4)
+                return notEnoughBytes(4);
             const metaLength = asBuffer(takeNextBytes(4)).readInt32BE();
-            const meta = metaSchema.parse(bufferToJson(takeNextBytes(metaLength)));
+
+            if (remain.byteLength < metaLength)
+                return notEnoughBytes(metaLength);
+            const metaResult = metaSchema.safeParse(bufferToJson(takeNextBytes(metaLength)));
+            if (!metaResult.success) {
+                ctx.issues.push(...metaResult.error.issues as never[]);
+                return z.NEVER;
+            }
+            const meta = metaResult.data;
 
             let files;
             if (meta.files !== undefined) {
                 files = [];
                 for (const file of meta.files) {
+                    if (remain.byteLength < file.length)
+                        return notEnoughBytes(file.length);
+
                     files.push({
                         name: file.name,
                         blob: new Blob([takeNextBytes(file.length)], { type: file.type })
@@ -158,6 +184,8 @@ const DiscordRequest = cleanType(z.codec(
                                 break;
                             }
                             case 'file': {
+                                if (remain.byteLength < entry.length)
+                                    return notEnoughBytes(entry.length);
                                 formData.append(entry.name, new Blob([takeNextBytes(entry.length)], { type: entry.type }), entry.fileName);
                                 break;
                             }
@@ -171,8 +199,17 @@ const DiscordRequest = cleanType(z.codec(
                 }
             }
 
-            if (remain.byteLength !== 0)
-                throw new Error(`Unexpected extra data. Expected ${value.content.byteLength - remain.byteLength} but got ${value.content.byteLength}`);
+            if (remain.byteLength !== 0) {
+                const taken = value.content.byteLength - remain.byteLength;
+                ctx.issues.push({
+                    code: 'too_big',
+                    maximum: taken,
+                    input: value.content.byteLength,
+                    message: `Unexpected extra data. Expected ${taken} bytes but got ${value.content.byteLength}`,
+                    origin: 'file'
+                });
+                return z.NEVER;
+            }
 
             return {
                 method: meta.method,
@@ -187,5 +224,4 @@ const DiscordRequest = cleanType(z.codec(
         }
     }
 ));
-
-export default DiscordRequest;
+export type DiscordRequest = z.infer<typeof DiscordRequest>;

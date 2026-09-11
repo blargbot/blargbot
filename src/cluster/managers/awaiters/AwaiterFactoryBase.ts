@@ -1,5 +1,5 @@
-import { Semaphore } from '@blargbot/core/Semaphore.js';
 import type { Logger } from '@blargbot/logger';
+import { Semaphore } from '@blargbot/util';
 
 import { Awaiter } from './Awaiter.js';
 

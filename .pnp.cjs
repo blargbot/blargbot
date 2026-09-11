@@ -71,6 +71,14 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:src/database"\
     },\
     {\
+      "name": "@blargbot/discord-cluster-orchestrator",\
+      "reference": "workspace:src/discord-cluster-orchestrator"\
+    },\
+    {\
+      "name": "@blargbot/discord-cluster-service",\
+      "reference": "workspace:src/discord-cluster-service"\
+    },\
+    {\
       "name": "@blargbot/discord-rest-service",\
       "reference": "workspace:src/discord-rest-service"\
     },\
@@ -101,6 +109,10 @@ const RAW_RUNTIME_STATE =
     {\
       "name": "@blargbot/res",\
       "reference": "workspace:src/res"\
+    },\
+    {\
+      "name": "@blargbot/util",\
+      "reference": "workspace:src/util"\
     },\
     {\
       "name": "@blargbot/bbtag-tests",\
@@ -139,6 +151,8 @@ const RAW_RUNTIME_STATE =
     ["@blargbot/crowdin", ["workspace:src/crowdin"]],\
     ["@blargbot/database", ["workspace:src/database"]],\
     ["@blargbot/database-tests", ["workspace:test/database"]],\
+    ["@blargbot/discord-cluster-orchestrator", ["workspace:src/discord-cluster-orchestrator"]],\
+    ["@blargbot/discord-cluster-service", ["workspace:src/discord-cluster-service"]],\
     ["@blargbot/discord-rest-service", ["workspace:src/discord-rest-service"]],\
     ["@blargbot/domain", ["workspace:src/domain"]],\
     ["@blargbot/formatting", ["workspace:src/formatting"]],\
@@ -148,6 +162,7 @@ const RAW_RUNTIME_STATE =
     ["@blargbot/master", ["workspace:src/master"]],\
     ["@blargbot/res", ["workspace:src/res"]],\
     ["@blargbot/test-util", ["workspace:test/testUtil"]],\
+    ["@blargbot/util", ["workspace:src/util"]],\
     ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
     ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
     ["@types/catflake", ["workspace:definitions/catflake"]],\
@@ -283,6 +298,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/mapping", "workspace:src/mapping"],\
           ["@blargbot/res", "workspace:src/res"],\
+          ["@blargbot/util", "workspace:src/util"],\
           ["@hunteroi/versioning", "npm:1.3.2"],\
           ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
           ["@types/eris", "workspace:definitions/eris"],\
@@ -335,6 +351,9 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./src/contracts/",\
         "packageDependencies": [\
           ["@blargbot/contracts", "workspace:src/contracts"],\
+          ["@blargbot/logger", "workspace:src/logger"],\
+          ["@blargbot/util", "workspace:src/util"],\
+          ["@discordeno/types", "npm:22.0.0-beta.2"],\
           ["amqplib", "npm:2.0.1"],\
           ["zod", "npm:4.5.4"]\
         ],\
@@ -355,6 +374,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/mapping", "workspace:src/mapping"],\
           ["@blargbot/res", "workspace:src/res"],\
+          ["@blargbot/util", "workspace:src/util"],\
           ["@types/catflake", "workspace:definitions/catflake"],\
           ["@types/color", "npm:3.0.3"],\
           ["@types/cron", "npm:2.0.0"],\
@@ -449,6 +469,40 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
+    ["@blargbot/discord-cluster-orchestrator", [\
+      ["workspace:src/discord-cluster-orchestrator", {\
+        "packageLocation": "./src/discord-cluster-orchestrator/",\
+        "packageDependencies": [\
+          ["@blargbot/config", "workspace:src/config"],\
+          ["@blargbot/contracts", "workspace:src/contracts"],\
+          ["@blargbot/discord-cluster-orchestrator", "workspace:src/discord-cluster-orchestrator"],\
+          ["@blargbot/discord-rest-service", "workspace:src/discord-rest-service"],\
+          ["@blargbot/logger", "workspace:src/logger"],\
+          ["@blargbot/util", "workspace:src/util"],\
+          ["@discordeno/gateway", "npm:22.0.0-beta.2"],\
+          ["@discordeno/rest", "npm:22.0.0-beta.2"],\
+          ["@discordeno/types", "npm:22.0.0-beta.2"],\
+          ["amqplib", "npm:2.0.1"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@blargbot/discord-cluster-service", [\
+      ["workspace:src/discord-cluster-service", {\
+        "packageLocation": "./src/discord-cluster-service/",\
+        "packageDependencies": [\
+          ["@blargbot/config", "workspace:src/config"],\
+          ["@blargbot/contracts", "workspace:src/contracts"],\
+          ["@blargbot/discord-cluster-service", "workspace:src/discord-cluster-service"],\
+          ["@blargbot/logger", "workspace:src/logger"],\
+          ["@blargbot/util", "workspace:src/util"],\
+          ["@discordeno/gateway", "npm:22.0.0-beta.2"],\
+          ["@discordeno/types", "npm:22.0.0-beta.2"],\
+          ["amqplib", "npm:2.0.1"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
     ["@blargbot/discord-rest-service", [\
       ["workspace:src/discord-rest-service", {\
         "packageLocation": "./src/discord-rest-service/",\
@@ -457,6 +511,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/contracts", "workspace:src/contracts"],\
           ["@blargbot/discord-rest-service", "workspace:src/discord-rest-service"],\
           ["@blargbot/logger", "workspace:src/logger"],\
+          ["@blargbot/util", "workspace:src/util"],\
           ["@discordeno/rest", "npm:22.0.0-beta.2"],\
           ["@discordeno/types", "npm:22.0.0-beta.2"],\
           ["amqplib", "npm:2.0.1"],\
@@ -571,6 +626,26 @@ const RAW_RUNTIME_STATE =
           ["ts-mockito", "npm:2.6.1"]\
         ],\
         "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@blargbot/util", [\
+      ["workspace:src/util", {\
+        "packageLocation": "./src/util/",\
+        "packageDependencies": [\
+          ["@blargbot/util", "workspace:src/util"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@discordeno/gateway", [\
+      ["npm:22.0.0-beta.2", {\
+        "packageLocation": "./.yarn/cache/@discordeno-gateway-npm-22.0.0-beta.2-aa8c9833bd-68d4a6a405.zip/node_modules/@discordeno/gateway/",\
+        "packageDependencies": [\
+          ["@discordeno/gateway", "npm:22.0.0-beta.2"],\
+          ["@discordeno/types", "npm:22.0.0-beta.2"],\
+          ["@discordeno/utils", "npm:22.0.0-beta.2"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["@discordeno/rest", [\

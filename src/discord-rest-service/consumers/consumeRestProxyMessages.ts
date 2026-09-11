@@ -1,46 +1,28 @@
-import type { DiscordResponse, DiscordRestQueue } from '@blargbot/contracts';
-import type { RestManager, RestRequestRejection } from '@discordeno/rest';
+import type { DiscordRestChannel } from '@blargbot/contracts';
+import type { RestManager } from '@discordeno/rest';
 import z from 'zod';
 
 export interface RestProxyOptions {
-    readonly queue: DiscordRestQueue;
+    readonly channel: DiscordRestChannel;
     readonly discord: RestManager;
 }
 
 export async function consumeRestProxyMessages(options: RestProxyOptions): Promise<AsyncDisposable> {
-    const { queue, discord } = options;
-    const discordError = function (): void { } as unknown as new () => RestRequestRejection;
-    discordError.prototype = Object.getPrototypeOf(discord.createRequestError(new Error(), { ok: false, status: 0, statusText: '' }).cause) as RestRequestRejection;
-    return await queue.handle(
+    const { channel, discord } = options;
+    return await channel.handle(
         async ({ method, url, ...options }) => {
-            const response = await discord.makeRequest(method, url, options);
-            if (response === undefined || response === null)
-                return { status: 204, statusText: 'NoContent', body: undefined };
-            return { status: 200, statusText: 'Ok', body: response };
-        },
-        {
-            catch(error): DiscordResponse & { body: Omit<RestRequestRejection, 'status' | 'statusText'>; } {
-                if (error instanceof z.ZodError) {
-                    return {
-                        status: 400,
-                        statusText: 'BadRequest',
-                        body: {
-                            ok: false,
-                            body: error.issues,
-                            error: error.message
-                        }
-                    };
-                }
-                if (error instanceof Error && error.cause instanceof discordError) {
-                    return {
-                        status: error.cause.status,
-                        statusText: error.cause.statusText,
-                        body: {
-                            ok: false,
-                            body: error.cause.body,
-                            error: error.cause.error
-                        }
-                    };
+            try {
+                const response = await discord.makeRequest(method, url, options);
+                if (response === undefined || response === null)
+                    return { status: 204, statusText: 'NoContent', body: undefined };
+                return { status: 200, statusText: 'Ok', body: response };
+            } catch (error) {
+                if (error instanceof Error) {
+                    const parsed = discordenoErrorCause.safeParse(error.cause);
+                    if (parsed.success) {
+                        const { status, statusText, ...body } = parsed.data;
+                        return { status, statusText, body };
+                    }
                 }
                 return {
                     status: 500,
@@ -55,3 +37,11 @@ export async function consumeRestProxyMessages(options: RestProxyOptions): Promi
         }
     );
 }
+
+const discordenoErrorCause = z.object({
+    ok: z.boolean(),
+    status: z.number(),
+    statusText: z.string().optional(),
+    error: z.string().optional(),
+    body: z.unknown()
+});

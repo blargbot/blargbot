@@ -1,30 +1,11 @@
 import z from 'zod';
 
-import { bufferToJson, cleanType, jsonToBuffer } from '../util.js';
-import AmqpMessage from './AmqpMessage.js';
+import { amqpJsonCodec } from '../util.js';
 
-const output = z.object({
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const DiscordResponse = amqpJsonCodec(z.object({
     status: z.int(),
     statusText: z.string().optional(),
     body: z.unknown()
-});
-
-type DiscordResponse = z.infer<typeof DiscordResponse>;
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const DiscordResponse = cleanType(z.codec(
-    AmqpMessage,
-    output,
-    {
-        encode(value) {
-            return {
-                content: jsonToBuffer(value),
-                contentType: 'application/json',
-                contentEncoding: 'utf-8' as const
-            };
-        },
-        decode(value) {
-            return output.parse(bufferToJson(value.content, value.contentEncoding));
-        }
-    }
-));
-export default DiscordResponse;
+}));
+export type DiscordResponse = z.infer<typeof DiscordResponse>;

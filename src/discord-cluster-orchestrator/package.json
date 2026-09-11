@@ -1,16 +1,17 @@
 {
-    "name": "@blargbot/discord-rest-service",
+    "name": "@blargbot/discord-cluster-orchestrator",
     "version": "1.0.0",
     "private": true,
     "type": "module",
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@blargbot/contracts": "workspace:^",
+        "@blargbot/discord-rest-service": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/util": "workspace:^",
+        "@discordeno/gateway": "^22.0.0-beta.2",
         "@discordeno/rest": "^22.0.0-beta.2",
         "@discordeno/types": "^22.0.0-beta.2",
-        "amqplib": "^2.0.1",
-        "zod": "^4.5.4"
+        "amqplib": "^2.0.1"
     }
 }

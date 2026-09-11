@@ -1,16 +1,17 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import z from 'zod';
 
 import { cleanType } from '../util.js';
 import { BufferEncoding } from './BufferEncoding.js';
 
-type AmqpMessage = z.infer<typeof AmqpMessage>
-const AmqpMessage = cleanType(z.object({
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const AmqpMessage = cleanType(z.object({
     content: z.instanceof(Uint8Array<ArrayBufferLike>),
-    contentType: z.union([z.string(), z.undefined()]),
-    contentEncoding: z.union([
-        z.undefined(),
-        BufferEncoding
-    ])
+    properties: z.object({
+        contentType: z.string().optional().catch(undefined),
+        contentEncoding: z.union([
+            z.undefined(),
+            BufferEncoding
+        ]).optional().catch(undefined)
+    })
 }));
-export default AmqpMessage;
+export type AmqpMessage = z.infer<typeof AmqpMessage>
