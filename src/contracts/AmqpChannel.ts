@@ -6,10 +6,12 @@ import amqplib from 'amqplib';
 
 import type { AmqpMessage } from './messages/AmqpMessage.js';
 import { AmqpMessageProperties } from './messages/AmqpMessageProperties.js';
+import type { AmqpTable } from './messages/AmqpValue.js';
 import { asBuffer, asUint8Array } from './util.js';
 
 export interface AmqpPublishOptions extends Omit<Options.Publish, 'contentType' | 'contentEncoding'> {
     signal?: AbortSignal;
+    headers?: AmqpTable;
 }
 
 export type AmqpReplyOptions = Omit<AmqpPublishOptions, 'correlationId'>
@@ -20,6 +22,21 @@ export interface AmqpRawChannel extends ConfirmChannel {
 
 export interface AmqpConsumeOptions extends Options.Consume {
     maxRetries?: number;
+    arguments?: AmqpTable;
+}
+
+export interface AmqpAssertQueue extends Options.AssertQueue {
+    arguments?: AmqpTable;
+    once?: boolean;
+}
+
+export interface AmqpAssertExchange extends Options.AssertExchange {
+    arguments?: AmqpTable;
+    once?: boolean;
+}
+export interface AmqpBindOptions {
+    arguments?: AmqpTable;
+    once?: boolean;
 }
 
 export class AmqpConnection implements Disposable {
@@ -137,10 +154,12 @@ export class AmqpChannel implements Disposable {
         });
     }
 
-    public async assertExchange(name: string, type: string, options?: Options.AssertExchange): Promise<AmqpExchange> {
+    public async assertExchange(name: string, type: string, options?: AmqpAssertExchange): Promise<AmqpExchange> {
+        let applied = false;
         if (this.hasRawChannel) {
             const channel = await this.#rawChannel.getValue();
             ({ exchange: name } = await channel.assertExchange(name, type, options));
+            applied = true;
         } else if (name === '') {
             name = randomUUID();
         }
@@ -148,14 +167,17 @@ export class AmqpChannel implements Disposable {
             name,
             type,
             options: deepClone(options),
-            bindings: new Set()
+            bindings: new Set(),
+            applied
         });
     }
 
-    public async assertQueue(name: string, options?: Options.AssertQueue): Promise<AmqpQueue> {
+    public async assertQueue(name: string, options?: AmqpAssertQueue): Promise<AmqpQueue> {
+        let applied = false;
         if (this.hasRawChannel) {
             const channel = await this.#rawChannel.getValue();
             ({ queue: name } = await channel.assertQueue(name, options));
+            applied = true;
         } else if (name === '') {
             name = randomUUID();
         }
@@ -163,7 +185,8 @@ export class AmqpChannel implements Disposable {
             name,
             options: deepClone(options),
             bindings: new Set(),
-            consumers: new Set()
+            consumers: new Set(),
+            applied
         });
     }
 
@@ -192,7 +215,8 @@ export class AmqpExchange implements Disposable {
         this.#root = root;
         this.#definition = definition;
 
-        root.exchanges.add(definition);
+        if (!definition.applied || definition.options?.once !== true)
+            root.exchanges.add(definition);
     }
 
     public async send(routingKey: string, message: AmqpMessage, options?: AmqpPublishOptions): Promise<void> {
@@ -200,18 +224,21 @@ export class AmqpExchange implements Disposable {
         await sendMessage(channel, (body, options, cb) => channel.publish(this.name, routingKey, body, options, cb), message, options);
     }
 
-    public async bind(exchange: string | AmqpExchange, pattern: string, args?: unknown): Promise<AmqpBinding> {
+    public async bind(exchange: string | AmqpExchange, pattern: string, options?: AmqpBindOptions): Promise<AmqpBinding> {
+        let applied = false;
         if (typeof exchange === 'object')
             exchange = exchange.name;
         if (this.#channel.hasRawChannel) {
             const channel = await this.#channel.getRawChannel();
-            await channel.bindExchange(this.name, exchange, pattern, args);
+            await channel.bindExchange(this.name, exchange, pattern, options?.arguments);
+            applied = true;
         }
         return new AmqpBinding(this.#channel, this.#definition, {
             isExchange: true,
             source: exchange,
             pattern,
-            args: deepClone(args)
+            options: deepClone(options),
+            applied
         });
     }
 
@@ -244,7 +271,8 @@ export class AmqpQueue implements Disposable {
         this.#root = root;
         this.#definition = definition;
 
-        root.queues.add(definition);
+        if (!definition.applied || definition.options?.once !== true)
+            root.queues.add(definition);
     }
 
     public async send(message: AmqpMessage, options?: AmqpPublishOptions): Promise<void> {
@@ -252,18 +280,21 @@ export class AmqpQueue implements Disposable {
         await sendMessage(channel, (body, options, cb) => channel.sendToQueue(this.name, body, options, cb), message, options);
     }
 
-    public async bind(exchange: string | AmqpExchange, pattern: string, args?: unknown): Promise<AmqpBinding> {
+    public async bind(exchange: string | AmqpExchange, pattern: string, options?: AmqpBindOptions): Promise<AmqpBinding> {
+        let applied = false;
         if (typeof exchange === 'object')
             exchange = exchange.name;
         if (this.#channel.hasRawChannel) {
             const channel = await this.#channel.getRawChannel();
-            await channel.bindQueue(this.name, exchange, pattern, args);
+            await channel.bindQueue(this.name, exchange, pattern, options?.arguments);
+            applied = true;
         }
         return new AmqpBinding(this.#channel, this.#definition, {
             isExchange: false,
             source: exchange,
             pattern,
-            args: deepClone(args)
+            options: deepClone(options),
+            applied
         });
     }
 
@@ -347,7 +378,8 @@ export class AmqpBinding implements Disposable {
         this.#root = root;
         this.#definition = definition;
 
-        root.bindings.add(definition);
+        if (!definition.applied || definition.options?.once !== true)
+            root.bindings.add(definition);
     }
 
     public [Symbol.dispose](): void {
@@ -357,7 +389,12 @@ export class AmqpBinding implements Disposable {
     public async delete(): Promise<void> {
         this.#root.bindings.delete(this.#definition);
         const channel = await this.#channel.getRawChannel();
-        await channel[this.#definition.isExchange ? 'unbindExchange' : 'unbindQueue'](this.#root.name, this.#definition.source, this.#definition.pattern, this.#definition.args);
+        await channel[this.#definition.isExchange ? 'unbindExchange' : 'unbindQueue'](
+            this.#root.name,
+            this.#definition.source,
+            this.#definition.pattern,
+            this.#definition.options?.arguments
+        );
     }
 }
 
@@ -398,14 +435,14 @@ export class AmqpConsumer implements AsyncDisposable {
 }
 
 export class AmqpConsumeMessage implements AmqpMessage {
-    readonly #properties: DeepReadonly<AmqpMessageProperties>;
+    readonly #properties: AmqpMessageProperties;
     readonly #channel: ConfirmChannel;
     readonly #content: Uint8Array;
     readonly #raw: ConsumeMessage;
     readonly #fields: Readonly<ConsumeMessageFields>;
     #canAcknowledge: boolean;
 
-    public get properties(): DeepReadonly<AmqpMessageProperties> {
+    public get properties(): AmqpMessageProperties {
         return this.#properties;
     }
 
@@ -478,47 +515,76 @@ interface AmqpTopology {
 
 interface AmqpQueueDefinition {
     readonly name: string;
-    readonly options: Options.AssertQueue | undefined;
+    readonly options: AmqpAssertQueue | undefined;
     readonly bindings: Set<AmqpBindingDefinition>;
     readonly consumers: Set<AmqpConsumerDefinition>;
+    applied: boolean;
 }
 
 interface AmqpExchangeDefinition {
     readonly name: string;
     readonly type: string;
-    readonly options: Options.AssertExchange | undefined;
+    readonly options: AmqpAssertExchange | undefined;
     readonly bindings: Set<AmqpBindingDefinition>;
+    applied: boolean;
 }
 
 interface AmqpBindingDefinition {
     readonly source: string;
     readonly isExchange: boolean;
     readonly pattern: string;
-    readonly args: unknown;
+    readonly options: AmqpBindOptions | undefined;
+    applied: boolean;
 }
 
 interface AmqpConsumerDefinition {
     readonly id: string;
     readonly handler: (this: unknown, channel: AmqpRawChannel, message: ConsumeMessage | null) => void;
-    readonly options: Options.Consume | undefined;
+    readonly options: AmqpConsumeOptions | undefined;
 }
-
-type DeepReadonly<T>
-    = T extends number | string | boolean | symbol | null | undefined ? T
-    : [unknown] extends [T] ? T
-    : { readonly [P in keyof T]: DeepReadonly<T[P]> };
 
 async function applyTopology(channel: AmqpRawChannel, topology: AmqpTopology): Promise<void> {
     await Promise.all([
-        ...topology.exchanges.keys().map(x => channel.assertExchange(x.name, x.type, x.options)),
-        ...topology.queues.keys().map(q => channel.assertQueue(q.name, q.options))
+        ...assertIfNotApplied(topology.exchanges, x => channel.assertExchange(x.name, x.type, x.options)),
+        ...assertIfNotApplied(topology.queues, q => channel.assertQueue(q.name, q.options))
     ]);
     await Promise.all([
-        ...mapEach(topology.exchanges, x => x.bindings, (x, b) => channel.bindExchange(x.name, b.source, b.pattern, b.args)),
-        ...mapEach(topology.queues, q => q.bindings, (q, b) => channel.bindQueue(q.name, b.source, b.pattern, b.args)),
-        ...mapEach(topology.queues, q => q.consumers, (q, c) => channel.consume(q.name, c.handler.bind(null, channel), { ...c.options, consumerTag: c.id }))
+        ...bindIfNotApplied(topology.exchanges, (x, b) => channel.bindExchange(x.name, b.source, b.pattern, b.options?.arguments)),
+        ...bindIfNotApplied(topology.queues, (x, b) => channel.bindQueue(x.name, b.source, b.pattern, b.options?.arguments)),
+        ...topology.queues.values()
+            .flatMap(q => q.consumers.values().map(c => ({ q, c })))
+            .map(({ q, c }) => channel.consume(q.name, c.handler.bind(null, channel), { ...c.options, consumerTag: c.id }))
     ]);
 }
+function assertIfNotApplied<
+    Source extends { applied: boolean; readonly options?: { readonly once?: boolean; }; }
+>(
+    source: Iterable<Source>,
+    assert: (value: Source) => Awaitable<unknown>
+): Iterable<Promise<void>> {
+    return Iterator.from(source)
+        .filter(x => !x.applied || x.options?.once !== true)
+        .map(async x => {
+            await assert(x);
+            x.applied = true;
+        });
+}
+function bindIfNotApplied<
+    const Source extends { bindings: Iterable<{ applied: boolean; readonly options?: { readonly once?: boolean; }; }>; },
+>(
+    source: Iterable<Source>,
+    bind: (outer: Source, inner: ElementType<Source['bindings']>) => Awaitable<unknown>
+): Iterable<Promise<void>> {
+    return Iterator.from(source)
+        .flatMap(o => Iterator.from(o.bindings as Iterable<ElementType<Source['bindings']>>).map(i => ({ o, i })))
+        .filter(x => !x.i.applied || x.i.options?.once !== true)
+        .map(async x => {
+            await bind(x.o, x.i);
+            x.i.applied = true;
+        });
+}
+
+type ElementType<T extends Iterable<unknown>> = T extends Iterable<infer R> ? R : never;
 
 async function sendMessage(channel: Channel, send: (body: Buffer, options: Options.Publish, cb: (err: unknown) => void) => boolean, message: AmqpMessage, options?: AmqpPublishOptions): Promise<void> {
     const { signal, ...amqpOptions } = options ?? {};
@@ -551,14 +617,6 @@ async function waitForDrain(channel: Channel, signal?: AbortSignal): Promise<voi
     using _drained = usingListener(channel, 'drain', () => resolve());
     using _abort = whenAborted(signal, reject);
     await promise;
-}
-
-function* mapEach<Outer, Inner, Result>(source: Iterable<Outer>, selector: (value: Outer) => Iterable<Inner>, mapping: (outer: Outer, inner: Inner) => Result): Generator<Result> {
-    for (const outer of source) {
-        for (const inner of selector(outer)) {
-            yield mapping(outer, inner);
-        }
-    }
 }
 
 async function handleSafe(channel: AmqpRawChannel, message: ConsumeMessage | null, handler: (channel: AmqpRawChannel, message: ConsumeMessage | null) => Promise<void>): Promise<void> {

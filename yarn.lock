@@ -251,9 +251,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/discord-cluster-orchestrator@workspace:src/discord-cluster-orchestrator":
+"@blargbot/discord-gateway-orchestrator@workspace:src/discord-gateway-orchestrator":
   version: 0.0.0-use.local
-  resolution: "@blargbot/discord-cluster-orchestrator@workspace:src/discord-cluster-orchestrator"
+  resolution: "@blargbot/discord-gateway-orchestrator@workspace:src/discord-gateway-orchestrator"
   dependencies:
     "@blargbot/config": "workspace:^"
     "@blargbot/contracts": "workspace:^"
@@ -267,9 +267,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/discord-cluster-service@workspace:src/discord-cluster-service":
+"@blargbot/discord-gateway-relay@workspace:src/discord-gateway-relay":
   version: 0.0.0-use.local
-  resolution: "@blargbot/discord-cluster-service@workspace:src/discord-cluster-service"
+  resolution: "@blargbot/discord-gateway-relay@workspace:src/discord-gateway-relay"
+  dependencies:
+    "@blargbot/config": "workspace:^"
+    "@blargbot/contracts": "workspace:^"
+    "@blargbot/logger": "workspace:^"
+    "@blargbot/util": "workspace:^"
+    "@discordeno/gateway": "npm:^22.0.0-beta.2"
+    "@discordeno/types": "npm:^22.0.0-beta.2"
+    amqplib: "npm:^2.0.1"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-gateway-worker@workspace:src/discord-gateway-worker":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-gateway-worker@workspace:src/discord-gateway-worker"
   dependencies:
     "@blargbot/config": "workspace:^"
     "@blargbot/contracts": "workspace:^"

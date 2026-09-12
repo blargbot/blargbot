@@ -1,5 +1,5 @@
 {
-    "name": "@blargbot/discord-cluster-service",
+    "name": "@blargbot/discord-gateway-worker",
     "version": "1.0.0",
     "private": true,
     "type": "module",

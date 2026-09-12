@@ -2,6 +2,7 @@ import type { MessageProperties } from 'amqplib';
 import z from 'zod';
 
 import { cleanType } from '../util.js';
+import { AmqpTable } from './AmqpValue.js';
 import { BufferEncoding } from './BufferEncoding.js';
 
 const output = z.compile(z.object({
@@ -9,7 +10,7 @@ const output = z.compile(z.object({
     contentEncoding: BufferEncoding.optional().catch(undefined),
     replyTo: z.string().optional().catch(undefined),
     correlationId: z.string().optional().catch(undefined),
-    headers: z.record(z.string(), z.unknown()).optional().catch(undefined),
+    headers: AmqpTable.optional().catch(undefined),
     deliveryMode: z.literal([1, 2]).optional().catch(undefined),
     priority: z.number().optional(),
     expiration: z.number().optional().catch(undefined),

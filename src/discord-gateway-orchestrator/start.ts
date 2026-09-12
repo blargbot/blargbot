@@ -1,5 +1,5 @@
 import { config } from '@blargbot/config';
-import { AmqpConnection, getDiscordClusterChannel, getDiscordRestChannel } from '@blargbot/contracts';
+import { AmqpConnection, getDiscordGatewayOrchestrationChannel, getDiscordRestChannel } from '@blargbot/contracts';
 import { createRequestHandler } from '@blargbot/discord-rest-service';
 import { createLogger } from '@blargbot/logger';
 import { whenAborted } from '@blargbot/util';
@@ -27,7 +27,7 @@ amqp.onConnected(signal => {
 const amqpChannel = amqp.createChannel();
 
 const restChannel = await getDiscordRestChannel(amqpChannel);
-const clusterChannel = await getDiscordClusterChannel(amqpChannel, 'TEST');
+const gatewayOrchestrationChannel = await getDiscordGatewayOrchestrationChannel(amqpChannel, 'TEST');
 
 discord.makeRequest = createRequestHandler({
     discord,
@@ -57,6 +57,12 @@ const gateway = createGatewayManager({
     }
 });
 
-await installDistributedSharding({ gateway, channel: clusterChannel });
+await installDistributedSharding({
+    gateway,
+    channel: gatewayOrchestrationChannel,
+    clusterTimeoutMs: 15_000,
+    topologyDebounceMs: 15_000,
+    pruneDelayMs: 60_000
+});
 
 await gateway.spawnShards();

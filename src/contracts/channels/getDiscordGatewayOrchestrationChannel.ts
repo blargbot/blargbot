@@ -12,7 +12,7 @@ import { SwitchShardsRequest } from '../messages/SwitchShardsRequest.js';
 import { inferReturnType } from '../util.js';
 import { amqpChannelHelper } from './channelMethods.js';
 
-export const getDiscordClusterChannel = inferReturnType(async (channel: AmqpChannel, clusterId: string) => {
+export const getDiscordGatewayOrchestrationChannel = inferReturnType(async (channel: AmqpChannel, clusterId: string) => {
     const exchange = await channel.assertExchange('discord-cluster', 'direct');
     const x = amqpChannelHelper.onExchange(channel, exchange);
     return amqpChannelHelper.merge(
@@ -70,4 +70,4 @@ export const getDiscordClusterChannel = inferReturnType(async (channel: AmqpChan
         })
     );
 });
-export type DiscordClusterChannel = Awaited<ReturnType<typeof getDiscordClusterChannel>>;
+export type DiscordGatewayOrchestrationChannel = Awaited<ReturnType<typeof getDiscordGatewayOrchestrationChannel>>;

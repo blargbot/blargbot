@@ -1,11 +1,11 @@
-import { type DiscordClusterChannel } from '@blargbot/contracts';
-import { debounce, Semaphore, usingInterval } from '@blargbot/util';
+import type { DiscordGatewayOrchestrationChannel } from '@blargbot/contracts';
+import { BalancedWorkerShardMap, debounce, range, Semaphore, usingInterval } from '@blargbot/util';
 import type { GatewayManager } from '@discordeno/gateway';
 
 export async function installDistributedSharding(
     options: {
         gateway: GatewayManager;
-        channel: DiscordClusterChannel;
+        channel: DiscordGatewayOrchestrationChannel;
         clusterTimeoutMs?: number;
         topologyDebounceMs?: number;
         pruneDelayMs?: number;
@@ -19,8 +19,15 @@ export async function installDistributedSharding(
     const lockSharding = new Semaphore();
     const activeClusters = new Map<string, ClusterState>();
     const unhealthyClusters = new Map<string, number>();
-    let activeTopology = new ClusterTopology(gateway.totalShards, activeClusters);
-    let targetTopology: ClusterTopology | undefined;
+    const activeClusterShards = activeClusters.entries()
+        .map(([workerId, state]) => [
+            workerId,
+            state.shards.values()
+                .filter(s => s.totalShards === gateway.totalShards)
+                .map(s => s.id)
+        ] as const);
+    let activeTopology = new BalancedWorkerShardMap(activeClusterShards, range(gateway.totalShards));
+    let targetTopology: typeof activeTopology | undefined;
 
     const isReshardingInProgress = (): boolean => targetTopology !== undefined;
     const onClustersChanged = debounce(
@@ -34,9 +41,9 @@ export async function installDistributedSharding(
                 return;
 
             if (
-                activeTopology.targetShards === sessionInfo.shards
+                activeTopology.shards.size === sessionInfo.shards
                 && gateway.totalShards === sessionInfo.shards
-                && activeTopology.clusters.symmetricDifference(activeClusters).size === 0
+                && activeTopology.workers.symmetricDifference(activeClusters).size === 0
             ) {
                 gateway.logger.info('[Resharding] The topology hasnt changed, skipping reshard.');
                 return;
@@ -84,14 +91,14 @@ export async function installDistributedSharding(
 
     const prepareBuckets = gateway.prepareBuckets;
     gateway.prepareBuckets = () => {
-        targetTopology ??= new ClusterTopology(gateway.totalShards, activeClusters);
-        gateway.logger.info(`[Resharding] Transitioning cluster shard topology:\n${ClusterTopology.diff(activeTopology, targetTopology)}`);
+        targetTopology ??= new BalancedWorkerShardMap(activeClusterShards, range(gateway.totalShards));
+        gateway.logger.info('[Resharding] Transitioning cluster shard topology.');
         prepareBuckets.call(gateway);
     };
 
     gateway.tellWorkerToIdentify = gateway.resharding.tellWorkerToPrepare = async (_, shardId) => {
         const topology = targetTopology ?? activeTopology;
-        const clusterId = topology.getCluster(shardId);
+        const clusterId = topology.shardsWorker.get(shardId);
         if (clusterId === undefined)
             return;
         const totalShards = gateway.totalShards;
@@ -111,7 +118,7 @@ export async function installDistributedSharding(
 
     gateway.resharding.onReshardingSwitch = async () => {
         const topology = targetTopology ?? activeTopology;
-        if (topology.clusters.size === 0 && activeTopology.clusters.size === 0) {
+        if (topology.workers.size === 0 && activeTopology.workers.size === 0) {
             gateway.logger.warn('No clusters are currently known, skipping switching to a topology that may not exist.');
         } else {
             await channel.switchShards({ groupId: topology.id });
@@ -124,7 +131,7 @@ export async function installDistributedSharding(
     };
 
     gateway.sendPayload = async (shardId, payload) => {
-        const clusterId = activeTopology.getCluster(shardId);
+        const clusterId = activeTopology.shardsWorker.get(shardId);
         if (clusterId === undefined)
             throw new Error('That shard does not exist.');
         await channel.sendToGateway({
@@ -185,7 +192,7 @@ export async function installDistributedSharding(
     const unhealthySweep = usingInterval(() => {
         const now = Date.now();
         for (const [clusterId, unhealthyTime] of unhealthyClusters) {
-            if (!activeTopology.clusters.has(clusterId) && now - unhealthyTime > clusterTimeoutMs * 5) {
+            if (!activeTopology.workers.has(clusterId) && now - unhealthyTime > clusterTimeoutMs * 5) {
                 unhealthyClusters.delete(clusterId);
                 gateway.logger.warn(`Cluster ${clusterId} has not posted stats for ${now - unhealthyTime}ms, it may be stuck or offline. Issuing kill command incase it is still up.`);
                 channel.killWorker({ workerId: clusterId })
@@ -217,132 +224,4 @@ interface ClusterState {
         readonly id: number;
         readonly totalShards: number;
     }>;
-}
-
-class ClusterTopology {
-    readonly #clustersToShards: Map<string, ReadonlySet<number>>;
-    readonly #shardToCluster: string[];
-
-    public readonly id: string;
-    public readonly clusters: ReadonlySet<string>;
-    public readonly shards: number;
-    public readonly targetShards: number;
-
-    public constructor(totalShards: number, clusters: ReadonlyMap<string, ClusterState>) {
-        if (totalShards <= 0 || totalShards % 1 !== 0)
-            throw new RangeError('Number of shards must be a positive integer.');
-
-        this.clusters = new Set(clusters.keys());
-        this.targetShards = totalShards;
-        this.shards = clusters.size === 0 ? 0 : totalShards;
-        this.id = ClusterTopology.#newId();
-
-        const clusterToShards = new Map<string, Set<number>>();
-        const shardToCluster: string[] = [];
-        if (clusters.size > 0) {
-            const allocations = new Map<string, { shards: Set<number>; allocation: number; }>();
-            const minimumShardsPerCluster = Math.floor(totalShards / clusters.size);
-            // All clusters will have atleast minimumShardsPerCluster shards allocated.
-            // When the number of clusters doesnt evenly divide the number of shards, there
-            // will be some left over which need allocating, which is this count.
-            let unallocated = totalShards % clusters.size;
-
-            // All shards start out as orphaned.
-            const orphanedShards = new Set(new Array(totalShards).keys());
-
-            for (const [cluster, state] of clusters) {
-                const shards = new Set<number>();
-                clusterToShards.set(cluster, shards);
-
-                // Adopt all shards that the cluster currently owns
-                state.shards.values()
-                    .filter(s => s.totalShards === totalShards)
-                    .map(s => s.id)
-                    .filter(s => orphanedShards.delete(s))
-                    .forEach(s => shards.add(s));
-
-                // Shards should be as balanced between clusters as possible.
-                // Because the number of clusters may not evenly divide the number of shards
-                // and we want to reduce the number of shard moves, we allocate an extra shard
-                // to clusters which already have more than the minimum shards
-                let allocation = minimumShardsPerCluster;
-                if (shards.size > allocation && unallocated > 0) {
-                    allocation++;
-                    unallocated--;
-                }
-
-                // If the cluster has more shards than it should (e.g. the number of clusters
-                // increased or the total number of shards decreased) the cluster abandons shards
-                // until it is at or below the target count.
-                if (shards.size > allocation) {
-                    shards.values()
-                        .filter(s => shards.delete(s))
-                        .take(shards.size - allocation)
-                        .forEach(s => orphanedShards.add(s));
-                }
-                allocations.set(cluster, { shards, allocation });
-            }
-
-            // Allocate any remaining shards to clusters that are at the minimum count.
-            allocations.values()
-                .filter(x => x.allocation === minimumShardsPerCluster)
-                .take(unallocated)
-                .forEach(x => x.allocation++);
-
-            for (const [cluster, { shards, allocation }] of allocations) {
-                // Adopt enough shards to fill the clusters allocation.
-                orphanedShards.values()
-                    .filter(s => orphanedShards.delete(s))
-                    .take(allocation - shards.size)
-                    .forEach(s => shards.add(s));
-
-                // Populate index used to reverse lookup shards.
-                for (const shard of shards) {
-                    shardToCluster[shard] = cluster;
-                }
-            }
-
-        }
-
-        this.#clustersToShards = clusterToShards;
-        this.#shardToCluster = shardToCluster;
-    }
-
-    public getCluster(shard: number): string | undefined {
-        return this.#shardToCluster[shard];
-    }
-
-    public getShards(cluster: string): ReadonlySet<number> | undefined {
-        return this.#clustersToShards.get(cluster);
-    }
-
-    static #newId(): string {
-        const source = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        return Array.from({ length: 8 }, () => source[Math.floor(Math.random() * source.length)])
-            .join('');
-    }
-
-    public static diff(activeTopology: ClusterTopology, targetTopology: ClusterTopology): string {
-        const lines: string[] = [];
-        lines.push(`Target shards: ${activeTopology.targetShards} => ${targetTopology.targetShards}`);
-        lines.push(`Actual shards: ${activeTopology.shards} => ${targetTopology.shards}`);
-        lines.push('Shards per cluster:');
-
-        const clusters = new Set([
-            ...activeTopology.clusters,
-            ...targetTopology.clusters
-        ]);
-        if (clusters.size === 0) {
-            lines.push('  No clusters available');
-        } else {
-            for (const cluster of clusters) {
-                const active = activeTopology.getShards(cluster)?.values().toArray().sort((a, b) => a - b).join(',') ?? 'offline';
-                const target = targetTopology.getShards(cluster)?.values().toArray().sort((a, b) => a - b).join(',') ?? 'offline';
-                lines.push(`- ${cluster}: [${active}] => [${target}]`);
-            }
-        }
-
-        return lines.join('\n');
-    }
-
 }

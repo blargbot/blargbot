@@ -1,12 +1,14 @@
+import { randomUUID } from 'node:crypto';
+
 import { config } from '@blargbot/config';
 import { AmqpConnection } from '@blargbot/contracts';
 import { createLogger } from '@blargbot/logger';
-import { whenAborted } from '@blargbot/util';
+import { createId, whenAborted } from '@blargbot/util';
 
 import { setupAmqp } from './setupAmqp.js';
 import { ShardManager } from './ShardManager.js';
 
-const clusterId = pickRandom('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 8).join('');
+const clusterId = createId();
 const logger = createLogger(config, `CLUSTER ${clusterId}`);
 logger.setGlobal();
 
@@ -21,12 +23,16 @@ amqp.onConnected(signal => {
 });
 const amqpChannel = amqp.createChannel();
 await setupAmqp(amqpChannel, shards, killWorker);
-setInterval(tickPostStats, 60_000);
+const postStats = setInterval(tickPostStats, 5_000);
 tickPostStats();
 
-function pickRandom<T>(source: ArrayLike<T>, count: number): T[] {
-    return Array.from({ length: count }, () => source[Math.floor(Math.random() * source.length)]);
-}
+whenAborted(killWorker.signal, () => {
+    amqp[Symbol.dispose]();
+    shards.switchShards({ groupId: randomUUID() });
+    clearInterval(postStats);
+    shards.pruneShards().catch(() => { });
+    setTimeout(() => process.exit(0), 10_000).unref();
+});
 
 function tickPostStats(): void {
     shards.postStats().catch(err => logger.error('Error while posting stats', err));

@@ -1,14 +1,13 @@
 import type { AmqpChannel } from '@blargbot/contracts';
-import { getDiscordClusterChannel } from '@blargbot/contracts';
-import { getDiscordGatewayChannel } from '@blargbot/contracts/channels/discordGatewayChannel.js';
+import { getDiscordGatewayChannel, getDiscordGatewayOrchestrationChannel } from '@blargbot/contracts';
 
 import type { ShardManager } from './ShardManager.js';
 
 export async function setupAmqp(channel: AmqpChannel, shardManager: ShardManager, killWorker: AbortController): Promise<void> {
-    const cluster = await getDiscordClusterChannel(channel, shardManager.id);
+    const cluster = await getDiscordGatewayOrchestrationChannel(channel, shardManager.id);
     const gateway = await getDiscordGatewayChannel(channel);
 
-    shardManager.handleGatewayMessage(request => gateway.emit(request));
+    shardManager.handleGatewayMessage(request => gateway.dedupe(request));
     shardManager.handlePermitIdentify(request => cluster.permitIdentify(request));
     shardManager.handlePostStats(request => cluster.postStats(request));
     await cluster.handleSendToGateway(request => shardManager.send(request));

@@ -71,12 +71,16 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:src/database"\
     },\
     {\
-      "name": "@blargbot/discord-cluster-orchestrator",\
-      "reference": "workspace:src/discord-cluster-orchestrator"\
+      "name": "@blargbot/discord-gateway-orchestrator",\
+      "reference": "workspace:src/discord-gateway-orchestrator"\
     },\
     {\
-      "name": "@blargbot/discord-cluster-service",\
-      "reference": "workspace:src/discord-cluster-service"\
+      "name": "@blargbot/discord-gateway-relay",\
+      "reference": "workspace:src/discord-gateway-relay"\
+    },\
+    {\
+      "name": "@blargbot/discord-gateway-worker",\
+      "reference": "workspace:src/discord-gateway-worker"\
     },\
     {\
       "name": "@blargbot/discord-rest-service",\
@@ -151,8 +155,9 @@ const RAW_RUNTIME_STATE =
     ["@blargbot/crowdin", ["workspace:src/crowdin"]],\
     ["@blargbot/database", ["workspace:src/database"]],\
     ["@blargbot/database-tests", ["workspace:test/database"]],\
-    ["@blargbot/discord-cluster-orchestrator", ["workspace:src/discord-cluster-orchestrator"]],\
-    ["@blargbot/discord-cluster-service", ["workspace:src/discord-cluster-service"]],\
+    ["@blargbot/discord-gateway-orchestrator", ["workspace:src/discord-gateway-orchestrator"]],\
+    ["@blargbot/discord-gateway-relay", ["workspace:src/discord-gateway-relay"]],\
+    ["@blargbot/discord-gateway-worker", ["workspace:src/discord-gateway-worker"]],\
     ["@blargbot/discord-rest-service", ["workspace:src/discord-rest-service"]],\
     ["@blargbot/domain", ["workspace:src/domain"]],\
     ["@blargbot/formatting", ["workspace:src/formatting"]],\
@@ -469,13 +474,13 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
-    ["@blargbot/discord-cluster-orchestrator", [\
-      ["workspace:src/discord-cluster-orchestrator", {\
-        "packageLocation": "./src/discord-cluster-orchestrator/",\
+    ["@blargbot/discord-gateway-orchestrator", [\
+      ["workspace:src/discord-gateway-orchestrator", {\
+        "packageLocation": "./src/discord-gateway-orchestrator/",\
         "packageDependencies": [\
           ["@blargbot/config", "workspace:src/config"],\
           ["@blargbot/contracts", "workspace:src/contracts"],\
-          ["@blargbot/discord-cluster-orchestrator", "workspace:src/discord-cluster-orchestrator"],\
+          ["@blargbot/discord-gateway-orchestrator", "workspace:src/discord-gateway-orchestrator"],\
           ["@blargbot/discord-rest-service", "workspace:src/discord-rest-service"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/util", "workspace:src/util"],\
@@ -487,13 +492,29 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
-    ["@blargbot/discord-cluster-service", [\
-      ["workspace:src/discord-cluster-service", {\
-        "packageLocation": "./src/discord-cluster-service/",\
+    ["@blargbot/discord-gateway-relay", [\
+      ["workspace:src/discord-gateway-relay", {\
+        "packageLocation": "./src/discord-gateway-relay/",\
         "packageDependencies": [\
           ["@blargbot/config", "workspace:src/config"],\
           ["@blargbot/contracts", "workspace:src/contracts"],\
-          ["@blargbot/discord-cluster-service", "workspace:src/discord-cluster-service"],\
+          ["@blargbot/discord-gateway-relay", "workspace:src/discord-gateway-relay"],\
+          ["@blargbot/logger", "workspace:src/logger"],\
+          ["@blargbot/util", "workspace:src/util"],\
+          ["@discordeno/gateway", "npm:22.0.0-beta.2"],\
+          ["@discordeno/types", "npm:22.0.0-beta.2"],\
+          ["amqplib", "npm:2.0.1"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@blargbot/discord-gateway-worker", [\
+      ["workspace:src/discord-gateway-worker", {\
+        "packageLocation": "./src/discord-gateway-worker/",\
+        "packageDependencies": [\
+          ["@blargbot/config", "workspace:src/config"],\
+          ["@blargbot/contracts", "workspace:src/contracts"],\
+          ["@blargbot/discord-gateway-worker", "workspace:src/discord-gateway-worker"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@discordeno/gateway", "npm:22.0.0-beta.2"],\
