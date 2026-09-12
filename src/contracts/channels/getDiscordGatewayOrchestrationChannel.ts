@@ -13,7 +13,7 @@ import { inferReturnType } from '../util.js';
 import { amqpChannelHelper } from './channelMethods.js';
 
 export const getDiscordGatewayOrchestrationChannel = inferReturnType(async (channel: AmqpChannel, clusterId: string) => {
-    const exchange = await channel.assertExchange('discord-cluster', 'direct');
+    const exchange = await channel.getExchange('discord-cluster', 'direct');
     const x = amqpChannelHelper.onExchange(channel, exchange);
     return amqpChannelHelper.merge(
         x.defineNotification({

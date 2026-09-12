@@ -33,7 +33,7 @@ export class ReplyTarget implements AsyncDisposable {
     }
 
     async #makeConsumer(): Promise<AmqpConsumer> {
-        const queue = await this.#channel.assertQueue(this.#queueName, this.#queueOptions);
+        const queue = await this.#channel.getQueue(this.#queueName, this.#queueOptions);
         const consumer = await queue.consume(message => {
             if (message.properties.correlationId === undefined)
                 return;

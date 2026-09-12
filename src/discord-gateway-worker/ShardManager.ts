@@ -1,16 +1,15 @@
-import type { ClusterStats, DiscordGatewayEvent, DiscordGatewayRequest, IdentifyShardRequest, IdentifyShardResponse, PermitShardIdentifyRequest, PermitShardIdentifyResponse, SetPresenceRequest, SwitchShardsRequest } from '@blargbot/contracts';
+import type { ClusterStats, DiscordGatewayDispatch, DiscordGatewayRequest, IdentifyShardRequest, IdentifyShardResponse, KnownDiscordGatewayDispatch, PermitShardIdentifyRequest, PermitShardIdentifyResponse, SetPresenceRequest, SwitchShardsRequest } from '@blargbot/contracts';
 import type { Logger } from '@blargbot/logger';
 import { AsyncResetValue } from '@blargbot/util';
 import type { ShardCreateOptions } from '@discordeno/gateway';
 import { DiscordenoShard, ShardSocketCloseCodes, ShardState } from '@discordeno/gateway';
-import type { DiscordGuild, DiscordGuildCreateExtra, DiscordReady, DiscordUnavailableGuild } from '@discordeno/types';
 import { GatewayOpcodes } from '@discordeno/types';
 
 export class ShardManager {
     readonly #id: string;
     readonly #logger: Logger;
     readonly #shards = new Map<`${number}/${number}`, DiscordShard>();
-    readonly #gatewayEvent = new AsyncResetValue<(message: DiscordGatewayEvent) => Promise<void>>();
+    readonly #gatewayEvent = new AsyncResetValue<(message: DiscordGatewayDispatch) => Promise<void>>();
     readonly #permitIdentify = new AsyncResetValue<(message: PermitShardIdentifyRequest) => Promise<PermitShardIdentifyResponse>>();
     readonly #postStats = new AsyncResetValue<(message: ClusterStats) => Promise<void>>();
     #activeGroup?: string;
@@ -28,7 +27,7 @@ export class ShardManager {
         this.#logger = logger;
     }
 
-    public handleGatewayMessage(handler: (message: DiscordGatewayEvent) => Promise<void>, signal?: AbortSignal): void {
+    public handleGatewayMessage(handler: (message: DiscordGatewayDispatch) => Promise<void>, signal?: AbortSignal): void {
         this.#gatewayEvent.resolve(handler, signal);
     }
 
@@ -160,7 +159,6 @@ export class ShardManager {
             activeGroupId: this.#activeGroup,
             shards
         });
-        this.#logger.shardi('Posted cluster stats.');
     }
 }
 
@@ -196,7 +194,7 @@ export class DiscordShard extends DiscordenoShard {
         return this.#unavailableGuildIds.size;
     }
 
-    public constructor(parent: ShardManager, options: Omit<ShardCreateOptions, 'events'> & { requestIdentify: () => Promise<void>; emit: (message: DiscordGatewayEvent) => void; }) {
+    public constructor(parent: ShardManager, options: Omit<ShardCreateOptions, 'events'> & { requestIdentify: () => Promise<void>; emit: (message: DiscordGatewayDispatch) => void; }) {
         const { requestIdentify, emit, ...coreOptions } = options;
         const shardId = options.id;
         const totalShards = coreOptions.connection.totalShards;
@@ -204,28 +202,32 @@ export class DiscordShard extends DiscordenoShard {
         super({
             ...coreOptions,
             events: {
-                message: (_, payload) => {
-                    switch (payload.t) {
+                message: (_, message) => {
+                    if (message.op !== 0)
+                        return;
+                    const dispatch = message as KnownDiscordGatewayDispatch;
+                    switch (dispatch.t) {
                         case 'GUILD_CREATE': {
-                            const { id, unavailable = false } = payload.d as DiscordGuildCreateExtra & (DiscordUnavailableGuild | DiscordGuild);
+                            const { id, unavailable = false } = dispatch.d;
                             this.#guildIds.add(id);
                             this.#unavailableGuildIds[unavailable ? 'add' : 'delete'](id);
                             break;
                         }
                         case 'GUILD_DELETE': {
-                            const { id, unavailable = false } = payload.d as DiscordUnavailableGuild;
+                            const { id, unavailable = false } = dispatch.d;
                             this.#guildIds[unavailable ? 'add' : 'delete'](id);
                             this.#unavailableGuildIds[unavailable ? 'add' : 'delete'](id);
                             break;
                         }
                         case 'GUILD_UPDATE': {
-                            const { id } = payload.d as DiscordGuild;
+                            const { id } = dispatch.d;
                             this.#guildIds.add(id);
                             this.#unavailableGuildIds.delete(id);
                             break;
                         }
                         case 'READY': {
-                            for (const { id, unavailable = false } of (payload.d as DiscordReady).guilds) {
+                            const { guilds } = dispatch.d;
+                            for (const { id, unavailable = false } of guilds) {
                                 this.#guildIds.add(id);
                                 this.#unavailableGuildIds[unavailable ? 'add' : 'delete'](id);
                             }
@@ -234,9 +236,9 @@ export class DiscordShard extends DiscordenoShard {
 
                         case 'GUILD_MEMBERS_CHUNK':
                         case 'SOUNDBOARD_SOUNDS':
-                        case 'CHANNEL_INFO' as never:
+                        case 'CHANNEL_INFO':
                             emit({
-                                ...payload,
+                                ...dispatch,
                                 shardId,
                                 totalShards
                             });
@@ -245,7 +247,7 @@ export class DiscordShard extends DiscordenoShard {
 
                     if (this.groupIds.has(parent.activeGroup)) {
                         emit({
-                            ...payload,
+                            ...dispatch,
                             shardId,
                             totalShards
                         });

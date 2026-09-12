@@ -25,14 +25,16 @@ export interface AmqpConsumeOptions extends Options.Consume {
     arguments?: AmqpTable;
 }
 
-export interface AmqpAssertQueue extends Options.AssertQueue {
+export interface AmqpGetQueue extends Options.AssertQueue {
     arguments?: AmqpTable;
     once?: boolean;
+    noAssert?: boolean;
 }
 
-export interface AmqpAssertExchange extends Options.AssertExchange {
+export interface AmqpGetExchange extends Options.AssertExchange {
     arguments?: AmqpTable;
     once?: boolean;
+    noAssert?: boolean;
 }
 export interface AmqpBindOptions {
     arguments?: AmqpTable;
@@ -154,39 +156,44 @@ export class AmqpChannel implements Disposable {
         });
     }
 
-    public async assertExchange(name: string, type: string, options?: AmqpAssertExchange): Promise<AmqpExchange> {
-        let applied = false;
-        if (this.hasRawChannel) {
+    public async getExchange(name: string, type: string, options?: AmqpGetExchange): Promise<AmqpExchange> {
+        const definition = {
+            options: deepClone(options),
+            applied: false
+        };
+        if (this.hasRawChannel && shouldAssert(definition)) {
             const channel = await this.#rawChannel.getValue();
             ({ exchange: name } = await channel.assertExchange(name, type, options));
-            applied = true;
+            definition.applied = true;
         } else if (name === '') {
             name = randomUUID();
         }
         return new AmqpExchange(this, this.#topology, {
+            ...definition,
             name,
             type,
-            options: deepClone(options),
-            bindings: new Set(),
-            applied
+            bindings: new Set()
         });
     }
 
-    public async assertQueue(name: string, options?: AmqpAssertQueue): Promise<AmqpQueue> {
-        let applied = false;
-        if (this.hasRawChannel) {
+    public async getQueue(name: string, options?: AmqpGetQueue): Promise<AmqpQueue> {
+        const definition = {
+            options: deepClone(options),
+            applied: false
+        };
+
+        if (this.hasRawChannel && shouldAssert(definition)) {
             const channel = await this.#rawChannel.getValue();
             ({ queue: name } = await channel.assertQueue(name, options));
-            applied = true;
+            definition.applied = true;
         } else if (name === '') {
             name = randomUUID();
         }
         return new AmqpQueue(this, this.#topology, {
+            ...definition,
             name,
-            options: deepClone(options),
             bindings: new Set(),
-            consumers: new Set(),
-            applied
+            consumers: new Set()
         });
     }
 
@@ -215,8 +222,7 @@ export class AmqpExchange implements Disposable {
         this.#root = root;
         this.#definition = definition;
 
-        if (!definition.applied || definition.options?.once !== true)
-            root.exchanges.add(definition);
+        root.exchanges.add(definition);
     }
 
     public async send(routingKey: string, message: AmqpMessage, options?: AmqpPublishOptions): Promise<void> {
@@ -271,8 +277,7 @@ export class AmqpQueue implements Disposable {
         this.#root = root;
         this.#definition = definition;
 
-        if (!definition.applied || definition.options?.once !== true)
-            root.queues.add(definition);
+        root.queues.add(definition);
     }
 
     public async send(message: AmqpMessage, options?: AmqpPublishOptions): Promise<void> {
@@ -515,7 +520,7 @@ interface AmqpTopology {
 
 interface AmqpQueueDefinition {
     readonly name: string;
-    readonly options: AmqpAssertQueue | undefined;
+    readonly options: AmqpGetQueue | undefined;
     readonly bindings: Set<AmqpBindingDefinition>;
     readonly consumers: Set<AmqpConsumerDefinition>;
     applied: boolean;
@@ -524,7 +529,7 @@ interface AmqpQueueDefinition {
 interface AmqpExchangeDefinition {
     readonly name: string;
     readonly type: string;
-    readonly options: AmqpAssertExchange | undefined;
+    readonly options: AmqpGetExchange | undefined;
     readonly bindings: Set<AmqpBindingDefinition>;
     applied: boolean;
 }
@@ -557,34 +562,37 @@ async function applyTopology(channel: AmqpRawChannel, topology: AmqpTopology): P
     ]);
 }
 function assertIfNotApplied<
-    Source extends { applied: boolean; readonly options?: { readonly once?: boolean; }; }
+    Source extends { applied: boolean; readonly options?: { readonly once?: boolean; readonly noAssert?: boolean; }; }
 >(
     source: Iterable<Source>,
     assert: (value: Source) => Awaitable<unknown>
 ): Iterable<Promise<void>> {
     return Iterator.from(source)
-        .filter(x => !x.applied || x.options?.once !== true)
+        .filter(shouldAssert)
         .map(async x => {
             await assert(x);
             x.applied = true;
         });
 }
+type ElementType<T extends Iterable<unknown>> = T extends Iterable<infer R> ? R : never;
 function bindIfNotApplied<
-    const Source extends { bindings: Iterable<{ applied: boolean; readonly options?: { readonly once?: boolean; }; }>; },
+    const Source extends { bindings: Iterable<{ applied: boolean; readonly options?: { readonly once?: boolean; readonly noAssert?: boolean; }; }>; },
 >(
     source: Iterable<Source>,
     bind: (outer: Source, inner: ElementType<Source['bindings']>) => Awaitable<unknown>
 ): Iterable<Promise<void>> {
     return Iterator.from(source)
         .flatMap(o => Iterator.from(o.bindings as Iterable<ElementType<Source['bindings']>>).map(i => ({ o, i })))
-        .filter(x => !x.i.applied || x.i.options?.once !== true)
+        .filter(x => shouldAssert(x.i))
         .map(async x => {
             await bind(x.o, x.i);
             x.i.applied = true;
         });
 }
 
-type ElementType<T extends Iterable<unknown>> = T extends Iterable<infer R> ? R : never;
+function shouldAssert(definition: { readonly applied: boolean; readonly options?: { readonly once?: boolean; readonly noAssert?: boolean; }; }): boolean {
+    return definition.options?.noAssert !== true && (!definition.applied || definition.options?.once !== true);
+}
 
 async function sendMessage(channel: Channel, send: (body: Buffer, options: Options.Publish, cb: (err: unknown) => void) => boolean, message: AmqpMessage, options?: AmqpPublishOptions): Promise<void> {
     const { signal, ...amqpOptions } = options ?? {};

@@ -5,6 +5,7 @@ export * from './createPushIterable.js';
 export * from './debounce.js';
 export * from './deepClone.js';
 export * from './disposable.js';
+export * from './Iterable.js';
 export * from './raceSignal.js';
 export * from './range.js';
 export * from './Registry.js';

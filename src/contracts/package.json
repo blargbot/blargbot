@@ -5,11 +5,11 @@
     "type": "module",
     "dependencies": {
         "@blargbot/util": "workspace:^",
-        "@discordeno/types": "^22.0.0-beta.2",
         "zod": "^4.5.4"
     },
     "devDependencies": {
         "@blargbot/logger": "workspace:*",
+        "@discordeno/types": "^22.0.0-beta.2",
         "amqplib": "^2.0.1"
     }
 }

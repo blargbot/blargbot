@@ -279,7 +279,7 @@ function stronglyType<
 }
 
 async function consumeTemporaryQueue(channel: AmqpChannel, queuePrefix: string, exchange: AmqpExchange, routingKey: string, consume: (queue: AmqpQueue) => Promise<AmqpConsumer>): Promise<AmqpConsumer> {
-    const queue = await channel.assertQueue(`${queuePrefix}.${randomUUID()}`, { autoDelete: true, exclusive: true });
+    const queue = await channel.getQueue(`${queuePrefix}.${randomUUID()}`, { autoDelete: true, exclusive: true });
     await queue.bind(exchange, routingKey);
     const consumer = await consume(queue);
     const baseDispose = consumer[Symbol.asyncDispose];

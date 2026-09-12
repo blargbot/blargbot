@@ -1,5 +1,5 @@
 import type { DiscordGatewayOrchestrationChannel } from '@blargbot/contracts';
-import { BalancedWorkerShardMap, debounce, range, Semaphore, usingInterval } from '@blargbot/util';
+import { BalancedWorkerShardMap, debounce, Iterable, range, Semaphore, usingInterval } from '@blargbot/util';
 import type { GatewayManager } from '@discordeno/gateway';
 
 export async function installDistributedSharding(
@@ -19,13 +19,13 @@ export async function installDistributedSharding(
     const lockSharding = new Semaphore();
     const activeClusters = new Map<string, ClusterState>();
     const unhealthyClusters = new Map<string, number>();
-    const activeClusterShards = activeClusters.entries()
-        .map(([workerId, state]) => [
+    const activeClusterShards = Iterable.from(activeClusters)
+        .transform(x => x.map(([workerId, state]) => [
             workerId,
             state.shards.values()
                 .filter(s => s.totalShards === gateway.totalShards)
                 .map(s => s.id)
-        ] as const);
+        ] as const));
     let activeTopology = new BalancedWorkerShardMap(activeClusterShards, range(gateway.totalShards));
     let targetTopology: typeof activeTopology | undefined;
 

@@ -7,7 +7,7 @@ export * from './messages/AmqpMessage.js';
 export * from './messages/AmqpMessageProperties.js';
 export * from './messages/BufferEncoding.js';
 export * from './messages/ClusterStats.js';
-export * from './messages/DiscordGatewayEvent.js';
+export * from './messages/DiscordGatewayDispatch.js';
 export * from './messages/DiscordGatewayRequest.js';
 export * from './messages/DiscordRequest.js';
 export * from './messages/DiscordResponse.js';

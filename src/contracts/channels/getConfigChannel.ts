@@ -4,7 +4,7 @@ import { inferReturnType } from '../util.js';
 import { amqpChannelHelper } from './channelMethods.js';
 
 export const getConfigChannel = inferReturnType(async (channel: AmqpChannel) => {
-    const exchange = await channel.assertExchange('config', 'direct');
+    const exchange = await channel.getExchange('config', 'direct');
 
     const x = amqpChannelHelper.onExchange(channel, exchange);
     return amqpChannelHelper.merge(

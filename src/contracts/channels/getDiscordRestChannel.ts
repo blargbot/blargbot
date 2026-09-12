@@ -7,7 +7,7 @@ import { inferReturnType } from '../util.js';
 import { amqpChannelHelper } from './channelMethods.js';
 
 export const getDiscordRestChannel = inferReturnType(async (channel: AmqpChannel) => {
-    const queue = await channel.assertQueue('discord-rest-requests');
+    const queue = await channel.getQueue('discord-rest-requests');
     return amqpChannelHelper.onQueue(channel, queue).defineRequest({
         send: 'send',
         handle: 'handle',

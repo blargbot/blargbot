@@ -35,7 +35,11 @@
         "build": "tsc --build",
         "watch": "tsc --watch",
         "rebuild": "tsc --build --clean",
-        "lint": "eslint --ext .ts,.mts,.cts ./"
+        "lint": "eslint --ext .ts,.mts,.cts ./",
+        "start:discord-rest": "yarn workspace @blargbot/discord-rest-service node ./start.js",
+        "start:gateway-worker": "yarn workspace @blargbot/discord-gateway-worker node ./start.js",
+        "start:gateway-orchestrator": "yarn workspace @blargbot/discord-gateway-orchestrator node ./start.js",
+        "start:gateway-relay": "yarn workspace @blargbot/discord-gateway-relay node ./start.js"
     },
     "repository": {
         "type": "git",

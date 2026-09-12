@@ -1,29 +1,21 @@
-export function range(end: number): Generator<number, void, void>;
-export function range(start: number, end: number, step?: number): Generator<number, void, void>
-export function range(start: number, end?: number, step?: number): Generator<number, void, void> {
-    if (end === undefined) {
-        end = start;
+export function range(count: number): Generator<number, void, void>;
+export function range(start: number, count: number, step?: number): Generator<number, void, void>
+export function range(start: number, count?: number, step?: number): Generator<number, void, void> {
+    if (count === undefined) {
+        count = start;
         start = 0;
     }
+
+    step ??= 1;
     if (step === 0)
-        throw new RangeError('Step cannot be 0');
+        throw new RangeError('Step cannot be zero');
 
-    step ??= Math.sign(end - start);
-    if (step === 0)
-        return rangeImpl(0, 0, 0);
-
-    if (Math.sign(step) !== Math.sign(end - start))
-        throw new RangeError('Step must operate in the direction from start to end.');
-
-    return rangeImpl(start, end, step);
+    return rangeImpl(start, count, step);
 }
 
-function* rangeImpl(start: number, end: number, step: number): Generator<number, void, void> {
-    if (step < 0) {
-        for (let x = start; x > end; x += step)
-            yield x;
-    } else {
-        for (let x = start; x < end; x += step)
-            yield x;
+function* rangeImpl(start: number, count: number, step: number): Generator<number, void, void> {
+    for (let i = 0; i < count; i++) {
+        yield start;
+        start += step;
     }
 }

@@ -7,7 +7,7 @@ export class Semaphore {
     #heldLocks: number;
 
     public constructor(maxConcurrency: number = 1) {
-        if (maxConcurrency <= 1)
+        if (maxConcurrency < 1)
             throw new RangeError('Cannot have a concurrency less than 1');
 
         this.#waiters = [];
