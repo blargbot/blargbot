@@ -1,18 +1,19 @@
-import type { DiscordAuditLogEntry, DiscordAutoModerationActionExecution, DiscordAutoModerationRule, DiscordChannel, DiscordChannelPinsUpdate, DiscordEntitlement, DiscordGuild, DiscordGuildApplicationCommandPermissions, DiscordGuildAuditLogEntryCreateExtra, DiscordGuildBanAdd, DiscordGuildBanRemove, DiscordGuildCreateExtra, DiscordGuildEmojisUpdate, DiscordGuildIntegrationsUpdate, DiscordGuildMemberAdd, DiscordGuildMemberRemove, DiscordGuildMembersChunk, DiscordGuildMemberUpdate, DiscordGuildRoleCreate, DiscordGuildRoleDelete, DiscordGuildRoleUpdate, DiscordGuildStickersUpdate, DiscordIntegrationCreateUpdate, DiscordIntegrationDelete, DiscordInteraction, DiscordInviteCreate, DiscordInviteDelete, DiscordMessage, DiscordMessageDelete, DiscordMessageDeleteBulk, DiscordMessageReactionAdd, DiscordMessageReactionRemove, DiscordMessageReactionRemoveAll, DiscordMessageReactionRemoveEmoji, DiscordPollVoteAdd, DiscordPollVoteRemove, DiscordPresenceUpdate, DiscordRateLimited, DiscordReady, DiscordScheduledEvent, DiscordScheduledEventUserAdd, DiscordScheduledEventUserRemove, DiscordSoundboardSound, DiscordSoundboardSoundDelete, DiscordSoundboardSounds, DiscordSoundboardSoundsUpdate, DiscordStageInstance, DiscordSubscription, DiscordThreadCreateExtra, DiscordThreadListSync, DiscordThreadMembersUpdate, DiscordThreadMemberUpdate, DiscordTypingStart, DiscordUnavailableGuild, DiscordUser, DiscordVoiceChannelEffectSend, DiscordVoiceServerUpdate, DiscordVoiceState, DiscordWebhookUpdate, GatewayEventNames } from '@discordeno/types';
+import type { DiscordAuditLogEntry, DiscordAutoModerationActionExecution, DiscordAutoModerationRule, DiscordChannel, DiscordChannelPinsUpdate, DiscordEntitlement, DiscordGuild, DiscordGuildApplicationCommandPermissions, DiscordGuildAuditLogEntryCreateExtra, DiscordGuildBanAdd, DiscordGuildBanRemove, DiscordGuildCreateExtra, DiscordGuildEmojisUpdate, DiscordGuildIntegrationsUpdate, DiscordGuildMemberAdd, DiscordGuildMemberRemove, DiscordGuildMembersChunk, DiscordGuildMemberUpdate, DiscordGuildRoleCreate, DiscordGuildRoleDelete, DiscordGuildRoleUpdate, DiscordGuildStickersUpdate, DiscordIntegrationCreateUpdate, DiscordIntegrationDelete, DiscordInteraction, DiscordInviteCreate, DiscordInviteDelete, DiscordMessage, DiscordMessageDelete, DiscordMessageDeleteBulk, DiscordMessageReactionAdd, DiscordMessageReactionRemove, DiscordMessageReactionRemoveAll, DiscordMessageReactionRemoveEmoji, DiscordPollVoteAdd, DiscordPollVoteRemove, DiscordPresenceUpdate, DiscordRateLimited, DiscordReady, DiscordScheduledEvent, DiscordScheduledEventUserAdd, DiscordScheduledEventUserRemove, DiscordSoundboardSound, DiscordSoundboardSoundDelete, DiscordSoundboardSounds, DiscordSoundboardSoundsUpdate, DiscordStageInstance, DiscordSubscription, DiscordThreadCreateExtra, DiscordThreadListSync, DiscordThreadMembersUpdate, DiscordThreadMemberUpdate, DiscordTypingStart, DiscordUnavailableGuild, DiscordUser, DiscordVoiceChannelEffectSend, DiscordVoiceServerUpdate, DiscordVoiceState, DiscordWebhookUpdate } from '@discordeno/types';
 import z from 'zod';
 
 import { amqpJsonCodec } from '../util.js';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention, no-useless-assignment
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const DiscordGatewayDispatch = amqpJsonCodec(z.object({
     op: z.literal(0),
-    d: z.unknown(),
+    d: z.custom<object>(v => typeof v === 'object' && v !== null),
     s: z.int(),
     t: z.string(),
     shardId: z.int(),
     totalShards: z.int()
-}) as z.ZodType<DiscordGatewayDispatch, DiscordGatewayDispatch>);
-export type DiscordGatewayDispatch = KnownDiscordGatewayDispatch | DispatchEvent<string, object>;
+}));
+export type DiscordGatewayDispatch = z.infer<typeof DiscordGatewayDispatch>;
+
 export type KnownDiscordGatewayDispatch = DiscordGatewayDispatchMapping[keyof DiscordGatewayDispatchMapping];
 export type DiscordGatewayDispatchMapping = { [P in keyof GatewayDispatchMapping]: DispatchEvent<P, GatewayDispatchMapping[P]> }
 
@@ -25,10 +26,11 @@ export type DispatchEvent<Type extends string, Data extends object> = {
     totalShards: number;
 }
 
+declare const brand: unique symbol;
 /* eslint-disable @typescript-eslint/naming-convention */
-export type GatewayDispatchMapping = AssertAllKeys<GatewayEventNames, {
+export type GatewayDispatchMapping = {
     'READY': DiscordReady;
-    'RESUMED': {};
+    'RESUMED': { [brand]: undefined; };
     'RATE_LIMITED': DiscordRateLimited;
     'APPLICATION_COMMAND_PERMISSIONS_UPDATE': DiscordGuildApplicationCommandPermissions;
     'AUTO_MODERATION_RULE_CREATE': DiscordAutoModerationRule;
@@ -106,9 +108,7 @@ export type GatewayDispatchMapping = AssertAllKeys<GatewayEventNames, {
     'SUBSCRIPTION_DELETE': DiscordSubscription;
     'MESSAGE_POLL_VOTE_ADD': DiscordPollVoteAdd;
     'MESSAGE_POLL_VOTE_REMOVE': DiscordPollVoteRemove;
-}>
-
-type AssertAllKeys<Keys extends PropertyKey, Value extends { [P in Keys]: unknown }> = Value;
+}
 
 export interface DiscordChannelInfo {
     guild_id: string;

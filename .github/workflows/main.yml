@@ -25,7 +25,7 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 24
           cache: yarn
 
       - name: Install build dependencies
@@ -57,7 +57,7 @@ jobs:
 
       - name: Upload coverage
         if: always() && steps.test.outcome != 'skipped' && hashFiles('coverage/index.html') != ''
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/
