@@ -48,7 +48,7 @@ jobs:
 
       - name: Test
         id: test
-        run: yarn coverage --reporter spec
+        run: yarn run test --coverage
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
