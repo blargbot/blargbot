@@ -10,7 +10,7 @@ export const StringMessage = z.compile(z.codec(
     {
         encode(value) {
             return {
-                content: asUint8Array(Buffer.from(value)),
+                content: asUint8Array(Buffer.from(value, 'utf-8')),
                 properties: {
                     contentEncoding: 'utf-8' as const,
                     contentType: 'text/plain'

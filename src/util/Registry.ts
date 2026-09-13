@@ -1,4 +1,3 @@
-
 export class Registry<T> implements Iterable<T> {
     readonly #items: Array<{ value: T; }> = [];
 

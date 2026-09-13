@@ -1,5 +1,6 @@
 import { guard } from '@blargbot/core/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
+import { asBuffer } from '@blargbot/util';
 import * as eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -56,7 +57,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         if (guard.isUrl(image)) {
             const res = await context.fetch(image);
             const contentType = res.headers.get('content-type');
-            options.image = `data:${contentType ?? ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
+            options.image = `data:${contentType ?? ''};base64,${asBuffer(await res.bytes()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
@@ -64,8 +65,9 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         //TODO would be nice to be able to provide one role without using an array like {emojicreate;name;image;role} and not {emojicreate;name;image;["role"]}
         const roleArray = await bbtag.tagArray.deserializeOrGetArray(context, rolesStr);
         if (roleArray !== undefined) {
-            for (const roleQuery of roleArray.v.filter(guard.isTypeOf('string', 'number'))) {
-                const role = await context.queryRole(roleQuery.toString(), { noLookup: true });
+            for (const roleQuery of roleArray.v) {
+                // eslint-disable-next-line @typescript-eslint/no-base-to-string
+                const role = await context.queryRole(roleQuery?.toString() ?? '', { noLookup: true });
                 if (role !== undefined) {
                     options.roles.push(role.id);
                 }

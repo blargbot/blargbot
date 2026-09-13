@@ -2,6 +2,7 @@ import type { CommandContext } from '@blargbot/cluster/command/index.js';
 import { GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command/index.js';
 import { CommandType } from '@blargbot/cluster/utils/index.js';
 import { parse } from '@blargbot/core/utils/index.js';
+import { asBuffer } from '@blargbot/util';
 import type * as eris from 'eris';
 
 import templates from '../../text.js';
@@ -50,7 +51,7 @@ export class AvatarCommand extends GlobalCommand {
 
         return {
             content: cmd.common.success({ user }),
-            file: [{ file: Buffer.from(await avatar.arrayBuffer()), name: new URL(avatarUrl).pathname.split('/').pop() ?? `${user.id}.${format ?? 'png'}` }]
+            file: [{ file: asBuffer(await avatar.bytes()), name: new URL(avatarUrl).pathname.split('/').pop() ?? `${user.id}.${format ?? 'png'}` }]
         };
     }
 }

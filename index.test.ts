@@ -3,6 +3,10 @@ import { stdout } from 'node:process';
 import { run } from 'node:test';
 import { dot, lcov, spec } from 'node:test/reporters';
 
+globalThis.fetch = () => {
+    throw new Error('Do not use global fetch in tests, it should be mocked out.');
+};
+
 const coverage = process.argv.includes('--coverage');
 const results = run({
     files: [`${import.meta.dirname}/test/index.test.js`],

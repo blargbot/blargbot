@@ -251,6 +251,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/mapping", "workspace:src/mapping"],\
+          ["@blargbot/util", "workspace:src/util"],\
           ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
           ["@types/color", "npm:3.0.3"],\
           ["@types/eris", "workspace:definitions/eris"],\
@@ -570,6 +571,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/image", "workspace:src/image"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/res", "workspace:src/res"],\
+          ["@blargbot/util", "workspace:src/util"],\
           ["@types/blargbot-image-api", "workspace:definitions/blargbot-image-api"],\
           ["@types/gif-encoder", "npm:0.7.4"],\
           ["@types/gm", "npm:1.25.0"],\

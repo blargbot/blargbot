@@ -3,6 +3,7 @@ import path from 'node:path';
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
 import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
 import type { EmojiOptions, ImageResult } from '@blargbot/image/types.js';
+import { asBuffer } from '@blargbot/util';
 import sharp from 'sharp';
 import twemoji from 'twemoji';
 
@@ -25,7 +26,7 @@ export class EmojiGenerator extends BaseImageGenerator<'emoji'> {
         if (!file.status.toString().startsWith('2'))
             return undefined;
 
-        const body = Buffer.from(await file.arrayBuffer());
+        const body = asBuffer(await file.bytes());
         if (svg)
             return { fileName: 'emoji.svg', data: body };
 

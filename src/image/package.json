@@ -8,6 +8,7 @@
         "@blargbot/core": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/res": "workspace:^",
+        "@blargbot/util": "workspace:^",
         "gif-encoder": "^0.7.2",
         "gm": "^1.25.0",
         "sharp": "^0.35.4",

@@ -1,5 +1,6 @@
 import { guard } from '@blargbot/core/utils/index.js';
 import { parse } from '@blargbot/core/utils/parse/index.js';
+import { asBuffer } from '@blargbot/util';
 import * as eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -37,7 +38,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
         if (guard.isUrl(image)) {
             const res = await context.fetch(image);
             const contentType = res.headers.get('content-type');
-            image = `data:${contentType ?? ''};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
+            image = `data:${contentType ?? ''};base64,${asBuffer(await res.bytes()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }

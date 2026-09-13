@@ -1,3 +1,4 @@
+import { asBuffer } from '@blargbot/util';
 import type { CommandMap } from 'blargbot-image-api';
 
 import { BaseImageGenerator } from './BaseImageGenerator.js';
@@ -27,7 +28,7 @@ export abstract class BaseApiImageGenerator<T extends keyof CommandMap> extends 
             if (!response.ok || contentType?.[0] !== 'image' || contentType.length === 0)
                 return undefined;
 
-            const image = Buffer.from(await response.arrayBuffer());
+            const image = asBuffer(await response.bytes());
             if (image.length > 0)
                 return { data: image, fileName: `${this.key}.${contentType[1]}` };
             return undefined;

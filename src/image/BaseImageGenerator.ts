@@ -4,6 +4,7 @@ import { promisify } from 'node:util';
 
 import { BufferWriter } from '@blargbot/core/BufferWriter.js';
 import { resourceDirectory } from '@blargbot/res';
+import { asBuffer } from '@blargbot/util';
 import gifEncoder from 'gif-encoder';
 import gm from 'gm';
 
@@ -61,7 +62,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
             case 'image/png':
             case 'image/jpeg':
             case 'image/bmp':
-                return Buffer.from(await response.arrayBuffer());
+                return asBuffer(await response.bytes());
             default:
                 throw new Error('Wrong file type!');
         }
