@@ -1,6 +1,5 @@
-import { GuildCommand } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType, parse } from '@blargbot/cluster';
+import { CommandType, GuildCommand, parse } from '@blargbot/cluster';
 import { Emote } from '@blargbot/core';
 import { random } from '@blargbot/util';
 import moment from 'moment-timezone';

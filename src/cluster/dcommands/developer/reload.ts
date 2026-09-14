@@ -1,6 +1,5 @@
-import { GlobalCommand } from '@blargbot/cluster';
 import type { CommandResult, ICommandManager } from '@blargbot/cluster';
-import { CommandType } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 import { ModuleLoader } from '@blargbot/core';
 
 import { templates } from '../../text.js';

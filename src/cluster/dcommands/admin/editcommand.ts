@@ -1,6 +1,5 @@
-import { GuildCommand } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster';
-import { CommandType } from '@blargbot/cluster';
+import { CommandType, GuildCommand  } from '@blargbot/cluster';
 import type { CommandPermissions } from '@blargbot/domain';
 import type * as eris from 'eris';
 

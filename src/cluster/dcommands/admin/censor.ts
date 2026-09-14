@@ -1,6 +1,5 @@
-import { GuildCommand } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType, ModerationType } from '@blargbot/cluster';
+import { CommandType, GuildCommand, ModerationType } from '@blargbot/cluster';
 import { guard } from '@blargbot/core';
 import type { GuildCensor, GuildTriggerTag } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';

@@ -1,7 +1,6 @@
 import type { CommandContext } from '@blargbot/cluster';
 import { GlobalImageCommand } from '@blargbot/cluster';
-import { guard } from '@blargbot/core';
-import { parse } from '@blargbot/core';
+import { guard, parse } from '@blargbot/core';
 import type * as eris from 'eris';
 
 import { templates } from '../../text.js';

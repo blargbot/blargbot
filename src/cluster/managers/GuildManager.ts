@@ -1,5 +1,4 @@
-import { FormattableMessageContent } from '@blargbot/core';
-import { metrics } from '@blargbot/core';
+import { FormattableMessageContent, metrics } from '@blargbot/core';
 import type eris from 'eris';
 import moment from 'moment-timezone';
 

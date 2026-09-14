@@ -1,12 +1,7 @@
-import type { Cluster } from '@blargbot/cluster';
-import type { CommandContext } from '@blargbot/cluster';
-import { Command } from '@blargbot/cluster';
-import type { CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster';
-import { commandTypeDetails, guard } from '@blargbot/cluster';
-import { metrics } from '@blargbot/core';
-import { ModuleLoader } from '@blargbot/core';
-import { Timer } from '@blargbot/core';
+import type { Cluster, CommandContext, CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster';
+import { Command, commandTypeDetails, guard } from '@blargbot/cluster';
 import type { NextMiddleware } from '@blargbot/core';
+import { metrics, ModuleLoader, Timer } from '@blargbot/core';
 import type { CommandPermissions, FlagDefinition } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import * as eris from 'eris';

@@ -1,7 +1,6 @@
 import { bbtag } from '@blargbot/bbtag';
-import { GuildCommand } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType, guard } from '@blargbot/cluster';
+import { CommandType, guard, GuildCommand  } from '@blargbot/cluster';
 import type { GuildRolemeEntry } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';

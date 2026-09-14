@@ -1,6 +1,5 @@
-import { GuildCommand } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType, guard } from '@blargbot/cluster';
+import { CommandType, guard, GuildCommand  } from '@blargbot/cluster';
 import type { StoredGuildEventLogType } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as eris from 'eris';

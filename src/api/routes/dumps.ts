@@ -1,6 +1,5 @@
 import { guard } from '@blargbot/core';
-import type { Dump } from '@blargbot/domain';
-import type { DiscordTagSet } from '@blargbot/domain';
+import type { DiscordTagSet, Dump  } from '@blargbot/domain';
 import type { APIEmbed } from 'discord-api-types/v9';
 
 import type { Api } from '../Api.js';

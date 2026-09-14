@@ -1,6 +1,5 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { GlobalImageCommand } from '@blargbot/cluster';
-import { guard } from '@blargbot/cluster';
+import { GlobalImageCommand, guard } from '@blargbot/cluster';
 
 import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';

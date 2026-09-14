@@ -1,5 +1,5 @@
-import { FormattableMessageContent } from '@blargbot/core';
 import type { FormatActionRow, FormatButton, FormatEmbedField, FormatEmbedOptions, FormatSelectMenu, FormatSelectMenuOptions, SendContent } from '@blargbot/core';
+import { FormattableMessageContent } from '@blargbot/core';
 import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format } from '@blargbot/formatting';
 import * as eris from 'eris';

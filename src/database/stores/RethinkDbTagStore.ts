@@ -1,5 +1,4 @@
-import type { StoredTag } from '@blargbot/domain';
-import type { TagStore } from '@blargbot/domain';
+import type { StoredTag, TagStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 
 import type { RethinkDb } from '../clients/index.js';

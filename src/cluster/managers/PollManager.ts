@@ -1,5 +1,4 @@
-import type { Cluster } from '@blargbot/cluster';
-import type { PollResponse } from '@blargbot/cluster';
+import type { Cluster, PollResponse } from '@blargbot/cluster';
 import type { Emote } from '@blargbot/core';
 import { FormattableMessageContent } from '@blargbot/core';
 import type { PollEventOptions } from '@blargbot/domain';

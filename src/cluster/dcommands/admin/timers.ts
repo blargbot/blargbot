@@ -1,6 +1,5 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { GlobalCommand } from '@blargbot/cluster';
-import { CommandType, guard } from '@blargbot/cluster';
+import { CommandType, GlobalCommand, guard } from '@blargbot/cluster';
 import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import type * as eris from 'eris';

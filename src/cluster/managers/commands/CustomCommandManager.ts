@@ -1,6 +1,4 @@
-import type { Cluster } from '@blargbot/cluster';
-import type { CommandContext } from '@blargbot/cluster';
-import type { CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster';
+import type { Cluster, CommandContext, CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster';
 import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster';
 import { metrics } from '@blargbot/core';
 import type { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain';

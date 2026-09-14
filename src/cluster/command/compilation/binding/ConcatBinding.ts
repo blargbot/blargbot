@@ -1,7 +1,7 @@
 import type { CommandBinderState, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster';
 import { humanize } from '@blargbot/cluster';
-import { Binder } from '@blargbot/core';
 import type { Binding, BindingResultAsyncIterator } from '@blargbot/core';
+import { Binder } from '@blargbot/core';
 
 import type { CommandContext } from '../../CommandContext.js';
 import { createCommandArgument } from '../commandArgument.js';

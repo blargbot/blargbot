@@ -1,6 +1,6 @@
 import type { CommandBinderParseResult, CommandBinderState, CommandBinderStateFailureReason } from '@blargbot/cluster';
-import { Binder } from '@blargbot/core';
 import type { Binding, BindingFailure, BindingResult, BindingResultValue, BindingSuccess } from '@blargbot/core';
+import { Binder } from '@blargbot/core';
 
 import type { CommandContext } from '../../CommandContext.js';
 

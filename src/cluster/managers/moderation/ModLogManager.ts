@@ -1,7 +1,7 @@
 import type { Cluster } from '@blargbot/cluster';
 import { guard, ModlogColour } from '@blargbot/cluster';
-import { FormattableMessageContent } from '@blargbot/core';
 import type { FormatEmbedField, FormatEmbedOptions } from '@blargbot/core';
+import { FormattableMessageContent } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import type * as eris from 'eris';

@@ -1,7 +1,5 @@
 import type { ClusterConnection } from '@blargbot/cluster';
-import { FormattableMessageContent } from '@blargbot/core';
-import { WorkerPoolEventService } from '@blargbot/core';
-import { WorkerState } from '@blargbot/core';
+import { FormattableMessageContent, WorkerPoolEventService, WorkerState } from '@blargbot/core';
 import { util } from '@blargbot/formatting';
 import type { Master } from '@blargbot/master';
 import moment from 'moment-timezone';

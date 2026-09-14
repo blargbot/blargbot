@@ -1,8 +1,7 @@
 import { inspect } from 'node:util';
 
 import type { CommandContext } from '@blargbot/cluster';
-import { GlobalCommand } from '@blargbot/cluster';
-import { CommandType } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 import type { EvalResult, GlobalEvalResult, MasterEvalRequest } from '@blargbot/core';
 
 import { templates } from '../../text.js';

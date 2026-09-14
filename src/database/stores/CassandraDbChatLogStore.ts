@@ -1,8 +1,6 @@
-import { metrics } from '@blargbot/core';
-import { snowflake } from '@blargbot/core';
-import type { ChatLog, ChatLogMessage, ChatLogSearchOptions } from '@blargbot/domain';
+import { metrics, snowflake } from '@blargbot/core';
+import type { ChatLog, ChatLogMessage, ChatLogSearchOptions, ChatLogStore } from '@blargbot/domain';
 import { ChatLogType } from '@blargbot/domain';
-import type { ChatLogStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
 import type { Client as Cassandra } from 'cassandra-driver';

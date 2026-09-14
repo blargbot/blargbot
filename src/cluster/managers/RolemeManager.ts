@@ -1,7 +1,6 @@
 import type { ExecutionResult } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
-import { FormattableMessageContent } from '@blargbot/core';
-import { guard } from '@blargbot/core';
+import { FormattableMessageContent, guard } from '@blargbot/core';
 import type { GuildRolemeEntry } from '@blargbot/domain';
 import type eris from 'eris';
 

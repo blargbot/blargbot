@@ -1,6 +1,5 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { GlobalCommand } from '@blargbot/cluster';
-import { CommandType } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 import { guard } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';

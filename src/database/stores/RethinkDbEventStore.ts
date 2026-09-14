@@ -1,5 +1,4 @@
-import type { EventOptionsTypeMap, EventType, StoredEvent, StoredEventOptions } from '@blargbot/domain';
-import type { EventStore } from '@blargbot/domain';
+import type { EventOptionsTypeMap, EventStore, EventType, StoredEvent, StoredEventOptions  } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import moment from 'moment-timezone';
 

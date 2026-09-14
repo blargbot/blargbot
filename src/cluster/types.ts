@@ -1,6 +1,5 @@
 import type { SubtagOptions } from '@blargbot/bbtag';
-import type { Command, CommandContext, ScopedCommand } from '@blargbot/cluster';
-import type { CommandType, ModerationType } from '@blargbot/cluster';
+import type { Command, CommandContext, CommandType, ModerationType, ScopedCommand  } from '@blargbot/cluster';
 import type { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core';
 import type { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';

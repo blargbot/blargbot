@@ -1,8 +1,7 @@
 import type { Cluster } from '@blargbot/cluster';
 import { guard, ModlogColour } from '@blargbot/cluster';
-import type { BaseUtilities } from '@blargbot/core';
+import type { BaseUtilities, FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core';
 import { FormattableMessageContent } from '@blargbot/core';
-import type { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core';
 import type { StoredGuildEventLogType } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import * as eris from 'eris';

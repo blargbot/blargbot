@@ -1,7 +1,5 @@
-import type { ClusterUtilities } from '@blargbot/cluster';
-import type { CommandContext } from '@blargbot/cluster';
-import { GlobalImageCommand } from '@blargbot/cluster';
-import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster';
+import type { ClusterUtilities, CommandContext } from '@blargbot/cluster';
+import { CommandType, commandTypeDetails, GlobalImageCommand, guard } from '@blargbot/cluster';
 import { cah } from '@blargbot/res';
 import { random } from '@blargbot/util';
 import * as eris from 'eris';

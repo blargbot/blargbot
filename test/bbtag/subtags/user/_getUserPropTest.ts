@@ -1,5 +1,4 @@
-import type { BBTagContext } from '@blargbot/bbtag';
-import type { BBTagRuntimeError } from '@blargbot/bbtag';
+import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag';
 import { UserNotFoundError } from '@blargbot/bbtag';
 import { argument } from '@blargbot/test-util/mock.js';
 import type { APIGuildMember } from 'discord-api-types/v9';

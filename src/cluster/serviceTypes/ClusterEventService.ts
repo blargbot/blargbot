@@ -1,7 +1,6 @@
-import type { Cluster } from '@blargbot/cluster';
-import type { ClusterIPCContract } from '@blargbot/cluster';
-import { BaseService } from '@blargbot/core';
+import type { Cluster, ClusterIPCContract } from '@blargbot/cluster';
 import type { GetWorkerProcessMessageHandler, IPCContractNames } from '@blargbot/core';
+import { BaseService } from '@blargbot/core';
 
 export abstract class ClusterEventService<Contract extends IPCContractNames<ClusterIPCContract>> extends BaseService {
     readonly #execute: GetWorkerProcessMessageHandler<ClusterIPCContract, Contract>;

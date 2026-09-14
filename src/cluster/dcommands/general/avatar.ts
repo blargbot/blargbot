@@ -1,6 +1,5 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster';
-import { CommandType } from '@blargbot/cluster';
+import { CommandType, GlobalCommand, SendTypingMiddleware  } from '@blargbot/cluster';
 import { parse } from '@blargbot/core';
 import { asBuffer } from '@blargbot/util';
 import type * as eris from 'eris';

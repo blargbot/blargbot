@@ -1,6 +1,5 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { GlobalCommand } from '@blargbot/cluster';
-import { CommandType, guard } from '@blargbot/cluster';
+import { CommandType, GlobalCommand, guard } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
 import { spells as spellsRes } from '@blargbot/res';
 import { random } from '@blargbot/util';

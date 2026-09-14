@@ -1,6 +1,5 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { GlobalCommand } from '@blargbot/cluster';
-import { avatarColours, CommandType } from '@blargbot/cluster';
+import { avatarColours, CommandType, GlobalCommand  } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
 import { random } from '@blargbot/util';
 import * as eris from 'eris';

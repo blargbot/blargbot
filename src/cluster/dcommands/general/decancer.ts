@@ -1,6 +1,5 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { GlobalCommand } from '@blargbot/cluster';
-import { CommandType, guard, humanize } from '@blargbot/cluster';
+import { CommandType, GlobalCommand, guard, humanize } from '@blargbot/cluster';
 import type * as eris from 'eris';
 
 import { templates } from '../../text.js';

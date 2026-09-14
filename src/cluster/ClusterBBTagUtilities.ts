@@ -1,6 +1,5 @@
 import type { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities } from '@blargbot/bbtag';
-import type { Emote } from '@blargbot/core';
-import type { ChoiceQueryResult, EntityPickQueryOptions, SendContent } from '@blargbot/core';
+import type { ChoiceQueryResult, Emote, EntityPickQueryOptions, SendContent } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import type * as eris from 'eris';

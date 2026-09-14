@@ -1,5 +1,4 @@
-import type { Cluster } from '@blargbot/cluster';
-import type { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster';
+import type { Cluster, CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster';
 import { defaultStaff, guard } from '@blargbot/cluster';
 import { parse } from '@blargbot/core';
 import type { CommandPermissions } from '@blargbot/domain';

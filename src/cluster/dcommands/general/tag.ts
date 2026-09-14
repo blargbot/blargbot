@@ -1,9 +1,6 @@
 import { bbtag } from '@blargbot/bbtag';
-import type { Cluster, ClusterUtilities } from '@blargbot/cluster';
-import type { CommandContext } from '@blargbot/cluster';
-import { GuildCommand } from '@blargbot/cluster';
-import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType, discord, parse } from '@blargbot/cluster';
+import type { Cluster, ClusterUtilities, CommandContext, CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, discord, GuildCommand, parse } from '@blargbot/cluster';
 import type { SendContent } from '@blargbot/core';
 import type { StoredTag } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';

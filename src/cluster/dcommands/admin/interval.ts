@@ -1,7 +1,6 @@
 import { bbtag } from '@blargbot/bbtag';
-import { GuildCommand } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType } from '@blargbot/cluster';
+import { CommandType, GuildCommand  } from '@blargbot/cluster';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import { templates } from '../../text.js';

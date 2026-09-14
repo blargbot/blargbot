@@ -1,5 +1,4 @@
-import { GlobalCommand } from '@blargbot/cluster';
-import { CommandType } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 import { random } from '@blargbot/util';
 import type * as eris from 'eris';
 

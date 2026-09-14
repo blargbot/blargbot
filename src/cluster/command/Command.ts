@@ -1,6 +1,4 @@
-import type { ClusterUtilities } from '@blargbot/cluster';
-import type { CommandBaseOptions, CommandResult, CommandSignature } from '@blargbot/cluster';
-import type { CommandType } from '@blargbot/cluster';
+import type { ClusterUtilities, CommandBaseOptions, CommandResult, CommandSignature, CommandType } from '@blargbot/cluster';
 import type { IMiddleware, NextMiddleware } from '@blargbot/core';
 import type { FlagDefinition } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';

@@ -1,6 +1,5 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster';
-import { CommandType, guard } from '@blargbot/cluster';
+import { CommandType, GlobalCommand, guard, SendTypingMiddleware  } from '@blargbot/cluster';
 import type { FlagResult } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';

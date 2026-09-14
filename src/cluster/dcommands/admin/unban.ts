@@ -1,6 +1,5 @@
-import { GuildCommand } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType } from '@blargbot/cluster';
+import { CommandType, GuildCommand  } from '@blargbot/cluster';
 import type { FlagResult } from '@blargbot/domain';
 import { util } from '@blargbot/formatting';
 

@@ -1,7 +1,5 @@
-import type { CommandContext } from '@blargbot/cluster';
-import { GlobalCommand } from '@blargbot/cluster';
-import type { CommandResult } from '@blargbot/cluster';
-import { CommandType } from '@blargbot/cluster';
+import type { CommandContext, CommandResult } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 
 import { templates } from '../../text.js';
 

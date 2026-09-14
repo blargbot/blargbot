@@ -1,6 +1,5 @@
 import { whenAborted } from './whenAborted.js';
 
-
 export class ResetValue<T> {
     #state: { type: 'pending'; } | { type: 'resolved'; value: T; } | { type: 'rejected'; error: unknown; };
     #registration?: Disposable;

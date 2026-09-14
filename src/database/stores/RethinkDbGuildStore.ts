@@ -1,6 +1,5 @@
 import { guard, snowflake } from '@blargbot/core';
-import type { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensorExceptions, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@blargbot/domain';
-import type { GuildStore } from '@blargbot/domain';
+import type { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensorExceptions, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildStore, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings  } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import type { UpdateData } from 'rethinkdb';
 

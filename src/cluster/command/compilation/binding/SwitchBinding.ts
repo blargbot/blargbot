@@ -1,7 +1,7 @@
 import type { CommandBinderState } from '@blargbot/cluster';
 import { guard } from '@blargbot/cluster';
-import { Binder } from '@blargbot/core';
 import type { Binding, BindingResult } from '@blargbot/core';
+import { Binder } from '@blargbot/core';
 
 import type { CommandContext } from '../../CommandContext.js';
 import { CommandBindingBase } from './CommandBindingBase.js';

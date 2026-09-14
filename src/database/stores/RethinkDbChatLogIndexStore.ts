@@ -1,5 +1,4 @@
-import type { ChatLogIndex } from '@blargbot/domain';
-import type { ChatLogIndexStore } from '@blargbot/domain';
+import type { ChatLogIndex, ChatLogIndexStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 
 import type { RethinkDb } from '../clients/index.js';

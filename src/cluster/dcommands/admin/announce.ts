@@ -1,6 +1,5 @@
-import { GuildCommand } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType, discord } from '@blargbot/cluster';
+import { CommandType, discord, GuildCommand  } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
 import * as eris from 'eris';
 import moment from 'moment-timezone';

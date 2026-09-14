@@ -1,6 +1,5 @@
-import { GuildCommand, SingleThreadMiddleware } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType } from '@blargbot/cluster';
+import { CommandType, GuildCommand, SingleThreadMiddleware  } from '@blargbot/cluster';
 import { createSafeRegExp, guard } from '@blargbot/core';
 import * as eris from 'eris';
 import moment from 'moment-timezone';

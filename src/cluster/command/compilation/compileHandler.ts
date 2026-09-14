@@ -1,7 +1,7 @@
 import type { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster';
 import { parse } from '@blargbot/cluster';
-import { Binder } from '@blargbot/core';
 import type { Binding } from '@blargbot/core';
+import { Binder } from '@blargbot/core';
 
 import { templates } from '../../text.js';
 import type { CommandContext } from '../CommandContext.js';

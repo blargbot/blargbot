@@ -1,6 +1,5 @@
-import { GuildCommand } from '@blargbot/cluster';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType, parse } from '@blargbot/cluster';
+import { CommandType, GuildCommand, parse } from '@blargbot/cluster';
 import type { FlagResult } from '@blargbot/domain';
 import { util } from '@blargbot/formatting';
 import type * as eris from 'eris';

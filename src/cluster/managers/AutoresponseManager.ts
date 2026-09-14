@@ -1,6 +1,5 @@
 import { bbtag } from '@blargbot/bbtag';
-import type { Cluster } from '@blargbot/cluster';
-import type { WhitelistResponse } from '@blargbot/cluster';
+import type { Cluster, WhitelistResponse } from '@blargbot/cluster';
 import { guard, humanize } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core';
 import type { GuildTriggerTag } from '@blargbot/domain';
