@@ -1,8 +1,9 @@
-import type { Api } from '@blargbot/api/Api.js';
-import { BaseRoute } from '@blargbot/api/BaseRoute.js';
-import type { ApiResponse } from '@blargbot/api/types.js';
-import { parse } from '@blargbot/core/utils/index.js';
+import { parse } from '@blargbot/core';
 import { mapping } from '@blargbot/mapping';
+
+import type { Api } from '../../Api.js';
+import { BaseRoute } from '../../BaseRoute.js';
+import type { ApiResponse } from '../../types.js';
 
 export class RolemesRoute extends BaseRoute<['/guilds/:guildId/rolemes']> {
     readonly #api: Api;

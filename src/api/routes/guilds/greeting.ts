@@ -1,7 +1,8 @@
-import type { Api } from '@blargbot/api/Api.js';
-import { BaseRoute } from '@blargbot/api/BaseRoute.js';
-import type { ApiResponse } from '@blargbot/api/types.js';
 import { mapping } from '@blargbot/mapping';
+
+import type { Api } from '../../Api.js';
+import { BaseRoute } from '../../BaseRoute.js';
+import type { ApiResponse } from '../../types.js';
 
 export class GreetingRoute extends BaseRoute<['/guilds/:guildId/greeting']> {
     readonly #api: Api;

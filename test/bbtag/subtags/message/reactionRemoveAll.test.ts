@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags/message/reactionRemoveAll.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

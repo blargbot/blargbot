@@ -1,4 +1,4 @@
-import type { SendContent } from '@blargbot/core/types.js';
+import type { SendContent } from '@blargbot/core';
 import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format } from '@blargbot/formatting';
 

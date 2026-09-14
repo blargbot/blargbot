@@ -1,23 +1,17 @@
-import { randChoose, randInt } from '@blargbot/core/utils/index.js';
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import type { DistortOptions, ImageResult } from '@blargbot/image/types.js';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
+import { random } from '@blargbot/util';
 import sharp from 'sharp';
 
-export class DistortGenerator extends BaseImageGenerator<'distort'> {
-    public constructor(worker: ImageWorker) {
-        super('distort', worker);
-    }
+import type { GeneratorContext } from '../GeneratorContext.js';
 
-    public async execute({ avatar }: DistortOptions): Promise<ImageResult> {
-        const avatarImg = await sharp(await this.getRemote(avatar)).toBuffer({ resolveWithObject: true });
-        return {
-            data: await this.gmConvert(avatarImg.data, x => x
-                .modulate(100, randInt(140, 180) * randChoose([-1, 1]), randInt(5, 95))
-                .implode(-randInt(3, 10))
-                .roll(randInt(0, avatarImg.info.width), randInt(0, avatarImg.info.height))
-                .swirl(randInt(120, 180) * randChoose([-1, 1]))),
-            fileName: 'distort.png'
-        };
-    }
+export async function distort(request: ImageRequestData<'distort'>, context: GeneratorContext): Promise<ImageResponse> {
+    const avatarImg = await sharp(await context.getRemote(request.imageUrl)).toUint8Array();
+    return {
+        data: await context.gmConvert(avatarImg.data, x => x
+            .modulate(100, random.int(140, 180) * random.pick([-1, 1]), random.int(5, 95))
+            .implode(-random.int(3, 10))
+            .roll(random.int(0, avatarImg.info.width), random.int(0, avatarImg.info.height))
+            .swirl(random.int(120, 180) * random.pick([-1, 1]))),
+        fileName: 'distort.png'
+    };
 }

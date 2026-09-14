@@ -1,5 +1,5 @@
-import type { Emote } from '@blargbot/core/Emote.js';
-import type { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models/index.js';
+import type { Emote } from '@blargbot/core';
+import type { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as eris from 'eris';
 import type ReadWriteLock from 'rwlock';

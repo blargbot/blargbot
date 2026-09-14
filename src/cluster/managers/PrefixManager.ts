@@ -1,5 +1,5 @@
-import { guard } from '@blargbot/cluster/utils/index.js';
-import type { GuildStore, UserStore } from '@blargbot/domain/stores/index.js';
+import { guard } from '@blargbot/cluster';
+import type { GuildStore, UserStore } from '@blargbot/domain';
 import type eris from 'eris';
 
 export class PrefixManager {

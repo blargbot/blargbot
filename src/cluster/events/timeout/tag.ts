@@ -1,8 +1,8 @@
 import type { SerializedBBTagContext } from '@blargbot/bbtag';
 import { BBTagContext, rules } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
-import { TimeoutEventService } from '@blargbot/cluster/serviceTypes/index.js';
-import type { StoredEvent } from '@blargbot/domain/models/index.js';
+import { TimeoutEventService } from '@blargbot/cluster';
+import type { StoredEvent } from '@blargbot/domain';
 
 export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
     public constructor(protected readonly cluster: Cluster) {

@@ -1,8 +1,7 @@
-import { BaseApiImageGenerator } from '@blargbot/image/BaseApiImageGenerator.js';
-import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
 
-export class ClintGenerator extends BaseApiImageGenerator<'clint'> {
-    public constructor(worker: ImageWorker) {
-        super('clint', worker);
-    }
+import type { GeneratorContext } from '../GeneratorContext.js';
+
+export async function clint(request: ImageRequestData<'clint'>, context: GeneratorContext): Promise<ImageResponse> {
+    return await context.renderApi('clint', { image: request.imageUrl });
 }

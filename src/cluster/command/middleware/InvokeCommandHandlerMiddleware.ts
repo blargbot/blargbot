@@ -1,5 +1,5 @@
-import type { CommandHandler, CommandResult, CommandSignatureHandler } from '@blargbot/cluster/types.js';
-import type { IMiddleware } from '@blargbot/core/types.js';
+import type { CommandHandler, CommandResult, CommandSignatureHandler } from '@blargbot/cluster';
+import type { IMiddleware } from '@blargbot/core';
 
 import type { CommandContext } from '../CommandContext.js';
 import { compileHandler } from '../compilation/index.js';

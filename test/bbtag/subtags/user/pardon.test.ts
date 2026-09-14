@@ -1,5 +1,5 @@
-import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { PardonSubtag } from '@blargbot/bbtag/subtags/user/pardon.js';
+import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
+import { PardonSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 

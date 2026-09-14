@@ -1,4 +1,4 @@
-import type { GetWorkerProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types.js';
+import type { GetWorkerProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 
 import { IPCMessageEmitter } from './IPCMessageEmitter.js';

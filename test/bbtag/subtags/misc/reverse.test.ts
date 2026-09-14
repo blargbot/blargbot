@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
-import { ReverseSubtag } from '@blargbot/bbtag/subtags/misc/reverse.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { GetSubtag, ReverseSubtag } from '@blargbot/bbtag/subtags';
+import { TagVariableType } from '@blargbot/domain';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

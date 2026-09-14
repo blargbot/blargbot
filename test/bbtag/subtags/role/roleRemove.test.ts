@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { RoleRemoveSubtag } from '@blargbot/bbtag/subtags/role/roleRemove.js';
+import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag';
+import { RoleRemoveSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 

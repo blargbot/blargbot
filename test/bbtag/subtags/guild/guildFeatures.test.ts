@@ -1,4 +1,4 @@
-import { GuildFeaturesSubtag } from '@blargbot/bbtag/subtags/guild/guildFeatures.js';
+import { GuildFeaturesSubtag } from '@blargbot/bbtag/subtags';
 import type { GuildFeature } from 'discord-api-types/v9';
 import * as eris from 'eris';
 

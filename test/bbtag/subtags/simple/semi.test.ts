@@ -1,4 +1,4 @@
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
+import { SemiSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

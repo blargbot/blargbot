@@ -1,12 +1,12 @@
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import type { FormatActionRow, FormatButton, FormatEmbedField, FormatEmbedOptions, FormatSelectMenu, FormatSelectMenuOptions, SendContent } from '@blargbot/core/types.js';
+import { FormattableMessageContent } from '@blargbot/core';
+import type { FormatActionRow, FormatButton, FormatEmbedField, FormatEmbedOptions, FormatSelectMenu, FormatSelectMenuOptions, SendContent } from '@blargbot/core';
 import type { IFormattable, IFormatter } from '@blargbot/formatting';
 import { format } from '@blargbot/formatting';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
 
 import type { Cluster } from '../../Cluster.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 export type Documentation = DocumentationGroup | DocumentationLeaf | DocumentationPaged;
 

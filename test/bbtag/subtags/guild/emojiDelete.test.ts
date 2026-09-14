@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { EmojiDeleteSubtag } from '@blargbot/bbtag/subtags/guild/emojiDelete.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { EmojiDeleteSubtag } from '@blargbot/bbtag/subtags';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

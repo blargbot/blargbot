@@ -2,7 +2,7 @@ import type { IFormatter } from '@blargbot/formatting';
 import { format } from '@blargbot/formatting';
 import type * as eris from 'eris';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { Documentation } from './DocumentationManager.js';
 import { DocumentationManager } from './DocumentationManager.js';
 

@@ -1,6 +1,6 @@
 import type { BBTagContext } from '@blargbot/bbtag';
-import type { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ChannelNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import type { BBTagRuntimeError } from '@blargbot/bbtag';
+import { ChannelNotFoundError } from '@blargbot/bbtag';
 import type { APIChannel } from 'discord-api-types/v9';
 import type * as eris from 'eris';
 

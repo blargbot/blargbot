@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { DeleteSubtag } from '@blargbot/bbtag/subtags/message/delete.js';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
+import { DeleteSubtag } from '@blargbot/bbtag/subtags';
 import type * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';

@@ -1,6 +1,6 @@
 import type { BBTagContext } from '@blargbot/bbtag';
-import type { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
+import type { BBTagRuntimeError } from '@blargbot/bbtag';
+import { UserNotFoundError } from '@blargbot/bbtag';
 import { argument } from '@blargbot/test-util/mock.js';
 import type { APIGuildMember } from 'discord-api-types/v9';
 import * as eris from 'eris';

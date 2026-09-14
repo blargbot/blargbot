@@ -1,4 +1,4 @@
-import { range } from '@blargbot/util';
+import { Iterable } from '@blargbot/util';
 import { createHash } from 'crypto';
 
 import type { AmqpChannel, AmqpExchange, AmqpQueue } from '../AmqpChannel.js';
@@ -35,18 +35,18 @@ export const getDiscordGatewayChannel = inferReturnType(async (channel: AmqpChan
                 await handler(decoded);
             });
         },
-        async assertPartitions(partitionCount: number) {
-            await getPartitionsCore(partitionCount, false);
+        async assertPartitions(kind: string, partitionCount: number) {
+            await getPartitionsCore(kind, partitionCount, false);
         },
-        async deletePartitions(partitionCount: number) {
-            const { exchange, queues } = await getPartitionsCore(partitionCount, true);
+        async deletePartitions(kind: string, partitionCount: number) {
+            const { exchange, queues } = await getPartitionsCore(kind, partitionCount, true);
             await Promise.all([
                 exchange.delete(),
                 ...queues.map(q => q.delete())
             ]);
         },
-        async handlePartition(partitionCount: number, partitionId: number, handler: (message: DiscordGatewayDispatch) => Awaitable<void>) {
-            const queue = await channel.getQueue(`discord-gateway-events.${getPartitionName(partitionCount, partitionId)}`, { durable: true });
+        async subscribe(kind: string, partitionCount: number, partitionId: number, handler: (message: DiscordGatewayDispatch) => Awaitable<void>) {
+            const queue = await channel.getQueue(`discord-gateway-events.${kind}.${getPartitionName(partitionCount, partitionId)}`, { durable: true });
             const consumer = await queue.consume(async message => {
                 const decoded = await DiscordGatewayDispatch.decodeAsync(message);
                 await handler(decoded);
@@ -57,21 +57,21 @@ export const getDiscordGatewayChannel = inferReturnType(async (channel: AmqpChan
                 await cancel.call(consumer);
             };
         },
-        async publish(message: DiscordGatewayDispatch, key: string, signal?: AbortSignal) {
+        async publish(message: DiscordGatewayDispatch, partitionKey: string, signal?: AbortSignal) {
             const payload = DiscordGatewayDispatch.encode(message);
-            await events.send(key, payload, { signal, persistent: true });
+            await events.send(partitionKey, payload, { signal, persistent: true });
         }
     };
 
-    async function getPartitionsCore(partitionCount: number, noAssert: boolean): Promise<{ exchange: AmqpExchange; queues: AmqpQueue[]; }> {
+    async function getPartitionsCore(kind: string, partitionCount: number, noAssert: boolean): Promise<{ exchange: AmqpExchange; queues: AmqpQueue[]; }> {
         if (partitionCount < 1 || partitionCount % 1 !== 0)
             throw new RangeError('Partition count must be a positive whole number');
-        const exchange = channel.getExchange(`discord-gateway-events.${getPartitionName(partitionCount, null)}`, 'x-modulus-hash', { once: true, noAssert });
+        const exchange = channel.getExchange(`discord-gateway-events.${kind}.${getPartitionName(partitionCount, null)}`, 'x-modulus-hash', { once: true, noAssert });
         const [_, ...queues] = await Promise.all([
             exchange.then(exchange => exchange.bind(events, '')),
-            ...range(partitionCount)
+            ...Iterable.range(partitionCount)
                 .map(async p => {
-                    const queue = await channel.getQueue(`discord-gateway-events.${getPartitionName(partitionCount, p)}`, { durable: true, once: true, noAssert });
+                    const queue = await channel.getQueue(`discord-gateway-events.${kind}.${getPartitionName(partitionCount, p)}`, { durable: true, once: true, noAssert });
                     await queue.bind(await exchange, '', { once: true });
                     return queue;
                 })

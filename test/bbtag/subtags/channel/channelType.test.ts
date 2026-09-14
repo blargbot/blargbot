@@ -1,4 +1,4 @@
-import { ChannelTypeSubtag } from '@blargbot/bbtag/subtags/channel/channelType.js';
+import { ChannelTypeSubtag } from '@blargbot/bbtag/subtags';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

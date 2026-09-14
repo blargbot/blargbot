@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { SlowModeSubtag } from '@blargbot/bbtag/subtags/channel/slowMode.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { SlowModeSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 

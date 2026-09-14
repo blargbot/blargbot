@@ -1,5 +1,5 @@
-import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { SpaceSubtag } from '@blargbot/bbtag/subtags/misc/space.js';
+import { NotANumberError } from '@blargbot/bbtag';
+import { SpaceSubtag } from '@blargbot/bbtag/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

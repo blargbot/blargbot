@@ -1,44 +1,38 @@
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import type { ImageResult, StupidOptions } from '@blargbot/image/types.js';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
+import { asBuffer } from '@blargbot/util';
 import sharp from 'sharp';
 
-export class StupidGenerator extends BaseImageGenerator<'stupid'> {
-    public constructor(worker: ImageWorker) {
-        super('stupid', worker);
+import type { GeneratorContext } from '../GeneratorContext.js';
+
+export async function stupid(request: ImageRequestData<'stupid'>, context: GeneratorContext): Promise<ImageResponse> {
+    const overlays = [];
+    if (request.imageUrl !== undefined) {
+        const avatarImg = sharp(await context.getRemote(request.imageUrl)).ensureAlpha();
+        const smallAvatar = avatarImg.clone().resize(74, 74);
+        const bigAvatar = avatarImg.clone().resize(171, 171).rotate(18, { background: 'transparent' });
+        overlays.push(
+            smallAvatar.toUint8Array().then(x => ({ input: asBuffer(x.data), left: 166, top: 131 })),
+            bigAvatar.toUint8Array().then(x => ({ input: asBuffer(x.data), left: 277, top: 32 }))
+        );
     }
 
-    public async execute({ text, avatar }: StupidOptions): Promise<ImageResult> {
-        const overlays = [];
-        if (avatar !== undefined) {
-            const avatarImg = sharp(await this.getRemote(avatar)).ensureAlpha();
-            const smallAvatar = avatarImg.clone().resize(74, 74);
-            const bigAvatar = avatarImg.clone().resize(171, 171).rotate(18, { background: 'transparent' });
-            overlays.push(
-                { input: await smallAvatar.toBuffer(), left: 166, top: 131 },
-                { input: await bigAvatar.toBuffer(), left: 277, top: 32 }
-            );
-        }
+    const { data } = await sharp(context.getLocal('stupid.png').path)
+        .composite([
+            ...await Promise.all(overlays),
+            {
+                input: asBuffer(await context.renderText(request.text, {
+                    font: 'ARCENA.ttf',
+                    fill: 'black',
+                    outline: ['white', 2.5],
+                    width: 272,
+                    height: 60
+                })),
+                left: 268,
+                top: 0
+            }
+        ])
+        .png()
+        .toUint8Array();
 
-        const result = sharp(this.getLocalPath('stupid.png'))
-            .composite([
-                ...overlays,
-                {
-                    input: await this.renderText(text, {
-                        font: 'ARCENA.ttf',
-                        fill: 'black',
-                        outline: ['white', 2.5],
-                        width: 272,
-                        height: 60
-                    }),
-                    left: 268,
-                    top: 0
-                }
-            ]);
-
-        return {
-            data: await result.png().toBuffer(),
-            fileName: 'stupid.png'
-        };
-    }
+    return { data, fileName: 'stupid.png' };
 }

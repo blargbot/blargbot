@@ -1,4 +1,4 @@
-import { UserNameSubtag } from '@blargbot/bbtag/subtags/user/userName.js';
+import { UserNameSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';

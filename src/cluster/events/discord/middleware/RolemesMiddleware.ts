@@ -1,5 +1,5 @@
-import type { RolemeManager } from '@blargbot/cluster/managers/index.js';
-import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { RolemeManager } from '@blargbot/cluster';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core';
 import type * as eris from 'eris';
 
 export class RolemesMiddleware implements IMiddleware<eris.KnownMessage, boolean> {

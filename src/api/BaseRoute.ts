@@ -1,11 +1,11 @@
 import type { IncomingMessage } from 'node:http';
 
-import type { Api } from '@blargbot/api/Api.js';
-import { Lazy } from '@blargbot/core/Lazy.js';
 import type { TypeMapping } from '@blargbot/mapping';
+import { Lazy } from '@blargbot/util';
 import type { IRoute } from 'express-serve-static-core';
 import { WebSocketServer } from 'ws';
 
+import type { Api } from './Api.js';
 import Security from './Security.js';
 import type { ApiResponse, AsyncRequestContext, AsyncRequestHandler, AsyncRequestMiddleware, AsyncWebsocketHandler, RequestHandlers, RequestMethods } from './types.js';
 

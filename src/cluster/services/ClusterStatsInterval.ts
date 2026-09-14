@@ -1,6 +1,6 @@
 import type { Cluster } from '@blargbot/cluster';
-import { discord } from '@blargbot/cluster/utils/index.js';
-import { IntervalService } from '@blargbot/core/serviceTypes/index.js';
+import { discord } from '@blargbot/cluster';
+import { IntervalService } from '@blargbot/core';
 
 export class ClusterStatsInterval extends IntervalService {
     public readonly type = 'cluster';

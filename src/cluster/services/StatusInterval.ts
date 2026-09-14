@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import { CronService } from '@blargbot/core/serviceTypes/index.js';
+import { CronService } from '@blargbot/core';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
 

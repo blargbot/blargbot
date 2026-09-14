@@ -1,4 +1,4 @@
-import { GuildNameSubtag } from '@blargbot/bbtag/subtags/guild/guildName.js';
+import { GuildNameSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

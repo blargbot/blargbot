@@ -1,6 +1,6 @@
-import { sleep } from '@blargbot/core/utils/index.js';
-import type { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores/index.js';
+import type { BotVariableStore, ChatLogIndexStore, ChatLogStore, DumpStore, EventStore, GuildStore, SuggesterStore, SuggestionStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
+import { sleep } from '@blargbot/util';
 import Airtable from 'airtable';
 import type { AirtableBase } from 'airtable/lib/airtable_base.js';
 import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';

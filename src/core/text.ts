@@ -50,5 +50,3 @@ export const templates = FormatString.defineTree('core', t => ({
         }
     }
 }));
-
-export default templates;

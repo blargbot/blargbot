@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ChannelSetPermissionsSubtag } from '@blargbot/bbtag/subtags/channel/channelSetPermissions.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { ChannelSetPermissionsSubtag } from '@blargbot/bbtag/subtags';
 import { OverwriteType } from 'discord-api-types/v9';
 import * as eris from 'eris';
 

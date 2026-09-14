@@ -1,6 +1,4 @@
-import { metrics } from '@blargbot/core/Metrics.js';
-import { Timer } from '@blargbot/core/Timer.js';
-import { guard } from '@blargbot/core/utils/index.js';
+import { guard, metrics, Timer } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { BBTagContext } from './BBTagContext.js';

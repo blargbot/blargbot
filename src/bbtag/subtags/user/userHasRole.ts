@@ -1,9 +1,9 @@
-import { guard, parse } from '@blargbot/core/utils/index.js';
+import { guard, parse } from '@blargbot/core';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userHasRole;

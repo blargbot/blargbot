@@ -1,4 +1,4 @@
-import { CronService } from '@blargbot/core/serviceTypes/index.js';
+import { CronService } from '@blargbot/core';
 import type { Master } from '@blargbot/master';
 
 export class MetricsInterval extends CronService {

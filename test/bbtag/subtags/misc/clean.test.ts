@@ -1,4 +1,4 @@
-import { CleanSubtag } from '@blargbot/bbtag/subtags/misc/clean.js';
+import { CleanSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

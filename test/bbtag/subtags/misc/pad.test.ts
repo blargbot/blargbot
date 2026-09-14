@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { it } from 'node:test';
 
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { PadSubtag } from '@blargbot/bbtag/subtags/misc/pad.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { PadSubtag } from '@blargbot/bbtag/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

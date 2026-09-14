@@ -1,5 +1,5 @@
 import type { Configuration } from '@blargbot/config';
-import { BaseWorker } from '@blargbot/core/worker/index.js';
+import { BaseWorker } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 import { holidays } from '@blargbot/res';
 
@@ -33,11 +33,6 @@ export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
     public async start(): Promise<void> {
         await this.cluster.start();
         await super.start();
-    }
-
-    public async stop(): Promise<void> {
-        await this.cluster.images.killAll();
-        await super.stop();
     }
 }
 

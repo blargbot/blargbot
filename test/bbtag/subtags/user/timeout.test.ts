@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { TimeoutSubtag } from '@blargbot/bbtag/subtags/user/timeout.js';
+import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag';
+import { TimeoutSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 import moment from 'moment-timezone';

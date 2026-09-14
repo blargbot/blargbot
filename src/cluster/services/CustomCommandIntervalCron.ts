@@ -1,5 +1,5 @@
 import type { Cluster } from '@blargbot/cluster';
-import { CronService } from '@blargbot/core/serviceTypes/index.js';
+import { CronService } from '@blargbot/core';
 
 export class CustomCommandIntervalCron extends CronService {
     public readonly type = 'bbtag';

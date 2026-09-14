@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { RequestSubtag } from '@blargbot/bbtag/subtags/bot/request.js';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { EscapeBBTagSubtag, RequestSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,5 +1,5 @@
 import type { AnalysisResult } from '@blargbot/bbtag';
-import type { FlagDefinition } from '@blargbot/domain/models/index.js';
+import type { FlagDefinition } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { FormatString } from '@blargbot/formatting';
 import type * as eris from 'eris';
@@ -3510,5 +3510,3 @@ export const templates = FormatString.defineTree('cluster', t => ({
         }
     }
 }));
-
-export default templates;

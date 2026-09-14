@@ -1,8 +1,8 @@
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
-import { GlobalImageCommand } from '@blargbot/cluster/command/index.js';
-import { guard } from '@blargbot/cluster/utils/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalImageCommand } from '@blargbot/cluster';
+import { guard } from '@blargbot/cluster';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.stupid;
@@ -46,6 +46,6 @@ export class StupidCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, text: string, url: string): Promise<CommandResult> {
         text = await context.util.resolveTags(context, text);
-        return await this.renderImage(context, 'stupid', { text, avatar: url });
+        return await this.renderImage(context, { type: 'stupid', text, imageUrl: url });
     }
 }

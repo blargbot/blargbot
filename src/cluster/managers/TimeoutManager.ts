@@ -1,5 +1,5 @@
-import { parse } from '@blargbot/core/utils/index.js';
-import type { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from '@blargbot/domain/models/index.js';
+import { parse } from '@blargbot/core';
+import type { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from '@blargbot/domain';
 import EventEmitter from 'eventemitter3';
 import moment from 'moment-timezone';
 

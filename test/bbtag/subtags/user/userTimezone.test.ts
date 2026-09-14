@@ -1,4 +1,4 @@
-import { UserTimezoneSubtag } from '@blargbot/bbtag/subtags/user/userTimeZone.js';
+import { UserTimezoneSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';

@@ -1,4 +1,4 @@
-import { UserActivitySubtag } from '@blargbot/bbtag/subtags/user/userActivity.js';
+import { UserActivitySubtag } from '@blargbot/bbtag/subtags';
 import { ActivityType } from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 

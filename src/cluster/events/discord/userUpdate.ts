@@ -1,7 +1,7 @@
 import type { Cluster } from '@blargbot/cluster';
-import { guard } from '@blargbot/cluster/utils/index.js';
-import { Lazy } from '@blargbot/core/Lazy.js';
-import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import { guard } from '@blargbot/cluster';
+import { DiscordEventService } from '@blargbot/core';
+import { Lazy } from '@blargbot/util';
 import * as eris from 'eris';
 
 export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> {

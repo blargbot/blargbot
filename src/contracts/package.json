@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
     "dependencies": {
         "@blargbot/util": "workspace:^",
         "zod": "^4.5.4"

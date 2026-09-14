@@ -1,11 +1,10 @@
-import { Emote } from '@blargbot/core/Emote.js';
-import { clamp, discord, guard, parse } from '@blargbot/core/utils/index.js';
+import { clamp, discord, Emote, guard, parse } from '@blargbot/core';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { Statement } from '../../language/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.waitReaction;

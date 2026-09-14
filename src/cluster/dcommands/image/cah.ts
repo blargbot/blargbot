@@ -1,11 +1,12 @@
 import type { ClusterUtilities } from '@blargbot/cluster';
-import type { CommandContext } from '@blargbot/cluster/command/index.js';
-import { GlobalImageCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalImageCommand } from '@blargbot/cluster';
+import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster';
 import { cah } from '@blargbot/res';
+import { random } from '@blargbot/util';
 import * as eris from 'eris';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 await cah.ensureLoaded();
@@ -49,15 +50,15 @@ export class CAHCommand extends GlobalImageCommand {
 
     public async render(context: CommandContext, unofficial: boolean): Promise<CommandResult> {
         const cardIds = unofficial ? packLookup.all : packLookup.official;
-        const black = cah.data.black[randChoose(cardIds.black)];
+        const black = cah.data.black[random.pick(cardIds.black)];
 
         const whiteIds = new Set<number>();
         while (whiteIds.size < black.pick)
-            whiteIds.add(randChoose(cardIds.white));
+            whiteIds.add(random.pick(cardIds.white));
 
         const white = [...whiteIds].map(id => cah.data.white[id]);
 
-        return await this.renderImage(context, 'cah', { black: black.text.replaceAll('_', '______'), white: white });
+        return await this.renderImage(context, { type: 'cah', black: black.text.replaceAll('_', '______'), white: white });
     }
 
     public listPacks(unofficial: boolean): CommandResult {

@@ -1,17 +1,17 @@
-import type { TimeoutClearResult, TimeoutResult } from '@blargbot/cluster/types.js';
-import { clampBy } from '@blargbot/cluster/utils/index.js';
+import type { TimeoutClearResult, TimeoutResult } from '@blargbot/cluster';
+import { clampBy } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 import { format } from '@blargbot/formatting';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { ModerationManager } from '../ModerationManager.js';
 import { ModerationManagerBase } from './ModerationManagerBase.js';
 
 const maximumTimeoutDuration = moment.duration(28, 'd').subtract(10, 's'); //Discord throws a RESTError when the duration is too close to 28d
 
-export class TimeoutManager extends ModerationManagerBase {
+export class UserTimeoutManager extends ModerationManagerBase {
     readonly #ignoreTimeouts: Set<`${string}:${string}`>;
     readonly #ignoreTimeoutClears: Set<`${string}:${string}`>;
 

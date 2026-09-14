@@ -1,11 +1,10 @@
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
-import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import type { ClusterStats, CommandResult, ShardStats } from '@blargbot/cluster/types.js';
-import { CommandType, discord, guard, snowflake } from '@blargbot/cluster/utils/index.js';
+import type { ClusterStats, CommandContext, CommandResult, ShardStats } from '@blargbot/cluster';
+import { CommandType, discord, GlobalCommand, guard } from '@blargbot/cluster';
+import { snowflake } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.shards;
 

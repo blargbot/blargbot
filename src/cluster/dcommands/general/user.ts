@@ -1,9 +1,9 @@
-import type { CommandContext } from '@blargbot/cluster/command/index.js';
-import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType, discord, guard, parse } from '@blargbot/cluster/utils/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalCommand } from '@blargbot/cluster';
+import { CommandType, discord, guard, parse } from '@blargbot/cluster';
 import type * as eris from 'eris';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.user;

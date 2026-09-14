@@ -1,11 +1,11 @@
 import { bbtag } from '@blargbot/bbtag';
 import type { Cluster, ClusterUtilities } from '@blargbot/cluster';
-import type { CommandContext } from '@blargbot/cluster/command/index.js';
-import { GuildCommand } from '@blargbot/cluster/command/index.js';
-import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, discord, parse } from '@blargbot/cluster/utils/index.js';
-import type { SendContent } from '@blargbot/core/types.js';
-import type { StoredTag } from '@blargbot/domain/models/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GuildCommand } from '@blargbot/cluster';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, discord, parse } from '@blargbot/cluster';
+import type { SendContent } from '@blargbot/core';
+import type { StoredTag } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import type * as eris from 'eris';
@@ -13,7 +13,7 @@ import moment from 'moment-timezone';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.tag;
 

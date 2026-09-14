@@ -1,5 +1,5 @@
 import { RegexSubtag } from '../../RegexSubtag.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.regexMatch;

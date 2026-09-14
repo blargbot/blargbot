@@ -1,6 +1,5 @@
-import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
-import { DMSubtag } from '@blargbot/bbtag/subtags/user/dm.js';
+import { UserNotFoundError } from '@blargbot/bbtag';
+import { DMSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 

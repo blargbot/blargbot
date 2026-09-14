@@ -1,9 +1,9 @@
-import type { Api } from '@blargbot/api/Api.js';
-import { guard } from '@blargbot/core/utils/index.js';
-import type { Dump } from '@blargbot/domain/models/Dump.js';
-import type { DiscordTagSet } from '@blargbot/domain/models/index.js';
+import { guard } from '@blargbot/core';
+import type { Dump } from '@blargbot/domain';
+import type { DiscordTagSet } from '@blargbot/domain';
 import type { APIEmbed } from 'discord-api-types/v9';
 
+import type { Api } from '../Api.js';
 import { BaseRoute } from '../BaseRoute.js';
 import type { ApiResponse } from '../types.js';
 

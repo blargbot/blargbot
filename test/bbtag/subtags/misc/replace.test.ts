@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { ReplaceSubtag } from '@blargbot/bbtag/subtags/misc/replace.js';
+import { ReplaceSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

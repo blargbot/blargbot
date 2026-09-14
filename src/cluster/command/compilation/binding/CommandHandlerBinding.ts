@@ -1,6 +1,6 @@
-import type { CommandBinderState, CommandSignatureHandler } from '@blargbot/cluster/types.js';
-import { Binder } from '@blargbot/core/Binder.js';
-import type { BindingResultValue } from '@blargbot/core/types.js';
+import type { CommandBinderState, CommandSignatureHandler } from '@blargbot/cluster';
+import { Binder } from '@blargbot/core';
+import type { BindingResultValue } from '@blargbot/core';
 
 import type { CommandContext } from '../../CommandContext.js';
 import { CommandBindingBase } from './CommandBindingBase.js';

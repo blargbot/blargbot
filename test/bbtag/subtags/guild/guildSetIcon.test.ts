@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { GuildSetIconSubtag } from '@blargbot/bbtag/subtags/guild/guildSetIcon.js';
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { GuildSetIconSubtag, SemiSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
+import { asUint8Array } from '@blargbot/util';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -33,7 +33,7 @@ await runSubtagTests({
                 response.setup(m => m.headers).thenReturn(new Headers({
                     'Content-Type': 'image/png'
                 }));
-                response.setup(m => m.bytes()).thenResolve(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64'));
+                response.setup(m => m.bytes()).thenResolve(asUint8Array(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64')));
                 ctx.discord.setup(m => m.editGuild(ctx.guild.id, argument.isDeepEqual({
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf'
                 }), 'Command User#0000')).thenResolve(bbctx.guild);

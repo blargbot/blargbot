@@ -1,9 +1,9 @@
-import type { CommandContext } from '@blargbot/cluster/command/index.js';
-import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType, randChoose } from '@blargbot/cluster/utils/index.js';
-import { asBuffer } from '@blargbot/util';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalCommand } from '@blargbot/cluster';
+import { CommandType } from '@blargbot/cluster';
+import { asBuffer, random } from '@blargbot/util';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.status;
@@ -25,7 +25,7 @@ export class StatusCommand extends GlobalCommand {
 
     public async getStatus(status: number, animal: string | undefined, context: CommandContext): Promise<CommandResult> {
         animal = animal?.toLowerCase();
-        const service = statusKeys.has(animal) ? statusSites[animal] : randChoose(Object.values(statusSites));
+        const service = statusKeys.has(animal) ? statusSites[animal] : random.pick(Object.values(statusSites));
         const response = await context.util.fetch(`${service}${status}.jpg`);
         let content;
         if (response.ok && response.headers.get('content-type') === 'image/jpeg') {

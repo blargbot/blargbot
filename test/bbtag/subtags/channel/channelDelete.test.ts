@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ChannelDeleteSubtag } from '@blargbot/bbtag/subtags/channel/channelDelete.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { ChannelDeleteSubtag } from '@blargbot/bbtag/subtags';
 import { OverwriteType } from 'discord-api-types/v9';
 import * as eris from 'eris';
 

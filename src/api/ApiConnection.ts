@@ -1,4 +1,4 @@
-import { WorkerConnection } from '@blargbot/core/worker/index.js';
+import { WorkerConnection } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 
 import type { ApiIPCContracts } from './types.js';

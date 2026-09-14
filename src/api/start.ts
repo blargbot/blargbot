@@ -1,6 +1,7 @@
-import { ApiWorker } from '@blargbot/api/ApiWorker.js';
 import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/logger';
+
+import { ApiWorker } from './ApiWorker.js';
 
 Error.stackTraceLimit = 100;
 const logger = createLogger(config, `API${process.env.WORKER_ID ?? ''}`);

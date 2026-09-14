@@ -1,4 +1,4 @@
-import { CommandType } from '@blargbot/cluster/utils/index.js';
+import { CommandType } from '@blargbot/cluster';
 import type { IFormatStringDefinition, IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import type * as eris from 'eris';

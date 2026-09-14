@@ -1,11 +1,11 @@
-import type { FormatEmbedField, SendContent } from '@blargbot/core/types.js';
-import { discord, guard } from '@blargbot/core/utils/index.js';
+import type { FormatEmbedField, SendContent } from '@blargbot/core';
+import { discord, guard } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import type * as eris from 'eris';
 
 import type { Cluster } from '../../Cluster.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandGetResult, CommandParameter, ICommand } from '../../types.js';
 import { humanize } from '../../utils/index.js';
 import type { Documentation, DocumentationGroup, DocumentationPage } from './DocumentationManager.js';

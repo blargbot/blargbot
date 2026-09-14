@@ -1,4 +1,4 @@
-import { MessageEditTimeSubtag } from '@blargbot/bbtag/subtags/message/messageEditTime.js';
+import { MessageEditTimeSubtag } from '@blargbot/bbtag/subtags';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,9 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError, SubtagStackOverflowError } from '@blargbot/bbtag/errors/index.js';
-import { ExecCustomCommandSubtag } from '@blargbot/bbtag/subtags/bot/execCustomCommand.js';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
+import { BBTagRuntimeError, BBTagRuntimeState, SubtagStackOverflowError } from '@blargbot/bbtag';
+import { ExecCustomCommandSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
 
 import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

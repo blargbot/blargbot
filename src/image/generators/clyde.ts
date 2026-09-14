@@ -1,34 +1,27 @@
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import type { ClydeOptions, ImageResult } from '@blargbot/image/types.js';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
+import { asBuffer } from '@blargbot/util';
 import sharp from 'sharp';
 
-export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
-    public constructor(worker: ImageWorker) {
-        super('clyde', worker);
-    }
+import type { GeneratorContext } from '../GeneratorContext.js';
 
-    public async execute({ text }: ClydeOptions): Promise<ImageResult> {
-        const textImg = await this.renderText(text, {
-            font: 'whitney.ttf',
-            fontsize: 20,
-            fill: '#ffffffB0',
-            gravity: 'NorthWest',
-            width: 714
-        });
+export async function clyde(request: ImageRequestData<'clyde'>, context: GeneratorContext): Promise<ImageResponse> {
+    const textImg = await context.renderText(request.text, {
+        font: 'whitney.ttf',
+        fontsize: 20,
+        fill: '#ffffffB0',
+        gravity: 'NorthWest',
+        width: 714
+    });
 
-        const { height = 0 } = await sharp(textImg).metadata();
-        const result = sharp({ create: { width: 864, height: height + 154, channels: 4, background: '#33363bff' } })
-            .composite([
-                { input: this.getLocalPath('clydeTop.png'), gravity: sharp.gravity.northwest },
-                { input: textImg, left: 118, top: 78 },
-                { input: this.getLocalPath('clydeBottom.png'), gravity: sharp.gravity.southwest }
-            ]);
+    const { height = 0 } = await sharp(textImg).metadata();
+    const { data } = await sharp({ create: { width: 864, height: height + 154, channels: 4, background: '#33363bff' } })
+        .composite([
+            { input: context.getLocal('clydeTop.png').path, gravity: sharp.gravity.northwest },
+            { input: asBuffer(textImg), left: 118, top: 78 },
+            { input: context.getLocal('clydeBottom.png').path, gravity: sharp.gravity.southwest }
+        ])
+        .png()
+        .toUint8Array();
 
-        return {
-            data: await result.png().toBuffer(),
-            fileName: 'clyde.png'
-        };
-    }
-
+    return { data, fileName: 'clyde.png' };
 }

@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { RoleDeleteSubtag } from '@blargbot/bbtag/subtags/role/roleDelete.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { RoleDeleteSubtag } from '@blargbot/bbtag/subtags';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

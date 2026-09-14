@@ -1,1 +1,1 @@
-export { createRequestHandler } from './publishers/createRequestHandler.js';
+export * from './publishers/createRequestHandler.js';

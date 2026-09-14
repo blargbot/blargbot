@@ -1,7 +1,6 @@
 import { describe } from 'node:test';
 
-import * as coreTransformers from '@blargbot/core/formatting/index.js';
-import templates from '@blargbot/core/text.js';
+import { templates, transformers as coreTransformers } from '@blargbot/core';
 import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';

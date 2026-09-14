@@ -1,14 +1,13 @@
 import { inspect } from 'node:util';
 
 import { BBTagEngine, subtags } from '@blargbot/bbtag';
-import type { ClusterOptions } from '@blargbot/cluster/types.js';
+import type { ClusterOptions } from '@blargbot/cluster';
 import type { Configuration } from '@blargbot/config';
-import { BaseClient } from '@blargbot/core/BaseClient.js';
-import { ModuleLoader } from '@blargbot/core/modules/index.js';
-import { BaseService } from '@blargbot/core/serviceTypes/index.js';
-import type { EvalResult } from '@blargbot/core/types.js';
-import { ImagePool } from '@blargbot/image';
+import { getImageChannel, type ImageChannel } from '@blargbot/contracts';
+import type { EvalResult } from '@blargbot/core';
+import { BaseClient, BaseService, ModuleLoader } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
+import { ResetValue } from '@blargbot/util';
 import { GatewayIntentBits } from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 
@@ -19,6 +18,8 @@ import { CommandDocumentationManager } from './managers/documentation/CommandDoc
 import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
 
 export class Cluster extends BaseClient {
+    readonly #images = new ResetValue<ImageChannel>();
+
     public readonly id: number;
     public readonly createdAt: moment.Moment;
     public readonly worker: ClusterWorker;
@@ -28,7 +29,6 @@ export class Cluster extends BaseClient {
     public readonly autoresponses: AutoresponseManager;
     public readonly contributors: ContributorManager;
     public readonly bbtag: BBTagEngine;
-    public readonly images: ImagePool;
     public readonly events: ModuleLoader<BaseService>;
     public readonly botStaff: BotStaffManager;
     public readonly moderation: ModerationManager;
@@ -44,6 +44,10 @@ export class Cluster extends BaseClient {
     public readonly version: VersionStateManager;
     public readonly guilds: GuildManager;
     public readonly announcements: AnnouncementManager;
+
+    public get images(): ImageChannel {
+        return this.#images.value;
+    }
 
     public constructor(
         worker: ClusterWorker,
@@ -92,7 +96,6 @@ export class Cluster extends BaseClient {
         this.createdAt = Object.freeze(moment());
         this.guilds = new GuildManager(this);
         this.domains = new DomainManager(this.database.vars);
-        this.images = new ImagePool(this.id, config.discord.images, this.logger);
         this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users, this.discord);
         this.commands = new AggregateCommandManager(this, {
             custom: new CustomCommandManager(this),
@@ -114,8 +117,7 @@ export class Cluster extends BaseClient {
             discord: this.discord,
             logger: this.logger,
             util: new ClusterBBTagUtilities(this),
-            subtags: Object.values(subtags.all)
-                .map(subtag => new subtag()),
+            subtags: Object.values(subtags).map(subtag => new subtag()),
             fetch: this.fetch
         });
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));
@@ -138,7 +140,8 @@ export class Cluster extends BaseClient {
         await Promise.all([
             super.start(),
             this.connectDiscordGateway(),
-            this.commands.load()
+            this.commands.load(),
+            getImageChannel(this.amqp).then(channel => this.#images.resolve(channel))
         ]);
 
         await this.services.init();

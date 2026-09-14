@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { between } from '@blargbot/core/utils/index.js';
+import { between } from '@blargbot/core';
 
 await describe('between', async () => {
     const data: Array<[value: number, lower: number, upper: number, inclusive: boolean, expected: boolean]> = [

@@ -1,9 +1,10 @@
-import type { Api } from '@blargbot/api/Api.js';
-import { BaseRoute } from '@blargbot/api/BaseRoute.js';
-import type { ApiResponse } from '@blargbot/api/types.js';
-import { snowflake } from '@blargbot/core/utils/snowflake.js';
-import type { GuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
+import { snowflake } from '@blargbot/core';
+import type { GuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain';
 import { mapping } from '@blargbot/mapping';
+
+import type { Api } from '../../Api.js';
+import { BaseRoute } from '../../BaseRoute.js';
+import type { ApiResponse } from '../../types.js';
 
 export class CCommandsRoute extends BaseRoute<['/guilds/:guildId/ccommands']> {
     readonly #api: Api;

@@ -1,4 +1,4 @@
-import { LowerSubtag } from '@blargbot/bbtag/subtags/misc/lower.js';
+import { LowerSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

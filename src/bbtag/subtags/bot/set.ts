@@ -1,7 +1,7 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.set;

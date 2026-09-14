@@ -1,9 +1,10 @@
-import type { CommandContext } from '@blargbot/cluster/command/index.js';
-import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType, shuffle } from '@blargbot/cluster/utils/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalCommand } from '@blargbot/cluster';
+import { CommandType } from '@blargbot/cluster';
 import { mapping } from '@blargbot/mapping';
+import { random } from '@blargbot/util';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.danbooru;
@@ -47,7 +48,7 @@ export class DanbooruCommand extends GlobalCommand {
         if (posts.length === 0)
             return cmd.default.noResults;
 
-        shuffle(posts);
+        random.ishuffle(posts);
         const selected = posts.slice(0, 3);
 
         return {

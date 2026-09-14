@@ -1,9 +1,9 @@
-import type { CommandResult } from '@blargbot/cluster/types.js';
-import { guard, snowflake } from '@blargbot/cluster/utils/index.js';
-import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { CommandResult } from '@blargbot/cluster';
+import { guard } from '@blargbot/cluster';
+import { type IMiddleware, type NextMiddleware, snowflake } from '@blargbot/core';
 import * as eris from 'eris';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandContext } from '../CommandContext.js';
 
 export class ErrorMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {

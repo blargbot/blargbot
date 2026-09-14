@@ -2,8 +2,7 @@ import http from 'node:http';
 import { performance } from 'node:perf_hooks';
 
 import type { Configuration } from '@blargbot/config';
-import { BaseClient } from '@blargbot/core/BaseClient.js';
-import { ModuleLoader } from '@blargbot/core/modules/index.js';
+import { BaseClient, ModuleLoader } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 import express from 'express';
 import asyncRouter from 'express-promise-router';

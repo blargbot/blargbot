@@ -1,5 +1,5 @@
 import type { Cluster } from '@blargbot/cluster';
-import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import { DiscordEventService } from '@blargbot/core';
 import * as eris from 'eris';
 
 export class DiscordGuildMemeberRemoveHandler extends DiscordEventService<'guildMemberRemove'> {

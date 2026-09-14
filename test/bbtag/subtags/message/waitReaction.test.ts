@@ -1,14 +1,9 @@
 import assert from 'node:assert/strict';
 
-import type { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
-import { ReactionSubtag } from '@blargbot/bbtag/subtags/message/reaction.js';
-import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser.js';
-import { WaitReactionSubtag } from '@blargbot/bbtag/subtags/message/waitReaction.js';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
-import type { AwaitReactionsResponse } from '@blargbot/bbtag/types.js';
-import { Emote } from '@blargbot/core/Emote.js';
+import type { AwaitReactionsResponse, BBTagUtilities } from '@blargbot/bbtag';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, WaitReactionSubtag } from '@blargbot/bbtag/subtags';
+import { Emote } from '@blargbot/core';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 

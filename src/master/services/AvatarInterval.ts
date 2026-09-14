@@ -1,7 +1,8 @@
-import { CronService } from '@blargbot/core/serviceTypes/index.js';
+import { CronService } from '@blargbot/core';
 import type { Master } from '@blargbot/master';
-import type { MasterOptions } from '@blargbot/master/types.js';
 import moment from 'moment-timezone';
+
+import type { MasterOptions } from '../types.js';
 
 export class AvatarInterval extends CronService {
     readonly #avatars: readonly string[];

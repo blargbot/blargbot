@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { RandomUserSubtag } from '@blargbot/bbtag/subtags/user/randomUser.js';
+import { RandomUserSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

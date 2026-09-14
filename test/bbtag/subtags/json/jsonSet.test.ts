@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json.js';
-import { JsonSetSubtag } from '@blargbot/bbtag/subtags/json/jsonSet.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { JsonSetSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
+import { TagVariableType } from '@blargbot/domain';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,4 +1,4 @@
-import { RollingArray } from '@blargbot/core/RollingArray.js';
+import { RollingArray } from '@blargbot/util';
 
 export class MessageIdQueue {
     readonly #messageQueue: Record<string, RollingArray<string> | undefined>;

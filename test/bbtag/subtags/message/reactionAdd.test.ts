@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ReactionAddSubtag } from '@blargbot/bbtag/subtags/message/reactionAdd.js';
-import { Emote } from '@blargbot/core/Emote.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { ReactionAddSubtag } from '@blargbot/bbtag/subtags';
+import { Emote } from '@blargbot/core';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 

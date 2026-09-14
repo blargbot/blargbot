@@ -3,7 +3,7 @@ import type { IFormattable } from '@blargbot/formatting';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import type { SubtagCall } from '../../language/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export class DisabledInRule implements RuntimeLimitRule {

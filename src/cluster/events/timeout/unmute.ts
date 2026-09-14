@@ -1,6 +1,6 @@
 import type { Cluster } from '@blargbot/cluster';
-import { TimeoutEventService } from '@blargbot/cluster/serviceTypes/index.js';
-import type { StoredEvent } from '@blargbot/domain/models/index.js';
+import { TimeoutEventService } from '@blargbot/cluster';
+import type { StoredEvent } from '@blargbot/domain';
 
 export class TimeoutUnmuteEventService extends TimeoutEventService<'unmute'> {
     public constructor(protected readonly cluster: Cluster) {

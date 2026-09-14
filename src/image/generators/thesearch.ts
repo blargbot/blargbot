@@ -1,8 +1,7 @@
-import { BaseApiImageGenerator } from '@blargbot/image/BaseApiImageGenerator.js';
-import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
 
-export class TheSearchGenerator extends BaseApiImageGenerator<'thesearch'> {
-    public constructor(worker: ImageWorker) {
-        super('thesearch', worker);
-    }
+import type { GeneratorContext } from '../GeneratorContext.js';
+
+export async function thesearch(request: ImageRequestData<'thesearch'>, context: GeneratorContext): Promise<ImageResponse> {
+    return await context.renderApi('thesearch', { text: request.text });
 }

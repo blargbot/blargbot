@@ -9,7 +9,7 @@ import { GatewayIntents } from '@discordeno/types';
 
 import { installDistributedSharding } from './installDistributedSharding.js';
 
-const logger = createLogger(config, 'TEST');
+const logger = createLogger(config, 'DGO');
 logger.setGlobal();
 
 const discord = createRestManager({
@@ -27,7 +27,7 @@ amqp.onConnected(signal => {
 const amqpChannel = amqp.createChannel();
 
 const restChannel = await getDiscordRestChannel(amqpChannel);
-const gatewayOrchestrationChannel = await getDiscordGatewayOrchestrationChannel(amqpChannel, 'TEST');
+const gatewayOrchestrationChannel = await getDiscordGatewayOrchestrationChannel(amqpChannel, 'root');
 
 discord.makeRequest = createRequestHandler({
     discord,

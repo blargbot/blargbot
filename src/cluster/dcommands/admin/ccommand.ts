@@ -1,13 +1,11 @@
 import { createHmac } from 'node:crypto';
 
 import { bbtag } from '@blargbot/bbtag';
-import type { Cluster } from '@blargbot/cluster';
-import type { CommandContext } from '@blargbot/cluster/command/index.js';
-import { GuildCommand } from '@blargbot/cluster/command/index.js';
-import type { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types.js';
-import { codeBlock, CommandType, guard, parse, snowflake } from '@blargbot/cluster/utils/index.js';
+import type { Cluster, CommandContext, CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster';
+import { CommandType, guard, GuildCommand, parse } from '@blargbot/cluster';
 import type { Configuration } from '@blargbot/config';
-import type { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models/index.js';
+import { codeBlock, snowflake } from '@blargbot/core';
+import type { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
@@ -16,7 +14,7 @@ import moment from 'moment-timezone';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.ccommand;
 

@@ -1,8 +1,9 @@
-import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
+import { GlobalCommand } from '@blargbot/cluster';
+import { CommandType } from '@blargbot/cluster';
+import { random } from '@blargbot/util';
 import type * as eris from 'eris';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.ship;
@@ -23,7 +24,7 @@ export class ShipCommand extends GlobalCommand {
     }
 
     public getShipName(user1: eris.User, user2: eris.User): CommandResult {
-        const order = randInt(0, 1);
+        const order = random.int(0, 1);
         const first = [user1, user2][order];
         const second = [user1, user2][1 - order];
 

@@ -1,12 +1,12 @@
-import { GuildCommand } from '@blargbot/cluster/command/index.js';
-import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, parse } from '@blargbot/cluster/utils/index.js';
-import type { FlagResult } from '@blargbot/domain/models/index.js';
+import { GuildCommand } from '@blargbot/cluster';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, parse } from '@blargbot/cluster';
+import type { FlagResult } from '@blargbot/domain';
 import { util } from '@blargbot/formatting';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.ban;
 

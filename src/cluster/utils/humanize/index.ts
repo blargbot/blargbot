@@ -1,4 +1,4 @@
-import { humanize as coreHumanize } from '@blargbot/core/utils/humanize/index.js';
+import { humanize as coreHumanize } from '@blargbot/core';
 
 import * as commandParameter from './commandParameter.js';
 

@@ -1,6 +1,5 @@
-import templates from '@blargbot/cluster/text.js';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import { BaseService } from '@blargbot/core/serviceTypes/index.js';
+import { templates } from '@blargbot/cluster';
+import { BaseService, FormattableMessageContent } from '@blargbot/core';
 import type { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 

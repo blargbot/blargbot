@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { EmojiCreateSubtag } from '@blargbot/bbtag/subtags/guild/emojiCreate.js';
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { EmojiCreateSubtag, SemiSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
+import { asUint8Array } from '@blargbot/util';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -43,7 +43,7 @@ await runSubtagTests({
                 response.setup(m => m.headers).thenReturn(new Headers({
                     'Content-Type': 'image/png'
                 }));
-                response.setup(m => m.bytes()).thenResolve(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64'));
+                response.setup(m => m.bytes()).thenResolve(asUint8Array(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64')));
                 ctx.discord.setup(m => m.createGuildEmoji(ctx.guild.id, argument.isDeepEqual({
                     image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf',
                     name: 'My cool emoji',

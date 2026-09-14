@@ -1,4 +1,4 @@
-import { callWithFinalize } from '@blargbot/core/utils/callWithFinalize.js';
+import { callWithFinalize } from '@blargbot/core';
 
 import type { BBTagRuntimeScope } from './types.js';
 

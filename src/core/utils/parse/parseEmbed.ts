@@ -1,5 +1,5 @@
-import type { MalformedEmbed } from '@blargbot/core/types.js';
-import { discord } from '@blargbot/core/utils/index.js';
+import type { MalformedEmbed } from '@blargbot/core';
+import { discord } from '@blargbot/core';
 import type { TypeMappingImpl } from '@blargbot/mapping';
 import { mapping } from '@blargbot/mapping';
 import Color from 'color';

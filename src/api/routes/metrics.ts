@@ -1,4 +1,4 @@
-import { metrics } from '@blargbot/core/Metrics.js';
+import { metrics } from '@blargbot/core';
 
 import type { Api } from '../Api.js';
 import { BaseRoute } from '../BaseRoute.js';

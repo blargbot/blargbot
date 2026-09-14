@@ -1,5 +1,5 @@
 import type { Configuration } from '@blargbot/config';
-import { BaseWorker } from '@blargbot/core/worker/index.js';
+import { BaseWorker } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 
 import { Api } from './Api.js';

@@ -1,11 +1,11 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { guard } from '@blargbot/core';
 import { mapping } from '@blargbot/mapping';
 import * as eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelEdit;

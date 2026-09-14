@@ -1,10 +1,11 @@
-import { GuildCommand } from '@blargbot/cluster/command/index.js';
-import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, parse, randInt } from '@blargbot/cluster/utils/index.js';
-import { Emote } from '@blargbot/core/Emote.js';
+import { GuildCommand } from '@blargbot/cluster';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, parse } from '@blargbot/cluster';
+import { Emote } from '@blargbot/core';
+import { random } from '@blargbot/util';
 import moment from 'moment-timezone';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.poll;
 
@@ -49,7 +50,7 @@ export class PollCommand extends GuildCommand {
         let color: number | undefined;
         switch (typeof options.color) {
             case 'undefined':
-                color = randInt(0, 0xffffff);
+                color = random.int(0, 0xffffff);
                 break;
             case 'number':
                 color = options.color;

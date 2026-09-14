@@ -1,9 +1,10 @@
-import type { CommandOptions, CommandResult } from '@blargbot/cluster/types.js';
-import { CommandType } from '@blargbot/cluster/utils/index.js';
-import type { ImageGeneratorMap } from '@blargbot/image/types.js';
+import type { CommandOptions, CommandResult } from '@blargbot/cluster';
+import { CommandType } from '@blargbot/cluster';
+import type { ImageRequest } from '@blargbot/contracts';
+import { asBuffer } from '@blargbot/util';
 import moment from 'moment-timezone';
 
-import templates from '../text.js';
+import { templates } from '../text.js';
 import type { CommandContext } from './CommandContext.js';
 import { GlobalCommand } from './GlobalCommand.js';
 import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware/index.js';
@@ -26,15 +27,15 @@ export abstract class GlobalImageCommand extends GlobalCommand {
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    protected async renderImage<T extends keyof ImageGeneratorMap>(context: CommandContext, command: T, data: ImageGeneratorMap[T]): Promise<CommandResult> {
-        const result = await context.cluster.images.render(command, data);
-        if (result === undefined || result.data.length === 0)
+    protected async renderImage(context: CommandContext, data: ImageRequest): Promise<CommandResult> {
+        const result = await context.cluster.images.render(data);
+        if (result === null || result.data.length === 0)
             return templates.commands.$errors.renderFailed;
 
         return {
             file: [
                 {
-                    file: result.data,
+                    file: asBuffer(result.data),
                     name: result.fileName
                 }
             ]

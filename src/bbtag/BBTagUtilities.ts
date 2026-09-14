@@ -1,6 +1,5 @@
 import type { Configuration } from '@blargbot/config';
-import type { Emote } from '@blargbot/core/Emote.js';
-import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types.js';
+import type { ChoiceQueryResult, Emote, EntityPickQueryOptions } from '@blargbot/core';
 import type { Database } from '@blargbot/database';
 import type { Logger } from '@blargbot/logger';
 import type * as eris from 'eris';

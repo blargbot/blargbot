@@ -1,8 +1,7 @@
-import { BaseApiImageGenerator } from '@blargbot/image/BaseApiImageGenerator.js';
-import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
 
-export class SonicSaysGenerator extends BaseApiImageGenerator<'sonicsays'> {
-    public constructor(worker: ImageWorker) {
-        super('sonicsays', worker);
-    }
+import type { GeneratorContext } from '../GeneratorContext.js';
+
+export async function sonicsays(request: ImageRequestData<'sonicsays'>, context: GeneratorContext): Promise<ImageResponse> {
+    return await context.renderApi('sonicsays', { text: request.text });
 }

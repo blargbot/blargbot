@@ -1,4 +1,4 @@
-import { WarningsSubtag } from '@blargbot/bbtag/subtags/user/warnings.js';
+import { WarningsSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';

@@ -1,5 +1,5 @@
 import { StaffOnlyError } from '../../errors/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export const staffOnlyRule: RuntimeLimitRule = Object.seal({

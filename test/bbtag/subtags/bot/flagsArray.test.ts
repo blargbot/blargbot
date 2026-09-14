@@ -1,4 +1,4 @@
-import { FlagsArraySubtag } from '@blargbot/bbtag/subtags/bot/flagsArray.js';
+import { FlagsArraySubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

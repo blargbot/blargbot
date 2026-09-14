@@ -9,7 +9,7 @@ import { setupAmqp } from './setupAmqp.js';
 import { ShardManager } from './ShardManager.js';
 
 const clusterId = createId();
-const logger = createLogger(config, `CLUSTER ${clusterId}`);
+const logger = createLogger(config, `DGW@${clusterId}`);
 logger.setGlobal();
 
 const shards = new ShardManager(clusterId, logger);

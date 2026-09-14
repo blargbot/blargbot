@@ -1,5 +1,5 @@
-import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { AbsoluteSubtag } from '@blargbot/bbtag/subtags/math/absolute.js';
+import { NotANumberError } from '@blargbot/bbtag';
+import { AbsoluteSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,4 +1,4 @@
-import { createSafeRegExp } from '@blargbot/core/utils/index.js';
+import { createSafeRegExp } from '@blargbot/core';
 
 import { CompiledSubtag } from './compilation/CompiledSubtag.js';
 import { BBTagRuntimeError } from './errors/index.js';

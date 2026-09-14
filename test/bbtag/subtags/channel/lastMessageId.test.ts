@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { LastMessageIdSubtag } from '@blargbot/bbtag/subtags/channel/lastMessageId.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { LastMessageIdSubtag } from '@blargbot/bbtag/subtags';
 import type { APITextChannel } from 'discord-api-types/v9';
 import * as eris from 'eris';
 

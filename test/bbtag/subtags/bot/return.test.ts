@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
+import { BBTagRuntimeState } from '@blargbot/bbtag';
+import { ReturnSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

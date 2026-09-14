@@ -6,7 +6,7 @@ import { createRestManager } from '@discordeno/rest';
 
 import { setupAmqp } from './setupAmqp.js';
 
-const logger = createLogger(config, 'REST');
+const logger = createLogger(config, 'DRS');
 logger.setGlobal();
 
 const discord = createRestManager({

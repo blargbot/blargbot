@@ -1,7 +1,7 @@
-import { Timer } from '@blargbot/core/Timer.js';
-import { guard, sleep } from '@blargbot/core/utils/index.js';
+import { guard, Timer } from '@blargbot/core';
 import type { Database } from '@blargbot/database';
 import type { Logger } from '@blargbot/logger';
+import { sleep } from '@blargbot/util';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -11,7 +11,7 @@ import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCo
 import type { Statement, SubtagCall } from './language/index.js';
 import type { Subtag } from './Subtag.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
-import templates from './text.js';
+import { templates } from './text.js';
 import type { AnalysisResults, BBTagContextOptions, ExecutionResult } from './types.js';
 import { BBTagRuntimeState } from './types.js';
 import { bbtag as bbtagUtil } from './utils/index.js';

@@ -1,4 +1,4 @@
-import { MessageSenderSubtag } from '@blargbot/bbtag/subtags/message/messageSender.js';
+import { MessageSenderSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';

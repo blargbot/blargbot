@@ -1,8 +1,8 @@
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
-import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType, randChoose, randInt, repeat } from '@blargbot/cluster/utils/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand } from '@blargbot/cluster';
+import { Iterable, random } from '@blargbot/util';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.syntax;
@@ -26,7 +26,7 @@ export class SyntaxCommand extends GlobalCommand {
         return cmd.default.success({
             name: commandName.replace(/[\s\n]+/g, ' '),
             prefix: context.prefix,
-            tokens: repeat(randInt(1, 10), i => getToken(i))
+            tokens: Iterable.range(random.int(1, 10)).map(i => getToken(i))
         });
     }
 }
@@ -34,15 +34,15 @@ export class SyntaxCommand extends GlobalCommand {
 function getToken(index: number): string {
     index++;
 
-    if (randInt(0, 7) !== 0 || index >= 4) {
-        const bracket = randChoose(brackets);
-        const token = bracket[0] === '' ? randChoose(keywords) : randChoose(tokens);
+    if (random.int(0, 7) !== 0 || index >= 4) {
+        const bracket = random.pick(brackets);
+        const token = bracket[0] === '' ? random.pick(keywords) : random.pick(tokens);
         return `${bracket[0]}${token}${bracket[1]}`;
     }
 
-    const bracket = randChoose(brackets.filter(b => b[0] !== ''));
-    const mTokens = repeat(randInt(2, 4), i => getToken(i));
-    return `${bracket[0]}${mTokens.join(randChoose(separators))}${bracket[1]}`;
+    const bracket = random.pick(brackets.filter(b => b[0] !== ''));
+    const mTokens = Iterable.range(random.int(2, 4)).map(i => getToken(i)).toArray();
+    return `${bracket[0]}${mTokens.join(random.pick(separators))}${bracket[1]}`;
 
 }
 

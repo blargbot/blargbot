@@ -1,10 +1,8 @@
 import assert from 'node:assert/strict';
 
-import type { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities.js';
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId.js';
-import { WaitMessageSubtag } from '@blargbot/bbtag/subtags/message/waitMessage.js';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator.js';
+import type { BBTagUtilities } from '@blargbot/bbtag';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag';
+import { MessageIdSubtag, OperatorSubtag, WaitMessageSubtag } from '@blargbot/bbtag/subtags';
 import type { Mock } from '@blargbot/test-util/mock.js';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';

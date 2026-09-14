@@ -1,7 +1,7 @@
-import { guard } from '@blargbot/core/utils/index.js';
-import type { BBTagVariable, TagVariableScope, TagVariableScopeFilter} from '@blargbot/domain/models/index.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
-import type { TagVariableStore } from '@blargbot/domain/stores/index.js';
+import { guard } from '@blargbot/core';
+import type { BBTagVariable, TagVariableScope, TagVariableScopeFilter } from '@blargbot/domain';
+import { TagVariableType } from '@blargbot/domain';
+import type { TagVariableStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import type { FindOptions, WhereAttributeHashValue } from 'sequelize';
 import { ENUM, Op, STRING, TEXT } from 'sequelize';

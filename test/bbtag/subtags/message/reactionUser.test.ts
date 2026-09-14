@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { ReactionUserSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

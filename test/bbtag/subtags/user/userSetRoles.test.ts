@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags/user/userSetRoles.js';
+import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag';
+import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 

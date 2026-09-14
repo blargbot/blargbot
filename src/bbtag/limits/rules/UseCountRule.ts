@@ -3,7 +3,7 @@ import { mapping } from '@blargbot/mapping';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export class UseCountRule implements RuntimeLimitRule {

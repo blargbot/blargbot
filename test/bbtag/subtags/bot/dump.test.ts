@@ -1,4 +1,4 @@
-import { DumpSubtag } from '@blargbot/bbtag/subtags/bot/dump.js';
+import { DumpSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

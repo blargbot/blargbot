@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 
-import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set.js';
-import { snowflake } from '@blargbot/core/utils/index.js';
-import type { TagVariableScope } from '@blargbot/domain/models/index.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { SetSubtag } from '@blargbot/bbtag/subtags';
+import { snowflake } from '@blargbot/core';
+import type { TagVariableScope } from '@blargbot/domain';
+import { TagVariableType } from '@blargbot/domain';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';

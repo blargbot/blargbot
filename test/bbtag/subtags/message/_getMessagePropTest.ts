@@ -1,7 +1,6 @@
-import type { BBTagContext } from '@blargbot/bbtag';
-import type { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { snowflake } from '@blargbot/core/utils/index.js';
+import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag';
+import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
+import { snowflake } from '@blargbot/core';
 import type { APIChannel, APIMessage } from 'discord-api-types/v9';
 import type * as eris from 'eris';
 

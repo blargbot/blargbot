@@ -1,10 +1,10 @@
-import { parse } from '@blargbot/core/utils/index.js';
+import { parse } from '@blargbot/core';
 import moment from 'moment-timezone';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.ban;

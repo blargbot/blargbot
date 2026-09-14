@@ -1,5 +1,5 @@
 import type { DiscordGatewayOrchestrationChannel } from '@blargbot/contracts';
-import { BalancedWorkerShardMap, debounce, Iterable, range, Semaphore, usingInterval } from '@blargbot/util';
+import { BalancedWorkerShardMap, debounce, Iterable, Semaphore, usingInterval } from '@blargbot/util';
 import type { GatewayManager } from '@discordeno/gateway';
 
 export async function installDistributedSharding(
@@ -20,13 +20,13 @@ export async function installDistributedSharding(
     const activeClusters = new Map<string, ClusterState>();
     const unhealthyClusters = new Map<string, number>();
     const activeClusterShards = Iterable.from(activeClusters)
-        .transform(x => x.map(([workerId, state]) => [
+        .map(([workerId, state]) => [
             workerId,
             state.shards.values()
                 .filter(s => s.totalShards === gateway.totalShards)
                 .map(s => s.id)
-        ] as const));
-    let activeTopology = new BalancedWorkerShardMap(activeClusterShards, range(gateway.totalShards));
+        ] as const);
+    let activeTopology = new BalancedWorkerShardMap(activeClusterShards, Iterable.range(gateway.totalShards));
     let targetTopology: typeof activeTopology | undefined;
 
     const isReshardingInProgress = (): boolean => targetTopology !== undefined;
@@ -91,7 +91,7 @@ export async function installDistributedSharding(
 
     const prepareBuckets = gateway.prepareBuckets;
     gateway.prepareBuckets = () => {
-        targetTopology ??= new BalancedWorkerShardMap(activeClusterShards, range(gateway.totalShards));
+        targetTopology ??= new BalancedWorkerShardMap(activeClusterShards, Iterable.range(gateway.totalShards));
         gateway.logger.info('[Resharding] Transitioning cluster shard topology.');
         prepareBuckets.call(gateway);
     };

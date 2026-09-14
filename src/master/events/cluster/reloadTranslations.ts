@@ -1,5 +1,5 @@
 import type { ClusterConnection } from '@blargbot/cluster';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/WorkerPoolEventService.js';
+import { WorkerPoolEventService } from '@blargbot/core';
 
 import type { Master } from '../../Master.js';
 

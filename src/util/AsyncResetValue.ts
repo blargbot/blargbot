@@ -39,6 +39,8 @@ export class AsyncResetValue<T> {
     }
 
     public reject(error: unknown): void {
+        this.#registration?.[Symbol.dispose]();
+        this.#registration = undefined;
         this.#done = true;
         if (this.#reject === undefined) {
             // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
@@ -53,6 +55,8 @@ export class AsyncResetValue<T> {
             return;
 
         if (this.#resolve === undefined) {
+            this.#registration?.[Symbol.dispose]();
+            this.#registration = undefined;
             const { promise, resolve, reject } = Promise.withResolvers<T>();
             this.#pending = promise;
             this.#resolve = resolve;

@@ -1,4 +1,4 @@
-import { parse as coreParse } from '@blargbot/core/utils/index.js';
+import { parse as coreParse } from '@blargbot/core';
 
 import { guildSetting } from './guildSetting.js';
 

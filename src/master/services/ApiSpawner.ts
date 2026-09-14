@@ -1,4 +1,4 @@
-import { BaseService } from '@blargbot/core/serviceTypes/index.js';
+import { BaseService } from '@blargbot/core';
 import type { Master } from '@blargbot/master';
 
 export class ApiSpawner extends BaseService {

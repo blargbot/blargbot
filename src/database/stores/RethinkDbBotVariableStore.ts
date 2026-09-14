@@ -1,5 +1,5 @@
-import type { BotVariable, GetBotVariableOptions } from '@blargbot/domain/models/index.js';
-import type { BotVariableStore } from '@blargbot/domain/stores/index.js';
+import type { BotVariable, GetBotVariableOptions } from '@blargbot/domain';
+import type { BotVariableStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 
 import type { RethinkDb } from '../clients/index.js';

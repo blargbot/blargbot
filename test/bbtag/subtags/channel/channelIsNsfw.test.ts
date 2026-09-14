@@ -1,4 +1,4 @@
-import { ChannelIsNsfwSubtag } from '@blargbot/bbtag/subtags/channel/channelIsNsfw.js';
+import { ChannelIsNsfwSubtag } from '@blargbot/bbtag/subtags';
 import type { APITextChannel } from 'discord-api-types/v9';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

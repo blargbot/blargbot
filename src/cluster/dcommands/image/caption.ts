@@ -1,10 +1,10 @@
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
-import { GlobalImageCommand } from '@blargbot/cluster/command/index.js';
-import { guard } from '@blargbot/core/utils/index.js';
-import { parse } from '@blargbot/core/utils/parse/index.js';
-import type { ValidFont } from '@blargbot/image/types.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalImageCommand } from '@blargbot/cluster';
+import { guard } from '@blargbot/core';
+import { parse } from '@blargbot/core';
+import type { ValidFont } from '@blargbot/image';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.caption;
@@ -69,8 +69,9 @@ export class CaptionCommand extends GlobalImageCommand {
         if (bottom !== undefined)
             bottom = await context.util.resolveTags(context, bottom);
 
-        return await this.renderImage(context, 'caption', {
-            url,
+        return await this.renderImage(context, {
+            type: 'caption',
+            imageUrl: url,
             font: fontLookup[fontName],
             top: top,
             bottom: bottom

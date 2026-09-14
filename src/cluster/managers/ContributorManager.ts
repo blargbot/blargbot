@@ -1,10 +1,10 @@
-import type { Cluster } from '@blargbot/cluster/Cluster.js';
+import type { Cluster } from '@blargbot/cluster';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import { contributors } from '@blargbot/res';
 import type eris from 'eris';
 
-import templates from '../text.js';
+import { templates } from '../text.js';
 
 export class ContributorManager {
     public patrons: Array<eris.User | IFormattable<string>>;

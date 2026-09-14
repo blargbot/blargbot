@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { NotABooleanError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { DecrementSubtag } from '@blargbot/bbtag/subtags/math/decrement.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { NotABooleanError, NotANumberError } from '@blargbot/bbtag';
+import { DecrementSubtag } from '@blargbot/bbtag/subtags';
+import { TagVariableType } from '@blargbot/domain';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

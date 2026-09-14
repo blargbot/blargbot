@@ -12,6 +12,7 @@
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/test-util": "workspace:^",
+        "@blargbot/util": "workspace:^",
         "eris": "^0.17.1",
         "moment-timezone": "^0.5.39",
         "ts-mockito": "^2.6.1"

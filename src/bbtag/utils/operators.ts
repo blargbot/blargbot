@@ -1,4 +1,4 @@
-import { compare as compareFn, guard, parse } from '@blargbot/core/utils/index.js';
+import { compare as compareFn, guard, parse } from '@blargbot/core';
 
 import { tagArray } from './tagArray.js';
 

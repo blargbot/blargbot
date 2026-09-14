@@ -1,4 +1,4 @@
-import { discord } from '@blargbot/core/utils/discord/index.js';
+import { discord } from '@blargbot/core';
 import type * as eris from 'eris';
 
 import { hasValue } from './hasValue.js';

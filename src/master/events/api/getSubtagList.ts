@@ -1,6 +1,6 @@
 import type { ApiConnection } from '@blargbot/api';
-import type { SubtagListResult } from '@blargbot/cluster/types.js';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
+import type { SubtagListResult } from '@blargbot/cluster';
+import { WorkerPoolEventService } from '@blargbot/core';
 import type { Master } from '@blargbot/master';
 
 export class ApiGetSubtagListHandler extends WorkerPoolEventService<ApiConnection, 'getSubtagList'> {

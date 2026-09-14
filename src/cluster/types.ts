@@ -1,8 +1,8 @@
 import type { SubtagOptions } from '@blargbot/bbtag';
-import type { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command/index.js';
-import type { CommandType, ModerationType } from '@blargbot/cluster/utils/index.js';
-import type { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core/types.js';
-import type { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain/models/index.js';
+import type { Command, CommandContext, ScopedCommand } from '@blargbot/cluster';
+import type { CommandType, ModerationType } from '@blargbot/cluster';
+import type { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core';
+import type { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as eris from 'eris';
 import type moment from 'moment-timezone';

@@ -1,7 +1,7 @@
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
-import { GlobalImageCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalImageCommand } from '@blargbot/cluster';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.color;
@@ -21,6 +21,6 @@ export class ColorCommand extends GlobalImageCommand {
     }
 
     public async render(context: CommandContext, colors: readonly string[]): Promise<CommandResult> {
-        return await this.renderImage(context, 'color', { color: colors });
+        return await this.renderImage(context, { type: 'color', color: colors });
     }
 }

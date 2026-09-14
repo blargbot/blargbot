@@ -1,4 +1,4 @@
-import templates from '../text.js';
+import { templates } from '../text.js';
 import type { SubtagPropertiesSet } from '../types.js';
 
 export enum SubtagType {

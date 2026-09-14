@@ -1,10 +1,10 @@
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
-import { GlobalImageCommand } from '@blargbot/cluster/command/index.js';
-import { guard } from '@blargbot/cluster/utils/index.js';
-import { parse } from '@blargbot/core/utils/parse/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalImageCommand } from '@blargbot/cluster';
+import { guard } from '@blargbot/cluster';
+import { parse } from '@blargbot/core';
 import type { User } from 'eris';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.starVsTheForcesOf;
@@ -46,6 +46,6 @@ export class StarVsTheForcesOfCommand extends GlobalImageCommand {
         if (!guard.isUrl(url))
             return cmd.default.invalidUrl({ url });
 
-        return await this.renderImage(context, 'starVsTheForcesOf', { avatar: url });
+        return await this.renderImage(context, { type: 'starVsTheForcesOf', imageUrl: url });
     }
 }

@@ -1,10 +1,11 @@
-import type { CommandContext } from '@blargbot/cluster/command/index.js';
-import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalCommand } from '@blargbot/cluster';
+import { CommandType } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
 import { mapping } from '@blargbot/mapping';
+import { random } from '@blargbot/util';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.xkcd;
@@ -29,7 +30,7 @@ export class XKCDCommand extends GlobalCommand {
             const comic = await this.#requestComic(undefined, context);
             if (comic === undefined)
                 return cmd.default.down;
-            comicNumber = randInt(0, comic.num);
+            comicNumber = random.int(0, comic.num);
         }
 
         const comic = await this.#requestComic(comicNumber, context);

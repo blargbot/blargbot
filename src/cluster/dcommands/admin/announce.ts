@@ -1,11 +1,11 @@
-import { GuildCommand } from '@blargbot/cluster/command/index.js';
-import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, discord } from '@blargbot/cluster/utils/index.js';
+import { GuildCommand } from '@blargbot/cluster';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, discord } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.announce;
 

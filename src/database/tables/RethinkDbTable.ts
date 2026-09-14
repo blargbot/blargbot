@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { guard } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 import type { Cursor, Expression, TableQuery, UpdateRequest, WriteResult } from 'rethinkdb';
 

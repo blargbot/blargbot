@@ -1,5 +1,5 @@
-import { NotANumberError, NotEnoughArgumentsError } from '@blargbot/bbtag/errors/index.js';
-import { ArgsSubtag } from '@blargbot/bbtag/subtags/bot/args.js';
+import { NotANumberError, NotEnoughArgumentsError } from '@blargbot/bbtag';
+import { ArgsSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

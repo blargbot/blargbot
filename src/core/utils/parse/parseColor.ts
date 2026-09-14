@@ -1,6 +1,6 @@
 import { colors } from '@blargbot/res';
+import { random } from '@blargbot/util';
 
-import { randInt } from '../random/index.js';
 import { parseHex } from './parseHex.js';
 
 await colors.ensureLoaded();
@@ -17,7 +17,7 @@ export function parseColor(text: number | string): number | undefined {
 
     const name = text.toLowerCase().replace(/[^a-z]/g, '');
     if (name === 'random')
-        return randInt(0, 0xffffff);
+        return random.int(0, 0xffffff);
 
     //By name
     if (colorKeys.includes(name))

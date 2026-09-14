@@ -1,39 +1,32 @@
 import path from 'node:path';
 
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import type { EmojiOptions, ImageResult } from '@blargbot/image/types.js';
-import { asBuffer } from '@blargbot/util';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
 import sharp from 'sharp';
 import twemoji from 'twemoji';
+
+import type { GeneratorContext } from '../GeneratorContext.js';
 
 // the .base property is undocumented in the types. Doing this allows us to use it, but detect if it is removed in the future.
 const twemojiBase = (twemoji as { base?: string; }).base ?? 'https://twemoji.maxcdn.com/v/14.0.2/';
 
-export class EmojiGenerator extends BaseImageGenerator<'emoji'> {
-    public constructor(worker: ImageWorker) {
-        super('emoji', worker);
+export async function emoji(request: ImageRequestData<'emoji'>, context: GeneratorContext): Promise<ImageResponse> {
+    const codePoint = twemoji.convert.toCodePoint(request.name);
+
+    let file = await context.fetch(path.join(twemojiBase, `svg/${codePoint}.svg`));
+    if (file.status === 404) {
+        if (codePoint.includes('-fe0f')) // remove variation selector-16 if present
+            file = await context.fetch(path.join(twemojiBase, `svg/${codePoint.replaceAll('-fe0f', '')}.svg`));
     }
+    if (!file.status.toString().startsWith('2'))
+        return null;
 
-    public async execute({ name, svg, size }: EmojiOptions): Promise<ImageResult | undefined> {
-        const codePoint = twemoji.convert.toCodePoint(name);
+    const body = await file.bytes();
+    if (request.svg)
+        return { fileName: 'emoji.svg', data: body };
 
-        let file = await this.fetch(path.join(twemojiBase, `svg/${codePoint}.svg`));
-        if (file.status === 404) {
-            if (codePoint.includes('-fe0f')) // remove variation selector-16 if present
-                file = await this.fetch(path.join(twemojiBase, `svg/${codePoint.replaceAll('-fe0f', '')}.svg`));
-        }
-        if (!file.status.toString().startsWith('2'))
-            return undefined;
-
-        const body = asBuffer(await file.bytes());
-        if (svg)
-            return { fileName: 'emoji.svg', data: body };
-
-        const buffer = await sharp(body)
-            .resize(size, size)
-            .png()
-            .toBuffer();
-        return { fileName: 'emoji.png', data: buffer };
-    }
+    const { data } = await sharp(body)
+        .resize(request.size, request.size)
+        .png()
+        .toUint8Array();
+    return { data, fileName: 'emoji.png' };
 }

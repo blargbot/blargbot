@@ -1,8 +1,7 @@
 import { describe } from 'node:test';
 
-import { Subtag, SubtagType } from '@blargbot/bbtag';
-import templates from '@blargbot/bbtag/text.js';
-import * as coreTransformers from '@blargbot/core/formatting/index.js';
+import { Subtag, SubtagType, templates } from '@blargbot/bbtag';
+import { transformers as coreTransformers } from '@blargbot/core';
 import { transformers, util } from '@blargbot/formatting';
 import { quickMock } from '@blargbot/test-util/quickMock.js';
 import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';

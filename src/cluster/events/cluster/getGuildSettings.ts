@@ -1,5 +1,5 @@
 import type { Cluster } from '@blargbot/cluster';
-import { ClusterEventService } from '@blargbot/cluster/serviceTypes/index.js';
+import { ClusterEventService } from '@blargbot/cluster';
 
 import { guildSettings } from '../../utils/index.js';
 

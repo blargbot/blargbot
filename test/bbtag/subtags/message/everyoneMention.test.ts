@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { EveryoneMentionSubtag } from '@blargbot/bbtag/subtags/message/everyoneMention.js';
+import { EveryoneMentionSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

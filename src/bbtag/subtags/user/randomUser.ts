@@ -1,8 +1,8 @@
-import { randChoose } from '@blargbot/core/utils/index.js';
+import { random } from '@blargbot/util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.randomUser;
@@ -28,6 +28,6 @@ export class RandomUserSubtag extends CompiledSubtag {
 
     public async randomUser(context: BBTagContext): Promise<string> {
         await context.util.ensureMemberCache(context.channel.guild);
-        return randChoose(context.guild.members.values()).id;
+        return random.pick(context.guild.members.values()).id;
     }
 }

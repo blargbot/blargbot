@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { RoleSetPositionSubtag } from '@blargbot/bbtag/subtags/role/roleSetPosition.js';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag';
+import { RoleSetPositionSubtag } from '@blargbot/bbtag/subtags';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

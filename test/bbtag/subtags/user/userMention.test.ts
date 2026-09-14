@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { UserMentionSubtag } from '@blargbot/bbtag/subtags/user/userMention.js';
+import { UserMentionSubtag } from '@blargbot/bbtag/subtags';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

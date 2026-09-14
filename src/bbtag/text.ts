@@ -2473,5 +2473,3 @@ Database Execution Time: {database#duration(MS)}ms
         }
     }
 }));
-
-export default templates;

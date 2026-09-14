@@ -1,6 +1,5 @@
-import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
-import { IndexOfSubtag } from '@blargbot/bbtag/subtags/misc/indexOf.js';
+import { NotANumberError } from '@blargbot/bbtag';
+import { EscapeBBTagSubtag, IndexOfSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

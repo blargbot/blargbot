@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { describe, it } from 'node:test';
 
-import { AirtableSuggesterStore } from '@blargbot/database/stores/AirtableSuggesterStore.js';
-import type { Suggester } from '@blargbot/domain/models/index.js';
+import { AirtableSuggesterStore } from '@blargbot/database';
+import type { Suggester } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import { argument, Mock } from '@blargbot/test-util/mock.js';
 import type { AirtableBase } from 'airtable/lib/airtable_base.js';

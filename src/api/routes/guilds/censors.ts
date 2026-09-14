@@ -1,6 +1,6 @@
-import type { Api } from '@blargbot/api/Api.js';
 import { mapping } from '@blargbot/mapping';
 
+import type { Api } from '../../Api.js';
 import { BaseRoute } from '../../BaseRoute.js';
 import type { ApiResponse } from '../../types.js';
 

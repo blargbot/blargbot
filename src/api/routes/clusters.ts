@@ -1,8 +1,9 @@
-import type { Api } from '@blargbot/api/Api.js';
-import { BaseRoute } from '@blargbot/api/BaseRoute.js';
-import type { ApiResponse } from '@blargbot/api/types.js';
-import type { ClusterStats } from '@blargbot/cluster/types.js';
+import type { ClusterStats } from '@blargbot/cluster';
 import type { WebSocket } from 'ws';
+
+import type { Api } from '../Api.js';
+import { BaseRoute } from '../BaseRoute.js';
+import type { ApiResponse } from '../types.js';
 
 export class ClustersRoute extends BaseRoute<['/clusters']> {
     #clusterStats: Record<number, ClusterStats | undefined>;

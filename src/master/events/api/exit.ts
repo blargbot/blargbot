@@ -1,6 +1,6 @@
 import type { ApiConnection } from '@blargbot/api';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
-import { WorkerState } from '@blargbot/core/worker/index.js';
+import { WorkerPoolEventService } from '@blargbot/core';
+import { WorkerState } from '@blargbot/core';
 import type { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 

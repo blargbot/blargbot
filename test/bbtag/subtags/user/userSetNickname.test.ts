@@ -1,5 +1,5 @@
-import { UserNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { UserSetNickSubtag } from '@blargbot/bbtag/subtags/user/userSetNickname.js';
+import { UserNotFoundError } from '@blargbot/bbtag';
+import { UserSetNickSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 

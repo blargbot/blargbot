@@ -1,9 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { SubtagStackOverflowError, UnknownSubtagError } from '@blargbot/bbtag/errors/index.js';
-import { FunctionInvokeSubtag } from '@blargbot/bbtag/subtags/bot/func..js';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
-import { bbtag } from '@blargbot/bbtag/utils/index.js';
+import { bbtag, BBTagRuntimeState, SubtagStackOverflowError, UnknownSubtagError } from '@blargbot/bbtag';
+import { FunctionInvokeSubtag } from '@blargbot/bbtag/subtags';
 
 import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 

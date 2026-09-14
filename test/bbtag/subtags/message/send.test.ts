@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { SendSubtag } from '@blargbot/bbtag/subtags/message/send.js';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag';
+import { EscapeBBTagSubtag, SendSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import type * as eris from 'eris';
 

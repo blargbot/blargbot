@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { RoleMentionSubtag } from '@blargbot/bbtag/subtags/role/roleMention.js';
+import { RoleMentionSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';

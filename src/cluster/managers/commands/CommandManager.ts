@@ -1,8 +1,8 @@
 import type { Cluster } from '@blargbot/cluster';
-import type { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster/types.js';
-import { defaultStaff, guard } from '@blargbot/cluster/utils/index.js';
-import { parse } from '@blargbot/core/utils/index.js';
-import type { CommandPermissions } from '@blargbot/domain/models/index.js';
+import type { CommandGetCoreResult, CommandGetResult, ICommandManager, PermissionCheckResult } from '@blargbot/cluster';
+import { defaultStaff, guard } from '@blargbot/cluster';
+import { parse } from '@blargbot/core';
+import type { CommandPermissions } from '@blargbot/domain';
 import * as eris from 'eris';
 
 export abstract class CommandManager<T> implements ICommandManager<T> {

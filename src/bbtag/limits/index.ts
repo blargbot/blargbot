@@ -4,6 +4,7 @@ import { GeneralAutoResponseLimit } from './GeneralAutoResponseLimit.js';
 import * as rules from './rules/index.js';
 import { TagLimit } from './TagLimit.js';
 
+export * from './BaseRuntimeLimit.js';
 export * from './CustomCommandLimit.js';
 export * from './EverythingAutoResponseLimit.js';
 export * from './GeneralAutoResponseLimit.js';

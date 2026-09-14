@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { NotABooleanError } from '@blargbot/bbtag/errors/index.js';
-import { SuppressLookupSubtag } from '@blargbot/bbtag/subtags/bot/suppressLookup.js';
+import { NotABooleanError } from '@blargbot/bbtag';
+import { SuppressLookupSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

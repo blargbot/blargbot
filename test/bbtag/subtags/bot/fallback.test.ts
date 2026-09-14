@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { UnknownSubtagError } from '@blargbot/bbtag/errors/index.js';
-import { FallbackSubtag } from '@blargbot/bbtag/subtags/bot/fallback.js';
+import { UnknownSubtagError } from '@blargbot/bbtag';
+import { FallbackSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

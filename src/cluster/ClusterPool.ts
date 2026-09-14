@@ -1,6 +1,6 @@
 import type { ClusterWorkerConfiguration } from '@blargbot/config';
-import type { ProcessMessageHandler } from '@blargbot/core/types.js';
-import { WorkerPool } from '@blargbot/core/worker/index.js';
+import type { ProcessMessageHandler } from '@blargbot/core';
+import { WorkerPool } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 
 import { ClusterConnection } from './ClusterConnection.js';

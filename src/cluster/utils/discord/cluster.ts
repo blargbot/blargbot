@@ -1,6 +1,5 @@
-import type { Cluster } from '@blargbot/cluster';
-import type { ClusterStats, ShardStats } from '@blargbot/cluster/types.js';
-import { cpuLoad } from '@blargbot/cluster/utils/index.js';
+import type { Cluster, ClusterStats, ShardStats } from '@blargbot/cluster';
+import { cpuLoad } from '@blargbot/core';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
 

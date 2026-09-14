@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag/errors/index.js';
-import { ReactionListSubtag } from '@blargbot/bbtag/subtags/message/reactionList.js';
+import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag';
+import { ReactionListSubtag } from '@blargbot/bbtag/subtags';
 import * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';

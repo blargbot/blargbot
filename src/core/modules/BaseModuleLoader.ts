@@ -1,9 +1,8 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { MultiKeyMap } from '@blargbot/core/MultiKeyMap.js';
-import type { ModuleResult } from '@blargbot/core/types.js';
-import { guard, pluralise as p } from '@blargbot/core/utils/index.js';
+import type { ModuleResult } from '@blargbot/core';
+import { guard, MultiKeyMap, pluralise as p } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 import EventEmitter from 'eventemitter3';
 

@@ -1,9 +1,9 @@
-import type { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types.js';
-import { parse } from '@blargbot/cluster/utils/index.js';
-import { Binder } from '@blargbot/core/Binder.js';
-import type { Binding } from '@blargbot/core/types.js';
+import type { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster';
+import { parse } from '@blargbot/cluster';
+import { Binder } from '@blargbot/core';
+import type { Binding } from '@blargbot/core';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandContext } from '../CommandContext.js';
 import type { ScopedCommand } from '../ScopedCommand.js';
 import * as bindings from './binding/index.js';

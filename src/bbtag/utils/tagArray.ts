@@ -1,5 +1,6 @@
-import { getRange, parse } from '@blargbot/core/utils/index.js';
+import { parse } from '@blargbot/core';
 import { mapping } from '@blargbot/mapping';
+import { Iterable } from '@blargbot/util';
 
 import type { BBTagContext } from '../BBTagContext.js';
 import type { BBTagArray } from '../types.js';
@@ -25,7 +26,7 @@ export const tagArray = Object.freeze({
             value = value.replace(
                 /([[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
                 (_, ...[before, from, to, after]: string[]) =>
-                    before + getRange(parse.int(from) ?? NaN, parse.int(to) ?? NaN).join(',') + after);
+                    before + Iterable.range(parse.int(from) ?? NaN, parse.int(to) ?? NaN).take(200).toArray().join(',') + after);
             result = mapBBTagArrayOrJson(value);
         }
 

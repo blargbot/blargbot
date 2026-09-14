@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { SortSubtag } from '@blargbot/bbtag/subtags/array/sort.js';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { GetSubtag, SortSubtag } from '@blargbot/bbtag/subtags';
+import { TagVariableType } from '@blargbot/domain';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,6 +1,6 @@
-import { guard } from '@blargbot/cluster/utils/index.js';
-import { metrics } from '@blargbot/core/Metrics.js';
-import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import { guard } from '@blargbot/cluster';
+import { metrics } from '@blargbot/core';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 import type * as eris from 'eris';
 

@@ -1,4 +1,4 @@
-import { UserIsBotSubtag } from '@blargbot/bbtag/subtags/user/userIsBot.js';
+import { UserIsBotSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';

@@ -1,11 +1,11 @@
-import type { MalformedEmbed } from '@blargbot/core/types.js';
-import { guard, parse } from '@blargbot/core/utils/index.js';
+import type { MalformedEmbed } from '@blargbot/core';
+import { guard, parse } from '@blargbot/core';
 import * as eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.send;

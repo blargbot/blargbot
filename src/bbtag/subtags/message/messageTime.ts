@@ -1,10 +1,10 @@
-import { snowflake } from '@blargbot/core/utils/index.js';
+import { snowflake } from '@blargbot/core';
 import moment from 'moment-timezone';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.messageTime;

@@ -1,10 +1,11 @@
-import type { CommandContext } from '@blargbot/cluster/command/index.js';
-import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType, guard, randChoose } from '@blargbot/cluster/utils/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalCommand } from '@blargbot/cluster';
+import { CommandType, guard } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
 import { spells as spellsRes } from '@blargbot/res';
+import { random } from '@blargbot/util';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 await spellsRes.ensureLoaded();
@@ -28,7 +29,7 @@ export class SpellCommand extends GlobalCommand {
     }
 
     public async getSpell(context: CommandContext, name: string | undefined): Promise<CommandResult> {
-        const spell = name === undefined ? randChoose(Object.values(spells)) : await this.#findSpell(context, name);
+        const spell = name === undefined ? random.pick(Object.values(spells)) : await this.#findSpell(context, name);
         if (spell === undefined)
             return cmd.default.notFound;
 

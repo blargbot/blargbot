@@ -1,11 +1,11 @@
-import { GuildCommand, SingleThreadMiddleware } from '@blargbot/cluster/command/index.js';
-import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { createSafeRegExp, guard } from '@blargbot/core/utils/index.js';
+import { GuildCommand, SingleThreadMiddleware } from '@blargbot/cluster';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType } from '@blargbot/cluster';
+import { createSafeRegExp, guard } from '@blargbot/core';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.tidy;
 

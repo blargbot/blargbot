@@ -1,9 +1,9 @@
-import { shuffle } from '@blargbot/core/utils/index.js';
+import { random } from '@blargbot/util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.shuffle;
@@ -36,7 +36,7 @@ export class ShuffleSubtag extends CompiledSubtag {
     }
 
     public shuffleInput(context: BBTagContext): void {
-        shuffle(context.input);
+        random.ishuffle(context.input);
     }
 
     public async shuffle(context: BBTagContext, array: string): Promise<JArray | undefined> {
@@ -44,7 +44,7 @@ export class ShuffleSubtag extends CompiledSubtag {
         if (arr === undefined)
             throw new NotAnArrayError(array);
 
-        shuffle(arr.v);
+        random.ishuffle(arr.v);
         if (arr.n === undefined)
             return arr.v;
 

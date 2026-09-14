@@ -1,6 +1,6 @@
-import { Cache } from '@blargbot/core/Cache.js';
-import { guard, sleep } from '@blargbot/core/utils/index.js';
+import { Cache, guard } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
+import { sleep } from '@blargbot/util';
 import type { UpdateRequest } from 'rethinkdb';
 
 import type { RethinkDb } from '../clients/index.js';

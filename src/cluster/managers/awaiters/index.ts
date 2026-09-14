@@ -5,6 +5,7 @@ import { MessageAwaiterFactory } from './MessageAwaiterFactory.js';
 import { ReactionAwaiterFactory } from './ReactionAwaiterFactory.js';
 
 export { Awaiter } from './Awaiter.js';
+export * from './AwaiterFactoryBase.js';
 
 export class AwaiterManager {
     public readonly messages: MessageAwaiterFactory;

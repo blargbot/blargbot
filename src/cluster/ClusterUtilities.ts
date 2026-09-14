@@ -1,14 +1,13 @@
-import { defaultStaff, discord, guard, parse, snowflake } from '@blargbot/cluster/utils/index.js';
-import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import type { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, FormatSelectMenuOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, SendContent, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types.js';
+import { defaultStaff, discord, guard, parse } from '@blargbot/cluster';
+import type { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, FormatSelectMenuOptions, MultipleQuery, MultipleQueryOptions, MultipleQueryResult, QueryButton, SendContent, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core';
+import { BaseUtilities, FormattableMessageContent, snowflake } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
 import * as eris from 'eris';
 
 import type { Cluster } from './Cluster.js';
 import type { Awaiter } from './managers/index.js';
-import templates from './text.js';
+import { templates } from './text.js';
 
 export class ClusterUtilities extends BaseUtilities {
     public constructor(

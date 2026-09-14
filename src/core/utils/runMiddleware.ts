@@ -1,6 +1,6 @@
 import { performance } from 'node:perf_hooks';
 
-import type { IMiddleware, MiddlewareOptions, NextMiddleware } from '@blargbot/core/types.js';
+import type { IMiddleware, MiddlewareOptions, NextMiddleware } from '@blargbot/core';
 
 import { callWithFinalize } from './callWithFinalize.js';
 

@@ -1,8 +1,7 @@
-import { BaseApiImageGenerator } from '@blargbot/image/BaseApiImageGenerator.js';
-import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
 
-export class ShitGenerator extends BaseApiImageGenerator<'shit'> {
-    public constructor(worker: ImageWorker) {
-        super('shit', worker);
-    }
+import type { GeneratorContext } from '../GeneratorContext.js';
+
+export async function shit(request: ImageRequestData<'shit'>, context: GeneratorContext): Promise<ImageResponse> {
+    return await context.renderApi('shit', { text: request.text, plural: request.plural });
 }

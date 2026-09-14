@@ -1,8 +1,8 @@
-import type { CommandResult } from '@blargbot/cluster/types.js';
-import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { CommandResult } from '@blargbot/cluster';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core';
 import moment from 'moment-timezone';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandContext } from '../CommandContext.js';
 
 export class RatelimitMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {

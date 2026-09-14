@@ -1,4 +1,4 @@
-import { discord as coreDiscord } from '@blargbot/core/utils/discord/index.js';
+import { discord as coreDiscord } from '@blargbot/core';
 
 import * as cluster from './cluster.js';
 

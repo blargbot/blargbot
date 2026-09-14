@@ -1,5 +1,5 @@
-import { NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { NewlineSubtag } from '@blargbot/bbtag/subtags/misc/newline.js';
+import { NotANumberError } from '@blargbot/bbtag';
+import { NewlineSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

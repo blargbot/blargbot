@@ -58,7 +58,7 @@ const metaSchema = z.compile(z.intersection(
     })
 ));
 
-export const DiscordRequest = cleanType(z.codec(
+export const DiscordRequest = cleanType(z.compile(z.codec(
     AmqpMessage,
     output,
     {
@@ -130,7 +130,7 @@ export const DiscordRequest = cleanType(z.codec(
         },
         decode(value, ctx) {
             let remain = value.content;
-            function takeNextBytes(count: number): Uint8Array {
+            function takeNextBytes(count: number): typeof remain {
                 const result = takeBytes(remain, count);
                 remain = result[1];
                 return result[0];
@@ -223,5 +223,5 @@ export const DiscordRequest = cleanType(z.codec(
             };
         }
     }
-));
+)));
 export type DiscordRequest = z.infer<typeof DiscordRequest>;

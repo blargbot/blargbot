@@ -225,6 +225,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/mapping", "workspace:src/mapping"],\
+          ["@blargbot/util", "workspace:src/util"],\
           ["@types/express", "npm:4.17.14"],\
           ["@types/express-serve-static-core", "npm:4.17.31"],\
           ["@types/jsonwebtoken", "npm:8.5.9"],\
@@ -251,6 +252,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/mapping", "workspace:src/mapping"],\
+          ["@blargbot/test-util", "workspace:test/testUtil"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
           ["@types/color", "npm:3.0.3"],\
@@ -262,7 +264,8 @@ const RAW_RUNTIME_STATE =
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
           ["html-entities", "npm:2.3.3"],\
           ["moment-timezone", "npm:0.5.39"],\
-          ["rwlock", "npm:5.0.0"]\
+          ["rwlock", "npm:5.0.0"],\
+          ["ts-mockito", "npm:2.6.1"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -280,6 +283,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/test-util", "workspace:test/testUtil"],\
+          ["@blargbot/util", "workspace:src/util"],\
           ["@types/eris", "workspace:definitions/eris"],\
           ["discord-api-types", "npm:0.37.20"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
@@ -296,6 +300,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/bbtag", "workspace:src/bbtag"],\
           ["@blargbot/cluster", "workspace:src/cluster"],\
           ["@blargbot/config", "workspace:src/config"],\
+          ["@blargbot/contracts", "workspace:src/contracts"],\
           ["@blargbot/core", "workspace:src/core"],\
           ["@blargbot/database", "workspace:src/database"],\
           ["@blargbot/domain", "workspace:src/domain"],\
@@ -372,6 +377,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@blargbot/bbtag", "workspace:src/bbtag"],\
           ["@blargbot/config", "workspace:src/config"],\
+          ["@blargbot/contracts", "workspace:src/contracts"],\
           ["@blargbot/core", "workspace:src/core"],\
           ["@blargbot/crowdin", "workspace:src/crowdin"],\
           ["@blargbot/database", "workspace:src/database"],\
@@ -439,6 +445,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/mapping", "workspace:src/mapping"],\
+          ["@blargbot/util", "workspace:src/util"],\
           ["@types/catflake", "workspace:definitions/catflake"],\
           ["@types/pg", "npm:8.6.5"],\
           ["@types/rethinkdb", "workspace:definitions/rethinkdb"],\
@@ -567,7 +574,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./src/image/",\
         "packageDependencies": [\
           ["@blargbot/config", "workspace:src/config"],\
-          ["@blargbot/core", "workspace:src/core"],\
+          ["@blargbot/contracts", "workspace:src/contracts"],\
           ["@blargbot/image", "workspace:src/image"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/res", "workspace:src/res"],\

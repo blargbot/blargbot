@@ -1,4 +1,4 @@
-import type { Snowflake } from '@blargbot/domain/models/index.js';
+import type { Snowflake } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import type * as eris from 'eris';
 

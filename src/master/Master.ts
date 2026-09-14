@@ -3,17 +3,15 @@ import { inspect } from 'node:util';
 import { ApiPool } from '@blargbot/api';
 import { ClusterPool } from '@blargbot/cluster';
 import type { Configuration } from '@blargbot/config';
-import { BaseClient } from '@blargbot/core/BaseClient.js';
-import { ModuleLoader } from '@blargbot/core/modules/index.js';
-import { BaseService } from '@blargbot/core/serviceTypes/index.js';
-import type { EvalResult } from '@blargbot/core/types.js';
+import type { EvalResult } from '@blargbot/core';
+import { BaseClient, BaseService, ModuleLoader } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
-import type { MasterOptions } from '@blargbot/master/types.js';
 import moment from 'moment-timezone';
 import type { metric } from 'prom-client';
 
 import { ClusterStatsManager } from './managers/index.js';
 import type { MasterWorker } from './MasterWorker.js';
+import type { MasterOptions } from './types.js';
 
 export class Master extends BaseClient {
     public readonly clusters: ClusterPool;

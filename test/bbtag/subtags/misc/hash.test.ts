@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { HashSubtag } from '@blargbot/bbtag/subtags/misc/hash.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { HashSubtag } from '@blargbot/bbtag/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

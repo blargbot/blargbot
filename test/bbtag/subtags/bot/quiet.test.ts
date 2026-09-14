@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { QuietSubtag } from '@blargbot/bbtag/subtags/bot/quiet.js';
+import { QuietSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,6 +1,6 @@
 import type { Cluster } from '@blargbot/cluster';
-import { guard } from '@blargbot/cluster/utils/index.js';
-import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import { guard } from '@blargbot/cluster';
+import { DiscordEventService } from '@blargbot/core';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
 

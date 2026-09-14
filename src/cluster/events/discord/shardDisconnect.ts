@@ -1,5 +1,5 @@
 import type { Cluster } from '@blargbot/cluster';
-import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import { DiscordEventService } from '@blargbot/core';
 
 export class DiscordShardDisconnectHandler extends DiscordEventService<'shardDisconnect'> {
     public constructor(cluster: Cluster) {

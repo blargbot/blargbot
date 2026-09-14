@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { ReasonSubtag } from '@blargbot/bbtag/subtags/bot/reason.js';
+import { ReasonSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { SleepSubtag } from '@blargbot/bbtag/subtags/bot/sleep.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { SleepSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

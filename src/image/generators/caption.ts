@@ -1,46 +1,39 @@
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import type { CaptionOptions, ImageResult, TextOptions } from '@blargbot/image/types.js';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
+import { asBuffer } from '@blargbot/util';
 import type { OverlayOptions } from 'sharp';
 import sharp from 'sharp';
 
-export class CaptionGenerator extends BaseImageGenerator<'caption'> {
-    public constructor(worker: ImageWorker) {
-        super('caption', worker);
+import type { GeneratorContext, TextOptions } from '../GeneratorContext.js';
+
+export async function caption(request: ImageRequestData<'caption'>, context: GeneratorContext): Promise<ImageResponse> {
+    const imgData = await sharp(await context.getRemote(request.imageUrl))
+        .resize(800, 800, { fit: 'outside' })
+        .toBuffer({ resolveWithObject: true });
+
+    const width = imgData.info.width;
+    const height = imgData.info.height / 6;
+    const overlays: Array<Promise<OverlayOptions>> = [];
+    const textOptions: TextOptions = {
+        font: request.font,
+        width,
+        height,
+        fill: 'white',
+        outline: ['black', 8]
+    };
+
+    if (request.top !== undefined) {
+        overlays.push(context.renderText(request.top, { ...textOptions, gravity: 'North' }).then(text => ({
+            input: asBuffer(text),
+            gravity: sharp.gravity.north
+        })));
     }
-
-    public async execute({ url, top, bottom, font }: CaptionOptions): Promise<ImageResult> {
-        const imgData = await sharp(await this.getRemote(url))
-            .resize(800, 800, { fit: 'outside' })
-            .toBuffer({ resolveWithObject: true });
-
-        const width = imgData.info.width;
-        const height = imgData.info.height / 6;
-        const overlays: OverlayOptions[] = [];
-        const textOptions: TextOptions = {
-            font,
-            width,
-            height,
-            fill: 'white',
-            outline: ['black', 8]
-        };
-
-        if (top !== undefined) {
-            overlays.push({
-                input: await this.renderText(top, { ...textOptions, gravity: 'North' }),
-                gravity: sharp.gravity.north
-            });
-        }
-        if (bottom !== undefined) {
-            overlays.push({
-                input: await this.renderText(bottom, { ...textOptions, gravity: 'South' }),
-                gravity: sharp.gravity.south
-            });
-        }
-
-        return {
-            data: await sharp(imgData.data).composite(overlays).png().toBuffer(),
-            fileName: 'caption.png'
-        };
+    if (request.bottom !== undefined) {
+        overlays.push(context.renderText(request.bottom, { ...textOptions, gravity: 'South' }).then(text => ({
+            input: asBuffer(text),
+            gravity: sharp.gravity.south
+        })));
     }
+    const { data } = await sharp(imgData.data).composite(await Promise.all(overlays)).png().toUint8Array();
+
+    return { data, fileName: 'caption.png' };
 }

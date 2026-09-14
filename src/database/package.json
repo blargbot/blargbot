@@ -3,12 +3,16 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
+        "@blargbot/util": "workspace:^",
         "airtable": "patch:airtable@npm%3A0.12.2#~/.yarn/patches/airtable-npm-0.12.2-ef934b1a03.patch",
         "cassandra-driver": "^4.6.4",
         "catflake": "^1.0.0",

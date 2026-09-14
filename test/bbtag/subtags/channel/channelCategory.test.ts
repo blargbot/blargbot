@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ChannelCategorySubtag } from '@blargbot/bbtag/subtags/channel/channelCategory.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { ChannelCategorySubtag } from '@blargbot/bbtag/subtags';
 import type { APITextChannel } from 'discord-api-types/v9';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -3,9 +3,13 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
     "dependencies": {
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",
+        "@blargbot/contracts": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/database": "workspace:^",
         "@blargbot/domain": "workspace:^",

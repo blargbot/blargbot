@@ -1,5 +1,5 @@
-import type { Suggestion } from '@blargbot/domain/models/index.js';
-import type { SuggestionStore } from '@blargbot/domain/stores/index.js';
+import type { Suggestion } from '@blargbot/domain';
+import type { SuggestionStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import type { AirtableBase } from 'airtable/lib/airtable_base.js';
 

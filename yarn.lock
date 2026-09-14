@@ -26,6 +26,7 @@ __metadata:
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
+    "@blargbot/util": "workspace:^"
     "@types/express": "npm:^4.17.14"
     "@types/express-serve-static-core": "npm:^4.17.31"
     "@types/jsonwebtoken": "npm:^8.5.9"
@@ -51,6 +52,7 @@ __metadata:
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/test-util": "workspace:^"
+    "@blargbot/util": "workspace:^"
     "@types/eris": "workspace:^"
     discord-api-types: "npm:^0.37.20"
     eris: "npm:^0.17.1"
@@ -70,6 +72,7 @@ __metadata:
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
+    "@blargbot/test-util": "workspace:^"
     "@blargbot/util": "workspace:^"
     "@types/brainfuck-node": "workspace:^"
     "@types/color": "npm:^3.0.3"
@@ -82,6 +85,7 @@ __metadata:
     html-entities: "npm:^2.3.3"
     moment-timezone: "npm:^0.5.39"
     rwlock: "npm:^5.0.0"
+    ts-mockito: "npm:^2.6.1"
   languageName: unknown
   linkType: soft
 
@@ -107,6 +111,7 @@ __metadata:
   dependencies:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
+    "@blargbot/contracts": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/domain": "workspace:^"
@@ -173,6 +178,7 @@ __metadata:
   dependencies:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
+    "@blargbot/contracts": "workspace:^"
     "@blargbot/crowdin": "workspace:^"
     "@blargbot/database": "workspace:^"
     "@blargbot/domain": "workspace:^"
@@ -237,6 +243,7 @@ __metadata:
     "@blargbot/domain": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"
+    "@blargbot/util": "workspace:^"
     "@types/catflake": "workspace:^"
     "@types/pg": "npm:^8.6.5"
     "@types/rethinkdb": "workspace:^"
@@ -331,7 +338,7 @@ __metadata:
   resolution: "@blargbot/image@workspace:src/image"
   dependencies:
     "@blargbot/config": "workspace:^"
-    "@blargbot/core": "workspace:^"
+    "@blargbot/contracts": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/res": "workspace:^"
     "@blargbot/util": "workspace:^"

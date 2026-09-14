@@ -1,6 +1,6 @@
 import type { ApiConnection } from '@blargbot/api';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes/index.js';
-import type { GuildSettingDocs } from '@blargbot/domain/models/index.js';
+import { WorkerPoolEventService } from '@blargbot/core';
+import type { GuildSettingDocs } from '@blargbot/domain';
 import type { Master } from '@blargbot/master';
 
 export class ApiGetGuildSettingsHandler extends WorkerPoolEventService<ApiConnection, 'getGuildSettings'> {

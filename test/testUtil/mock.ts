@@ -1,4 +1,4 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { guard } from '@blargbot/core';
 import { instance, verify, when } from 'ts-mockito';
 import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher.js';
 import { StrictEqualMatcher } from 'ts-mockito/lib/matcher/type/StrictEqualMatcher.js';

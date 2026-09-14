@@ -1,6 +1,6 @@
-import type { CommandResult } from '@blargbot/cluster/types.js';
-import { guard } from '@blargbot/cluster/utils/index.js';
-import type { IMiddleware, NextMiddleware } from '@blargbot/core/types.js';
+import type { CommandResult } from '@blargbot/cluster';
+import { guard } from '@blargbot/cluster';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core';
 
 import type { CommandContext } from '../CommandContext.js';
 

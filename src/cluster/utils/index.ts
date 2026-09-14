@@ -1,4 +1,3 @@
-export * from '@blargbot/core/utils/index.js';
 export * from './constants/index.js';
 export * from './guard/index.js';
 export * from './humanize/index.js';

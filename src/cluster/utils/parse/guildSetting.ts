@@ -1,6 +1,6 @@
 import type { ClusterUtilities } from '@blargbot/cluster';
-import { guard, parse } from '@blargbot/core/utils/index.js';
-import type { StoredGuildSettings } from '@blargbot/domain/models/index.js';
+import { guard, parse } from '@blargbot/core';
+import type { StoredGuildSettings } from '@blargbot/domain';
 import type * as eris from 'eris';
 
 import { guildSettings } from '../constants/index.js';

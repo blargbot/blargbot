@@ -1,9 +1,9 @@
 import type { Configuration } from '@blargbot/config';
-import { BaseWorker } from '@blargbot/core/worker/index.js';
+import { BaseWorker } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
-import type { MasterIPCContract, MasterOptions } from '@blargbot/master/types.js';
 
 import { Master } from './Master.js';
+import type { MasterIPCContract, MasterOptions } from './types.js';
 
 export class MasterWorker extends BaseWorker<MasterIPCContract> {
     public readonly master: Master;

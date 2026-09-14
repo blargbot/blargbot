@@ -1,5 +1,5 @@
-import type { ResettableStoredUserData, StoredUser, StoredUsername, UserDetails, UserTodo } from '@blargbot/domain/models/index.js';
-import type { UserStore } from '@blargbot/domain/stores/index.js';
+import type { ResettableStoredUserData, StoredUser, StoredUsername, UserDetails, UserTodo } from '@blargbot/domain';
+import type { UserStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import type { UpdateData } from 'rethinkdb';
 

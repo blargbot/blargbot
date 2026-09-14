@@ -1,10 +1,10 @@
-import { GuildCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { guard } from '@blargbot/core/utils/index.js';
+import { GuildCommand } from '@blargbot/cluster';
+import { CommandType } from '@blargbot/cluster';
+import { guard } from '@blargbot/core';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.slowMode;

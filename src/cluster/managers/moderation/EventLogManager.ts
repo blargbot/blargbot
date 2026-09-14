@@ -1,14 +1,14 @@
 import type { Cluster } from '@blargbot/cluster';
-import { guard, ModlogColour } from '@blargbot/cluster/utils/index.js';
-import type { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent.js';
-import type { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core/types.js';
-import type { StoredGuildEventLogType } from '@blargbot/domain/models/index.js';
+import { guard, ModlogColour } from '@blargbot/cluster';
+import type { BaseUtilities } from '@blargbot/core';
+import { FormattableMessageContent } from '@blargbot/core';
+import type { FormatEmbedAuthor, FormatEmbedField, FormatEmbedOptions } from '@blargbot/core';
+import type { StoredGuildEventLogType } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 export class EventLogManager {
     readonly #cluster: Cluster;

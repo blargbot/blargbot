@@ -1,4 +1,4 @@
-import { parse } from '@blargbot/core/utils/index.js';
+import { parse } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { SubtagLogic } from '../logic/index.js';

@@ -1,8 +1,7 @@
 import type { ExecutionResult } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
-import { snowflake } from '@blargbot/cluster/utils/index.js';
-import { guard } from '@blargbot/core/utils/index.js';
-import type { GuildTriggerTag } from '@blargbot/domain/models/index.js';
+import { guard, snowflake } from '@blargbot/core';
+import type { GuildTriggerTag } from '@blargbot/domain';
 import type eris from 'eris';
 import moment from 'moment-timezone';
 

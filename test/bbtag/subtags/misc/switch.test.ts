@@ -1,4 +1,4 @@
-import { SwitchSubtag } from '@blargbot/bbtag/subtags/misc/switch.js';
+import { SwitchSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

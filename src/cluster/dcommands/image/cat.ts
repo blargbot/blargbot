@@ -1,10 +1,11 @@
 import type { Cluster } from '@blargbot/cluster';
-import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType, randInt } from '@blargbot/cluster/utils/index.js';
+import { GlobalCommand } from '@blargbot/cluster';
+import { CommandType } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
+import { random } from '@blargbot/util';
 import wolken from 'wolken';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.cat;
@@ -35,7 +36,7 @@ export class CatCommand extends GlobalCommand {
                 {
                     image: { url: res.url },
                     footer: { text: util.literal('Powered by weeb.sh') },
-                    color: randInt(0x1, 0xffffff)
+                    color: random.int(0x1, 0xffffff)
                 }
             ]
         };

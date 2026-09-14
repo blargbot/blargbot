@@ -1,12 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { MapSubtag } from '@blargbot/bbtag/subtags/array/map.js';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
-import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return.js';
-import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if.js';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { BBTagRuntimeError, BBTagRuntimeState } from '@blargbot/bbtag';
+import { GetSubtag, IfSubtag, MapSubtag, ReturnSubtag } from '@blargbot/bbtag/subtags';
+import { TagVariableType } from '@blargbot/domain';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

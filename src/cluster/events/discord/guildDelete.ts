@@ -1,5 +1,5 @@
 import type { Cluster } from '@blargbot/cluster';
-import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import { DiscordEventService } from '@blargbot/core';
 import type * as eris from 'eris';
 
 export class DiscordGuildDeleteHandler extends DiscordEventService<'guildDelete'> {

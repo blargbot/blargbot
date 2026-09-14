@@ -1,12 +1,14 @@
 import type { Configuration } from '@blargbot/config';
-import { BaseUtilities } from '@blargbot/core/BaseUtilities.js';
+import type { AmqpChannel } from '@blargbot/contracts';
+import { AmqpConnection } from '@blargbot/contracts';
+import { BaseUtilities } from '@blargbot/core';
 import { Database } from '@blargbot/database';
 import * as Formatting from '@blargbot/formatting';
 import type { Logger } from '@blargbot/logger';
+import { Iterable } from '@blargbot/util';
 import * as eris from 'eris';
 
-import * as transformers from './formatting/index.js';
-import { getRange } from './utils/index.js';
+import * as transformers from './transformers/index.js';
 
 export interface BaseClientOptions {
     readonly logger: Logger;
@@ -24,6 +26,7 @@ export class BaseClient {
     public readonly formatCompiler: Formatting.IFormatStringCompiler;
     public readonly database: Database;
     public readonly discord: eris.Client;
+    public readonly amqp: AmqpChannel;
     public readonly fetch: typeof fetch;
     public get ownerIds(): readonly string[] { return this.#owners; }
 
@@ -31,6 +34,7 @@ export class BaseClient {
         this.logger = options.logger;
         this.config = options.config;
         this.fetch = options.fetch;
+        this.amqp = new AmqpConnection(options.config.amqp.url).createChannel();
         this.formatCompiler = new Formatting.FormatStringCompiler({
             middleware: [...options.formatterOptions?.middleware ?? [], new Formatting.CacheMiddleware()],
             transformers: {
@@ -57,7 +61,9 @@ export class BaseClient {
     }
 
     protected async connectDiscordGateway(): Promise<void> {
-        const shards = getRange(this.discord.options.firstShardID ?? 0, this.discord.options.lastShardID ?? 0);
+        const firstShard = this.discord.options.firstShardID ?? 0;
+        const lastShard = this.discord.options.lastShardID ?? 0;
+        const shards = Iterable.range(firstShard, lastShard - firstShard + 1);
         const remainingShards = new Set(shards);
         await Promise.all([
             new Promise(resolve => this.discord.once('ready', resolve)).then(() => this.logger.init('discord connected')),

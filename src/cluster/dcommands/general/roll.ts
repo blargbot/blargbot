@@ -1,8 +1,8 @@
-import type { CommandContext } from '@blargbot/cluster/command/index.js';
-import { GlobalCommand } from '@blargbot/cluster/command/index.js';
-import { CommandType, guard, parse, randChoose, randInt, repeat } from '@blargbot/cluster/utils/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand, guard, parse } from '@blargbot/cluster';
+import { Iterable, random } from '@blargbot/util';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.roll;
@@ -26,21 +26,21 @@ export class RollCommand extends GlobalCommand {
             case 'cat': return {
                 embeds: [{
                     author: context.util.embedifyAuthor(context.author),
-                    image: { url: randChoose(cats) }
+                    image: { url: random.pick(cats) }
                 }]
             };
             case 'rick': return {
                 embeds: [{
                     author: context.util.embedifyAuthor(context.author),
-                    image: { url: randChoose(ricks) }
+                    image: { url: random.pick(ricks) }
                 }]
             };
             case 'character': return {
                 embeds: [{
                     author: context.util.embedifyAuthor(context.author),
                     description: cmd.default.character.embed.description({
-                        stats: repeat(6, id => {
-                            const rolls = repeat(4, () => randInt(1, 6));
+                        stats: Iterable.range(6).map(id => {
+                            const rolls = Iterable.range(4).map(() => random.int(1, 6));
                             const total = rolls.reduce((p, c) => p + c, 0);
                             const min = Math.min(...rolls);
                             return { id, rolls, total, min, result: total - min };
@@ -62,7 +62,7 @@ export class RollCommand extends GlobalCommand {
         if (rollCount > maxRolls || faceCount > maxFaces)
             return cmd.default.tooBig({ maxRolls, maxFaces });
 
-        const rolls = repeat(rollCount, () => randInt(1, faceCount));
+        const rolls = Iterable.range(rollCount).map(() => random.int(1, faceCount)).toArray();
         const subtotal = rolls.reduce((p, c) => p + c, 0);
         const total = subtotal + modifier;
         const modifierText = modifier === 0 ? undefined

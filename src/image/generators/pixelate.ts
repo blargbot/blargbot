@@ -1,24 +1,17 @@
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator.js';
-import type { ImageWorker } from '@blargbot/image/ImageWorker.js';
-import type { ImageResult, PixelateOptions } from '@blargbot/image/types.js';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
 import sharp from 'sharp';
 
-export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {
-    public constructor(worker: ImageWorker) {
-        super('pixelate', worker);
-    }
+import type { GeneratorContext } from '../GeneratorContext.js';
 
-    public async execute({ url, scale }: PixelateOptions): Promise<ImageResult> {
-        const pixelated = await sharp(await this.getRemote(url))
-            .resize(scale, scale, { fit: 'inside' })
-            .toBuffer();
+export async function pixelate(request: ImageRequestData<'pixelate'>, context: GeneratorContext): Promise<ImageResponse> {
+    const pixelated = await sharp(await context.getRemote(request.imageUrl))
+        .resize(request.scale, request.scale, { fit: 'inside' })
+        .toBuffer();
 
-        const result = sharp(pixelated)
-            .resize(256, 256, { fit: 'outside', kernel: 'nearest' });
+    const { data } = await sharp(pixelated)
+        .resize(256, 256, { fit: 'outside', kernel: 'nearest' })
+        .png()
+        .toUint8Array();
 
-        return {
-            data: await result.png().toBuffer(),
-            fileName: 'pixelate.png'
-        };
-    }
+    return { data, fileName: 'pixelate.png' };
 }

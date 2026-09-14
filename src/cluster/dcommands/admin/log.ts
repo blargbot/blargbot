@@ -1,11 +1,11 @@
-import { GuildCommand } from '@blargbot/cluster/command/index.js';
-import type { CommandResult, GuildCommandContext } from '@blargbot/cluster/types.js';
-import { CommandType, guard } from '@blargbot/cluster/utils/index.js';
-import type { StoredGuildEventLogType } from '@blargbot/domain/models/index.js';
+import { GuildCommand } from '@blargbot/cluster';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, guard } from '@blargbot/cluster';
+import type { StoredGuildEventLogType } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as eris from 'eris';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.log;
 

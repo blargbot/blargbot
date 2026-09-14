@@ -1,6 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { ChannelEditSubtag } from '@blargbot/bbtag/subtags/channel/channelEdit.js';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { ChannelEditSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import { ChannelType } from 'discord-api-types/v9';
 import * as eris from 'eris';

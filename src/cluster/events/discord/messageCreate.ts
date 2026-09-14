@@ -1,10 +1,9 @@
 import { performance } from 'node:perf_hooks';
 
 import type { Cluster } from '@blargbot/cluster';
-import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware } from '@blargbot/cluster/command/index.js';
-import { guard, runMiddleware, snowflake } from '@blargbot/cluster/utils/index.js';
-import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
-import type { IMiddleware } from '@blargbot/core/types.js';
+import { CommandLoggerMiddleware, ErrorMiddleware, guard, RollingRatelimitMiddleware } from '@blargbot/cluster';
+import type { IMiddleware } from '@blargbot/core';
+import { DiscordEventService, runMiddleware, snowflake } from '@blargbot/core';
 import { MessageFlags } from 'discord-api-types/v9';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';

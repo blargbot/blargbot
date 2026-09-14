@@ -1,5 +1,5 @@
 import type { Cluster } from '@blargbot/cluster';
-import { DiscordEventService } from '@blargbot/core/serviceTypes/index.js';
+import { DiscordEventService } from '@blargbot/core';
 
 export class DiscordErrorHandler extends DiscordEventService<'error'> {
     public constructor(cluster: Cluster) {

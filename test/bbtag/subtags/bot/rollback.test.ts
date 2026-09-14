@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
 import type { BBTagContext } from '@blargbot/bbtag';
-import { RollbackSubtag } from '@blargbot/bbtag/subtags/bot/rollback.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { RollbackSubtag } from '@blargbot/bbtag/subtags';
+import { TagVariableType } from '@blargbot/domain';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

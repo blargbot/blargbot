@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { BaseNumberSubtag } from '@blargbot/bbtag/subtags/math/base.js';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag';
+import { BaseNumberSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

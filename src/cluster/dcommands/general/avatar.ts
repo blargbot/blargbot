@@ -1,11 +1,11 @@
-import type { CommandContext } from '@blargbot/cluster/command/index.js';
-import { GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command/index.js';
-import { CommandType } from '@blargbot/cluster/utils/index.js';
-import { parse } from '@blargbot/core/utils/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster';
+import { CommandType } from '@blargbot/cluster';
+import { parse } from '@blargbot/core';
 import { asBuffer } from '@blargbot/util';
 import type * as eris from 'eris';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.avatar;

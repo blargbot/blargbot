@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag/errors/index.js';
-import { SliceSubtag } from '@blargbot/bbtag/subtags/array/slice.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag';
+import { SliceSubtag } from '@blargbot/bbtag/subtags';
+import { TagVariableType } from '@blargbot/domain';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

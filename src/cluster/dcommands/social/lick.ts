@@ -1,7 +1,7 @@
 import type { Cluster } from '@blargbot/cluster';
-import { WolkenCommand } from '@blargbot/cluster/command/index.js';
+import { WolkenCommand } from '@blargbot/cluster';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 
 export class LickCommand extends WolkenCommand {
     public constructor(cluster: Cluster) {

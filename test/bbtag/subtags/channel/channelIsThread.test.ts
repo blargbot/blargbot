@@ -1,4 +1,4 @@
-import { ChannelIsThreadSubtag } from '@blargbot/bbtag/subtags/channel/channelIsThread.js';
+import { ChannelIsThreadSubtag } from '@blargbot/bbtag/subtags';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

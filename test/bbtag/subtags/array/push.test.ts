@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { NotAnArrayError } from '@blargbot/bbtag/errors/index.js';
-import { PushSubtag } from '@blargbot/bbtag/subtags/array/push.js';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get.js';
-import { TagVariableType } from '@blargbot/domain/models/index.js';
+import { NotAnArrayError } from '@blargbot/bbtag';
+import { GetSubtag, PushSubtag } from '@blargbot/bbtag/subtags';
+import { TagVariableType } from '@blargbot/domain';
 import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

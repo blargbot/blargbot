@@ -1,4 +1,4 @@
-import { guard as coreGuard } from '@blargbot/core/utils/guard/index.js';
+import { guard as coreGuard } from '@blargbot/core';
 
 import * as isGuildCommandContext from './isGuildCommandContext.js';
 import * as isGuildImportedCommandTag from './isGuildImportedCommandTag.js';

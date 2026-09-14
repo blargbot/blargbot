@@ -1,7 +1,7 @@
-import type { CommandContext} from '@blargbot/cluster/command/index.js';
-import { GlobalImageCommand } from '@blargbot/cluster/command/index.js';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalImageCommand } from '@blargbot/cluster';
 
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.free;
@@ -24,6 +24,6 @@ export class FreeCommand extends GlobalImageCommand {
     }
 
     public async render(context: CommandContext, caption: string, bottomText: string | undefined): Promise<CommandResult> {
-        return await this.renderImage(context, 'free', { top: caption, bottom: bottomText });
+        return await this.renderImage(context, { type: 'free', top: caption, bottom: bottomText });
     }
 }

@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { RoleSetPermissionsSubtag } from '@blargbot/bbtag/subtags/role/roleSetPermissions.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { RoleSetPermissionsSubtag } from '@blargbot/bbtag/subtags';
 import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 

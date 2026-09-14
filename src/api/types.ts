@@ -1,7 +1,7 @@
 import type { IncomingMessage } from 'node:http';
 
-import type { ClusterStats, CommandListResult, CommandListResultItem, GuildPermissionDetails, SubtagDetails, SubtagListResult } from '@blargbot/cluster/types.js';
-import type { GuildSettingDocs } from '@blargbot/domain/models/index.js';
+import type { ClusterStats, CommandListResult, CommandListResultItem, GuildPermissionDetails, SubtagDetails, SubtagListResult } from '@blargbot/cluster';
+import type { GuildSettingDocs } from '@blargbot/domain';
 import type { IRoute, IRouterHandler, Request, Response, RouteParameters } from 'express-serve-static-core';
 import type { metric } from 'prom-client';
 import type { WebSocket } from 'ws';

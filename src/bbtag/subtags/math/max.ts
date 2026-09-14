@@ -1,7 +1,7 @@
-import { guard, parse } from '@blargbot/core/utils/index.js';
+import { guard, parse } from '@blargbot/core';
 
 import { CompiledSubtag } from '../../compilation/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.max;

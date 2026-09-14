@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors/index.js';
-import { RegexReplaceSubtag } from '@blargbot/bbtag/subtags/misc/regexReplace.js';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { RegexReplaceSubtag } from '@blargbot/bbtag/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

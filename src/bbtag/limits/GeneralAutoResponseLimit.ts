@@ -1,5 +1,5 @@
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors/index.js';
-import templates from '../text.js';
+import { templates } from '../text.js';
 import { GlobalLimit } from './GlobalLimit.js';
 import { disabledRule, staffOnlyRule, UseCountRule } from './rules/index.js';
 

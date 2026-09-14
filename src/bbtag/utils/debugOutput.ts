@@ -2,7 +2,7 @@ import type { IFormattable } from '@blargbot/formatting';
 import type * as eris from 'eris';
 
 import type { SubtagCall } from '../language/index.js';
-import templates from '../text.js';
+import { templates } from '../text.js';
 import type { ExecutionResult } from '../types.js';
 import { stringify } from './stringify.js';
 

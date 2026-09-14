@@ -1,7 +1,6 @@
-import type { IPCContracts } from '@blargbot/core/types.js';
-import { getRange } from '@blargbot/core/utils/index.js';
+import type { IPCContracts } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
-import { Semaphore } from '@blargbot/util';
+import { Iterable, Semaphore } from '@blargbot/util';
 import EventEmitter from 'eventemitter3';
 
 import type { WorkerConnection } from './WorkerConnection.js';
@@ -131,13 +130,15 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
     }
 
     public async spawnAll(timeoutMs = this.defaultTimeout): Promise<Worker[]> {
-        return await Promise.all(getRange(0, this.workerCount - 1)
-            .map(id => this.spawn(id, timeoutMs)));
+        return await Promise.all(
+            Iterable.range(0, this.workerCount - 1).map(id => this.spawn(id, timeoutMs))
+        );
     }
 
     public async killAll(): Promise<void> {
-        await Promise.all(getRange(0, this.workerCount - 1)
-            .map(id => this.kill(id)));
+        await Promise.all(
+            Iterable.range(0, this.workerCount - 1).map(id => this.kill(id))
+        );
     }
 
     public forEach(callback: (id: number, worker: Worker | undefined) => Promise<void>): Promise<void>;

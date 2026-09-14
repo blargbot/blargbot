@@ -1,10 +1,10 @@
-import { guard } from '@blargbot/core/utils/index.js';
+import { guard } from '@blargbot/core';
 import Color from 'color';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import templates from '../../text.js';
+import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.color;

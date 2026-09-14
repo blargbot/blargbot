@@ -1,4 +1,4 @@
-import type { MessageFilter } from '@blargbot/domain/models/index.js';
+import type { MessageFilter } from '@blargbot/domain';
 import type * as eris from 'eris';
 
 import { matchRegexSafe } from '../createRegExp.js';
