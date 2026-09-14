@@ -131,13 +131,13 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
 
     public async spawnAll(timeoutMs = this.defaultTimeout): Promise<Worker[]> {
         return await Promise.all(
-            Iterable.range(0, this.workerCount - 1).map(id => this.spawn(id, timeoutMs))
+            Iterable.range(0, this.workerCount).map(id => this.spawn(id, timeoutMs))
         );
     }
 
     public async killAll(): Promise<void> {
         await Promise.all(
-            Iterable.range(0, this.workerCount - 1).map(id => this.kill(id))
+            Iterable.range(0, this.workerCount).map(id => this.kill(id))
         );
     }
 

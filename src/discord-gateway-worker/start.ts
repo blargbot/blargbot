@@ -15,12 +15,7 @@ logger.setGlobal();
 const shards = new ShardManager(clusterId, logger);
 const killWorker = new AbortController();
 
-const amqp = new AmqpConnection(config.amqp.url);
-amqp.onError(err => logger.error('[AMQP]', err));
-amqp.onConnected(signal => {
-    logger.init('[AMQP] internal connection established.');
-    whenAborted(signal, () => logger.warn('[AMQP] internal connection closed.'));
-});
+const amqp = new AmqpConnection(config.amqp.url, { logger });
 const amqpChannel = amqp.createChannel();
 await setupAmqp(amqpChannel, shards, killWorker);
 const postStats = setInterval(tickPostStats, 5_000);

@@ -377,7 +377,7 @@ export class AutoResponseCommand extends GuildCommand {
 const symbols = '!@#$%^&*()_+{}|\\[]-=:";\'<>?,./';
 const numbers = '0123456790';
 const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const holyShitSymbols = Iterable.range(0xf0ff, 0xffff)
+const holyShitSymbols = Iterable.range(0xf0ff, 0x0f00)
     .map(i => String.fromCharCode(i))
     .toArray()
     .join('');

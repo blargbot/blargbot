@@ -34,7 +34,9 @@ export class BaseClient {
         this.logger = options.logger;
         this.config = options.config;
         this.fetch = options.fetch;
-        this.amqp = new AmqpConnection(options.config.amqp.url).createChannel();
+        this.amqp = new AmqpConnection(options.config.amqp.url, {
+            logger: options.logger
+        }).createChannel();
         this.formatCompiler = new Formatting.FormatStringCompiler({
             middleware: [...options.formatterOptions?.middleware ?? [], new Formatting.CacheMiddleware()],
             transformers: {

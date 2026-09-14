@@ -25,8 +25,12 @@ export const tagArray = Object.freeze({
         if (!result.valid) {
             value = value.replace(
                 /([[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
-                (_, ...[before, from, to, after]: string[]) =>
-                    before + Iterable.range(parse.int(from) ?? NaN, parse.int(to) ?? NaN).take(200).toArray().join(',') + after);
+                (_, ...[before, from, to, after]: string[]) => {
+                    const start = parse.int(from) ?? NaN;
+                    const end = parse.int(to) ?? NaN;
+                    return before + Iterable.range(start, end - start).take(200).toArray().join(',') + after;
+                }
+            );
             result = mapBBTagArrayOrJson(value);
         }
 

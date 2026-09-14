@@ -40,7 +40,7 @@ export interface ImageGeneratorOptions {
 
 export function createImageGenerator(options: ImageGeneratorOptions): (request: ImageRequest) => Promise<ImageResponse> {
     const imgDir = path.join(options.resourceDirectory, 'img');
-    const context: GeneratorContext = {
+    const context: GeneratorContext = Object.freeze<GeneratorContext>({
         fetch: options.fetch,
         getLocal(...segments) {
             const fullPath = path.join(imgDir, ...segments);
@@ -125,7 +125,7 @@ export function createImageGenerator(options: ImageGeneratorOptions): (request: 
             encoder.finish();
             return asUint8Array(await result.getResult());
         }
-    };
+    });
     return async (request) => await generators[request.type](request as never, context);
 }
 

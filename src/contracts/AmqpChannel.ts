@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
+import type { Logger } from '@blargbot/logger';
 import { AsyncResetValue, deepClone, Registry, usingListener, waitForAbort, whenAborted } from '@blargbot/util';
 import type { Channel, ChannelModel, ConfirmChannel, ConsumeMessage, ConsumeMessageFields, Options, Replies } from 'amqplib';
 import amqplib from 'amqplib';
@@ -40,24 +41,22 @@ export interface AmqpBindOptions {
     arguments?: AmqpTable;
     once?: boolean;
 }
+export interface AmqpOptions extends Options.Connect {
+    logger: Logger;
+}
 
 export class AmqpConnection implements Disposable {
     readonly #url: string;
-    readonly #options: Options.Connect | undefined;
+    readonly #options: AmqpOptions;
     readonly #controller = new AbortController();
     readonly #onConnect = new Registry<(connection: ChannelModel, signal: AbortSignal) => Promise<void>>();
-    readonly #onError = new Registry<(error: unknown) => void>();
     #connection?: ChannelModel;
 
-    public constructor(url: string, options?: Options.Connect) {
+    public constructor(url: string, options: AmqpOptions) {
         this.#url = url;
         this.#options = options;
 
         void this.#connect();
-    }
-
-    public onError(handler: (error: unknown) => void): Disposable {
-        return this.#onError.register(handler);
     }
 
     public onConnected(handler: (lifetime: AbortSignal) => void): Disposable {
@@ -74,20 +73,23 @@ export class AmqpConnection implements Disposable {
 
     async #connect(): Promise<void> {
         while (!this.#controller.signal.aborted) {
+            this.#options.logger.init('Connecting to AMQP');
             let connection;
             try {
                 connection = await amqplib.connect(this.#url, this.#options);
             } catch (error) {
-                this.#emitError(error);
+                this.#options.logger.error('Failed to connect to AMQP, abandoning connection', error);
                 break;
             }
-            connection.addListener('handler-error', (err: unknown) => this.#emitError(err));
+            this.#options.logger.init('Connected to AMQP');
+            connection.addListener('handler-error', (err: unknown) => this.#options.logger.error('Error from AMQP handler', err));
             this.#connection = connection;
             try {
                 const lifetime = new AbortController();
                 connection.addListener('close', () => lifetime.abort(new Error('Internal connection has closed.')));
                 for (const item of this.#onConnect)
                     await item(connection, lifetime.signal).catch(err => this.#emitError(err));
+                using _aborted = whenAborted(lifetime.signal, () => this.#options.logger.warn('AMQP connection lost, reestablishing...'));
                 await waitForAbort(lifetime.signal);
                 this.#connection = undefined;
             } catch (error) {
@@ -114,12 +116,7 @@ export class AmqpConnection implements Disposable {
     }
 
     #emitError(error: unknown): void {
-        if (this.#onError.isEmpty)
-            throw error;
-
-        for (const handler of this.#onError) {
-            handler(error);
-        }
+        this.#options.logger.error('Error from AMQP client', error);
     }
 
     public [Symbol.dispose](): void {

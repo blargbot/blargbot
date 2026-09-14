@@ -141,10 +141,15 @@ export class Cluster extends BaseClient {
             super.start(),
             this.connectDiscordGateway(),
             this.commands.load(),
-            getImageChannel(this.amqp).then(channel => this.#images.resolve(channel))
+            this.#connectImageChannel()
         ]);
 
         await this.services.init();
+    }
+
+    async #connectImageChannel(): Promise<void> {
+        this.#images.resolve(await getImageChannel(this.amqp));
+        this.logger.init('Image connection ready.');
     }
 
     public async eval(this: Cluster, author: string, text: string): Promise<EvalResult> {

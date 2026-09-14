@@ -10,7 +10,7 @@ Error.stackTraceLimit = 100;
 const logger = createLogger(config, createId());
 logger.setGlobal();
 
-const amqp = new AmqpConnection(config.amqp.url);
+const amqp = new AmqpConnection(config.amqp.url, { logger });
 const channel = amqp.createChannel();
 const imageChannel = await getImageChannel(channel);
 

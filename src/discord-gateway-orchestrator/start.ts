@@ -2,7 +2,6 @@ import { config } from '@blargbot/config';
 import { AmqpConnection, getDiscordGatewayOrchestrationChannel, getDiscordRestChannel } from '@blargbot/contracts';
 import { createRequestHandler } from '@blargbot/discord-rest-service';
 import { createLogger } from '@blargbot/logger';
-import { whenAborted } from '@blargbot/util';
 import { createGatewayManager } from '@discordeno/gateway';
 import { createRestManager } from '@discordeno/rest';
 import { GatewayIntents } from '@discordeno/types';
@@ -18,12 +17,7 @@ const discord = createRestManager({
     logger
 });
 
-const amqp = new AmqpConnection(config.amqp.url);
-amqp.onError(err => logger.error('[AMQP]', err));
-amqp.onConnected(signal => {
-    logger.init('[AMQP] internal connection established.');
-    whenAborted(signal, () => logger.warn('[AMQP] internal connection closed.'));
-});
+const amqp = new AmqpConnection(config.amqp.url, { logger });
 const amqpChannel = amqp.createChannel();
 
 const restChannel = await getDiscordRestChannel(amqpChannel);
