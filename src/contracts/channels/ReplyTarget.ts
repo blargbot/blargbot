@@ -77,6 +77,7 @@ export class ReplyTarget implements AsyncDisposable {
     public async waitFor(correlationId: string, signal?: AbortSignal): Promise<AmqpConsumeMessage> {
         for await (const item of this.stream(correlationId, signal))
             return item;
+        signal?.throwIfAborted();
         throw new Error('No message was receieved.');
     }
 

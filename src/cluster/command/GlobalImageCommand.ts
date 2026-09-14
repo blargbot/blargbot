@@ -28,7 +28,11 @@ export abstract class GlobalImageCommand extends GlobalCommand {
     }
 
     protected async renderImage(context: CommandContext, data: ImageRequest): Promise<CommandResult> {
-        const result = await context.cluster.images.render(data);
+        const result = await context.cluster.images.render(data, { ttl: 10_000 })
+            .catch(error => {
+                context.logger.error('Error while rendering', data, error);
+                return null;
+            });
         if (result === null || result.data.length === 0)
             return templates.commands.$errors.renderFailed;
 

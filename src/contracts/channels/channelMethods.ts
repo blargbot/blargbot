@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
+import { usingTimeout, whenAborted } from '@blargbot/util';
 import type { Options } from 'amqplib';
 
 import type { AmqpChannel, AmqpConsumeOptions, AmqpConsumer, AmqpExchange, AmqpQueue, AmqpReplyOptions } from '../AmqpChannel.js';
@@ -7,6 +8,10 @@ import type { AmqpMessage } from '../messages/AmqpMessage.js';
 import { ReplyTarget } from './ReplyTarget.js';
 
 type ConsumeKeys = keyof Options.Consume;
+export interface SendOptions {
+    signal?: AbortSignal;
+    ttl?: number;
+}
 export type AmqpChannelMethods<
     Send extends PropertyKey,
     Handle extends PropertyKey,
@@ -16,7 +21,7 @@ export type AmqpChannelMethods<
     HandleArgs extends readonly unknown[] = []
 >
     = (
-        { [P in Send]: (...args: [message: Request, ...SendArgs, signal?: AbortSignal]) => Promise<Response> }
+        { [P in Send]: (...args: [message: Request, ...SendArgs, options?: SendOptions]) => Promise<Response> }
         & { [P in Handle]: (...args: [handler: (message: Request) => Awaitable<Response>, ...HandleArgs]) => Promise<AmqpConsumer> }
         & AsyncDisposable
     ) extends infer P ? { [R in keyof P]: P[R] } : never
@@ -117,9 +122,14 @@ export const amqpChannelHelper = {
                 const queuePrefix = `${exchange.name}.${routingKey}`;
 
                 return stronglyType(send, handle, (send, handle) => ({
-                    async [send](message, signal) {
+                    async [send](message, options) {
+                        using signal = getSignal(options);
                         const request = await encoder.encodeAsync(message);
-                        await exchange.send(routingKey, request, { ...sendOptions?.(message, request), signal });
+                        await exchange.send(routingKey, request, {
+                            expiration: options?.ttl,
+                            ...sendOptions?.(message, request),
+                            signal
+                        });
                     },
                     async [handle](handler) {
                         return await consumeTemporaryQueue(
@@ -140,9 +150,14 @@ export const amqpChannelHelper = {
                 const queuePrefix = `${exchange.name}.${routingKey}`;
 
                 return stronglyType(send, handle, (send, handle) => ({
-                    async [send](message, workerId, signal) {
+                    async [send](message, workerId, options) {
+                        using signal = getSignal(options);
                         const request = await encoder.encodeAsync(message);
-                        await exchange.send(`${routingKey}.${workerId}`, request, { ...sendOptions?.(message, request), signal });
+                        await exchange.send(`${routingKey}.${workerId}`, request, {
+                            expiration: options?.ttl,
+                            ...sendOptions?.(message, request),
+                            signal
+                        });
                     },
                     async [handle](handler) {
                         return await consumeTemporaryQueue(
@@ -164,9 +179,14 @@ export const amqpChannelHelper = {
                 const replyTo = new ReplyTarget({ channel, queuePrefix });
 
                 return stronglyType(send, handle, (send, handle) => ({
-                    async [send](message, signal) {
+                    async [send](message, options) {
+                        using signal = getSignal(options);
                         const request = await requestEncoder.encodeAsync(message);
-                        const response = await replyTo.getExchangeResponse(exchange, routingKey, request, { ...sendOptions?.(message, request), signal });
+                        const response = await replyTo.getExchangeResponse(exchange, routingKey, request, {
+                            expiration: options?.ttl,
+                            ...sendOptions?.(message, request),
+                            signal
+                        });
                         return await responseEncoder.decodeAsync(response);
                     },
                     async [handle](handler) {
@@ -189,9 +209,14 @@ export const amqpChannelHelper = {
                 const replyTo = new ReplyTarget({ channel, queuePrefix });
 
                 return stronglyType(send, handle, (send, handle) => ({
-                    async [send](message, workerId, signal) {
+                    async [send](message, workerId, options) {
+                        using signal = getSignal(options);
                         const request = await requestEncoder.encodeAsync(message);
-                        const response = await replyTo.getExchangeResponse(exchange, `${routingKey}.${workerId}`, request, { ...sendOptions?.(message, request), signal });
+                        const response = await replyTo.getExchangeResponse(exchange, `${routingKey}.${workerId}`, request, {
+                            expiration: options?.ttl,
+                            ...sendOptions?.(message, request),
+                            signal
+                        });
                         return await responseEncoder.decodeAsync(response);
                     },
                     async [handle](handler) {
@@ -215,9 +240,14 @@ export const amqpChannelHelper = {
             defineNotification(options) {
                 const { send, handle, encoder, sendOptions, consumeOptions, badRequest } = options;
                 return stronglyType(send, handle, (send, handle) => ({
-                    async [send](message, signal) {
+                    async [send](message, options) {
+                        using signal = getSignal(options);
                         const request = await encoder.encodeAsync(message);
-                        await queue.send(request, { ...sendOptions?.(message, request), signal });
+                        await queue.send(request, {
+                            expiration: options?.ttl,
+                            ...sendOptions?.(message, request),
+                            signal
+                        });
                     },
                     async [handle](handler) {
                         return await consumeWithoutReply(
@@ -238,9 +268,14 @@ export const amqpChannelHelper = {
                 const replyTo = new ReplyTarget({ channel, queuePrefix: queue.name });
 
                 return stronglyType(send, handle, (send, handle) => ({
-                    async [send](message, signal) {
+                    async [send](message, options) {
+                        using signal = getSignal(options);
                         const request = await requestEncoder.encodeAsync(message);
-                        const response = await replyTo.getQueueResponse(queue, request, { ...sendOptions?.(message, request), signal });
+                        const response = await replyTo.getQueueResponse(queue, request, {
+                            expiration: options?.ttl,
+                            ...sendOptions?.(message, request),
+                            signal
+                        });
                         return await responseEncoder.decodeAsync(response);
                     },
                     async [handle](handler) {
@@ -276,6 +311,40 @@ function stronglyType<
     factory: (send: '$send', handle: '$handle') => AmqpChannelMethods<'$send', '$handle', Request, Response, SendArgs, HandleArgs>
 ): AmqpChannelMethods<Send, Handle, Request, Response, SendArgs, HandleArgs> {
     return factory(send as '$send', handle as '$handle') as never;
+}
+
+function getSignal(options?: SendOptions): AbortSignal & Disposable | undefined {
+    if (options === undefined)
+        return undefined;
+    if (options.ttl === undefined) {
+        if (options.signal === undefined)
+            return undefined;
+        return Object.assign(options.signal, { [Symbol.dispose]() { } });
+    }
+
+    const timeout = makeTimeoutSignal(options.ttl);
+    if (options.signal === undefined)
+        return timeout;
+
+    const result = new AbortController();
+    const timedOut = whenAborted(timeout, r => result.abort(r));
+    const cancelled = whenAborted(options.signal, r => result.abort(r));
+    return Object.assign(result.signal, {
+        [Symbol.dispose]() {
+            using _0 = timedOut;
+            using _1 = cancelled;
+        }
+    });
+}
+
+function makeTimeoutSignal(timeout: number): AbortSignal & Disposable {
+    const controller = new AbortController();
+    const handle = usingTimeout(() => controller.abort(new Error(`Timed out after ${timeout}ms`)), timeout);
+    return Object.assign(controller.signal, {
+        [Symbol.dispose]() {
+            using _0 = handle;
+        }
+    });
 }
 
 async function consumeTemporaryQueue(channel: AmqpChannel, queuePrefix: string, exchange: AmqpExchange, routingKey: string, consume: (queue: AmqpQueue) => Promise<AmqpConsumer>): Promise<AmqpConsumer> {
