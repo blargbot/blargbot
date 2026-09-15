@@ -1,8 +1,8 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { CommandType, GlobalCommand  } from '@blargbot/cluster';
+import { CommandType, GlobalCommand } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
-import { mapping } from '@blargbot/mapping';
 import { random } from '@blargbot/util';
+import z from 'zod';
 
 import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -68,8 +68,8 @@ export class CommitCommand extends GlobalCommand {
     async #fetchCommit(commitNumber: number, context: CommandContext): Promise<CommitData | undefined> {
         try {
             const response = await this.#fetchCommitRaw(commitNumber, context);
-            const mapped = commitMapping(await response.json());
-            return mapped.valid ? mapped.value[0] : undefined;
+            const mapped = commitMapping.safeParse(await response.json());
+            return mapped.success ? mapped.data[0] : undefined;
         } catch {
             return undefined;
         }
@@ -80,38 +80,19 @@ export class CommitCommand extends GlobalCommand {
     }
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
-interface CommitData {
-    sha: string;
-    html_url: string;
-    author?: {
-        login: string;
-        avatar_url: string;
-        html_url: string;
-    };
-    commit: {
-        author: {
-            name: string;
-        };
-        message: string;
-    };
-}
-
-const commitMapping = mapping.array(
-    mapping.object<CommitData>({
-        author: mapping.object<CommitData['author']>({
-            avatar_url: mapping.string,
-            html_url: mapping.string,
-            login: mapping.string
-        }).optional,
-        commit: mapping.object({
-            author: mapping.object({
-                name: mapping.string
-            }),
-            message: mapping.string
+const commitMapping = z.object({
+    author: z.object({
+        avatar_url: z.string(),
+        html_url: z.string(),
+        login: z.string()
+    }).optional(),
+    commit: z.object({
+        author: z.object({
+            name: z.string()
         }),
-        html_url: mapping.string,
-        sha: mapping.string
-    })
-);
-/* eslint-enable @typescript-eslint/naming-convention */
+        message: z.string()
+    }),
+    html_url: z.string(),
+    sha: z.string()
+}).array();
+type CommitData = z.infer<typeof commitMapping>[number];

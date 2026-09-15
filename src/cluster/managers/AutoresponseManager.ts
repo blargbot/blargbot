@@ -1,10 +1,10 @@
 import { bbtag } from '@blargbot/bbtag';
 import type { Cluster, WhitelistResponse } from '@blargbot/cluster';
 import { guard, humanize } from '@blargbot/cluster';
-import { FormattableMessageContent } from '@blargbot/core';
+import { FormattableMessageContent, zodStringToJson } from '@blargbot/core';
 import type { GuildTriggerTag } from '@blargbot/domain';
-import { mapping } from '@blargbot/mapping';
 import type eris from 'eris';
+import z from 'zod';
 
 import { templates } from '../text.js';
 
@@ -138,15 +138,15 @@ export class AutoresponseManager {
         if (match === null)
             return;
 
-        const mapped = mapArData(match[1]);
-        if (!mapped.valid)
+        const mapped = mapArData.safeParse(match[1]);
+        if (!mapped.success)
             return;
 
         const whitelist = emojiValues[emoji.name];
         const reason = `${whitelist ? 'Approved' : 'Rejected'} by ${user.username}#${user.discriminator}`;
 
         const promises: Array<Promise<unknown>> = [];
-        promises.push(this.whitelist(mapped.value.guild, mapped.value.channel, user, reason, whitelist));
+        promises.push(this.whitelist(mapped.data.guild, mapped.data.channel, user, reason, whitelist));
         for (const m of await message.channel.getMessages()) {
             if (m.author.id === this.#cluster.discord.user.id && m.content.includes(match[0])) {
                 promises.push(m.edit(`${emoji.name} ${m.content.replace(match[0], reason)}`));
@@ -182,12 +182,10 @@ const emojiValues = {
     '❌': false
 };
 
-interface ArData {
-    guild: string;
-    channel: string;
-}
-
-const mapArData = mapping.base64(mapping.json(mapping.object<ArData>({
-    channel: mapping.string,
-    guild: mapping.string
-})));
+const mapArData = z.base64()
+    .transform(v => Buffer.from(v, 'base64').toString())
+    .pipe(zodStringToJson)
+    .pipe(z.object({
+        channel: z.string(),
+        guild: z.string()
+    }));

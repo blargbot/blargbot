@@ -1,5 +1,5 @@
 import type { SubtagOptions } from '@blargbot/bbtag';
-import type { Command, CommandContext, CommandType, ModerationType, ScopedCommand  } from '@blargbot/cluster';
+import type { Command, CommandContext, CommandType, ModerationType, ScopedCommand } from '@blargbot/cluster';
 import type { EvalRequest, EvalResult, GlobalEvalResult, IMiddleware, MasterEvalRequest, SendContent } from '@blargbot/core';
 import type { CommandPermissions, FlagDefinition, FlagResult, GuildSettingDocs, GuildSourceCommandTag, NamedGuildCommandTag } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
@@ -225,9 +225,7 @@ export interface CommandSignatureHandler<TContext extends CommandContext> extend
     readonly execute: (context: TContext, args: readonly CommandArgument[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
 }
 
-export type CustomCommandShrinkwrap = {
-    readonly [P in Exclude<keyof GuildSourceCommandTag, 'author' | 'authorizer' | 'id'>]: GuildSourceCommandTag[P]
-}
+export type CustomCommandShrinkwrap = Readonly<Omit<GuildSourceCommandTag, 'author' | 'authorizer' | 'id'>>;
 
 export interface GuildShrinkwrap {
     readonly cc: Record<string, CustomCommandShrinkwrap | undefined>;

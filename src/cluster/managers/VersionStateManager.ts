@@ -1,12 +1,8 @@
 import type { BotVariableStore } from '@blargbot/domain';
-import { mapping } from '@blargbot/mapping';
-import type { UpdateType } from '@hunteroi/versioning';
 import { Version } from '@hunteroi/versioning';
+import z from 'zod';
 
-const mapUpdateType = mapping.choice(
-    mapping.in<UpdateType>('major', 'minor'),
-    mapping.string.map<UpdateType>(() => 'patch')
-);
+const mapUpdateType = z.enum(['major', 'minor', 'patch']).catch('patch');
 
 export class VersionStateManager {
     readonly #db: BotVariableStore;
@@ -23,12 +19,12 @@ export class VersionStateManager {
     public async updateVersion(type: string): Promise<void> {
         const version = await this.#getFromStorage();
 
-        const mapped = mapUpdateType(type);
-        if (!mapped.valid) {
+        const mapped = mapUpdateType.safeParse(type);
+        if (!mapped.success) {
             throw new Error('Invalid update type');
         }
 
-        version.update(mapped.value);
+        version.update(mapped.data);
 
         await this.#db.set('version', version);
     }

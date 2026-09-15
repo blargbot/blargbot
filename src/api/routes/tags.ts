@@ -1,5 +1,5 @@
 import type { StoredTag } from '@blargbot/domain';
-import { mapping } from '@blargbot/mapping';
+import z from 'zod';
 
 import type { Api } from '../Api.js';
 import { BaseRoute } from '../BaseRoute.js';
@@ -38,7 +38,7 @@ export class TagsRoute extends BaseRoute<['/tags']> {
     }
 
     public async setTag(tagName: string, body: unknown, author: string): Promise<ApiResponse> {
-        const request = this.mapRequestValue(body, mapUpdateTag);
+        const request = await this.mapRequestValue(body, mapUpdateTag);
 
         const current = await this.#api.database.tags.get(tagName);
         if (current === undefined)
@@ -47,7 +47,7 @@ export class TagsRoute extends BaseRoute<['/tags']> {
     }
 
     public async createTag(body: unknown, author: string): Promise<ApiResponse> {
-        const { name: tagName, content } = this.mapRequestValue(body, mapCreateTag);
+        const { name: tagName, content } = await this.mapRequestValue(body, mapCreateTag);
         const exists = await this.#api.database.tags.get(tagName);
         if (exists !== undefined)
             return this.forbidden(`A tag with the name ${tagName} already exists`);
@@ -72,7 +72,7 @@ export class TagsRoute extends BaseRoute<['/tags']> {
     }
 
     public async editTag(tagName: string, body: unknown, author: string): Promise<ApiResponse> {
-        const request = this.mapRequestValue(body, mapUpdateTag);
+        const request = await this.mapRequestValue(body, mapUpdateTag);
 
         const current = await this.#api.database.tags.get(tagName);
         if (current === undefined)
@@ -122,12 +122,12 @@ export class TagsRoute extends BaseRoute<['/tags']> {
     }
 }
 
-const mapCreateTag = mapping.object({
-    content: mapping.string,
-    name: mapping.string
-});
+const mapCreateTag = z.compile(z.object({
+    content: z.string(),
+    name: z.string()
+}));
 
-const mapUpdateTag = mapping.object({
-    content: mapping.string.optional,
-    name: mapping.string.optional
-});
+const mapUpdateTag = z.compile(z.object({
+    content: z.string().optional(),
+    name: z.string().optional()
+}));

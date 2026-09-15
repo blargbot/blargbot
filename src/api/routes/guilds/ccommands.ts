@@ -1,6 +1,6 @@
 import { snowflake } from '@blargbot/core';
 import type { GuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain';
-import { mapping } from '@blargbot/mapping';
+import z from 'zod';
 
 import type { Api } from '../../Api.js';
 import { BaseRoute } from '../../BaseRoute.js';
@@ -43,7 +43,7 @@ export class CCommandsRoute extends BaseRoute<['/guilds/:guildId/ccommands']> {
     }
 
     public async setCommand(guildId: string, commandName: string, body: unknown, author: string): Promise<ApiResponse> {
-        const request = this.mapRequestValue(body, mapUpdateCommand);
+        const request = await this.mapRequestValue(body, mapUpdateCommand);
 
         const current = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (current === undefined)
@@ -52,7 +52,7 @@ export class CCommandsRoute extends BaseRoute<['/guilds/:guildId/ccommands']> {
     }
 
     public async createCommand(guildId: string, body: unknown, author: string): Promise<ApiResponse> {
-        const { name: commandName, content } = this.mapRequestValue(body, mapCreateCommand);
+        const { name: commandName, content } = await this.mapRequestValue(body, mapCreateCommand);
         const current = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (current !== undefined)
             return this.forbidden(`A custom command with the name ${commandName} already exists`);
@@ -77,7 +77,7 @@ export class CCommandsRoute extends BaseRoute<['/guilds/:guildId/ccommands']> {
     }
 
     public async editCommand(guildId: string, commandName: string, body: unknown, author: string): Promise<ApiResponse> {
-        const request = this.mapRequestValue(body, mapUpdateCommand);
+        const request = await this.mapRequestValue(body, mapUpdateCommand);
 
         const current = await this.#api.database.guilds.getCommand(guildId, commandName);
         if (current === undefined)
@@ -135,12 +135,12 @@ export class CCommandsRoute extends BaseRoute<['/guilds/:guildId/ccommands']> {
     }
 }
 
-const mapCreateCommand = mapping.object({
-    content: mapping.string,
-    name: mapping.string
-});
+const mapCreateCommand = z.compile(z.object({
+    content: z.string(),
+    name: z.string()
+}));
 
-const mapUpdateCommand = mapping.object({
-    content: mapping.string.optional,
-    name: mapping.string.optional
-});
+const mapUpdateCommand = z.compile(z.object({
+    content: z.string().optional(),
+    name: z.string().optional()
+}));

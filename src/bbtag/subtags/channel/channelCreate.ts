@@ -1,6 +1,6 @@
-import { guard } from '@blargbot/core';
-import { mapping } from '@blargbot/mapping';
+import { guard, zodStringToJson } from '@blargbot/core';
 import * as eris from 'eris';
+import z from 'zod';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -38,15 +38,15 @@ export class ChannelCreateSubtag extends CompiledSubtag {
         if (!context.hasPermission('manageChannels'))
             throw new BBTagRuntimeError('Author cannot create channels');
 
-        const mapped = mapOptions(optionsJson);
-        if (!mapped.valid)
+        const mapped = mapOptions.safeParse(optionsJson);
+        if (!mapped.success)
             throw new BBTagRuntimeError('Invalid JSON');
-        const options = mapped.value;
+        const options = mapped.data;
 
         const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : eris.Constants.ChannelTypes.GUILD_TEXT;
 
         for (const permission of options.permissionOverwrites ?? [])
-            if (!context.hasPermission((permission.allow as bigint) | (permission.deny as bigint)))
+            if (!context.hasPermission(permission.allow | permission.deny))
                 throw new BBTagRuntimeError('Author missing requested permissions');
 
         try {
@@ -71,25 +71,32 @@ const channelTypes = {
     store: eris.Constants.ChannelTypes.GUILD_STORE
 } as const;
 
-const mapOptions = mapping.json(
-    mapping.object<eris.CreateChannelOptions>({
-        bitrate: mapping.number.optional,
-        nsfw: mapping.boolean.optional,
-        parentID: mapping.string.optional,
-        rateLimitPerUser: mapping.number.optional,
-        topic: mapping.string.optional,
-        userLimit: mapping.number.optional,
-        permissionOverwrites: mapping.array(
-            mapping.object({
-                allow: mapping.bigInt.optional.map(v => v ?? 0n),
-                deny: mapping.bigInt.optional.map(v => v ?? 0n),
-                id: mapping.string,
-                type: mapping.in('role', 'member')
-                    .map(v => v === 'member' ? 'user' : v)
-                    .map(v => eris.Constants.PermissionOverwriteTypes[v.toUpperCase()])
-            })
-        ).optional,
-        reason: mapping.string.optional,
-        position: [undefined]
-    })
-);
+const numberish = z.union([
+    z.number(),
+    z.string().transform(v => parseFloat(v))
+]).refine(v => !isNaN(v));
+const booleanish = z.union([
+    z.boolean(),
+    z.enum(['true', 'false']).transform(v => v === 'true')
+]);
+const bigintish = z.string()
+    .regex(/^\d+$/)
+    .transform(BigInt);
+
+const mapOptions = zodStringToJson.pipe(z.object({
+    bitrate: numberish.optional(),
+    nsfw: booleanish.optional(),
+    parentID: z.string().optional(),
+    rateLimitPerUser: numberish.optional(),
+    topic: z.string().optional(),
+    userLimit: numberish.optional(),
+    permissionOverwrites: z.object({
+        allow: bigintish.optional().default(0n),
+        deny: bigintish.optional().default(0n),
+        id: z.string(),
+        type: z.enum(['role', 'member'])
+            .transform(v => v === 'member' ? 'user' : v)
+            .transform(v => eris.Constants.PermissionOverwriteTypes[v.toUpperCase()])
+    }).array().optional(),
+    reason: z.string().optional()
+}));

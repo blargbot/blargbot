@@ -1,7 +1,7 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { CommandType, GlobalCommand  } from '@blargbot/cluster';
-import { mapping } from '@blargbot/mapping';
+import { CommandType, GlobalCommand } from '@blargbot/cluster';
 import { random } from '@blargbot/util';
+import z from 'zod';
 
 import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -36,11 +36,11 @@ export class DanbooruCommand extends GlobalCommand {
             return cmd.default.unsafeTags;
 
         const response = await this.#requestSafe(`https://danbooru.donmai.us/posts.json?limit=50&tags=${tags.join('%20')}`, context);
-        const doc = danbooruMapping(response);
-        if (!doc.valid)
+        const doc = danbooruMapping.safeParse(response);
+        if (!doc.success)
             return cmd.default.noResults;
 
-        const posts = doc.value
+        const posts = doc.data
             .filter(p => p.has_children === false)
             .filter(p => p.file_url !== undefined && /\.(gif|jpg|png|jpeg)$/.test(p.file_url));
 
@@ -73,10 +73,10 @@ export class DanbooruCommand extends GlobalCommand {
     }
 }
 
-const danbooruMapping = mapping.array(mapping.object({
-    has_children: mapping.boolean.optional,
-    file_url: mapping.string.optional,
-    tag_string_artist: mapping.string.optional,
-    source: mapping.string.optional,
-    created_at: mapping.date.optional
-}));
+const danbooruMapping = z.object({
+    has_children: z.boolean().optional(),
+    file_url: z.string().optional(),
+    tag_string_artist: z.string().optional(),
+    source: z.string().optional(),
+    created_at: z.date().optional()
+}).array();

@@ -15,6 +15,7 @@ export * from './random.js';
 export * from './Registry.js';
 export * from './ResetValue.js';
 export * from './RollingArray.js';
+export * from './safeJSON.js';
 export * from './Semaphore.js';
 export * from './sleep.js';
 export * from './streamEventEmitter.js';

@@ -1,9 +1,9 @@
 import type { IncomingMessage } from 'node:http';
 
-import type { TypeMapping } from '@blargbot/mapping';
 import { Lazy } from '@blargbot/util';
 import type { IRoute } from 'express-serve-static-core';
 import { WebSocketServer } from 'ws';
+import type z from 'zod';
 
 import type { Api } from './Api.js';
 import Security from './Security.js';
@@ -32,12 +32,12 @@ export class BaseRoute<BaseRoutes extends Array<`/${string}`>> {
             step(api, path);
     }
 
-    protected mapRequestValue<T>(value: unknown, mapping: TypeMapping<T>): T {
-        const result = mapping(value);
-        if (!result.valid)
+    protected async mapRequestValue<In, Out>(value: In, schema: z.ZodType<Out, In>): Promise<Out> {
+        const result = await schema.safeDecodeAsync(value);
+        if (!result.success)
             throw new ApiRequestError(this.badRequest());
 
-        return result.value;
+        return result.data;
     }
 
     #bindWebsocket(api: Api, path: string, handler: AsyncWebsocketHandler<this>): void {

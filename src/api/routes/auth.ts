@@ -1,6 +1,6 @@
 import { config } from '@blargbot/config';
-import { mapping } from '@blargbot/mapping';
 import type { Request } from 'express-serve-static-core';
+import z from 'zod';
 
 import type { Api } from '../Api.js';
 import { BaseRoute } from '../BaseRoute.js';
@@ -31,7 +31,7 @@ export class AuthRoute extends BaseRoute<['/auth']> {
     }
 
     public async validate(request: Request, api: Api): Promise<ApiResponse> {
-        const body = this.mapRequestValue(request.body, mapValidateBody);
+        const body = await this.mapRequestValue(request.body, mapValidateBody);
 
         const params = new URLSearchParams();
         params.append('client_id', config.website.clientId);
@@ -63,6 +63,6 @@ export class AuthRoute extends BaseRoute<['/auth']> {
     }
 }
 
-const mapValidateBody = mapping.object({
-    code: mapping.string
-});
+const mapValidateBody = z.compile(z.object({
+    code: z.string()
+}));

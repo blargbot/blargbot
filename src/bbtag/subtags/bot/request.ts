@@ -1,6 +1,6 @@
-import { parse } from '@blargbot/core';
-import { mapping } from '@blargbot/mapping';
+import { parse, zodStringToJson } from '@blargbot/core';
 import { BufferWriterStream } from '@blargbot/util';
+import z from 'zod';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -52,11 +52,11 @@ export class RequestSubtag extends CompiledSubtag {
         };
 
         if (optionsStr !== '') {
-            const mappedOptions = mapOptions(optionsStr);
-            if (!mappedOptions.valid)
+            const mappedOptions = mapOptions.safeParse(optionsStr);
+            if (!mappedOptions.success)
                 throw new BBTagRuntimeError('', `Invalid request options "${optionsStr}"`);
-            request.method = mappedOptions.value.method;
-            request.headers = mappedOptions.value.headers;
+            request.method = mappedOptions.data.method;
+            request.headers = mappedOptions.data.headers;
         }
 
         let data;
@@ -116,14 +116,14 @@ export class RequestSubtag extends CompiledSubtag {
     }
 }
 
-const mapOptions = mapping.json(mapping.object({
-    method: mapping.string
-        .map(s => s.toUpperCase())
-        .chain(mapping.in('GET', 'POST', 'PUT', 'PATCH', 'DELETE'))
-        .optional
-        .map(v => v ?? 'GET'),
-    headers: mapping.choice(
-        mapping.json(mapping.record(mapping.jToken.map(parse.string))),
-        mapping.record(mapping.jToken.map(parse.string))
-    ).optional.map(v => v ?? {})
+const mapOptions = zodStringToJson.pipe(z.object({
+    method: z.string()
+        .transform(s => s.toUpperCase())
+        .pipe(z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']))
+        .optional()
+        .default('GET'),
+    headers: z.union([
+        zodStringToJson.pipe(z.record(z.string(), z.json().transform(v => parse.string(v)))),
+        z.record(z.string(), z.json().transform(v => parse.string(v)))
+    ]).optional().default(() => ({}))
 }));

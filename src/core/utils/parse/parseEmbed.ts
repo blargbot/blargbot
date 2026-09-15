@@ -1,9 +1,8 @@
 import type { MalformedEmbed } from '@blargbot/core';
-import { discord } from '@blargbot/core';
-import type { TypeMappingImpl } from '@blargbot/mapping';
-import { mapping } from '@blargbot/mapping';
+import { discord, zodStringToJson } from '@blargbot/core';
 import Color from 'color';
 import type * as eris from 'eris';
+import z from 'zod';
 
 import { parseColor } from './parseColor.js';
 import { parseInt } from './parseInt.js';
@@ -15,78 +14,74 @@ export function parseEmbed(embedText: string | undefined, allowMalformed = true)
     if (embedText === undefined || embedText.trim().length === 0)
         return undefined;
 
-    const embeds = mapEmbeds(embedText);
-    if (!embeds.valid)
+    const embeds = mapEmbeds.safeParse(embedText);
+    if (!embeds.success)
         return undefined;
 
-    const results = Array.isArray(embeds.value) ? embeds.value : [embeds.value];
+    const results = Array.isArray(embeds.data) ? embeds.data : [embeds.data];
     if (!allowMalformed && results.some(r => 'malformed' in r))
         return undefined;
 
     return results;
-
 }
 
-const mapEmbedCore = mapping.object<eris.EmbedOptions>({
-    author: mapping.object<Exclude<eris.EmbedOptions['author'], undefined>>({
-        icon_url: mapping.string.optional,
-        name: mapping.string.optional.map(v => v ?? ''),
-        url: mapping.string.optional
-    }, { strict: false }).optional,
-    color: mapping.choice<number[]>(
-        mapping.number,
-        mapping.string.chain(v => {
-            const parsed = parseColor(v);
-            return parsed === undefined ? mapping.failed : mapping.success(parsed);
-        }),
-        mapping.string.chain(s => {
-            const parsed = parseInt(s);
-            return parsed === undefined ? mapping.failed : mapping.success(parsed);
-        }),
-        mapping.tuple<[number, number, number]>([
-            mapping.number,
-            mapping.number,
-            mapping.number
-        ]).map(v => Color.rgb(...v).value()),
-        mapping.regex<`#${number}`>(/^#\d+$/).map(v => parseInt(v.slice(1), { radix: 16 }) ?? NaN)
-    ).optional,
-    description: mapping.string.optional,
-    fields: mapping.array(mapping.object<Exclude<eris.EmbedOptions['fields'], undefined>[number]>({
-        inline: mapping.boolean.optional,
-        name: mapping.string,
-        value: mapping.string
-    }, { strict: false })).optional,
-    footer: mapping.object<Exclude<eris.EmbedOptions['footer'], undefined>>({
-        icon_url: mapping.string.optional,
-        text: mapping.string.optional.map(v => v ?? '')
-    }, { strict: false }).optional,
-    image: mapping.object<Exclude<eris.EmbedOptions['image'], undefined>>({
-        url: mapping.string.optional
-    }, { strict: false }).optional,
-    thumbnail: mapping.object<Exclude<eris.EmbedOptions['thumbnail'], undefined>>({
-        url: mapping.string.optional
-    }, { strict: false }).optional,
-    timestamp: mapping.choice<Array<Exclude<eris.EmbedOptions['timestamp'], undefined>>>(
-        mapping.string,
-        mapping.date
-    ).optional,
-    title: mapping.string.optional,
-    url: mapping.string.optional
-}, { strict: false });
+function fail(ctx: z.RefinementCtx): never {
+    ctx.addIssue('failed');
+    return z.NEVER;
+}
 
-const mapMalformedEmbed: TypeMappingImpl<MalformedEmbed> = value => mapping.success({
-    fields: [{ name: 'Malformed JSON', value: discord.overflowText('embed.field.value', JSON.stringify(value), '...') }],
-    malformed: true
+const mapEmbedCore = z.object({
+    author: z.object({
+        icon_url: z.string().optional(),
+        name: z.string().optional().default(''),
+        url: z.string().optional()
+    }).optional(),
+    color: z.union([
+        z.number(),
+        z.string().transform((v, ctx) => parseColor(v) ?? fail(ctx)),
+        z.string().transform((v, ctx) => parseInt(v) ?? fail(ctx)),
+        z.tuple([
+            z.union([z.number(), z.string().regex(/^\d+$/)]).transform(Number),
+            z.union([z.number(), z.string().regex(/^\d+$/)]).transform(Number),
+            z.union([z.number(), z.string().regex(/^\d+$/)]).transform(Number)
+        ]).transform(v => Color.rgb(...v).value()),
+        z.string().regex(/^#\d+$/).transform(v => parseInt(v.slice(1), { radix: 16 }) ?? NaN)
+    ]).optional(),
+    description: z.string().optional(),
+    fields: z.object({
+        inline: z.boolean().optional(),
+        name: z.string(),
+        value: z.string()
+    }).array().optional(),
+    footer: z.object({
+        icon_url: z.string().optional(),
+        text: z.string().optional().default('')
+    }).optional(),
+    image: z.object({
+        url: z.string().optional()
+    }).optional(),
+    thumbnail: z.object({
+        url: z.string().optional()
+    }).optional(),
+    timestamp: z.union([
+        z.iso.date()
+    ]).optional(),
+    title: z.string().optional(),
+    url: z.string().optional()
 });
 
-const mapEmbeds = mapping.choice(
-    mapping.json(mapping.choice(
-        mapping.array(mapping.choice(
-            mapEmbedCore,
-            mapMalformedEmbed
-        )),
-        mapEmbedCore,
-        mapMalformedEmbed
-    )),
+const mapMalformedEmbed = z.unknown().transform(value => ({
+    fields: [{ name: 'Malformed JSON', value: discord.overflowText('embed.field.value', JSON.stringify(value), '...') }],
+    malformed: true
+}));
+
+const mapEmbeddable = z.union([
+    mapEmbedCore,
+    z.union([mapEmbedCore, mapMalformedEmbed]).array(),
     mapMalformedEmbed
-);
+]);
+
+const mapEmbeds = z.union([
+    zodStringToJson.pipe(mapEmbeddable),
+    mapEmbeddable
+]);

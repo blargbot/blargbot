@@ -1,8 +1,8 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { CommandType, GlobalCommand  } from '@blargbot/cluster';
+import { CommandType, GlobalCommand } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
-import { mapping } from '@blargbot/mapping';
 import { random } from '@blargbot/util';
+import z from 'zod';
 
 import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -54,26 +54,19 @@ export class XKCDCommand extends GlobalCommand {
     async #requestComic(comicNumber: number | undefined, context: CommandContext): Promise<ComicInfo | undefined> {
         const response = await context.util.fetch(`http://xkcd.com/${comicNumber === undefined ? '' : `${comicNumber}/`}info.0.json`);
         try {
-            const info = comicInfoMapping(await response.json());
-            return info.valid ? info.value : undefined;
+            const info = comicInfoMapping.safeParse(await response.json());
+            return info.success ? info.data : undefined;
         } catch {
             return undefined;
         }
     }
 }
 
-interface ComicInfo {
-    num: number;
-    title: string;
-    year: string;
-    alt: string;
-    img: string;
-}
-
-const comicInfoMapping = mapping.object<ComicInfo>({
-    num: mapping.number,
-    title: mapping.string,
-    year: mapping.string,
-    alt: mapping.string,
-    img: mapping.string
+const comicInfoMapping = z.object({
+    num: z.number(),
+    title: z.string(),
+    year: z.string(),
+    alt: z.string(),
+    img: z.string()
 });
+type ComicInfo = z.infer<typeof comicInfoMapping>;

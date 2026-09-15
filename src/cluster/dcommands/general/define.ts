@@ -1,6 +1,6 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { CommandType, GlobalCommand  } from '@blargbot/cluster';
-import { mapping } from '@blargbot/mapping';
+import { CommandType, GlobalCommand } from '@blargbot/cluster';
+import z from 'zod';
 
 import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -29,11 +29,11 @@ export class DefineCommand extends GlobalCommand {
                 'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com'
             }
         });
-        const details = wordApiMapping(response);
-        if (!details.valid)
+        const details = wordApiMapping.safeParse(response);
+        if (!details.success)
             return cmd.default.unavailable;
 
-        const defaultIPA = details.value.pronunciation.all ?? '';
+        const defaultIPA = details.data.pronunciation.all ?? '';
 
         return {
             embeds: [
@@ -41,10 +41,10 @@ export class DefineCommand extends GlobalCommand {
                     author: context.util.embedifyAuthor(context.author),
                     title: cmd.default.embed.title({ word }),
                     description: defaultIPA !== '' ? cmd.default.embed.description(pronunciation(defaultIPA)) : undefined,
-                    fields: details.value.results
+                    fields: details.data.results
                         .slice(0, 15)
                         .map((r, i) => {
-                            const specificIPA = details.value.pronunciation[r.partOfSpeech] ?? defaultIPA;
+                            const specificIPA = details.data.pronunciation[r.partOfSpeech] ?? defaultIPA;
                             return {
                                 name: cmd.default.embed.field.name({ index: i + 1, type: r.partOfSpeech }),
                                 value: cmd.default.embed.field.value.default({
@@ -77,13 +77,16 @@ async function fetchSafe(context: CommandContext, url: string, init?: RequestIni
     }
 }
 
-const wordApiMapping = mapping.object({
-    word: mapping.string,
-    results: mapping.array(mapping.object({
-        definition: mapping.string,
-        partOfSpeech: mapping.string,
-        synonyms: mapping.array(mapping.string).optional
-    }, { strict: false })),
-    frequency: mapping.number,
-    pronunciation: mapping.record(mapping.choice(mapping.in(undefined), mapping.string))
-}, { strict: false });
+const wordApiMapping = z.object({
+    word: z.string(),
+    results: z.object({
+        definition: z.string(),
+        partOfSpeech: z.string(),
+        synonyms: z.string().array().optional()
+    }).array(),
+    frequency: z.number(),
+    pronunciation: z.record(
+        z.string(),
+        z.string().optional()
+    )
+});

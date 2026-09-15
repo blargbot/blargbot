@@ -1,11 +1,12 @@
 import type { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster';
 import { discord, guard } from '@blargbot/cluster';
+import { zodStringToJson } from '@blargbot/core';
 import type { UnmuteEventOptions } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { format } from '@blargbot/formatting';
-import { mapping } from '@blargbot/mapping';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
+import z from 'zod';
 
 import { templates } from '../../text.js';
 import type { ModerationManager } from '../ModerationManager.js';
@@ -129,11 +130,20 @@ export class MuteManager extends ModerationManagerBase {
         if (member === undefined)
             return;
 
-        const mapResult = mapDuration(event.duration);
-        const duration = mapResult.valid ? mapResult.value : undefined;
+        const mapResult = mapDuration.safeParse(event.duration);
+        const duration = mapResult.success ? mapResult.data : undefined;
 
         await this.unmute(member, this.cluster.discord.user, templates.mute.autoUnmute({ duration }));
     }
 }
 
-const mapDuration = mapping.json(mapping.duration);
+const mapDuration = zodStringToJson
+    .pipe(z.union([z.string(), z.number()]))
+    .transform((v, ctx) => {
+        try {
+            return moment.duration(v);
+        } catch {
+            ctx.addIssue('Invalid duration');
+            return z.NEVER;
+        }
+    });

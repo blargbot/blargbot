@@ -1,4 +1,4 @@
-import { mapping } from '@blargbot/mapping';
+import z from 'zod';
 
 import type { Api } from '../../Api.js';
 import { BaseRoute } from '../../BaseRoute.js';
@@ -47,7 +47,7 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
     }
 
     public async getCensor(guildId: string, idStr: string): Promise<ApiResponse> {
-        const id = this.mapRequestValue(idStr, mapping.number);
+        const id = await this.mapRequestValue(idStr, mapCensorId);
         const censor = await this.#api.database.guilds.getCensor(guildId, id);
         if (censor === undefined)
             return this.notFound();
@@ -56,7 +56,7 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
     }
 
     public async deleteCensor(guildId: string, idStr: string): Promise<ApiResponse> {
-        const id = this.mapRequestValue(idStr, mapping.number);
+        const id = await this.mapRequestValue(idStr, mapCensorId);
         if (!await this.#api.database.guilds.setCensor(guildId, id, undefined))
             return this.notFound();
 
@@ -77,7 +77,7 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
     }
 
     public async setCensorDefaultMessage(guildId: string, type: CensorRuleType, body: unknown, userId: string): Promise<ApiResponse> {
-        const request = this.mapRequestValue(body, mapTag);
+        const request = await this.mapRequestValue(body, mapTag);
         const current = await this.#api.database.guilds.getCensorRule(guildId, undefined, type);
         const result = { ...current, ...request, author: userId };
         if (!await this.#api.database.guilds.setCensorRule(guildId, undefined, type, result))
@@ -92,7 +92,7 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
     }
 
     public async getCensorMessage(guildId: string, idStr: string, type: CensorRuleType): Promise<ApiResponse> {
-        const id = this.mapRequestValue(idStr, mapping.number);
+        const id = await this.mapRequestValue(idStr, mapCensorId);
         const censor = await this.#api.database.guilds.getCensor(guildId, id);
         const result = censor?.[`${type}Message`];
         if (result === undefined)
@@ -102,8 +102,8 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
     }
 
     public async setCensorMessage(guildId: string, idStr: string, type: CensorRuleType, body: unknown, userId: string): Promise<ApiResponse> {
-        const id = this.mapRequestValue(idStr, mapping.number);
-        const request = this.mapRequestValue(body, mapTag);
+        const id = await this.mapRequestValue(idStr, mapCensorId);
+        const request = await this.mapRequestValue(body, mapTag);
         const current = await this.#api.database.guilds.getCensor(guildId, id);
         if (current === undefined)
             return this.notFound();
@@ -116,7 +116,7 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
     }
 
     public async deleteCensorMessage(guildId: string, idStr: string, type: CensorRuleType): Promise<ApiResponse> {
-        const id = this.mapRequestValue(idStr, mapping.number);
+        const id = await this.mapRequestValue(idStr, mapCensorId);
         if (await this.#api.database.guilds.getCensor(guildId, id) === undefined)
             return this.notFound();
 
@@ -147,6 +147,7 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
     }
 }
 
-const mapTag = mapping.object({
-    content: mapping.string
-});
+const mapCensorId = z.compile(z.string().regex(/^\d+$/).transform(Number));
+const mapTag = z.compile(z.object({
+    content: z.string()
+}));

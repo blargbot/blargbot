@@ -1,5 +1,5 @@
 import type { IFormattable } from '@blargbot/formatting';
-import { mapping } from '@blargbot/mapping';
+import z from 'zod';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
@@ -39,16 +39,16 @@ export class UseCountRule implements RuntimeLimitRule {
     }
 
     public load(state: JToken): void {
-        const mapped = mapState(state);
-        if (!mapped.valid)
+        const mapped = mapState.safeParse(state);
+        if (!mapped.success)
             throw new Error(`Invalid state ${JSON.stringify(state)}`);
 
-        this.#remaining = mapped.value[0];
-        this.#initial = mapped.value[1];
+        this.#remaining = mapped.data[0];
+        this.#initial = mapped.data[1];
     }
 }
 
-const mapState = mapping.tuple<[number, number]>([
-    mapping.number,
-    mapping.number
+const mapState = z.tuple([
+    z.number(),
+    z.number()
 ]);

@@ -26,3 +26,8 @@ if (coverage) {
         fs.mkdirSync(reportDir, { recursive: true });
     results.compose(lcov).pipe(fs.createWriteStream(`${reportDir}/lcov.info`));
 }
+
+await new Promise((res, rej) => {
+    results.on('close', res);
+    results.on('error', rej);
+});

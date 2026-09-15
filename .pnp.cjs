@@ -103,10 +103,6 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:src/logger"\
     },\
     {\
-      "name": "@blargbot/mapping",\
-      "reference": "workspace:src/mapping"\
-    },\
-    {\
       "name": "@blargbot/master",\
       "reference": "workspace:src/master"\
     },\
@@ -163,7 +159,6 @@ const RAW_RUNTIME_STATE =
     ["@blargbot/formatting", ["workspace:src/formatting"]],\
     ["@blargbot/image", ["workspace:src/image"]],\
     ["@blargbot/logger", ["workspace:src/logger"]],\
-    ["@blargbot/mapping", ["workspace:src/mapping"]],\
     ["@blargbot/master", ["workspace:src/master"]],\
     ["@blargbot/res", ["workspace:src/res"]],\
     ["@blargbot/test-util", ["workspace:test/testUtil"]],\
@@ -224,7 +219,6 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
-          ["@blargbot/mapping", "workspace:src/mapping"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/express", "npm:4.17.14"],\
           ["@types/express-serve-static-core", "npm:4.17.31"],\
@@ -235,7 +229,8 @@ const RAW_RUNTIME_STATE =
           ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
           ["jsonwebtoken", "npm:8.5.1"],\
           ["prom-client", "npm:14.1.0"],\
-          ["ws", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:8.11.0"]\
+          ["ws", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:8.11.0"],\
+          ["zod", "npm:4.6.5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -251,7 +246,6 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
-          ["@blargbot/mapping", "workspace:src/mapping"],\
           ["@blargbot/test-util", "workspace:test/testUtil"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
@@ -265,7 +259,8 @@ const RAW_RUNTIME_STATE =
           ["html-entities", "npm:2.3.3"],\
           ["moment-timezone", "npm:0.5.39"],\
           ["rwlock", "npm:5.0.0"],\
-          ["ts-mockito", "npm:2.6.1"]\
+          ["ts-mockito", "npm:2.6.1"],\
+          ["zod", "npm:4.6.5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -307,7 +302,6 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/image", "workspace:src/image"],\
           ["@blargbot/logger", "workspace:src/logger"],\
-          ["@blargbot/mapping", "workspace:src/mapping"],\
           ["@blargbot/res", "workspace:src/res"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@hunteroi/versioning", "npm:1.3.2"],\
@@ -325,7 +319,8 @@ const RAW_RUNTIME_STATE =
           ["prom-client", "npm:14.1.0"],\
           ["require-reload", "npm:0.2.2"],\
           ["wolken", "npm:0.2.1"],\
-          ["xml2js", "npm:0.4.23"]\
+          ["xml2js", "npm:0.4.23"],\
+          ["zod", "npm:4.6.5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -366,7 +361,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/util", "workspace:src/util"],\
           ["@discordeno/types", "npm:22.0.0-beta.2"],\
           ["amqplib", "npm:2.0.1"],\
-          ["zod", "npm:4.5.4"]\
+          ["zod", "npm:4.6.5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -384,7 +379,6 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
-          ["@blargbot/mapping", "workspace:src/mapping"],\
           ["@blargbot/res", "workspace:src/res"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/catflake", "workspace:definitions/catflake"],\
@@ -404,7 +398,8 @@ const RAW_RUNTIME_STATE =
           ["prom-client", "npm:14.1.0"],\
           ["safe-regex", "npm:2.1.1"],\
           ["twemoji", "npm:14.0.2"],\
-          ["unorm", "npm:1.6.0"]\
+          ["unorm", "npm:1.6.0"],\
+          ["zod", "npm:4.6.5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -444,7 +439,6 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/database", "workspace:src/database"],\
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/logger", "workspace:src/logger"],\
-          ["@blargbot/mapping", "workspace:src/mapping"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/catflake", "workspace:definitions/catflake"],\
           ["@types/pg", "npm:8.6.5"],\
@@ -457,7 +451,8 @@ const RAW_RUNTIME_STATE =
           ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\
           ["pg-hstore", "npm:2.3.4"],\
           ["rethinkdb", "npm:2.4.2"],\
-          ["sequelize", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.25.8"]\
+          ["sequelize", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.25.8"],\
+          ["zod", "npm:4.6.5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -544,7 +539,7 @@ const RAW_RUNTIME_STATE =
           ["@discordeno/rest", "npm:22.0.0-beta.2"],\
           ["@discordeno/types", "npm:22.0.0-beta.2"],\
           ["amqplib", "npm:2.0.1"],\
-          ["zod", "npm:4.5.4"]\
+          ["zod", "npm:4.6.5"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -600,16 +595,6 @@ const RAW_RUNTIME_STATE =
           ["@sentry/node", "npm:7.21.1"],\
           ["@sentry/tracing", "npm:7.21.1"],\
           ["cat-loggr", "npm:1.2.2"]\
-        ],\
-        "linkType": "SOFT"\
-      }]\
-    ]],\
-    ["@blargbot/mapping", [\
-      ["workspace:src/mapping", {\
-        "packageLocation": "./src/mapping/",\
-        "packageDependencies": [\
-          ["@blargbot/mapping", "workspace:src/mapping"],\
-          ["moment-timezone", "npm:0.5.39"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -7584,10 +7569,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["zod", [\
-      ["npm:4.5.4", {\
-        "packageLocation": "./.yarn/cache/zod-npm-4.5.4-5303b3afef-b2fd4aaf35.zip/node_modules/zod/",\
+      ["npm:4.6.5", {\
+        "packageLocation": "./.yarn/cache/zod-npm-4.6.5-b3c3c8802d-db004952e4.zip/node_modules/zod/",\
         "packageDependencies": [\
-          ["zod", "npm:4.5.4"]\
+          ["zod", "npm:4.6.5"]\
         ],\
         "linkType": "HARD"\
       }]\

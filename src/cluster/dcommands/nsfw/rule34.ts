@@ -1,8 +1,8 @@
 import type { CommandContext } from '@blargbot/cluster';
-import { CommandType, GlobalCommand  } from '@blargbot/cluster';
-import { mapping } from '@blargbot/mapping';
+import { CommandType, GlobalCommand } from '@blargbot/cluster';
 import { random } from '@blargbot/util';
 import xml2js from 'xml2js';
+import z from 'zod';
 
 import { templates } from '../../text.js';
 import type { CommandResult } from '../../types.js';
@@ -38,11 +38,11 @@ export class Rule34Command extends GlobalCommand {
             return cmd.default.unsafeTags;
 
         const response = await this.#requestXmlSafe(`http://rule34.paheal.net/api/danbooru/find_posts/index.xml?tags=${tags.join('%20')}&limit=50`, context);
-        const doc = r34Mapping(response);
-        if (!doc.valid)
+        const doc = r34Mapping.safeParse(response);
+        if (!doc.success)
             return cmd.default.noResults;
 
-        const posts = doc.value.posts.tag
+        const posts = doc.data.posts.tag
             .map(t => t.$)
             .filter(p => p.file_url !== undefined && /\.(gif|jpg|png|jpeg)$/.test(p.file_url));
 
@@ -75,14 +75,14 @@ export class Rule34Command extends GlobalCommand {
     }
 }
 
-const r34Mapping = mapping.object({
-    posts: mapping.object({
-        tag: mapping.array(mapping.object({
-            '$': mapping.object({
-                author: mapping.string.optional,
-                file_url: mapping.string.optional,
-                date: mapping.date.optional,
-                source: mapping.string.optional
+const r34Mapping = z.object({
+    posts: z.object({
+        tag: z.array(z.object({
+            '$': z.object({
+                author: z.string().optional(),
+                file_url: z.string().optional(),
+                date: z.iso.date().optional(),
+                source: z.string().optional()
             })
         }))
     })

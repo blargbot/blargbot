@@ -1,9 +1,9 @@
-import { snowflake } from '@blargbot/core';
+import { snowflake, zodStringToJson } from '@blargbot/core';
 import type { Dump, DumpStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
-import { mapping } from '@blargbot/mapping';
 import type { Client as Cassandra } from 'cassandra-driver';
 import { types } from 'cassandra-driver';
+import z from 'zod';
 
 export class CassandraDbDumpStore implements DumpStore {
     public constructor(
@@ -26,8 +26,8 @@ export class CassandraDbDumpStore implements DumpStore {
 
     public async get(id: string): Promise<Dump | undefined> {
         const dump = await this.cassandra.execute('SELECT id, content, embeds, channelid, TTL(channelid) as expiry FROM message_outputs WHERE id = :id', { id }, { prepare: true });
-        const mapped = mapDump(dump.rows[0]);
-        return mapped.valid ? mapped.value : undefined;
+        const mapped = mapDump.safeParse(dump.rows[0]);
+        return mapped.success ? mapped.data : undefined;
     }
 
     public async migrate(): Promise<void> {
@@ -40,11 +40,14 @@ export class CassandraDbDumpStore implements DumpStore {
     }
 }
 
-const mapLongToSnowflake = mapping.instanceof(types.Long).map(v => v.toString()).chain(mapping.guard(snowflake.test));
-const mapDump = mapping.object<Dump>({
+const mapLongToSnowflake = z.instanceof(types.Long).transform(v => v.toString()).refine(snowflake.test);
+const mapDump = z.object({
     id: mapLongToSnowflake,
     channelid: mapLongToSnowflake,
-    content: mapping.string.nullish.map(v => v ?? undefined),
-    embeds: mapping.json(mapping.array(mapping.typeof('object'))).nullish.map(v => v ?? undefined),
-    expiry: mapping.number
+    content: z.string().nullish().transform(v => v ?? undefined),
+    embeds: zodStringToJson
+        .pipe(z.custom<object>(v => typeof v === 'object').array())
+        .nullish()
+        .transform(v => v ?? undefined),
+    expiry: z.number()
 });

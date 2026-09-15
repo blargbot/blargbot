@@ -1,6 +1,6 @@
-import { parse } from '@blargbot/core';
-import { mapping } from '@blargbot/mapping';
+import { parse, zodStringToJson } from '@blargbot/core';
 import { Iterable } from '@blargbot/util';
+import z from 'zod';
 
 import type { BBTagContext } from '../BBTagContext.js';
 import type { BBTagArray } from '../types.js';
@@ -21,8 +21,8 @@ export const tagArray = Object.freeze({
         });
     },
     deserialize(value: string): BBTagArray | undefined {
-        let result = mapBBTagArrayOrJson(value);
-        if (!result.valid) {
+        let result = mapBBTagArrayOrJson.safeParse(value);
+        if (!result.success) {
             value = value.replace(
                 /([[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
                 (_, ...[before, from, to, after]: string[]) => {
@@ -31,14 +31,14 @@ export const tagArray = Object.freeze({
                     return before + Iterable.range(start, end - start).take(200).toArray().join(',') + after;
                 }
             );
-            result = mapBBTagArrayOrJson(value);
+            result = mapBBTagArrayOrJson.safeParse(value);
         }
 
-        if (!result.valid)
+        if (!result.success)
             return undefined;
-        if (Array.isArray(result.value))
-            return { v: result.value };
-        return result.value;
+        if (Array.isArray(result.data))
+            return { v: result.data };
+        return result.data;
     },
     flattenArray(array: JArray): JArray {
         const result = [];
@@ -76,18 +76,16 @@ export const tagArray = Object.freeze({
         return undefined;
     },
     isTagArray(value: unknown): value is BBTagArray {
-        return mapBBTagArrayCore(value).valid;
+        return mapBBTagArrayCore.safeParse(value).success;
     }
 });
 
-const mapBBTagArrayCore = mapping.object<BBTagArray>({
-    n: mapping.string.optional,
-    v: mapping.array(mapping.jToken)
+const mapBBTagArrayCore = z.object({
+    n: z.string().optional(),
+    v: z.json().array()
 });
 
-const mapBBTagArrayOrJson = mapping.json(
-    mapping.choice(
-        mapping.array(mapping.jToken),
-        mapBBTagArrayCore
-    )
-);
+const mapBBTagArrayOrJson = zodStringToJson.pipe(z.union([
+    z.json().array(),
+    mapBBTagArrayCore
+]));

@@ -73,7 +73,7 @@ export class AmqpConnection implements Disposable {
 
     async #connect(): Promise<void> {
         while (!this.#controller.signal.aborted) {
-            this.#options.logger.init('Connecting to AMQP');
+            this.#options.logger.debug('Connecting to AMQP');
             let connection;
             try {
                 connection = await amqplib.connect(this.#url, this.#options);

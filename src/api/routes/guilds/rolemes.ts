@@ -1,5 +1,4 @@
-import { parse } from '@blargbot/core';
-import { mapping } from '@blargbot/mapping';
+import z from 'zod';
 
 import type { Api } from '../../Api.js';
 import { BaseRoute } from '../../BaseRoute.js';
@@ -27,10 +26,7 @@ export class RolemesRoute extends BaseRoute<['/guilds/:guildId/rolemes']> {
     }
 
     public async getRoleme(guildId: string, idStr: string): Promise<ApiResponse> {
-        const id = parse.int(idStr, { strict: true });
-        if (id === undefined)
-            return this.badRequest();
-
+        const id = await this.mapRequestValue(idStr, mapId);
         const roleme = await this.#api.database.guilds.getRoleme(guildId, id);
         if (roleme?.output === undefined)
             return this.notFound();
@@ -39,11 +35,8 @@ export class RolemesRoute extends BaseRoute<['/guilds/:guildId/rolemes']> {
     }
 
     public async setRoleme(guildId: string, idStr: string, body: unknown, userId: string): Promise<ApiResponse> {
-        const id = parse.int(idStr, { strict: true });
-        if (id === undefined)
-            return this.badRequest();
-
-        const request = this.mapRequestValue(body, mapTag);
+        const id = await this.mapRequestValue(idStr, mapId);
+        const request = await this.mapRequestValue(body, mapTag);
 
         const current = await this.#api.database.guilds.getRoleme(guildId, id);
         if (current === undefined)
@@ -57,10 +50,7 @@ export class RolemesRoute extends BaseRoute<['/guilds/:guildId/rolemes']> {
     }
 
     public async deleteRoleme(guildId: string, idStr: string): Promise<ApiResponse> {
-        const id = parse.int(idStr, { strict: true });
-        if (id === undefined)
-            return this.badRequest();
-
+        const id = await this.mapRequestValue(idStr, mapId);
         const current = await this.#api.database.guilds.getRoleme(guildId, id);
         if (current === undefined)
             return this.notFound();
@@ -93,6 +83,8 @@ export class RolemesRoute extends BaseRoute<['/guilds/:guildId/rolemes']> {
     }
 }
 
-const mapTag = mapping.object({
-    content: mapping.string
-});
+const mapId = z.compile(z.string().regex(/^\d+$/).transform(Number));
+
+const mapTag = z.compile(z.object({
+    content: z.string()
+}));

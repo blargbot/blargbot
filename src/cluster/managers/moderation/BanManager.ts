@@ -1,12 +1,13 @@
 import type { BanResult, KickResult, MassBanResult, UnbanResult } from '@blargbot/cluster';
 import { guard } from '@blargbot/cluster';
+import { zodStringToJson } from '@blargbot/core';
 import type { UnbanEventOptions } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { format, util } from '@blargbot/formatting';
-import { mapping } from '@blargbot/mapping';
 import { sleep } from '@blargbot/util';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
+import z from 'zod';
 
 import { templates } from '../../text.js';
 import type { ModerationManager } from '../ModerationManager.js';
@@ -170,8 +171,8 @@ export class BanManager extends ModerationManagerBase {
         if (user === undefined)
             return;
 
-        const mapResult = mapDuration(event.duration);
-        const duration = mapResult.valid ? mapResult.value : undefined;
+        const mapResult = mapDuration.safeParse(event.duration);
+        const duration = mapResult.success ? mapResult.data : undefined;
 
         await this.unban(guild, user, this.cluster.discord.user, this.cluster.discord.user, templates.ban.autoUnban({ duration }));
     }
@@ -223,4 +224,13 @@ async function tryGetAuditLogs(guild: eris.Guild, limit?: number, before?: strin
     }
 }
 
-const mapDuration = mapping.json(mapping.duration);
+const mapDuration = zodStringToJson
+    .pipe(z.union([z.string(), z.number()]))
+    .transform((v, ctx) => {
+        try {
+            return moment.duration(v);
+        } catch {
+            ctx.addIssue('Invalid duration');
+            return z.NEVER;
+        }
+    });

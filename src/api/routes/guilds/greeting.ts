@@ -1,4 +1,4 @@
-import { mapping } from '@blargbot/mapping';
+import z from 'zod';
 
 import type { Api } from '../../Api.js';
 import { BaseRoute } from '../../BaseRoute.js';
@@ -29,7 +29,7 @@ export class GreetingRoute extends BaseRoute<['/guilds/:guildId/greeting']> {
     }
 
     public async setGreeting(guildId: string, body: unknown, userId: string): Promise<ApiResponse> {
-        const request = this.mapRequestValue(body, mapTag);
+        const request = await this.mapRequestValue(body, mapTag);
 
         const current = await this.#api.database.guilds.getGreeting(guildId);
         const result = { ...current, ...request, author: userId };
@@ -58,6 +58,6 @@ export class GreetingRoute extends BaseRoute<['/guilds/:guildId/greeting']> {
     }
 }
 
-const mapTag = mapping.object({
-    content: mapping.string
-});
+const mapTag = z.compile(z.object({
+    content: z.string()
+}));

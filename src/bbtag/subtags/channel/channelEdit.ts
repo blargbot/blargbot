@@ -1,6 +1,6 @@
-import { guard } from '@blargbot/core';
-import { mapping } from '@blargbot/mapping';
+import { guard, zodStringToJson } from '@blargbot/core';
 import * as eris from 'eris';
+import z from 'zod';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -42,11 +42,11 @@ export class ChannelEditSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         const mapping = guard.isThreadChannel(channel) ? mapThreadOptions : mapChannelOptions;
-        const mapped = mapping(editJson);
-        if (!mapped.valid)
+        const mapped = mapping.safeParse(editJson);
+        if (!mapped.success)
             throw new BBTagRuntimeError('Invalid JSON');
 
-        const options = mapped.value;
+        const options = mapped.data;
         try {
             await channel.edit(options, context.auditReason());
             return channel.id;
@@ -59,50 +59,33 @@ export class ChannelEditSubtag extends CompiledSubtag {
     }
 }
 
-const defaultAutoArchiveDurationMapping = mapping.in(...[60, 1440, 4320, 10080, undefined] as const);
+const numberish = z.union([
+    z.number(),
+    z.string().transform(v => parseFloat(v))
+]).refine(v => !isNaN(v));
+const booleanish = z.union([
+    z.boolean(),
+    z.enum(['true', 'false']).transform(v => v === 'true')
+]);
 
-const mapChannelOptions = mapping.json(
-    mapping.object<eris.EditChannelOptions>({
-        bitrate: mapping.number.optional,
-        name: mapping.string.optional,
-        nsfw: mapping.boolean.optional,
-        parentID: mapping.string.optional,
-        rateLimitPerUser: mapping.number.optional,
-        topic: mapping.string.optional,
-        userLimit: mapping.number.optional,
-        defaultAutoArchiveDuration: mapping.number.chain(defaultAutoArchiveDurationMapping).optional,
-        locked: mapping.boolean.optional,
-        rtcRegion: [undefined],
-        archived: [undefined],
-        autoArchiveDuration: [undefined],
-        icon: [undefined],
-        invitable: [undefined],
-        ownerID: [undefined],
-        videoQualityMode: [undefined],
-        position: [undefined],
-        permissionOverwrites: [undefined]
-    })
-);
+const defaultAutoArchiveDurationMapping = z.enum({ a: 60, b: 1440, c: 4320, d: 10080 });
 
-const mapThreadOptions = mapping.json(
-    mapping.object<eris.EditChannelOptions>({
-        archived: mapping.boolean.optional,
-        autoArchiveDuration: mapping.number.chain(defaultAutoArchiveDurationMapping).optional,
-        locked: mapping.boolean.optional,
-        name: mapping.string.optional,
-        rateLimitPerUser: mapping.number.optional,
-        invitable: mapping.boolean.optional,
-        bitrate: [undefined],
-        defaultAutoArchiveDuration: [undefined],
-        icon: [undefined],
-        nsfw: [undefined],
-        ownerID: [undefined],
-        parentID: [undefined],
-        rtcRegion: [undefined],
-        topic: [undefined],
-        userLimit: [undefined],
-        videoQualityMode: [undefined],
-        position: [undefined],
-        permissionOverwrites: [undefined]
-    })
-);
+const mapChannelOptions = zodStringToJson.pipe(z.object({
+    bitrate: numberish.optional(),
+    name: z.string().optional(),
+    nsfw: booleanish.optional(),
+    parentID: z.string().optional(),
+    rateLimitPerUser: numberish.optional(),
+    topic: z.string().optional(),
+    userLimit: numberish.optional(),
+    defaultAutoArchiveDuration: numberish.pipe(defaultAutoArchiveDurationMapping).optional(),
+    locked: booleanish.optional()
+}));
+const mapThreadOptions = zodStringToJson.pipe(z.object({
+    archived: booleanish.optional(),
+    autoArchiveDuration: numberish.pipe(defaultAutoArchiveDurationMapping).optional(),
+    locked: booleanish.optional(),
+    name: z.string().optional(),
+    rateLimitPerUser: numberish.optional(),
+    invitable: booleanish.optional()
+}));

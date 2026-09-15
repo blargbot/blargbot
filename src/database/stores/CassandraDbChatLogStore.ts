@@ -1,11 +1,11 @@
-import { metrics, snowflake } from '@blargbot/core';
+import { metrics, snowflake, zodStringToJson } from '@blargbot/core';
 import type { ChatLog, ChatLogMessage, ChatLogSearchOptions, ChatLogStore } from '@blargbot/domain';
 import { ChatLogType } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
-import { mapping } from '@blargbot/mapping';
 import type { Client as Cassandra } from 'cassandra-driver';
 import { types } from 'cassandra-driver';
 import type moment from 'moment-timezone';
+import z from 'zod';
 
 export class CassandraDbChatLogStore implements ChatLogStore {
     readonly #db: Cassandra;
@@ -30,12 +30,12 @@ export class CassandraDbChatLogStore implements ChatLogStore {
         const excludeLookup = new Set(options.exclude);
         const result = [];
         for await (const row of chatlogs) {
-            const chatlog = mapChatLog(row);
-            if (!chatlog.valid) continue;
-            if (typeLookup.size > 0 && !typeLookup.has(chatlog.value.type)) continue;
-            if (userLookup.size > 0 && !userLookup.has(chatlog.value.userid)) continue;
-            if (excludeLookup.has(chatlog.value.msgid)) continue;
-            result.push(chatlog.value);
+            const chatlog = mapChatLog.safeParse(row);
+            if (!chatlog.success) continue;
+            if (typeLookup.size > 0 && !typeLookup.has(chatlog.data.type)) continue;
+            if (userLookup.size > 0 && !userLookup.has(chatlog.data.userid)) continue;
+            if (excludeLookup.has(chatlog.data.msgid)) continue;
+            result.push(chatlog.data);
             if (result.length >= options.count)
                 break;
         }
@@ -58,9 +58,9 @@ export class CassandraDbChatLogStore implements ChatLogStore {
 
             const results = await resultPromise;
             for await (const row of resultSet) {
-                const mappedRow = mapChatLog(row);
-                if (mappedRow.valid)
-                    results.push(mappedRow.value);
+                const mappedRow = mapChatLog.safeParse(row);
+                if (mappedRow.success)
+                    results.push(mappedRow.data);
             }
             return results;
         }, Promise.resolve<ChatLog[]>([]));
@@ -79,8 +79,8 @@ export class CassandraDbChatLogStore implements ChatLogStore {
             { prepare: true });
         if (messages.rows.length === 0)
             return undefined;
-        const mapped = mapChatLog(messages.rows[0]);
-        return mapped.valid ? mapped.value : undefined;
+        const mapped = mapChatLog.safeParse(messages.rows[0]);
+        return mapped.success ? mapped.data : undefined;
     }
 
     public async add(message: ChatLogMessage, type: ChatLogType, lifespanS: number | moment.Duration = 604800): Promise<void> {
@@ -92,7 +92,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
             msgtime: new Date(),
             type: type,
             embeds: JSON.stringify(message.embeds),
-            attachment: JSON.stringify(message.attachments)
+            attachment: JSON.stringify(message.attachment)
         };
         await this.#db.execute(
             `INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)\nVALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)\nUSING TTL ${lifespan}`,
@@ -117,21 +117,23 @@ export class CassandraDbChatLogStore implements ChatLogStore {
     }
 }
 
-const mapLongToString = mapping.instanceof(types.Long).map(v => v.toString());
+const mapLongToString = z.instanceof(types.Long).transform(v => v.toString());
 
-const mapChatLog = mapping.object<ChatLog>({
-    attachments: ['attachment', mapping.choice(
-        mapping.json(mapping.array(mapping.string)),
-        mapping.string.nullish.map(s => typeof s === 'string' ? [s] : [])
-    )],
+const mapChatLog = z.object({
+    attachment: z.union([
+        zodStringToJson.pipe(z.string().array()),
+        z.string().transform(v => [v]),
+        z.null().transform(() => [] as []),
+        z.undefined().transform(() => [] as [])
+    ]),
     channelid: mapLongToString,
-    content: mapping.string,
-    embeds: mapping.json(mapping.array(mapping.typeof('object'))),
+    content: z.string(),
+    embeds: zodStringToJson.pipe(z.custom<object>(v => typeof v === 'object').array()),
     guildid: mapLongToString,
     id: mapLongToString,
     msgid: mapLongToString,
-    msgtime: mapping.instanceof(Date),
-    type: mapping.in(ChatLogType.CREATE, ChatLogType.DELETE, ChatLogType.UPDATE),
+    msgtime: z.instanceof(Date),
+    type: z.enum(ChatLogType),
     userid: mapLongToString
 });
 
