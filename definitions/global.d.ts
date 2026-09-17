@@ -96,6 +96,7 @@ declare global {
     }
 
     type Awaitable<T> = T | PromiseLike<T>;
+    type ForAwaitOfable<T> = Iterable<T> | AsyncIterable<T>;
     type ExcludeExact<T, U> = T extends U ? U extends T ? never : T : T;
 
     namespace NodeJS {

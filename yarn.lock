@@ -40,6 +40,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/bbtag-engine@workspace:src/bbtag-engine":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/bbtag-engine@workspace:src/bbtag-engine"
+  dependencies:
+    "@blargbot/util": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/bbtag-tests@workspace:test/bbtag":
   version: 0.0.0-use.local
   resolution: "@blargbot/bbtag-tests@workspace:test/bbtag"

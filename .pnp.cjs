@@ -47,6 +47,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:src/bbtag"\
     },\
     {\
+      "name": "@blargbot/bbtag-engine",\
+      "reference": "workspace:src/bbtag-engine"\
+    },\
+    {\
       "name": "@blargbot/cluster",\
       "reference": "workspace:src/cluster"\
     },\
@@ -141,6 +145,7 @@ const RAW_RUNTIME_STATE =
   "fallbackExclusionList": [\
     ["@blargbot/api", ["workspace:src/api"]],\
     ["@blargbot/bbtag", ["workspace:src/bbtag"]],\
+    ["@blargbot/bbtag-engine", ["workspace:src/bbtag-engine"]],\
     ["@blargbot/bbtag-tests", ["workspace:test/bbtag"]],\
     ["@blargbot/cluster", ["workspace:src/cluster"]],\
     ["@blargbot/cluster-tests", ["workspace:test/cluster"]],\
@@ -261,6 +266,16 @@ const RAW_RUNTIME_STATE =
           ["rwlock", "npm:5.0.0"],\
           ["ts-mockito", "npm:2.6.1"],\
           ["zod", "npm:4.6.5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@blargbot/bbtag-engine", [\
+      ["workspace:src/bbtag-engine", {\
+        "packageLocation": "./src/bbtag-engine/",\
+        "packageDependencies": [\
+          ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"],\
+          ["@blargbot/util", "workspace:src/util"]\
         ],\
         "linkType": "SOFT"\
       }]\
