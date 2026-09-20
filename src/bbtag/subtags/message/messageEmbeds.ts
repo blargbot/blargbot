@@ -1,5 +1,3 @@
-import type * as eris from 'eris';
-
 import type * as BBTagContextJs from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
@@ -19,7 +17,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
                     description: tag.trigger.description,
                     exampleCode: tag.trigger.exampleCode,
                     exampleOut: tag.trigger.exampleOut,
-                    returns: 'embed[]',
+                    returns: 'json[]',
                     execute: (ctx) => this.getMessageEmbeds(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
@@ -27,7 +25,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
                     description: tag.inCurrent.description,
                     exampleCode: tag.inCurrent.exampleCode,
                     exampleOut: tag.inCurrent.exampleOut,
-                    returns: 'embed[]',
+                    returns: 'json[]',
                     execute: (ctx, [messageId]) => this.getMessageEmbeds(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
@@ -35,7 +33,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
                     description: tag.inOther.description,
                     exampleCode: tag.inOther.exampleCode,
                     exampleOut: tag.inOther.exampleOut,
-                    returns: 'embed[]',
+                    returns: 'json[]',
                     execute: (ctx, [channel, message, quiet]) => this.getMessageEmbeds(ctx, channel.value, message.value, quiet.value !== '')
                 }
             ]
@@ -47,7 +45,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
         channelStr: string,
         messageStr: string,
         quiet: boolean
-    ): Promise<eris.Embed[]> {
+    ): Promise<JObject[]> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
@@ -61,7 +59,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '[]' : undefined);
         }
 
-        return message.embeds;
+        return message.embeds as unknown[] as JObject[];
 
     }
 }

@@ -1,14 +1,13 @@
-import type { BBTagContext } from '../BBTagContext.js';
-import { ArgumentLengthError } from '../errors/index.js';
-import type { Statement, SubtagCall } from '../language/index.js';
-import type { SubtagSignatureValueParameter } from '../types.js';
-import { BBTagRuntimeState } from '../types.js';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { ArgumentLengthError } from '../../BBTagRuntimeError.js';
+import type { BBTagExpression, BBTagSubtag } from '../../language/index.js';
+import type { SubtagSignatureValueParameter } from '../../types.js';
 import type { SubtagArgument } from './SubtagArgument.js';
 
-export class ExecutingSubtagArgumentValue implements SubtagArgument {
+export class ExecutingSubtagArgumentValue<Locals extends Record<string, unknown>> implements SubtagArgument {
     #promise?: Promise<string>;
     #value?: string;
-    readonly #context: BBTagContext;
+    readonly #context: BBTagContext<Locals>;
 
     public get raw(): string { return this.code.source; }
     public get value(): string {
@@ -19,9 +18,9 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
 
     public constructor(
         public readonly parameter: SubtagSignatureValueParameter,
-        context: BBTagContext,
-        public readonly call: SubtagCall,
-        public readonly code: Statement
+        context: BBTagContext<Locals>,
+        public readonly call: BBTagSubtag,
+        public readonly code: BBTagExpression
     ) {
         this.#context = context;
     }
@@ -37,7 +36,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
     async #executeInner(): Promise<string> {
         const result = await this.#context.eval(this.code);
         if (result.length > this.parameter.maxLength) {
-            this.#context.data.state = BBTagRuntimeState.ABORT;
+            this.#context.return = Infinity;
             throw new ArgumentLengthError(this.call.args.indexOf(this.code), this.parameter.maxLength, result.length);
         }
         return this.#value = result.length === 0 ? this.parameter.defaultValue : result;

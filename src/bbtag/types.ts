@@ -227,7 +227,6 @@ type SubtagReturnTypeValueMap = {
     string: string;
     id: string;
     json: JToken;
-    embed: eris.Embed;
     nothing: undefined;
 }
 

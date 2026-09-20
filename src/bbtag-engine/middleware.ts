@@ -1,0 +1,45 @@
+import type { BBTagAnyLocal } from './BBTagAnyLocal.js';
+import type { BBTagContext } from './BBTagContext.js';
+import type { BBTagReplacer } from './BBTagReplacer.js';
+import type { BBTagReplaceResult } from './BBTagReplaceResult.js';
+import type { BBTagSubtag } from './language/BBTagSubtag.js';
+
+export function defineMiddleware<Locals extends Record<string, unknown>, Args extends readonly unknown[]>(
+    impl: (...args: [...Args, context: BBTagContext<Locals>, name: string, bbtag: BBTagSubtag, next: () => BBTagReplaceResult]) => BBTagReplaceResult
+): <OwnLocals extends Record<string, unknown>>(...args: [...Args, next: BBTagReplacer<OwnLocals>]) => BBTagReplacer<Locals & OwnLocals> {
+    return function middleware(...x) {
+        const next = x.at(-1) as BBTagReplacer<BBTagAnyLocal>;
+        const args = x.slice(0, -1) as [...Args];
+
+        return function (context, name, bbtag) {
+            return impl(...args, context, name, bbtag, () => next(context, name, bbtag));
+        };
+    };
+}
+
+export const throttleMiddleware = defineMiddleware<{ readonly throttle: { callCount: number; }; }, [throttleAt: number, delayMs: number]>(
+    async function* (throttleAt, delayMs, ctx, _name, _bbtag, next) {
+        for await (const item of await next()) {
+            if (ctx.locals.throttle.callCount++ >= throttleAt)
+                await new Promise(res => setTimeout(res, delayMs));
+            yield item;
+        }
+    }
+);
+
+export interface BBTagMetricsLocals extends Record<string, unknown> {
+    readonly metrics: {
+        onReplacerCalled(id: string, elapsedMs: number): void;
+    };
+}
+
+export const trackMetricsMiddleware = defineMiddleware<BBTagMetricsLocals, [id: string]>(
+    async function* (id, ctx, _name, _bbtag, next) {
+        const start = performance.now();
+        try {
+            yield* await next();
+        } finally {
+            ctx.locals.metrics.onReplacerCalled(id, performance.now() - start);
+        }
+    }
+);

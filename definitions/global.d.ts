@@ -68,6 +68,8 @@ declare global {
 
         defineProperties<T, U>(o: T, properties: { [P in keyof U]: TypedPropertyDescriptor<U[P]> }): T & U;
         defineProperty<T, Key extends PropertyKey, U>(o: T, key: Key, attributes: TypedPropertyDescriptor<U>): T & { [P in Key]: U; };
+
+        hasOwn<Target extends object, const Key extends PropertyKey>(target: Target, key: Key): key is keyof Target;
     }
 
     interface Boolean {
@@ -96,7 +98,7 @@ declare global {
     }
 
     type Awaitable<T> = T | PromiseLike<T>;
-    type ForAwaitOfable<T> = Iterable<T> | AsyncIterable<T>;
+    type AwaitableIterable<Yield, Return = unknown, Next = unknown> = Iterable<Yield, Return, Next> | AsyncIterable<Yield, Return, Next>;
     type ExcludeExact<T, U> = T extends U ? U extends T ? never : T : T;
 
     namespace NodeJS {

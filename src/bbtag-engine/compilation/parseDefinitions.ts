@@ -1,21 +1,19 @@
-import { parse } from '@blargbot/core';
-import type { IFormattable } from '@blargbot/formatting';
-
-import type { SubtagLogic } from '../logic/index.js';
-import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic/index.js';
+import { parse } from '../parse.js';
 import type { SubtagReturnTypeMap, SubtagSignature, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types.js';
 import type { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions.js';
+import type { SubtagLogic } from './logic/index.js';
+import { iterableOrSingleSubtagLogic, iterableSubtagLogic, passthroughSubtagLogic, stringifySubtagLogic, stringIterableSubtagLogic, stringSubtagLogic, voidSubtagLogic } from './logic/index.js';
 import type { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
 import type { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions.js';
 
-export function parseDefinitions(definitions: readonly AnySubtagSignatureOptions[]): ReadonlyArray<{
-    readonly signature?: SubtagSignature<IFormattable<string>>;
-    readonly implementation?: SubtagSignatureCallable;
+export function parseDefinitions<Locals extends Record<string, unknown>>(definitions: ReadonlyArray<AnySubtagSignatureOptions<Locals>>): ReadonlyArray<{
+    readonly signature?: SubtagSignature;
+    readonly implementation?: SubtagSignatureCallable<Locals>;
 }> {
     return definitions.map(parseDefinition);
 }
 
-function parseDefinition(definition: AnySubtagSignatureOptions): { signature?: SubtagSignature<IFormattable<string>>; implementation?: SubtagSignatureCallable; } {
+function parseDefinition<Locals extends Record<string, unknown>>(definition: AnySubtagSignatureOptions<Locals>): { signature?: SubtagSignature; implementation?: SubtagSignatureCallable<Locals>; } {
     const parameters = definition.parameters.map(parseArgument);
     return {
         signature: getSignature(definition, parameters),
@@ -23,17 +21,12 @@ function parseDefinition(definition: AnySubtagSignatureOptions): { signature?: S
     };
 }
 
-function getSignature(definition: AnySubtagSignatureOptions, parameters: readonly SubtagSignatureParameter[]): SubtagSignature<IFormattable<string>> | undefined {
-    if (definition.description === undefined)
+function getSignature<Locals extends Record<string, unknown>>(definition: AnySubtagSignatureOptions<Locals>, parameters: readonly SubtagSignatureParameter[]): SubtagSignature | undefined {
+    if ('return' in definition)
         return undefined;
 
     return {
-        subtagName: definition.subtagName,
-        description: definition.description,
-        parameters: parameters,
-        exampleCode: definition.exampleCode,
-        exampleOut: definition.exampleOut,
-        exampleIn: definition.exampleIn
+        parameters: parameters
     };
 }
 
@@ -56,8 +49,8 @@ function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignat
 
     let name = parameter.slice(0, Math.min(startDefault, startMaxLength));
     let defaultValue = parameter.slice(startDefault + 1, startMaxLength);
-    let maxLength = parse.int(parameter.slice(startMaxLength + 1), { strict: true });
-    if (maxLength === undefined) {
+    let maxLength = parseInt(parameter.slice(startMaxLength + 1));
+    if (isNaN(maxLength)) {
         maxLength = 1_000_000;
         defaultValue = parameter.slice(startDefault + 1);
     }
@@ -106,38 +99,43 @@ function createParameterGroup(parameters: SubtagSignatureParameter[], minCount: 
     return { nested, minRepeats: minCount };
 }
 
-function getExecute(definition: AnySubtagSignatureOptions, parameters: readonly SubtagSignatureParameter[]): SubtagSignatureCallable | undefined {
+function getExecute<Locals extends Record<string, unknown>>(definition: AnySubtagSignatureOptions<Locals>, parameters: readonly SubtagSignatureParameter[]): SubtagSignatureCallable<Locals> | undefined {
     if (definition.execute === undefined)
         return undefined;
-    const wrapper = logicWrappers[definition.returns];
+    const implementation = logicWrappers[definition.returns](definition.execute as never);
+    const id = definition.execute.name;
+    if (id === 'execute' || id === '')
+        throw new Error('The `execute` method of a replacer must have a name other than `execute`');
+
     return {
+        id,
         subtagName: definition.subtagName,
-        parameters: parameters,
-        implementation: new wrapper(definition as SubtagLogic<unknown> as SubtagLogic<never>)
+        parameters,
+        implementation
     };
 }
 
-const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLogic<Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic } = {
-    'unknown': DeferredSubtagLogic,
-    'number': StringifySubtagLogic,
-    'hex': StringSubtagLogic.withConversion(val => val.toString(16).padStart(6, '0')),
-    'number[]': ArraySubtagLogic,
-    'boolean': StringifySubtagLogic,
-    'boolean|number': StringifySubtagLogic,
-    'boolean[]': ArraySubtagLogic,
-    'string': StringSubtagLogic,
-    'string|nothing': StringSubtagLogic,
-    'string[]': ArraySubtagLogic,
-    'json': StringSubtagLogic.withConversion(parse.string),
-    'json|nothing': StringSubtagLogic.withConversion(parse.string),
-    'json[]': ArraySubtagLogic,
-    'json[]|nothing': ArraySubtagLogic,
-    'nothing': IgnoreSubtagLogic,
-    'id': StringSubtagLogic,
-    'id[]': ArraySubtagLogic,
-    'loop': StringIterableSubtagLogic,
-    'error': IgnoreSubtagLogic,
-    'hex[]': ArraySubtagLogic,
-    'nothing[]': ArraySubtagLogic,
-    'number|number[]': ArrayOrValueSubtagLogicWrapper
+const logicWrappers: { [P in keyof SubtagReturnTypeMap]: <Locals extends Record<string, unknown>>(factory: SubtagLogic<Locals, Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic<Locals> } = {
+    'unknown': passthroughSubtagLogic,
+    'number': stringifySubtagLogic,
+    'hex': next => stringifySubtagLogic(next, val => val.toString(16).padStart(6, '0')),
+    'number[]': iterableSubtagLogic,
+    'boolean': stringifySubtagLogic,
+    'boolean|number': stringifySubtagLogic,
+    'boolean[]': iterableSubtagLogic,
+    'string': stringSubtagLogic,
+    'string|nothing': stringSubtagLogic,
+    'string[]': iterableSubtagLogic,
+    'json': next => stringifySubtagLogic(next, parse.string),
+    'json|nothing': next => stringifySubtagLogic(next, parse.string),
+    'json[]': iterableSubtagLogic,
+    'json[]|nothing': iterableSubtagLogic,
+    'nothing': voidSubtagLogic,
+    'id': stringSubtagLogic,
+    'id[]': iterableSubtagLogic,
+    'loop': stringIterableSubtagLogic,
+    'error': voidSubtagLogic,
+    'hex[]': iterableSubtagLogic,
+    'nothing[]': iterableSubtagLogic,
+    'number|number[]': iterableOrSingleSubtagLogic
 };

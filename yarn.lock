@@ -43,8 +43,6 @@ __metadata:
 "@blargbot/bbtag-engine@workspace:src/bbtag-engine":
   version: 0.0.0-use.local
   resolution: "@blargbot/bbtag-engine@workspace:src/bbtag-engine"
-  dependencies:
-    "@blargbot/util": "workspace:^"
   languageName: unknown
   linkType: soft
 

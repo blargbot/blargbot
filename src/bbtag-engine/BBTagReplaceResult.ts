@@ -1,1 +1,1 @@
-export type BBTagReplaceResult = Awaitable<ForAwaitOfable<string> | string>;
+export type BBTagReplaceResult = Awaitable<AwaitableIterable<string> | string>;
