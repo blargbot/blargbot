@@ -19,7 +19,7 @@
         "color": "^4.2.3",
         "eris": "^0.17.1",
         "html-entities": "^2.3.3",
-        "moment-timezone": "^0.5.39",
+        "moment-timezone": "^0.6.4",
         "rwlock": "^5.0.0",
         "zod": "^4.6.5"
     },

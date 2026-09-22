@@ -6,14 +6,14 @@ import { iterableOrSingleSubtagLogic, iterableSubtagLogic, passthroughSubtagLogi
 import type { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
 import type { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions.js';
 
-export function parseDefinitions<Locals extends Record<string, unknown>>(definitions: ReadonlyArray<AnySubtagSignatureOptions<Locals>>): ReadonlyArray<{
+export function parseDefinitions<Locals extends object>(definitions: ReadonlyArray<AnySubtagSignatureOptions<Locals>>): ReadonlyArray<{
     readonly signature?: SubtagSignature;
     readonly implementation?: SubtagSignatureCallable<Locals>;
 }> {
     return definitions.map(parseDefinition);
 }
 
-function parseDefinition<Locals extends Record<string, unknown>>(definition: AnySubtagSignatureOptions<Locals>): { signature?: SubtagSignature; implementation?: SubtagSignatureCallable<Locals>; } {
+function parseDefinition<Locals extends object>(definition: AnySubtagSignatureOptions<Locals>): { signature?: SubtagSignature; implementation?: SubtagSignatureCallable<Locals>; } {
     const parameters = definition.parameters.map(parseArgument);
     return {
         signature: getSignature(definition, parameters),
@@ -21,11 +21,12 @@ function parseDefinition<Locals extends Record<string, unknown>>(definition: Any
     };
 }
 
-function getSignature<Locals extends Record<string, unknown>>(definition: AnySubtagSignatureOptions<Locals>, parameters: readonly SubtagSignatureParameter[]): SubtagSignature | undefined {
+function getSignature<Locals extends object>(definition: AnySubtagSignatureOptions<Locals>, parameters: readonly SubtagSignatureParameter[]): SubtagSignature | undefined {
     if ('return' in definition)
         return undefined;
 
     return {
+        subtagName: definition.subtagName,
         parameters: parameters
     };
 }
@@ -99,7 +100,7 @@ function createParameterGroup(parameters: SubtagSignatureParameter[], minCount: 
     return { nested, minRepeats: minCount };
 }
 
-function getExecute<Locals extends Record<string, unknown>>(definition: AnySubtagSignatureOptions<Locals>, parameters: readonly SubtagSignatureParameter[]): SubtagSignatureCallable<Locals> | undefined {
+function getExecute<Locals extends object>(definition: AnySubtagSignatureOptions<Locals>, parameters: readonly SubtagSignatureParameter[]): SubtagSignatureCallable<Locals> | undefined {
     if (definition.execute === undefined)
         return undefined;
     const implementation = logicWrappers[definition.returns](definition.execute as never);
@@ -115,7 +116,7 @@ function getExecute<Locals extends Record<string, unknown>>(definition: AnySubta
     };
 }
 
-const logicWrappers: { [P in keyof SubtagReturnTypeMap]: <Locals extends Record<string, unknown>>(factory: SubtagLogic<Locals, Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic<Locals> } = {
+const logicWrappers: { [P in keyof SubtagReturnTypeMap]: <Locals extends object>(factory: SubtagLogic<Locals, Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic<Locals> } = {
     'unknown': passthroughSubtagLogic,
     'number': stringifySubtagLogic,
     'hex': next => stringifySubtagLogic(next, val => val.toString(16).padStart(6, '0')),

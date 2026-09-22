@@ -1,21 +1,21 @@
-import type { BBTagAnyLocal } from './BBTagAnyLocal.js';
 import type { BBTagContextFrame } from './BBTagContextFrame.js';
 import type { BBTagErrorRenderer } from './BBTagErrorRenderer.js';
 import type { BBTagReplacer } from './BBTagReplacer.js';
+import type { LocatedBBTagRuntimeError } from './BBTagRuntimeError.js';
 import { BBTagRuntimeError, InternalServerError } from './BBTagRuntimeError.js';
 import type { BBTagExpression } from './language/BBTagExpression.js';
 import type { BBTagSubtag } from './language/BBTagSubtag.js';
 
-export class BBTagContext<out Locals extends Record<string, unknown>> {
+export class BBTagContext<out Locals extends object> {
     readonly #callstack: BBTagContextFrame[];
-    readonly #locals: BBTagAnyLocal[];
-    readonly #replacer: BBTagReplacer<BBTagAnyLocal>;
-    readonly #renderError: BBTagErrorRenderer<BBTagAnyLocal>;
-    readonly #serialize: (context: BBTagContext<BBTagAnyLocal>) => Awaitable<Uint8Array>;
+    readonly #locals: object[];
+    readonly #replacer: BBTagReplacer<object>;
+    readonly #renderError: BBTagErrorRenderer<object>;
+    readonly #serialize: (context: BBTagContext<object>) => Awaitable<Uint8Array>;
 
     public return: number = 0;
 
-    public readonly errors: Array<{ readonly subtag: BBTagSubtag; readonly error: BBTagRuntimeError; }>;
+    public readonly errors: LocatedBBTagRuntimeError[];
 
     public get callstack(): readonly BBTagContextFrame[] {
         return Object.freeze(this.#callstack.toReversed());
@@ -32,9 +32,9 @@ export class BBTagContext<out Locals extends Record<string, unknown>> {
         serialize: (context: BBTagContext<Locals>) => Awaitable<Uint8Array>
     ) {
         this.#locals = [locals];
-        this.#replacer = replacer as BBTagReplacer<BBTagAnyLocal>;
-        this.#renderError = renderError as BBTagErrorRenderer<BBTagAnyLocal>;
-        this.#serialize = serialize as (context: BBTagContext<BBTagAnyLocal>) => Awaitable<Uint8Array>;
+        this.#replacer = replacer as BBTagReplacer<object>;
+        this.#renderError = renderError as BBTagErrorRenderer<object>;
+        this.#serialize = serialize as (context: BBTagContext<object>) => Awaitable<Uint8Array>;
         this.#callstack = [];
         this.errors = [];
     }
@@ -60,8 +60,10 @@ export class BBTagContext<out Locals extends Record<string, unknown>> {
 
                     this.#callstack.push({ name, subtag: item });
                     try {
-                        yield* await this.#replacer(this, name, item);
+                        yield* await this.#replacer.replace(this, name, item);
                     } catch (error) {
+                        if (error instanceof RangeError)
+                            throw error;
                         yield await this.addError(error, item);
                     } finally {
                         this.#callstack.pop();
@@ -92,11 +94,11 @@ export class BBTagContext<out Locals extends Record<string, unknown>> {
         return await this.#serialize(this);
     }
 
-    public async addError(error: unknown, subtag: BBTagSubtag): Promise<string> {
+    public async addError(error: unknown, bbtag: BBTagSubtag): Promise<string> {
         if (!(error instanceof BBTagRuntimeError))
-            return await this.addError(new InternalServerError(error), subtag);
+            return await this.addError(new InternalServerError(error), bbtag);
 
-        this.errors.push({ subtag, error });
+        this.errors.push({ bbtag, error });
         const values = [];
         for await (const item of await this.#renderError(error, this))
             values.push(item);

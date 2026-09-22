@@ -1,0 +1,59 @@
+import { JsonCleanSubtag, JsonSubtag } from '@blargbot/bbtag-engine';
+import { TagVariableType } from '@blargbot/domain';
+
+import { runSubtagTests } from '../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.jsonCleanReplacer,
+    argCountBounds: { min: 1, max: 1 },
+    cases: [
+        {
+            code: '{jsonclean;{j;{"test":"[]"}}}',
+            expected: '{"test":[]}',
+            subtags: [replacers.jsonReplacer]
+        },
+        {
+            code: '{jsonclean;{j;{"test":"[\\"{}\\"]"}}}',
+            expected: '{"test":[{}]}',
+            subtags: [replacers.jsonReplacer]
+        },
+        {
+            code: '{jsonclean;{j;["test","[\\"{}\\"]"]}}',
+            expected: '["test",[{}]]',
+            subtags: [replacers.jsonReplacer]
+        },
+        {
+            code: '{jsonclean;{j;{"n":"arr1","v":["abc","{\\"x\\":\\"5\\"}"]}}}',
+            expected: '["abc",{"x":"5"}]',
+            subtags: [replacers.jsonReplacer]
+        },
+        {
+            code: '{jsonclean;arr1}',
+            expected: '[{"x":{}}]',
+            setup(ctx) {
+                ctx.options.tagName = 'testTag';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['{"x":"{}"}']);
+            }
+        },
+        {
+            code: '{jsonclean;obj1}',
+            expected: '{"a":{"x":{}}}',
+            setup(ctx) {
+                ctx.options.tagName = 'testTag';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'obj1' }, { a: '{"x":"{}"}' });
+            }
+        },
+        {
+            code: '{jsonclean;var1}',
+            expected: '{"a":{"x":{}}}',
+            setup(ctx) {
+                ctx.options.tagName = 'testTag';
+                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, '{"a":"{\\"x\\":\\"{}\\"}"}');
+            }
+        },
+        {
+            code: '{jsonclean;abc}',
+            expected: '{}'
+        }
+    ]
+});

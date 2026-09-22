@@ -1,10 +1,11 @@
 import type { SubtagLogic } from './SubtagLogic.js';
 
-export function stringSubtagLogic<Locals extends Record<string, unknown>>(
-    next: SubtagLogic<Locals, Awaitable<string>>
+export function stringSubtagLogic<Locals extends object>(
+    next: SubtagLogic<Locals, Awaitable<string | undefined>>
 ): SubtagLogic<Locals> {
     return async function* stringResults(ctx, args, bbtag) {
         const result = await next(ctx, args, bbtag);
-        yield result.toString();
+        if (result !== undefined)
+            yield result;
     };
 }

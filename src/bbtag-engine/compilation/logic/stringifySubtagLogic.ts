@@ -1,14 +1,14 @@
 import type { SubtagLogic } from './SubtagLogic.js';
 
-export function stringifySubtagLogic<Locals extends Record<string, unknown>, T>(
+export function stringifySubtagLogic<Locals extends object, T>(
     next: SubtagLogic<Locals, Awaitable<T>>,
     conversion: (value: T) => string
 ): SubtagLogic<Locals>
-export function stringifySubtagLogic<Locals extends Record<string, unknown>, T extends { toString(): string; }>(
+export function stringifySubtagLogic<Locals extends object, T extends { toString(): string; }>(
     next: SubtagLogic<Locals, Awaitable<T>>,
     conversion?: (value: T) => string
 ): SubtagLogic<Locals>
-export function stringifySubtagLogic<Locals extends Record<string, unknown>, T extends { toString(): string; }>(
+export function stringifySubtagLogic<Locals extends object, T extends { toString(): string; }>(
     next: SubtagLogic<Locals, Awaitable<T>>,
     conversion?: (value: T) => string
 ): SubtagLogic<Locals> {

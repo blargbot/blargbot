@@ -5,7 +5,7 @@ import { describe, it } from 'node:test';
 import { AirtableSuggesterStore } from '@blargbot/database';
 import type { Suggester } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
-import { argument, Mock } from '@blargbot/test-util/mock.js';
+import { Mock as Mock } from '@blargbot/test-util/mock.js';
 import type { AirtableBase } from 'airtable/lib/airtable_base.js';
 import AirtableError from 'airtable/lib/airtable_error.js';
 import type { FieldSet } from 'airtable/lib/field_set.js';
@@ -19,20 +19,20 @@ await describe('AirtableSuggesterStore', async () => {
     await describe('#get', async () => {
         await it('should return a suggester when it exists', async () => {
             // arrange
-            const airtable = new Mock<{ getTable: AirtableBase; }>();
+            const airtable = new Mock<AirtableBase>();
             const suggestorsTable = new Mock<Table<Fields>>();
             const record = new Mock<Record<Fields>>();
-            const logger = new Mock<Logger>(undefined, false);
-            const store = new AirtableSuggesterStore(airtable.instance.getTable, logger.instance);
+            const logger = new Mock<Logger>({ typeof: 'object', loose: true });
+            const store = new AirtableSuggesterStore(airtable.instance, logger.instance);
             const userId = randomUUID();
             const expected: Fields = {
                 ID: userId,
                 Username: 'Some user'
             };
 
-            airtable.setup(m => m.getTable<Fields>('Suggestors')).thenReturn(suggestorsTable.instance);
-            suggestorsTable.setup(m => m.find(userId)).thenResolve(record.instance);
-            record.setup(m => m.fields).thenReturn(expected);
+            airtable.setup(m => m<Fields>('Suggestors')).returns(suggestorsTable.instance);
+            suggestorsTable.setup(m => m.find(userId)).resolves(record.instance);
+            record.setup(m => m.fields).returns(expected);
 
             // act
             const result = await store.get(userId);
@@ -42,14 +42,14 @@ await describe('AirtableSuggesterStore', async () => {
         });
         await it('should return undefined when it doesnt exists', async () => {
             // arrange
-            const airtable = new Mock<{ getTable: AirtableBase; }>();
+            const airtable = new Mock<AirtableBase>();
             const suggestorsTable = new Mock<Table<Fields>>();
-            const logger = new Mock<Logger>(undefined, false);
-            const store = new AirtableSuggesterStore(airtable.instance.getTable, logger.instance);
+            const logger = new Mock<Logger>({ typeof: 'object', loose: true });
+            const store = new AirtableSuggesterStore(airtable.instance, logger.instance);
             const userId = randomUUID();
 
-            airtable.setup(m => m.getTable<Fields>('Suggestors')).thenReturn(suggestorsTable.instance);
-            suggestorsTable.setup(m => m.find(userId)).thenReject(notFoundError);
+            airtable.setup(m => m<Fields>('Suggestors')).returns(suggestorsTable.instance);
+            suggestorsTable.setup(m => m.find(userId)).rejects(notFoundError);
 
             // act
             const result = await store.get(userId);
@@ -61,24 +61,24 @@ await describe('AirtableSuggesterStore', async () => {
     await describe('#upsert', async () => {
         await it('Should create the user if it doesnt exist', async () => {
             // arrange
-            const airtable = new Mock<{ getTable: AirtableBase; }>();
+            const airtable = new Mock<AirtableBase>();
             const suggestorsTable = new Mock<Table<Fields>>();
-            const query = new Mock<Query<Fields>>();
             const record = new Mock<Record<Fields>>();
-            const logger = new Mock<Logger>(undefined, false);
-            const store = new AirtableSuggesterStore(airtable.instance.getTable, logger.instance);
+            const query = new Mock<Query<Fields>>();
+            const logger = new Mock<Logger>({ typeof: 'object', loose: true });
+            const store = new AirtableSuggesterStore(airtable.instance, logger.instance);
             const userId = randomUUID();
             const username = randomUUID();
             const expected = randomUUID();
 
-            airtable.setup(m => m.getTable<Fields>('Suggestors')).thenReturn(suggestorsTable.instance);
-            suggestorsTable.setup(m => m.select(argument.isDeepEqual({ maxRecords: 1, filterByFormula: `{ID} = '${userId}'` }))).thenReturn(query.instance);
-            query.setup(m => m.firstPage()).thenResolve([]);
-            suggestorsTable.setup(m => m.create(
-                argument.isDeepEqual({ ID: userId, Username: username }),
-                argument.isDeepEqual({ typecast: true })
-            )).thenResolve(record.instance);
-            record.setup(m => m.id).thenReturn(expected);
+            airtable.setup(m => m<Fields>('Suggestors')).returns(suggestorsTable.instance).mustHappen();
+            suggestorsTable.setup((m, $) => m.select($.looksLike({ maxRecords: 1, filterByFormula: `{ID} = '${userId}'` }))).returns(query.instance);
+            query.setup(m => m.firstPage()).resolves([]);
+            suggestorsTable.setup((m, $) => m.create(
+                $.looksLike({ ID: userId, Username: username }),
+                $.looksLike({ typecast: true })
+            )).resolves(record.instance);
+            record.setup(m => m.id).returns(expected);
 
             // act
             const result = await store.upsert(userId, username);
@@ -88,21 +88,21 @@ await describe('AirtableSuggesterStore', async () => {
         });
         await it('Should return undefined if the create fails', async () => {
             // arrange
-            const airtable = new Mock<{ getTable: AirtableBase; }>();
+            const airtable = new Mock<AirtableBase>();
             const suggestorsTable = new Mock<Table<Fields>>();
             const query = new Mock<Query<Fields>>();
-            const logger = new Mock<Logger>(undefined, false);
-            const store = new AirtableSuggesterStore(airtable.instance.getTable, logger.instance);
+            const logger = new Mock<Logger>({ typeof: 'object', loose: true });
+            const store = new AirtableSuggesterStore(airtable.instance, logger.instance);
             const userId = randomUUID();
             const username = randomUUID();
 
-            airtable.setup(m => m.getTable<Fields>('Suggestors')).thenReturn(suggestorsTable.instance);
-            suggestorsTable.setup(m => m.select(argument.isDeepEqual({ maxRecords: 1, filterByFormula: `{ID} = '${userId}'` }))).thenReturn(query.instance);
-            query.setup(m => m.firstPage()).thenResolve([]);
-            suggestorsTable.setup(m => m.create(
-                argument.isDeepEqual({ ID: userId, Username: username }),
-                argument.isDeepEqual({ typecast: true })
-            )).thenReject(notFoundError);
+            airtable.setup(m => m<Fields>('Suggestors')).returns(suggestorsTable.instance);
+            suggestorsTable.setup((m, $) => m.select($.looksLike({ maxRecords: 1, filterByFormula: `{ID} = '${userId}'` }))).returns(query.instance);
+            query.setup(m => m.firstPage()).resolves([]);
+            suggestorsTable.setup((m, $) => m.create(
+                $.looksLike({ ID: userId, Username: username }),
+                $.looksLike({ typecast: true })
+            )).rejects(notFoundError);
 
             // act
             const result = await store.upsert(userId, username);
@@ -112,24 +112,24 @@ await describe('AirtableSuggesterStore', async () => {
         });
         await it('Should update the user if it does exist', async () => {
             // arrange
-            const airtable = new Mock<{ getTable: AirtableBase; }>();
+            const airtable = new Mock<AirtableBase>();
             const suggestorsTable = new Mock<Table<Fields>>();
-            const query = new Mock<Query<Fields>>();
             const record = new Mock<Record<Fields>>();
-            const logger = new Mock<Logger>(undefined, false);
-            const store = new AirtableSuggesterStore(airtable.instance.getTable, logger.instance);
+            const query = new Mock<Query<Fields>>();
+            const logger = new Mock<Logger>({ typeof: 'object', loose: true });
+            const store = new AirtableSuggesterStore(airtable.instance, logger.instance);
             const userId = randomUUID();
             const username = randomUUID();
             const expected = randomUUID();
 
-            airtable.setup(m => m.getTable<Fields>('Suggestors')).thenReturn(suggestorsTable.instance);
-            suggestorsTable.setup(m => m.select(argument.isDeepEqual({ maxRecords: 1, filterByFormula: `{ID} = '${userId}'` }))).thenReturn(query.instance);
-            query.setup(m => m.firstPage()).thenResolve([record.instance]);
-            record.setup(m => m.id).thenReturn(expected);
-            suggestorsTable.setup(m => m.update(
+            airtable.setup(m => m<Fields>('Suggestors')).returns(suggestorsTable.instance);
+            suggestorsTable.setup((m, $) => m.select($.looksLike({ maxRecords: 1, filterByFormula: `{ID} = '${userId}'` }))).returns(query.instance);
+            query.setup(m => m.firstPage()).resolves([record.instance]);
+            record.setup(m => m.id).returns(expected);
+            suggestorsTable.setup((m, $) => m.update(
                 expected,
-                argument.isDeepEqual({ Username: username })
-            )).thenResolve(record.instance);
+                $.looksLike({ Username: username })
+            )).resolves(record.instance);
 
             // act
             const result = await store.upsert(userId, username);

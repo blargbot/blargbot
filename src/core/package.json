@@ -24,7 +24,7 @@
         "eris": "^0.17.1",
         "eventemitter3": "^4.0.7",
         "limax": "^3.0.0",
-        "moment-timezone": "^0.5.39",
+        "moment-timezone": "^0.6.4",
         "prom-client": "^14.1.0",
         "safe-regex": "^2.1.1",
         "twemoji": "^14.0.2",

@@ -1,18 +1,23 @@
-import type { BBTagAnyLocal } from './BBTagAnyLocal.js';
 import type { BBTagContext } from './BBTagContext.js';
 import type { BBTagReplacer } from './BBTagReplacer.js';
 import type { BBTagReplaceResult } from './BBTagReplaceResult.js';
 import type { BBTagSubtag } from './language/BBTagSubtag.js';
 
-export function defineMiddleware<Locals extends Record<string, unknown>, Args extends readonly unknown[]>(
-    impl: (...args: [...Args, context: BBTagContext<Locals>, name: string, bbtag: BBTagSubtag, next: () => BBTagReplaceResult]) => BBTagReplaceResult
-): <OwnLocals extends Record<string, unknown>>(...args: [...Args, next: BBTagReplacer<OwnLocals>]) => BBTagReplacer<Locals & OwnLocals> {
+export function defineMiddleware<Locals extends object, Args extends readonly unknown[]>(
+    impl: (...args: [...Args, context: BBTagContext<Locals>, name: string, bbtag: BBTagSubtag, next: () => BBTagReplaceResult]) => BBTagReplaceResult,
+    name?: (innerName: string | null) => string | null,
+    aliases?: (innerAliases: ReadonlySet<string>) => Iterable<string>
+): <OwnLocals extends object>(...args: [...Args, next: BBTagReplacer<OwnLocals>]) => BBTagReplacer<Locals & OwnLocals> {
     return function middleware(...x) {
-        const next = x.at(-1) as BBTagReplacer<BBTagAnyLocal>;
+        const next = x.at(-1) as BBTagReplacer;
         const args = x.slice(0, -1) as [...Args];
 
-        return function (context, name, bbtag) {
-            return impl(...args, context, name, bbtag, () => next(context, name, bbtag));
+        return {
+            name: name === undefined ? next.name : name(next.name),
+            aliases: new Set(aliases === undefined ? next.aliases : aliases(next.aliases)),
+            replace(context, name, bbtag) {
+                return impl(...args, context, name, bbtag, () => next.replace(context, name, bbtag));
+            }
         };
     };
 }
@@ -27,7 +32,7 @@ export const throttleMiddleware = defineMiddleware<{ readonly throttle: { callCo
     }
 );
 
-export interface BBTagMetricsLocals extends Record<string, unknown> {
+export interface BBTagMetricsLocals {
     readonly metrics: {
         onReplacerCalled(id: string, elapsedMs: number): void;
     };

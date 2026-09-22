@@ -133,7 +133,6 @@ function setProp(target: JToken | undefined, prop: string, value: JToken | undef
                 throw new BBTagRuntimeError(`Cannot set property ${prop} on null`);
             if (Array.isArray(target))
                 return setArrayProp(target, prop, value);
-
             if (value === undefined)
                 delete target[prop];
             else

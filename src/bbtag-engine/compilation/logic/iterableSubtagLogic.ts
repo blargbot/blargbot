@@ -1,7 +1,7 @@
 import { BBTagRuntimeError } from '../../BBTagRuntimeError.js';
 import type { SubtagLogic } from './SubtagLogic.js';
 
-export function iterableSubtagLogic<Locals extends Record<string, unknown>>(
+export function iterableSubtagLogic<Locals extends object>(
     next: SubtagLogic<Locals, Awaitable<AwaitableIterable<unknown> | undefined>>
 ): SubtagLogic<Locals> {
     return async function* iterableResults(context, args, bbtag) {

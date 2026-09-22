@@ -1,17 +1,13 @@
-import type { BBTagAnyLocal } from '../BBTagAnyLocal.js';
 import type { BBTagContext } from '../BBTagContext.js';
-import type { BBTagReplacer } from '../BBTagReplacer.js';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '../BBTagRuntimeError.js';
 import type { BBTagSubtag } from '../language/index.js';
 import type { ArgumentResolver } from './ArgumentResolver.js';
-import type { CompositeBBTagReplacer } from './CompositeBBTagReplacer.js';
+import type { CompiledBBTagReplacer } from './CompiledBBTagReplacer.js';
 import type { ConditionalBBTagReplacer } from './ConditionalBBTagReplacer.js';
 import { createArgumentResolvers } from './createResolvers.js';
 import type { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
 
-type PropsOnly<T> = { [P in keyof T]: T[P] }
-
-export function compileSignatures<Locals extends Record<string, unknown>>(names: string[], signatures: ReadonlyArray<SubtagSignatureCallable<Locals>>): CompositeBBTagReplacer<Locals> {
+export function compileSignatures<Locals extends object>(names: string[], signatures: ReadonlyArray<SubtagSignatureCallable<Locals>>): CompiledBBTagReplacer<Locals> {
     const handlers: Array<ConditionalBBTagReplacer<Locals>> = [];
     let min = initialResolver;
     let max = initialResolver;
@@ -32,29 +28,42 @@ export function compileSignatures<Locals extends Record<string, unknown>>(names:
         }
     }
 
-    return Object.assign<BBTagReplacer<Locals>, PropsOnly<CompositeBBTagReplacer<Locals>>>(
-        function execute(context, subtagName, call) {
+    const result: CompiledBBTagReplacer<Locals> = {
+        name: names[0] ?? null,
+        aliases: new Set(names.slice(1)),
+        handlers: handlers,
+        replace(context, subtagName, call) {
             const handler = handlers.find(handler => handler.canHandle(call, subtagName));
 
             if (handler !== undefined)
-                return handler(context, subtagName, call);
+                return handler.replace(context, subtagName, call);
             if (call.args.length < min.minArgs)
                 return resolveAndThrow(context, call, min, new NotEnoughArgumentsError(min.minArgs, call.args.length));
             if (call.args.length > max.maxArgs)
                 return resolveAndThrow(context, call, max, new TooManyArgumentsError(max.maxArgs, call.args.length));
 
             throw new Error(`Missing handler for ${call.args.length} arguments!`);
-        },
-        { handlers, names: Object.freeze([...names]) }
-    );
+        }
+    };
+    Object.defineProperty(result.replace, 'name', { value: names[0] });
+    return result;
 }
 
-function createConditionalHandler<Locals extends Record<string, unknown>>(signature: SubtagSignatureCallable<Locals>, resolver: ArgumentResolver<Locals>): ConditionalBBTagReplacer<Locals> {
+function createConditionalHandler<Locals extends object>(signature: SubtagSignatureCallable<Locals>, resolver: ArgumentResolver<Locals>): ConditionalBBTagReplacer<Locals> {
     const name = signature.subtagName?.toLowerCase();
     const implementation = signature.implementation;
 
-    return Object.assign<BBTagReplacer<Locals>, { [P in keyof ConditionalBBTagReplacer<Locals>]: ConditionalBBTagReplacer<Locals>[P] }>(
-        async function* executeContionalHandler(context, subtagName, call) {
+    return {
+        id: signature.id,
+        name: name ?? null,
+        aliases: new Set([name].filter(v => v !== undefined)),
+        parameters: signature.parameters,
+        canHandle:
+            name === undefined
+                ? subtag => resolver.isExactMatch(subtag)
+                : (subtag, subtagName) => subtagName.toLowerCase() === name && resolver.isExactMatch(subtag)
+        ,
+        replace: async function* executeContionalHandler(context, subtagName, call) {
             const args = [];
             for (const arg of resolver.resolve(context, call)) {
                 args.push(arg);
@@ -68,19 +77,11 @@ function createConditionalHandler<Locals extends Record<string, unknown>>(signat
                     throw error;
                 yield* await context.addError(error, call);
             }
-        },
-        {
-            id: signature.id,
-            parameters: signature.parameters,
-            subtagName: signature.subtagName,
-            canHandle: name === undefined
-                ? subtag => resolver.isExactMatch(subtag)
-                : (subtag, subtagName) => subtagName.toLowerCase() === name && resolver.isExactMatch(subtag)
         }
-    );
+    };
 }
 
-const initialResolver: ArgumentResolver<BBTagAnyLocal> = {
+const initialResolver: ArgumentResolver<object> = {
     minArgs: Infinity,
     maxArgs: -Infinity,
     isExactMatch() { return false; },
@@ -90,7 +91,7 @@ const initialResolver: ArgumentResolver<BBTagAnyLocal> = {
 };
 
 // eslint-disable-next-line require-yield
-async function* resolveAndThrow<Locals extends Record<string, unknown>>(
+async function* resolveAndThrow<Locals extends object>(
     context: BBTagContext<Locals>,
     call: BBTagSubtag,
     resolver: ArgumentResolver<Locals>,

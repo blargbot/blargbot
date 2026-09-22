@@ -1,57 +1,58 @@
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
 import { BBTagRuntimeError, InvalidOperatorError } from '../BBTagRuntimeError.js';
-import { compileReplacer } from '../compileReplacer.js';
+import { cacheResult } from '../cacheResult.js';
+import { defineReplacer } from '../defineReplacer.js';
 import { isNumericOperator, numericOperators } from '../operators.js';
 import { parse } from '../parse.js';
 import type { FallbackLocals, VariablesLocals } from './locals.js';
 
-export const parseIntReplacer = compileReplacer('parseInt', {
+export const parseIntReplacer = defineReplacer('parseInt', {
     parameters: ['number'],
     returns: 'number',
     execute: function parseInt(_, [number]) {
         return parse.int(number.value) ?? NaN;
     }
 });
-export const parseFloatReplacer = compileReplacer('parseFloat', {
+export const parseFloatReplacer = defineReplacer('parseFloat', {
     parameters: ['number'],
     returns: 'number',
     execute: function parseFloat(_, [number]) {
         return parse.float(number.value) ?? NaN;
     }
 });
-export const roundReplacer = compileReplacer('round', {
+export const roundReplacer = defineReplacer('round', {
     parameters: ['number'],
     returns: 'number',
     execute: function round(_, [number]) {
         return roundUsing(number.value, Math.round);
     }
 });
-export const roundDownReplacer = compileReplacer(['roundDown', 'floor'], {
+export const roundDownReplacer = defineReplacer(['roundDown', 'floor'], {
     parameters: ['number'],
     returns: 'number',
     execute: function roundDown(_, [number]) {
         return roundUsing(number.value, Math.floor);
     }
 });
-export const roundUpReplacer = compileReplacer(['roundUp', 'ceil'], {
+export const roundUpReplacer = defineReplacer(['roundUp', 'ceil'], {
     parameters: ['number'],
     returns: 'number',
     execute: function roundUp(_, [number]) {
         return roundUsing(number.value, Math.ceil);
     }
 });
-export const randomIntReplacer = compileReplacer<FallbackLocals>(['randomInt', 'randint'], {
+export const randomIntReplacer = defineReplacer<FallbackLocals>(['randomInt', 'randint'], {
     parameters: ['min?:0', 'max'],
     returns: 'number',
     execute: function randomInt(ctx, [{ value: minStr }, { value: maxStr }]) {
-        const fallback = parse.int(ctx.locals.fallback);
+        const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
         const min = parse.int(minStr, { fallback, throw: true });
         const max = parse.int(maxStr, { fallback, throw: true });
         return min + Math.floor(Math.random() * (max - min));
     }
 });
-export const absoluteReplacer = compileReplacer(
+export const absoluteReplacer = defineReplacer(
     ['absolute', 'abs'],
     {
         parameters: ['number'],
@@ -71,7 +72,7 @@ export const absoluteReplacer = compileReplacer(
         }
     }
 );
-export const decrementReplacer = compileReplacer<VariablesLocals>(
+export const decrementReplacer = defineReplacer<VariablesLocals>(
     'decrement',
     {
         parameters: ['varName'],
@@ -88,7 +89,7 @@ export const decrementReplacer = compileReplacer<VariablesLocals>(
         }
     }
 );
-export const incrementReplacer = compileReplacer<VariablesLocals>(
+export const incrementReplacer = defineReplacer<VariablesLocals>(
     'increment',
     {
         parameters: ['varName'],
@@ -105,7 +106,7 @@ export const incrementReplacer = compileReplacer<VariablesLocals>(
         }
     }
 );
-export const numberFormatReplacer = compileReplacer(
+export const numberFormatReplacer = defineReplacer(
     ['numberFormat', 'numFormat'],
     {
         parameters: ['number', 'roundTo'],
@@ -122,7 +123,7 @@ export const numberFormatReplacer = compileReplacer(
         }
     }
 );
-export const mathReplacer = compileReplacer('math', {
+export const mathReplacer = defineReplacer('math', {
     parameters: ['operator', 'numbers+'],
     returns: 'number',
     execute: function math(_, [{ value: operator }, ...values]) {
@@ -134,33 +135,31 @@ export const mathReplacer = compileReplacer('math', {
             .reduce(numericOperators[operator]);
     }
 });
-export const maxReplacer = compileReplacer('max', {
+export const maxReplacer = defineReplacer('max', {
     parameters: ['numbers+'],
     returns: 'number',
     execute: function max(_, values) {
         return aggregate(values.map(v => v.value), v => Math.max(...v));
     }
 });
-export const minReplacer = compileReplacer('min', {
+export const minReplacer = defineReplacer('min', {
     parameters: ['numbers+'],
     returns: 'number',
     execute: function min(_, values) {
         return aggregate(values.map(v => v.value), v => Math.min(...v));
     }
 });
-export const baseReplacer = compileReplacer<FallbackLocals>(['base', 'radix'], {
+export const baseReplacer = defineReplacer<FallbackLocals>(['base', 'radix'], {
     parameters: ['integer', 'origin?:10', 'radix'],
     returns: 'string',
     execute: function base(ctx, [{ value: valueStr }, { value: originStr }, { value: radixStr }]) {
-        const fallback = parse.int(ctx.locals.fallback);
+        const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
         let origin = parse.int(originStr, { fallback, throw: true });
         let radix = parse.int(radixStr, { fallback, throw: true });
-        if (fallback !== undefined) {
-            if (!isValidRadix(origin))
-                origin = fallback;
-            if (!isValidRadix(radix))
-                radix = fallback;
-        }
+        if (!isValidRadix(origin))
+            origin = fallback() ?? origin;
+        if (!isValidRadix(radix))
+            radix = fallback() ?? origin;
         if (!isValidRadix(origin) || !isValidRadix(radix))
             throw new BBTagRuntimeError('Base must be between 2 and 36');
 
@@ -185,14 +184,15 @@ async function nudge(context: BBTagContext<VariablesLocals>, varName: string, am
     let amount = parse.float(amountStr, { throw: true });
     const floor = parse.boolean(floorStr, { throw: true });
 
-    let value = parse.float(await context.locals.variables.get(varName), { throw: true });
+    const varRef = await context.locals.variables.get(varName);
+    let value = parse.float(varRef.value, { throw: true });
     if (floor) {
         value = Math.floor(value);
         amount = Math.floor(amount);
     }
 
     value += amount * scale;
-    await context.locals.variables.set(varName, value);
+    await context.locals.variables.set(varRef.key, value);
 
     return value;
 }

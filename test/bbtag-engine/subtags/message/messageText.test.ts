@@ -1,0 +1,32 @@
+import { replacers } from '@blargbot/bbtag-engine';
+
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
+
+await runSubtagTests({
+    replacer: replacers.messageTextReplacer,
+    argCountBounds: { min: 0, max: 3 },
+    cases: [
+        ...createGetMessagePropTestCases({
+            quiet: '',
+            includeNoArgs: true,
+            generateCode(...args) {
+                return `{${['messagetext', ...args].filter(a => a !== undefined).join(';')}}`;
+            },
+            cases: [
+                {
+                    expected: 'This is some message content',
+                    setup(_, message) {
+                        message.content = 'This is some message content';
+                    }
+                },
+                {
+                    expected: 'abcxyz',
+                    setup(_, message) {
+                        message.content = 'abcxyz';
+                    }
+                }
+            ]
+        })
+    ]
+});

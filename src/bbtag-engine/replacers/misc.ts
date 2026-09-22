@@ -1,32 +1,32 @@
 import { createHash, getHashes } from 'node:crypto';
 
-import type { BBTagAnyLocal } from '../BBTagAnyLocal.js';
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
 import { BBTagRuntimeError, InvalidOperatorError } from '../BBTagRuntimeError.js';
+import { cacheResult } from '../cacheResult.js';
 import type { SubtagSignatureCallableOptions } from '../compilation/SubtagSignatureCallableOptions.js';
-import { compileReplacer } from '../compileReplacer.js';
+import { defineReplacer } from '../defineReplacer.js';
 import type { LogicOperator } from '../operators.js';
 import { aggregationOperators, comparisonOperators, isComparisonOperator, isLogicOperator, logicOperators, numericOperators, ordinalOperators, stringOperators } from '../operators.js';
 import { parse } from '../parse.js';
 import type { SubtagReturnTypeMap } from '../types.js';
-import type { ArgsLocals, BrainfuckLocals, FallbackLocals, RegExpCompilerLocals, ReplaceOutputLocals, SafeRegExp, VariablesLocals } from './locals.js';
+import type { ArgsLocals, BrainfuckLocals, FallbackLocals, RegExpCompilerLocals, ReplaceOutputLocals, SafeRegExp, TemporalLocals, VariablesLocals } from './locals.js';
 
-export const base64DecodeReplacer = compileReplacer(['base64Decode', 'aToB'], {
+export const base64DecodeReplacer = defineReplacer(['base64Decode', 'aToB'], {
     parameters: ['text'],
     returns: 'string',
     execute: function base64Decode(_, [{ value: text }]) {
         return Buffer.from(text, 'base64').toString();
     }
 });
-export const base64EncodeReplacer = compileReplacer(['base64Encode', 'bToA'], {
+export const base64EncodeReplacer = defineReplacer(['base64Encode', 'bToA'], {
     parameters: ['text'],
     returns: 'string',
     execute: function base64Encode(_, [{ value: text }]) {
         return Buffer.from(text).toString('base64');
     }
 });
-export const boolReplacer = compileReplacer('bool', {
+export const boolReplacer = defineReplacer('bool', {
     parameters: ['arg1', 'evaluator', 'arg2'],
     returns: 'boolean',
     execute: function bool(_, [{ value: left }, { value: operator }, { value: right }]) {
@@ -53,7 +53,7 @@ function boolOperator(left: string, operator: string, right: string): boolean {
 
     return comparisonOperators[op](left, right);
 }
-export const brainfuckReplacer = compileReplacer<BrainfuckLocals>('brainfuck', {
+export const brainfuckReplacer = defineReplacer<BrainfuckLocals>('brainfuck', {
     parameters: ['code', 'input?'],
     returns: 'string',
     execute: async function brainfuck(ctx, [{ value: code }, { value: input }]) {
@@ -66,7 +66,7 @@ export const brainfuckReplacer = compileReplacer<BrainfuckLocals>('brainfuck', {
         }
     }
 });
-export const capitalizeReplacer = compileReplacer(
+export const capitalizeReplacer = defineReplacer(
     'capitalize',
     {
         parameters: ['text'],
@@ -83,21 +83,21 @@ export const capitalizeReplacer = compileReplacer(
         }
     }
 );
-export const lowerReplacer = compileReplacer('lower', {
+export const lowerReplacer = defineReplacer('lower', {
     parameters: ['text'],
     returns: 'string',
     execute: function lower(_, [{ value: text }]) {
         return text.toLowerCase();
     }
 });
-export const upperReplacer = compileReplacer('upper', {
+export const upperReplacer = defineReplacer('upper', {
     parameters: ['text'],
     returns: 'string',
     execute: function upper(_, [{ value: text }]) {
         return text.toUpperCase();
     }
 });
-export const chooseReplacer = compileReplacer('choose', {
+export const chooseReplacer = defineReplacer('choose', {
     parameters: ['choice', '~options+'],
     returns: 'string',
     execute: function choose(_, [{ value: choice }, ...options]) {
@@ -110,7 +110,7 @@ export const chooseReplacer = compileReplacer('choose', {
         return options[index].wait();
     }
 });
-export const cleanReplacer = compileReplacer('clean', {
+export const cleanReplacer = defineReplacer('clean', {
     parameters: ['text'],
     returns: 'string',
     execute: function clean(_, [{ value: text }]) {
@@ -121,23 +121,25 @@ export const cleanReplacer = compileReplacer('clean', {
         });
     }
 });
-export const commentReplacer = compileReplacer(['comment', '//'], {
+export const commentReplacer = defineReplacer(['comment', '//'], {
     parameters: ['~anything*'],
     returns: 'nothing',
     execute: function comment() { }
 });
-export const voidReplacer = compileReplacer(['void', 'null'], {
+export const voidReplacer = defineReplacer(['void', 'null'], {
     parameters: ['anything*'],
     returns: 'nothing',
     execute: function $void() { }
 });
-export const escapeBBTagReplacer = compileReplacer(['escapeBBTag', 'escape'], {
+export const escapeBBTagReplacer = defineReplacer(['escapeBBTag', 'escape'], {
     parameters: ['~input*'],
     returns: 'string',
-    execute: (_, items) => items.map(i => i.code.source).join(';')
+    execute: function escape(_, items) {
+        return items.map(i => i.code.source).join(';');
+    }
 });
 const supportedHashes = new Set(['md5', 'sha1', 'sha256', 'sha512', 'whirlpool']).intersection(new Set(getHashes()));
-export const hashReplacer = compileReplacer(
+export const hashReplacer = defineReplacer(
     'hash',
     {
         parameters: ['text'],
@@ -166,7 +168,7 @@ export const hashReplacer = compileReplacer(
         }
     }
 );
-export const ifReplacer = compileReplacer(
+export const ifReplacer = defineReplacer(
     'if',
     {
         parameters: ['boolean', '~then'],
@@ -204,23 +206,23 @@ export const ifReplacer = compileReplacer(
         }
     }
 );
-export const indexOfReplacer = compileReplacer<FallbackLocals>('indexOf', {
+export const indexOfReplacer = defineReplacer<FallbackLocals>('indexOf', {
     parameters: ['text|array', 'searchfor', 'start?:0'],
     returns: 'number',
     execute: function indexOf(ctx, [{ value: text }, { value: search }, { value: start }]) {
-        const fallback = parse.int(ctx.locals.fallback);
+        const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
         const from = parse.int(start, { fallback, throw: true });
 
         const { v: input } = bbtagArray.deserialize(text) ?? { v: text };
         return input.indexOf(search, from);
     }
 });
-export const langReplacer = compileReplacer('lang', {
+export const langReplacer = defineReplacer('lang', {
     parameters: ['language'],
     returns: 'nothing',
     execute: function lang() { }
 });
-export const lengthReplacer = compileReplacer('length', {
+export const lengthReplacer = defineReplacer('length', {
     parameters: ['value'],
     returns: 'number',
     execute: function length(_, [{ value }]) {
@@ -230,7 +232,7 @@ export const lengthReplacer = compileReplacer('length', {
         return value.length;
     }
 });
-export const logicReplacer = compileReplacer('logic', {
+export const logicReplacer = defineReplacer('logic', {
     parameters: ['operator', 'values+'],
     returns: 'boolean',
     execute: function logic(_, args) {
@@ -243,19 +245,21 @@ export const logicReplacer = compileReplacer('logic', {
                 operator = operatorName;
             else if (operatorName === '^')
                 operator = 'xor';
-            else {
-                values.splice(i, 1);
-                break;
-            }
+            else
+                continue;
+            values.splice(i, 1);
+            break;
         }
 
         if (operator === undefined)
             throw new InvalidOperatorError(values[0]);
 
-        return logicOperators[operator](values.map((value) => parse.boolean(value, { throw: true })));
+        const parsed = values.map((value) => parse.boolean(value, { throw: true }));
+
+        return logicOperators[operator](parsed);
     }
 });
-export const md5Replacer = compileReplacer('md5', {
+export const md5Replacer = defineReplacer('md5', {
     parameters: ['text'],
     returns: 'string',
     execute: function md5(_, [{ value: text }]) {
@@ -263,31 +267,31 @@ export const md5Replacer = compileReplacer('md5', {
         return hash.update(text).digest('hex');
     }
 });
-export const newlineReplacer = compileReplacer<FallbackLocals>(['newline', 'n'], {
+export const newlineReplacer = defineReplacer<FallbackLocals>(['newline', 'n'], {
     parameters: ['count?:1'],
     returns: 'string',
     execute: function newline(ctx, [{ value: countStr }]) {
-        const fallback = parse.int(ctx.locals.fallback);
+        const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
         const count = parse.int(countStr, { throw: true, fallback });
         // TODO: limit count
         return ''.padStart(count < 0 ? 0 : count, '\n');
     }
 });
-export const spaceReplacer = compileReplacer<FallbackLocals>(['space', 's'], {
+export const spaceReplacer = defineReplacer<FallbackLocals>(['space', 's'], {
     parameters: ['count?:1'],
     returns: 'string',
     execute: function space(ctx, [{ value: countStr }]) {
-        const fallback = parse.int(ctx.locals.fallback);
+        const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
         const count = parse.int(countStr, { throw: true, fallback });
         // TODO: limit count
         return ''.padStart(count < 0 ? 0 : count, ' ');
     }
 });
-type Options<Type extends keyof SubtagReturnTypeMap> = SubtagSignatureCallableOptions<BBTagAnyLocal, Type>;
+type Options<Type extends keyof SubtagReturnTypeMap> = SubtagSignatureCallableOptions<object, Type>;
 function withName<T extends (...args: never) => unknown>(name: string, fn: T): T {
     return Object.defineProperty(fn, 'name', { value: name });
 }
-export const operatorReplacer = compileReplacer('operator',
+export const operatorReplacer = defineReplacer('operator',
     ...Object.entries(ordinalOperators).map<Options<'boolean'>>(([op, impl]) => ({
         subtagName: op,
         parameters: ['values+'],
@@ -295,7 +299,7 @@ export const operatorReplacer = compileReplacer('operator',
         execute: withName(op, (_, values) => {
             const flattenedValues = bbtagArray.flattenArray(values.map(x => x.value))
                 .map(v => parse.string(v));
-            return flattenedValues
+            return flattenedValues.length > 1 && flattenedValues
                 .values()
                 .drop(1)
                 .every((v, i) => impl(flattenedValues[i], v));
@@ -346,7 +350,7 @@ export const operatorReplacer = compileReplacer('operator',
         }
     }
 );
-export const padReplacer = compileReplacer('pad', {
+export const padReplacer = defineReplacer('pad', {
     parameters: ['direction', 'back', 'text'],
     returns: 'string',
     execute: function pad(_, [{ value: direction }, { value: backing }, { value: overlay }]) {
@@ -365,7 +369,7 @@ export const padReplacer = compileReplacer('pad', {
         throw new BBTagRuntimeError('Invalid direction');
     }
 });
-export const realPadReplacer = compileReplacer(
+export const realPadReplacer = defineReplacer(
     'realPad',
     {
         parameters: ['text', 'length'],
@@ -400,7 +404,7 @@ export const realPadReplacer = compileReplacer(
 function pickOneOf<T>(source: readonly T[]): T {
     return source[Math.floor(Math.random() * source.length)];
 }
-export const randomChooseReplacer = compileReplacer<VariablesLocals & ArgsLocals>(
+export const randomChooseReplacer = defineReplacer<VariablesLocals & ArgsLocals>(
     ['randomChoose', 'randChoose'],
     {
         parameters: ['choiceArray'],
@@ -422,12 +426,12 @@ export const randomChooseReplacer = compileReplacer<VariablesLocals & ArgsLocals
         }
     }
 );
-export const randomStringReplacer = compileReplacer<FallbackLocals>(['randomString', 'randStr', 'randString'], {
+export const randomStringReplacer = defineReplacer<FallbackLocals>(['randomString', 'randStr', 'randString'], {
     parameters: ['chars', 'length'],
     returns: 'string',
     execute: function randomString(ctx, [{ value: charsStr }, { value: countStr }]) {
         const chars = charsStr.split('');
-        const fallback = parse.int(ctx.locals.fallback);
+        const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
         const count = parse.int(countStr, { fallback, throw: true });
         if (chars.length === 0)
             throw new BBTagRuntimeError('Not enough characters');
@@ -437,9 +441,8 @@ export const randomStringReplacer = compileReplacer<FallbackLocals>(['randomStri
     }
 });
 async function parseRegExp(context: BBTagContext<RegExpCompilerLocals>, regExp: string): Promise<SafeRegExp> {
-    if (!regExp.startsWith('/') || !regExp.endsWith('/'))
-        throw new BBTagRuntimeError('Invalid Regex');
-    regExp = regExp.slice(1, -1);
+    if (regExp.startsWith('/'))
+        regExp = regExp.slice(1);
     const flagsStartAt = regExp.lastIndexOf('/');
     if (flagsStartAt === -1)
         throw new BBTagRuntimeError('Invalid Regex');
@@ -465,15 +468,15 @@ async function parseRegExp(context: BBTagContext<RegExpCompilerLocals>, regExp: 
         throw error;
     }
 }
-export const regexMatchReplacer = compileReplacer<RegExpCompilerLocals>(['regexMatch', 'match'], {
+export const regexMatchReplacer = defineReplacer<RegExpCompilerLocals>(['regexMatch', 'match'], {
     parameters: ['text', '~regex'],
     returns: 'string[]',
-    execute: async function* regexMatch(ctx, [{ value: text }, { raw: source }]) {
+    execute: async function regexMatch(ctx, [{ value: text }, { raw: source }]) {
         const regex = await parseRegExp(ctx, source);
-        yield* await regex.match(text);
+        return await regex.match(text);
     }
 });
-export const regexReplaceReplacer = compileReplacer<RegExpCompilerLocals & ReplaceOutputLocals>(
+export const regexReplaceReplacer = defineReplacer<RegExpCompilerLocals & ReplaceOutputLocals>(
     'regexReplace',
     {
         parameters: ['~regex', 'replaceWith'],
@@ -492,15 +495,15 @@ export const regexReplaceReplacer = compileReplacer<RegExpCompilerLocals & Repla
         }
     }
 );
-export const regexSplitReplacer = compileReplacer<RegExpCompilerLocals>('regexSplit', {
+export const regexSplitReplacer = defineReplacer<RegExpCompilerLocals>('regexSplit', {
     parameters: ['text', '~regex'],
     returns: 'string[]',
-    execute: async function* regexSplit(ctx, [{ value: text }, { raw: source }]) {
+    execute: async function regexSplit(ctx, [{ value: text }, { raw: source }]) {
         const regex = await parseRegExp(ctx, source);
-        yield* await regex.split(text);
+        return await regex.split(text);
     }
 });
-export const regexTestReplacer = compileReplacer<RegExpCompilerLocals>('regexTest', {
+export const regexTestReplacer = defineReplacer<RegExpCompilerLocals>('regexTest', {
     parameters: ['text', '~regex'],
     returns: 'boolean',
     execute: async function regexTest(ctx, [{ value: text }, { raw: source }]) {
@@ -508,7 +511,7 @@ export const regexTestReplacer = compileReplacer<RegExpCompilerLocals>('regexTes
         return await regex.test(text);
     }
 });
-export const replaceReplacer = compileReplacer<ReplaceOutputLocals>(
+export const replaceReplacer = defineReplacer<ReplaceOutputLocals>(
     'replace',
     {
         parameters: ['phrase', 'replaceWith'],
@@ -525,10 +528,10 @@ export const replaceReplacer = compileReplacer<ReplaceOutputLocals>(
         }
     }
 );
-export const reverseReplacer = compileReplacer<VariablesLocals>('reverse', {
+export const reverseReplacer = defineReplacer<VariablesLocals>('reverse', {
     parameters: ['text'],
     returns: 'string',
-    execute: async function (ctx, [{ value: text }]) {
+    execute: async function reverse(ctx, [{ value: text }]) {
         const arr = bbtagArray.deserialize(text);
         if (arr === undefined)
             return text.split('').reverse().join('');
@@ -541,17 +544,17 @@ export const reverseReplacer = compileReplacer<VariablesLocals>('reverse', {
         return '';
     }
 });
-export const substringReplacer = compileReplacer<FallbackLocals>('substring', {
+export const substringReplacer = defineReplacer<FallbackLocals>('substring', {
     parameters: ['text', 'start', 'end?'],
     returns: 'string',
     execute: function substringReplacer(ctx, [{ value: text }, { value: startStr }, { value: endStr }]) {
-        const fallback = parse.int(ctx.locals.fallback);
+        const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
         const start = parse.int(startStr, { fallback, throw: true });
         const end = endStr === '' ? text.length : parse.int(endStr, { fallback, throw: true });
         return text.substring(start, end);
     }
 });
-export const switchReplacer = compileReplacer('switch', {
+export const switchReplacer = defineReplacer('switch', {
     parameters: ['value', { repeat: ['case', '~then'], minCount: 1 }, '~default?'],
     returns: 'string',
     execute: async function $switch(_, [{ value }, ...args]) {
@@ -577,14 +580,14 @@ export const switchReplacer = compileReplacer('switch', {
         return await match.execute();
     }
 });
-export const trimReplacer = compileReplacer('trim', {
+export const trimReplacer = defineReplacer('trim', {
     parameters: ['text'],
     returns: 'string',
     execute: function trim(_, [{ value: text }]) {
         return text.trim();
     }
 });
-export const unindentReplacer = compileReplacer(['unindent', 'ui'], {
+export const unindentReplacer = defineReplacer(['unindent', 'ui'], {
     parameters: ['text', 'level?'],
     returns: 'string',
     execute: function unindent(_, [{ value: text }, { value: levelStr }]) {
@@ -604,14 +607,14 @@ export const unindentReplacer = compileReplacer(['unindent', 'ui'], {
         return text.replace(regexp, '');
     }
 });
-export const uriEncodeReplacer = compileReplacer('uriEncode', {
+export const uriEncodeReplacer = defineReplacer('uriEncode', {
     parameters: ['text'],
     returns: 'string',
     execute: function uriEncode(_, [{ value: text }]) {
         return encodeURIComponent(text);
     }
 });
-export const uriDecodeReplacer = compileReplacer('uriDecode', {
+export const uriDecodeReplacer = defineReplacer('uriDecode', {
     parameters: ['text'],
     returns: 'string',
     execute: function uriDecode(_, [{ value: text }]) {
@@ -622,5 +625,15 @@ export const uriDecodeReplacer = compileReplacer('uriDecode', {
                 throw new BBTagRuntimeError(error.message);
             throw error;
         }
+    }
+});
+export const timeReplacer = defineReplacer<TemporalLocals>('time', {
+    parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ', 'time?:now', 'parseFormat?', 'fromTimezone?:Etc/UTC', 'toTimezone?:Etc/UTC'],
+    returns: 'string',
+    execute: function time(ctx, [{ value: format }, { value: time }, { value: parseFormat }, { value: fromTimezone }, { value: toTimezone }]) {
+        const parsed = ctx.locals.parseTime(time, parseFormat, fromTimezone);
+        if (parsed === undefined)
+            throw new BBTagRuntimeError('Invalid date');
+        return parsed.toString(format, toTimezone);
     }
 });

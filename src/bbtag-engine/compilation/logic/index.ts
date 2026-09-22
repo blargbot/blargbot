@@ -4,6 +4,5 @@ export * from './passthroughSubtagLogic.js';
 export * from './voidSubtagLogic.js';
 export * from './stringIterableSubtagLogic.js';
 export * from './stringSubtagLogic.js';
-export * from './stringifyIterableSubtagLogic.js';
 export * from './stringifySubtagLogic.js';
 export * from './SubtagLogic.js';

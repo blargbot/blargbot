@@ -1,3 +1,9 @@
+import type { BBTagSubtag } from './language/BBTagSubtag.js';
+
+export interface LocatedBBTagRuntimeError {
+    readonly error: BBTagRuntimeError;
+    readonly bbtag: BBTagSubtag;
+}
 export class BBTagRuntimeError extends Error {
     public display?: string;
 
@@ -20,8 +26,9 @@ export class BBTagTypeError extends BBTagRuntimeError {
 }
 
 export class InternalServerError extends BBTagRuntimeError {
-    public constructor(public readonly error: unknown) {
+    public constructor(error: unknown) {
         super('An internal server error has occurred', error instanceof Error ? error.message : typeof error === 'string' ? error : undefined);
+        this.cause = error;
     }
 }
 export class UnknownSubtagError extends BBTagRuntimeError {

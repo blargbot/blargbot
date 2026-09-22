@@ -5,7 +5,7 @@ import type { SubtagArgument } from './arguments/index.js';
 import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue } from './arguments/index.js';
 import type { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
 
-export function* createArgumentResolvers<Locals extends Record<string, unknown>>(signature: SubtagSignatureCallable<Locals>): Iterable<ArgumentResolver<Locals>> {
+export function* createArgumentResolvers<Locals extends object>(signature: SubtagSignatureCallable<Locals>): Iterable<ArgumentResolver<Locals>> {
     const flatParams = [...flatParameters(signature.parameters)];
     const defaultArgs = flatParams.map(p => new DefaultSubtagArgumentValue(p));
     const bindingOrder = createResolverOrder(signature.parameters, flatParams);
@@ -86,7 +86,7 @@ function addParameter(result: ArgumentResolverPermutations, parameter: SubtagSig
     result.permutations.unshift(...cloned);
 }
 
-function createResolver<Locals extends Record<string, unknown>>(
+function createResolver<Locals extends object>(
     argCount: number,
     defaultArgs: readonly SubtagArgument[],
     beforeGreedy: readonly number[],
@@ -126,7 +126,7 @@ const excessArg: SubtagSignatureValueParameter = {
     required: false
 };
 
-function createVariableResolver<Locals extends Record<string, unknown>>(
+function createVariableResolver<Locals extends object>(
     parameters: readonly SubtagArgument[],
     beforeGreedy: readonly number[],
     greedy: readonly number[],

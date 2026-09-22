@@ -1,0 +1,36 @@
+import { replacers } from '@blargbot/bbtag-engine';
+import * as eris from 'eris';
+
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
+
+await runSubtagTests({
+    replacer: replacers.channelTypeReplacer,
+    argCountBounds: { min: 0, max: 2 },
+    cases: [
+        ...createGetChannelPropTestCases({
+            quiet: '',
+            includeNoArgs: true,
+            generateCode(...args) {
+                return `{${['channeltype', ...args].join(';')}}`;
+            },
+            cases: Object.entries({
+                ['GUILD_TEXT']: 'text',
+                ['GUILD_VOICE']: 'voice',
+                ['GUILD_CATEGORY']: 'category',
+                ['GUILD_NEWS']: 'news',
+                ['GUILD_NEWS_THREAD']: 'news-thread',
+                ['GUILD_PUBLIC_THREAD']: 'public-thread',
+                ['GUILD_PRIVATE_THREAD']: 'private-thread',
+                ['GUILD_STAGE_VOICE']: 'stage-voice'
+            }).map(([key, success]) => ({
+                title: `Channel is a ${key} (${eris.Constants.ChannelTypes[key]})`,
+                expected: success,
+                setup(channel) {
+                    channel.type = eris.Constants.ChannelTypes[key];
+                }
+            }))
+
+        })
+    ]
+});

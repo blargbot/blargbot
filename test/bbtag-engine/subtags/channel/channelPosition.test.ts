@@ -1,0 +1,40 @@
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
+import type { APITextChannel } from 'discord-api-types/v9';
+import * as eris from 'eris';
+
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
+
+await runSubtagTests({
+    replacer: replacers.channelPositionReplacer,
+    argCountBounds: { min: 0, max: 2 },
+    cases: [
+        ...createGetChannelPropTestCases({
+            quiet: '',
+            includeNoArgs: true,
+            generateCode(...args) {
+                return `{${['channelpos', ...args].join(';')}}`;
+            },
+            cases: [
+                {
+                    expected: '324',
+                    setup(channel) {
+                        (channel as APITextChannel).position = 324;
+                    }
+                }
+            ]
+        }),
+        {
+            code: '{channelpos}',
+            expected: '`Threads dont have a position`',
+            errors: [
+                { start: 0, end: 12, error: new BBTagRuntimeError('Threads dont have a position', '<#23948762874624372942> is a thread and doesnt have a position') }
+            ],
+            setup(ctx) {
+                ctx.channels.command.id = '23948762874624372942';
+                ctx.message.channel_id = ctx.channels.command.id;
+                ctx.channels.command.type = eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD;
+            }
+        }
+    ]
+});

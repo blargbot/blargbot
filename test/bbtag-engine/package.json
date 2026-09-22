@@ -1,0 +1,14 @@
+{
+    "name": "@blargbot/bbtag-engine-tests",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@blargbot/bbtag-engine": "workspace:^",
+        "@blargbot/test-util": "workspace:^",
+        "@blargbot/util": "workspace:^",
+        "brainfuck-node": "^1.0.2",
+        "moment-timezone": "^0.6.4",
+        "ts-mockito": "^2.6.1"
+    }
+}

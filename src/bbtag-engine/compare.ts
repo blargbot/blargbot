@@ -1,3 +1,23 @@
+import { toSortedBy } from './toSortedBy.js';
+
+export function toNaturalSortedBy<Item>(items: Iterable<Item>, selector: (item: Item, index: number) => string, direction: 1 | -1 = 1): Item[] {
+    return toSortedBy(items, (item, index) => toBlocks(selector(item, index)), (a, b) => {
+        const max = Math.max(a.length, b.length);
+        for (let i = 0; i < max; i++) {
+            const $a = a[i];
+            const $b = b[i];
+            const key = `${typeof $a}|${typeof $b}`;
+            if (!Object.hasOwn(sorter, key))
+                continue;
+
+            const value = direction * callSorter(key, $a, $b);
+            if (value !== 0)
+                return value;
+        }
+        return 0;
+    });
+}
+
 export function compare(a: string, b: string): number {
     const aBlocks = toBlocks(a);
     const bBlocks = toBlocks(b);

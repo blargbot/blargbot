@@ -4,14 +4,14 @@ import type { BBTagLocalsFactory } from './BBTagLocalsFactory.js';
 import type { BBTagReplacer } from './BBTagReplacer.js';
 import type { BBTagSerializer } from './BBTagSerializer.js';
 
-export interface BBTagEngineOptions<Input, Locals extends Record<string, unknown>> {
+export interface BBTagEngineOptions<Input, Locals extends object> {
     readonly replacer: BBTagReplacer<Locals>;
     readonly renderError: BBTagErrorRenderer<NoInfer<Locals>>;
     readonly serializer: BBTagSerializer<NoInfer<Input>>;
     readonly locals: BBTagLocalsFactory<Input, NoInfer<Locals>>;
 }
 
-export class BBTagEngine<Input, Locals extends Record<string, unknown>> {
+export class BBTagEngine<Input, Locals extends object> {
     readonly #serializer: BBTagSerializer<Input>;
     readonly #locals: BBTagLocalsFactory<Input, Locals>;
     readonly #replacer: BBTagReplacer<Locals>;

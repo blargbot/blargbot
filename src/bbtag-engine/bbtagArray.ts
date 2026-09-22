@@ -1,7 +1,12 @@
 import type { BBTagContext } from './BBTagContext.js';
+import { NotAnArrayError } from './BBTagRuntimeError.js';
 import { parse } from './parse.js';
 import type { VariablesLocals } from './replacers/locals.js';
 import type { BBTagArray } from './types.js';
+
+export interface DeserializeOptions {
+    throw?: boolean;
+}
 
 export const bbtagArray = Object.freeze({
     serialize(array: JArray | BBTagArray, varName?: string): string {
@@ -18,23 +23,7 @@ export const bbtagArray = Object.freeze({
             n: varName
         });
     },
-    deserialize(value: string): BBTagArray | undefined {
-        let result = tryParseAsBBTagArray(value);
-        if (result === undefined) {
-            value = value.replace(
-                /([[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
-                (_, ...[before, from, to, after]: string[]) => {
-                    const start = parse.int(from) ?? NaN;
-                    const end = parse.int(to) ?? NaN;
-                    const count = Math.max(0, Math.min(end - start, 200));
-                    return before + Array.from({ length: count }, (_, i) => i + start).join(',') + after;
-                }
-            );
-            result = tryParseAsBBTagArray(value);
-        }
-
-        return result;
-    },
+    deserialize,
     flattenArray(array: JArray): JArray {
         const result = [];
         for (const arg of array) {
@@ -48,28 +37,8 @@ export const bbtagArray = Object.freeze({
         }
         return result;
     },
-    async deserializeOrGetArray(context: BBTagContext<VariablesLocals>, value: string): Promise<BBTagArray | undefined> {
-        const obj = this.deserialize(value);
-        if (obj !== undefined)
-            return obj;
-
-        const arr = await context.locals.variables.get(value);
-        if (Array.isArray(arr))
-            return { v: arr, n: value };
-
-        return undefined;
-    },
-    async deserializeOrGetIterable(context: BBTagContext<VariablesLocals>, value: string): Promise<Iterable<JToken> | undefined> {
-        const obj = this.deserialize(value);
-        if (obj !== undefined)
-            return obj.v;
-
-        const arr = await context.locals.variables.get(value);
-        if (Array.isArray(arr) || typeof arr === 'string')
-            return arr;
-
-        return undefined;
-    },
+    deserializeOrGetArray,
+    deserializeOrGetIterable,
     isTagArray(value: unknown): value is BBTagArray {
         return typeof value === 'object'
             && value !== null
@@ -78,6 +47,64 @@ export const bbtagArray = Object.freeze({
             && (!('n' in value) || typeof value.n === 'string');
     }
 });
+
+function deserialize(value: string, options: DeserializeOptions & { throw: true; }): BBTagArray
+function deserialize(value: string, options?: DeserializeOptions): BBTagArray | undefined
+function deserialize(value: string, options: DeserializeOptions = {}): BBTagArray | undefined {
+    let result = tryParseAsBBTagArray(value);
+    if (result === undefined) {
+        value = value.replace(
+            /(?<before>[[,]\s*)(?<start>\d+)\s*\.\.\.\s*(?<end>\d+)(?<after>\s*[\],])/gi,
+            (_, ...args) => {
+                const groups = args.at(-1) as Record<string, string>;
+                const start = parse.int(groups.start) ?? NaN;
+                const end = parse.int(groups.end) ?? NaN;
+                const count = Math.max(0, Math.min(end - start, 200));
+                return groups.before + Array.from({ length: count }, (_, i) => i + start).join(',') + groups.after;
+            }
+        );
+        result = tryParseAsBBTagArray(value);
+    }
+
+    if (options.throw === true && result === undefined)
+        throw new NotAnArrayError(value);
+
+    return result;
+}
+
+async function deserializeOrGetArray(context: BBTagContext<VariablesLocals>, value: string, options: DeserializeOptions & { throw: true; }): Promise<BBTagArray>
+async function deserializeOrGetArray(context: BBTagContext<VariablesLocals>, value: string, options?: DeserializeOptions): Promise<BBTagArray | undefined>
+async function deserializeOrGetArray(context: BBTagContext<VariablesLocals>, value: string, options: DeserializeOptions = {}): Promise<BBTagArray | undefined> {
+    const obj = bbtagArray.deserialize(value);
+    if (obj !== undefined)
+        return obj;
+
+    const arr = await context.locals.variables.get(value);
+    if (Array.isArray(arr.value))
+        return { v: arr.value, n: arr.key };
+
+    if (options.throw === true)
+        throw new NotAnArrayError(value);
+
+    return undefined;
+}
+
+async function deserializeOrGetIterable(context: BBTagContext<VariablesLocals>, value: string, options: DeserializeOptions & { throw: true; }): Promise<Iterable<JToken> | undefined>
+async function deserializeOrGetIterable(context: BBTagContext<VariablesLocals>, value: string, options?: DeserializeOptions): Promise<Iterable<JToken> | undefined>
+async function deserializeOrGetIterable(context: BBTagContext<VariablesLocals>, value: string, options: DeserializeOptions = {}): Promise<Iterable<JToken> | undefined> {
+    const obj = bbtagArray.deserialize(value);
+    if (obj !== undefined)
+        return obj.v;
+
+    const arr = await context.locals.variables.get(value);
+    if (Array.isArray(arr.value) || typeof arr.value === 'string')
+        return arr.value;
+
+    if (options.throw === true)
+        throw new NotAnArrayError(value);
+
+    return undefined;
+}
 
 function tryParseAsBBTagArray(json: string): BBTagArray | undefined {
     try {

@@ -11,7 +11,7 @@
         "@blargbot/formatting": "workspace:^",
         "@blargbot/test-util": "workspace:^",
         "eris": "^0.17.1",
-        "moment-timezone": "^0.5.39"
+        "moment-timezone": "^0.6.4"
     },
     "devDependencies": {
         "@types/eris": "workspace:^"

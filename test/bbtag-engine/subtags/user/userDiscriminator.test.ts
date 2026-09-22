@@ -1,0 +1,37 @@
+import { replacers } from '@blargbot/bbtag-engine';
+
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
+
+await runSubtagTests({
+    replacer: replacers.userDiscriminatorReplacer,
+    argCountBounds: { min: 0, max: 2 },
+    cases: [
+        ...createGetUserPropTestCases({
+            quiet: '',
+            generateCode(...args) {
+                return `{${['userdiscrim', ...args].join(';')}}`;
+            },
+            cases: [
+                {
+                    expected: '1234',
+                    setup(member) {
+                        member.user.discriminator = '1234';
+                    }
+                },
+                {
+                    expected: '5678',
+                    setup(member) {
+                        member.user.discriminator = '5678';
+                    }
+                },
+                {
+                    expected: '0000',
+                    setup(member) {
+                        member.user.discriminator = '0000';
+                    }
+                }
+            ]
+        })
+    ]
+});

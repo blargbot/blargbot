@@ -41,7 +41,7 @@ type SubtagReturnTypeValueMap = {
     string: string;
     id: string;
     json: JToken;
-    nothing: never;
+    nothing: undefined;
 }
 
 type SubtagReturnTypeAtomicMap = SubtagReturnTypeValueMap & {

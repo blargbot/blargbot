@@ -1,15 +1,17 @@
 import { BBTagEngine } from './BBTagEngine.js';
 import { BBTagRuntimeError } from './BBTagRuntimeError.js';
-import { composeBBTagReplacer } from './composeBBTagReplacer.js';
+import { composeReplacer } from './composeReplacer.js';
 import { parseBBTag } from './language/parseBBTag.js';
+import * as json from './replacers/json.js';
 import * as math from './replacers/math.js';
 import * as misc from './replacers/misc.js';
 import * as simple from './replacers/simple.js';
 
-const replacer = composeBBTagReplacer(x => x
+const replacer = composeReplacer(x => x
     .registerAll(simple)
     .registerAll(misc)
     .registerAll(math)
+    .registerAll(json)
 );
 const engine = new BBTagEngine({
     replacer,
@@ -17,6 +19,7 @@ const engine = new BBTagEngine({
         toInput() {
             return {};
         },
+        /* @ts-expect-error testing file */
         toLocals() {
             return {
 
@@ -42,4 +45,5 @@ if (bbtag instanceof BBTagRuntimeError)
     throw bbtag;
 
 const result = await ctx.eval(bbtag);
+// eslint-disable-next-line no-console
 console.info(result);

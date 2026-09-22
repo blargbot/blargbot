@@ -123,6 +123,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:test/bbtag"\
     },\
     {\
+      "name": "@blargbot/bbtag-engine-tests",\
+      "reference": "workspace:test/bbtag-engine"\
+    },\
+    {\
       "name": "@blargbot/cluster-tests",\
       "reference": "workspace:test/cluster"\
     },\
@@ -146,6 +150,7 @@ const RAW_RUNTIME_STATE =
     ["@blargbot/api", ["workspace:src/api"]],\
     ["@blargbot/bbtag", ["workspace:src/bbtag"]],\
     ["@blargbot/bbtag-engine", ["workspace:src/bbtag-engine"]],\
+    ["@blargbot/bbtag-engine-tests", ["workspace:test/bbtag-engine"]],\
     ["@blargbot/bbtag-tests", ["workspace:test/bbtag"]],\
     ["@blargbot/cluster", ["workspace:src/cluster"]],\
     ["@blargbot/cluster-tests", ["workspace:test/cluster"]],\
@@ -262,7 +267,7 @@ const RAW_RUNTIME_STATE =
           ["discord-api-types", "npm:0.37.20"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
           ["html-entities", "npm:2.3.3"],\
-          ["moment-timezone", "npm:0.5.39"],\
+          ["moment-timezone", "npm:0.6.4"],\
           ["rwlock", "npm:5.0.0"],\
           ["ts-mockito", "npm:2.6.1"],\
           ["zod", "npm:4.6.5"]\
@@ -275,6 +280,21 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./src/bbtag-engine/",\
         "packageDependencies": [\
           ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@blargbot/bbtag-engine-tests", [\
+      ["workspace:test/bbtag-engine", {\
+        "packageLocation": "./test/bbtag-engine/",\
+        "packageDependencies": [\
+          ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"],\
+          ["@blargbot/bbtag-engine-tests", "workspace:test/bbtag-engine"],\
+          ["@blargbot/test-util", "workspace:test/testUtil"],\
+          ["@blargbot/util", "workspace:src/util"],\
+          ["brainfuck-node", "npm:1.0.2"],\
+          ["moment-timezone", "npm:0.6.4"],\
+          ["ts-mockito", "npm:2.6.1"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -296,7 +316,7 @@ const RAW_RUNTIME_STATE =
           ["@types/eris", "workspace:definitions/eris"],\
           ["discord-api-types", "npm:0.37.20"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
-          ["moment-timezone", "npm:0.5.39"],\
+          ["moment-timezone", "npm:0.6.4"],\
           ["ts-mockito", "npm:2.6.1"]\
         ],\
         "linkType": "SOFT"\
@@ -329,7 +349,7 @@ const RAW_RUNTIME_STATE =
           ["discord-api-types", "npm:0.37.20"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
           ["eventemitter3", "npm:4.0.7"],\
-          ["moment-timezone", "npm:0.5.39"],\
+          ["moment-timezone", "npm:0.6.4"],\
           ["prom-client", "npm:14.1.0"],\
           ["require-reload", "npm:0.2.2"],\
           ["wolken", "npm:0.2.1"],\
@@ -352,7 +372,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/test-util", "workspace:test/testUtil"],\
           ["@types/eris", "workspace:definitions/eris"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
-          ["moment-timezone", "npm:0.5.39"]\
+          ["moment-timezone", "npm:0.6.4"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -408,7 +428,7 @@ const RAW_RUNTIME_STATE =
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
           ["eventemitter3", "npm:4.0.7"],\
           ["limax", "npm:3.0.0"],\
-          ["moment-timezone", "npm:0.5.39"],\
+          ["moment-timezone", "npm:0.6.4"],\
           ["prom-client", "npm:14.1.0"],\
           ["safe-regex", "npm:2.1.1"],\
           ["twemoji", "npm:14.0.2"],\
@@ -461,7 +481,7 @@ const RAW_RUNTIME_STATE =
           ["airtable", "patch:airtable@npm%3A0.12.2#~/.yarn/patches/airtable-npm-0.12.2-ef934b1a03.patch::version=0.12.2&hash=535749"],\
           ["cassandra-driver", "npm:4.6.4"],\
           ["catflake", "npm:1.0.0"],\
-          ["moment-timezone", "npm:0.5.39"],\
+          ["moment-timezone", "npm:0.6.4"],\
           ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\
           ["pg-hstore", "npm:2.3.4"],\
           ["rethinkdb", "npm:2.4.2"],\
@@ -564,7 +584,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
-          ["moment-timezone", "npm:0.5.39"]\
+          ["moment-timezone", "npm:0.6.4"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -628,7 +648,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/res", "workspace:src/res"],\
           ["@types/eris", "workspace:definitions/eris"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
-          ["moment-timezone", "npm:0.5.39"],\
+          ["moment-timezone", "npm:0.6.4"],\
           ["prom-client", "npm:14.1.0"],\
           ["strip-ansi", "npm:6.0.1"]\
         ],\
@@ -5512,28 +5532,28 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["moment", [\
-      ["npm:2.29.4", {\
-        "packageLocation": "./.yarn/cache/moment-npm-2.29.4-902943305d-157c5af5a0.zip/node_modules/moment/",\
+      ["npm:2.31.0", {\
+        "packageLocation": "./.yarn/cache/moment-npm-2.31.0-f6e03a269c-fd3708d46f.zip/node_modules/moment/",\
         "packageDependencies": [\
-          ["moment", "npm:2.29.4"]\
+          ["moment", "npm:2.31.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["moment-timezone", [\
-      ["npm:0.5.37", {\
-        "packageLocation": "./.yarn/cache/moment-timezone-npm-0.5.37-cb6e7487a6-bbee5b7104.zip/node_modules/moment-timezone/",\
+      ["npm:0.5.48", {\
+        "packageLocation": "./.yarn/cache/moment-timezone-npm-0.5.48-3b583954df-8e0b7a0557.zip/node_modules/moment-timezone/",\
         "packageDependencies": [\
-          ["moment", "npm:2.29.4"],\
-          ["moment-timezone", "npm:0.5.37"]\
+          ["moment", "npm:2.31.0"],\
+          ["moment-timezone", "npm:0.5.48"]\
         ],\
         "linkType": "HARD"\
       }],\
-      ["npm:0.5.39", {\
-        "packageLocation": "./.yarn/cache/moment-timezone-npm-0.5.39-e9aea4996d-42c12b07b4.zip/node_modules/moment-timezone/",\
+      ["npm:0.6.4", {\
+        "packageLocation": "./.yarn/cache/moment-timezone-npm-0.6.4-78ea3bd92a-efa60fc46c.zip/node_modules/moment-timezone/",\
         "packageDependencies": [\
-          ["moment", "npm:2.29.4"],\
-          ["moment-timezone", "npm:0.5.39"]\
+          ["moment", "npm:2.31.0"],\
+          ["moment-timezone", "npm:0.6.4"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -6482,8 +6502,8 @@ const RAW_RUNTIME_STATE =
           ["inflection", "npm:1.13.4"],\
           ["lodash", "npm:4.17.21"],\
           ["mariadb", null],\
-          ["moment", "npm:2.29.4"],\
-          ["moment-timezone", "npm:0.5.37"],\
+          ["moment", "npm:2.31.0"],\
+          ["moment-timezone", "npm:0.5.48"],\
           ["mysql2", null],\
           ["oracledb", null],\
           ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\
@@ -6543,8 +6563,8 @@ const RAW_RUNTIME_STATE =
           ["inflection", "npm:1.13.4"],\
           ["lodash", "npm:4.17.21"],\
           ["mariadb", null],\
-          ["moment", "npm:2.29.4"],\
-          ["moment-timezone", "npm:0.5.37"],\
+          ["moment", "npm:2.31.0"],\
+          ["moment-timezone", "npm:0.5.48"],\
           ["mysql2", null],\
           ["oracledb", null],\
           ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\

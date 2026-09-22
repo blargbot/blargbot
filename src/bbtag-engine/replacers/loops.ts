@@ -1,14 +1,15 @@
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError } from '../BBTagRuntimeError.js';
+import { cacheResult } from '../cacheResult.js';
 import type { SubtagArgument } from '../compilation/arguments/SubtagArgument.js';
-import { compileReplacer } from '../compileReplacer.js';
+import { defineReplacer } from '../defineReplacer.js';
 import type { OrdinalOperator } from '../operators.js';
 import { isComparisonOperator, operate } from '../operators.js';
 import { parse } from '../parse.js';
 import type { FallbackLocals, VariablesLocals } from './locals.js';
 
-export const forReplacer = compileReplacer<VariablesLocals>('for', {
+export const forReplacer = defineReplacer<VariablesLocals>('for', {
     parameters: ['variable', 'initial', 'comparison', 'limit', 'increment?:1', '~code'],
     returns: 'loop',
     execute: async function* forReplacer(ctx, [{ value: variable }, { value: initialStr }, { value: operator }, { value: limitStr }, { value: incrementStr }, code]) {
@@ -30,16 +31,16 @@ export const forReplacer = compileReplacer<VariablesLocals>('for', {
                 yield await code.execute();
 
                 const varEntry = await ctx.locals.variables.get(variable);
-                i = parse.float(varEntry, { throw: true });
+                i = parse.float(varEntry.value, { throw: true });
                 if (ctx.return !== 0)
                     break;
             }
         } finally {
-            ctx.locals.variables.reset([variable]);
+            ctx.locals.variables.rollback([variable]);
         }
     }
 });
-export const foreachReplacer = compileReplacer<VariablesLocals>('forEach', {
+export const foreachReplacer = defineReplacer<VariablesLocals>('forEach', {
     parameters: ['variable', 'array#10000000', '~code'],
     returns: 'loop',
     execute: async function* foreachReplacer(context, [{ value: variable }, { value: source }, code]) {
@@ -53,16 +54,16 @@ export const foreachReplacer = compileReplacer<VariablesLocals>('forEach', {
                     break;
             }
         } finally {
-            context.locals.variables.reset([variable]);
+            context.locals.variables.rollback([variable]);
         }
     }
 
 });
-export const repeatReplacer = compileReplacer<VariablesLocals & FallbackLocals>(['repeat', 'loop'], {
+export const repeatReplacer = defineReplacer<VariablesLocals & FallbackLocals>(['repeat', 'loop'], {
     parameters: ['~code', 'amount'],
     returns: 'loop',
     execute: async function* repeatReplacer(ctx, [code, { value: amountStr }]) {
-        const fallback = parse.int(ctx.locals.fallback);
+        const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
         const amount = parse.int(amountStr, { fallback, throw: true });
         if (amount < 0)
             throw new BBTagRuntimeError('Can\'t be negative');
@@ -75,7 +76,7 @@ export const repeatReplacer = compileReplacer<VariablesLocals & FallbackLocals>(
     }
 });
 
-export const whileReplacer = compileReplacer<VariablesLocals>(
+export const whileReplacer = defineReplacer<VariablesLocals>(
     'while',
     {
         parameters: ['~boolean', '~code'],

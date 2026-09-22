@@ -1,41 +1,48 @@
-export interface ArgsLocals extends Record<string, unknown> {
+export interface ArgsLocals {
     args: {
-        readonly positional: readonly string[];
-        readonly raw: string;
+        positional: readonly string[];
+        raw: string;
     };
 }
 
-export interface CustomCommandLocals extends Record<string, unknown> {
+export interface CustomCommandLocals {
     isCC: boolean;
 }
 
-export interface AuthorizerLocals extends Record<string, unknown> {
+export interface AuthorizerLocals {
     authorizerId: string;
 }
 
-export interface AuthorLocals extends Record<string, unknown> {
+export interface AuthorLocals {
     authorId: string;
 }
 
-export interface FallbackLocals extends Record<string, unknown> {
+export interface FallbackLocals {
     fallback?: string;
 }
 
-export interface VariablesLocals extends Record<string, unknown> {
-    variables: {
-        get(name: string): Awaitable<JToken | undefined>;
-        set(name: string, value: JToken | undefined): Awaitable<void>;
-        reset(names?: readonly string[]): Awaitable<void>;
-        persist(names?: readonly string[]): Awaitable<void>;
-    };
+export interface VariablesLocals {
+    variables: VariableStore;
 }
 
-export interface ReplaceOutputLocals extends Record<string, unknown> {
+export interface VariableStore {
+    get(name: string): Awaitable<VariableReference>;
+    set(name: string, value: JToken | undefined): Awaitable<void>;
+    rollback(names?: readonly string[]): Awaitable<void>;
+    commit(names?: readonly string[]): Awaitable<void>;
+}
+
+export interface VariableReference {
+    readonly key: string;
+    readonly value: JToken | undefined;
+}
+
+export interface ReplaceOutputLocals {
     replaceOutput: Array<(output: string) => Awaitable<string>>;
 }
 
-export interface RegExpCompilerLocals extends Record<string, unknown> {
-    compileRegExp(pattern: string, flags: string): Awaitable<SafeRegExp>;
+export interface RegExpCompilerLocals {
+    compileRegExp: (pattern: string, flags: string) => Awaitable<SafeRegExp>;
 }
 
 export interface SafeRegExp {
@@ -45,6 +52,14 @@ export interface SafeRegExp {
     match(text: string): Awaitable<AwaitableIterable<string>>;
 }
 
-export interface BrainfuckLocals extends Record<string, unknown> {
-    brainfuck(code: string, input: string): Awaitable<string>;
+export interface BrainfuckLocals {
+    brainfuck: (code: string, input: string) => Awaitable<string>;
+}
+
+export interface TemporalLocals {
+    parseTime: (input: string, format: string, timezone: string) => undefined | TemporalValue;
+}
+
+export interface TemporalValue {
+    toString(format: string, timezone: string): string;
 }

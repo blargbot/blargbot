@@ -40,7 +40,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/bbtag-engine@workspace:src/bbtag-engine":
+"@blargbot/bbtag-engine-tests@workspace:test/bbtag-engine":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/bbtag-engine-tests@workspace:test/bbtag-engine"
+  dependencies:
+    "@blargbot/bbtag-engine": "workspace:^"
+    "@blargbot/test-util": "workspace:^"
+    "@blargbot/util": "workspace:^"
+    brainfuck-node: "npm:^1.0.2"
+    moment-timezone: "npm:^0.6.4"
+    ts-mockito: "npm:^2.6.1"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/bbtag-engine@workspace:^, @blargbot/bbtag-engine@workspace:src/bbtag-engine":
   version: 0.0.0-use.local
   resolution: "@blargbot/bbtag-engine@workspace:src/bbtag-engine"
   languageName: unknown
@@ -62,7 +75,7 @@ __metadata:
     "@types/eris": "workspace:^"
     discord-api-types: "npm:^0.37.20"
     eris: "npm:^0.17.1"
-    moment-timezone: "npm:^0.5.39"
+    moment-timezone: "npm:^0.6.4"
     ts-mockito: "npm:^2.6.1"
   languageName: unknown
   linkType: soft
@@ -88,7 +101,7 @@ __metadata:
     discord-api-types: "npm:^0.37.20"
     eris: "npm:^0.17.1"
     html-entities: "npm:^2.3.3"
-    moment-timezone: "npm:^0.5.39"
+    moment-timezone: "npm:^0.6.4"
     rwlock: "npm:^5.0.0"
     ts-mockito: "npm:^2.6.1"
     zod: "npm:^4.6.5"
@@ -107,7 +120,7 @@ __metadata:
     "@blargbot/test-util": "workspace:^"
     "@types/eris": "workspace:^"
     eris: "npm:^0.17.1"
-    moment-timezone: "npm:^0.5.39"
+    moment-timezone: "npm:^0.6.4"
   languageName: unknown
   linkType: soft
 
@@ -137,7 +150,7 @@ __metadata:
     discord-api-types: "npm:^0.37.20"
     eris: "npm:^0.17.1"
     eventemitter3: "npm:^4.0.7"
-    moment-timezone: "npm:^0.5.39"
+    moment-timezone: "npm:^0.6.4"
     prom-client: "npm:^14.1.0"
     require-reload: "npm:^0.2.2"
     wolken: "npm:^0.2.1"
@@ -205,7 +218,7 @@ __metadata:
     eris: "npm:^0.17.1"
     eventemitter3: "npm:^4.0.7"
     limax: "npm:^3.0.0"
-    moment-timezone: "npm:^0.5.39"
+    moment-timezone: "npm:^0.6.4"
     prom-client: "npm:^14.1.0"
     safe-regex: "npm:^2.1.1"
     twemoji: "npm:^14.0.2"
@@ -256,7 +269,7 @@ __metadata:
     airtable: "patch:airtable@npm%3A0.12.2#~/.yarn/patches/airtable-npm-0.12.2-ef934b1a03.patch"
     cassandra-driver: "npm:^4.6.4"
     catflake: "npm:^1.0.0"
-    moment-timezone: "npm:^0.5.39"
+    moment-timezone: "npm:^0.6.4"
     pg: "npm:^8.8.0"
     pg-hstore: "npm:^2.3.4"
     rethinkdb: "npm:^2.4.2"
@@ -329,7 +342,7 @@ __metadata:
   resolution: "@blargbot/domain@workspace:src/domain"
   dependencies:
     "@blargbot/formatting": "workspace:^"
-    moment-timezone: "npm:^0.5.39"
+    moment-timezone: "npm:^0.6.4"
   languageName: unknown
   linkType: soft
 
@@ -384,7 +397,7 @@ __metadata:
     "@blargbot/res": "workspace:^"
     "@types/eris": "workspace:^"
     eris: "npm:^0.17.1"
-    moment-timezone: "npm:^0.5.39"
+    moment-timezone: "npm:^0.6.4"
     prom-client: "npm:^14.1.0"
     strip-ansi: "npm:^6.0.1"
   languageName: unknown
@@ -4525,27 +4538,27 @@ __metadata:
   linkType: hard
 
 "moment-timezone@npm:^0.5.34":
-  version: 0.5.37
-  resolution: "moment-timezone@npm:0.5.37"
+  version: 0.5.48
+  resolution: "moment-timezone@npm:0.5.48"
   dependencies:
-    moment: "npm:>= 2.9.0"
-  checksum: 10/bbee5b7104fe936115b1b9677b57d0b252cef0e97301d31e143fa7de8621dc504fd960025e03dda4de670ab462e8c5c7f8b03eb171447702273ec369672761d5
+    moment: "npm:^2.29.4"
+  checksum: 10/8e0b7a05577623552293b28eeee4e60634b8be87fdb74084fa6d5ccc516771eb42d88f29c5a5e50a94c494048d14cdef94f94526a9dfd5e1b0050ff29d0a6c0a
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.39":
-  version: 0.5.39
-  resolution: "moment-timezone@npm:0.5.39"
+"moment-timezone@npm:^0.6.4":
+  version: 0.6.4
+  resolution: "moment-timezone@npm:0.6.4"
   dependencies:
-    moment: "npm:>= 2.9.0"
-  checksum: 10/42c12b07b4287b3a16c5e87b6dbe52cba46f2a15540e1a6822e1f8222d4e820b1c78c13355b80664000aedfd381f57283d15bb5197daddfd95665dcf0f96e9c1
+    moment: "npm:^2.29.4"
+  checksum: 10/efa60fc46c83278e01921a229399883ddb2128df078fe282384f929fec7ed71f6101e6e21a14cb36ba8d03febfd9a769dff9e7ed017245d8b65e042abb71de39
   languageName: node
   linkType: hard
 
-"moment@npm:>= 2.9.0, moment@npm:^2.29.1":
-  version: 2.29.4
-  resolution: "moment@npm:2.29.4"
-  checksum: 10/157c5af5a0ba8196e577bc67feb583303191d21ba1f7f2af30b3b40d4c63a64d505ba402be2a1454832082fac6be69db1e0d186c3279dae191e6634b0c33705c
+"moment@npm:^2.29.1, moment@npm:^2.29.4":
+  version: 2.31.0
+  resolution: "moment@npm:2.31.0"
+  checksum: 10/fd3708d46f820c64fe1e064a60747533a55ee0aefd944490e18f08b2a83a5b6418bb4f42e1de47ef1f1a29f450c7ac41edd1fa6f940db30ded247c9717301b9f
   languageName: node
   linkType: hard
 

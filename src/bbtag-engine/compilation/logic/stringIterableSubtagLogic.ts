@@ -1,6 +1,6 @@
 import type { SubtagLogic } from './SubtagLogic.js';
 
-export function stringIterableSubtagLogic<Locals extends Record<string, unknown>>(
+export function stringIterableSubtagLogic<Locals extends object>(
     next: SubtagLogic<Locals, Awaitable<AwaitableIterable<string>>>
 ): SubtagLogic<Locals> {
     return async function* stringIterableResults(ctx, args, bbtag) {

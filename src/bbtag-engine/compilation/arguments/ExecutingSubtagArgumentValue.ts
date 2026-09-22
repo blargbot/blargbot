@@ -4,7 +4,7 @@ import type { BBTagExpression, BBTagSubtag } from '../../language/index.js';
 import type { SubtagSignatureValueParameter } from '../../types.js';
 import type { SubtagArgument } from './SubtagArgument.js';
 
-export class ExecutingSubtagArgumentValue<Locals extends Record<string, unknown>> implements SubtagArgument {
+export class ExecutingSubtagArgumentValue<Locals extends object> implements SubtagArgument {
     #promise?: Promise<string>;
     #value?: string;
     readonly #context: BBTagContext<Locals>;

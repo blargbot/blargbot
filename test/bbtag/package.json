@@ -14,7 +14,7 @@
         "@blargbot/test-util": "workspace:^",
         "@blargbot/util": "workspace:^",
         "eris": "^0.17.1",
-        "moment-timezone": "^0.5.39",
+        "moment-timezone": "^0.6.4",
         "ts-mockito": "^2.6.1"
     },
     "devDependencies": {
