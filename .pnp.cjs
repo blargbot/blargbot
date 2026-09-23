@@ -263,7 +263,7 @@ const RAW_RUNTIME_STATE =
           ["@types/eris", "workspace:definitions/eris"],\
           ["@types/rwlock", "npm:5.0.3"],\
           ["brainfuck-node", "npm:1.0.2"],\
-          ["color", "npm:4.2.3"],\
+          ["color", "npm:5.0.3"],\
           ["discord-api-types", "npm:0.37.20"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
           ["html-entities", "npm:2.3.3"],\
@@ -294,7 +294,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/color", "npm:3.0.3"],\
           ["brainfuck-node", "npm:1.0.2"],\
-          ["color", "npm:4.2.3"],\
+          ["color", "npm:5.0.3"],\
           ["moment-timezone", "npm:0.6.4"],\
           ["ts-mockito", "npm:2.6.1"]\
         ],\
@@ -425,7 +425,7 @@ const RAW_RUNTIME_STATE =
           ["@types/unorm", "npm:1.3.28"],\
           ["airtable", "patch:airtable@npm%3A0.12.2#~/.yarn/patches/airtable-npm-0.12.2-ef934b1a03.patch::version=0.12.2&hash=535749"],\
           ["catflake", "npm:1.0.0"],\
-          ["color", "npm:4.2.3"],\
+          ["color", "npm:5.0.3"],\
           ["cron", "npm:2.1.0"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
           ["eventemitter3", "npm:4.0.7"],\
@@ -3018,12 +3018,12 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["color", [\
-      ["npm:4.2.3", {\
-        "packageLocation": "./.yarn/cache/color-npm-4.2.3-4a23227581-b23f5e500a.zip/node_modules/color/",\
+      ["npm:5.0.3", {\
+        "packageLocation": "./.yarn/cache/color-npm-5.0.3-2279f16622-88063ee058.zip/node_modules/color/",\
         "packageDependencies": [\
-          ["color", "npm:4.2.3"],\
-          ["color-convert", "npm:2.0.1"],\
-          ["color-string", "npm:1.9.1"]\
+          ["color", "npm:5.0.3"],\
+          ["color-convert", "npm:3.1.3"],\
+          ["color-string", "npm:2.1.4"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -3044,6 +3044,14 @@ const RAW_RUNTIME_STATE =
           ["color-name", "npm:1.1.4"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:3.1.3", {\
+        "packageLocation": "./.yarn/cache/color-convert-npm-3.1.3-4ccfd70ef2-36b9b99c13.zip/node_modules/color-convert/",\
+        "packageDependencies": [\
+          ["color-convert", "npm:3.1.3"],\
+          ["color-name", "npm:2.1.1"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["color-name", [\
@@ -3060,15 +3068,21 @@ const RAW_RUNTIME_STATE =
           ["color-name", "npm:1.1.4"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:2.1.1", {\
+        "packageLocation": "./.yarn/cache/color-name-npm-2.1.1-7272c0e973-17bbb03a1e.zip/node_modules/color-name/",\
+        "packageDependencies": [\
+          ["color-name", "npm:2.1.1"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["color-string", [\
-      ["npm:1.9.1", {\
-        "packageLocation": "./.yarn/cache/color-string-npm-1.9.1-dc020e56be-72aa0b81ee.zip/node_modules/color-string/",\
+      ["npm:2.1.4", {\
+        "packageLocation": "./.yarn/cache/color-string-npm-2.1.4-e5adac6a35-689a8688ac.zip/node_modules/color-string/",\
         "packageDependencies": [\
-          ["color-name", "npm:1.1.4"],\
-          ["color-string", "npm:1.9.1"],\
-          ["simple-swizzle", "npm:0.2.2"]\
+          ["color-name", "npm:2.1.1"],\
+          ["color-string", "npm:2.1.4"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -4766,15 +4780,6 @@ const RAW_RUNTIME_STATE =
           ["call-bound", "npm:1.0.4"],\
           ["get-intrinsic", "npm:1.3.1"],\
           ["is-array-buffer", "npm:3.0.5"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["is-arrayish", [\
-      ["npm:0.3.2", {\
-        "packageLocation": "./.yarn/cache/is-arrayish-npm-0.3.2-f856180f79-81a78d518e.zip/node_modules/is-arrayish/",\
-        "packageDependencies": [\
-          ["is-arrayish", "npm:0.3.2"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -6803,16 +6808,6 @@ const RAW_RUNTIME_STATE =
           ["object-inspect", "npm:1.13.4"],\
           ["side-channel-map", "npm:1.0.1"],\
           ["side-channel-weakmap", "npm:1.0.2"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["simple-swizzle", [\
-      ["npm:0.2.2", {\
-        "packageLocation": "./.yarn/cache/simple-swizzle-npm-0.2.2-8dee37fad1-c6dffff17a.zip/node_modules/simple-swizzle/",\
-        "packageDependencies": [\
-          ["is-arrayish", "npm:0.3.2"],\
-          ["simple-swizzle", "npm:0.2.2"]\
         ],\
         "linkType": "HARD"\
       }]\

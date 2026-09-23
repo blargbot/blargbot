@@ -16,7 +16,7 @@
         "@blargbot/logger": "workspace:^",
         "@blargbot/util": "workspace:^",
         "brainfuck-node": "^1.0.2",
-        "color": "^4.2.3",
+        "color": "^5.0.3",
         "eris": "^0.17.1",
         "html-entities": "^2.3.3",
         "moment-timezone": "^0.6.4",

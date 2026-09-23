@@ -19,7 +19,7 @@
         "@blargbot/util": "workspace:^",
         "airtable": "patch:airtable@npm%3A0.12.2#~/.yarn/patches/airtable-npm-0.12.2-ef934b1a03.patch",
         "catflake": "^1.0.0",
-        "color": "^4.2.3",
+        "color": "^5.0.3",
         "cron": "^2.1.0",
         "eris": "^0.17.1",
         "eventemitter3": "^4.0.7",
