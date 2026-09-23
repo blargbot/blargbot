@@ -293,10 +293,14 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/test-util", "workspace:test/testUtil"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/color", "npm:3.0.3"],\
+          ["@types/unorm", "npm:1.3.28"],\
           ["brainfuck-node", "npm:1.0.2"],\
           ["color", "npm:5.0.3"],\
+          ["html-entities", "npm:2.3.3"],\
+          ["limax", "npm:3.0.0"],\
           ["moment-timezone", "npm:0.6.4"],\
-          ["ts-mockito", "npm:2.6.1"]\
+          ["ts-mockito", "npm:2.6.1"],\
+          ["unorm", "npm:1.6.0"]\
         ],\
         "linkType": "SOFT"\
       }]\

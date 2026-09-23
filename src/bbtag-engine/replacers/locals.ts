@@ -63,3 +63,6 @@ export interface TemporalLocals {
 export interface TemporalValue {
     toString(format: string, timezone: string): string;
 }
+export interface DecancerLocals {
+    decancer: (value: string) => string;
+}

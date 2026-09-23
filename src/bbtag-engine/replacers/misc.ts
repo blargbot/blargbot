@@ -10,7 +10,7 @@ import type { LogicOperator } from '../operators.js';
 import { aggregationOperators, comparisonOperators, isComparisonOperator, isLogicOperator, logicOperators, numericOperators, ordinalOperators, stringOperators, takeOperator } from '../operators.js';
 import { parse } from '../parse.js';
 import type { SubtagReturnTypeMap } from '../types.js';
-import type { ArgsLocals, BrainfuckLocals, FallbackLocals, RegExpCompilerLocals, ReplaceOutputLocals, SafeRegExp, TemporalLocals, VariablesLocals } from './locals.js';
+import type { ArgsLocals, BrainfuckLocals, DecancerLocals, FallbackLocals, RegExpCompilerLocals, ReplaceOutputLocals, SafeRegExp, TemporalLocals, VariablesLocals } from './locals.js';
 
 export const base64DecodeReplacer = defineReplacer(['base64Decode', 'aToB'], {
     parameters: ['text'],
@@ -638,5 +638,12 @@ export const returnReplacer = defineReplacer('return', {
     execute: function $return(context, [{ value: forcedStr }]) {
         const forced = parse.boolean(forcedStr, { fallback: true });
         context.return = forced ? Infinity : 1;
+    }
+});
+export const decancerReplacer = defineReplacer<DecancerLocals>('decancer', {
+    parameters: ['text'],
+    returns: 'string',
+    execute: function decancer(ctx, [{ value: text }]) {
+        return ctx.locals.decancer(text);
     }
 });

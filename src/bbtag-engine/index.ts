@@ -1,6 +1,7 @@
 export * as replacers from './replacers.js';
 export * from './replacers/locals.js';
 export { Color, ColorLocals, ColorParser, Colorspace } from './replacers/color.js';
+export { HtmlEncoder, HtmlEncoderLocals } from './replacers/html.js';
 export * from './language/index.js';
 export * from './bbtagArray.js';
 export * from './BBTagEngine.js';
