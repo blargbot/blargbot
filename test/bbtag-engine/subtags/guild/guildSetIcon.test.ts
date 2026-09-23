@@ -1,5 +1,5 @@
 import { BBTagRuntimeError, GuildSetIconSubtag, SemiSubtag } from '@blargbot/bbtag-engine';
-import { $ } from '@blargbot/test-util/mock.js';
+import { $ } from '@blargbot/test-util';
 import { asUint8Array } from '@blargbot/util';
 import * as eris from 'eris';
 

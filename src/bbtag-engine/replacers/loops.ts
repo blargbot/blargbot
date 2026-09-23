@@ -5,7 +5,7 @@ import { cacheResult } from '../cacheResult.js';
 import type { SubtagArgument } from '../compilation/arguments/SubtagArgument.js';
 import { defineReplacer } from '../defineReplacer.js';
 import type { OrdinalOperator } from '../operators.js';
-import { isComparisonOperator, operate } from '../operators.js';
+import { isComparisonOperator, operate, takeOperator } from '../operators.js';
 import { parse } from '../parse.js';
 import type { FallbackLocals, VariablesLocals } from './locals.js';
 
@@ -59,7 +59,7 @@ export const foreachReplacer = defineReplacer<VariablesLocals>('forEach', {
     }
 
 });
-export const repeatReplacer = defineReplacer<VariablesLocals & FallbackLocals>(['repeat', 'loop'], {
+export const repeatReplacer = defineReplacer<FallbackLocals>(['repeat', 'loop'], {
     parameters: ['~code', 'amount'],
     returns: 'loop',
     execute: async function* repeatReplacer(ctx, [code, { value: amountStr }]) {
@@ -96,32 +96,29 @@ export const whileReplacer = defineReplacer<VariablesLocals>(
 async function* whileImpl(
     context: BBTagContext<VariablesLocals>,
     val1Raw: SubtagArgument,
-    evaluator: SubtagArgument | string,
-    val2Raw: SubtagArgument | string,
+    evaluator: Pick<SubtagArgument, 'execute'> | string,
+    val2Raw: Pick<SubtagArgument, 'execute'> | string,
     codeRaw: SubtagArgument
 ): AsyncIterable<string> {
+    if (typeof evaluator === 'string')
+        evaluator = { execute: (v => () => Promise.resolve(v))(evaluator) };
+    if (typeof val2Raw === 'string')
+        val2Raw = { execute: (v => () => Promise.resolve(v))(val2Raw) };
+
     while (context.return === 0) {
+        const items = [
+            await val1Raw.execute(),
+            await evaluator.execute(),
+            await val2Raw.execute()
+        ];
+        const operator = takeOperator(isComparisonOperator, items);
 
-        let right = await val1Raw.execute();
-        let operator = typeof evaluator === 'string' ? evaluator : await evaluator.execute();
-        let left = typeof val2Raw === 'string' ? val2Raw : await val2Raw.execute();
-
-        if (isComparisonOperator(operator)) {
-            //operator = operator;
-        } else if (isComparisonOperator(left)) {
-            //operator = left;
-            [left, operator] = [operator, left];
-        } else if (isComparisonOperator(right)) {
-            //operator = right;
-            [operator, right] = [right, operator];
-        }
-
-        if (!isComparisonOperator(operator)) {
+        if (operator === undefined) {
             //TODO invalid operator stuff here
             yield await codeRaw.execute();
-        } else if (!operate(operator, right, left))
+        } else if (!operate(operator, items[0], items[1])) {
             break;
-        else {
+        } else {
             yield await codeRaw.execute();
         }
     }

@@ -1,7 +1,5 @@
-import assert from 'node:assert/strict';
-
+import type { VariableStore } from '@blargbot/bbtag-engine';
 import { NotAnArrayError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -14,7 +12,12 @@ await runSubtagTests({
             expected: '`Not an array`',
             errors: [
                 { start: 0, end: 13, error: new NotAnArrayError('abc') }
-            ]
+            ],
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('abc')).returns({ key: '$abc', value: undefined }).mustHappen();
+            }
         },
         {
             code: '{slice;[1,2,3,4];0}',
@@ -50,24 +53,18 @@ await runSubtagTests({
             code: '{slice;arr1;1}',
             expected: '[2,3,4]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), [1, 2, 3, 4]);
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, [1, 2, 3, 4]);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: [1, 2, 3, 4] }).mustHappen();
             }
         },
         {
             code: '{slice;arr1;1;3}',
             expected: '[2,3]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), [1, 2, 3, 4]);
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, [1, 2, 3, 4]);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: [1, 2, 3, 4] }).mustHappen();
             }
         }
     ]

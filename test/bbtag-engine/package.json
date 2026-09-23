@@ -8,7 +8,11 @@
         "@blargbot/test-util": "workspace:^",
         "@blargbot/util": "workspace:^",
         "brainfuck-node": "^1.0.2",
+        "color": "^4.2.3",
         "moment-timezone": "^0.6.4",
         "ts-mockito": "^2.6.1"
+    },
+    "devDependencies": {
+        "@types/color": "^3.0.3"
     }
 }

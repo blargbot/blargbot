@@ -2,8 +2,7 @@ import { describe } from 'node:test';
 
 import { templates, transformers as coreTransformers } from '@blargbot/core';
 import { transformers, util } from '@blargbot/formatting';
-import { quickMock } from '@blargbot/test-util/quickMock.js';
-import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
+import { quickMock, runFormatTreeTests } from '@blargbot/test-util';
 import * as eris from 'eris';
 
 const client = (): eris.Client => new eris.Client('');

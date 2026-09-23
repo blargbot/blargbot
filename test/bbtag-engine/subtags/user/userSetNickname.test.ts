@@ -1,5 +1,5 @@
 import { replacers, UserNotFoundError } from '@blargbot/bbtag-engine';
-import { $ } from '@blargbot/test-util/mock.js';
+import { $ } from '@blargbot/test-util';
 import * as eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

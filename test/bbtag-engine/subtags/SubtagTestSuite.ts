@@ -6,8 +6,8 @@ import { describe, it } from 'node:test';
 
 import type { BBTagContext, BBTagReplacer, BBTagSerializer, CompiledBBTagReplacer, FallbackLocals, LocatedBBTagRuntimeError, SourceMarker } from '@blargbot/bbtag-engine';
 import { BBTagEngine, BBTagRuntimeError, composeReplacer, NotEnoughArgumentsError, parseBBTag, TooManyArgumentsError } from '@blargbot/bbtag-engine';
-import type { Mockable, MockOptions } from '@blargbot/test-util/mock.js';
-import { Mock, MockError } from '@blargbot/test-util/mock.js';
+import type { Mockable, MockOptions } from '@blargbot/test-util';
+import { Mock, MockError } from '@blargbot/test-util';
 
 type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${number}` | `${number}:${number}` | `${number}`;
 
@@ -49,7 +49,7 @@ export interface SubtagTestSuiteData<
     Locals extends object
 > extends Pick<SubtagTestCase<Locals>, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
     readonly cases: Array<SubtagTestCase<Locals>>;
-    readonly replacer: CompiledBBTagReplacer<Locals>;
+    readonly replacer: CompiledBBTagReplacer<Locals & FallbackLocals>;
     readonly argCountBounds: { min: ArgCountBound; max: ArgCountBound; };
 }
 

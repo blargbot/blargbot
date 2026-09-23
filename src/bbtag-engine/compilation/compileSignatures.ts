@@ -75,7 +75,7 @@ function createConditionalHandler<Locals extends object>(signature: SubtagSignat
             } catch (error: unknown) {
                 if (!(error instanceof BBTagRuntimeError))
                     throw error;
-                yield* await context.addError(error, call);
+                yield await context.addError(error, call);
             }
         }
     };

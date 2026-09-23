@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError, ChannelNotFoundError, EscapeBBTagSubtag, SendSubtag } from '@blargbot/bbtag-engine';
-import { $ } from '@blargbot/test-util/mock.js';
+import { $ } from '@blargbot/test-util';
 import type * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';

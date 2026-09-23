@@ -1,8 +1,7 @@
-import assert from 'node:assert/strict';
+import type { VariableStore } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { BBTagRuntimeError, BBTagRuntimeState, GetSubtag, IfSubtag, IncrementSubtag, NotANumberError, RepeatSubtag, ReturnSubtag } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
-
+import { setupVariables } from '../setupVariables.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
@@ -11,25 +10,19 @@ await runSubtagTests({
     cases: [
         {
             code: '{repeat;abc;10}',
-            expected: 'abcabcabcabcabcabcabcabcabcabc',
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(10).thenResolve(undefined);
-            }
+            expected: 'abcabcabcabcabcabcabcabcabcabc'
         },
         {
             code: '{repeat;{increment;index},;8}',
             expected: '1,2,3,4,5,6,7,8,',
-            subtags: [replacers.incrementReplacer],
+            replacers: [replacers.incrementReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(8).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 8);
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 8);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                setupVariables(variables, 'index', 0);
+                for (let i = 1; i < 9; i++)
+                    variables.setup(m => m.set('index', i)).mustHappen(1);
+                variables.setup(m => m.get('index')).mustHappen(8);
             }
         },
         {
@@ -49,43 +42,40 @@ await runSubtagTests({
         {
             code: '{repeat;{increment;index}{if;{get;index};==;6;{return}},;10}',
             expected: '1,2,3,4,5,6',
-            subtags: [replacers.getReplacer, replacers.ifReplacer, replacers.returnReplacer, replacers.incrementReplacer],
+            replacers: [replacers.getReplacer, replacers.ifReplacer, replacers.returnReplacer, replacers.incrementReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(6).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 6);
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 6);
-                assert.equal(bbctx.data.state, BBTagRuntimeState.ABORT);
-            }
-        },
-        {
-            code: '{repeat;{increment;index},;10}',
-            expected: '1,2,3,4,`Too many loops`',
-            errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Too many loops') }
-            ],
-            subtags: [replacers.incrementReplacer],
-            setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
-            },
-            postSetup(bbctx, ctx) {
-                let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(5).thenCall(() => {
-                    if (i++ >= 4)
-                        throw new BBTagRuntimeError('Too many loops');
-                    return undefined;
-                });
-            },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 4);
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 4);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                setupVariables(variables, 'index', 0);
+                for (let i = 1; i < 7; i++)
+                    variables.setup(m => m.set('index', i)).mustHappen(1);
+                variables.setup(m => m.get('index')).mustHappen(12);
             }
         }
+        // TODO: Move this test once limits are reintroduced
+        // {
+        //     code: '{repeat;{increment;index},;10}',
+        //     expected: '1,2,3,4,`Too many loops`',
+        //     errors: [
+        //         { start: 0, end: 30, error: new BBTagRuntimeError('Too many loops') }
+        //     ],
+        //     replacers: [replacers.incrementReplacer],
+        //     setup(ctx) {
+        //         ctx.options.tagName = 'testTag';
+        //         ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+        //     },
+        //     postSetup(bbctx, ctx) {
+        //         let i = 0;
+        //         ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(5).thenCall(() => {
+        //             if (i++ >= 4)
+        //                 throw new BBTagRuntimeError('Too many loops');
+        //             return undefined;
+        //         });
+        //     },
+        //     async assert(bbctx, _, ctx) {
+        //         assert.equal((await bbctx.variables.get('index')).value, 4);
+        //         assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 4);
+        //     }
+        // }
     ]
 });

@@ -4,7 +4,7 @@ import { replacers } from '@blargbot/bbtag-engine';
 import { snowflake } from '@blargbot/core';
 import type { TagVariableScope } from '@blargbot/domain';
 import { TagVariableType } from '@blargbot/domain';
-import { $ } from '@blargbot/test-util/mock.js';
+import { $ } from '@blargbot/test-util';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';

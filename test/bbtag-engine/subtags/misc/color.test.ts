@@ -1,6 +1,6 @@
-import type { ColorFormat } from '@blargbot/bbtag-engine';
+import type { ColorLocals, Colorspace, VariablesLocals, VariableStore } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
+import Color from 'color';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
@@ -8,6 +8,15 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     replacer: replacers.colorReplacer,
     argCountBounds: { min: 1, max: 3 },
+    setup(ctx) {
+        ctx.locals.setup(m => m.parseColor).returns((channels, format) => {
+            const result = new Color(channels, format);
+            return format === 'gray' ? result.rgb() : result;
+        });
+        const variablesFallback = ctx.createMock<VariableStore>();
+        ctx.locals.setup(m => m.variables).fallback().returns(variablesFallback.instance);
+        variablesFallback.setup((m, $) => m.get($.string)).returns({ key: '', value: undefined });
+    },
     cases: [
         {
             code: '{color;}',
@@ -26,7 +35,11 @@ await runSubtagTests({
         {
             code: '{color;_myVariable}',
             expected: '`Invalid color`',
-            setup(ctx) { ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 'abc'); },
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('_myVariable')).returns({ key: '$myVariable', value: 'abc' }).mustHappen();
+            },
             errors: [
                 { start: 0, end: 19, error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
             ]
@@ -35,7 +48,9 @@ await runSubtagTests({
             code: '{color;_myVariable}',
             expected: '204080',
             setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, [32, 64, 128]);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('_myVariable')).returns({ key: '$myVariable', value: [32, 64, 128] }).mustHappen();
             }
         },
         ...generateTestCases('FFFFFF', '', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
@@ -79,7 +94,7 @@ await runSubtagTests({
     ]
 });
 
-function generateTestCases(input: string, format: string, results: Record<ColorFormat, string>): SubtagTestCase[] {
+function generateTestCases(input: string, format: string, results: Record<Colorspace, string>): Array<SubtagTestCase<ColorLocals & VariablesLocals>> {
     const cases = Object.entries(results).map(([output, expected]) => ({ code: `{color;${input};${output};${format}}`, expected }));
     if (format === '')
         cases.push(...Object.entries(results).map(([output, expected]) => ({ code: `{color;${input};${output}}`, expected })));

@@ -1,8 +1,5 @@
-import assert from 'node:assert/strict';
-
-import { GetSubtag, NotAnArrayError, PopSubtag } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
-import { $ } from '@blargbot/test-util/mock.js';
+import type { VariableStore } from '@blargbot/bbtag-engine';
+import { NotAnArrayError, replacers } from '@blargbot/bbtag-engine';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -15,7 +12,12 @@ await runSubtagTests({
             expected: '`Not an array`',
             errors: [
                 { start: 0, end: 9, error: new NotAnArrayError('abc') }
-            ]
+            ],
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('abc')).returns({ key: '$abc', value: undefined }).mustHappen();
+            }
         },
         {
             code: '{pop;var1}',
@@ -24,8 +26,9 @@ await runSubtagTests({
                 { start: 0, end: 10, error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('var1')).returns({ key: '$var1', value: 'This is var 1' }).mustHappen();
             }
         },
         {
@@ -35,43 +38,32 @@ await runSubtagTests({
         {
             code: '{pop;{get;arr1}}',
             expected: 'arr1',
-            subtags: [replacers.getReplacer],
-            setupSaveVariables: false,
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), ['this', 'is', 'arr1']);
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['this', 'is']);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('arr1')).returns({ key: '$abc', value: ['This', 'is', 'arr1'] }).mustHappen();
+                variables.setup((m, $) => m.set('$abc', $.looksLike(['This', 'is']))).returns().mustHappen();
             }
         },
         {
             code: '{pop;arr1}',
             expected: 'arr1',
-            subtags: [replacers.getReplacer],
-            setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), ['this', 'is', 'arr1']);
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['this', 'is']);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('arr1')).returns({ key: '$abc', value: ['This', 'is', 'arr1'] }).mustHappen();
+                variables.setup((m, $) => m.set('$abc', $.looksLike(['This', 'is']))).returns().mustHappen();
             }
         },
         {
             code: '{pop;!arr1}',
             expected: 'arr1',
-            subtags: [replacers.getReplacer],
-            setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.tagVariablesTable.setup(m => m.upsert($.looksLike({ arr1: ['this', 'is'] }), $.looksLike({ type: TagVariableType.LOCAL_TAG, name: 'testTag' }))).thenResolve(undefined);
-            },
-            async assert(bbctx) {
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['this', 'is']);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('!arr1')).returns({ key: '$abc', value: ['This', 'is', 'arr1'] }).mustHappen();
+                variables.setup((m, $) => m.set('$abc', $.looksLike(['This', 'is']))).returns().mustHappen();
             }
         },
         {

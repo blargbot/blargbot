@@ -3,8 +3,8 @@ import { describe } from 'node:test';
 import { Subtag, SubtagType, templates } from '@blargbot/bbtag';
 import { transformers as coreTransformers } from '@blargbot/core';
 import { transformers, util } from '@blargbot/formatting';
-import { quickMock } from '@blargbot/test-util/quickMock.js';
-import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
+import { quickMock } from '@blargbot/test-util';
+import { runFormatTreeTests } from '@blargbot/test-util';
 
 class TestSubtag extends Subtag {
     protected executeCore: Subtag['executeCore'] = () => {

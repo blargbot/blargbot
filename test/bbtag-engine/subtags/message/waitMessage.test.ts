@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 
 import type { BBTagUtilities } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, MessageIdSubtag, NotANumberError, OperatorSubtag, WaitMessageSubtag } from '@blargbot/bbtag-engine';
-import type { Mock } from '@blargbot/test-util/mock.js';
-import { $ } from '@blargbot/test-util/mock.js';
+import type { Mock } from '@blargbot/test-util';
+import { $ } from '@blargbot/test-util';
 import * as eris from 'eris';
 
 import type { SubtagTestContext } from '../SubtagTestSuite.js';

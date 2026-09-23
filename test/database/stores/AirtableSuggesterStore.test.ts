@@ -5,7 +5,7 @@ import { describe, it } from 'node:test';
 import { AirtableSuggesterStore } from '@blargbot/database';
 import type { Suggester } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
-import { Mock as Mock } from '@blargbot/test-util/mock.js';
+import { Mock } from '@blargbot/test-util';
 import type { AirtableBase } from 'airtable/lib/airtable_base.js';
 import AirtableError from 'airtable/lib/airtable_error.js';
 import type { FieldSet } from 'airtable/lib/field_set.js';

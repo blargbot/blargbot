@@ -4,8 +4,8 @@ import { describe } from 'node:test';
 import { Command, CommandType, templates } from '@blargbot/cluster';
 import { transformers as coreTransformers } from '@blargbot/core';
 import { transformers, util } from '@blargbot/formatting';
-import { quickMock } from '@blargbot/test-util/quickMock.js';
-import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests.js';
+import { quickMock } from '@blargbot/test-util';
+import { runFormatTreeTests } from '@blargbot/test-util';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
 

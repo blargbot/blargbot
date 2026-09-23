@@ -23,6 +23,8 @@ export const filterReplacer = defineReplacer<VariablesLocals>('filter', {
                 await ctx.locals.variables.set(varName, item);
                 if (parse.boolean((await code.execute()).trim()) === true)
                     yield item;
+                if (ctx.return !== 0)
+                    break;
             }
         } finally {
             ctx.locals.variables.rollback([varName]);
@@ -54,6 +56,8 @@ export const mapReplacer = defineReplacer<VariablesLocals>('map', {
             for (const item of array) {
                 await context.locals.variables.set(varName, item);
                 yield await code.execute();
+                if (context.return !== 0)
+                    break;
             }
         } finally {
             context.locals.variables.rollback([varName]);
@@ -78,14 +82,14 @@ export const pushReplacer = defineReplacer<VariablesLocals>('push', {
     parameters: ['array', 'values+'],
     returns: 'json[]|nothing',
     execute: async function push(context, [{ value: arrayStr }, ...values]) {
-        return await modifyArray(context, arrayStr, arr => arr.push(values.map(x => x.value)), x => x);
+        return await modifyArray(context, arrayStr, arr => arr.push(...values.map(x => x.value)), x => x);
     }
 });
 export const unshiftReplacer = defineReplacer<VariablesLocals>('unshift', {
     parameters: ['array', 'values+'],
     returns: 'json[]|nothing',
     execute: async function unshift(context, [{ value: arrayStr }, ...values]) {
-        return await modifyArray(context, arrayStr, arr => arr.unshift(values.map(x => x.value)), x => x);
+        return await modifyArray(context, arrayStr, arr => arr.unshift(...values.map(x => x.value)), x => x);
     }
 });
 export const shuffleReplacer = defineReplacer<VariablesLocals & ArgsLocals>(
@@ -103,7 +107,7 @@ export const shuffleReplacer = defineReplacer<VariablesLocals & ArgsLocals>(
         parameters: ['array'],
         returns: 'json[]|nothing',
         execute: async function shuffleArray(ctx, [{ value: arrayStr }]) {
-            return await modifyArray(ctx, arrayStr, shuffle, arr => arr);
+            return await modifyArray(ctx, arrayStr, shuffle, x => x);
         }
     }
 );
@@ -170,15 +174,15 @@ async function modifyArray<State, Result>(
     context: BBTagContext<VariablesLocals>,
     arrayStr: string,
     modify: (arr: JArray) => State,
-    getResult: (arr: JArray, res: State) => Result
+    getResult: (arr: JArray | undefined, res: State) => Result
 ): Promise<Result> {
     const { n: varName, v: array } = await bbtagArray.deserializeOrGetArray(context, arrayStr, { throw: true });
 
     const state = modify(array);
-    if (varName !== undefined)
-        await context.locals.variables.set(varName, array);
-
-    return getResult(array, state);
+    if (varName === undefined)
+        return getResult(array, state);
+    await context.locals.variables.set(varName, array);
+    return getResult(undefined, state);
 }
 
 function shuffle<T>(items: T[]): void {

@@ -1,8 +1,5 @@
-import assert from 'node:assert/strict';
-
-import { GetSubtag, SortSubtag } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
-import { $ } from '@blargbot/test-util/mock.js';
+import type { VariableStore } from '@blargbot/bbtag-engine';
+import { replacers } from '@blargbot/bbtag-engine';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -46,43 +43,34 @@ await runSubtagTests({
         {
             code: '{sort;{get;arr1}}',
             expected: '',
-            subtags: [replacers.getReplacer],
-            setupSaveVariables: false,
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), ['this', 'is', 'arr1']);
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['arr1', 'is', 'this']);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
+                variables.setup((m, $) => m.set('$arr1', $.looksLike(['arr1', 'is', 'this']))).returns().mustHappen();
             }
         },
         {
             code: '{sort;arr1}',
             expected: '',
-            subtags: [replacers.getReplacer],
-            setupSaveVariables: false,
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), ['this', 'is', 'arr1']);
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['arr1', 'is', 'this']);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
+                variables.setup((m, $) => m.set('$arr1', $.looksLike(['arr1', 'is', 'this']))).returns().mustHappen();
             }
         },
         {
             code: '{sort;!arr1}',
             expected: '',
-            subtags: [replacers.getReplacer],
-            setupSaveVariables: false,
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.tagVariablesTable.setup(m => m.upsert($.looksLike({ arr1: ['arr1', 'is', 'this'] }), $.looksLike({ type: TagVariableType.LOCAL_TAG, name: 'testTag' }))).thenResolve(undefined);
-            },
-            async assert(bbctx) {
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['arr1', 'is', 'this']);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('!arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
+                variables.setup((m, $) => m.set('$arr1', $.looksLike(['arr1', 'is', 'this']))).returns().mustHappen();
             }
         }
     ]

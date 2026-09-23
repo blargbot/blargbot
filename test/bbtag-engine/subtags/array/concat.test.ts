@@ -1,5 +1,5 @@
-import { ConcatSubtag, GetSubtag } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
+import type { VariableStore } from '@blargbot/bbtag-engine';
+import { replacers } from '@blargbot/bbtag-engine';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -12,11 +12,12 @@ await runSubtagTests({
         {
             code: '{concat;{get;arr1};{get;arr2}}',
             expected: '["this","is","arr1","this","is","arr2"]',
-            subtags: [replacers.getReplacer],
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr2' }, ['this', 'is', 'arr2']);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('arr1')).returns({ key: '$var1', value: ['this', 'is', 'arr1'] }).mustHappen();
+                variables.setup(m => m.get('arr2')).returns({ key: '$var2', value: ['this', 'is', 'arr2'] }).mustHappen();
             }
         }
     ]

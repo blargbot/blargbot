@@ -1,6 +1,6 @@
 import { replacers } from '@blargbot/bbtag-engine';
 import { TagVariableType } from '@blargbot/domain';
-import { $ } from '@blargbot/test-util/mock.js';
+import { $ } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

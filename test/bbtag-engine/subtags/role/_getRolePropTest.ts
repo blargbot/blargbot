@@ -1,6 +1,6 @@
 import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag-engine';
 import { RoleNotFoundError } from '@blargbot/bbtag-engine';
-import { $ } from '@blargbot/test-util/mock.js';
+import { $ } from '@blargbot/test-util';
 import type { APIRole } from 'discord-api-types/v9';
 import * as eris from 'eris';
 

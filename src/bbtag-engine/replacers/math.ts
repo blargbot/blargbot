@@ -159,7 +159,7 @@ export const baseReplacer = defineReplacer<FallbackLocals>(['base', 'radix'], {
         if (!isValidRadix(origin))
             origin = fallback() ?? origin;
         if (!isValidRadix(radix))
-            radix = fallback() ?? origin;
+            radix = fallback() ?? radix;
         if (!isValidRadix(origin) || !isValidRadix(radix))
             throw new BBTagRuntimeError('Base must be between 2 and 36');
 
@@ -167,8 +167,8 @@ export const baseReplacer = defineReplacer<FallbackLocals>(['base', 'radix'], {
     }
 });
 
-function isValidRadix(value: number | false): value is number {
-    return value !== false && value >= 2 && value <= 36;
+function isValidRadix(value: number): value is number {
+    return value >= 2 && value <= 36;
 }
 
 function roundUsing(value: string, roundFn: (value: number) => number): number {
@@ -192,7 +192,7 @@ async function nudge(context: BBTagContext<VariablesLocals>, varName: string, am
     }
 
     value += amount * scale;
-    await context.locals.variables.set(varRef.key, value);
+    await context.locals.variables.set(varName, value);
 
     return value;
 }

@@ -1,5 +1,5 @@
-import { GetSubtag, IsArraySubtag } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
+import type { VariableStore } from '@blargbot/bbtag-engine';
+import { replacers } from '@blargbot/bbtag-engine';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -15,10 +15,11 @@ await runSubtagTests({
         {
             code: '{isarray;{get;arr1}}',
             expected: 'true',
-            subtags: [replacers.getReplacer],
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
             }
         }
     ]

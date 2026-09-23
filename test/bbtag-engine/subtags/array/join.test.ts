@@ -1,5 +1,5 @@
-import { GetSubtag, JoinSubtag, NotAnArrayError } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
+import type { VariableStore } from '@blargbot/bbtag-engine';
+import { NotAnArrayError, replacers } from '@blargbot/bbtag-engine';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -10,6 +10,11 @@ await runSubtagTests({
         {
             code: '{join;a;b}',
             expected: '`Not an array`',
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('a')).returns({ key: '$arr1', value: undefined }).mustHappen();
+            },
             errors: [
                 { start: 0, end: 10, error: new NotAnArrayError('a') }
             ]
@@ -21,8 +26,9 @@ await runSubtagTests({
             code: '{join;arr1;~}',
             expected: 'this~is~arr1',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
             }
         },
         {
@@ -32,17 +38,19 @@ await runSubtagTests({
                 { start: 0, end: 13, error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'This is var1');
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('var1')).returns({ key: '$var1', value: 'This is var1' }).mustHappen();
             }
         },
         {
             code: '{join;{get;arr1};~}',
             expected: 'this~is~arr1',
-            subtags: [replacers.getReplacer],
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
             }
         }
     ]

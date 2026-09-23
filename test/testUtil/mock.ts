@@ -16,6 +16,8 @@ export type Mockable = object | Callable;
 export type Callback<T extends Mockable, Result> = (invocation: Invocation, mock: Mock<T>) => Result;
 export type Assertion<T extends Mockable> = (invocations: readonly Invocation[], mock: Mock<T>) => void;
 export interface SetupMock<T extends Mockable, Result> {
+    fallback(): SetupMock<T, Result>;
+
     invokes(callback: Callback<T, Result>): Disposable & SetupMock<T, Result>;
     invokesAsync(callback: Result extends PromiseLike<infer V> ? Callback<T, Awaitable<V>> : never): Disposable & SetupMock<T, Result>;
     returns(value: Result): Disposable & SetupMock<T, Result>;
@@ -162,9 +164,13 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
             if (lastMatch !== undefined && interceptor.expression.specificity < lastMatch.expression.specificity)
                 break;
             if (isMatch(interceptor.expression, invocation, this.#instance)) {
-                lastMatch = interceptor;
-                if (!interceptor.invoked)
-                    return interceptor;
+                if (interceptor.isFallback) {
+                    lastMatch ??= interceptor;
+                } else {
+                    lastMatch = interceptor;
+                    if (!interceptor.invoked)
+                        return interceptor;
+                }
             }
         }
         return lastMatch;
@@ -319,6 +325,14 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
 
     public clearInvocations(): void {
         this.#invocations.length = 0;
+        for (const value of Object.values(this.#interceptors)) {
+            const groups = value instanceof Map ? value.values() : [value];
+            for (const group of groups) {
+                for (const invocation of group) {
+                    invocation.invoked = false;
+                }
+            }
+        }
     }
 
     public clearVerifiers(): void {
@@ -327,10 +341,10 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
 
     public clearSetups(): void {
         for (const value of Object.values(this.#interceptors)) {
-            if (!(value instanceof Map))
-                value.length = 0;
-            else for (const arr of value.values())
-                arr.length = 0;
+            const groups = value instanceof Map ? value.values() : [value];
+            for (const group of groups) {
+                group.length = 0;
+            }
         }
     }
 
@@ -375,45 +389,48 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         return this.#setup(expression);
     }
 
-    public setupSet<Key extends keyof T>(key: Key, value: T[Key]): SetupMock<T, boolean> {
-        const matcher = ArgumentMatcher.from(value, this.#instance);
-        return this.#setup({ kind: 'set', name: key, value: matcher, specificity: matcher.specificity });
+    public setupSet<Result>(action: (instance: T, matchers: ArgumentMatchers<T>) => Result): SetupMock<T, boolean> {
+        const expression = toExpression(action, this.#shape, true);
+        if (expression.kind !== 'set')
+            throw new Error('Only expressions of the form `x => x.something = value` are supported with setupSet');
+        return this.#setup(expression);
     }
 
-    #setup<Result>(expression: Expression): SetupMock<T, Result> {
-        switch (expression.kind) {
-            case 'method': {
-                const nameStr = keyToProp(expression.name);
-                if ((this.#interceptors.get.get(expression.name)?.length ?? 0) > 0)
-                    throw new MockError(`Cannot setup x${nameStr}(...) because x${nameStr} is already configured.`);
-                break;
-            }
-            case 'newNested': {
-                const nameStr = keyToProp(expression.name);
-                if ((this.#interceptors.get.get(expression.name)?.length ?? 0) > 0)
-                    throw new MockError(`Cannot setup new x${nameStr}(...) because x${nameStr} is already configured.`);
-                break;
-            }
-            case 'get': {
-                const nameStr = keyToProp(expression.name);
-                if ((this.#interceptors.method.get(expression.name)?.length ?? 0) > 0)
-                    throw new MockError(`Cannot setup x${nameStr} because x${nameStr}(...) is already configured.`);
-                if ((this.#interceptors.newNested.get(expression.name)?.length ?? 0) > 0)
-                    throw new MockError(`Cannot setup x${nameStr} because new x${nameStr}(...) is already configured.`);
-                break;
-            }
-        }
-
+    #setup<Result>(expression: Expression, isFallback = false): SetupMock<T, Result> {
         const result: SetupMock<T, Result> = {
+            fallback: () => this.#setup(expression, true),
             invokes: (handler) => {
-                const interceptor = { expression, handler, invoked: false };
+                switch (expression.kind) {
+                    case 'method': {
+                        const nameStr = keyToProp(expression.name);
+                        if ((this.#interceptors.get.get(expression.name)?.length ?? 0) > 0)
+                            throw new MockError(`Cannot setup x${nameStr}(...) because x${nameStr} is already configured.`);
+                        break;
+                    }
+                    case 'newNested': {
+                        const nameStr = keyToProp(expression.name);
+                        if ((this.#interceptors.get.get(expression.name)?.length ?? 0) > 0)
+                            throw new MockError(`Cannot setup new x${nameStr}(...) because x${nameStr} is already configured.`);
+                        break;
+                    }
+                    case 'get': {
+                        const nameStr = keyToProp(expression.name);
+                        if ((this.#interceptors.method.get(expression.name)?.length ?? 0) > 0)
+                            throw new MockError(`Cannot setup x${nameStr} because x${nameStr}(...) is already configured.`);
+                        if ((this.#interceptors.newNested.get(expression.name)?.length ?? 0) > 0)
+                            throw new MockError(`Cannot setup x${nameStr} because new x${nameStr}(...) is already configured.`);
+                        break;
+                    }
+                }
+
+                const interceptor = { expression, handler, invoked: false, isFallback };
                 const interceptors = this.#interceptorsFor(expression);
                 const specificity = expression.specificity;
                 let low = 0;
                 let high = interceptors.length;
 
                 while (low < high) {
-                    const mid = Math.floor((high - low) / 2);
+                    const mid = low + Math.floor((high - low) / 2);
                     if (interceptors[mid].expression.specificity >= specificity)
                         low = mid + 1;
                     else
@@ -432,7 +449,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                 });
             },
 
-            invokesAsync: value => result.invokes((i, m) => Promise.try(value, i, m) as Result),
+            invokesAsync: (value) => result.invokes((i, m) => Promise.try(value, i, m) as Result),
             returns: value => result.invokes(() => value),
             resolves: value => result.invokes(() => Promise.resolve(value) as Result),
             throws: error => result.invokes(() => { throw error; }),
@@ -496,6 +513,7 @@ function mustHaveHappened<T extends Mockable>(expression: Expression, ...args: [
 interface Interceptor<T extends Mockable, Result> {
     readonly expression: Expression;
     readonly handler: Callback<T, Result>;
+    readonly isFallback: boolean;
     invoked: boolean;
 }
 interface Verifier<T extends Mockable> {
@@ -572,23 +590,23 @@ class StrictArgumentMatcher extends ArgumentMatcher {
         return value === this.#expected;
     }
     public override toString(): string {
-        return `exactly(${String(this.#expected)})`;
+        return argToString(this.#expected);
     }
     public override equals(other: ArgumentMatcher): boolean {
         return other instanceof StrictArgumentMatcher && other.#expected === this.#expected;
     }
 }
-class GuardedArgumentMatcher extends ArgumentMatcher {
-    readonly #guard: (value: unknown) => boolean;
+class GuardedArgumentMatcher<T> extends ArgumentMatcher {
+    readonly #guard: (value: T) => boolean;
 
     public override specificity = 100_000;
 
-    public constructor(guard: (value: unknown) => boolean) {
+    public constructor(guard: (value: T) => boolean) {
         super();
         this.#guard = guard;
     }
     public override check(value: unknown): boolean {
-        return this.#guard(value);
+        return this.#guard(value as T);
     }
     public override toString(): string {
         return `matches(${this.#guard.name})`;
@@ -615,17 +633,17 @@ class InstanceOfArgumentMatcher extends ArgumentMatcher {
         return other instanceof InstanceOfArgumentMatcher && other.#ctor === this.#ctor;
     }
 }
-class AssertingArgumentMatcher extends ArgumentMatcher {
-    readonly #assertion: (value: unknown) => void;
+class AssertingArgumentMatcher<T> extends ArgumentMatcher {
+    readonly #assertion: (value: T) => void;
     public override specificity = 100_000;
 
-    public constructor(assertion: (value: unknown) => void) {
+    public constructor(assertion: (value: T) => void) {
         super();
         this.#assertion = assertion;
     }
     public override check(value: unknown): boolean {
         try {
-            this.#assertion(value);
+            this.#assertion(value as T);
             return true;
         } catch {
             return false;
@@ -841,8 +859,8 @@ export interface ArgumentMatchers<T = never> {
     readonly boolean: boolean;
     readonly bigint: bigint;
     readonly strict: <R>(value: R) => R;
-    readonly satisfies: <R>(guard: (value: unknown) => value is R) => R;
-    readonly asserts: <R>(guard: (value: unknown) => asserts value is R) => R;
+    readonly satisfies: <R>(guard: (value: R) => boolean) => R;
+    readonly asserts: <R>(guard: (value: R) => void) => R;
     readonly oneOf: <R>(...values: R[]) => R;
     readonly instanceOf: <R>(ctor: abstract new (...args: never) => R) => R;
     readonly looksLike: <R>(skeleton: R) => R;
@@ -1284,7 +1302,7 @@ function keyToSource(key: PropertyKey): string {
 function debugMatchers(expr: Expression): string {
     switch (expr.kind) {
         case 'call': {
-            if (expr.thisArg === thisArgumentMatcher)
+            if (expr.thisArg === thisArgumentMatcher || expr.thisArg === anyArgumentMatcher)
                 return `$mock(${expr.parameters.map(p => p.toString()).join(',')})`;
             return `$mock.apply(${expr.thisArg.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }
@@ -1294,7 +1312,7 @@ function debugMatchers(expr: Expression): string {
             return `new (class Derived extends $mock {...})(${expr.newTarget.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }
         case 'method': {
-            if (expr.thisArg === thisArgumentMatcher)
+            if (expr.thisArg === thisArgumentMatcher || expr.thisArg === anyArgumentMatcher)
                 return `$mock${keyToProp(expr.name)}(${expr.parameters.map(p => p.toString()).join(',')})`;
             return `$mock${keyToProp(expr.name)}.apply(${expr.thisArg.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }

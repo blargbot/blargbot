@@ -114,3 +114,15 @@ function getStrArray(text: string): JArray | undefined {
     }
     return undefined;
 }
+
+export function takeOperator<T extends string>(filter: (value: string) => value is T, options: string[]): T | undefined {
+    for (let i = 0; i < options.length; i++) {
+        const item = options[i];
+        if (filter(item)) {
+            options.splice(i, 1);
+            return item;
+        }
+    }
+
+    return undefined;
+}

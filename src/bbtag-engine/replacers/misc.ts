@@ -7,7 +7,7 @@ import { cacheResult } from '../cacheResult.js';
 import type { SubtagSignatureCallableOptions } from '../compilation/SubtagSignatureCallableOptions.js';
 import { defineReplacer } from '../defineReplacer.js';
 import type { LogicOperator } from '../operators.js';
-import { aggregationOperators, comparisonOperators, isComparisonOperator, isLogicOperator, logicOperators, numericOperators, ordinalOperators, stringOperators } from '../operators.js';
+import { aggregationOperators, comparisonOperators, isComparisonOperator, isLogicOperator, logicOperators, numericOperators, ordinalOperators, stringOperators, takeOperator } from '../operators.js';
 import { parse } from '../parse.js';
 import type { SubtagReturnTypeMap } from '../types.js';
 import type { ArgsLocals, BrainfuckLocals, FallbackLocals, RegExpCompilerLocals, ReplaceOutputLocals, SafeRegExp, TemporalLocals, VariablesLocals } from './locals.js';
@@ -34,14 +34,9 @@ export const boolReplacer = defineReplacer('bool', {
     }
 });
 function boolOperator(left: string, operator: string, right: string): boolean {
-    let op;
-    if (isComparisonOperator(operator)) {
-        op = operator;
-    } else if (isComparisonOperator(left)) {
-        [left, op] = [operator, left];
-    } else if (isComparisonOperator(right)) {
-        [op, right] = [right, operator];
-    } else
+    const args = [left, operator, right];
+    const op = takeOperator(isComparisonOperator, args);
+    if (op === undefined)
         throw new InvalidOperatorError(operator);
 
     const leftBool = parse.boolean(left, { includeNumbers: false });
@@ -635,5 +630,13 @@ export const timeReplacer = defineReplacer<TemporalLocals>('time', {
         if (parsed === undefined)
             throw new BBTagRuntimeError('Invalid date');
         return parsed.toString(format, toTimezone);
+    }
+});
+export const returnReplacer = defineReplacer('return', {
+    parameters: ['force?:true'],
+    returns: 'nothing',
+    execute: function $return(context, [{ value: forcedStr }]) {
+        const forced = parse.boolean(forcedStr, { fallback: true });
+        context.return = forced ? Infinity : 1;
     }
 });

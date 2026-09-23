@@ -292,7 +292,9 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/bbtag-engine-tests", "workspace:test/bbtag-engine"],\
           ["@blargbot/test-util", "workspace:test/testUtil"],\
           ["@blargbot/util", "workspace:src/util"],\
+          ["@types/color", "npm:3.0.3"],\
           ["brainfuck-node", "npm:1.0.2"],\
+          ["color", "npm:4.2.3"],\
           ["moment-timezone", "npm:0.6.4"],\
           ["ts-mockito", "npm:2.6.1"]\
         ],\

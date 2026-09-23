@@ -1,8 +1,8 @@
-import assert from 'node:assert/strict';
+import type { VariableStore } from '@blargbot/bbtag-engine';
+import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
+import type { Mock } from '@blargbot/test-util';
 
-import { AggregateBBTagError, BBTagRuntimeError, BBTagRuntimeState, ForSubtag, GetSubtag, IfSubtag, InvalidOperatorError, NotANumberError, OperatorSubtag, ReturnSubtag, SetSubtag } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
-
+import { setupVariables } from '../setupVariables.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
@@ -12,65 +12,43 @@ await runSubtagTests({
         {
             code: '{for;index;0;<;10;{get;index},}',
             expected: '0,1,2,3,4,5,6,7,8,9,',
-            subtags: [replacers.getReplacer],
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(10).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 'initial');
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                setupIndexes(variables, 'index', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
             }
         },
         {
             code: '{for;index;0;<;10;2;{get;index},}',
             expected: '0,2,4,6,8,',
-            subtags: [replacers.getReplacer],
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(5).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 'initial');
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                setupIndexes(variables, 'index', [0, 2, 4, 6, 8]);
             }
         },
         {
             code: '{for;index;10;>;0;-1;{get;index},}',
             expected: '10,9,8,7,6,5,4,3,2,1,',
-            subtags: [replacers.getReplacer],
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(10).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 'initial');
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                setupIndexes(variables, 'index', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
             }
         },
         {
             code: '{for;index;1;<;513;0;{get;index},{set;index;{*;{get;index};2}}}',
             expected: '1,2,4,8,16,32,64,128,256,512,',
-            subtags: [replacers.getReplacer, replacers.setReplacer, replacers.operatorReplacer],
+            replacers: [replacers.getReplacer, replacers.setReplacer, replacers.operatorReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(10).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 'initial');
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                setupIndexes(variables, 'index', [1, 2, 4, 8, 16, 32, 64, 128, 256, 512], 2);
+                for (const value of [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024])
+                    variables.setup(m => m.set('index', `${value}`)).mustHappen(1);
             }
         },
         {
@@ -79,17 +57,15 @@ await runSubtagTests({
             errors: [
                 { start: 0, end: 37, error: new NotANumberError('abc') }
             ],
-            subtags: [replacers.setReplacer],
+            replacers: [replacers.setReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(1).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 'initial');
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                setupVariables(variables, 'index');
+                variables.setup(m => m.set('index', 1)).mustHappen(1);
+                variables.setup(m => m.set('index', 'abc')).mustHappen(1);
+                variables.setup(m => m.get('index')).mustHappen(1);
+                variables.setup((m, $) => m.rollback($.looksLike(['index']))).returns().mustHappen(1);
             }
         },
         {
@@ -134,46 +110,48 @@ await runSubtagTests({
                 }
             ]
         },
-        {
-            code: '{for;index;0;<;10;{get;index},}',
-            expected: '0,1,2,3,`Too many loops`',
-            errors: [
-                { start: 0, end: 31, error: new BBTagRuntimeError('Too many loops') }
-            ],
-            subtags: [replacers.getReplacer],
-            setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
-            },
-            postSetup(bbctx, ctx) {
-                let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(5).thenCall(() => {
-                    if (i++ >= 4)
-                        throw new BBTagRuntimeError('Too many loops');
-                    return undefined;
-                });
-            },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 'initial');
-            }
-        },
+        // TODO: Move this test once limits are reintroduced
+        // {
+        //     code: '{for;index;0;<;10;{get;index},}',
+        //     expected: '0,1,2,3,`Too many loops`',
+        //     errors: [
+        //         { start: 0, end: 31, error: new BBTagRuntimeError('Too many loops') }
+        //     ],
+        //     replacers: [replacers.getReplacer],
+        //     setup(ctx) {
+        //         ctx.options.tagName = 'testTag';
+        //         ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
+        //     },
+        //     postSetup(bbctx, ctx) {
+        //         let i = 0;
+        //         ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(5).thenCall(() => {
+        //             if (i++ >= 4)
+        //                 throw new BBTagRuntimeError('Too many loops');
+        //             return undefined;
+        //         });
+        //     },
+        //     async assert(bbctx, _, ctx) {
+        //         assert.equal((await bbctx.variables.get('index')).value, 'initial');
+        //         assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 'initial');
+        //     }
+        // },
         {
             code: '{for;index;0;<;10;{get;index}{if;{get;index};==;5;{return}},}',
             expected: '0,1,2,3,4,5',
-            subtags: [replacers.getReplacer, replacers.ifReplacer, replacers.returnReplacer],
+            replacers: [replacers.getReplacer, replacers.ifReplacer, replacers.returnReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, 'initial');
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).verifiable(6).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 'initial');
-                assert.equal(bbctx.data.state, BBTagRuntimeState.ABORT);
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                setupIndexes(variables, 'index', [0, 1, 2, 3, 4, 5], 2);
             }
         }
     ]
 });
+
+function setupIndexes(variables: Mock<VariableStore>, varName: string, values: Array<JToken | undefined>, getPerLoop = 1): void {
+    setupVariables(variables, varName);
+    for (const value of new Set(values))
+        variables.setup(m => m.set(varName, value)).mustHappen(values.filter(x => x === value).length);
+    variables.setup(m => m.get(varName)).mustHappen(values.length * (getPerLoop + 1));
+    variables.setup((m, $) => m.rollback($.looksLike([varName]))).returns().mustHappen(1);
+}
