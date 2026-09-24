@@ -14,7 +14,7 @@ await runSubtagTests({
             return format === 'gray' ? result.rgb() : result;
         });
         const variablesFallback = ctx.createMock<VariableStore>();
-        ctx.locals.setup(m => m.variables).fallback().returns(variablesFallback.instance);
+        ctx.locals.setup(m => m.variables).returns(variablesFallback.instance, { isFallback: true });
         variablesFallback.setup((m, $) => m.get($.string)).returns({ key: '', value: undefined });
     },
     cases: [

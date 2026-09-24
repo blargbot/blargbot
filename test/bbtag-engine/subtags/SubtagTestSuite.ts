@@ -4,8 +4,8 @@ import * as inspector from 'node:inspector';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import type { BBTagContext, BBTagReplacer, BBTagSerializer, CompiledBBTagReplacer, FallbackLocals, LocatedBBTagRuntimeError, SourceMarker } from '@blargbot/bbtag-engine';
-import { BBTagEngine, BBTagRuntimeError, composeReplacer, NotEnoughArgumentsError, parseBBTag, TooManyArgumentsError } from '@blargbot/bbtag-engine';
+import type { BBTagContext, BBTagReplacer, BBTagSerializer, BBTagSubtag, CompiledBBTagReplacer, FallbackLocals, LocatedBBTagRuntimeError, SourceMarker, SubtagArgumentArray } from '@blargbot/bbtag-engine';
+import { BBTagEngine, BBTagRuntimeError, composeReplacer, defineReplacer, NotEnoughArgumentsError, parseBBTag, TooManyArgumentsError } from '@blargbot/bbtag-engine';
 import type { Mockable, MockOptions } from '@blargbot/test-util';
 import { Mock, MockError } from '@blargbot/test-util';
 
@@ -188,6 +188,7 @@ export function createTestDataReplacer(values: Record<string, string | undefined
     return {
         name: 'testData',
         aliases: new Set(),
+        canReplace: () => true,
         replace: async function* testData(_, __, bbtag) {
             if (bbtag.args.length !== 1)
                 throw new RangeError(`Subtag ${testData.name} must be given 1 argument!`);
@@ -206,6 +207,7 @@ export function createLimitedReplacer(limit = 1): BBTagReplacer {
     return {
         name: 'limit',
         aliases: new Set(),
+        canReplace: () => true,
         replace: async function* limited(context) {
             const count = counts.get(context) ?? 0;
             counts.set(context, count + 1);
@@ -216,9 +218,19 @@ export function createLimitedReplacer(limit = 1): BBTagReplacer {
         }
     };
 }
+export function createAssertReplacer<Locals extends object>(assert: (context: BBTagContext<Locals>, args: SubtagArgumentArray, bbtag: BBTagSubtag) => Awaitable<JToken | undefined>): BBTagReplacer<Locals> {
+    if (assert.name === 'execute' || assert.name === '')
+        Object.defineProperty(assert, 'name', { value: 'assert' });
+    return defineReplacer('assert', {
+        parameters: ['~args*'],
+        returns: 'json|nothing',
+        execute: assert
+    });
+}
 export const evalReplacer: BBTagReplacer = {
     name: 'eval',
     aliases: new Set(),
+    canReplace: () => true,
     replace: async function* $eval(_, __, bbtag) {
         yield await Promise.reject(new MarkerError('eval', bbtag.start.index));
     }
@@ -226,6 +238,7 @@ export const evalReplacer: BBTagReplacer = {
 export const failReplacer: BBTagReplacer = {
     name: 'fail',
     aliases: new Set(),
+    canReplace: () => true,
     replace: async function* $fail(_, __, bbtag) {
         yield await Promise.reject(new RangeError(`Subtag ${bbtag.source} was evaluated when it wasnt supposed to!`));
     }
@@ -233,6 +246,7 @@ export const failReplacer: BBTagReplacer = {
 export const echoReplacer: BBTagReplacer = {
     name: 'echo',
     aliases: new Set(),
+    canReplace: () => true,
     replace: function* $echo(_, __, bbtag) {
         yield '[';
         yield JSON.stringify(bbtag.name.source);

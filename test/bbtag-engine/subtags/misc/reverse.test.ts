@@ -21,7 +21,7 @@ await runSubtagTests({
                 const variables = ctx.createMock<VariableStore>();
                 ctx.locals.setup(m => m.variables).returns(variables.instance);
                 variables.setup(m => m.get('_myArray')).resolves({ key: '_myArray', value: ['abc', 'def', 'ghi'] }).mustHappen();
-                variables.setup((m, $) => m.set('_myArray', $.looksLike(['ghi', 'def', 'abc']))).resolves().mustHappen();
+                variables.setup((m, $) => m.set('_myArray', $(['ghi', 'def', 'abc']))).resolves().mustHappen();
             }
         }
     ]

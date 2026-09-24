@@ -1,3 +1,5 @@
+import type { BBTagExpression } from '../language/BBTagExpression.js';
+
 export interface ArgsLocals {
     args: {
         positional: readonly string[];
@@ -65,4 +67,9 @@ export interface TemporalValue {
 }
 export interface DecancerLocals {
     decancer: (value: string) => string;
+}
+
+export interface FunctionLocals {
+    functions: Record<`func.${string}`, BBTagExpression | undefined>;
+    functionParameters?: readonly string[];
 }

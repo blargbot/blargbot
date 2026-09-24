@@ -7,7 +7,7 @@ import { cacheResult } from '../cacheResult.js';
 import type { SubtagSignatureCallableOptions } from '../compilation/SubtagSignatureCallableOptions.js';
 import { defineReplacer } from '../defineReplacer.js';
 import type { LogicOperator } from '../operators.js';
-import { aggregationOperators, comparisonOperators, isComparisonOperator, isLogicOperator, logicOperators, numericOperators, ordinalOperators, stringOperators, takeOperator } from '../operators.js';
+import { aggregationOperators, isLogicOperator, logicOperators, numericOperators, ordinalOperators, runBool, stringOperators } from '../operators.js';
 import { parse } from '../parse.js';
 import type { SubtagReturnTypeMap } from '../types.js';
 import type { ArgsLocals, BrainfuckLocals, DecancerLocals, FallbackLocals, RegExpCompilerLocals, ReplaceOutputLocals, SafeRegExp, TemporalLocals, VariablesLocals } from './locals.js';
@@ -30,24 +30,9 @@ export const boolReplacer = defineReplacer('bool', {
     parameters: ['arg1', 'evaluator', 'arg2'],
     returns: 'boolean',
     execute: function bool(_, [{ value: left }, { value: operator }, { value: right }]) {
-        return boolOperator(left, operator, right);
+        return runBool(left, operator, right);
     }
 });
-function boolOperator(left: string, operator: string, right: string): boolean {
-    const args = [left, operator, right];
-    const op = takeOperator(isComparisonOperator, args);
-    if (op === undefined)
-        throw new InvalidOperatorError(operator);
-
-    const leftBool = parse.boolean(left, { includeNumbers: false });
-    if (leftBool !== undefined)
-        left = leftBool.toString();
-    const rightBool = parse.boolean(right, { includeNumbers: false });
-    if (rightBool !== undefined)
-        right = rightBool.toString();
-
-    return comparisonOperators[op](left, right);
-}
 export const brainfuckReplacer = defineReplacer<BrainfuckLocals>('brainfuck', {
     parameters: ['code', 'input?'],
     returns: 'string',
@@ -160,44 +145,6 @@ export const hashReplacer = defineReplacer(
 
             const hash = createHash(algorithm.toLowerCase());
             return hash.update(new Uint8Array(data.buffer, data.byteOffset, data.byteLength)).digest('hex');
-        }
-    }
-);
-export const ifReplacer = defineReplacer(
-    'if',
-    {
-        parameters: ['boolean', '~then'],
-        returns: 'string',
-        execute: async function ifThen(_, [{ value: bool }, thenCode]) {
-            if (!parse.boolean(bool, { throw: true }))
-                return '';
-
-            return await thenCode.wait();
-        }
-    },
-    {
-        parameters: ['boolean', '~then', '~else'],
-        returns: 'string',
-        execute: async function ifThenElse(_, [{ value: bool }, thenCode, elseCode]) {
-            const next = parse.boolean(bool, { throw: true }) ? thenCode : elseCode;
-            return await next.wait();
-        }
-    },
-    {
-        parameters: ['value1', 'operator', 'value2', '~then'],
-        returns: 'string',
-        execute: async function ifOperatorThen(_, [{ value: value1 }, { value: operator }, { value: value2 }, thenCode]) {
-            if (!boolOperator(value1, operator, value2))
-                return '';
-            return await thenCode.wait();
-        }
-    },
-    {
-        parameters: ['value1', 'operator', 'value2', '~then', '~else'],
-        returns: 'string',
-        execute: async function ifOperatorThenElse(_, [{ value: value1 }, { value: operator }, { value: value2 }, thenCode, elseCode]) {
-            const next = boolOperator(value1, operator, value2) ? thenCode : elseCode;
-            return await next.wait();
         }
     }
 );
@@ -549,32 +496,6 @@ export const substringReplacer = defineReplacer<FallbackLocals>('substring', {
         return text.substring(start, end);
     }
 });
-export const switchReplacer = defineReplacer('switch', {
-    parameters: ['value', { repeat: ['case', '~then'], minCount: 1 }, '~default?'],
-    returns: 'string',
-    execute: async function $switch(_, [{ value }, ...args]) {
-        let defaultCase = undefined;
-        if (args.length % 2 === 1)
-            defaultCase = args.pop();
-
-        const pairs = Array.from(
-            { length: args.length / 2 },
-            (_, i) => [args[i * 2].value, args[i * 2 + 1]] as const
-        );
-        const cases = new Map(pairs
-            .reverse()
-            .flatMap(x => (bbtagArray.deserialize(x[0])?.v ?? [x[0]])
-                .reverse()
-                .map(v => [parse.string(v), x[1]] as const)
-            )
-        );
-        const match = cases.get(value) ?? defaultCase;
-        if (match === undefined)
-            return '';
-
-        return await match.execute();
-    }
-});
 export const trimReplacer = defineReplacer('trim', {
     parameters: ['text'],
     returns: 'string',
@@ -630,14 +551,6 @@ export const timeReplacer = defineReplacer<TemporalLocals>('time', {
         if (parsed === undefined)
             throw new BBTagRuntimeError('Invalid date');
         return parsed.toString(format, toTimezone);
-    }
-});
-export const returnReplacer = defineReplacer('return', {
-    parameters: ['force?:true'],
-    returns: 'nothing',
-    execute: function $return(context, [{ value: forcedStr }]) {
-        const forced = parse.boolean(forcedStr, { fallback: true });
-        context.return = forced ? Infinity : 1;
     }
 });
 export const decancerReplacer = defineReplacer<DecancerLocals>('decancer', {

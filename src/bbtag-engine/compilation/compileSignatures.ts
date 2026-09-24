@@ -32,6 +32,7 @@ export function compileSignatures<Locals extends object>(names: string[], signat
         name: names[0] ?? null,
         aliases: new Set(names.slice(1)),
         handlers: handlers,
+        canReplace: v => handlers.some(h => h.canReplace(v)),
         replace(context, subtagName, call) {
             const handler = handlers.find(handler => handler.canHandle(call, subtagName));
 
@@ -61,8 +62,8 @@ function createConditionalHandler<Locals extends object>(signature: SubtagSignat
         canHandle:
             name === undefined
                 ? subtag => resolver.isExactMatch(subtag)
-                : (subtag, subtagName) => subtagName.toLowerCase() === name && resolver.isExactMatch(subtag)
-        ,
+                : (subtag, subtagName) => subtagName.toLowerCase() === name && resolver.isExactMatch(subtag),
+        canReplace: name === undefined ? () => true : v => v.toLowerCase() === name,
         replace: async function* executeContionalHandler(context, subtagName, call) {
             const args = [];
             for (const arg of resolver.resolve(context, call)) {

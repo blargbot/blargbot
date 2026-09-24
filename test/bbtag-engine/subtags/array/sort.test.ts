@@ -48,7 +48,7 @@ await runSubtagTests({
                 const variables = ctx.createMock<VariableStore>();
                 ctx.locals.setup(m => m.variables).returns(variables.instance);
                 variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
-                variables.setup((m, $) => m.set('$arr1', $.looksLike(['arr1', 'is', 'this']))).returns().mustHappen();
+                variables.setup((m, $) => m.set('$arr1', $(['arr1', 'is', 'this']))).returns().mustHappen();
             }
         },
         {
@@ -59,7 +59,7 @@ await runSubtagTests({
                 const variables = ctx.createMock<VariableStore>();
                 ctx.locals.setup(m => m.variables).returns(variables.instance);
                 variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
-                variables.setup((m, $) => m.set('$arr1', $.looksLike(['arr1', 'is', 'this']))).returns().mustHappen();
+                variables.setup((m, $) => m.set('$arr1', $(['arr1', 'is', 'this']))).returns().mustHappen();
             }
         },
         {
@@ -70,7 +70,7 @@ await runSubtagTests({
                 const variables = ctx.createMock<VariableStore>();
                 ctx.locals.setup(m => m.variables).returns(variables.instance);
                 variables.setup(m => m.get('!arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
-                variables.setup((m, $) => m.set('$arr1', $.looksLike(['arr1', 'is', 'this']))).returns().mustHappen();
+                variables.setup((m, $) => m.set('$arr1', $(['arr1', 'is', 'this']))).returns().mustHappen();
             }
         }
     ]

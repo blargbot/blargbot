@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeState, replacers } from '@blargbot/bbtag-engine';
+import { replacers } from '@blargbot/bbtag-engine';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -12,28 +12,28 @@ await runSubtagTests({
             code: 'abc{return}def',
             expected: 'abc',
             assert(ctx) {
-                assert.equal(ctx.data.state, BBTagRuntimeState.ABORT);
+                assert.equal(ctx.returnDepth, Infinity);
             }
         },
         {
             code: '{return;true}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.data.state, BBTagRuntimeState.ABORT);
+                assert.equal(ctx.returnDepth, Infinity);
             }
         },
         {
             code: 'abc{return;false}def',
             expected: 'abc',
             assert(ctx) {
-                assert.equal(ctx.data.state, BBTagRuntimeState.RETURN);
+                assert.equal(ctx.returnDepth, 1);
             }
         },
         {
             code: '{return;abc}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.data.state, BBTagRuntimeState.ABORT);
+                assert.equal(ctx.returnDepth, Infinity);
             }
         }
     ]

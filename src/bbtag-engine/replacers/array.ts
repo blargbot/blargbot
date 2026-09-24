@@ -23,7 +23,7 @@ export const filterReplacer = defineReplacer<VariablesLocals>('filter', {
                 await ctx.locals.variables.set(varName, item);
                 if (parse.boolean((await code.execute()).trim()) === true)
                     yield item;
-                if (ctx.return !== 0)
+                if (ctx.returnDepth !== 0)
                     break;
             }
         } finally {
@@ -56,7 +56,7 @@ export const mapReplacer = defineReplacer<VariablesLocals>('map', {
             for (const item of array) {
                 await context.locals.variables.set(varName, item);
                 yield await code.execute();
-                if (context.return !== 0)
+                if (context.returnDepth !== 0)
                     break;
             }
         } finally {

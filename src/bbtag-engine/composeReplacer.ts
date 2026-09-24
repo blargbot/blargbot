@@ -70,16 +70,21 @@ class Builder<Locals extends object> implements BBTagReplacerComposer<Locals> {
         function findReplacer(name: string): BBTagReplacer<Locals> | undefined {
             name = name.toLowerCase();
             const result = lookup.get(name);
-            if (result !== undefined)
+            if (result?.canReplace(name) === true)
                 return result;
             const splitAt = name.indexOf('.');
             if (splitAt === -1)
                 return undefined;
-            return lookup.get(name.slice(0, splitAt));
+            name = name.slice(0, splitAt + 1);
+            const result2 = lookup.get(name);
+            if (result2?.canReplace(name) === true)
+                return result2;
+            return undefined;
         }
         return {
             name: null,
             aliases: new Set(lookup.keys()),
+            canReplace: v => findReplacer(v) !== undefined,
             replace: async function* executeCompositeBBTagReplacers(context, name, bbtag) {
                 const replacer = findReplacer(name);
                 yield* await (replacer === undefined

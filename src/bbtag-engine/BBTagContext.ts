@@ -13,7 +13,7 @@ export class BBTagContext<out Locals extends object> {
     readonly #renderError: BBTagErrorRenderer<object>;
     readonly #serialize: (context: BBTagContext<object>) => Awaitable<Uint8Array>;
 
-    public return: number = 0;
+    public returnDepth: number = 0;
 
     public readonly errors: LocatedBBTagRuntimeError[];
 
@@ -39,8 +39,12 @@ export class BBTagContext<out Locals extends object> {
         this.errors = [];
     }
 
+    public canReplace(subtagName: string): boolean {
+        return this.#replacer.canReplace(subtagName);
+    }
+
     public async eval(bbtag: BBTagExpression): Promise<string> {
-        if (this.return !== 0)
+        if (this.returnDepth !== 0)
             return '';
 
         const values = [];
@@ -68,7 +72,7 @@ export class BBTagContext<out Locals extends object> {
                     } finally {
                         this.#callstack.pop();
                     }
-                    if (this.return !== 0)
+                    if (this.returnDepth !== 0)
                         return;
                 }
             }

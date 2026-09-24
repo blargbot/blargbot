@@ -1,78 +1,57 @@
-import assert from 'node:assert/strict';
-
-import type { BBTagContext } from '@blargbot/bbtag-engine';
+import type { VariablesLocals, VariableStore } from '@blargbot/bbtag-engine';
 import { replacers } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-await runSubtagTests({
+await runSubtagTests<VariablesLocals>({
     replacer: replacers.rollbackReplacer,
     argCountBounds: { min: 0, max: Infinity },
-    setup(ctx) {
-        ctx.options.tagName = 'testTag';
-        ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 22);
-        ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var2' }, 'def');
-        ctx.tagVariables.set({ scope: { type: TagVariableType.GLOBAL }, name: 'var5' }, 22);
-        ctx.tagVariables.set({ scope: { type: TagVariableType.GLOBAL }, name: 'var6' }, 'def');
-        ctx.tagVariables.set({ scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id }, name: 'var7' }, 22);
-        ctx.tagVariables.set({ scope: { type: TagVariableType.AUTHOR, authorId: ctx.users.command.id }, name: 'var8' }, 'def');
-        ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'var9' }, 22);
-        ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'var10' }, 'def');
-    },
-    async postSetup(bbctx) {
-        await bbctx.variables.set('var1', 5);
-        await bbctx.variables.set('var2', 'abc');
-        await bbctx.variables.set('~var3', 5);
-        await bbctx.variables.set('~var4', 'abc');
-        await bbctx.variables.set('*var5', 5);
-        await bbctx.variables.set('*var6', 'abc');
-        await bbctx.variables.set('@var7', 5);
-        await bbctx.variables.set('@var8', 'abc');
-        await bbctx.variables.set('_var9', 5);
-        await bbctx.variables.set('_var10', 'abc');
-    },
     cases: [
         {
             code: '{rollback}',
-            setupSaveVariables: false,
-            async assert(bbctx) {
-                await assertCacheState(bbctx, {
-                    ['~var3']: undefined,
-                    ['~var4']: undefined,
-                    ['var1']: 22,
-                    ['var2']: 'def',
-                    ['*var5']: 22,
-                    ['*var6']: 'def',
-                    ['@var7']: 22,
-                    ['@var8']: 'def',
-                    ['_var9']: 22,
-                    ['_var10']: 'def'
-                });
+            expected: '',
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup(m => m.rollback()).returns().mustHappen();
             }
         },
         {
-            code: '{rollback;var2;~var4;["*var6","@var8"];[];_var10}',
-            setupSaveVariables: false,
-            async assert(bbctx) {
-                await assertCacheState(bbctx, {
-                    ['var1']: 5,
-                    ['var2']: 'def',
-                    ['~var3']: 5,
-                    ['~var4']: undefined,
-                    ['*var5']: 5,
-                    ['*var6']: 'def',
-                    ['@var7']: 5,
-                    ['@var8']: 'def',
-                    ['_var9']: 5,
-                    ['_var10']: 'def'
-                });
+            code: '{rollback;var1;["~var3","*var5"];[];@var7;_var9}',
+            expected: '',
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup((m, $) => m.rollback($(['var1', '~var3', '*var5', '@var7', '_var9']))).returns().mustHappen();
+            }
+        },
+        {
+            code: '{rollback;var1}',
+            expected: '',
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup((m, $) => m.rollback($(['var1']))).returns().mustHappen();
+            }
+        },
+        {
+            code: '{rollback;[]}',
+            expected: '',
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup((m, $) => m.rollback($([]))).returns().mustHappen();
+            }
+        },
+        {
+            code: '{rollback;[{escape;{"test": true}}]}',
+            expected: '',
+            replacers: [replacers.escapeBBTagReplacer],
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance);
+                variables.setup((m, $) => m.rollback($(['{"test":true}']))).returns().mustHappen();
             }
         }
     ]
 });
-
-async function assertCacheState(bbctx: BBTagContext, expected: Record<string, JToken | undefined>): Promise<void> {
-    const values = await Promise.all(Object.keys(expected).map(async k => [k, (await bbctx.variables.get(k)).value] as const));
-    assert.deepEqual(Object.fromEntries(values), expected);
-}

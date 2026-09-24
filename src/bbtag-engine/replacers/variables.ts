@@ -80,7 +80,7 @@ export const commitReplacer = defineReplacer<VariablesLocals>(
         parameters: ['variables+'],
         returns: 'nothing',
         execute: async function commitSome(ctx, variables) {
-            await ctx.locals.variables.commit(variables.map(v => v.value));
+            await ctx.locals.variables.commit(bbtagArray.flattenArray(variables.map(v => v.value)).map(v => parse.string(v)));
         }
     }
 );
@@ -98,7 +98,7 @@ export const rollbackReplacer = defineReplacer<VariablesLocals>(
         parameters: ['variables+'],
         returns: 'nothing',
         execute: async function commitSome(ctx, variables) {
-            await ctx.locals.variables.rollback(variables.map(v => v.value));
+            await ctx.locals.variables.rollback(bbtagArray.flattenArray(variables.map(v => v.value)).map(v => parse.string(v)));
         }
     }
 );

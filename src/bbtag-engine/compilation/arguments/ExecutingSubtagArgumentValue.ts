@@ -36,7 +36,7 @@ export class ExecutingSubtagArgumentValue<Locals extends object> implements Subt
     async #executeInner(): Promise<string> {
         const result = await this.#context.eval(this.code);
         if (result.length > this.parameter.maxLength) {
-            this.#context.return = Infinity;
+            this.#context.returnDepth = Infinity;
             throw new ArgumentLengthError(this.call.args.indexOf(this.code), this.parameter.maxLength, result.length);
         }
         return this.#value = result.length === 0 ? this.parameter.defaultValue : result;

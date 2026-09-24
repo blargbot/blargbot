@@ -1,4 +1,5 @@
 import { bbtagArray } from './bbtagArray.js';
+import { InvalidOperatorError } from './BBTagRuntimeError.js';
 import { compare } from './compare.js';
 import { parse } from './parse.js';
 
@@ -125,4 +126,20 @@ export function takeOperator<T extends string>(filter: (value: string) => value 
     }
 
     return undefined;
+}
+
+export function runBool(left: string, operator: string, right: string): boolean {
+    const args = [left, operator, right];
+    const op = takeOperator(isComparisonOperator, args);
+    if (op === undefined)
+        throw new InvalidOperatorError(operator);
+
+    const leftBool = parse.boolean(left, { includeNumbers: false });
+    if (leftBool !== undefined)
+        left = leftBool.toString();
+    const rightBool = parse.boolean(right, { includeNumbers: false });
+    if (rightBool !== undefined)
+        right = rightBool.toString();
+
+    return comparisonOperators[op](left, right);
 }

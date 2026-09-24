@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, JsonGetSubtag, JsonSubtag } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
+import type { VariablesLocals, VariableStore } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-await runSubtagTests({
+await runSubtagTests<VariablesLocals>({
     replacer: replacers.jsonGetReplacer,
     argCountBounds: { min: 1, max: 2 },
     cases: [
@@ -17,21 +17,36 @@ await runSubtagTests({
             expected: '`Cannot read property test of undefined`',
             errors: [
                 { start: 0, end: 19, error: new BBTagRuntimeError('Cannot read property test of undefined') }
-            ]
+            ],
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen();
+                variables.setup(m => m.get('10')).returns({ key: '~', value: undefined }).mustHappen();
+            }
         },
         {
             code: '{jsonget;"abc";0.test}',
             expected: '`Cannot read property test of undefined`',
             errors: [
                 { start: 0, end: 22, error: new BBTagRuntimeError('Cannot read property test of undefined') }
-            ]
+            ],
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen();
+                variables.setup(m => m.get('"abc"')).returns({ key: '~', value: undefined }).mustHappen();
+            }
         },
         {
             code: '{jsonget;true;0.test}',
             expected: '`Cannot read property test of undefined`',
             errors: [
                 { start: 0, end: 21, error: new BBTagRuntimeError('Cannot read property test of undefined') }
-            ]
+            ],
+            setup(ctx) {
+                const variables = ctx.createMock<VariableStore>();
+                ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen();
+                variables.setup(m => m.get('true')).returns({ key: '~', value: undefined }).mustHappen();
+            }
         },
         {
             code: '{jsonget;;someProp}',
@@ -40,26 +55,28 @@ await runSubtagTests({
     ]
 });
 
-function* generateTestCases(source: JToken, path: string, expected: string): Iterable<SubtagTestCase> {
+function* generateTestCases(source: JToken, path: string, expected: string): Iterable<SubtagTestCase<VariablesLocals>> {
     yield {
         code: `{jsonget;{j;${JSON.stringify(source)}};${path}}`,
-        subtags: [replacers.jsonReplacer],
+        replacers: [replacers.jsonReplacer],
         expected: expected
     };
     yield {
         code: `{jsonget;myJsonVar;${path}}`,
         expected: expected,
         setup(ctx) {
-            ctx.options.tagName = 'testTag';
-            ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myJsonVar' }, source);
+            const variables = ctx.createMock<VariableStore>();
+            ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen();
+            variables.setup(m => m.get('myJsonVar')).returns({ key: '~', value: source }).mustHappen();
         }
     };
     yield {
         code: '{jsonget;myJsonVar}',
         expected: typeof source === 'string' ? source : JSON.stringify(source),
         setup(ctx) {
-            ctx.options.tagName = 'testTag';
-            ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myJsonVar' }, source);
+            const variables = ctx.createMock<VariableStore>();
+            ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen();
+            variables.setup(m => m.get('myJsonVar')).returns({ key: '~', value: source }).mustHappen();
         }
     };
 }

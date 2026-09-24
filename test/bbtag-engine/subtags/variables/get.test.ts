@@ -1,130 +1,297 @@
-import { BBTagRuntimeError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
-import { TagVariableType } from '@blargbot/domain';
+import type { VariablesLocals, VariableStore } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
+import type { SubtagTestContext } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.getReplacer,
     argCountBounds: { min: 1, max: 2 },
     cases: [
-        ...generateTestCases(false, 'testTag', [
-            { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
-            { args: ['~myVariableName'], key: undefined, value: undefined, expected: '' },
-            { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'GLOBAL value', expected: 'GLOBAL value' },
-            { args: ['@myVariableName'], key: { scope: { type: TagVariableType.AUTHOR, authorId: '823764823946284623234' }, name: 'myVariableName' }, value: 'AUTHOR value', expected: 'AUTHOR value' },
-            { args: ['_myVariableName'], key: { scope: { type: TagVariableType.GUILD_TAG, guildId: '23904768237436873424' }, name: 'myVariableName' }, value: 'GUILD_TAG value', expected: 'GUILD_TAG value' },
-            { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
-            { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
-            { args: ['*myVariableName', '0'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'a' },
-            { args: ['*myVariableName', '1'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'b' },
-            { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'c' },
-            { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' },
-            { args: ['*myVariableName', 'abc'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' }
-        ]),
-        ...generateTestCases(true, 'testTag', [
-            { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_CC, guildId: '23904768237436873424', name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_CC value', expected: 'LOCAL_CC value' },
-            { args: ['~myVariableName'], key: undefined, value: undefined, expected: '' },
-            { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'GLOBAL value', expected: 'GLOBAL value' },
-            { args: ['@myVariableName'], key: { scope: { type: TagVariableType.AUTHOR, authorId: '823764823946284623234' }, name: 'myVariableName' }, value: 'AUTHOR value', expected: 'AUTHOR value' },
-            { args: ['_myVariableName'], key: { scope: { type: TagVariableType.GUILD_CC, guildId: '23904768237436873424' }, name: 'myVariableName' }, value: 'GUILD_CC value', expected: 'GUILD_CC value' },
-            { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
-            { args: ['*myVariableName', '0'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'a' },
-            { args: ['*myVariableName', '1'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'b' },
-            { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'c' },
-            { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' },
-            { args: ['*myVariableName', 'abc'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' }
-        ]),
         {
-            code: '{get;*myVariableName;abc}',
-            expected: '`Not a number`',
-            errors: [
-                { start: 0, end: 25, error: new NotANumberError('abc') }
-            ],
-            async postSetup(ctx) {
-                await ctx.variables.set('*myVariableName', [1, 2, 3]);
+            code: '{get;missingVar}',
+            expected: '',
+            setup(ctx) {
+                setupVariables(ctx, 'missingVar', undefined);
             }
         },
         {
-            code: '{get;*myVariableName;4}',
-            expected: '`Index out of range`',
-            errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Index out of range') }
-            ],
-            async postSetup(ctx) {
-                await ctx.variables.set('*myVariableName', [1, 2, 3]);
+            code: '{get;missingVar;0}',
+            expected: '',
+            setup(ctx) {
+                setupVariables(ctx, 'missingVar', undefined);
             }
         },
         {
-            code: '{get;*myVariableName;-1}',
+            code: '{get;someNumber}',
+            expected: '1234',
+            setup(ctx) {
+                setupVariables(ctx, 'someNumber', 1234);
+            }
+        },
+        {
+            code: '{get;someNumber;0}',
+            expected: '1234',
+            setup(ctx) {
+                setupVariables(ctx, 'someNumber', 1234);
+            }
+        },
+        {
+            code: '{get;trueVar}',
+            expected: 'true',
+            setup(ctx) {
+                setupVariables(ctx, 'trueVar', true);
+            }
+        },
+        {
+            code: '{get;trueVar;0}',
+            expected: 'true',
+            setup(ctx) {
+                setupVariables(ctx, 'trueVar', true);
+            }
+        },
+        {
+            code: '{get;falseVar}',
+            expected: 'false',
+            setup(ctx) {
+                setupVariables(ctx, 'falseVar', false);
+            }
+        },
+        {
+            code: '{get;falseVar;0}',
+            expected: 'false',
+            setup(ctx) {
+                setupVariables(ctx, 'falseVar', false);
+            }
+        },
+        {
+            code: '{get;stringVar}',
+            expected: 'Success!',
+            setup(ctx) {
+                setupVariables(ctx, 'stringVar', 'Success!');
+            }
+        },
+        {
+            code: '{get;stringVar;0}',
+            expected: 'Success!',
+            setup(ctx) {
+                setupVariables(ctx, 'stringVar', 'Success!');
+            }
+        },
+        {
+            code: '{get;nullVar}',
+            expected: '',
+            setup(ctx) {
+                setupVariables(ctx, 'nullVar', null);
+            }
+        },
+        {
+            code: '{get;nullVar;0}',
+            expected: '',
+            setup(ctx) {
+                setupVariables(ctx, 'nullVar', null);
+            }
+        },
+        {
+            code: '{get;arrayVar}',
+            expected: '{"v":[1,2,3,4,5],"n":"$var"}',
+            setup(ctx) {
+                setupVariables(ctx, 'arrayVar', [1, 2, 3, 4, 5], '$var');
+            }
+        },
+        {
+            code: '{get;arrayVar;0}',
+            expected: '1',
+            setup(ctx) {
+                setupVariables(ctx, 'arrayVar', [1, 2, 3, 4, 5], '$var');
+            }
+        },
+        {
+            code: '{get;arrayVar;1}',
+            expected: '2',
+            setup(ctx) {
+                setupVariables(ctx, 'arrayVar', [1, 2, 3, 4, 5], '$var');
+            }
+        },
+        {
+            code: '{get;arrayVar;2}',
+            expected: '3',
+            setup(ctx) {
+                setupVariables(ctx, 'arrayVar', [1, 2, 3, 4, 5], '$var');
+            }
+        },
+        {
+            code: '{get;arrayVar;3}',
+            expected: '4',
+            setup(ctx) {
+                setupVariables(ctx, 'arrayVar', [1, 2, 3, 4, 5], '$var');
+            }
+        },
+        {
+            code: '{get;arrayVar;10}',
             expected: '`Index out of range`',
             errors: [
-                { start: 0, end: 24, error: new BBTagRuntimeError('Index out of range') }
+                { start: 0, end: 17, error: new BBTagRuntimeError('Index out of range') }
             ],
-            async postSetup(ctx) {
-                await ctx.variables.set('*myVariableName', [1, 2, 3]);
+            setup(ctx) {
+                setupVariables(ctx, 'arrayVar', [1, 2, 3, 4, 5], '$var');
+            }
+        },
+        {
+            code: '{get;arrayVar;-1}',
+            expected: '`Index out of range`',
+            errors: [
+                { start: 0, end: 17, error: new BBTagRuntimeError('Index out of range') }
+            ],
+            setup(ctx) {
+                setupVariables(ctx, 'arrayVar', [1, 2, 3, 4, 5], '$var');
+            }
+        },
+        {
+            code: '{get;objectVar}',
+            expected: '{"test":"success"}',
+            setup(ctx) {
+                setupVariables(ctx, 'objectVar', { test: 'success' });
+            }
+        },
+        {
+            code: '{get;objectVar;0}',
+            expected: '{"test":"success"}',
+            setup(ctx) {
+                setupVariables(ctx, 'objectVar', { test: 'success' });
             }
         }
     ]
 });
 
-function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args: string[]; key: Parameters<SubtagTestContext['tagVariables']['get']>[0] | undefined; value: JToken | undefined; expected: string; }>): Generator<SubtagTestCase> {
-    for (const { args, key, value, expected } of cases) {
-        const title = isCC ? 'Custom command' : 'Tag';
-        const code = `{${['get', ...args].join(';')}}`;
-        yield {
-            title: `From DB and ${title}`,
-            code: code,
-            expected,
-            setup(ctx) {
-                ctx.guild.id = '23904768237436873424';
-                ctx.roles.everyone.id = ctx.guild.id;
-                ctx.users.command.id = '823764823946284623234';
-                ctx.options.isCC = isCC;
-                ctx.options.tagName = tagName;
-                if (key !== undefined) {
-                    if (value === undefined)
-                        ctx.tagVariables.delete(key);
-                    else
-                        ctx.tagVariables.set(key, value);
-                }
-            }
-        };
-        yield {
-            title: `From cache and ${title}`,
-            code: code,
-            expected,
-            setup(ctx) {
-                ctx.guild.id = '23904768237436873424';
-                ctx.roles.everyone.id = ctx.guild.id;
-                ctx.users.command.id = '823764823946284623234';
-                ctx.options.isCC = isCC;
-                ctx.options.tagName = tagName;
-            },
-            async postSetup(bbctx) {
-                await bbctx.variables.set(args[0], value);
-            }
-        };
-        yield {
-            title: `Ignoring cache and ${title}`,
-            code: `{${['get', `!${args[0]}`, ...args.slice(1)].join(';')}}`,
-            expected,
-            setup(ctx) {
-                ctx.guild.id = '23904768237436873424';
-                ctx.roles.everyone.id = ctx.guild.id;
-                ctx.users.command.id = '823764823946284623234';
-                ctx.options.isCC = isCC;
-                ctx.options.tagName = tagName;
-                if (key !== undefined) {
-                    if (value === undefined)
-                        ctx.tagVariables.delete(key);
-                    else
-                        ctx.tagVariables.set(key, value);
-                }
-            },
-            async postSetup(bbctx) {
-                await bbctx.variables.set(args[0], 'FAIL');
-            }
-        };
-    }
+function setupVariables(context: SubtagTestContext<VariablesLocals>, varName: string, varValue: JToken | undefined, key = '~'): void {
+    const variables = context.createMock<VariableStore>();
+    context.locals.setup(m => m.variables).returns(variables.instance);
+    variables.setup(m => m.get(varName)).returns({ key, value: varValue }).mustHappen();
 }
+
+// TODO: Move these tests to test the actual implementation of the VariableStore when that is done
+// await runSubtagTests({
+//     replacer: replacers.getReplacer,
+//     argCountBounds: { min: 1, max: 2 },
+//     cases: [
+//         ...generateTestCases(false, 'testTag', [
+//             { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
+//             { args: ['~myVariableName'], key: undefined, value: undefined, expected: '' },
+//             { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'GLOBAL value', expected: 'GLOBAL value' },
+//             { args: ['@myVariableName'], key: { scope: { type: TagVariableType.AUTHOR, authorId: '823764823946284623234' }, name: 'myVariableName' }, value: 'AUTHOR value', expected: 'AUTHOR value' },
+//             { args: ['_myVariableName'], key: { scope: { type: TagVariableType.GUILD_TAG, guildId: '23904768237436873424' }, name: 'myVariableName' }, value: 'GUILD_TAG value', expected: 'GUILD_TAG value' },
+//             { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
+//             { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
+//             { args: ['*myVariableName', '0'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'a' },
+//             { args: ['*myVariableName', '1'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'b' },
+//             { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'c' },
+//             { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' },
+//             { args: ['*myVariableName', 'abc'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' }
+//         ]),
+//         ...generateTestCases(true, 'testTag', [
+//             { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_CC, guildId: '23904768237436873424', name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_CC value', expected: 'LOCAL_CC value' },
+//             { args: ['~myVariableName'], key: undefined, value: undefined, expected: '' },
+//             { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'GLOBAL value', expected: 'GLOBAL value' },
+//             { args: ['@myVariableName'], key: { scope: { type: TagVariableType.AUTHOR, authorId: '823764823946284623234' }, name: 'myVariableName' }, value: 'AUTHOR value', expected: 'AUTHOR value' },
+//             { args: ['_myVariableName'], key: { scope: { type: TagVariableType.GUILD_CC, guildId: '23904768237436873424' }, name: 'myVariableName' }, value: 'GUILD_CC value', expected: 'GUILD_CC value' },
+//             { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: '{"v":["a","b","c"],"n":"*myVariableName"}' },
+//             { args: ['*myVariableName', '0'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'a' },
+//             { args: ['*myVariableName', '1'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'b' },
+//             { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: ['a', 'b', 'c'], expected: 'c' },
+//             { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' },
+//             { args: ['*myVariableName', 'abc'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' }
+//         ]),
+//         {
+//             code: '{get;*myVariableName;abc}',
+//             expected: '`Not a number`',
+//             errors: [
+//                 { start: 0, end: 25, error: new NotANumberError('abc') }
+//             ],
+//             async postSetup(ctx) {
+//                 await ctx.variables.set('*myVariableName', [1, 2, 3]);
+//             }
+//         },
+//         {
+//             code: '{get;*myVariableName;4}',
+//             expected: '`Index out of range`',
+//             errors: [
+//                 { start: 0, end: 23, error: new BBTagRuntimeError('Index out of range') }
+//             ],
+//             async postSetup(ctx) {
+//                 await ctx.variables.set('*myVariableName', [1, 2, 3]);
+//             }
+//         },
+//         {
+//             code: '{get;*myVariableName;-1}',
+//             expected: '`Index out of range`',
+//             errors: [
+//                 { start: 0, end: 24, error: new BBTagRuntimeError('Index out of range') }
+//             ],
+//             async postSetup(ctx) {
+//                 await ctx.variables.set('*myVariableName', [1, 2, 3]);
+//             }
+//         }
+//     ]
+// });
+
+// function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args: string[]; key: Parameters<SubtagTestContext['tagVariables']['get']>[0] | undefined; value: JToken | undefined; expected: string; }>): Generator<SubtagTestCase> {
+//     for (const { args, key, value, expected } of cases) {
+//         const title = isCC ? 'Custom command' : 'Tag';
+//         const code = `{${['get', ...args].join(';')}}`;
+//         yield {
+//             title: `From DB and ${title}`,
+//             code: code,
+//             expected,
+//             setup(ctx) {
+//                 ctx.guild.id = '23904768237436873424';
+//                 ctx.roles.everyone.id = ctx.guild.id;
+//                 ctx.users.command.id = '823764823946284623234';
+//                 ctx.options.isCC = isCC;
+//                 ctx.options.tagName = tagName;
+//                 if (key !== undefined) {
+//                     if (value === undefined)
+//                         ctx.tagVariables.delete(key);
+//                     else
+//                         ctx.tagVariables.set(key, value);
+//                 }
+//             }
+//         };
+//         yield {
+//             title: `From cache and ${title}`,
+//             code: code,
+//             expected,
+//             setup(ctx) {
+//                 ctx.guild.id = '23904768237436873424';
+//                 ctx.roles.everyone.id = ctx.guild.id;
+//                 ctx.users.command.id = '823764823946284623234';
+//                 ctx.options.isCC = isCC;
+//                 ctx.options.tagName = tagName;
+//             },
+//             async postSetup(bbctx) {
+//                 await bbctx.variables.set(args[0], value);
+//             }
+//         };
+//         yield {
+//             title: `Ignoring cache and ${title}`,
+//             code: `{${['get', `!${args[0]}`, ...args.slice(1)].join(';')}}`,
+//             expected,
+//             setup(ctx) {
+//                 ctx.guild.id = '23904768237436873424';
+//                 ctx.roles.everyone.id = ctx.guild.id;
+//                 ctx.users.command.id = '823764823946284623234';
+//                 ctx.options.isCC = isCC;
+//                 ctx.options.tagName = tagName;
+//                 if (key !== undefined) {
+//                     if (value === undefined)
+//                         ctx.tagVariables.delete(key);
+//                     else
+//                         ctx.tagVariables.set(key, value);
+//                 }
+//             },
+//             async postSetup(bbctx) {
+//                 await bbctx.variables.set(args[0], 'FAIL');
+//             }
+//         };
+//     }
+// }

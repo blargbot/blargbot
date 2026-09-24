@@ -9,17 +9,17 @@ await runSubtagTests({
         {
             code: '{paramsarray}',
             expected: '[]',
-            setup(ctx) { ctx.rootScope.paramsarray = []; }
+            setup(ctx) { ctx.locals.setup(m => m.functionParameters).returns([]); }
         },
         {
             code: '{paramsarray}',
             expected: '["this","is","a","test"]',
-            setup(ctx) { ctx.rootScope.paramsarray = ['this', 'is', 'a', 'test']; }
+            setup(ctx) { ctx.locals.setup(m => m.functionParameters).returns(['this', 'is', 'a', 'test']); }
         },
         {
             code: '{paramsarray}',
             expected: '["this","is a","test"]',
-            setup(ctx) { ctx.rootScope.paramsarray = ['this', 'is a', 'test']; }
+            setup(ctx) { ctx.locals.setup(m => m.functionParameters).returns(['this', 'is a', 'test']); }
         },
         {
             code: '{paramsarray}',
@@ -28,7 +28,7 @@ await runSubtagTests({
                 { start: 0, end: 13, error: new BBTagRuntimeError('{paramsarray} can only be used inside {function}') }
             ],
             setup(ctx) {
-                ctx.rootScope.paramsarray = undefined;
+                ctx.locals.setup(m => m.functionParameters).returns(undefined);
             }
         }
     ]

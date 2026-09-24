@@ -6,7 +6,7 @@ await runSubtagTests({
     replacer: replacers.paramsReplacer,
     argCountBounds: { min: 0, max: 2 },
     setup(ctx) {
-        ctx.rootScope.paramsarray = ['arg1', 'arg2', 'arg3 arg3', 'arg4', 'arg5'];
+        ctx.locals.setup(m => m.functionParameters).returns(['arg1', 'arg2', 'arg3 arg3', 'arg4', 'arg5'], { isFallback: true });
     },
     cases: [
         {
@@ -17,7 +17,7 @@ await runSubtagTests({
             code: '{params}',
             expected: '',
             setup(ctx) {
-                ctx.rootScope.paramsarray = [];
+                ctx.locals.setup(m => m.functionParameters).returns([]);
             }
         },
         {
@@ -130,7 +130,7 @@ await runSubtagTests({
                 { start: 0, end: 8, error: new BBTagRuntimeError('{params} can only be used inside {function}') }
             ],
             setup(ctx) {
-                ctx.rootScope.paramsarray = undefined;
+                ctx.locals.setup(m => m.functionParameters).returns(undefined);
             }
         },
         {
@@ -140,7 +140,7 @@ await runSubtagTests({
                 { start: 0, end: 10, error: new BBTagRuntimeError('{params} can only be used inside {function}') }
             ],
             setup(ctx) {
-                ctx.rootScope.paramsarray = undefined;
+                ctx.locals.setup(m => m.functionParameters).returns(undefined);
             }
         },
         {
@@ -150,7 +150,7 @@ await runSubtagTests({
                 { start: 0, end: 12, error: new BBTagRuntimeError('{params} can only be used inside {function}') }
             ],
             setup(ctx) {
-                ctx.rootScope.paramsarray = undefined;
+                ctx.locals.setup(m => m.functionParameters).returns(undefined);
             }
         }
     ]

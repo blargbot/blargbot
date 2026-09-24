@@ -9,5 +9,5 @@ export function setupArray(variables: Mock<VariableStore>, itemName: string, arr
     for (const value of new Set(expectedItems))
         variables.setup(m => m.set(itemName, value)).mustHappen(expectedItems.filter(x => x === value).length);
     variables.setup(m => m.get(itemName)).mustHappen(expectedItems.length * getPerLoop);
-    variables.setup((m, $) => m.rollback($.looksLike([itemName]))).returns().mustHappen(1);
+    variables.setup((m, $) => m.rollback($([itemName]))).returns().mustHappen(1);
 }

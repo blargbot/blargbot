@@ -32,7 +32,7 @@ export const forReplacer = defineReplacer<VariablesLocals>('for', {
 
                 const varEntry = await ctx.locals.variables.get(variable);
                 i = parse.float(varEntry.value, { throw: true });
-                if (ctx.return !== 0)
+                if (ctx.returnDepth !== 0)
                     break;
             }
         } finally {
@@ -50,7 +50,7 @@ export const foreachReplacer = defineReplacer<VariablesLocals>('forEach', {
                 await context.locals.variables.set(variable, item);
                 yield await code.execute();
 
-                if (context.return !== 0)
+                if (context.returnDepth !== 0)
                     break;
             }
         } finally {
@@ -70,7 +70,7 @@ export const repeatReplacer = defineReplacer<FallbackLocals>(['repeat', 'loop'],
 
         for (let i = 0; i < amount; i++) {
             yield await code.execute();
-            if (ctx.return !== 0)
+            if (ctx.returnDepth !== 0)
                 break;
         }
     }
@@ -105,7 +105,7 @@ async function* whileImpl(
     if (typeof val2Raw === 'string')
         val2Raw = { execute: (v => () => Promise.resolve(v))(val2Raw) };
 
-    while (context.return === 0) {
+    while (context.returnDepth === 0) {
         const items = [
             await val1Raw.execute(),
             await evaluator.execute(),

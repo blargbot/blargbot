@@ -6,24 +6,38 @@ export interface MockOptions<out T extends Mockable> {
     typeof:
     | (T extends object ? 'object' : never)
     | (T extends Callable ? 'function' : never);
-    target?: T;
     loose?: boolean;
 }
 
 export type Callable = (this: never, ...args: never) => unknown;
 export type Mockable = object | Callable;
 
+export interface InterceptOptions {
+    /**
+     * There are situations where javascript limits what values can be returned from a mock object.
+     * This property decides if, when encountering one of these situations, the proxy should throw
+     * an error or silently discard the result of the setup.
+     *
+     * This situation commonly occurs when `Reflect.preventExtensions`, `Reflect.isExtensible` and
+     * `Reflect.defineProperty(foo, bar, { configurable: false })` is used.
+     * */
+    allowUninterceptableInvocations?: boolean;
+
+    /**
+     * Identifies this as a fallback setup, only to be used if nothing else has provided a setup.
+     */
+    isFallback?: boolean;
+}
+
 export type Callback<T extends Mockable, Result> = (invocation: Invocation, mock: Mock<T>) => Result;
 export type Assertion<T extends Mockable> = (invocations: readonly Invocation[], mock: Mock<T>) => void;
 export interface SetupMock<T extends Mockable, Result> {
-    fallback(): SetupMock<T, Result>;
-
-    invokes(callback: Callback<T, Result>): Disposable & SetupMock<T, Result>;
-    invokesAsync(callback: Result extends PromiseLike<infer V> ? Callback<T, Awaitable<V>> : never): Disposable & SetupMock<T, Result>;
-    returns(value: Result): Disposable & SetupMock<T, Result>;
-    resolves(value: Result extends PromiseLike<infer V> ? Awaitable<V> : never): Disposable & SetupMock<T, Result>;
-    throws(error: unknown): Disposable & SetupMock<T, Result>;
-    rejects(error: Result extends PromiseLike<unknown> ? unknown : never): Disposable & SetupMock<T, Result>;
+    invokes(callback: Callback<T, Result>, options?: InterceptOptions): Disposable & SetupMock<T, Result>;
+    invokesAsync(callback: Result extends PromiseLike<infer V> ? Callback<T, Awaitable<V>> : never, options?: InterceptOptions): Disposable & SetupMock<T, Result>;
+    returns(value: Result, options?: InterceptOptions): Disposable & SetupMock<T, Result>;
+    resolves(value: Result extends PromiseLike<infer V> ? Awaitable<V> : never, options?: InterceptOptions): Disposable & SetupMock<T, Result>;
+    throws(error: unknown, options?: InterceptOptions): Disposable & SetupMock<T, Result>;
+    rejects(error: Result extends PromiseLike<unknown> ? unknown : never, options?: InterceptOptions): Disposable & SetupMock<T, Result>;
 
     addAssertion(assertion: Assertion<T>): Disposable & SetupMock<T, Result>;
     mustNotHappen(): Disposable & SetupMock<T, Result>;
@@ -33,7 +47,7 @@ export interface SetupMock<T extends Mockable, Result> {
     mustHappen(options: Iterable<number>): Disposable & SetupMock<T, Result>;
 }
 export interface VerifyMock<T extends Mockable> {
-    satisifes(assertion: Assertion<T>): void;
+    satisfies(assertion: Assertion<T>): void;
     mustNotHaveHappened(): void;
     mustHaveHappened(): void;
     mustHaveHappened(exactly: number): void;
@@ -53,6 +67,8 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
     readonly #shape: T;
     readonly #instance: T;
     readonly #invocations: Invocation[] = [];
+    readonly #getProxies: Record<PropertyKey, unknown> = {};
+    readonly #getGetProxies: Record<PropertyKey, Record<PropertyKey, unknown>> = {};
     readonly #interceptors = {
         get: new Map<PropertyKey, Array<Interceptor<T, unknown>>>(),
         set: new Map<PropertyKey, Array<Interceptor<T, boolean>>>(),
@@ -83,7 +99,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
     public constructor(options?: MockOptions<T>) {
         switch (options?.typeof) {
             case 'object':
-                this.#shape = {} as T;
+                this.#shape = Object.create(null) as T;
                 break;
             case 'function':
             default:
@@ -91,33 +107,107 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                 break;
 
         }
-        let target = this.#shape;
-        if (options !== undefined && 'target' in options) {
-            if (options.target === undefined)
-                throw new MockError('Target must be an object or function');
-            target = this.#shape;
-        }
-        if (typeof target !== typeof this.#shape)
-            throw new MockError(`'typeof' option was set to "${typeof this.#shape}" but typeof options.target === "${typeof target}".`);
         this.#strict = options?.loose !== true;
 
-        this.#instance = makeOpaqueProxy<T>(target, {
+        function canMutate(target: T, property: PropertyKey): boolean {
+            return Reflect.isExtensible(target)
+                && canFake(target, property);
+        }
+        function canFake(target: T, property: PropertyKey): boolean {
+            return Reflect.getOwnPropertyDescriptor(target, property)?.configurable !== false;
+        }
+
+        this.#instance = makeOpaqueProxy<T>(this.#shape, {
             fallback() {
                 throw new MockError('Unsupported call');
             },
-            apply: (_, thisArg, argArray) => this.#invoke<unknown>('call', thisArg, '[[Call]]', argArray),
-            construct: (_, argArray, newTarget) => this.#invoke('new', newTarget, '[[Construct]]', argArray),
-            defineProperty: (_, property, attributes) => this.#invoke('defineProperty', this.#instance, property, [attributes]),
-            deleteProperty: (_, p) => this.#invoke('delete', this.#instance, p, []),
-            get: (_, p) => this.#invoke<unknown>('get', this.#instance, p, []),
-            set: (_, p, value) => this.#invoke('set', this.#instance, p, [value]),
-            has: (_, p) => this.#invoke('has', this.#instance, p, []),
-            getOwnPropertyDescriptor: (_, p) => this.#invoke('getDescriptor', this.#instance, p, []),
-            getPrototypeOf: () => this.#invoke('getPrototype', this.#instance, '[[Prototype]]', []),
-            setPrototypeOf: (_, v) => this.#invoke('setPrototype', this.#instance, '[[Prototype]]', [v]),
-            isExtensible: () => this.#invoke('isExtensible', this.#instance, '[[IsExtensible]]', []),
-            ownKeys: () => this.#invoke('ownKeys', this.#instance, '[[OwnKeys]]', []),
-            preventExtensions: () => this.#invoke('preventExtensions', this.#instance, '[[IsExtensible]]', [])
+            apply: (_, thisArg, argArray) => this.#handleInteraction<unknown>('call', thisArg, '[[Call]]', argArray, true),
+            construct: (_, argArray, newTarget) => this.#handleInteraction('new', newTarget, '[[Construct]]', argArray, true),
+            defineProperty: (_, p, attributes) => {
+                const canIntercept = canMutate(_, p);
+                const result = this.#handleInteraction<boolean>('defineProperty', this.#instance, p, [attributes], canIntercept);
+                if (!canIntercept)
+                    return Reflect.defineProperty(_, p, attributes);
+                if (result && attributes.configurable === false)
+                    Reflect.defineProperty(_, p, attributes);
+                return result;
+            },
+            deleteProperty: (_, p) => {
+                const canIntercept = canMutate(_, p);
+                const result = this.#handleInteraction<boolean>('delete', this.#instance, p, [], canIntercept);
+                if (!canIntercept)
+                    return Reflect.deleteProperty(_, p);
+                return result;
+            },
+            get: (_, p, thisArg) => {
+                const canIntercept = canFake(_, p);
+                const result = this.#handleInteraction<unknown>('get', thisArg, p, [], canIntercept);
+                if (!canIntercept)
+                    return Reflect.get(_, p, thisArg);
+                return result;
+            },
+            set: (_, p, value, thisArg) => {
+                // To support using the mocked instance as a prototype, we need to
+                // skip any set calls which are on derived objects, e.g.
+                //
+                // const mock = new Mock();
+                // const derived = Object.create(mock.instance);
+                // derived.someProp = 'On derived';
+                //
+                // The last line sets the property directly on 'derived', it should
+                // not be intercepted by the mock.
+                if (thisArg !== this.#instance)
+                    return Reflect.set(_, p, value, thisArg);
+
+                const canIntercept = canMutate(_, p);
+                const result = this.#handleInteraction<boolean>('set', thisArg, p, [value], canIntercept);
+                if (!canIntercept)
+                    return Reflect.set(_, p, value, thisArg);
+                return result;
+            },
+            has: (_, p) => {
+                const canIntercept = canFake(_, p);
+                const result = this.#handleInteraction<boolean>('has', this.#instance, p, [], canIntercept);
+                if (!canIntercept)
+                    return Reflect.has(_, p);
+                return result;
+            },
+            getOwnPropertyDescriptor: (_, p) => {
+                const canIntercept = canMutate(_, p);
+                const result = this.#handleInteraction<PropertyDescriptor | undefined>('getDescriptor', this.#instance, p, [], canIntercept);
+                if (!canIntercept)
+                    return Reflect.getOwnPropertyDescriptor(_, p);
+                return result;
+            },
+            getPrototypeOf: _ => {
+                const canIntercept = Reflect.isExtensible(_);
+                const result = this.#handleInteraction<Mockable | null>('getPrototype', this.#instance, '[[Prototype]]', [], canIntercept);
+                if (!canIntercept)
+                    return Reflect.getPrototypeOf(_);
+                return result;
+            },
+            setPrototypeOf: (_, v) => {
+                const canIntercept = Reflect.isExtensible(_);
+                const result = this.#handleInteraction<boolean>('setPrototype', this.#instance, '[[Prototype]]', [v], canIntercept);
+                if (!canIntercept)
+                    return Reflect.setPrototypeOf(_, v);
+                return result;
+            },
+            isExtensible: _ => {
+                this.#handleInteraction<boolean>('isExtensible', this.#instance, '[[IsExtensible]]', [], false);
+                return Reflect.isExtensible(_);
+            },
+            ownKeys: _ => {
+                const canIntercept = Reflect.isExtensible(_);
+                const result = this.#handleInteraction<ArrayLike<string | symbol>>('ownKeys', this.#instance, '[[OwnKeys]]', [], canIntercept);
+                if (!canIntercept)
+                    return Reflect.ownKeys(_);
+                return result;
+            },
+            preventExtensions: _ => {
+                this.#handleInteraction<boolean>('preventExtensions', this.#instance, '[[PreventExtensions]]', [], false);
+                return Reflect.preventExtensions(_);
+            }
         });
     }
 
@@ -185,8 +275,8 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         };
     }
 
-    #invoke<T>(kind: Invocation['kind'], $this: unknown, name: PropertyKey, args: readonly unknown[]): T {
-        const invocation: Invocation = { kind, name, this: $this, arguments: args };
+    #handleInteraction<T>(kind: Invocation['kind'], $this: unknown, name: PropertyKey, args: readonly unknown[], canIntercept: boolean): T {
+        const invocation: Invocation = { kind, name, this: $this, arguments: args, canIntercept };
         const interceptor = this.#findInterceptor(invocation);
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
@@ -194,18 +284,18 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
             return interceptor.handler(invocation, this) as T;
         }
 
-        if (kind === 'get') {
+        if (canIntercept && kind === 'get') {
             const shouldReturnProxy =
                 (name === 'call' || name === 'apply')
                 && this.#hasCallInterceptors()
                 || this.#hasMethodLikeInterceptor(name);
             if (shouldReturnProxy) {
-                return makeOpaqueProxy(function () { }, {
+                return (this.#getProxies[name] ??= makeOpaqueProxy(function () { }, {
                     fallback: this.#createNotConfiguredHandler(invocation),
                     apply: (_, thisArg, args) => this.#invokeGetApply(invocation, thisArg, args),
                     construct: (_, argsArray, newTarget) => this.#invokeGetConstruct(invocation, newTarget, argsArray),
                     get: (_, p) => this.#invokeGetGet(invocation, p)
-                }) as T;
+                })) as T;
             }
         }
 
@@ -238,7 +328,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
 
     #invokeCallMethod(kind: 'method' | 'call', name: PropertyKey, args: readonly unknown[]): unknown {
         const [thisArg, ...argsArray] = args;
-        const invocation: Invocation = { kind, name, this: thisArg, arguments: Array.from(argsArray) };
+        const invocation: Invocation = { kind, name, this: thisArg, arguments: Array.from(argsArray), canIntercept: true };
         const interceptor = this.#findInterceptor(invocation);
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
@@ -252,7 +342,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         const [thisArg, argsArray] = args;
         if (!isArrayLike(argsArray))
             throw new MockError('Apply expects the second argument to be array like.');
-        const invocation: Invocation = { kind, name, this: thisArg, arguments: Array.from(argsArray) };
+        const invocation: Invocation = { kind, name, this: thisArg, arguments: Array.from(argsArray), canIntercept: true };
         const interceptor = this.#findInterceptor(invocation);
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
@@ -271,7 +361,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                     return this.#invokeApplyMethod('call', '[[Call]]', args);
             }
         }
-        const invocation: Invocation = { kind: 'method', name: get.name, this: thisArg, arguments: args };
+        const invocation: Invocation = { kind: 'method', name: get.name, this: thisArg, arguments: args, canIntercept: true };
         const interceptor = this.#findInterceptor(invocation);
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
@@ -283,7 +373,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
     }
 
     #invokeGetConstruct(get: Invocation, newTarget: unknown, args: readonly unknown[]): object {
-        const invocation: Invocation = { kind: 'newNested', name: get.name, this: newTarget, arguments: args };
+        const invocation: Invocation = { kind: 'newNested', name: get.name, this: newTarget, arguments: args, canIntercept: true };
         const interceptor = this.#findInterceptor(invocation);
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
@@ -299,13 +389,13 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         if (this.#hasMethodLikeInterceptor(get.name)) {
             switch (inner) {
                 case 'call': {
-                    return makeOpaqueProxy(function () { }, {
+                    return (this.#getGetProxies[get.name] ??= {})[inner] ??= makeOpaqueProxy(function () { }, {
                         fallback: this.#createNotConfiguredHandler(get),
                         apply: (_, __, args) => this.#invokeCallMethod('method', get.name, args)
                     });
                 }
                 case 'apply': {
-                    return makeOpaqueProxy(function () { }, {
+                    return (this.#getGetProxies[get.name] ??= {})[inner] ??= makeOpaqueProxy(function () { }, {
                         fallback: this.#createNotConfiguredHandler(get),
                         apply: (_, __, args) => this.#invokeApplyMethod('method', get.name, args)
                     });
@@ -359,8 +449,10 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
             }
         }
 
-        if (errors.length > 0)
+        if (errors.length > 1)
             throw new AggregateError(errors);
+        if (errors.length === 1)
+            throw errors[0];
     }
 
     public verify(action: (instance: T, matcher: ArgumentMatchers<T>) => unknown): VerifyMock<T> {
@@ -370,15 +462,15 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
 
     #verify(expression: Expression): VerifyMock<T> {
         const result: VerifyMock<T> = {
-            satisifes: (assertion) => {
+            satisfies: (assertion) => {
                 const invocations = this.#invocations.filter(i => isMatch(expression, i, this.#instance));
                 assertion(invocations, this);
             },
             mustNotHaveHappened() {
-                result.satisifes(mustNotHaveHappened(expression));
+                result.satisfies(mustNotHaveHappened(expression));
             },
             mustHaveHappened(...args: [number | Iterable<number>] | [number, number] | []) {
-                return result.satisifes(mustHaveHappened(expression, ...args));
+                return result.satisfies(mustHaveHappened(expression, ...args));
             }
         };
         return result;
@@ -396,10 +488,24 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         return this.#setup(expression);
     }
 
-    #setup<Result>(expression: Expression, isFallback = false): SetupMock<T, Result> {
+    public setupProperty<Property extends keyof T>(property: Property, initialValue: T[Property]): Disposable {
+        let value = initialValue;
+        const getHandle = this.setup(m => m[property]).invokes(() => value);
+        const setHandle = this.setupSet((m, $) => m[property] = $.anything).invokes(i => {
+            value = i.arguments[0] as T[Property];
+            return true;
+        });
+        return {
+            [Symbol.dispose]() {
+                using _0 = getHandle;
+                using _1 = setHandle;
+            }
+        };
+    }
+
+    #setup<Result>(expression: Expression): SetupMock<T, Result> {
         const result: SetupMock<T, Result> = {
-            fallback: () => this.#setup(expression, true),
-            invokes: (handler) => {
+            invokes: (handler, options) => {
                 switch (expression.kind) {
                     case 'method': {
                         const nameStr = keyToProp(expression.name);
@@ -423,7 +529,20 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                     }
                 }
 
-                const interceptor = { expression, handler, invoked: false, isFallback };
+                if (options?.allowUninterceptableInvocations !== true) {
+                    handler = (h => (i, m) => {
+                        if (!i.canIntercept)
+                            throw new MockError(`Cannot mock the result of ${debugInvocation(i, m)} because this JavaScript operation is not interceptable in the object's current state.`);
+                        return h(i, m);
+                    })(handler);
+                }
+
+                const interceptor: Interceptor<T, ReturnType<typeof handler>> = {
+                    expression,
+                    handler,
+                    invoked: false,
+                    isFallback: options?.isFallback ?? false
+                };
                 const interceptors = this.#interceptorsFor(expression);
                 const specificity = expression.specificity;
                 let low = 0;
@@ -449,12 +568,12 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                 });
             },
 
-            invokesAsync: (value) => result.invokes((i, m) => Promise.try(value, i, m) as Result),
-            returns: value => result.invokes(() => value),
-            resolves: value => result.invokes(() => Promise.resolve(value) as Result),
-            throws: error => result.invokes(() => { throw error; }),
+            invokesAsync: (value, options) => result.invokes((i, m) => Promise.try(value, i, m) as Result, options),
+            returns: (value, options) => result.invokes(() => value, options),
+            resolves: (value, options) => result.invokes(() => Promise.resolve(value) as Result, options),
+            throws: (error, options) => result.invokes(() => { throw error; }, options),
             // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
-            rejects: error => result.invokes(() => Promise.reject(error) as Result),
+            rejects: (error, options) => result.invokes(() => Promise.reject(error) as Result, options),
 
             addAssertion: (handler) => {
                 const verifier = { expression, handler };
@@ -481,8 +600,8 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
 };
 
 function mustNotHaveHappened<T extends Mockable>(expression: Expression): Assertion<T> {
-    return i => assert(i.length > 0,
-        `Expected ${debugMatchers(expression)} to have been called but it has not.`
+    return i => assert(i.length === 0,
+        `Expected ${debugMatchers(expression)} to not be called but it has been ${i.length} time(s).`
     );
 }
 
@@ -580,7 +699,8 @@ class StrictArgumentMatcher extends ArgumentMatcher {
     public static readonly undefined = new StrictArgumentMatcher(undefined);
     public static readonly null = new StrictArgumentMatcher(null);
 
-    public override specificity = 100_000_000_000_000;
+    public static readonly specificity = 100_000_000_000_000;
+    public override specificity = StrictArgumentMatcher.specificity;
 
     public constructor(expected: unknown) {
         super();
@@ -658,13 +778,41 @@ class AssertingArgumentMatcher<T> extends ArgumentMatcher {
 }
 class LooksLikeArgumentMatcher extends ArgumentMatcher {
     readonly #skeleton: unknown;
-    public override specificity = 100;
+    public override specificity: number;
     public constructor(skeleton: unknown) {
         super();
         this.#skeleton = skeleton;
+        this.specificity = LooksLikeArgumentMatcher.#calcSpecificity(skeleton);
     }
     public override check(value: unknown, thisArg: unknown): boolean {
         return LooksLikeArgumentMatcher.#check(value, this.#skeleton, thisArg);
+    }
+    static #calcSpecificity(value: unknown): number {
+        value = PublicArgumentMatcher.reveal(value);
+        if (value instanceof ArgumentMatcher)
+            return value.specificity;
+
+        switch (typeof value) {
+            case 'string':
+            case 'bigint':
+            case 'boolean':
+            case 'number':
+            case 'symbol':
+            case 'undefined':
+            case 'function':
+                return StrictArgumentMatcher.specificity;
+            case 'object': {
+                if (value === null)
+                    return StrictArgumentMatcher.specificity;
+                if (value instanceof Array)
+                    return value.reduce((p: number, c: unknown) => p + this.#calcSpecificity(c), 0);
+                if (Reflect.getPrototypeOf(value) === Object.prototype)
+                    return (Reflect.ownKeys(value) as Array<keyof typeof value>).reduce((p, c) => p + this.#calcSpecificity(value[c]), 0);
+                if ('valueOf' in value && typeof value.valueOf === 'function')
+                    return StrictArgumentMatcher.specificity / 2;
+                return StrictArgumentMatcher.specificity;
+            }
+        }
     }
     static #check(value: unknown, skeleton: unknown, thisArg: unknown): boolean {
         skeleton = PublicArgumentMatcher.reveal(skeleton);
@@ -844,7 +992,8 @@ const deepMemberError = (): never => {
     throw new MockError('Cannot mock deep members.');
 };
 
-export interface ArgumentMatchers<T = never> {
+export interface ArgumentMatchers<out T = never> {
+    <R>(skeleton: R): R;
     readonly anything: never;
     readonly unknown: unknown;
     readonly undefined: undefined;
@@ -883,7 +1032,7 @@ function toExpression<T extends Mockable>(
 
     const target = typeof shape === 'function'
         ? function () { } as T
-        : {} as T;
+        : Object.create(null) as T;
     Reflect.setPrototypeOf(target, shape);
 
     const deadEnd = makeOpaqueProxy(() => { }, { fallback: deepMemberError });
@@ -897,7 +1046,6 @@ function toExpression<T extends Mockable>(
         apply(_, __, args) {
             if (expression?.kind !== 'get')
                 return deepMemberError();
-
             if (typeof target === 'function') {
                 if (expression.name === 'call') {
                     // mocking x => x.call(thisArg, arg1, arg2, arg3, ...)
@@ -1228,27 +1376,33 @@ class PublicArgumentMatcher extends class Stamper {
     }
 }
 
-const publicArgumentMatchers = Object.freeze<ArgumentMatchers<never>>({
-    anything: PublicArgumentMatcher.disguise<never>(anyArgumentMatcher),
-    unknown: PublicArgumentMatcher.disguise<unknown>(anyArgumentMatcher),
-    undefined: PublicArgumentMatcher.disguise<undefined>(StrictArgumentMatcher.undefined),
-    null: PublicArgumentMatcher.disguise<null>(StrictArgumentMatcher.null),
-    this: PublicArgumentMatcher.disguise<never>(thisArgumentMatcher),
-    number: PublicArgumentMatcher.disguise<number>(numberArgumentMatcher),
-    integer: PublicArgumentMatcher.disguise<number>(integerArgumentMatcher),
-    positive: PublicArgumentMatcher.disguise<number>(positiveArgumentMatcher),
-    negative: PublicArgumentMatcher.disguise<number>(negativeArgumentMatcher),
-    string: PublicArgumentMatcher.disguise<string>(stringArgumentMatcher),
-    symbol: PublicArgumentMatcher.disguise<symbol>(symbolArgumentMatcher),
-    boolean: PublicArgumentMatcher.disguise<boolean>(booleanArgumentMatcher),
-    bigint: PublicArgumentMatcher.disguise<bigint>(bigintArgumentMatcher),
-    strict: v => PublicArgumentMatcher.disguise(new StrictArgumentMatcher(v)),
-    satisfies: v => PublicArgumentMatcher.disguise(new GuardedArgumentMatcher(v)),
-    asserts: v => PublicArgumentMatcher.disguise(new AssertingArgumentMatcher(v)),
-    oneOf: (...v) => PublicArgumentMatcher.disguise(new OneOfArgumentMatcher(...v.map(v => ArgumentMatcher.from(v)))),
-    instanceOf: v => PublicArgumentMatcher.disguise(new InstanceOfArgumentMatcher(v)),
-    looksLike: v => PublicArgumentMatcher.disguise(new LooksLikeArgumentMatcher(v))
-});
+function looksLike<T>(value: T): T {
+    return PublicArgumentMatcher.disguise(new LooksLikeArgumentMatcher(value));
+}
+const publicArgumentMatchers: ArgumentMatchers<never> = Object.freeze(Object.assign(
+    looksLike,
+    {
+        anything: PublicArgumentMatcher.disguise<never>(anyArgumentMatcher),
+        unknown: PublicArgumentMatcher.disguise<unknown>(anyArgumentMatcher),
+        undefined: PublicArgumentMatcher.disguise<undefined>(StrictArgumentMatcher.undefined),
+        null: PublicArgumentMatcher.disguise<null>(StrictArgumentMatcher.null),
+        this: PublicArgumentMatcher.disguise<never>(thisArgumentMatcher),
+        number: PublicArgumentMatcher.disguise<number>(numberArgumentMatcher),
+        integer: PublicArgumentMatcher.disguise<number>(integerArgumentMatcher),
+        positive: PublicArgumentMatcher.disguise<number>(positiveArgumentMatcher),
+        negative: PublicArgumentMatcher.disguise<number>(negativeArgumentMatcher),
+        string: PublicArgumentMatcher.disguise<string>(stringArgumentMatcher),
+        symbol: PublicArgumentMatcher.disguise<symbol>(symbolArgumentMatcher),
+        boolean: PublicArgumentMatcher.disguise<boolean>(booleanArgumentMatcher),
+        bigint: PublicArgumentMatcher.disguise<bigint>(bigintArgumentMatcher),
+        strict: v => PublicArgumentMatcher.disguise(new StrictArgumentMatcher(v)),
+        satisfies: v => PublicArgumentMatcher.disguise(new GuardedArgumentMatcher(v)),
+        asserts: v => PublicArgumentMatcher.disguise(new AssertingArgumentMatcher(v)),
+        oneOf: (...v) => PublicArgumentMatcher.disguise(new OneOfArgumentMatcher(...v.map(v => ArgumentMatcher.from(v)))),
+        instanceOf: v => PublicArgumentMatcher.disguise(new InstanceOfArgumentMatcher(v)),
+        looksLike
+    } satisfies { [P in keyof ArgumentMatchers<never>]: ArgumentMatchers<never>[P]; }
+));
 
 type Expression =
     | { specificity: number; kind: 'call'; thisArg: ArgumentMatcher; parameters: readonly ArgumentMatcher[]; }
@@ -1272,6 +1426,7 @@ interface Invocation {
     readonly this: unknown;
     readonly arguments: readonly unknown[];
     readonly name: PropertyKey;
+    readonly canIntercept: boolean;
 }
 
 function isArrayLike(value: unknown): value is ArrayLike<unknown> {
@@ -1286,7 +1441,7 @@ function keyToProp(key: PropertyKey): string {
         return `[${String(key)}]`;
     if (typeof key === 'number')
         return `[${key}]`;
-    if (/^[a-zA-Z_$][a-zA-Z0-9_$]+$/.test(key))
+    if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key))
         return `.${key}`;
     return `[${JSON.stringify(key)}]`;
 }
@@ -1340,7 +1495,7 @@ function debugMatchers(expr: Expression): string {
             return 'Reflect.getPrototypeOf($mock)';
         }
         case 'setPrototype': {
-            return `Reflect.setProtoypeOf($mock, ${expr.value.toString()})`;
+            return `Reflect.setPrototypeOf($mock, ${expr.value.toString()})`;
         }
         case 'defineProperty': {
             const definition = [];
@@ -1446,7 +1601,7 @@ function debugInvocation(invocation: Invocation, mockInstance: unknown): string 
             return 'Reflect.getPrototypeOf($mock)';
         }
         case 'setPrototype': {
-            return `Reflect.setProtoypeOf($mock, ${argToString(invocation.arguments[0])})`;
+            return `Reflect.setPrototypeOf($mock, ${argToString(invocation.arguments[0])})`;
         }
         case 'defineProperty': {
             return `Reflect.defineProperty($mock, ${keyToSource(invocation.name)}, ${argToString(invocation.arguments[0])})`;

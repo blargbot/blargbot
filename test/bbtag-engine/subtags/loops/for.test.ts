@@ -65,7 +65,7 @@ await runSubtagTests({
                 variables.setup(m => m.set('index', 1)).mustHappen(1);
                 variables.setup(m => m.set('index', 'abc')).mustHappen(1);
                 variables.setup(m => m.get('index')).mustHappen(1);
-                variables.setup((m, $) => m.rollback($.looksLike(['index']))).returns().mustHappen(1);
+                variables.setup((m, $) => m.rollback($(['index']))).returns().mustHappen(1);
             }
         },
         {
@@ -153,5 +153,5 @@ function setupIndexes(variables: Mock<VariableStore>, varName: string, values: A
     for (const value of new Set(values))
         variables.setup(m => m.set(varName, value)).mustHappen(values.filter(x => x === value).length);
     variables.setup(m => m.get(varName)).mustHappen(values.length * (getPerLoop + 1));
-    variables.setup((m, $) => m.rollback($.looksLike([varName]))).returns().mustHappen(1);
+    variables.setup((m, $) => m.rollback($([varName]))).returns().mustHappen(1);
 }

@@ -134,10 +134,10 @@ async function resolveObj(context: BBTagContext<VariablesLocals>, input: string)
     if (typeof variable.value === 'object' && variable.value !== null)
         return { variable: variable.key, object: variable.value };
 
-    if (typeof variable !== 'string')
+    if (typeof variable.value !== 'string')
         return { variable: input, object: {} };
 
-    obj = parseJson(variable);
+    obj = parseJson(variable.value);
     if (typeof obj === 'object' && obj !== null)
         return { variable: input, object: obj };
 
@@ -182,6 +182,8 @@ async function getPropPath(
     path: string
 ): Promise<JToken | undefined> {
     const { object } = await resolveObj(ctx, input);
+    if (path === '')
+        return object;
     return path.split('.')
         .reduce<JToken | undefined>((obj, part) => {
             if (typeof obj === 'string')
