@@ -4,25 +4,9 @@ import { describe, it } from 'node:test';
 import { Mock } from './mock.js';
 
 await describe('mock', async () => {
-    await it('Should be able to mock a direct invocation ignoring `this` without an explicit target.', () => {
+    await it('Should be able to mock a direct invocation ignoring `this`.', () => {
         // arrange
         const sut = new Mock<(id: string) => string>({ typeof: 'function' });
-
-        // act
-        sut.setup(x => x('123')).returns('success!');
-        const instance = sut.instance;
-
-        // assert
-        assert.equal(instance('123'), 'success!');
-        assert.equal(sut.instance('123'), 'success!');
-        assert.equal(instance.call(new Date(), '123'), 'success!');
-        assert.equal(instance.apply(new Date(), ['123']), 'success!');
-        assert.throws(() => instance('456'));
-        assert.throws(() => instance.name);
-    });
-    await it('Should be able to mock a direct invocation ignoring `this` with an explicit target.', () => {
-        // arrange
-        const sut = new Mock<(id: string) => string>({ typeof: 'function', target: () => '' });
 
         // act
         sut.setup(x => x('123')).returns('success!');
@@ -68,25 +52,9 @@ await describe('mock', async () => {
         assert.throws(() => instance('456'));
         assert.throws(() => instance.name);
     });
-    await it('Should be able to mock a direct method call ignoring `this` without an explicit target.', () => {
+    await it('Should be able to mock a direct method call ignoring `this`.', () => {
         // arrange
         const sut = new Mock<{ echo(id: string): string; }>({ typeof: 'object' });
-
-        // act
-        sut.setup(x => x.echo('123')).returns('success!');
-        const instance = sut.instance;
-
-        // assert
-        assert.equal(instance.echo('123'), 'success!');
-        assert.equal(sut.instance.echo('123'), 'success!');
-        assert.equal(instance.echo.call(new Date(), '123'), 'success!');
-        assert.equal(instance.echo.apply(new Date(), ['123']), 'success!');
-        assert.throws(() => instance.echo('456'));
-        assert.throws(() => instance.echo.name);
-    });
-    await it('Should be able to mock a direct method call ignoring `this` with an explicit target.', () => {
-        // arrange
-        const sut = new Mock<{ echo(id: string): string; }>({ typeof: 'object', target: { echo: () => '' } });
 
         // act
         sut.setup(x => x.echo('123')).returns('success!');
