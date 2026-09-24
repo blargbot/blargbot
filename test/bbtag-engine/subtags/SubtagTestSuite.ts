@@ -218,13 +218,13 @@ export function createLimitedReplacer(limit = 1): BBTagReplacer {
         }
     };
 }
-export function createAssertReplacer<Locals extends object>(assert: (context: BBTagContext<Locals>, args: SubtagArgumentArray, bbtag: BBTagSubtag) => Awaitable<JToken | undefined>): BBTagReplacer<Locals> {
-    if (assert.name === 'execute' || assert.name === '')
-        Object.defineProperty(assert, 'name', { value: 'assert' });
-    return defineReplacer('assert', {
+export function createTestReplacer<Locals extends object>(name: string, execute: (context: BBTagContext<Locals>, args: SubtagArgumentArray, bbtag: BBTagSubtag) => Awaitable<JToken | undefined>): BBTagReplacer<Locals> {
+    if (execute.name === 'execute' || execute.name === '')
+        Object.defineProperty(execute, 'name', { value: name });
+    return defineReplacer(name, {
         parameters: ['~args*'],
         returns: 'json|nothing',
-        execute: assert
+        execute: execute
     });
 }
 export const evalReplacer: BBTagReplacer = {
@@ -244,7 +244,7 @@ export const failReplacer: BBTagReplacer = {
     }
 };
 export const echoReplacer: BBTagReplacer = {
-    name: 'echo',
+    name: 'echoargs',
     aliases: new Set(),
     canReplace: () => true,
     replace: function* $echo(_, __, bbtag) {

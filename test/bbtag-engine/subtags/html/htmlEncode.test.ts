@@ -1,6 +1,6 @@
 import type { HtmlEncoder, HtmlEncoderLocals } from '@blargbot/bbtag-engine';
 import { replacers } from '@blargbot/bbtag-engine';
-import { decode } from 'html-entities';
+import { encode } from 'html-entities';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -11,7 +11,7 @@ await runSubtagTests<HtmlEncoderLocals>({
         const htmlEncoder = ctx.createMock<HtmlEncoder>();
         ctx.locals.setup(m => m.htmlEncoder).returns(htmlEncoder.instance);
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        htmlEncoder.setup(m => m.decode).returns(decode);
+        htmlEncoder.setup(m => m.encode).returns(encode);
     },
     cases: [
         {

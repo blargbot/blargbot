@@ -6,7 +6,7 @@ await runSubtagTests({
     replacer: replacers.argsReplacer,
     argCountBounds: { min: 0, max: 2 },
     setup(ctx) {
-        ctx.options.inputRaw = 'arg1 arg2 "arg3 arg3" arg4 "arg5"';
+        ctx.locals.setup(m => m.args).returns(['arg1', 'arg2', 'arg3 arg3', 'arg4', 'arg5'], { isFallback: true });
     },
     cases: [
         {
@@ -17,14 +17,14 @@ await runSubtagTests({
             code: '{args}',
             expected: '',
             setup(ctx) {
-                ctx.options.inputRaw = '';
+                ctx.locals.setup(m => m.args).returns([]);
             }
         },
         {
             code: '{args}',
             expected: '{json;{\n "key": "value"\n}}',
             setup(ctx) {
-                ctx.options.inputRaw = '{json;{\n  "key": "value"\n}}';
+                ctx.locals.setup(m => m.args).returns(['{json;{\n', '"key":', '"value"\n}}']);
             }
         },
         {

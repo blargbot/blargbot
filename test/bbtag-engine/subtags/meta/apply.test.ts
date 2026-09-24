@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import { EchoArgsSubtag, MarkerError, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
+import { createTestDataReplacer, echoReplacer, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.applyReplacer,
@@ -15,22 +15,22 @@ await runSubtagTests({
         },
         {
             code: '{apply;testdata;1234}',
-            subtags: [new TestDataSubtag({ 1234: 'My cool test data' })],
+            replacers: [createTestDataReplacer({ 1234: 'My cool test data' })],
             expected: 'My cool test data'
         },
         {
             code: '{apply;testdata;[1234]}',
-            subtags: [new TestDataSubtag({ 1234: 'My cool test data' })],
+            replacers: [createTestDataReplacer({ 1234: 'My cool test data' })],
             expected: 'My cool test data'
         },
         {
             code: '{apply;testdata;["1234"]}',
-            subtags: [new TestDataSubtag({ 1234: 'My cool test data' })],
+            replacers: [createTestDataReplacer({ 1234: 'My cool test data' })],
             expected: 'My cool test data'
         },
         {
             code: '{apply;echoargs;["1234","567",null];abc;def;[];["ghi",123]}',
-            subtags: [replacers.echoArgsReplacer],
+            replacers: [echoReplacer],
             expected: '["echoargs","1234","567","","abc","def","ghi","123"]'
         },
         {

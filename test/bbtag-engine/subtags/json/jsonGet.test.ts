@@ -20,8 +20,8 @@ await runSubtagTests<VariablesLocals>({
             ],
             setup(ctx) {
                 const variables = ctx.createMock<VariableStore>();
-                ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen();
-                variables.setup(m => m.get('10')).returns({ key: '~', value: undefined }).mustHappen();
+                ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen(1);
+                variables.setup(m => m.get('10')).returns({ key: '~', value: undefined }).mustHappen(1);
             }
         },
         {
@@ -32,8 +32,8 @@ await runSubtagTests<VariablesLocals>({
             ],
             setup(ctx) {
                 const variables = ctx.createMock<VariableStore>();
-                ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen();
-                variables.setup(m => m.get('"abc"')).returns({ key: '~', value: undefined }).mustHappen();
+                ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen(1);
+                variables.setup(m => m.get('"abc"')).returns({ key: '~', value: undefined }).mustHappen(1);
             }
         },
         {
@@ -44,8 +44,8 @@ await runSubtagTests<VariablesLocals>({
             ],
             setup(ctx) {
                 const variables = ctx.createMock<VariableStore>();
-                ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen();
-                variables.setup(m => m.get('true')).returns({ key: '~', value: undefined }).mustHappen();
+                ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen(1);
+                variables.setup(m => m.get('true')).returns({ key: '~', value: undefined }).mustHappen(1);
             }
         },
         {
@@ -66,8 +66,8 @@ function* generateTestCases(source: JToken, path: string, expected: string): Ite
         expected: expected,
         setup(ctx) {
             const variables = ctx.createMock<VariableStore>();
-            ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen();
-            variables.setup(m => m.get('myJsonVar')).returns({ key: '~', value: source }).mustHappen();
+            ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen(1);
+            variables.setup(m => m.get('myJsonVar')).returns({ key: '~', value: source }).mustHappen(1);
         }
     };
     yield {
@@ -75,8 +75,8 @@ function* generateTestCases(source: JToken, path: string, expected: string): Ite
         expected: typeof source === 'string' ? source : JSON.stringify(source),
         setup(ctx) {
             const variables = ctx.createMock<VariableStore>();
-            ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen();
-            variables.setup(m => m.get('myJsonVar')).returns({ key: '~', value: source }).mustHappen();
+            ctx.locals.setup(m => m.variables).returns(variables.instance).mustHappen(1);
+            variables.setup(m => m.get('myJsonVar')).returns({ key: '~', value: source }).mustHappen(1);
         }
     };
 }

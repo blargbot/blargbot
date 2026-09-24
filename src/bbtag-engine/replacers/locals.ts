@@ -1,14 +1,27 @@
 import type { BBTagExpression } from '../language/BBTagExpression.js';
 
 export interface ArgsLocals {
-    args: {
-        positional: readonly string[];
-        raw: string;
-    };
+    args: string[];
+}
+export interface PrefixLocals {
+    prefix: string;
+}
+
+type Letters = 'abcdefghijklmnopqrstuvwxyz';
+type Digits = '0123456789';
+type AlphaNumerics = `${Letters}${Uppercase<Letters>}${Digits}`
+type Characters<T extends string, Result = never> = T extends `${infer Char1}${infer Rest}` ? Characters<Rest, Char1 | Result> : Result;
+export type FlagCharacters = Characters<AlphaNumerics>;
+export interface FlagsLocals {
+    flags: { [P in FlagCharacters]?: readonly string[] } & { _: readonly string[]; };
 }
 
 export interface CustomCommandLocals {
     isCC: boolean;
+}
+
+export interface CommandLocals {
+    commmandName: string;
 }
 
 export interface AuthorizerLocals {

@@ -57,7 +57,7 @@ await runSubtagTests({
                 const variables = ctx.createMock<VariableStore>();
                 ctx.locals.setup(m => m.variables).returns(variables.instance);
                 setupVariables(variables, 'a');
-                setupArray(variables, 'a', 'var1', 'this is var1', 'this'.split(''));
+                setupArray(variables, 'a', 'var1', 'this is var1', 'this'.split(''), 2);
             }
         }
         // TODO: Move this test once limits are reintroduced

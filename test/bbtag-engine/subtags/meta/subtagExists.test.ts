@@ -1,4 +1,4 @@
-import { FunctionSubtag, IfSubtag, SubtagExistsSubtag } from '@blargbot/bbtag-engine';
+import { replacers } from '@blargbot/bbtag-engine';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -21,30 +21,32 @@ await runSubtagTests({
         },
         {
             title: '{if} is loaded',
-            subtags: [replacers.ifReplacer],
+            replacers: [replacers.ifReplacer],
             code: '{subtagexists;if}',
             expected: 'true'
         },
         {
-            subtags: [replacers.functionReplacer],
             code: '{subtagexists;function}',
+            replacers: [replacers.functionReplacer],
             expected: 'true'
         },
         {
-            subtags: [replacers.functionReplacer],
             code: '{subtagexists;func}',
+            replacers: [replacers.functionReplacer],
             expected: 'true'
         },
         {
             code: '{subtagexists;func.abc}',
             expected: 'false',
             setup(ctx) {
-                ctx.rootScope.functions['abc'] = {
-                    end: { index: 0, line: 0, column: 0 },
-                    start: { index: 0, line: 0, column: 0 },
-                    source: '',
-                    values: []
-                };
+                ctx.locals.setup(m => m.functions).returns({
+                    ['func.abc']: {
+                        end: { index: 0, line: 0, column: 0 },
+                        start: { index: 0, line: 0, column: 0 },
+                        source: '',
+                        values: []
+                    }
+                });
             }
         }
     ]

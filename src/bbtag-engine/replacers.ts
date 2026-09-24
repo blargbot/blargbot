@@ -1,4 +1,5 @@
 export * from './replacers/array.js';
+export * from './replacers/inputs.js';
 export * from './replacers/json.js';
 export * from './replacers/loops.js';
 export * from './replacers/math.js';

@@ -10,15 +10,7 @@ await runSubtagTests({
             code: '{commandname}',
             expected: 'My cool command',
             setup(ctx) {
-                ctx.options.tagName = 'My cool command';
-            }
-        },
-        {
-            code: '{commandname}',
-            expected: 'My cool command',
-            setup(ctx) {
-                ctx.options.rootTagName = 'My cool command';
-                ctx.options.tagName = 'WRONG';
+                ctx.locals.setup(m => m.commmandName).returns('My cool command');
             }
         }
     ]

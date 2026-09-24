@@ -6,19 +6,14 @@ await runSubtagTests({
     replacer: replacers.flagSetReplacer,
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {
-        ctx.options.inputRaw = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
-        ctx.options.flags = [
-            {
-                description: '',
-                flag: 'e',
-                word: 'extra'
-            },
-            {
-                description: '',
-                flag: 'E',
-                word: 'else'
-            }
-        ];
+        ctx.locals.setup(m => m.flags).returns({
+            'a': ['flag', 'a', 'content'],
+            'b': [],
+            'c': ['flag', 'c', 'content'],
+            'e': ['flag', 'extra', 'content'],
+            'E': ['flag', 'else', 'content'],
+            _: ['some', 'more', 'text']
+        });
     },
     cases: [
         { code: '{flagset;1}', expected: 'false' },

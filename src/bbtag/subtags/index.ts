@@ -1,4 +1,3 @@
-export * from './array/index.js';
 export * from './bot/index.js';
 export * from './channel/index.js';
 export * from './guild/index.js';

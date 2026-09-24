@@ -133,6 +133,7 @@ export function runBool(left: string, operator: string, right: string): boolean 
     const op = takeOperator(isComparisonOperator, args);
     if (op === undefined)
         throw new InvalidOperatorError(operator);
+    [left, right] = args;
 
     const leftBool = parse.boolean(left, { includeNumbers: false });
     if (leftBool !== undefined)

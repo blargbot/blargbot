@@ -29,11 +29,10 @@ await runSubtagTests<VariablesLocals & ArgsLocals>({
             expected: '',
             retries: 1,
             setup(ctx) {
-                const positional = ['arg1', 'arg2', 'arg3', 'arg4'];
-                const args = ctx.createMock<ArgsLocals['args']>();
-                ctx.locals.setup(m => m.args).returns(args.instance).mustHappen();
-                args.setup(m => m.positional).returns([...positional]).mustHappen();
-                args.setupSet((m, $) => m.positional = $.satisfies(v => hasSameMembers(v, positional))).returns(true).mustHappen();
+                ctx.locals.setup(m => m.args).returns(['arg1', 'arg2', 'arg3', 'arg4']);
+            },
+            assert(ctx) {
+                assert(hasSameMembers(ctx.locals.args, ['arg1', 'arg2', 'arg3', 'arg4']));
             }
         },
         {

@@ -98,9 +98,7 @@ export const shuffleReplacer = defineReplacer<VariablesLocals & ArgsLocals>(
         parameters: [],
         returns: 'nothing',
         execute: function shuffleArgs(ctx) {
-            const items = [...ctx.locals.args.positional];
-            shuffle(items);
-            ctx.locals.args.positional = items;
+            shuffle(ctx.locals.args);
         }
     },
     {

@@ -560,3 +560,16 @@ export const decancerReplacer = defineReplacer<DecancerLocals>('decancer', {
         return ctx.locals.decancer(text);
     }
 });
+export const fallbackReplacer = defineReplacer<FallbackLocals>(
+    'fallback',
+    {
+        parameters: ['message'],
+        returns: 'nothing',
+        execute: function setFallback(ctx, [{ value: message }]) { ctx.locals.fallback = message; }
+    },
+    {
+        parameters: [],
+        returns: 'nothing',
+        execute: function clearFallback(ctx) { ctx.locals.fallback = undefined; }
+    }
+);

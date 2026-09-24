@@ -9,17 +9,17 @@ await runSubtagTests({
         {
             code: '{argsarray}',
             expected: '[]',
-            setup(ctx) { ctx.locals.setup(x => x.args).returns({ raw: '', positional: [] }); }
+            setup(ctx) { ctx.locals.setup(x => x.args).returns([]); }
         },
         {
             code: '{argsarray}',
             expected: '["this","is","a","test"]',
-            setup(ctx) { ctx.locals.setup(x => x.args).returns({ raw: '', positional: ['this', 'is', 'a', 'test'] }); }
+            setup(ctx) { ctx.locals.setup(x => x.args).returns(['this', 'is', 'a', 'test']); }
         },
         {
             code: '{argsarray}',
             expected: '["this","is a","test"]',
-            setup(ctx) { ctx.locals.setup(x => x.args).returns({ raw: '', positional: ['this', 'is a', 'test'] }); }
+            setup(ctx) { ctx.locals.setup(x => x.args).returns(['this', 'is a', 'test']); }
         }
     ]
 });
