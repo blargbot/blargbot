@@ -9,7 +9,9 @@ export interface MockOptions<out T extends Mockable> {
     loose?: boolean;
 }
 
-export type Callable = (this: never, ...args: never) => unknown;
+export type Callable =
+    | ((this: never, ...args: never) => unknown)
+    | (abstract new (...args: never) => unknown);
 export type Mockable = object | Callable;
 
 export interface InterceptOptions {
@@ -55,7 +57,12 @@ export interface VerifyMock<T extends Mockable> {
     mustHaveHappened(options: Iterable<number>): void;
 }
 
-export class MockError extends Error { }
+export class MockError extends Error {
+    public override readonly name = MockError.name;
+    public constructor(...args: ConstructorParameters<typeof Error>) {
+        super(...args);
+    }
+}
 
 type MockHelper<T extends Mockable = Mockable> = { [P in keyof InstanceType<typeof Mock<T>>]: InstanceType<typeof Mock<T>>[P] };
 export interface Mock<out T extends Mockable = Mockable> extends MockHelper<T> {
@@ -1563,7 +1570,7 @@ function argToString(value: unknown): string {
 function debugInvocation(invocation: Invocation, mockInstance: unknown): string {
     switch (invocation.kind) {
         case 'call': {
-            if (invocation.this === mockInstance)
+            if (invocation.this === mockInstance || invocation.this === undefined && typeof mockInstance === 'function')
                 return `$mock(${invocation.arguments.map(argToString).join(',')})`;
             return `$mock.apply(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
         }
