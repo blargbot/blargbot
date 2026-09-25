@@ -11,7 +11,7 @@ await runSubtagTests({
             expected: '',
             retries: 5,
             setup(ctx) {
-                ctx.sleep.setup(m => m.sleep(100)).thenResolve();
+                ctx.locals.setup(m => m.sleep(100)).resolves().mustHappen(1);
             }
         },
         {
@@ -19,7 +19,7 @@ await runSubtagTests({
             expected: '',
             retries: 5,
             setup(ctx) {
-                ctx.sleep.setup(m => m.sleep(50)).thenResolve();
+                ctx.locals.setup(m => m.sleep(50)).resolves().mustHappen(1);
             }
         },
         {
@@ -27,7 +27,7 @@ await runSubtagTests({
             expected: '',
             retries: 5,
             setup(ctx) {
-                ctx.sleep.setup(m => m.sleep(1000)).thenResolve();
+                ctx.locals.setup(m => m.sleep(1000)).resolves().mustHappen(1);
             }
         },
         {
@@ -35,7 +35,7 @@ await runSubtagTests({
             expected: '',
             retries: 5,
             setup(ctx) {
-                ctx.sleep.setup(m => m.sleep(300_000)).thenResolve();
+                ctx.locals.setup(m => m.sleep(24 * 60 * 60_000)).resolves().mustHappen(1);
             }
         },
         {

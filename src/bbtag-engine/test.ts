@@ -39,7 +39,7 @@ const engine = new BBTagEngine({
 });
 
 const ctx = await engine.createContext({});
-const bbtag = parseBBTag('{lb}', { throws: true });
+const bbtag = parseBBTag('{lb}', { throw: true });
 const result = await ctx.eval(bbtag);
 // eslint-disable-next-line no-console
 console.info(result);

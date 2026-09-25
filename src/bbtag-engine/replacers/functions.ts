@@ -96,7 +96,7 @@ export const injectReplacer = defineReplacer('inject', {
     parameters: ['code'],
     returns: 'string',
     execute: async function inject(context, [code]) {
-        const ast = parseBBTag(code.value, { throws: true });
+        const ast = parseBBTag(code.value, { throw: true });
         const result = await context.eval(ast);
         if (context.returnDepth > 0)
             context.returnDepth--;

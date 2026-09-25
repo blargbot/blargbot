@@ -59,9 +59,9 @@ export interface VerifyMock<T extends Mockable> {
 }
 
 export class MockError extends Error {
-    public override readonly name = MockError.name;
     public constructor(...args: ConstructorParameters<typeof Error>) {
         super(...args);
+        this.name = MockError.name;
     }
 }
 
@@ -71,8 +71,9 @@ type MockHelper<T extends Mockable = Mockable> = { [P in keyof InstanceType<type
 export interface Mock<out T extends Mockable = Mockable> extends MockHelper<T> {
     get instance(): T;
 }
+type IType<T extends Mockable = Mockable> = Mock<T>;
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const Mock = class Mock<T extends Mockable = Mockable> {
+export const Mock = class Mock<T extends Mockable = Mockable> implements IType<T> {
     readonly #strict: boolean;
     readonly #id: string | null;
     readonly #shape: T;
@@ -328,7 +329,10 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
             interceptor.invoked = true;
-            return interceptor.handler(invocation, this) as T;
+            const result = interceptor.handler(invocation, this) as T;
+            if (kind === 'get' && typeof result === 'function' && isProxy(result))
+                assertMockableMethod(name);
+            return result;
         }
 
         if (canIntercept && kind === 'get') {
@@ -337,6 +341,8 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                 && this.#hasCallInterceptors()
                 || this.#hasMethodLikeInterceptor(name);
             if (shouldReturnProxy) {
+                assertMockableMethod(name);
+
                 return (this.#getProxies[name] ??= makeOpaqueProxy(function () { }, {
                     fallback: this.#createNotConfiguredHandler(invocation),
                     apply: (_, thisArg, args) => this.#invokeGetApply(invocation, thisArg, args),
@@ -504,6 +510,26 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                 errors.push(error);
             }
         }
+        if (this.#disposeMock !== undefined) {
+            try {
+                this.#disposeMock.verifyAll();
+            } catch (error) {
+                if (error instanceof AggregateError)
+                    errors.push(error.errors);
+                else
+                    errors.push(error);
+            }
+        }
+        if (this.#asyncDisposeMock !== undefined) {
+            try {
+                this.#asyncDisposeMock.verifyAll();
+            } catch (error) {
+                if (error instanceof AggregateError)
+                    errors.push(error.errors);
+                else
+                    errors.push(error);
+            }
+        }
 
         if (errors.length > 1)
             throw new AggregateError(errors);
@@ -530,6 +556,33 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
             }
         };
         return result;
+    }
+
+    #disposeMock?: Mock<() => void>;
+    public setupDispose(this: IType<Disposable>): SetupMock<T, void> {
+        const mock = (this as Mock<Disposable>).#disposeMock ??= new Mock({
+            typeof: 'function',
+            id: this.id === null ? 'Symbol.dispose' : `${this.id}.Symbol.dispose`
+        });
+        const dispose = mock.instance;
+        this.setup(m => m[Symbol.dispose]).returns(function (this: Disposable) {
+            dispose.call(this);
+        });
+        return mock.setup(m => m()) as SetupMock<T, void>;
+    }
+
+    #asyncDisposeMock?: Mock<() => PromiseLike<void>>;
+    public setupAsyncDispose(this: IType<AsyncDisposable>): SetupMock<T, PromiseLike<void>> {
+        const mock = (this as Mock<AsyncDisposable>).#asyncDisposeMock ??= new Mock({
+            typeof: 'function',
+            id: this.id === null ? 'Symbol.asyncDispose' : `${this.id}.Symbol.asyncDispose`
+        });
+        const dispose = mock.instance;
+        this.setup(m => m[Symbol.asyncDispose]).returns(function (this: AsyncDisposable) {
+            return dispose.call(this);
+        });
+        return mock.setup(m => m()) as SetupMock<T, PromiseLike<void>>;
+
     }
 
     public setup<Result>(action: (instance: T, matchers: ArgumentMatchers<T>) => Result): SetupMock<T, Result> {
@@ -562,6 +615,8 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
     #setup<Result>(expression: Expression): SetupMock<T, Result> {
         const result: SetupMock<T, Result> = {
             invokes: (handler, options) => {
+                if (expression.kind === 'method')
+                    assertMockableMethod(expression.name);
                 switch (expression.kind) {
                     case 'method': {
                         const nameStr = keyToProp(expression.name);
@@ -1229,6 +1284,7 @@ function toExpression<T extends Mockable>(
         apply(_, __, args) {
             if (expression?.kind !== 'get')
                 return deepMemberError();
+
             // mocking x => x.method.apply(thisArg, [arg1, arg2, arg3, ...])
             const [thisArg, argArray] = args as unknown[];
             if (!isArrayLike(argArray))
@@ -1502,13 +1558,13 @@ function isArrayLike(value: unknown): value is ArrayLike<unknown> {
         && typeof value.length === 'number';
 }
 
-function keyToProp(key: PropertyKey): string {
+function keyToProp(key: PropertyKey, includeDot = true): string {
     if (typeof key === 'symbol')
         return `[${String(key)}]`;
     if (typeof key === 'number')
         return `[${key}]`;
     if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key))
-        return `.${key}`;
+        return includeDot ? `.${key}` : key;
     return `[${JSON.stringify(key)}]`;
 }
 
@@ -1618,12 +1674,14 @@ function argToString(value: unknown): string {
                 // eslint-disable-next-line @typescript-eslint/no-base-to-string
                 content = value.toString();
             else
-                content = `{${Object.entries(value).map(([k, v]) => `[${keyToSource(k)}]:${argToString(v)}`).join(',')}}`;
+                content = `{${Object.entries(value).map(([k, v]) => `${keyToProp(k, false)}:${argToString(v)}`).join(',')}}`;
             const prototype = Object.getPrototypeOf(value) as object | null;
             if (prototype === null || typeof prototype.constructor !== 'function' || prototype.constructor.name === '')
                 return content;
             if (value instanceof Array)
                 return `[${value.map(argToString).join(',')}]`;
+            if (prototype === Object.prototype)
+                return content;
             return `${prototype.constructor.name}(${content})`;
         }
     }
@@ -1806,3 +1864,34 @@ function setNewSpecificity(expr: Extract<Expression, { kind: 'new' | 'newNested'
     expr.specificity += expr.newTarget.specificity;
     expr.specificity = expr.parameters.reduce((p, c) => p + c.specificity, expr.specificity);
 }
+
+function assertMockableMethod(name: PropertyKey): void {
+    if (!canMockDispose) {
+        if (name === Symbol.dispose || name === Symbol.asyncDispose) {
+            throw new MockError(
+                'Cannot implement Symbol.dispose or Symbol.asyncDispose as mock functions as ' +
+                'the Javascript runtime does not support Proxied functions in this case.\n\n' +
+                'Unsupported:\n' +
+                '  -  $mock.setup(x => x[Symbol.dispose]()).returns()\n' +
+                '  -  $mock.setup(x => x[Symbol.asyncDispose]()).returns()\n' +
+                '  -  $mock.setup(x => x[Symbol.dispose]).returns(mockedFunction)\n' +
+                '  -  $mock.setup(x => x[Symbol.asyncDispose]).returns(mockedFunction)\n' +
+                'Supported:\n' +
+                '  -  $mock.setup(x => x[Symbol.dispose]).returns(() => {})\n' +
+                '  -  $mock.setup(x => x[Symbol.asyncDispose]).returns(() => Promise.resolve())\n' +
+                '  -  $mock.setup(x => x[Symbol.dispose]).returns(() => mockedFunction());\n' +
+                '  -  $mock.setup(x => x[Symbol.asyncDispose]).returns(() => mockedFunction());'
+            );
+        }
+    }
+}
+
+const canMockDispose = (() => {
+    try {
+        const dispose = new Proxy(() => { }, {});
+        using _ = { [Symbol.dispose]: dispose };
+        return true;
+    } catch {
+        return false;
+    }
+})();

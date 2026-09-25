@@ -1,6 +1,5 @@
+import type { BBTagSubtag } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
-import { $ } from '@blargbot/test-util';
-import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -12,8 +11,9 @@ await runSubtagTests({
             code: '{timer;abc{fail};10s}',
             retries: 3,
             expected: '',
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.setTimeout(bbctx, 'abc{fail}', $.looksLike(moment.duration(10, 's')))).thenResolve(undefined);
+            postSetup(bbctx, ctx, code) {
+                const scheduledBody = (code.values[0] as BBTagSubtag).args[1];
+                ctx.locals.setup((m, $) => m.schedule(bbctx, $(scheduledBody), 10_000)).resolves().mustHappen(1);
             }
         },
         {

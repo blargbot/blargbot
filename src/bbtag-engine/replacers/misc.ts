@@ -10,7 +10,7 @@ import type { LogicOperator } from '../operators.js';
 import { aggregationOperators, isLogicOperator, logicOperators, numericOperators, ordinalOperators, runBool, stringOperators } from '../operators.js';
 import { parse } from '../parse.js';
 import type { SubtagReturnTypeMap } from '../types.js';
-import type { ArgsLocals, BrainfuckLocals, DecancerLocals, FallbackLocals, RegExpCompilerLocals, ReplaceOutputLocals, SafeRegExp, TemporalLocals, VariablesLocals } from './locals.js';
+import type { ArgsLocals, BrainfuckLocals, DebugLocals, DecancerLocals, FallbackLocals, RegExpCompilerLocals, ReplaceOutputLocals, SafeRegExp, TemporalLocals, VariablesLocals } from './locals.js';
 
 export const base64DecodeReplacer = defineReplacer(['base64Decode', 'aToB'], {
     parameters: ['text'],
@@ -573,3 +573,13 @@ export const fallbackReplacer = defineReplacer<FallbackLocals>(
         execute: function clearFallback(ctx) { ctx.locals.fallback = undefined; }
     }
 );
+export const debugReplacer = defineReplacer<DebugLocals>('debug', {
+    parameters: ['text*'],
+    returns: 'nothing',
+    execute: function debug(ctx, text, bbtag) {
+        ctx.locals.debug.push({
+            bbtag,
+            text: text.map(x => x.value).join(' ')
+        });
+    }
+});

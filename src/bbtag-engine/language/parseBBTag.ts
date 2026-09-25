@@ -1,72 +1,78 @@
 import { BBTagRuntimeError } from '../BBTagRuntimeError.js';
-import type { BBTagExpression } from './BBTagExpression.js';
-import type { BBTagSubtag } from './BBTagSubtag.js';
+import { BBTagExpression } from './BBTagExpression.js';
+import { BBTagSubtag } from './BBTagSubtag.js';
 import type { SourceMarker } from './SourceMarker.js';
 
-type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
-    : T extends BBTagSubtag ? MutableSubtagCall
-    : T extends BBTagExpression ? MutableStatement
-    : T;
+interface BBTagSubtagBuilder {
+    start: SourceMarker;
+    end: SourceMarker;
+    readonly name: BBTagExpressionBuilder;
+    readonly args: BBTagExpressionBuilder[];
+    build(): BBTagSubtag;
+}
+interface BBTagExpressionBuilder {
+    start: SourceMarker;
+    end: SourceMarker;
+    readonly values: Array<string | BBTagSubtagBuilder>;
+    build(): BBTagExpression;
+};
 
-type MutableSubtagCall = { -readonly [P in keyof BBTagSubtag]: ToMutable<BBTagSubtag[P]> }
-type MutableStatement = { -readonly [P in keyof BBTagExpression]: ToMutable<BBTagExpression[P]> };
-
-export function parseBBTag(source: string, options: { throws: true; }): BBTagExpression
-export function parseBBTag(source: string, options?: { throws?: boolean; }): BBTagExpression | BBTagRuntimeError
-export function parseBBTag(source: string, options?: { throws?: boolean; }): BBTagExpression | BBTagRuntimeError {
-    const result = createStatement(source);
-    const subtags: MutableSubtagCall[] = [];
-    let statement = result;
-    let subtag: MutableSubtagCall | undefined;
+export function parseBBTag(source: string, options: { throw: true; }): BBTagExpression
+export function parseBBTag(source: string, options?: { throw?: boolean; }): BBTagExpression | BBTagRuntimeError
+export function parseBBTag(source: string, options?: { throw?: boolean; }): BBTagExpression | BBTagRuntimeError {
+    const result = createExpression(source);
+    const subtags: BBTagSubtagBuilder[] = [];
+    let expression = result;
+    let subtag: BBTagSubtagBuilder | undefined;
 
     for (const token of tokenize(source)) {
         switch (token.type) {
             case SourceTokenType.STARTSUBTAG:
                 if (subtag !== undefined)
                     subtags.push(subtag);
-                statement.values.push(subtag = createSubtagCall(source, token));
-                statement = subtag.name;
-                statement.start = token.end;
+                expression.values.push(subtag = createSubtagCall(source, token));
+                expression = subtag.name;
+                expression.start = token.end;
                 break;
             case SourceTokenType.ARGUMENTDELIMITER:
                 if (subtag === undefined)
-                    statement.values.push(token.content);
+                    expression.values.push(token.content);
                 else {
-                    trim(statement);
-                    subtag.args.push(statement = createStatement(source, token));
+                    trim(expression);
+                    subtag.args.push(expression = createExpression(source, token));
                 }
                 break;
             case SourceTokenType.ENDSUBTAG:
                 if (subtag === undefined) {
                     const error = new BBTagRuntimeError(`Unexpected '}' at ${token.start.index}`);
-                    if (options?.throws === true)
+                    if (options?.throw === true)
                         throw error;
                     return error;
                 }
-                trim(statement);
+                trim(expression);
                 subtag.end = token.end;
                 subtag = subtags.pop();
-                statement = subtag === undefined ? result : currentStatement(subtag);
-                statement.end = token.end;
+                expression = subtag === undefined ? result : currentStatement(subtag);
+                expression.end = token.end;
                 break;
             case SourceTokenType.CONTENT:
-                statement.end = token.end;
+                expression.end = token.end;
                 if (token.content.length === 0)
                     break;
-                statement.values.push(token.content);
+                expression.values.push(token.content);
                 break;
         }
     }
 
     if (subtag !== undefined) {
         const error = new BBTagRuntimeError(`Unmatched '{' at ${subtag.start.index}`);
-        if (options?.throws === true)
+        if (options?.throw === true)
             throw error;
         return error;
     }
 
     trim(result);
-    return result;
+    return result.build();
 }
 
 function* tokenize(source: string): IterableIterator<SourceToken> {
@@ -115,37 +121,52 @@ function* tokenize(source: string): IterableIterator<SourceToken> {
     yield token(SourceTokenType.CONTENT, previous, marker);
 }
 
-function createStatement(source: string, token?: SourceToken): MutableStatement {
+function createExpression(source: string, token?: SourceToken): BBTagExpressionBuilder {
     return {
         start: token?.end ?? { index: 0, line: 0, column: 0 },
         end: token?.end ?? { index: 0, line: 0, column: 0 },
-        get source() { return source.slice(this.start.index, this.end.index); },
-        values: []
+        values: [],
+        build() {
+            return new BBTagExpression(
+                this.values.map(v => typeof v === 'string' ? v : v.build()),
+                this.start,
+                this.end,
+                source
+            );
+        }
     };
 }
 
-function createSubtagCall(source: string, token?: SourceToken): MutableSubtagCall {
+function createSubtagCall(source: string, token?: SourceToken): BBTagSubtagBuilder {
     return {
-        name: createStatement(source),
+        name: createExpression(source),
         args: [],
         start: token?.start ?? { index: 0, line: 0, column: 0 },
         end: token?.end ?? { index: 0, line: 0, column: 0 },
-        get source() { return source.slice(this.start.index, this.end.index); }
+        build() {
+            return new BBTagSubtag(
+                this.name.build(),
+                this.args.map(a => a.build()),
+                this.start,
+                this.end,
+                source
+            );
+        }
     };
 }
 
-function currentStatement(subtag: MutableSubtagCall): MutableStatement {
+function currentStatement(subtag: BBTagSubtagBuilder): BBTagExpressionBuilder {
     if (subtag.args.length === 0)
         return subtag.name;
     return subtag.args[subtag.args.length - 1];
 }
 
-function trim(str: MutableStatement): void {
+function trim(str: BBTagExpressionBuilder): void {
     modify(str.values, 0, str => str.trimStart());
     modify(str.values, str.values.length - 1, str => str.trimEnd());
 }
 
-function modify(str: MutableStatement['values'], index: number, mod: (str: string) => string): void {
+function modify(str: BBTagExpressionBuilder['values'], index: number, mod: (str: string) => string): void {
     if (str.length === 0)
         return;
 

@@ -5,7 +5,7 @@ import { parseBBTag, replacers, UnknownSubtagError } from '@blargbot/bbtag-engin
 
 import { createTestReplacer, runSubtagTests } from '../SubtagTestSuite.js';
 
-const check = parseBBTag('{check1}', { throws: true });
+const check = parseBBTag('{check1}', { throw: true });
 
 await runSubtagTests<FunctionLocals>({
     replacer: replacers.funcReplacer,

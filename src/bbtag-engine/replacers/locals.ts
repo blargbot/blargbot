@@ -1,5 +1,6 @@
 import type { BBTagContext } from '../BBTagContext.js';
 import type { BBTagExpression } from '../language/BBTagExpression.js';
+import type { BBTagSubtag } from '../language/BBTagSubtag.js';
 
 export interface ArgsLocals {
     args: string[];
@@ -37,6 +38,15 @@ export interface FallbackLocals {
     fallback?: string;
 }
 
+export interface DebugLocals {
+    debug: DebugEntry[];
+}
+
+export interface DebugEntry {
+    bbtag: BBTagSubtag;
+    text: string;
+}
+
 export interface VariablesLocals {
     variables: VariableStore;
 }
@@ -59,6 +69,19 @@ export interface ReplaceOutputLocals {
 
 export interface RegExpCompilerLocals {
     compileRegExp: (pattern: string, flags: string) => Awaitable<SafeRegExp>;
+}
+
+export interface SleepLocals {
+    sleep: (durationMs: number) => Promise<void>;
+}
+
+export interface TimerLocals {
+    schedule: (context: BBTagContext<object>, code: BBTagExpression, timeoutMs: number) => Awaitable<void>;
+}
+
+export interface LockLocals {
+    inLock: boolean;
+    lock: (mode: 'read' | 'write', key: string) => Promise<AsyncDisposable | Disposable>;
 }
 
 export interface SafeRegExp {

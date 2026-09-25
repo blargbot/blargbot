@@ -4,8 +4,8 @@ import * as inspector from 'node:inspector';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import type { BBTagContext, BBTagReplacer, BBTagSerializer, BBTagSubtag, CompiledBBTagReplacer, FallbackLocals, LocatedBBTagRuntimeError, SourceMarker, SubtagArgumentArray } from '@blargbot/bbtag-engine';
-import { BBTagEngine, BBTagRuntimeError, composeReplacer, defineReplacer, NotEnoughArgumentsError, parseBBTag, TooManyArgumentsError, UnrecoverableBBTagError } from '@blargbot/bbtag-engine';
+import type { BBTagContext, BBTagExpression, BBTagReplacer, BBTagSerializer, BBTagSubtag, CompiledBBTagReplacer, FallbackLocals, LocatedBBTagRuntimeError, SourceMarker, SubtagArgumentArray } from '@blargbot/bbtag-engine';
+import { BBTagEngine, BBTagRuntimeError, composeReplacer, defineReplacer, InternalServerError, NotEnoughArgumentsError, parseBBTag, TooManyArgumentsError, UnrecoverableBBTagError } from '@blargbot/bbtag-engine';
 import type { Mockable, MockOptions } from '@blargbot/test-util';
 import { Mock, MockError } from '@blargbot/test-util';
 
@@ -16,8 +16,8 @@ export interface SubtagTestCase<Locals extends object = object> {
     readonly code: string;
     readonly subtagName?: string;
     readonly expected?: string | RegExp | (() => string | RegExp);
-    readonly setup?: (context: SubtagTestContext<Locals>) => Awaitable<void>;
-    readonly postSetup?: (context: BBTagContext<Locals>, mocks: SubtagTestContext<Locals>) => Awaitable<void>;
+    readonly setup?: (context: SubtagTestContext<Locals>, bbtag: BBTagExpression) => Awaitable<void>;
+    readonly postSetup?: (context: BBTagContext<Locals>, mocks: SubtagTestContext<Locals>, bbtag: BBTagExpression) => Awaitable<void>;
     readonly assert?: (context: BBTagContext<Locals>, result: string, test: SubtagTestContext<Locals>) => Awaitable<void>;
     readonly teardown?: (context: SubtagTestContext<Locals>) => Awaitable<void>;
     readonly expectError?: {
@@ -32,10 +32,10 @@ export interface SubtagTestCase<Locals extends object = object> {
 }
 
 interface TestSuiteConfig<Locals extends object> {
-    readonly setup: Array<(context: SubtagTestContext<Locals>) => Awaitable<void>>;
+    readonly setup: Array<(context: SubtagTestContext<Locals>, bbtag: BBTagExpression) => Awaitable<void>>;
     readonly assert: Array<(context: BBTagContext<Locals>, result: string, test: SubtagTestContext<Locals>) => Awaitable<void>>;
     readonly teardown: Array<(context: SubtagTestContext<Locals>) => Awaitable<void>>;
-    readonly postSetup: Array<(context: BBTagContext<Locals>, mocks: SubtagTestContext<Locals>) => Awaitable<void>>;
+    readonly postSetup: Array<(context: BBTagContext<Locals>, mocks: SubtagTestContext<Locals>, bbtag: BBTagExpression) => Awaitable<void>>;
 }
 
 export class MarkerError extends BBTagRuntimeError {
@@ -109,6 +109,8 @@ export class SubtagTestContext<Locals extends object> {
             replacer: this.replacer,
             renderError: function* (err, ctx) {
                 if (err.cause instanceof MockError || err.cause instanceof AssertionError)
+                    throw err.cause;
+                if (err instanceof InternalServerError)
                     throw err.cause;
                 yield err.display ?? ctx.locals.fallback ?? `\`${err.message}\``;
             },
@@ -363,17 +365,17 @@ async function runTestCase<Locals extends object>(
         .registerAll(testCase.replacers ?? [])
     );
     const test = new SubtagTestContext(testCase, subtags);
-    const code = parseBBTag(testCase.code, { throws: true });
+    const code = parseBBTag(testCase.code, { throw: true });
 
     try {
         // arrange
         for (const setup of config.setup)
-            await setup(test);
-        await testCase.setup?.(test);
+            await setup(test, code);
+        await testCase.setup?.(test, code);
         const context = await test.createContext();
         for (const postSetup of config.postSetup)
-            await postSetup(context, test);
-        await testCase.postSetup?.(context, test);
+            await postSetup(context, test, code);
+        await testCase.postSetup?.(context, test, code);
 
         const expected = getExpectation(testCase);
 
