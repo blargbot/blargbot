@@ -1,7 +1,6 @@
 import { bbtagArray } from '../bbtagArray.js';
 import { BBTagRuntimeError } from '../BBTagRuntimeError.js';
 import { defineReplacer } from '../defineReplacer.js';
-import { parseBBTag } from '../language/parseBBTag.js';
 import { parse } from '../parse.js';
 
 export const subtagExistsReplacer = defineReplacer('subtagExists', {
@@ -48,19 +47,5 @@ export const applyReplacer = defineReplacer('apply', {
             end: subtag.end,
             source
         });
-    }
-});
-
-export const injectReplacer = defineReplacer('inject', {
-    parameters: ['code'],
-    returns: 'string',
-    execute: async function inject(context, [code]) {
-        const ast = parseBBTag(code.value);
-        if (ast instanceof BBTagRuntimeError)
-            throw ast;
-        const result = await context.eval(ast);
-        if (context.returnDepth !== 0)
-            context.returnDepth--;
-        return result;
     }
 });

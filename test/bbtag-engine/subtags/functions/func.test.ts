@@ -1,13 +1,11 @@
 import assert from 'node:assert/strict';
 
 import type { FunctionLocals } from '@blargbot/bbtag-engine';
-import { BBTagRuntimeError, parseBBTag, replacers, UnknownSubtagError } from '@blargbot/bbtag-engine';
+import { parseBBTag, replacers, UnknownSubtagError } from '@blargbot/bbtag-engine';
 
 import { createTestReplacer, runSubtagTests } from '../SubtagTestSuite.js';
 
-const check = parseBBTag('{check1}');
-if (check instanceof BBTagRuntimeError)
-    throw check;
+const check = parseBBTag('{check1}', { throws: true });
 
 await runSubtagTests<FunctionLocals>({
     replacer: replacers.funcReplacer,

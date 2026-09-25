@@ -1,3 +1,4 @@
+import type { BBTagContext } from '../BBTagContext.js';
 import type { BBTagExpression } from '../language/BBTagExpression.js';
 
 export interface ArgsLocals {
@@ -85,4 +86,31 @@ export interface DecancerLocals {
 export interface FunctionLocals {
     functions: Record<`func.${string}`, BBTagExpression | undefined>;
     functionParameters?: readonly string[];
+}
+
+export interface ExecTagLocals {
+    getTag: (tagName: string) => Awaitable<ExecutableTag | undefined>;
+}
+export interface ExecCustomCommandLocals {
+    getCustomCommand: (tagName: string) => Awaitable<ExecutableTag | undefined>;
+}
+
+export interface ExecutableTag {
+    execute(context: BBTagContext<object>, args: string | string[]): Awaitable<string>;
+}
+
+export interface NsfwLocals {
+    nsfw: { value?: string; };
+}
+
+export interface QuietLocals {
+    quiet?: boolean;
+}
+
+export interface ReasonLocals {
+    reason?: string;
+}
+
+export interface SuppressLookupLocals {
+    suppressLookup?: boolean;
 }

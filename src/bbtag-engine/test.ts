@@ -1,5 +1,4 @@
 import { BBTagEngine } from './BBTagEngine.js';
-import { BBTagRuntimeError } from './BBTagRuntimeError.js';
 import { composeReplacer } from './composeReplacer.js';
 import { parseBBTag } from './language/parseBBTag.js';
 import * as json from './replacers/json.js';
@@ -40,10 +39,7 @@ const engine = new BBTagEngine({
 });
 
 const ctx = await engine.createContext({});
-const bbtag = parseBBTag('{lb}');
-if (bbtag instanceof BBTagRuntimeError)
-    throw bbtag;
-
+const bbtag = parseBBTag('{lb}', { throws: true });
 const result = await ctx.eval(bbtag);
 // eslint-disable-next-line no-console
 console.info(result);

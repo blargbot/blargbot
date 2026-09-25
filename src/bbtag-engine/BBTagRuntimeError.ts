@@ -4,6 +4,10 @@ export interface LocatedBBTagRuntimeError {
     readonly error: BBTagRuntimeError;
     readonly bbtag: BBTagSubtag;
 }
+export class UnrecoverableBBTagError extends Error {
+
+}
+
 export class BBTagRuntimeError extends Error {
     public display?: string;
 

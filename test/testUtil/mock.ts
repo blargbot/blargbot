@@ -7,6 +7,7 @@ export interface MockOptions<out T extends Mockable> {
     | (T extends object ? 'object' : never)
     | (T extends Callable ? 'function' : never);
     loose?: boolean;
+    id?: string;
 }
 
 export type Callable =
@@ -64,6 +65,8 @@ export class MockError extends Error {
     }
 }
 
+const mocks = new WeakMap<Mockable, Mock<Mockable>>();
+
 type MockHelper<T extends Mockable = Mockable> = { [P in keyof InstanceType<typeof Mock<T>>]: InstanceType<typeof Mock<T>>[P] };
 export interface Mock<out T extends Mockable = Mockable> extends MockHelper<T> {
     get instance(): T;
@@ -71,6 +74,7 @@ export interface Mock<out T extends Mockable = Mockable> extends MockHelper<T> {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const Mock = class Mock<T extends Mockable = Mockable> {
     readonly #strict: boolean;
+    readonly #id: string | null;
     readonly #shape: T;
     readonly #instance: T;
     readonly #invocations: Invocation[] = [];
@@ -103,6 +107,34 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         return [...this.#invocations];
     }
 
+    public get id(): string | null {
+        return this.#id;
+    }
+
+    public static isMocked<T extends Mockable>(value: T): boolean;
+    public static isMocked<T extends Mockable>(value: T, property: PropertyKey): boolean;
+    public static isMocked<T extends Mockable>(value: T, property?: keyof T): boolean {
+        while (!mocks.has(value)) {
+            if (property !== undefined && Reflect.has(value, property))
+                return false;
+            const proto = Reflect.getPrototypeOf(value) as T | null;
+            if (proto === null)
+                return false;
+            value = proto;
+        }
+        return true;
+    }
+
+    public static fromInstance<T extends Mockable>(instance: T): Mock<T> | undefined {
+        while (!mocks.has(instance)) {
+            const proto = Reflect.getPrototypeOf(instance) as T | null;
+            if (proto === null)
+                return undefined;
+            instance = proto;
+        }
+        return mocks.get(instance) as Mock<T>;
+    }
+
     public constructor(options?: MockOptions<T>) {
         switch (options?.typeof) {
             case 'object':
@@ -115,6 +147,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
 
         }
         this.#strict = options?.loose !== true;
+        this.#id = options?.id ?? null;
 
         function canMutate(target: T, property: PropertyKey): boolean {
             return Reflect.isExtensible(target)
@@ -216,6 +249,13 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                 return Reflect.preventExtensions(_);
             }
         });
+        mocks.set(this.#instance, this);
+    }
+
+    public toString(): string {
+        if (this.#id === null)
+            return '$mock';
+        return `$mock<${this.#id}>`;
     }
 
     #hasCallInterceptors(): boolean {
@@ -278,7 +318,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
             return undefined;
         return () => {
             this.#invocations.push(invocation);
-            throw new MockError(`No setup has been configured for ${debugInvocation(invocation, this.#instance)}`);
+            throw new MockError(`No setup has been configured for ${debugInvocation(invocation, this)}`);
         };
     }
 
@@ -304,6 +344,15 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                     get: (_, p) => this.#invokeGetGet(invocation, p)
                 })) as T;
             }
+        }
+
+        // Special case for async interactions. Promise resolution probes every returned value
+        // for a `then` property to determine whether it is a thenable. An unconfigured mock
+        // must therefore return undefined here rather than throw, otherwise returning a mock
+        // from an async function would require explicitly configuring `then` on every mock.
+        if (kind === 'get' && name === 'then') {
+            this.#invocations.push(invocation);
+            return undefined as T;
         }
 
         this.#createNotConfiguredHandler(invocation)?.();
@@ -473,11 +522,11 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                 const invocations = this.#invocations.filter(i => isMatch(expression, i, this.#instance));
                 assertion(invocations, this);
             },
-            mustNotHaveHappened() {
-                result.satisfies(mustNotHaveHappened(expression));
+            mustNotHaveHappened: () => {
+                result.satisfies(mustNotHaveHappened(this, expression));
             },
-            mustHaveHappened(...args: [number | Iterable<number>] | [number, number] | []) {
-                return result.satisfies(mustHaveHappened(expression, ...args));
+            mustHaveHappened: (...args: [number | Iterable<number>] | [number, number] | []) => {
+                return result.satisfies(mustHaveHappened(this, expression, ...args));
             }
         };
         return result;
@@ -595,45 +644,55 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                     }
                 });
             },
-            mustNotHappen() {
-                return result.addAssertion(mustNotHaveHappened(expression));
+            mustNotHappen: () => {
+                return result.addAssertion(mustNotHaveHappened(this, expression));
             },
-            mustHappen(...args: [number | Iterable<number>] | [number, number] | []) {
-                return result.addAssertion(mustHaveHappened(expression, ...args));
+            mustHappen: (...args: [number | Iterable<number>] | [number, number] | []) => {
+                return result.addAssertion(mustHaveHappened(this, expression, ...args));
             }
         };
         return result;
     }
 };
 
-function mustNotHaveHappened<T extends Mockable>(expression: Expression): Assertion<T> {
-    return i => assert(i.length === 0,
-        `Expected ${debugMatchers(expression)} to not be called but it has been ${i.length} time(s).`
-    );
+function mustNotHaveHappened<T extends Mockable>(mock: Mock<T>, expression: Expression): Assertion<T> {
+    return i => {
+        if (i.length !== 0) {
+            assert.fail(`Expected ${debugMatchers(expression, mock)} to not be called but it has been ${i.length} time(s).`);
+        }
+    };
 }
 
-function mustHaveHappened<T extends Mockable>(expression: Expression, ...args: [number | Iterable<number>] | [number, number] | []): Assertion<T> {
+function mustHaveHappened<T extends Mockable>(mock: Mock<T>, expression: Expression, ...args: [number | Iterable<number>] | [number, number] | []): Assertion<T> {
     if (args.length === 0) {
-        return i => assert(i.length > 0,
-            `Expected ${debugMatchers(expression)} to have been called but it has not.`
-        );
+        return i => {
+            if (i.length === 0) {
+                assert.fail(`Expected ${debugMatchers(expression, mock)} to have been called but it has not.`);
+            }
+        };
     }
     if (args.length === 2) {
         const [min, max] = args;
-        return i => assert(min <= i.length && i.length <= max,
-            `Expected ${debugMatchers(expression)} to have been called between ${min} and ${max} time(s) (inclusive), but found ${i.length}.`
-        );
+        return i => {
+            if (min > i.length || i.length > max) {
+                assert.fail(`Expected ${debugMatchers(expression, mock)} to have been called between ${min} and ${max} time(s) (inclusive), but found ${i.length}.`);
+            }
+        };
     }
     const v0 = args[0];
     if (typeof v0 === 'number') {
-        return i => assert.equal(i.length, v0,
-            `Expected ${debugMatchers(expression)} to have been called ${v0} time(s), but found ${i.length}.`
-        );
+        return i => {
+            if (i.length !== v0) {
+                assert.fail(`Expected ${debugMatchers(expression, mock)} to have been called ${v0} time(s), but found ${i.length}.`);
+            }
+        };
     }
     const options = [...v0];
-    return i => assert(options.includes(i.length),
-        `Expected ${debugMatchers(expression)} to have been called one of [${options.join(',')}] time(s), but found ${i.length}.`
-    );
+    return i => {
+        if (!options.includes(i.length)) {
+            assert.fail(`Expected ${debugMatchers(expression, mock)} to have been called one of [${options.join(',')}] time(s), but found ${i.length}.`);
+        }
+    };
 }
 
 interface Interceptor<T extends Mockable, Result> {
@@ -1017,7 +1076,7 @@ export interface ArgumentMatchers<out T = never> {
     readonly strict: <R>(value: R) => R;
     readonly satisfies: <R>(guard: (value: R) => boolean) => R;
     readonly asserts: <R>(guard: (value: R) => void) => R;
-    readonly oneOf: <R>(...values: R[]) => R;
+    readonly oneOf: <R extends unknown[]>(...values: R) => R[number];
     readonly instanceOf: <R>(ctor: abstract new (...args: never) => R) => R;
     readonly looksLike: <R>(skeleton: R) => R;
 }
@@ -1461,27 +1520,27 @@ function keyToSource(key: PropertyKey): string {
     return JSON.stringify(key);
 }
 
-function debugMatchers(expr: Expression): string {
+function debugMatchers(expr: Expression, mock: Mock): string {
     switch (expr.kind) {
         case 'call': {
             if (expr.thisArg === thisArgumentMatcher || expr.thisArg === anyArgumentMatcher)
-                return `$mock(${expr.parameters.map(p => p.toString()).join(',')})`;
-            return `$mock.apply(${expr.thisArg.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
+                return `${mock.toString()}(${expr.parameters.map(p => p.toString()).join(',')})`;
+            return `${mock.toString()}.apply(${expr.thisArg.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }
         case 'new': {
             if (expr.newTarget === thisArgumentMatcher)
-                return `new $mock(${expr.parameters.map(p => p.toString()).join(',')})`;
-            return `new (class Derived extends $mock {...})(${expr.newTarget.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
+                return `new ${mock.toString()}(${expr.parameters.map(p => p.toString()).join(',')})`;
+            return `new (class Derived extends ${mock.toString()} {...})(${expr.newTarget.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }
         case 'method': {
             if (expr.thisArg === thisArgumentMatcher || expr.thisArg === anyArgumentMatcher)
-                return `$mock${keyToProp(expr.name)}(${expr.parameters.map(p => p.toString()).join(',')})`;
-            return `$mock${keyToProp(expr.name)}.apply(${expr.thisArg.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
+                return `${mock.toString()}${keyToProp(expr.name)}(${expr.parameters.map(p => p.toString()).join(',')})`;
+            return `${mock.toString()}${keyToProp(expr.name)}.apply(${expr.thisArg.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }
         case 'newNested': {
             if (expr.newTarget === thisArgumentMatcher)
-                return `new $mock${keyToProp(expr.name)}(${expr.parameters.map(p => p.toString()).join(',')})`;
-            return `new (class Derived extends $mock${keyToProp(expr.name)} {...})(${expr.newTarget.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
+                return `new ${mock.toString()}${keyToProp(expr.name)}(${expr.parameters.map(p => p.toString()).join(',')})`;
+            return `new (class Derived extends ${mock.toString()}${keyToProp(expr.name)} {...})(${expr.newTarget.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }
         case 'get': {
             return `$mock${keyToProp(expr.name)}`;
@@ -1550,6 +1609,10 @@ function argToString(value: unknown): string {
         case 'object': {
             if (value === null)
                 return 'null';
+            const mock = Mock.fromInstance(value);
+            if (mock !== undefined)
+                return mock.toString();
+
             let content;
             if (value.toString !== Object.prototype.toString)
                 // eslint-disable-next-line @typescript-eslint/no-base-to-string
@@ -1563,31 +1626,41 @@ function argToString(value: unknown): string {
                 return `[${value.map(argToString).join(',')}]`;
             return `${prototype.constructor.name}(${content})`;
         }
-
     }
 }
 
-function debugInvocation(invocation: Invocation, mockInstance: unknown): string {
+function hasPrototype(target: unknown, prototype: unknown): boolean {
+    while (target !== prototype) {
+        if (typeof target !== 'object' || target === null)
+            return false;
+        if (mocks.has(target))
+            return false;
+        target = Reflect.getPrototypeOf(target);
+    }
+    return true;
+}
+
+function debugInvocation(invocation: Invocation, mock: Mock): string {
     switch (invocation.kind) {
         case 'call': {
-            if (invocation.this === mockInstance || invocation.this === undefined && typeof mockInstance === 'function')
-                return `$mock(${invocation.arguments.map(argToString).join(',')})`;
-            return `$mock.apply(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
+            if (hasPrototype(invocation.this, mock.instance) || invocation.this === undefined && typeof mock === 'function')
+                return `${mock.toString()}(${invocation.arguments.map(argToString).join(',')})`;
+            return `${mock.toString()}.apply(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
         }
         case 'new': {
-            if (invocation.this === mockInstance)
-                return `new $mock(${invocation.arguments.map(argToString).join(',')})`;
-            return `new (class Derived extends $mock {...})(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
+            if (invocation.this === mock)
+                return `new ${mock.toString()}(${invocation.arguments.map(argToString).join(',')})`;
+            return `new (class Derived extends ${mock.toString()} {...})(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
         }
         case 'method': {
-            if (invocation.this === mockInstance)
-                return `$mock${keyToProp(invocation.name)}(${invocation.arguments.map(argToString).join(',')})`;
-            return `$mock${keyToProp(invocation.name)}.apply(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
+            if (hasPrototype(invocation.this, mock.instance))
+                return `${mock.toString()}${keyToProp(invocation.name)}(${invocation.arguments.map(argToString).join(',')})`;
+            return `${mock.toString()}${keyToProp(invocation.name)}.apply(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
         }
         case 'newNested': {
-            if (invocation.this === mockInstance)
-                return `new $mock${keyToProp(invocation.name)}(${invocation.arguments.map(argToString).join(',')})`;
-            return `new (class Derived extends $mock${keyToProp(invocation.name)} {...})(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
+            if (invocation.this === mock)
+                return `new ${mock.toString()}${keyToProp(invocation.name)}(${invocation.arguments.map(argToString).join(',')})`;
+            return `new (class Derived extends ${mock.toString()}${keyToProp(invocation.name)} {...})(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
         }
         case 'get': {
             return `$mock${keyToProp(invocation.name)}`;

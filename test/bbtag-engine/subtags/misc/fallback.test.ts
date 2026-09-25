@@ -1,49 +1,45 @@
-import assert from 'node:assert/strict';
-
-import type { FallbackLocals } from '@blargbot/bbtag-engine';
 import { replacers, UnknownSubtagError } from '@blargbot/bbtag-engine';
 
-import { createTestReplacer, runSubtagTests } from '../SubtagTestSuite.js';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.fallbackReplacer,
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
-            code: '{fallback}{xyz}{check1}',
+            code: '{fallback}{xyz}',
             expected: '`Unknown subtag xyz`',
             errors: [
                 { start: 10, end: 15, error: new UnknownSubtagError('xyz') }
             ],
-            replacers: [createTestReplacer<FallbackLocals>('check1', ctx => {
-                assert.equal(ctx.locals.fallback, undefined);
-            })]
+            setup(ctx) {
+                ctx.locals.setupProperty('fallback', undefined);
+                ctx.locals.setupSet(m => m.fallback = undefined).mustHappen(1);
+            }
         },
         {
-            code: '{fallback;abc}{xyz}{check1}',
+            code: '{fallback;abc}{xyz}',
             expected: 'abc',
             errors: [
                 { start: 14, end: 19, error: new UnknownSubtagError('xyz') }
             ],
-            replacers: [createTestReplacer<FallbackLocals>('check1', ctx => {
-                assert.equal(ctx.locals.fallback, 'abc');
-            })]
+            setup(ctx) {
+                ctx.locals.setupProperty('fallback', undefined);
+                ctx.locals.setupSet(m => m.fallback = 'abc').mustHappen(1);
+            }
         },
         {
-            code: '{fallback;This tag failed} {abc}{check1} {fallback} {xyz}{check2}',
+            code: '{fallback;This tag failed} {abc} {fallback} {xyz}',
             expected: ' This tag failed  `Unknown subtag xyz`',
             errors: [
                 { start: 27, end: 32, error: new UnknownSubtagError('abc') },
-                { start: 52, end: 57, error: new UnknownSubtagError('xyz') }
+                { start: 44, end: 49, error: new UnknownSubtagError('xyz') }
             ],
-            replacers: [
-                createTestReplacer<FallbackLocals>('check1', ctx => {
-                    assert.equal(ctx.locals.fallback, 'This tag failed');
-                }),
-                createTestReplacer<FallbackLocals>('check2', ctx => {
-                    assert.equal(ctx.locals.fallback, undefined);
-                })
-            ]
+            setup(ctx) {
+                ctx.locals.setupProperty('fallback', undefined);
+                ctx.locals.setupSet(m => m.fallback = 'This tag failed').mustHappen(1);
+                ctx.locals.setupSet(m => m.fallback = undefined).mustHappen(1);
+            }
         }
     ]
 });

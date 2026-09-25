@@ -2,7 +2,7 @@ import type { BBTagContextFrame } from './BBTagContextFrame.js';
 import type { BBTagErrorRenderer } from './BBTagErrorRenderer.js';
 import type { BBTagReplacer } from './BBTagReplacer.js';
 import type { LocatedBBTagRuntimeError } from './BBTagRuntimeError.js';
-import { BBTagRuntimeError, InternalServerError } from './BBTagRuntimeError.js';
+import { BBTagRuntimeError, InternalServerError, UnrecoverableBBTagError } from './BBTagRuntimeError.js';
 import type { BBTagExpression } from './language/BBTagExpression.js';
 import type { BBTagSubtag } from './language/BBTagSubtag.js';
 
@@ -53,43 +53,48 @@ export class BBTagContext<out Locals extends object> {
         return values.join('');
     }
 
-    public async *evalIter(bbtag: BBTagExpression): AsyncGenerator<string> {
-        this.#locals.push(Object.create(this.locals));
-        try {
-            for (const item of bbtag.values) {
-                if (typeof item === 'string') {
-                    yield item;
-                } else {
-                    const name = await this.eval(item.name);
+    async #evalOnScope(bbtag: BBTagExpression): Promise<string> {
+        using _scope = this.pushScope();
+        return await this.eval(bbtag);
+    }
 
-                    this.#callstack.push({ name, subtag: item });
-                    try {
-                        yield* await this.#replacer.replace(this, name, item);
-                    } catch (error) {
-                        if (error instanceof RangeError)
-                            throw error;
-                        yield await this.addError(error, item);
-                    } finally {
-                        this.#callstack.pop();
-                    }
-                    if (this.returnDepth !== 0)
-                        return;
+    public async *evalIter(bbtag: BBTagExpression): AsyncGenerator<string> {
+        for (const item of bbtag.values) {
+            if (typeof item === 'string') {
+                yield item;
+            } else {
+                const name = await this.#evalOnScope(item.name);
+
+                this.#callstack.push({ name, subtag: item });
+                try {
+                    yield* await this.#replacer.replace(this, name, item);
+                } catch (error) {
+                    yield await this.addError(error, item);
+                } finally {
+                    this.#callstack.pop();
                 }
+                if (this.returnDepth !== 0)
+                    return;
             }
-        } finally {
-            this.#locals.pop();
         }
     }
 
     public pushScope(): Disposable {
-        this.#locals.push(Object.create(this.locals));
+        const scope = Object.create(this.locals);
+        this.#locals.push(scope);
         let disposed = false;
         return {
             [Symbol.dispose]: () => {
                 if (disposed)
                     return;
                 disposed = true;
-                this.#locals.pop();
+                if (scope !== this.#locals.pop()) {
+                    throw new UnrecoverableBBTagError(
+                        'Popping the current scope didnt return the same scope that was pushed. ' +
+                        'Either this scope was popped while a nested scope exists or it was popped ' +
+                        'by another caller.'
+                    );
+                }
             }
         };
     }
@@ -99,6 +104,9 @@ export class BBTagContext<out Locals extends object> {
     }
 
     public async addError(error: unknown, bbtag: BBTagSubtag): Promise<string> {
+        if (error instanceof UnrecoverableBBTagError || isStackOverflowError(error))
+            throw error;
+
         if (!(error instanceof BBTagRuntimeError))
             return await this.addError(new InternalServerError(error), bbtag);
 
@@ -109,3 +117,19 @@ export class BBTagContext<out Locals extends object> {
         return values.join('');
     }
 }
+
+function isStackOverflowError(error: unknown): boolean {
+    return error instanceof RangeError && error.message === stackOverflowMessage;
+}
+
+const stackOverflowMessage = (() => {
+    const test = (): never => test();
+    try {
+        test();
+        throw new Error('Expected a stack overflow but got none...');
+    } catch (error) {
+        if (error instanceof RangeError)
+            return error.message;
+        throw error;
+    }
+})();

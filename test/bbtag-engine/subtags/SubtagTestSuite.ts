@@ -1,11 +1,11 @@
-import assert from 'node:assert/strict';
+import assert, { AssertionError } from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as inspector from 'node:inspector';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
 import type { BBTagContext, BBTagReplacer, BBTagSerializer, BBTagSubtag, CompiledBBTagReplacer, FallbackLocals, LocatedBBTagRuntimeError, SourceMarker, SubtagArgumentArray } from '@blargbot/bbtag-engine';
-import { BBTagEngine, BBTagRuntimeError, composeReplacer, defineReplacer, NotEnoughArgumentsError, parseBBTag, TooManyArgumentsError } from '@blargbot/bbtag-engine';
+import { BBTagEngine, BBTagRuntimeError, composeReplacer, defineReplacer, NotEnoughArgumentsError, parseBBTag, TooManyArgumentsError, UnrecoverableBBTagError } from '@blargbot/bbtag-engine';
 import type { Mockable, MockOptions } from '@blargbot/test-util';
 import { Mock, MockError } from '@blargbot/test-util';
 
@@ -65,12 +65,10 @@ export class SubtagTestContext<Locals extends object> {
         public readonly testCase: SubtagTestCase<Locals>,
         public readonly replacer: BBTagReplacer<Locals & FallbackLocals>
     ) {
-        this.locals = this.createMock({ typeof: 'object' });
+        this.locals = this.createMock({ typeof: 'object', id: 'BBTagContext.locals' });
         this.serializer = this.createMock();
 
-        this.locals.setup(x => x.fallback).returns(undefined);
-        this.locals.setup(x => (x as { then?: undefined; }).then).returns(undefined);
-        assert(this.locals.instance.fallback === undefined);
+        this.locals.setup(x => x.fallback).returns(undefined, { isFallback: true });
     }
 
     public createMock<T extends Mockable>(options?: MockOptions<T>): Mock<T> {
@@ -110,7 +108,7 @@ export class SubtagTestContext<Locals extends object> {
             },
             replacer: this.replacer,
             renderError: function* (err, ctx) {
-                if (err.cause instanceof MockError)
+                if (err.cause instanceof MockError || err.cause instanceof AssertionError)
                     throw err.cause;
                 yield err.display ?? ctx.locals.fallback ?? `\`${err.message}\``;
             },
@@ -191,11 +189,11 @@ export function createTestDataReplacer(values: Record<string, string | undefined
         canReplace: () => true,
         replace: async function* testData(_, __, bbtag) {
             if (bbtag.args.length !== 1)
-                throw new RangeError(`Subtag ${testData.name} must be given 1 argument!`);
+                throw new UnrecoverableBBTagError(`Subtag ${testData.name} must be given 1 argument!`);
             const key = bbtag.args[0].source;
             const value = values[key];
             if (value === undefined)
-                throw new RangeError(`Subtag ${testData.name} doesnt have test data set up for ${JSON.stringify(value)}`);
+                throw new UnrecoverableBBTagError(`Subtag ${testData.name} doesnt have test data set up for ${JSON.stringify(value)}`);
 
             await Promise.resolve();
             yield value;
@@ -240,7 +238,7 @@ export const failReplacer: BBTagReplacer = {
     aliases: new Set(),
     canReplace: () => true,
     replace: async function* $fail(_, __, bbtag) {
-        yield await Promise.reject(new RangeError(`Subtag ${bbtag.source} was evaluated when it wasnt supposed to!`));
+        yield await Promise.reject(new UnrecoverableBBTagError(`Subtag ${bbtag.source} was evaluated when it wasnt supposed to!`));
     }
 };
 export const echoReplacer: BBTagReplacer = {
@@ -365,9 +363,7 @@ async function runTestCase<Locals extends object>(
         .registerAll(testCase.replacers ?? [])
     );
     const test = new SubtagTestContext(testCase, subtags);
-    const code = parseBBTag(testCase.code);
-    if (code instanceof BBTagRuntimeError)
-        throw code;
+    const code = parseBBTag(testCase.code, { throws: true });
 
     try {
         // arrange

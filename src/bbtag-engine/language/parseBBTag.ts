@@ -11,7 +11,9 @@ type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
 type MutableSubtagCall = { -readonly [P in keyof BBTagSubtag]: ToMutable<BBTagSubtag[P]> }
 type MutableStatement = { -readonly [P in keyof BBTagExpression]: ToMutable<BBTagExpression[P]> };
 
-export function parseBBTag(source: string): BBTagExpression | BBTagRuntimeError {
+export function parseBBTag(source: string, options: { throws: true; }): BBTagExpression
+export function parseBBTag(source: string, options?: { throws?: boolean; }): BBTagExpression | BBTagRuntimeError
+export function parseBBTag(source: string, options?: { throws?: boolean; }): BBTagExpression | BBTagRuntimeError {
     const result = createStatement(source);
     const subtags: MutableSubtagCall[] = [];
     let statement = result;
@@ -35,8 +37,12 @@ export function parseBBTag(source: string): BBTagExpression | BBTagRuntimeError 
                 }
                 break;
             case SourceTokenType.ENDSUBTAG:
-                if (subtag === undefined)
-                    return new BBTagRuntimeError(`Unexpected '}' at ${token.start.index}`);
+                if (subtag === undefined) {
+                    const error = new BBTagRuntimeError(`Unexpected '}' at ${token.start.index}`);
+                    if (options?.throws === true)
+                        throw error;
+                    return error;
+                }
                 trim(statement);
                 subtag.end = token.end;
                 subtag = subtags.pop();
@@ -52,8 +58,12 @@ export function parseBBTag(source: string): BBTagExpression | BBTagRuntimeError 
         }
     }
 
-    if (subtag !== undefined)
-        return new BBTagRuntimeError(`Unmatched '{' at ${subtag.start.index}`);
+    if (subtag !== undefined) {
+        const error = new BBTagRuntimeError(`Unmatched '{' at ${subtag.start.index}`);
+        if (options?.throws === true)
+            throw error;
+        return error;
+    }
 
     trim(result);
     return result;
