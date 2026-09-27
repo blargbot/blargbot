@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { isProxy } from 'node:util/types';
+import { isProxy, isTypedArray } from 'node:util/types';
 
 export interface MockOptions<out T extends Mockable> {
     typeof:
@@ -73,7 +73,7 @@ export interface Mock<out T extends Mockable = Mockable> extends MockHelper<T> {
 }
 type IType<T extends Mockable = Mockable> = Mock<T>;
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const Mock = class Mock<T extends Mockable = Mockable> implements IType<T> {
+export const Mock = class Mock<T extends Mockable = Mockable> {
     readonly #strict: boolean;
     readonly #id: string | null;
     readonly #shape: T;
@@ -897,6 +897,79 @@ class AssertingArgumentMatcher<T> extends ArgumentMatcher {
         return other instanceof AssertingArgumentMatcher && other.#assertion === this.#assertion;
     }
 }
+class CollectionEqualMatcher<Item> extends ArgumentMatcher {
+    readonly #source: readonly unknown[];
+    readonly #orderMatters: boolean;
+    public specificity: number = 100_000;
+
+    public constructor(source: Iterable<Item>, orderMatters: boolean) {
+        super();
+        this.#source = Iterator.from(source).map(x => PublicArgumentMatcher.reveal(x)).toArray();
+        this.#orderMatters = orderMatters;
+        for (const item of this.#source) {
+            if (item instanceof ArgumentMatcher)
+                this.specificity += item.specificity;
+            else
+                this.specificity += StrictArgumentMatcher.specificity;
+        }
+    }
+
+    #checkAll(items: Iterable<unknown>, thisArg: unknown): boolean {
+        if (this.#orderMatters) {
+            const arr = [...items];
+            return arr.length === this.#source.length && this.#source.every((x, i) => {
+                const y = arr[i];
+                if (x instanceof ArgumentMatcher)
+                    return x.check(y, thisArg);
+                return x === y;
+            });
+        }
+
+        const matchCount = new Map(this.#source.map(x => [x, 0]));
+        const matchers = this.#source.filter(x => x instanceof ArgumentMatcher);
+        for (const item of items) {
+            if (matchCount.has(item))
+                matchCount.set(item, matchCount.get(item)! + 1);
+            else {
+                let matched = false;
+                for (const matcher of matchers) {
+                    if (matcher.check(item, thisArg)) {
+                        matched = true;
+                        matchCount.set(matcher, matchCount.get(matcher)! + 1);
+                    }
+                }
+                if (!matched)
+                    return false;
+            }
+        }
+        return matchCount.values().every(v => v > 0);
+    }
+
+    public check(value: unknown, thisArg: unknown): boolean {
+        if (typeof value === 'string')
+            return this.#checkAll(value, thisArg);
+        if (typeof value !== 'object' || value === null)
+            return false;
+        if (!(Symbol.iterator in value) || typeof value[Symbol.iterator] !== 'function')
+            return false;
+        return this.#checkAll(value as Iterable<unknown>, thisArg);
+    }
+
+    public toString(): string {
+        return `[${this.#source.map(x => x instanceof ArgumentMatcher ? x.toString() : argToString(x)).join(',')}]`;
+    }
+
+    public equals(other: ArgumentMatcher): boolean {
+        return other instanceof CollectionEqualMatcher &&
+            this.#source.length === other.#source.length &&
+            this.#source.every((x, i) => {
+                const y = other.#source[i];
+                if (x instanceof ArgumentMatcher)
+                    return y instanceof ArgumentMatcher && x.equals(y);
+                return x === y;
+            });
+    }
+}
 class LooksLikeArgumentMatcher extends ArgumentMatcher {
     readonly #skeleton: unknown;
     public override specificity: number;
@@ -927,6 +1000,8 @@ class LooksLikeArgumentMatcher extends ArgumentMatcher {
                     return StrictArgumentMatcher.specificity;
                 if (value instanceof Array)
                     return value.reduce((p: number, c: unknown) => p + this.#calcSpecificity(c), 0);
+                if (isTypedArray(value))
+                    return 100_000_000;
                 if (Reflect.getPrototypeOf(value) === Object.prototype)
                     return (Reflect.ownKeys(value) as Array<keyof typeof value>).reduce((p, c) => p + this.#calcSpecificity(value[c]), 0);
                 if ('valueOf' in value && typeof value.valueOf === 'function')
@@ -958,8 +1033,10 @@ class LooksLikeArgumentMatcher extends ArgumentMatcher {
                     return true;
                 if (value === null || $skeleton === null)
                     return false;
-                if ($skeleton instanceof Array && value instanceof Array)
-                    return value.length === $skeleton.length && $skeleton.every((v, i) => this.#check(value[i], v, thisArg));
+                if ($skeleton instanceof Array)
+                    return Array.isArray(value) && value.length === $skeleton.length && $skeleton.every((v, i) => this.#check(value[i], v, thisArg));
+                if (isTypedArray($skeleton))
+                    return isTypedArray(value) && $skeleton.BYTES_PER_ELEMENT === value.BYTES_PER_ELEMENT && $skeleton.length === value.length && $skeleton.every((v, i) => value[i] === v);
                 if (Reflect.getPrototypeOf($skeleton) === Object.prototype)
                     return (Reflect.ownKeys($skeleton) as Array<keyof typeof $skeleton>)
                         .every(k => this.#check(value[k], $skeleton[k], thisArg));
@@ -1134,6 +1211,8 @@ export interface ArgumentMatchers<out T = never> {
     readonly oneOf: <R extends unknown[]>(...values: R) => R[number];
     readonly instanceOf: <R>(ctor: abstract new (...args: never) => R) => R;
     readonly looksLike: <R>(skeleton: R) => R;
+    readonly sequenceEqual: <R>(items: R extends Iterable<infer Item> ? Iterable<Item> : never) => R;
+    readonly setEqual: <R>(items: R extends Iterable<infer Item> ? Iterable<Item> : never) => R;
 }
 
 function toExpression<T extends Mockable>(
@@ -1522,6 +1601,8 @@ const publicArgumentMatchers: ArgumentMatchers<never> = Object.freeze(Object.ass
         asserts: v => PublicArgumentMatcher.disguise(new AssertingArgumentMatcher(v)),
         oneOf: (...v) => PublicArgumentMatcher.disguise(new OneOfArgumentMatcher(...v.map(v => ArgumentMatcher.from(v)))),
         instanceOf: v => PublicArgumentMatcher.disguise(new InstanceOfArgumentMatcher(v)),
+        sequenceEqual: v => PublicArgumentMatcher.disguise(new CollectionEqualMatcher(v, true)),
+        setEqual: v => PublicArgumentMatcher.disguise(new CollectionEqualMatcher(v, false)),
         looksLike
     } satisfies { [P in keyof ArgumentMatchers<never>]: ArgumentMatchers<never>[P]; }
 ));
@@ -1673,6 +1754,8 @@ function argToString(value: unknown): string {
             if (value.toString !== Object.prototype.toString)
                 // eslint-disable-next-line @typescript-eslint/no-base-to-string
                 content = value.toString();
+            else if (Symbol.iterator in value && typeof value[Symbol.iterator] === 'function')
+                content = `[${[...value as Iterable<unknown>].map(v => argToString(v)).join(',')}]`;
             else
                 content = `{${Object.entries(value).map(([k, v]) => `${keyToProp(k, false)}:${argToString(v)}`).join(',')}}`;
             const prototype = Object.getPrototypeOf(value) as object | null;

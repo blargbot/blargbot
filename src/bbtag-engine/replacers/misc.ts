@@ -10,7 +10,7 @@ import type { LogicOperator } from '../operators.js';
 import { aggregationOperators, isLogicOperator, logicOperators, numericOperators, ordinalOperators, runBool, stringOperators } from '../operators.js';
 import { parse } from '../parse.js';
 import type { SubtagReturnTypeMap } from '../types.js';
-import type { ArgsLocals, BrainfuckLocals, DebugLocals, DecancerLocals, FallbackLocals, RegExpCompilerLocals, ReplaceOutputLocals, SafeRegExp, TemporalLocals, VariablesLocals } from './locals.js';
+import type { ArgsLocals, BrainfuckLocals, DebugLocals, DecancerLocals, DumpLocals, FallbackLocals, HttpMethod, HttpRequest, RegExpCompilerLocals, ReplaceOutputLocals, RequestLocals, SafeRegExp, TemporalLocals, VariablesLocals } from './locals.js';
 
 export const base64DecodeReplacer = defineReplacer(['base64Decode', 'aToB'], {
     parameters: ['text'],
@@ -583,3 +583,149 @@ export const debugReplacer = defineReplacer<DebugLocals>('debug', {
         });
     }
 });
+export const dumpReplacer = defineReplacer<DumpLocals>('dump', {
+    parameters: ['text'],
+    returns: 'string',
+    execute: async function dump(ctx, [{ value: text }]) {
+        const url = await ctx.locals.dump(text);
+        return url.toString();
+    }
+});
+export const requestReplacer = defineReplacer<RequestLocals>('request', {
+    parameters: ['url', 'options?', 'data?'],
+    returns: 'json',
+    execute: async function request(ctx, [{ value: url }, { value: optionsStr }, { value: dataStr }]) {
+        const request: HttpRequest = {
+            method: 'GET',
+            url: url,
+            headers: new Headers(),
+            body: new Uint8Array(0)
+        };
+
+        let options;
+        if (optionsStr !== '') {
+            options = parseOptions(optionsStr);
+            if (options === undefined)
+                throw new BBTagRuntimeError('', `Invalid request options "${optionsStr}"`);
+            request.method = options.method ?? 'GET';
+            for (const [key, value] of Object.entries(options.headers ?? {}))
+                request.headers.append(key, value);
+        }
+
+        let data;
+        try {
+            data = JSON.parse(dataStr);
+        } catch { /* NOOP */ }
+
+        if (request.method === 'GET') {
+            if (typeof data === 'object' && data !== null) {
+                const sep = request.url.includes('?') ? '&' : '?';
+                request.url += `${sep}${new URLSearchParams(toStringRecord(data)).toString()}`;
+            }
+        } else if (data !== undefined) {
+            if (!request.headers.has('content-type'))
+                request.headers.set('Content-Type', 'application/json');
+            request.body = asUInt8Array(Buffer.from(JSON.stringify(data)));
+        } else {
+            request.body = asUInt8Array(Buffer.from(dataStr));
+        }
+
+        const response = await ctx.locals.httpRequest(request);
+        if (response.isTruncated)
+            throw new BBTagRuntimeError('Response too large');
+
+        if (options?.checkOk !== false && !(response.status >= 200 && response.status < 400))
+            throw new BBTagRuntimeError(`${response.status} ${response.statusText}`);
+
+        const result = {
+            status: response.status,
+            statusText: response.statusText,
+            contentType: response.headers.get('content-type'),
+            date: response.headers.get('date'),
+            url: response.url
+        };
+        const buffer = asBuffer(response.body);
+
+        if (result.contentType?.startsWith('text') !== false)
+            return { body: buffer.toString(), ...result };
+
+        if (result.contentType.includes('application/json'))
+            return { body: JSON.parse(buffer.toString()), ...result };
+
+        if (buffer.byteLength === 0)
+            return { body: '', ...result };
+
+        return { body: buffer.toString('base64'), ...result };
+    }
+});
+
+interface RequestOptions {
+    method?: HttpMethod;
+    headers?: Record<string, string>;
+    checkOk?: boolean;
+}
+
+function tryParseJson(input: string): JToken | undefined {
+    try {
+        return JSON.parse(input);
+    } catch {
+        return undefined;
+    }
+}
+
+function parseOptions(optionsStr: string): RequestOptions | undefined {
+    const json = tryParseJson(optionsStr);
+    if (json === undefined)
+        return undefined;
+    if (typeof json !== 'object' || json === null)
+        return undefined;
+    const result: RequestOptions = {};
+    if ('checkOk' in json) {
+        if (typeof json.checkOk !== 'boolean')
+            return undefined;
+        result.checkOk = json.checkOk;
+    }
+    if ('method' in json) {
+        if (typeof json.method !== 'string')
+            return undefined;
+        const method = json.method.toUpperCase();
+        switch (method) {
+            case 'GET':
+            case 'POST':
+            case 'PATCH':
+            case 'OPTIONS':
+            case 'DELETE':
+            case 'PUT':
+            case 'QUERY':
+            case 'HEAD':
+                result.method = method;
+                break;
+            default:
+                return undefined;
+        }
+    }
+    if ('headers' in json) {
+        let headers = json.headers;
+        if (typeof headers === 'string') {
+            headers = tryParseJson(headers) ?? headers;
+        }
+        if (typeof headers !== 'object' || headers === null)
+            return undefined;
+        result.headers = toStringRecord(headers);
+    }
+
+    return result;
+}
+
+function asUInt8Array(source: Pick<Uint8Array, 'buffer' | 'byteLength' | 'byteOffset'>): Uint8Array {
+    return new Uint8Array(source.buffer, source.byteOffset, source.byteLength);
+}
+function asBuffer(source: Pick<Uint8Array, 'buffer' | 'byteLength' | 'byteOffset'>): Buffer {
+    return Buffer.from(source.buffer, source.byteOffset, source.byteLength);
+}
+function toStringRecord(source: JObject | JArray): Record<string, string> {
+    return Object.fromEntries(
+        (Array.isArray(source) ? source.entries() : Object.entries(source))
+            .map(([k, v]) => [k, parse.string(v)])
+    );
+}

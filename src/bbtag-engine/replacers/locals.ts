@@ -47,6 +47,32 @@ export interface DebugEntry {
     text: string;
 }
 
+export interface RequestLocals {
+    httpRequest: (request: HttpRequest) => Promise<HttpResponse>;
+}
+
+export type HttpMethod = 'GET' | 'QUERY' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH';
+
+export interface HttpRequest {
+    method: HttpMethod;
+    url: string;
+    headers: Headers;
+    body: Uint8Array;
+}
+
+export interface HttpResponse {
+    url: string;
+    status: number;
+    statusText: string;
+    headers: Headers;
+    body: Uint8Array;
+    isTruncated: boolean;
+}
+
+export interface DumpLocals {
+    dump: (content: string) => Awaitable<URL>;
+}
+
 export interface VariablesLocals {
     variables: VariableStore;
 }
