@@ -6,6 +6,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.logicReplacer,
+    names: ['logic'],
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {

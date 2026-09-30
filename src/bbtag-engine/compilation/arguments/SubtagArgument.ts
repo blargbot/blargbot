@@ -6,6 +6,7 @@ export interface SubtagArgument {
     readonly value: string;
     readonly code: BBTagExpression;
     readonly raw: string;
+    readonly exists: boolean;
     wait(): Promise<string>;
     execute(): Promise<string>;
 }

@@ -439,7 +439,7 @@ export class AmqpConsumer implements AsyncDisposable {
 export class AmqpConsumeMessage implements AmqpMessage {
     readonly #properties: AmqpMessageProperties;
     readonly #channel: ConfirmChannel;
-    readonly #content: Uint8Array;
+    readonly #content: Uint8Array<ArrayBuffer>;
     readonly #raw: ConsumeMessage;
     readonly #fields: Readonly<ConsumeMessageFields>;
     #canAcknowledge: boolean;
@@ -448,7 +448,7 @@ export class AmqpConsumeMessage implements AmqpMessage {
         return this.#properties;
     }
 
-    public get content(): Uint8Array {
+    public get content(): Uint8Array<ArrayBuffer> {
         return this.#content;
     }
 

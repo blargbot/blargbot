@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.parseIntReplacer,
+    names: ['parseInt'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{parseint;123}', expected: '123' },

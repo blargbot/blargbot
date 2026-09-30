@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.debugReplacer,
+    names: ['debug'],
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         {

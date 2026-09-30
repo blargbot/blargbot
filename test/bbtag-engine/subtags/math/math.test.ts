@@ -8,6 +8,7 @@ const exp = Math.pow;
 
 await runSubtagTests({
     replacer: replacers.mathReplacer,
+    names: ['math'],
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         ...createTestCases([0], { '%': 0, '*': 0, '+': 0, '-': 0, '/': 0, '^': 0 }),

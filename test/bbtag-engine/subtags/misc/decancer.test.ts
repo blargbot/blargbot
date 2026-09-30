@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.decancerReplacer,
+    names: ['decancer'],
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {
         ctx.locals.setup(m => m.decancer).returns(value => {

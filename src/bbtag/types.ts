@@ -258,7 +258,7 @@ export type SubtagReturnTypeMap = {
 
 export interface SubtagOptions<TString> {
     readonly name: string;
-    readonly aliases?: readonly string[];
+    readonly aliases?: undefined;
     readonly category: SubtagType;
     readonly description?: TString;
     readonly deprecated?: string | boolean;

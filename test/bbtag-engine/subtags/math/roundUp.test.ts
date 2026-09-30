@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.roundUpReplacer,
+    names: ['roundUp', 'ceil'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{roundup;5}', expected: '5' },

@@ -1,6 +1,6 @@
 export * as replacers from './replacers.js';
 export * from './replacers/locals.js';
-export { Color, ColorLocals, ColorParser, Colorspace } from './replacers/color.js';
+export { Color, ColorParser, Colorspace } from './replacers/color.js';
 export { HtmlEncoder, HtmlEncoderLocals } from './replacers/html.js';
 export * from './language/index.js';
 export * from './bbtagArray.js';
@@ -28,3 +28,7 @@ export * from './compilation/SubtagSignatureOptions.js';
 export * from './compilation/SubtagSignatureCallable.js';
 export * from './compilation/SubtagSignatureCallableOptions.js';
 export * from './compilation/SubtagSignatureParameterOptions.js';
+
+export * from './replacers/discord/errors.js';
+export * from './replacers/discord/locals.js';
+export * from './replacers/discord/util.js';

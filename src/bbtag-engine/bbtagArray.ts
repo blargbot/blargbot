@@ -5,7 +5,7 @@ import type { VariablesLocals } from './replacers/locals.js';
 import type { BBTagArray } from './types.js';
 
 export interface DeserializeOptions {
-    throw?: boolean;
+    throw?: boolean | string;
 }
 
 export const bbtagArray = Object.freeze({
@@ -48,7 +48,7 @@ export const bbtagArray = Object.freeze({
     }
 });
 
-function deserialize(value: string, options: DeserializeOptions & { throw: true; }): BBTagArray
+function deserialize(value: string, options: DeserializeOptions & { throw: true | string; }): BBTagArray
 function deserialize(value: string, options?: DeserializeOptions): BBTagArray | undefined
 function deserialize(value: string, options: DeserializeOptions = {}): BBTagArray | undefined {
     let result = tryParseAsBBTagArray(value);
@@ -66,13 +66,16 @@ function deserialize(value: string, options: DeserializeOptions = {}): BBTagArra
         result = tryParseAsBBTagArray(value);
     }
 
-    if (options.throw === true && result === undefined)
+    if (result !== undefined)
+        return result;
+    if (options.throw === true)
         throw new NotAnArrayError(value);
-
+    if (typeof options.throw === 'string')
+        throw new NotAnArrayError(value).withDisplay(options.throw);
     return result;
 }
 
-async function deserializeOrGetArray(context: BBTagContext<VariablesLocals>, value: string, options: DeserializeOptions & { throw: true; }): Promise<BBTagArray>
+async function deserializeOrGetArray(context: BBTagContext<VariablesLocals>, value: string, options: DeserializeOptions & { throw: true | string; }): Promise<BBTagArray>
 async function deserializeOrGetArray(context: BBTagContext<VariablesLocals>, value: string, options?: DeserializeOptions): Promise<BBTagArray | undefined>
 async function deserializeOrGetArray(context: BBTagContext<VariablesLocals>, value: string, options: DeserializeOptions = {}): Promise<BBTagArray | undefined> {
     const obj = bbtagArray.deserialize(value);
@@ -85,11 +88,13 @@ async function deserializeOrGetArray(context: BBTagContext<VariablesLocals>, val
 
     if (options.throw === true)
         throw new NotAnArrayError(value);
+    if (typeof options.throw === 'string')
+        throw new NotAnArrayError(value).withDisplay(options.throw);
 
     return undefined;
 }
 
-async function deserializeOrGetIterable(context: BBTagContext<VariablesLocals>, value: string, options: DeserializeOptions & { throw: true; }): Promise<Iterable<JToken> | undefined>
+async function deserializeOrGetIterable(context: BBTagContext<VariablesLocals>, value: string, options: DeserializeOptions & { throw: true | string; }): Promise<Iterable<JToken> | undefined>
 async function deserializeOrGetIterable(context: BBTagContext<VariablesLocals>, value: string, options?: DeserializeOptions): Promise<Iterable<JToken> | undefined>
 async function deserializeOrGetIterable(context: BBTagContext<VariablesLocals>, value: string, options: DeserializeOptions = {}): Promise<Iterable<JToken> | undefined> {
     const obj = bbtagArray.deserialize(value);
@@ -102,6 +107,8 @@ async function deserializeOrGetIterable(context: BBTagContext<VariablesLocals>, 
 
     if (options.throw === true)
         throw new NotAnArrayError(value);
+    if (typeof options.throw === 'string')
+        throw new NotAnArrayError(value).withDisplay(options.throw);
 
     return undefined;
 }

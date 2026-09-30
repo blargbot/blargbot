@@ -4,6 +4,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.realPadReplacer,
+    names: ['realPad'],
     argCountBounds: { min: 2, max: 4 },
     cases: [
         { code: '{realpad;;5}', expected: '     ' },

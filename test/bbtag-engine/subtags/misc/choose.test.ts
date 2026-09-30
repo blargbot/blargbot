@@ -4,6 +4,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.chooseReplacer,
+    names: ['choose'],
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {

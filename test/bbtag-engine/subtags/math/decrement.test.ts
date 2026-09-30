@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.decrementReplacer,
+    names: ['decrement'],
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {

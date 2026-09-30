@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.prefixReplacer,
+    names: ['prefix'],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

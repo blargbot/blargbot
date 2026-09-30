@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.newlineReplacer,
+    names: ['newline', 'n'],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         { code: '{newline}', expected: '\n' },

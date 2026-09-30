@@ -11,5 +11,6 @@ export * from './replacers/functions.js';
 export * from './replacers/flowControl.js';
 export * from './replacers/settings.js';
 export * from './replacers/delay.js';
-export { colorReplacer } from './replacers/color.js';
+export * from './replacers/discord.js';
+export { colorReplacerFactory } from './replacers/color.js';
 export { htmlEncodeReplacer, htmlDecodeReplacer } from './replacers/html.js';

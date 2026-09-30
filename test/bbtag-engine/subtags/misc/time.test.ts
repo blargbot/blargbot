@@ -1,4 +1,6 @@
+import type { TemporalValue } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
+import type { Moment } from 'moment-timezone';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -21,17 +23,23 @@ const prettyTimeMagnitudes = {
 
 await runSubtagTests({
     replacer: replacers.timeReplacer,
+    names: ['time'],
     argCountBounds: { min: 0, max: 5 },
     setup(ctx) {
         ctx.locals.setup(m => m.parseTime).returns((text, format, timezone) => {
             const m = parseWithMoment(text, format, timezone);
             if (!m.isValid())
                 return undefined;
-            return {
-                toString(format, timezone) {
-                    return m.tz(timezone).format(format);
-                }
-            };
+            return (function asTemporal(m: Moment): TemporalValue {
+                return {
+                    toTimezone(timezone) {
+                        return asTemporal(m.tz(timezone));
+                    },
+                    format(format) {
+                        return m.format(format);
+                    }
+                };
+            })(m);
         });
     },
     cases: [

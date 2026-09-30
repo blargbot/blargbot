@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.joinReplacer,
+    names: ['join'],
     argCountBounds: { min: 2, max: 2 },
     cases: [
         {

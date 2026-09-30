@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.jsonReplacer,
+    names: ['json', 'j'],
     argCountBounds: { min: 0, max: { count: 1, noEval: [0] } },
     cases: [
         {

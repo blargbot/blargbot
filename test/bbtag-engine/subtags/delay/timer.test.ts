@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.timerReplacer,
+    names: ['timer'],
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 2, noEval: [0] } },
     cases: [
         {
@@ -12,8 +13,8 @@ await runSubtagTests({
             retries: 3,
             expected: '',
             postSetup(bbctx, ctx, code) {
-                const scheduledBody = (code.values[0] as BBTagSubtag).args[1];
-                ctx.locals.setup((m, $) => m.schedule(bbctx, $(scheduledBody), 10_000)).resolves().mustHappen(1);
+                const scheduledBody = (code.values[0] as BBTagSubtag).args[0];
+                ctx.locals.setup(m => m.schedule(bbctx, scheduledBody, 10_000)).resolves().mustHappen(1);
             }
         },
         {

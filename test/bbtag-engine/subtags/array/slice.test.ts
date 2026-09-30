@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.sliceReplacer,
+    names: ['slice'],
     argCountBounds: { min: 2, max: 3 },
     cases: [
         {

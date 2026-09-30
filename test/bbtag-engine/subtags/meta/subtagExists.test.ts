@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.subtagExistsReplacer,
+    names: ['subtagExists'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {

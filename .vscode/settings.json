@@ -16,9 +16,9 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "*.ts": "$(capture).js, $(capture).d.ts",
-    "*.mts": "$(capture).mjs, $(capture).d.mts, $(capture).js, $(capture).d.ts",
-    "*.cts": "$(capture).cjs, $(capture).d.cts, $(capture).js, $(capture).d.ts",
+    "*.ts": "",
+    "*.mts": "",
+    "*.cts": "",
     "*.js": "$(capture).js.map, $(capture).min.js, $(capture).d.ts",
     "*.cjs": "$(capture).cjs.map, $(capture).min.cjs, $(capture).d.cts",
     "*.mjs": "$(capture).mjs.map, $(capture).min.mjs, $(capture).d.mts",

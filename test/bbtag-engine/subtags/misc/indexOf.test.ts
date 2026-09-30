@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.indexOfReplacer,
+    names: ['indexOf'],
     argCountBounds: { min: 2, max: 3 },
     cases: [
         { code: '{indexof;This is some text;s}', expected: '3' },

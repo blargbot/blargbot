@@ -3,4 +3,3 @@ export * from './channel/index.js';
 export * from './guild/index.js';
 export * from './message/index.js';
 export * from './role/index.js';
-export * from './user/index.js';

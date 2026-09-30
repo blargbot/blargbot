@@ -5,6 +5,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.brainfuckReplacer,
+    names: ['brainfuck'],
     argCountBounds: { min: 1, max: 2 },
     setup(context) {
         context.locals.setup(m => m.brainfuck).returns((code, input) => {

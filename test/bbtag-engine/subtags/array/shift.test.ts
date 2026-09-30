@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.shiftReplacer,
+    names: ['shift'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {

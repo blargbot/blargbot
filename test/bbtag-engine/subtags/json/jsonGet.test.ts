@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<VariablesLocals>({
     replacer: replacers.jsonGetReplacer,
+    names: ['jsonGet', 'jGet'],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...generateTestCases({ array: [{ test: { abc: 123 } }] }, 'array.0.test', '{"abc":123}'),

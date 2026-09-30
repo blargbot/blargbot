@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.reverseReplacer,
+    names: ['reverse'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{reverse;abcdefg}', expected: 'gfedcba' },

@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.capitalizeReplacer,
+    names: ['capitalize'],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         {

@@ -9,6 +9,7 @@ const check = parseBBTag('{check1}', { throw: true });
 
 await runSubtagTests<FunctionLocals>({
     replacer: replacers.funcReplacer,
+    names: ['func.'],
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         {

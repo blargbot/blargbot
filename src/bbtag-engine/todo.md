@@ -3,5 +3,5 @@
 0. usage limits
 0. cooldowns
 0. analyze
-0. debug
-
+0. ctx.locals.queryUser read suppressLookup
+0. dm message preamble

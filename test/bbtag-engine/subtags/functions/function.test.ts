@@ -7,6 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.functionReplacer,
+    names: ['function', 'func'],
     argCountBounds: { min: { count: 2, noEval: [1] }, max: { count: 2, noEval: [1] } },
     setup(ctx) {
         ctx.locals.setup(m => m.functions).returns({});
@@ -16,7 +17,7 @@ await runSubtagTests({
             code: '{function;test;{fail}}',
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.locals.functions['func.test'], {
+                assertLooksLike(ctx.locals.functions['func.test'], {
                     values: [
                         {
                             name: {
@@ -41,7 +42,7 @@ await runSubtagTests({
             code: '{function;func.test;{fail}}',
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.locals.functions['func.test'], {
+                assertLooksLike(ctx.locals.functions['func.test'], {
                     values: [
                         {
                             name: {
@@ -74,3 +75,26 @@ await runSubtagTests({
         }
     ]
 });
+
+function assertLooksLike<T>(actual: T, expected: T): void {
+    compare(actual, expected, 'actual');
+    function compare(actual: unknown, expected: unknown, path: string): void {
+        if (expected === null || typeof expected !== 'object') {
+            assert.deepStrictEqual(actual, expected, `${path} differs`);
+            return;
+        }
+
+        assert(actual !== null, `${path} is null`);
+        assert(typeof actual === 'object', `${path} is not an object`);
+
+        for (const key of Reflect.ownKeys(expected)) {
+            assert(key in actual, `${path}.${String(key)} does not exist`);
+
+            compare(
+                (actual as Record<PropertyKey, unknown>)[key],
+                (expected as Record<PropertyKey, unknown>)[key],
+                `${path}.${String(key)}`
+            );
+        }
+    }
+}

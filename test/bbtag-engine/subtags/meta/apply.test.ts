@@ -4,6 +4,7 @@ import { createTestDataReplacer, echoReplacer, MarkerError, runSubtagTests } fro
 
 await runSubtagTests({
     replacer: replacers.applyReplacer,
+    names: ['apply'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {

@@ -4,6 +4,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.regexTestReplacer,
+    names: ['regexTest'],
     argCountBounds: { min: 2, max: { count: 2, noEval: [1] } },
     setup(context) {
         context.locals.setup((m, $) => m.compileRegExp($.string, $.string)).invokes(i => {

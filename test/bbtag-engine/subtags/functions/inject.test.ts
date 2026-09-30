@@ -4,6 +4,7 @@ import { createTestReplacer, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.injectReplacer,
+    names: ['inject'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
 

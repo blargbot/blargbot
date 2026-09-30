@@ -9,6 +9,7 @@ export class ExecutingSubtagArgumentValue<Locals extends object> implements Subt
     #value?: string;
     readonly #context: BBTagContext<Locals>;
 
+    public readonly exists = true;
     public get raw(): string { return this.code.source; }
     public get value(): string {
         if (this.#value === undefined)

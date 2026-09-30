@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.roundReplacer,
+    names: ['round'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{round;5}', expected: '5' },

@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.tagAuthorizerReplacer,
+    names: ['tagAuthorizer', 'customCommandAuthorizer', 'ccAuthorizer'],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

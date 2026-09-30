@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.splitReplacer,
+    names: ['split'],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         { code: '{split;abc123}', expected: '["a","b","c","1","2","3"]' },

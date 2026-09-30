@@ -14,6 +14,7 @@ const doesntContain = { 'startswith': false, 'endswith': false, 'includes': fals
 
 await runSubtagTests({
     replacer: replacers.boolReplacer,
+    names: ['bool'],
     argCountBounds: { min: 3, max: 3 },
     cases: [
         ...generateOrdinalTestCases('123', isEqualTo, '123'),

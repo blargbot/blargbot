@@ -7,6 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<RequestLocals>({
     replacer: replacers.requestReplacer,
+    names: ['request'],
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {

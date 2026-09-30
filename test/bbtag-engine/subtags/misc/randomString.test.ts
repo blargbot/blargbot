@@ -4,6 +4,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.randomStringReplacer,
+    names: ['randomString', 'randString', 'randStr'],
     argCountBounds: { min: 2, max: 2 },
     cases: [
         { code: '{randstr;abcdefg;5}', expected: /^([a-g])(?!\1{4})[a-g]{4}$/, retries: 5 },

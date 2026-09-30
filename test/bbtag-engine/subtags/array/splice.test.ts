@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.spliceReplacer,
+    names: ['splice'],
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {

@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<ExecTagLocals>({
     replacer: replacers.execTagReplacer,
+    names: ['execTag', 'exec'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {

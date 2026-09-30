@@ -22,6 +22,7 @@ function hasSameMembers(a: Iterable<unknown>, b: Iterable<unknown>): boolean {
 
 await runSubtagTests<VariablesLocals & ArgsLocals>({
     replacer: replacers.shuffleReplacer,
+    names: ['shuffle'],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

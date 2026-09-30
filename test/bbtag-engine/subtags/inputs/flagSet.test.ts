@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.flagSetReplacer,
+    names: ['flagSet'],
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {
         ctx.locals.setup(m => m.flags).returns({

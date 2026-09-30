@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<VariablesLocals>({
     replacer: replacers.jsonSortReplacer,
+    names: ['jsonSort', 'jSort'],
     argCountBounds: { min: 2, max: 3 },
     cases: [
         {

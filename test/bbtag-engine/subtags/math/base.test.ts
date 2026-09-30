@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.baseReplacer,
+    names: ['base', 'radix'],
     argCountBounds: { min: 2, max: 3 },
     cases: [
         { code: '{base;10;16}', expected: 'a' },

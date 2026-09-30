@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.escapeBBTagReplacer,
+    names: ['escapeBBTag', 'escape'],
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         { code: '{escapebbtag}', expected: '' },

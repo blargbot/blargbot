@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<VariablesLocals>({
     replacer: replacers.rollbackReplacer,
+    names: ['rollback'],
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         {

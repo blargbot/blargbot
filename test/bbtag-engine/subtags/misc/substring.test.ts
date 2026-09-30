@@ -4,6 +4,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.substringReplacer,
+    names: ['substring'],
     argCountBounds: { min: 2, max: 3 },
     cases: [
         { code: '{substring;This is some text;5}', expected: 'is some text' },

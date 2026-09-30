@@ -83,7 +83,7 @@ export const jsonValuesReplacer = defineReplacer<VariablesLocals>(['jsonValues',
     returns: 'json',
     execute: async function jsonValues(ctx, [{ value: input }, { value: path }]) {
         const value = await getPropPath(ctx, input, path);
-        return Object.values(value ?? {});
+        return Object.values(value ?? {}).values().filter(x => x !== undefined).toArray();
     }
 });
 export const jsonSortReplacer = defineReplacer<VariablesLocals>(['jsonSort', 'jSort'], {
@@ -171,7 +171,8 @@ function clean(input: JToken): JToken {
             return clean(input.v);
 
         for (const [key, value] of Object.entries(input))
-            input[key] = clean(value);
+            if (value !== undefined)
+                input[key] = clean(value);
 
     }
     return input;

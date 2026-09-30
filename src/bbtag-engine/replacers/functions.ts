@@ -34,47 +34,30 @@ export const funcReplacer = defineReplacer<FunctionLocals>(['func.'], {
     }
 });
 
-export const paramsReplacer = defineReplacer<FunctionLocals>(
-    ['params'],
-    {
-        parameters: [],
-        returns: 'string',
-        execute: function allParams(ctx) {
-            return requireParams(ctx, 'params').join(' ');
-        }
-    },
-    {
-        parameters: ['index'],
-        returns: 'string',
-        execute: function singleParam(ctx, [{ value: index }]) {
-            const params = requireParams(ctx, 'params');
-            const i = parse.int(index, { throw: true });
-            if (params.length <= i || i < 0)
-                throw new NotEnoughArgumentsError(i + 1, params.length);
+export const paramsReplacer = defineReplacer<FunctionLocals>('params', {
+    parameters: ['start?', 'end?'],
+    returns: 'string',
+    execute: function sliceParams(ctx, [{ value: start, exists: hasStart }, { value: end, exists: hasEnd }]) {
+        const params = requireParams(ctx, 'params');
+        if (!hasStart)
+            return params.join(' ');
 
-            return params[i];
-        }
-    },
-    {
-        parameters: ['start', 'end'],
-        returns: 'string',
-        execute: function sliceParams(ctx, [{ value: start }, { value: end }]) {
-            const params = requireParams(ctx, 'params');
-            let from = parse.int(start, { throw: true });
-            let to = end.toLowerCase() === 'n'
+        let from = parse.int(start, { throw: true });
+        let to = hasEnd
+            ? end.toLowerCase() === 'n'
                 ? params.length
-                : parse.int(end, { throw: true });
+                : parse.int(end, { throw: true })
+            : from + 1;
 
-            // TODO This behaviour should be documented
-            [from, to] = [from, to].sort((a, b) => a - b);
+        // TODO This behaviour should be documented
+        [from, to] = [from, to].sort((a, b) => a - b);
 
-            if (params.length <= from || from < 0)
-                throw new NotEnoughArgumentsError(from + 1, params.length);
+        if (params.length <= from || from < 0)
+            throw new NotEnoughArgumentsError(from + 1, params.length);
 
-            return params.slice(from, to).join(' ');
-        }
+        return params.slice(from, to).join(' ');
     }
-);
+});
 
 export const paramsArrayReplacer = defineReplacer<FunctionLocals>('paramsArray', {
     parameters: [],

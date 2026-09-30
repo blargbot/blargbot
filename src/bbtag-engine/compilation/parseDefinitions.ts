@@ -132,7 +132,7 @@ const logicWrappers: { [P in keyof SubtagReturnTypeMap]: <Locals extends object>
     'json[]': iterableSubtagLogic,
     'json[]|nothing': iterableSubtagLogic,
     'nothing': voidSubtagLogic,
-    'id': stringSubtagLogic,
+    'id': stringifySubtagLogic,
     'id[]': iterableSubtagLogic,
     'loop': stringIterableSubtagLogic,
     'error': voidSubtagLogic,

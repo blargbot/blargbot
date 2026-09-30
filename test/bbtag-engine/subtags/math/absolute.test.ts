@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.absoluteReplacer,
+    names: ['absolute', 'abs'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         { code: '{abs;12345}', expected: '12345' },

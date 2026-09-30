@@ -23,7 +23,9 @@
         "skipLibCheck": true,
         "useUnknownInCatchVariables": true,
         "lib": [
-            "ES2025"
+            "ES2025",
+            "ESNext.Temporal",
+            "ESNext.Collection",
         ]
     }
 }

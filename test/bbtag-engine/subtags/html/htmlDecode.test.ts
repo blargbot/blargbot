@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<HtmlEncoderLocals>({
     replacer: replacers.htmlDecodeReplacer,
+    names: ['htmlDecode'],
     argCountBounds: { min: 1, max: Infinity },
     setup(ctx) {
         const htmlEncoder = ctx.createMock<HtmlEncoder>();

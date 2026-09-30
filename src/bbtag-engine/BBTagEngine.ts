@@ -8,7 +8,7 @@ export interface BBTagEngineOptions<Input, Locals extends object> {
     readonly replacer: BBTagReplacer<Locals>;
     readonly renderError: BBTagErrorRenderer<NoInfer<Locals>>;
     readonly serializer: BBTagSerializer<NoInfer<Input>>;
-    readonly locals: BBTagLocalsFactory<Input, NoInfer<Locals>>;
+    readonly locals: BBTagLocalsFactory<Input, Locals>;
 }
 
 export class BBTagEngine<Input, Locals extends object> {

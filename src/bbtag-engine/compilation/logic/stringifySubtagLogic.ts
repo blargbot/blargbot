@@ -4,11 +4,11 @@ export function stringifySubtagLogic<Locals extends object, T>(
     next: SubtagLogic<Locals, Awaitable<T>>,
     conversion: (value: T) => string
 ): SubtagLogic<Locals>
-export function stringifySubtagLogic<Locals extends object, T extends { toString(): string; }>(
+export function stringifySubtagLogic<Locals extends object, T extends JValue | bigint>(
     next: SubtagLogic<Locals, Awaitable<T>>,
     conversion?: (value: T) => string
 ): SubtagLogic<Locals>
-export function stringifySubtagLogic<Locals extends object, T extends { toString(): string; }>(
+export function stringifySubtagLogic<Locals extends object, T extends JValue | bigint>(
     next: SubtagLogic<Locals, Awaitable<T>>,
     conversion?: (value: T) => string
 ): SubtagLogic<Locals> {

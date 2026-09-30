@@ -4,6 +4,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.spaceReplacer,
+    names: ['space', 's'],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         { code: '{space}', expected: ' ' },

@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.base64EncodeReplacer,
+    names: ['base64Encode', 'bToA'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {

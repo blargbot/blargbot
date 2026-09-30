@@ -34,5 +34,26 @@ export const random = {
     /** Picks a random number in the range [min, max], or [min, max) if upperInclusive is set to false */
     int(min: number, max: number, upperInclusive = true): number {
         return Math.floor(Math.random() * (max - min + (upperInclusive ? 1 : 0))) + min;
+    },
+    bigint(min: bigint, max: bigint, upperInclusive = true): bigint {
+        if (max < min)
+            [max, min] = [min, max];
+        let range = max - min;
+        if (!upperInclusive)
+            range--;
+        if (range <= 0n)
+            return min;
+        const rangeStr = range.toString();
+        const digitCount = rangeStr.length;
+        let limited = true;
+        return min + BigInt(Array.from({ length: digitCount }, (_, i) => {
+            if (!limited) return random.pick(anyDigit);
+            const digits = anyDigit.slice(0, parseInt(rangeStr[i]) + 1);
+            const digit = random.pick(digits);
+            if (digit !== rangeStr[i])
+                limited = false;
+            return digit;
+        }).join(''));
     }
 };
+const anyDigit = '0123456789';

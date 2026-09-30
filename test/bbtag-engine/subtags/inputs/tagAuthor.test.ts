@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.tagAuthorReplacer,
+    names: ['tagAuthor', 'customCommandAuthor', 'ccAuthor'],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

@@ -9,6 +9,7 @@ const isLessThan = { '!=': true, '<': true, '<=': true, '==': false, '>': false,
 
 await runSubtagTests({
     replacer: replacers.ifReplacer,
+    names: ['if'],
     argCountBounds: { min: 2, max: { count: 5, noEval: [3, 4] } },
     cases: [
         /* {if;<bool>;<then>} */

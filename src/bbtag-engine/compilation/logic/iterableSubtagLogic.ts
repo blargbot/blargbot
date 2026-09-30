@@ -1,8 +1,9 @@
 import { BBTagRuntimeError } from '../../BBTagRuntimeError.js';
+import { bigintReplacer } from './bigintReplacer.js';
 import type { SubtagLogic } from './SubtagLogic.js';
 
 export function iterableSubtagLogic<Locals extends object>(
-    next: SubtagLogic<Locals, Awaitable<AwaitableIterable<unknown> | undefined>>
+    next: SubtagLogic<Locals, Awaitable<AwaitableIterable<JToken | bigint | undefined> | undefined>>
 ): SubtagLogic<Locals> {
     return async function* iterableResults(context, args, bbtag) {
         const values = await next(context, args, bbtag);
@@ -10,7 +11,7 @@ export function iterableSubtagLogic<Locals extends object>(
             return;
 
         if (Array.isArray(values))
-            return yield JSON.stringify(values);
+            return yield JSON.stringify(values, bigintReplacer);
 
         const result = [];
         try {
@@ -22,6 +23,6 @@ export function iterableSubtagLogic<Locals extends object>(
             result.push(await context.addError(err, bbtag));
         }
 
-        yield JSON.stringify(result);
+        yield JSON.stringify(result, bigintReplacer);
     };
 }

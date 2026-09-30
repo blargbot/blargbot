@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.trimReplacer,
+    names: ['trim'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{trim;abc}', expected: 'abc' },

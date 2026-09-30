@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<VariablesLocals>({
     replacer: replacers.jsonStringifyReplacer,
+    names: ['jsonStringify', 'jStringify'],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         {

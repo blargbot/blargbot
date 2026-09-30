@@ -7,6 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.forReplacer,
+    names: ['for'],
     argCountBounds: { min: { count: 5, noEval: [4] }, max: { count: 6, noEval: [5] } },
     cases: [
         {

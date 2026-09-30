@@ -7,6 +7,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.randomChooseReplacer,
+    names: ['randomChoose', 'randChoose'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
@@ -34,12 +35,12 @@ await runSubtagTests({
             }
         },
         {
-            code: `{randchoose;{eval}[1,2,3,4,5,6,7,8,9]}
-{randchoose;{eval}[1,2,3,4,5,6,7,8,9]}`,
+            code: '{randchoose;{eval}[1,2,3,4,5,6,7,8,9]}\n' +
+                '{randchoose;{eval}[1,2,3,4,5,6,7,8,9]}',
             expected: /^(\d)\n(?!\1)\d$/, // the 2 numbers picked should not be the same
             errors: [
                 { start: 12, end: 18, error: new MarkerError('eval', 12) },
-                { start: '51:1:12', end: '57:1:18', error: new MarkerError('eval', 51) }
+                { start: 51, end: 57, error: new MarkerError('eval', 51) }
             ],
             retries: 5
         },
@@ -58,8 +59,8 @@ await runSubtagTests({
             ]
         },
         {
-            code: `{randchoose;{eval}1;{eval}2;{eval}3;{eval}4;{eval}5;{eval}6;{eval}7;{eval}8;{eval}9}
-{randchoose;{eval}1;{eval}2;{eval}3;{eval}4;{eval}5;{eval}6;{eval}7;{eval}8;{eval}9}`,
+            code: '{randchoose;{eval}1;{eval}2;{eval}3;{eval}4;{eval}5;{eval}6;{eval}7;{eval}8;{eval}9}\n' +
+                '{randchoose;{eval}1;{eval}2;{eval}3;{eval}4;{eval}5;{eval}6;{eval}7;{eval}8;{eval}9}',
             expected: /^(\d)\n(?!\1)\d$/, // the 2 numbers picked should not be the same
             errors(errors) {
                 assert.equal(errors.length, 2);

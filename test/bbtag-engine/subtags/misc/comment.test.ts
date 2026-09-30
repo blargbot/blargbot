@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.commentReplacer,
+    names: ['comment', '//'],
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         { code: '{comment}', expected: '' },

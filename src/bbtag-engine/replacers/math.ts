@@ -42,7 +42,7 @@ export const roundUpReplacer = defineReplacer(['roundUp', 'ceil'], {
         return roundUsing(number.value, Math.ceil);
     }
 });
-export const randomIntReplacer = defineReplacer<FallbackLocals>(['randomInt', 'randint'], {
+export const randomIntReplacer = defineReplacer<FallbackLocals>(['randomInt', 'randInt'], {
     parameters: ['min?:0', 'max'],
     returns: 'number',
     execute: function randomInt(ctx, [{ value: minStr }, { value: maxStr }]) {

@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<VariablesLocals>({
     replacer: replacers.jsonSetReplacer,
+    names: ['jsonSet', 'jSet'],
     argCountBounds: { min: 2, max: 4 },
     cases: [
         {

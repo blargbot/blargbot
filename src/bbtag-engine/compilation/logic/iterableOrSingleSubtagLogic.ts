@@ -1,7 +1,8 @@
+import { bigintReplacer } from './bigintReplacer.js';
 import type { SubtagLogic } from './SubtagLogic.js';
 
 export function iterableOrSingleSubtagLogic<Locals extends object, T extends { toString(): string; }>(
-    next: SubtagLogic<Locals, Awaitable<T | AwaitableIterable<unknown> | undefined | void>>
+    next: SubtagLogic<Locals, Awaitable<T | AwaitableIterable<T> | undefined | void>>
 ): SubtagLogic<Locals> {
     return async function* iterableOrSingleResult(context, args, bbtag) {
         const values = await next(context, args, bbtag);
@@ -9,7 +10,7 @@ export function iterableOrSingleSubtagLogic<Locals extends object, T extends { t
             return;
 
         if (Array.isArray(values))
-            return yield JSON.stringify(values);
+            return yield JSON.stringify(values, bigintReplacer);
 
         if (typeof values !== 'object' || !(Symbol.iterator in values) && !(Symbol.asyncIterator in values))
             return yield values.toString();
@@ -18,6 +19,6 @@ export function iterableOrSingleSubtagLogic<Locals extends object, T extends { t
         for await (const item of values)
             result.push(item);
 
-        yield JSON.stringify(result);
+        yield JSON.stringify(result, bigintReplacer);
     };
 }

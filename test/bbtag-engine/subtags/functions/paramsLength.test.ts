@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.paramsLengthReplacer,
+    names: ['paramsLength'],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

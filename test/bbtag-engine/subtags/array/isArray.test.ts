@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.isArrayReplacer,
+    names: ['isArray'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{isarray;[1,2,3]}', expected: 'true' },

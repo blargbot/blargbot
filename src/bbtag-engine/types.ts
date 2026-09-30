@@ -39,7 +39,7 @@ type SubtagReturnTypeValueMap = {
     number: number | bigint;
     boolean: boolean;
     string: string;
-    id: string;
+    id: string | bigint;
     json: JToken;
     nothing: undefined;
 }

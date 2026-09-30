@@ -48,7 +48,7 @@ export interface DebugEntry {
 }
 
 export interface RequestLocals {
-    httpRequest: (request: HttpRequest) => Promise<HttpResponse>;
+    httpRequest: (request: HttpRequest) => Awaitable<HttpResponse>;
 }
 
 export type HttpMethod = 'GET' | 'QUERY' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH';
@@ -90,7 +90,7 @@ export interface VariableReference {
 }
 
 export interface ReplaceOutputLocals {
-    replaceOutput: Array<(output: string) => Awaitable<string>>;
+    outputReplacers: Array<(output: string) => Awaitable<string>>;
 }
 
 export interface RegExpCompilerLocals {
@@ -107,7 +107,7 @@ export interface TimerLocals {
 
 export interface LockLocals {
     inLock: boolean;
-    lock: (mode: 'read' | 'write', key: string) => Promise<AsyncDisposable | Disposable>;
+    lock: (mode: 'read' | 'write', key: string) => Awaitable<AsyncDisposable | Disposable>;
 }
 
 export interface SafeRegExp {
@@ -126,8 +126,10 @@ export interface TemporalLocals {
 }
 
 export interface TemporalValue {
-    toString(format: string, timezone: string): string;
+    toTimezone(timezone: string): TemporalValue;
+    format(format: string): string;
 }
+
 export interface DecancerLocals {
     decancer: (value: string) => string;
 }

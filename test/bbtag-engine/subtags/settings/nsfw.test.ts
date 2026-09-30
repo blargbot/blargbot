@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.nsfwReplacer,
+    names: ['nsfw'],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.switchReplacer,
+    names: ['switch'],
     argCountBounds: { min: 3, max: Infinity },
     cases: [
         { code: '{switch;abc;abc;aaaa;def;{fail};ghi;{fail}}', expected: 'aaaa' },

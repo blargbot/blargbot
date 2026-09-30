@@ -7,6 +7,7 @@ import { createTestReplacer, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<ReasonLocals>({
     replacer: replacers.reasonReplacer,
+    names: ['reason'],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

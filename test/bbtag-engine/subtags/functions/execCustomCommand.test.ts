@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<ExecCustomCommandLocals>({
     replacer: replacers.execCustomCommandReplacer,
+    names: ['execCustomCommand', 'execCC'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {

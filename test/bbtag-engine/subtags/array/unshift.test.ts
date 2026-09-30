@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.unshiftReplacer,
+    names: ['unshift'],
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {

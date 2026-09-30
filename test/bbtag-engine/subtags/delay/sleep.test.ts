@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.sleepReplacer,
+    names: ['sleep'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {

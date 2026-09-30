@@ -4,12 +4,10 @@ import * as inspector from 'node:inspector';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import type { BBTagContext, BBTagExpression, BBTagReplacer, BBTagSerializer, BBTagSubtag, CompiledBBTagReplacer, FallbackLocals, LocatedBBTagRuntimeError, SourceMarker, SubtagArgumentArray } from '@blargbot/bbtag-engine';
+import type { BBTagContext, BBTagExpression, BBTagReplacer, BBTagSerializer, BBTagSubtag, FallbackLocals, LocatedBBTagRuntimeError, SourceMarker, SubtagArgumentArray } from '@blargbot/bbtag-engine';
 import { BBTagEngine, BBTagRuntimeError, composeReplacer, defineReplacer, InternalServerError, NotEnoughArgumentsError, parseBBTag, TooManyArgumentsError, UnrecoverableBBTagError } from '@blargbot/bbtag-engine';
 import type { Mockable, MockOptions } from '@blargbot/test-util';
 import { Mock, MockError } from '@blargbot/test-util';
-
-type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${number}` | `${number}:${number}` | `${number}`;
 
 export interface SubtagTestCase<Locals extends object = object> {
     readonly title?: string;
@@ -24,7 +22,7 @@ export interface SubtagTestCase<Locals extends object = object> {
         required?: boolean;
         handle: (error: unknown) => Awaitable<void>;
     };
-    readonly errors?: ReadonlyArray<{ start?: SourceMarkerResolvable; end?: SourceMarkerResolvable; error: BBTagRuntimeError; }> | ((errors: LocatedBBTagRuntimeError[]) => void);
+    readonly errors?: ReadonlyArray<{ start: number | SourceMarker; end: number | SourceMarker; error: BBTagRuntimeError; }> | ((errors: LocatedBBTagRuntimeError[]) => void);
     readonly skip?: boolean | (() => Awaitable<boolean>);
     readonly replacers?: Iterable<BBTagReplacer<Locals>>;
     readonly retries?: number;
@@ -39,9 +37,13 @@ interface TestSuiteConfig<Locals extends object> {
 }
 
 export class MarkerError extends BBTagRuntimeError {
+    public readonly type: string;
+    public readonly index: number;
     public constructor(type: string, index: number) {
         super(`{${type}} called at ${index}`);
         this.display = '';
+        this.type = type;
+        this.index = index;
     }
 }
 
@@ -49,7 +51,8 @@ export interface SubtagTestSuiteData<
     Locals extends object
 > extends Pick<SubtagTestCase<Locals>, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
     readonly cases: Array<SubtagTestCase<Locals>>;
-    readonly replacer: CompiledBBTagReplacer<Locals & FallbackLocals>;
+    readonly replacer: BBTagReplacer<Locals & FallbackLocals>;
+    readonly names: Iterable<string>;
     readonly argCountBounds: { min: ArgCountBound; max: ArgCountBound; };
 }
 
@@ -128,7 +131,7 @@ export class SubtagTestContext<Locals extends object> {
 }
 
 export async function runSubtagTests<Locals extends object>(data: SubtagTestSuiteData<Locals>): Promise<void> {
-    const suite = new SubtagTestSuite(data.replacer);
+    const suite = new SubtagTestSuite(data.replacer, data.names);
     if (data.setup !== undefined)
         suite.setup(data.setup);
     if (data.postSetup !== undefined)
@@ -166,22 +169,15 @@ Finished!`;
     }
 }
 
-export function sourceMarker(location: SourceMarkerResolvable): SourceMarker
-export function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined
-export function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined {
-    if (typeof location === 'number')
-        return { index: location, line: 0, column: location };
+export function sourceMarker(location: number | SourceMarker, source: string): SourceMarker | undefined {
     if (typeof location === 'object')
         return location;
-    if (typeof location === 'undefined')
-        return undefined;
 
-    const segments = location.split(':');
-    const index = segments[0];
-    const line = segments[1] ?? '0';
-    const column = segments[2] ?? index;
-
-    return { index: parseInt(index), line: parseInt(line), column: parseInt(column) };
+    const slice = source.slice(0, location);
+    const lineStart = slice.lastIndexOf('\n');
+    const lastLine = lineStart === -1 ? slice : slice.slice(lineStart + 1);
+    const lineCount = slice.split('\n').length - 1;
+    return { index: location, line: lineCount, column: lastLine.length };
 }
 
 export function createTestDataReplacer(values: Record<string, string | undefined>): BBTagReplacer {
@@ -261,10 +257,12 @@ export const echoReplacer: BBTagReplacer = {
 export class SubtagTestSuite<Locals extends object> {
     readonly #config: TestSuiteConfig<Locals> = { setup: [], assert: [], teardown: [], postSetup: [] };
     readonly #testCases: Array<SubtagTestCase<Locals>> = [];
-    readonly #replacer: CompiledBBTagReplacer<Locals>;
+    readonly #replacer: BBTagReplacer<Locals>;
+    readonly #names: Iterable<string>;
 
-    public constructor(replacer: CompiledBBTagReplacer<Locals>) {
+    public constructor(replacer: BBTagReplacer<Locals>, names: Iterable<string>) {
         this.#replacer = replacer;
+        this.#names = names;
     }
 
     public setup(setup: TestSuiteConfig<Locals>['setup'][number]): this {
@@ -302,6 +300,15 @@ export class SubtagTestSuite<Locals extends object> {
         await describe(`{${this.#replacer.name ?? ''}}`, async () => {
             const subtag = this.#replacer;
             const config = this.#config;
+            await it(`Should have [${Iterator.from(this.#names).map(x => JSON.stringify(x)).toArray().join(',')}] as names`, () => {
+                const expectedNames = new Set(this.#names);
+                assert(expectedNames.size > 0);
+                const replacerNames = new Set(subtag.aliases);
+                if (subtag.name !== null)
+                    replacerNames.add(subtag.name);
+                assert.deepEqual(replacerNames, expectedNames);
+            });
+
             for (const testCase of this.#testCases) {
                 const retries = Math.max(testCase.retries ?? 0, 0);
                 const timeout = testCase.timeout === undefined ? undefined : (retries + 1) * testCase.timeout;
@@ -354,7 +361,7 @@ async function shouldSkip<Locals extends object>(testCase: SubtagTestCase<Locals
 }
 
 async function runTestCase<Locals extends object>(
-    replacer: CompiledBBTagReplacer<Locals>,
+    replacer: BBTagReplacer<Locals>,
     testCase: SubtagTestCase<Locals>,
     config: TestSuiteConfig<Locals>
 ): Promise<void> {
@@ -363,7 +370,7 @@ async function runTestCase<Locals extends object>(
         .register(evalReplacer)
         .register(failReplacer)
         .registerAll(testCase.replacers ?? [])
-    );
+    ) as BBTagReplacer<Locals>;
     const test = new SubtagTestContext(testCase, subtags);
     const code = parseBBTag(testCase.code, { throw: true });
 
@@ -408,14 +415,14 @@ async function runTestCase<Locals extends object>(
             testCase.errors(context.errors);
         } else {
             const errors = context.errors.map(err => ({
-                error: err.error,
+                error: Object.create(err.error, { stack: { value: null } }),
                 start: err.bbtag.start,
                 end: err.bbtag.end
             }));
             const expected = testCase.errors?.map(err => ({
-                error: err.error,
-                start: sourceMarker(err.start),
-                end: sourceMarker(err.end)
+                error: Object.create(err.error, { stack: { value: null } }),
+                start: sourceMarker(err.start, testCase.code),
+                end: sourceMarker(err.end, testCase.code)
             })) ?? [];
             assert.deepEqual(errors, expected);
         }

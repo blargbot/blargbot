@@ -1,5 +1,5 @@
 import type { LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '@blargbot/bbtag-engine';
-import { InvalidOperatorError, isLogicOperator, isNumericOperator, isOrdinalOperator, isStringOperator, replacers } from '@blargbot/bbtag-engine';
+import { InvalidOperatorError, isLogicOperator, isNumericOperator, isOrdinalOperator, isStringOperator, operators, replacers } from '@blargbot/bbtag-engine';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
@@ -16,6 +16,7 @@ const isFalse = { '!=': false, '<': false, '<=': false, '==': false, '>': false,
 
 await runSubtagTests({
     replacer: replacers.operatorReplacer,
+    names: ['operator', ...Object.keys(operators)],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {

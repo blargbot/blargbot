@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.argsReplacer,
+    names: ['args'],
     argCountBounds: { min: 0, max: 2 },
     setup(ctx) {
         ctx.locals.setup(m => m.args).returns(['arg1', 'arg2', 'arg3 arg3', 'arg4', 'arg5'], { isFallback: true });

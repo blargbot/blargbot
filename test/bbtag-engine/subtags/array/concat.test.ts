@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.concatReplacer,
+    names: ['concat'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         { code: '{concat;["this", "is"];["an", "array"]}', expected: '["this","is","an","array"]' },

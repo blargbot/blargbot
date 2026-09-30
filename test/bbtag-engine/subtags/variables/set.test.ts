@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<VariablesLocals>({
     replacer: replacers.setReplacer,
+    names: ['set'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {

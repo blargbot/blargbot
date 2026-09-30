@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.minReplacer,
+    names: ['min'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         { code: '{min;1;2;3;4;5}', expected: '1' },

@@ -6,9 +6,10 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.regexReplaceReplacer,
+    names: ['regexReplace'],
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 3, noEval: [1] } },
     setup(context) {
-        context.locals.setup(m => m.replaceOutput).returns([]);
+        context.locals.setup(m => m.outputReplacers).returns([]);
         context.locals.setup((m, $) => m.compileRegExp($.string, $.string)).invokes(i => {
             const regex = new RegExp(i.arguments[0] as string, i.arguments[1] as string);
             return {
@@ -24,9 +25,9 @@ await runSubtagTests({
             code: '{regexreplace;/[a-z]\\d/g;oooh}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.locals.replaceOutput.length, 1);
-                assert.equal(ctx.locals.replaceOutput[0]('This is a 5 test'), 'This is a 5 test');
-                assert.equal(ctx.locals.replaceOutput[0]('This is a5 test'), 'This is oooh test');
+                assert.equal(ctx.locals.outputReplacers.length, 1);
+                assert.equal(ctx.locals.outputReplacers[0]('This is a 5 test'), 'This is a 5 test');
+                assert.equal(ctx.locals.outputReplacers[0]('This is a5 test'), 'This is oooh test');
             }
         },
         {
@@ -61,9 +62,9 @@ await runSubtagTests({
             code: '{regexreplace;/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/;{eval}oooh}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.locals.replaceOutput.length, 1);
-                assert.equal(ctx.locals.replaceOutput[0](`This is ${'a'.repeat(1999)} test`), `This is ${'a'.repeat(1999)} test`);
-                assert.equal(ctx.locals.replaceOutput[0](`This is ${'a'.repeat(2002)} test`), 'This is ooohaa test');
+                assert.equal(ctx.locals.outputReplacers.length, 1);
+                assert.equal(ctx.locals.outputReplacers[0](`This is ${'a'.repeat(1999)} test`), `This is ${'a'.repeat(1999)} test`);
+                assert.equal(ctx.locals.outputReplacers[0](`This is ${'a'.repeat(2002)} test`), 'This is ooohaa test');
             },
             errors: [
                 { start: 2017, end: 2023, error: new MarkerError('eval', 2017) }

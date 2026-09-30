@@ -4,7 +4,7 @@ declare global {
     type Primitive = string | number | bigint | boolean | object | ((...args: never) => unknown) | symbol | undefined;
     type JToken = JObject | JArray | JValue | null;
     type JValue = string | number | boolean;
-    type JObject = { [P in string]: JToken; };
+    type JObject = { [P in string]?: JToken; };
     type JArray = JToken[];
     type JTokenType = keyof JTokenTypeMap;
     type JTokenTypeMap = {

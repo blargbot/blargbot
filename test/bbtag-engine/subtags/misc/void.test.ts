@@ -4,6 +4,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.voidReplacer,
+    names: ['void', 'null'],
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         { code: '{void}', expected: '' },

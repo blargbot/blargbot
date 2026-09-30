@@ -72,6 +72,7 @@ export interface Mock<out T extends Mockable = Mockable> extends MockHelper<T> {
     get instance(): T;
 }
 type IType<T extends Mockable = Mockable> = Mock<T>;
+type PropertyKey = string | symbol;
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const Mock = class Mock<T extends Mockable = Mockable> {
     readonly #strict: boolean;
@@ -79,8 +80,8 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
     readonly #shape: T;
     readonly #instance: T;
     readonly #invocations: Invocation[] = [];
-    readonly #getProxies: Record<PropertyKey, unknown> = {};
-    readonly #getGetProxies: Record<PropertyKey, Record<PropertyKey, unknown>> = {};
+    readonly #getProxies = new Map<PropertyKey, unknown>();
+    readonly #getGetProxies = new Map<PropertyKey, Map<PropertyKey, unknown>>();
     readonly #interceptors = {
         get: new Map<PropertyKey, Array<Interceptor<T, unknown>>>(),
         set: new Map<PropertyKey, Array<Interceptor<T, boolean>>>(),
@@ -343,7 +344,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
             if (shouldReturnProxy) {
                 assertMockableMethod(name);
 
-                return (this.#getProxies[name] ??= makeOpaqueProxy(function () { }, {
+                return this.#getProxies.getOrInsertComputed(name, () => makeOpaqueProxy(function () { }, {
                     fallback: this.#createNotConfiguredHandler(invocation),
                     apply: (_, thisArg, args) => this.#invokeGetApply(invocation, thisArg, args),
                     construct: (_, argsArray, newTarget) => this.#invokeGetConstruct(invocation, newTarget, argsArray),
@@ -447,20 +448,24 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         return Object.create(null) as object;
     }
 
+    #getGetProxy(name: PropertyKey): Map<PropertyKey, unknown> {
+        return this.#getGetProxies.getOrInsertComputed(name, () => new Map());
+    }
+
     #invokeGetGet(get: Invocation, inner: PropertyKey): unknown {
         if (this.#hasMethodLikeInterceptor(get.name)) {
             switch (inner) {
                 case 'call': {
-                    return (this.#getGetProxies[get.name] ??= {})[inner] ??= makeOpaqueProxy(function () { }, {
+                    return this.#getGetProxy(get.name).getOrInsertComputed(inner, () => makeOpaqueProxy(function () { }, {
                         fallback: this.#createNotConfiguredHandler(get),
                         apply: (_, __, args) => this.#invokeCallMethod('method', get.name, args)
-                    });
+                    }));
                 }
                 case 'apply': {
-                    return (this.#getGetProxies[get.name] ??= {})[inner] ??= makeOpaqueProxy(function () { }, {
+                    return this.#getGetProxy(get.name).getOrInsertComputed(inner, () => makeOpaqueProxy(function () { }, {
                         fallback: this.#createNotConfiguredHandler(get),
                         apply: (_, __, args) => this.#invokeApplyMethod('method', get.name, args)
-                    });
+                    }));
                 }
 
             }
@@ -972,14 +977,16 @@ class CollectionEqualMatcher<Item> extends ArgumentMatcher {
 }
 class LooksLikeArgumentMatcher extends ArgumentMatcher {
     readonly #skeleton: unknown;
+    readonly #allowExcessOwnProperties: boolean;
     public override specificity: number;
-    public constructor(skeleton: unknown) {
+    public constructor(skeleton: unknown, allowExcessOwnProperties: boolean) {
         super();
         this.#skeleton = skeleton;
+        this.#allowExcessOwnProperties = allowExcessOwnProperties;
         this.specificity = LooksLikeArgumentMatcher.#calcSpecificity(skeleton);
     }
     public override check(value: unknown, thisArg: unknown): boolean {
-        return LooksLikeArgumentMatcher.#check(value, this.#skeleton, thisArg);
+        return this.#check(value, this.#skeleton, thisArg);
     }
     static #calcSpecificity(value: unknown): number {
         value = PublicArgumentMatcher.reveal(value);
@@ -1010,7 +1017,7 @@ class LooksLikeArgumentMatcher extends ArgumentMatcher {
             }
         }
     }
-    static #check(value: unknown, skeleton: unknown, thisArg: unknown): boolean {
+    #check(value: unknown, skeleton: unknown, thisArg: unknown): boolean {
         skeleton = PublicArgumentMatcher.reveal(skeleton);
         if (skeleton instanceof ArgumentMatcher)
             return skeleton.check(value, thisArg);
@@ -1037,9 +1044,11 @@ class LooksLikeArgumentMatcher extends ArgumentMatcher {
                     return Array.isArray(value) && value.length === $skeleton.length && $skeleton.every((v, i) => this.#check(value[i], v, thisArg));
                 if (isTypedArray($skeleton))
                     return isTypedArray(value) && $skeleton.BYTES_PER_ELEMENT === value.BYTES_PER_ELEMENT && $skeleton.length === value.length && $skeleton.every((v, i) => value[i] === v);
-                if (Reflect.getPrototypeOf($skeleton) === Object.prototype)
+                if (Reflect.getPrototypeOf($skeleton) === Object.prototype) {
                     return (Reflect.ownKeys($skeleton) as Array<keyof typeof $skeleton>)
-                        .every(k => this.#check(value[k], $skeleton[k], thisArg));
+                        .every(k => this.#check(value[k], $skeleton[k], thisArg))
+                        && (this.#allowExcessOwnProperties || new Set(Reflect.ownKeys(value)).difference(new Set(Reflect.ownKeys($skeleton))).size === 0);
+                };
                 if ('valueOf' in $skeleton && typeof $skeleton.valueOf === 'function' && 'valueOf' in value && typeof value.valueOf === 'function')
                     return $skeleton.valueOf() === value.valueOf();
                 return false;
@@ -1211,6 +1220,7 @@ export interface ArgumentMatchers<out T = never> {
     readonly oneOf: <R extends unknown[]>(...values: R) => R[number];
     readonly instanceOf: <R>(ctor: abstract new (...args: never) => R) => R;
     readonly looksLike: <R>(skeleton: R) => R;
+    readonly looksLikeLoose: <R>(skeleton: R) => R;
     readonly sequenceEqual: <R>(items: R extends Iterable<infer Item> ? Iterable<Item> : never) => R;
     readonly setEqual: <R>(items: R extends Iterable<infer Item> ? Iterable<Item> : never) => R;
 }
@@ -1578,7 +1588,7 @@ class PublicArgumentMatcher extends class Stamper {
 }
 
 function looksLike<T>(value: T): T {
-    return PublicArgumentMatcher.disguise(new LooksLikeArgumentMatcher(value));
+    return PublicArgumentMatcher.disguise(new LooksLikeArgumentMatcher(value, false));
 }
 const publicArgumentMatchers: ArgumentMatchers<never> = Object.freeze(Object.assign(
     looksLike,
@@ -1603,6 +1613,7 @@ const publicArgumentMatchers: ArgumentMatchers<never> = Object.freeze(Object.ass
         instanceOf: v => PublicArgumentMatcher.disguise(new InstanceOfArgumentMatcher(v)),
         sequenceEqual: v => PublicArgumentMatcher.disguise(new CollectionEqualMatcher(v, true)),
         setEqual: v => PublicArgumentMatcher.disguise(new CollectionEqualMatcher(v, false)),
+        looksLikeLoose: v => PublicArgumentMatcher.disguise(new LooksLikeArgumentMatcher(v, true)),
         looksLike
     } satisfies { [P in keyof ArgumentMatchers<never>]: ArgumentMatchers<never>[P]; }
 ));
@@ -1642,8 +1653,6 @@ function isArrayLike(value: unknown): value is ArrayLike<unknown> {
 function keyToProp(key: PropertyKey, includeDot = true): string {
     if (typeof key === 'symbol')
         return `[${String(key)}]`;
-    if (typeof key === 'number')
-        return `[${key}]`;
     if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key))
         return includeDot ? `.${key}` : key;
     return `[${JSON.stringify(key)}]`;
@@ -1652,8 +1661,6 @@ function keyToProp(key: PropertyKey, includeDot = true): string {
 function keyToSource(key: PropertyKey): string {
     if (typeof key === 'symbol')
         return String(key);
-    if (typeof key === 'number')
-        return `${key}`;
     return JSON.stringify(key);
 }
 
@@ -1731,9 +1738,10 @@ function debugMatchers(expr: Expression, mock: Mock): string {
 function argToString(value: unknown): string {
     value = PublicArgumentMatcher.reveal(value);
     switch (typeof value) {
-        case 'string':
         case 'number':
         case 'boolean':
+            return value.toString();
+        case 'string':
             return JSON.stringify(value);
         case 'bigint':
             return `${value}n`;

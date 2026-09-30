@@ -23,17 +23,7 @@ export const returnReplacer = defineReplacer('return', {
 export const ifReplacer = defineReplacer(
     'if',
     {
-        parameters: ['boolean', '~then'],
-        returns: 'string',
-        execute: async function ifThen(_, [{ value: bool }, thenCode]) {
-            if (!parse.boolean(bool, { throw: true }))
-                return '';
-
-            return await thenCode.wait();
-        }
-    },
-    {
-        parameters: ['boolean', '~then', '~else'],
+        parameters: ['boolean', '~then', '~else?'],
         returns: 'string',
         execute: async function ifThenElse(_, [{ value: bool }, thenCode, elseCode]) {
             const next = parse.boolean(bool, { throw: true }) ? thenCode : elseCode;
@@ -41,16 +31,7 @@ export const ifReplacer = defineReplacer(
         }
     },
     {
-        parameters: ['value1', 'operator', 'value2', '~then'],
-        returns: 'string',
-        execute: async function ifOperatorThen(_, [{ value: value1 }, { value: operator }, { value: value2 }, thenCode]) {
-            if (!runBool(value1, operator, value2))
-                return '';
-            return await thenCode.wait();
-        }
-    },
-    {
-        parameters: ['value1', 'operator', 'value2', '~then', '~else'],
+        parameters: ['value1', 'operator', 'value2', '~then', '~else?'],
         returns: 'string',
         execute: async function ifOperatorThenElse(_, [{ value: value1 }, { value: operator }, { value: value2 }, thenCode, elseCode]) {
             const next = runBool(value1, operator, value2) ? thenCode : elseCode;

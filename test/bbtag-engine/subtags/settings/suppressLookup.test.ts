@@ -7,6 +7,7 @@ import { createTestReplacer, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<SuppressLookupLocals>({
     replacer: replacers.suppressLookupReplacer,
+    names: ['suppressLookup'],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

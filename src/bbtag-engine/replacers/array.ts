@@ -92,23 +92,16 @@ export const unshiftReplacer = defineReplacer<VariablesLocals>('unshift', {
         return await modifyArray(context, arrayStr, arr => arr.unshift(...values.map(x => x.value)), x => x);
     }
 });
-export const shuffleReplacer = defineReplacer<VariablesLocals & ArgsLocals>(
-    'shuffle',
-    {
-        parameters: [],
-        returns: 'nothing',
-        execute: function shuffleArgs(ctx) {
-            shuffle(ctx.locals.args);
-        }
-    },
-    {
-        parameters: ['array'],
-        returns: 'json[]|nothing',
-        execute: async function shuffleArray(ctx, [{ value: arrayStr }]) {
+export const shuffleReplacer = defineReplacer<VariablesLocals & ArgsLocals>('shuffle', {
+    parameters: ['array?'],
+    returns: 'json[]|nothing',
+    execute: async function shuffleArray(ctx, [{ value: arrayStr, exists: hasArrayStr }]) {
+        if (hasArrayStr)
             return await modifyArray(ctx, arrayStr, shuffle, x => x);
-        }
+        shuffle(ctx.locals.args);
+        return undefined;
     }
-);
+});
 export const sliceReplacer = defineReplacer<VariablesLocals & FallbackLocals>('slice', {
     parameters: ['array', 'start', 'end?:999999999999'],
     returns: 'json[]',

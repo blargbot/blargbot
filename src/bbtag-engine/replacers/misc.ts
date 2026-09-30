@@ -46,23 +46,15 @@ export const brainfuckReplacer = defineReplacer<BrainfuckLocals>('brainfuck', {
         }
     }
 });
-export const capitalizeReplacer = defineReplacer(
-    'capitalize',
-    {
-        parameters: ['text'],
-        returns: 'string',
-        execute: function capitalize(_, [{ value: text }]) {
-            return text.slice(0, 1).toUpperCase() + text.slice(1);
-        }
-    },
-    {
-        parameters: ['text', 'lower'],
-        returns: 'string',
-        execute: function capitalizeLower(_, [{ value: text }]) {
-            return text.slice(0, 1).toUpperCase() + text.slice(1).toLowerCase();
-        }
+export const capitalizeReplacer = defineReplacer('capitalize', {
+    parameters: ['text', 'lower?'],
+    returns: 'string',
+    execute: function capitalizeLower(_, [{ value: text }, { exists: lower }]) {
+        const first = text.slice(0, 1).toUpperCase();
+        const rest = text.slice(1);
+        return lower ? first + rest.toLowerCase() : first + rest;
     }
-);
+});
 export const lowerReplacer = defineReplacer('lower', {
     parameters: ['text'],
     returns: 'string',
@@ -311,63 +303,44 @@ export const padReplacer = defineReplacer('pad', {
         throw new BBTagRuntimeError('Invalid direction');
     }
 });
-export const realPadReplacer = defineReplacer(
-    'realPad',
-    {
-        parameters: ['text', 'length'],
-        returns: 'string',
-        execute: function realPad(_, [{ value: text }, { value: lengthStr }]) {
-            const length = parse.int(lengthStr, { throw: true });
-            return text.padEnd(length, ' ');
-        }
-    },
-    {
-        parameters: ['text', 'length', 'filler: ', 'direction?:right'],
-        returns: 'string',
-        execute: function realPaddFull(_, [{ value: text }, { value: lengthStr }, { value: filler }, { value: direction }]) {
-            const length = parse.int(lengthStr, { throw: true });
-            if (filler.length === 0)
-                filler = '';
-            else if (filler.length !== 1)
-                throw new BBTagRuntimeError('Filler must be 1 character');
-            switch (direction) {
-                case 'left':
-                case 'start':
-                    return text.padStart(length, filler);
-                case 'right':
-                case 'end':
-                    return text.padEnd(length, filler);
-                default:
-                    throw new BBTagRuntimeError('Invalid direction', `${direction} is invalid`);
-            }
+export const realPadReplacer = defineReplacer('realPad', {
+    parameters: ['text', 'length', 'filler?: ', 'direction?:right'],
+    returns: 'string',
+    execute: function realPaddFull(_, [{ value: text }, { value: lengthStr }, { value: filler }, { value: direction }]) {
+        const length = parse.int(lengthStr, { throw: true });
+        if (filler.length === 0)
+            filler = '';
+        else if (filler.length !== 1)
+            throw new BBTagRuntimeError('Filler must be 1 character');
+        switch (direction) {
+            case 'left':
+            case 'start':
+                return text.padStart(length, filler);
+            case 'right':
+            case 'end':
+                return text.padEnd(length, filler);
+            default:
+                throw new BBTagRuntimeError('Invalid direction', `${direction} is invalid`);
         }
     }
-);
+});
 function pickOneOf<T>(source: readonly T[]): T {
     return source[Math.floor(Math.random() * source.length)];
 }
-export const randomChooseReplacer = defineReplacer<VariablesLocals & ArgsLocals>(
-    ['randomChoose', 'randChoose'],
-    {
-        parameters: ['choiceArray'],
-        returns: 'json',
-        execute: async function randomChooseArray(ctx, [{ value: choices }]) {
-            const array = await bbtagArray.deserializeOrGetArray(ctx, choices);
-            if (array === undefined)
-                return choices;
-            if (array.v.length === 0)
-                return '';
-            return pickOneOf(array.v);
-        }
-    },
-    {
-        parameters: ['~choices+2'],
-        returns: 'string',
-        execute: async function randomChooseArray(_, array) {
+export const randomChooseReplacer = defineReplacer<VariablesLocals & ArgsLocals>(['randomChoose', 'randChoose'], {
+    parameters: ['~choices+'],
+    returns: 'json',
+    execute: async function randomChooseArray(ctx, array) {
+        if (array.length > 1)
             return await pickOneOf(array).wait();
-        }
+        const choices = await bbtagArray.deserializeOrGetArray(ctx, await array[0].wait());
+        if (choices === undefined)
+            return array[0].value;
+        if (choices.v.length === 0)
+            return '';
+        return pickOneOf(choices.v);
     }
-);
+});
 export const randomStringReplacer = defineReplacer<FallbackLocals>(['randomString', 'randStr', 'randString'], {
     parameters: ['chars', 'length'],
     returns: 'string',
@@ -425,7 +398,7 @@ export const regexReplaceReplacer = defineReplacer<RegExpCompilerLocals & Replac
         returns: 'nothing',
         execute: async function regexReplaceOutput(ctx, [{ raw: source }, { value: replaceWith }]) {
             const regex = await parseRegExp(ctx, source);
-            ctx.locals.replaceOutput.push(text => regex.replace(text, replaceWith));
+            ctx.locals.outputReplacers.push(text => regex.replace(text, replaceWith));
         }
     },
     {
@@ -459,7 +432,7 @@ export const replaceReplacer = defineReplacer<ReplaceOutputLocals>(
         parameters: ['phrase', 'replaceWith'],
         returns: 'nothing',
         execute: function replaceOutput(ctx, [{ value: phrase }, { value: replaceWith }]) {
-            ctx.locals.replaceOutput.push(text => text.replace(phrase, replaceWith));
+            ctx.locals.outputReplacers.push(text => text.replace(phrase, replaceWith));
         }
     },
     {
@@ -550,7 +523,7 @@ export const timeReplacer = defineReplacer<TemporalLocals>('time', {
         const parsed = ctx.locals.parseTime(time, parseFormat, fromTimezone);
         if (parsed === undefined)
             throw new BBTagRuntimeError('Invalid date');
-        return parsed.toString(format, toTimezone);
+        return parsed.toTimezone(toTimezone).format(format);
     }
 });
 export const decancerReplacer = defineReplacer<DecancerLocals>('decancer', {

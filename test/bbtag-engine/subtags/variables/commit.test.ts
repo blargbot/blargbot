@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<VariablesLocals>({
     replacer: replacers.commitReplacer,
+    names: ['commit'],
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         {

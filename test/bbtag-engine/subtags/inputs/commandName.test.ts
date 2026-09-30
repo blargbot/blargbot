@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.commandNameReplacer,
+    names: ['commandName'],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

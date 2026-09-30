@@ -1,12 +1,7 @@
 import { bbtagArray } from '../bbtagArray.js';
-import type { BBTagContext } from '../BBTagContext.js';
 import { BBTagRuntimeError } from '../BBTagRuntimeError.js';
 import { defineReplacer } from '../defineReplacer.js';
 import type { VariablesLocals } from './locals.js';
-
-export interface ColorLocals {
-    parseColor: ColorParser;
-}
 
 export type ColorParser = (channels: [number, number?, number?, number?] | string, format: Colorspace) => Color;
 
@@ -36,56 +31,39 @@ export interface Color extends Omit<ColorConverters, 'hex' | 'keyword' | 'gray'>
     gray(): number;
 }
 
-export const colorReplacer = defineReplacer<ColorLocals & VariablesLocals>(
-    'color',
-    {
-        parameters: ['color', 'outputFormat?:hex'],
-        returns: 'string',
-        execute: function parseColorInferred(ctx, [color, format]) {
-            return parseColor(ctx, color.value, format.value, undefined);
-        }
-    },
-    {
-        parameters: ['color', 'outputFormat:hex', 'inputFormat'],
-        returns: 'string',
-        execute: function parseColorExplicit(ctx, [color, outFormat, inFormat]) {
-            return parseColor(ctx, color.value, outFormat.value, inFormat.value);
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const colorReplacerFactory = (options: { parseColor: ColorParser; }) => defineReplacer<VariablesLocals>('color', {
+    parameters: ['color', 'outputFormat?:hex', 'inputFormat?'],
+    returns: 'string',
+    execute: async function parseColorExplicit(ctx, [{ value: colorStr }, { value: outFormat }, { value: inFormat }]) {
+        if (colorStr === '')
+            throw new BBTagRuntimeError('Invalid color', 'value was empty');
+
+        const arr = await bbtagArray.deserializeOrGetArray(ctx, colorStr);
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
+
+        const inputConverter = getConverter(inFormat);
+        if (inputConverter === undefined)
+            throw new BBTagRuntimeError('Invalid input method', `${JSON.stringify(inFormat)} is not valid`);
+
+        const outputConverter = getConverter(outFormat);
+        if (outputConverter === undefined)
+            throw new BBTagRuntimeError('Invalid output method', `${JSON.stringify(outFormat)} is not valid`);
+
+        try {
+            const color = inputConverter.toColor(options.parseColor, input);
+            const result = outputConverter.toValue(color);
+            switch (typeof result) {
+                case 'string': return result;
+                case 'number': return result.toString();
+                default: return JSON.stringify(result.round(2).array());
+            }
+        } catch {
+            throw new BBTagRuntimeError('Invalid color', `${JSON.stringify(colorStr)} is not a valid color`);
         }
     }
-);
-async function parseColor(
-    context: BBTagContext<ColorLocals & VariablesLocals>,
-    colorStr: string,
-    outputStr: string,
-    inputStr: string | undefined
-): Promise<string> {
-    if (colorStr === '')
-        throw new BBTagRuntimeError('Invalid color', 'value was empty');
-
-    const arr = await bbtagArray.deserializeOrGetArray(context, colorStr);
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
-
-    const inputConverter = getConverter(inputStr ?? '');
-    if (inputConverter === undefined)
-        throw new BBTagRuntimeError('Invalid input method', `${JSON.stringify(inputStr)} is not valid`);
-
-    const outputConverter = getConverter(outputStr);
-    if (outputConverter === undefined)
-        throw new BBTagRuntimeError('Invalid output method', `${JSON.stringify(outputStr)} is not valid`);
-
-    try {
-        const color = inputConverter.toColor(context.locals.parseColor, input);
-        const result = outputConverter.toValue(color);
-        switch (typeof result) {
-            case 'string': return result;
-            case 'number': return result.toString();
-            default: return JSON.stringify(result.round(2).array());
-        }
-    } catch {
-        throw new BBTagRuntimeError('Invalid color', `${JSON.stringify(colorStr)} is not a valid color`);
-    }
-}
+});
 
 interface ColorConverter {
     toColor(parser: ColorParser, value: string): Color;

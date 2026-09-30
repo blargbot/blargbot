@@ -1,4 +1,4 @@
-import type { ColorLocals, Colorspace, VariablesLocals, VariableStore } from '@blargbot/bbtag-engine';
+import type { Colorspace, VariablesLocals, VariableStore } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 import Color from 'color';
 
@@ -6,13 +6,15 @@ import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
-    replacer: replacers.colorReplacer,
-    argCountBounds: { min: 1, max: 3 },
-    setup(ctx) {
-        ctx.locals.setup(m => m.parseColor).returns((channels, format) => {
+    replacer: replacers.colorReplacerFactory({
+        parseColor(channels, format) {
             const result = new Color(channels, format);
             return format === 'gray' ? result.rgb() : result;
-        });
+        }
+    }),
+    names: ['color'],
+    argCountBounds: { min: 1, max: 3 },
+    setup(ctx) {
         const variablesFallback = ctx.createMock<VariableStore>();
         ctx.locals.setup(m => m.variables).returns(variablesFallback.instance, { isFallback: true });
         variablesFallback.setup((m, $) => m.get($.string)).returns({ key: '', value: undefined });
@@ -94,7 +96,7 @@ await runSubtagTests({
     ]
 });
 
-function generateTestCases(input: string, format: string, results: Record<Colorspace, string>): Array<SubtagTestCase<ColorLocals & VariablesLocals>> {
+function generateTestCases(input: string, format: string, results: Record<Colorspace, string>): Array<SubtagTestCase<VariablesLocals>> {
     const cases = Object.entries(results).map(([output, expected]) => ({ code: `{color;${input};${output};${format}}`, expected }));
     if (format === '')
         cases.push(...Object.entries(results).map(([output, expected]) => ({ code: `{color;${input};${output}}`, expected })));

@@ -77,7 +77,8 @@ export const json = Object.freeze({
                 return this.clean(input.v);
 
             for (const [key, value] of Object.entries(input))
-                input[key] = this.clean(value);
+                if (value !== undefined)
+                    input[key] = this.clean(value);
 
         }
         return input;

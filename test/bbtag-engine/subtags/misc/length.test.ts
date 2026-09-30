@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     replacer: replacers.lengthReplacer,
+    names: ['length'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{length;}', expected: '0' },

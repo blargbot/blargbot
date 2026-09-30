@@ -7,6 +7,7 @@ import { createTestReplacer, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests<QuietLocals>({
     replacer: replacers.quietReplacer,
+    names: ['quiet'],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {

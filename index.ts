@@ -9,7 +9,7 @@ if (isPnpEnabled()) {
         cwd: process.cwd(),
         env: {
             ...process.env,
-            'NODE_OPTIONS': `${process.env.NODE_OPTIONS ?? ''} --require ${import.meta.dirname}/.pnp.cjs --experimental-loader ${import.meta.dirname}/.pnp.loader.mjs`
+            'NODE_OPTIONS': `${process.env.NODE_OPTIONS ?? ''} --require ${import.meta.dirname}/.pnp.cjs --experimental-loader ${import.meta.dirname}/.pnp.loader.mjs --enable-source-maps`
         },
         stdio: 'inherit'
     });

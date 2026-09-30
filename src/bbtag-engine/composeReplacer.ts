@@ -1,22 +1,51 @@
 import type { BBTagReplacer } from './BBTagReplacer.js';
 import { UnknownSubtagError } from './BBTagRuntimeError.js';
 
-type GetLocals<T extends BBTagReplacer<never>> = (T extends BBTagReplacer<infer R> ? (v: R) => void : never) extends (v: infer R) => void ? R : never
+type BBTagReplacerFactory<in Locals extends object, in Options> = (options: Options) => BBTagReplacer<Locals>;
+type ReplacerOrFactory<Locals extends object = never, Options = never> = BBTagReplacer<Locals> | BBTagReplacerFactory<Locals, Options>;
+type IterableOrRecord<T = unknown> = Iterable<T> | Record<string, T>;
+
+type GetElement<T extends IterableOrRecord>
+    = T extends IterableOrRecord<infer R>
+    ? R
+    : never;
+type GetReplacerArgs<T extends ReplacerOrFactory>
+    = T extends BBTagReplacer<infer Locals>
+    ? { locals: Locals; options: never; }
+    : T extends BBTagReplacerFactory<infer Locals, infer Options>
+    ? { locals: Locals; options: Options; }
+    : never;
+type UnionToIntersection<U> =
+    (U extends unknown ? (x: U) => void : never) extends
+    (x: infer I) => void
+    ? I
+    : never;
+type GetLocals<T extends IterableOrRecord<ReplacerOrFactory>> = UnionToIntersection<GetReplacerArgs<GetElement<T>>['locals']>;
+type GetOptions<T extends IterableOrRecord<ReplacerOrFactory>> = UnionToIntersection<GetReplacerArgs<GetElement<T>>['options']>;
+
 export interface BBTagReplacerComposer<Locals extends object = object> {
     register<OwnInputs extends object>(
         replacer: BBTagReplacer<OwnInputs>
     ): BBTagReplacerComposer<Locals & OwnInputs>;
+    register<OwnInputs extends object, Options>(
+        replacer: (options: NoInfer<Options>) => BBTagReplacer<OwnInputs>,
+        options: Options
+    ): BBTagReplacerComposer<Locals & OwnInputs>;
 
-    registerAll<Replacer extends BBTagReplacer<never>>(
-        replacers: Iterable<Replacer> | Record<string, Replacer>
-    ): BBTagReplacerComposer<Locals & GetLocals<Replacer>>;
+    registerAll<Replacers extends IterableOrRecord<BBTagReplacer<never>>>(
+        replacers: Replacers
+    ): BBTagReplacerComposer<Locals & GetLocals<Replacers>>;
+    registerAll<Replacers extends IterableOrRecord<ReplacerOrFactory>>(
+        replacers: Replacers,
+        options: GetOptions<Replacers>
+    ): BBTagReplacerComposer<Locals & GetLocals<Replacers>>;
 
     build(): BBTagReplacer<Locals>;
 }
 
 export function composeReplacer<Locals extends object>(
     configure: (builder: BBTagReplacerComposer) => BBTagReplacerComposer<Locals>
-): BBTagReplacer<{ [P in keyof Locals]: Locals[P] }> {
+): BBTagReplacer<Locals> {
     return configure(new Builder<object>(new Map())).build();
 }
 
@@ -40,25 +69,33 @@ class Builder<Locals extends object> implements BBTagReplacerComposer<Locals> {
         }
     }
 
-    public register<OwnInputs extends object>(replacer: BBTagReplacer<OwnInputs>): BBTagReplacerComposer<Locals & OwnInputs> {
+    public register<OwnInputs extends object, Options>(
+        replacer: BBTagReplacer<OwnInputs> | ((options: Options) => BBTagReplacer<OwnInputs>),
+        options?: Options
+    ): BBTagReplacerComposer<Locals & OwnInputs> {
         const state = new Map<string, BBTagReplacer<Locals & OwnInputs>>(this.#state);
+
+        if (typeof replacer === 'function')
+            replacer = replacer(options!);
 
         Builder.#pushReplacer(state, replacer);
 
         return new Builder(state);
     }
 
-    public registerAll<Replacers extends BBTagReplacer<never>>(
-        replacers: Iterable<Replacers> | Record<string, Replacers>
-    ): BBTagReplacerComposer<Locals & GetLocals<Replacers>> {
-        const state = new Map<string, BBTagReplacer<Locals & GetLocals<Replacers>>>(this.#state);
+    public registerAll(
+        replacers: IterableOrRecord<ReplacerOrFactory>,
+        options?: never
+    ): BBTagReplacerComposer<Locals> {
+        const state = new Map<string, BBTagReplacer<Locals>>(this.#state);
 
         if (Symbol.iterator in replacers) {
-            for (const replacer of replacers)
-                Builder.#pushReplacer(state, replacer);
+            for (const replacer of replacers as Iterable<ReplacerOrFactory>) {
+                Builder.#pushReplacer(state, typeof replacer === 'function' ? replacer(options!) : replacer);
+            }
         } else {
             for (const replacer of Object.values(replacers)) {
-                Builder.#pushReplacer(state, replacer);
+                Builder.#pushReplacer(state, typeof replacer === 'function' ? replacer(options!) : replacer);
             }
         }
 

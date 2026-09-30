@@ -1,31 +1,41 @@
-import { NotABooleanError, NotANumberError } from './BBTagRuntimeError.js';
+import { BBTagRuntimeError, NotABooleanError, NotANumberError } from './BBTagRuntimeError.js';
+
+type ThrowType = true | string
+type MaybeThrowType = false | ThrowType | undefined;
+type FallbackType<T> = T | (() => T);
+type MaybeFallbackType<T> = FallbackType<T> | (() => T | undefined);
 
 export interface ParseIntOptions {
     readonly radix?: number;
     readonly strict?: boolean;
-    readonly throw?: boolean;
-    readonly fallback?: (() => number | undefined) | number;
+    readonly throw?: MaybeThrowType;
+    readonly fallback?: MaybeFallbackType<number>;
 }
 export interface ParseFloatOptions {
     readonly strict?: boolean;
-    readonly throw?: boolean;
-    readonly fallback?: (() => number | undefined) | number;
+    readonly throw?: MaybeThrowType;
+    readonly fallback?: MaybeFallbackType<number>;
 }
 export interface ParseBooleanOptions {
     readonly includeNumbers?: boolean;
-    readonly throw?: boolean;
-    readonly fallback?: (() => boolean | undefined) | boolean;
+    readonly throw?: MaybeThrowType;
+    readonly fallback?: MaybeFallbackType<boolean>;
+}
+export interface ParseDurationOptions {
+    readonly throw?: MaybeThrowType;
+    readonly fallback?: MaybeFallbackType<number>;
 }
 
 export const parse = {
     int: parseInt,
     float: parseFloat,
     boolean: parseBoolean,
-    string: parseString
+    string: parseString,
+    duration: parseDuration
 };
 
-function parseInt(s: JToken | undefined, options: ParseIntOptions & { throw: true; }): number
-function parseInt(s: JToken | undefined, options: ParseIntOptions & { fallback: number; }): number
+function parseInt(s: JToken | undefined, options: ParseIntOptions & { throw: ThrowType; }): number
+function parseInt(s: JToken | undefined, options: ParseIntOptions & { fallback: FallbackType<number>; }): number
 function parseInt(s: JToken | undefined, options?: ParseIntOptions): number | undefined;
 function parseInt(s: JToken | undefined, options: ParseIntOptions = {}): number | undefined {
     const result = parseIntCore(s, options);
@@ -36,6 +46,8 @@ function parseInt(s: JToken | undefined, options: ParseIntOptions = {}): number 
         return fallback;
     if (options.throw === true)
         throw new NotANumberError(s);
+    if (typeof options.throw === 'string')
+        throw new NotANumberError(s).withDisplay(options.throw);
     return undefined;
 }
 
@@ -67,8 +79,8 @@ const radixRegexes = charset
     .split('')
     .map((_, i) => new RegExp(`^[+-]?[${charset.slice(0, i)}]+$`, 'i'));
 
-function parseFloat(s: JToken | undefined, options: ParseFloatOptions & { throw: true; }): number
-function parseFloat(s: JToken | undefined, options: ParseFloatOptions & { fallback: number; }): number
+function parseFloat(s: JToken | undefined, options: ParseFloatOptions & { throw: ThrowType; }): number
+function parseFloat(s: JToken | undefined, options: ParseFloatOptions & { fallback: FallbackType<number>; }): number
 function parseFloat(s: JToken | undefined, options?: ParseFloatOptions): number | undefined;
 function parseFloat(s: JToken | undefined, options: ParseFloatOptions = {}): number | undefined {
     const result = parseFloatCore(s, options);
@@ -79,6 +91,8 @@ function parseFloat(s: JToken | undefined, options: ParseFloatOptions = {}): num
         return fallback;
     if (options.throw === true)
         throw new NotANumberError(s);
+    if (typeof options.throw === 'string')
+        throw new NotANumberError(s).withDisplay(options.throw);
     return undefined;
 }
 
@@ -97,8 +111,8 @@ function parseFloatCore(s: JToken | undefined, options: ParseFloatOptions): numb
 
 const floatTest = /^[+-]?\d+(?:\.\d+)?$/;
 
-function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions & { throw: true; }): boolean
-function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions & { fallback: boolean; }): boolean
+function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions & { throw: ThrowType; }): boolean
+function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions & { fallback: FallbackType<boolean>; }): boolean
 function parseBoolean(value: JToken | undefined, options?: ParseBooleanOptions): boolean | undefined;
 function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions = {}): boolean | undefined {
     const result = parseBooleanCore(value, options);
@@ -109,6 +123,8 @@ function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions = 
         return fallback;
     if (options.throw === true)
         throw new NotABooleanError(value);
+    if (typeof options.throw === 'string')
+        throw new NotABooleanError(value).withDisplay(options.throw);
     return undefined;
 }
 function parseBooleanCore(value: JToken | undefined, options: ParseBooleanOptions): boolean | undefined {
@@ -157,3 +173,50 @@ function callOrReturn<T>(value: T | (() => T)): T {
         ? (value as () => T)()
         : value;
 }
+
+function parseDuration(duration: string, options: ParseDurationOptions & { throw: ThrowType; }): number
+function parseDuration(duration: string, options: ParseDurationOptions & { fallback: FallbackType<number>; }): number
+function parseDuration(duration: string, options?: ParseDurationOptions): number | undefined
+function parseDuration(duration: string, options: ParseDurationOptions = {}): number | undefined {
+    let matched = false;
+    let result = 0;
+    for (const { regex, scale } of durationMatchers) {
+        duration = duration.replaceAll(regex, (_, count: string) => {
+            result += scale * globalThis.parseFloat(count);
+            matched = true;
+            return '';
+        });
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!matched || duration.trim().length > 0) {
+        if (options.throw === true)
+            throw new BBTagRuntimeError('Invalid duration');
+        if (typeof options.throw === 'string')
+            throw new BBTagRuntimeError('Invalid duration').withDisplay(options.throw);
+        return undefined;
+    }
+
+    return result;
+}
+
+const second = 1000;
+const minute = 60 * second;
+const hour = 60 * minute;
+const day = 24 * hour;
+const week = 7 * day;
+const month = 30 * day;
+const year = 365.25 * day;
+const durationMatchers = [
+    { names: ['years', 'year', 'y'], flags: 'i', scale: year },
+    { names: ['months', 'month'], flags: 'i', scale: month },
+    { names: ['M'], flags: '', scale: month },
+    { names: ['weeks', 'week', 'w'], flags: 'i', scale: week },
+    { names: ['days', 'day', 'd'], flags: 'i', scale: day },
+    { names: ['hours', 'hour', 'h'], flags: 'i', scale: hour },
+    { names: ['minutes', 'minute', 'm'], flags: 'i', scale: minute },
+    { names: ['seconds', 'second', 's'], flags: 'i', scale: second },
+    { names: ['milliseconds', 'millisecond', 'ms'], flags: 'i', scale: 1 }
+].map(x => ({
+    regex: new RegExp(`(\\d+) *(${x.names.join('|')})\\b`, `${x.flags}g`),
+    scale: x.scale
+}));
