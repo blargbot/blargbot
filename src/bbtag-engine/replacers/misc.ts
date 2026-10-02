@@ -2,7 +2,7 @@ import { createHash, getHashes } from 'node:crypto';
 
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
-import { BBTagRuntimeError, InvalidOperatorError } from '../BBTagRuntimeError.js';
+import { BBTagRuntimeError, InvalidOperatorError, NotABooleanError, NotANumberError } from '../BBTagRuntimeError.js';
 import { cacheResult } from '../cacheResult.js';
 import type { SubtagSignatureCallableOptions } from '../compilation/SubtagSignatureCallableOptions.js';
 import { defineReplacer } from '../defineReplacer.js';
@@ -10,7 +10,7 @@ import type { LogicOperator } from '../operators.js';
 import { aggregationOperators, isLogicOperator, logicOperators, numericOperators, ordinalOperators, runBool, stringOperators } from '../operators.js';
 import { parse } from '../parse.js';
 import type { SubtagReturnTypeMap } from '../types.js';
-import type { ArgsLocals, BrainfuckLocals, DebugLocals, DecancerLocals, DumpLocals, FallbackLocals, HttpMethod, HttpRequest, RegExpCompilerLocals, ReplaceOutputLocals, RequestLocals, SafeRegExp, TemporalLocals, VariablesLocals } from './locals.js';
+import type { ArgsLocals, BrainfuckLocals, DebugLocals, DecancerLocals, DumpLocals, FallbackLocals, HttpMethod, HttpRequest, RegExpCompilerLocals, ReplaceOutputLocals, RequestLocals, SafeRegExp, TemporalOptions, VariablesLocals } from './locals.js';
 
 export const base64DecodeReplacer = defineReplacer(['base64Decode', 'aToB'], {
     parameters: ['text'],
@@ -73,7 +73,7 @@ export const chooseReplacer = defineReplacer('choose', {
     parameters: ['choice', '~options+'],
     returns: 'string',
     execute: function choose(_, [{ value: choice }, ...options]) {
-        const index = parse.int(choice, { throw: true });
+        const index = parse.int(choice, { throw: NotANumberError });
         if (index < 0)
             throw new BBTagRuntimeError('Choice cannot be negative');
         if (index >= options.length)
@@ -145,7 +145,7 @@ export const indexOfReplacer = defineReplacer<FallbackLocals>('indexOf', {
     returns: 'number',
     execute: function indexOf(ctx, [{ value: text }, { value: search }, { value: start }]) {
         const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
-        const from = parse.int(start, { fallback, throw: true });
+        const from = parse.int(start, { fallback, throw: NotANumberError });
 
         const { v: input } = bbtagArray.deserialize(text) ?? { v: text };
         return input.indexOf(search, from);
@@ -188,7 +188,7 @@ export const logicReplacer = defineReplacer('logic', {
         if (operator === undefined)
             throw new InvalidOperatorError(values[0]);
 
-        const parsed = values.map((value) => parse.boolean(value, { throw: true }));
+        const parsed = values.map((value) => parse.boolean(value, { throw: NotABooleanError }));
 
         return logicOperators[operator](parsed);
     }
@@ -206,7 +206,7 @@ export const newlineReplacer = defineReplacer<FallbackLocals>(['newline', 'n'], 
     returns: 'string',
     execute: function newline(ctx, [{ value: countStr }]) {
         const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
-        const count = parse.int(countStr, { throw: true, fallback });
+        const count = parse.int(countStr, { throw: NotANumberError, fallback });
         // TODO: limit count
         return ''.padStart(count < 0 ? 0 : count, '\n');
     }
@@ -216,7 +216,7 @@ export const spaceReplacer = defineReplacer<FallbackLocals>(['space', 's'], {
     returns: 'string',
     execute: function space(ctx, [{ value: countStr }]) {
         const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
-        const count = parse.int(countStr, { throw: true, fallback });
+        const count = parse.int(countStr, { throw: NotANumberError, fallback });
         // TODO: limit count
         return ''.padStart(count < 0 ? 0 : count, ' ');
     }
@@ -253,7 +253,7 @@ export const operatorReplacer = defineReplacer('operator',
         parameters: ['values+'],
         returns: 'boolean',
         execute: withName(op, (_, args) => impl(args
-            .map((arg) => parse.boolean(arg.value, { throw: true }))
+            .map((arg) => parse.boolean(arg.value, { throw: NotABooleanError }))
         ))
     })),
     ...Object.entries(numericOperators).map<Options<'number'>>(([op, impl]) => ({
@@ -263,7 +263,7 @@ export const operatorReplacer = defineReplacer('operator',
         execute: withName(op, (_, values) => bbtagArray
             .flattenArray(values.map(v => v.value))
             .values()
-            .map(arg => parse.float(arg, { throw: true }))
+            .map(arg => parse.float(arg, { throw: NotANumberError }))
             .reduce(impl)
         )
     })),
@@ -307,7 +307,7 @@ export const realPadReplacer = defineReplacer('realPad', {
     parameters: ['text', 'length', 'filler?: ', 'direction?:right'],
     returns: 'string',
     execute: function realPaddFull(_, [{ value: text }, { value: lengthStr }, { value: filler }, { value: direction }]) {
-        const length = parse.int(lengthStr, { throw: true });
+        const length = parse.int(lengthStr, { throw: NotANumberError });
         if (filler.length === 0)
             filler = '';
         else if (filler.length !== 1)
@@ -347,7 +347,7 @@ export const randomStringReplacer = defineReplacer<FallbackLocals>(['randomStrin
     execute: function randomString(ctx, [{ value: charsStr }, { value: countStr }]) {
         const chars = charsStr.split('');
         const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
-        const count = parse.int(countStr, { fallback, throw: true });
+        const count = parse.int(countStr, { fallback, throw: NotANumberError });
         if (chars.length === 0)
             throw new BBTagRuntimeError('Not enough characters');
 
@@ -464,8 +464,8 @@ export const substringReplacer = defineReplacer<FallbackLocals>('substring', {
     returns: 'string',
     execute: function substringReplacer(ctx, [{ value: text }, { value: startStr }, { value: endStr }]) {
         const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
-        const start = parse.int(startStr, { fallback, throw: true });
-        const end = endStr === '' ? text.length : parse.int(endStr, { fallback, throw: true });
+        const start = parse.int(startStr, { fallback, throw: NotANumberError });
+        const end = endStr === '' ? text.length : parse.int(endStr, { fallback, throw: NotANumberError });
         return text.substring(start, end);
     }
 });
@@ -481,7 +481,7 @@ export const unindentReplacer = defineReplacer(['unindent', 'ui'], {
     returns: 'string',
     execute: function unindent(_, [{ value: text }, { value: levelStr }]) {
         let level = parse.int(levelStr);
-        if (level === undefined) {
+        if (level === null) {
             const lines = text.split('\n');
             level = lines.length === 1 ? 0 : lines
                 .values()
@@ -516,11 +516,12 @@ export const uriDecodeReplacer = defineReplacer('uriDecode', {
         }
     }
 });
-export const timeReplacer = defineReplacer<TemporalLocals>('time', {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const timeReplacerFactory = (options: TemporalOptions) => defineReplacer('time', {
     parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ', 'time?:now', 'parseFormat?', 'fromTimezone?:Etc/UTC', 'toTimezone?:Etc/UTC'],
     returns: 'string',
-    execute: function time(ctx, [{ value: format }, { value: time }, { value: parseFormat }, { value: fromTimezone }, { value: toTimezone }]) {
-        const parsed = ctx.locals.parseTime(time, parseFormat, fromTimezone);
+    execute: function time(_, [{ value: format }, { value: time }, { value: parseFormat }, { value: fromTimezone }, { value: toTimezone }]) {
+        const parsed = options.parseTime(time, parseFormat, fromTimezone);
         if (parsed === undefined)
             throw new BBTagRuntimeError('Invalid date');
         return parsed.toTimezone(toTimezone).format(format);
@@ -533,19 +534,13 @@ export const decancerReplacer = defineReplacer<DecancerLocals>('decancer', {
         return ctx.locals.decancer(text);
     }
 });
-export const fallbackReplacer = defineReplacer<FallbackLocals>(
-    'fallback',
-    {
-        parameters: ['message'],
-        returns: 'nothing',
-        execute: function setFallback(ctx, [{ value: message }]) { ctx.locals.fallback = message; }
-    },
-    {
-        parameters: [],
-        returns: 'nothing',
-        execute: function clearFallback(ctx) { ctx.locals.fallback = undefined; }
+export const fallbackReplacer = defineReplacer<FallbackLocals>('fallback', {
+    parameters: ['message?'],
+    returns: 'nothing',
+    execute: function setFallback(ctx, [{ value: message, exists: hasFallback }]) {
+        ctx.locals.fallback = hasFallback ? message : null;
     }
-);
+});
 export const debugReplacer = defineReplacer<DebugLocals>('debug', {
     parameters: ['text*'],
     returns: 'nothing',

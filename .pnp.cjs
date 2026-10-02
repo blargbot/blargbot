@@ -119,12 +119,12 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:src/util"\
     },\
     {\
-      "name": "@blargbot/bbtag-tests",\
+      "name": "@blargbot/bbtag-engine-tests",\
       "reference": "workspace:test/bbtag"\
     },\
     {\
-      "name": "@blargbot/bbtag-engine-tests",\
-      "reference": "workspace:test/bbtag-engine"\
+      "name": "@blargbot/bbtag-impl-tests",\
+      "reference": "workspace:test/bbtag-impl"\
     },\
     {\
       "name": "@blargbot/cluster-tests",\
@@ -150,8 +150,8 @@ const RAW_RUNTIME_STATE =
     ["@blargbot/api", ["workspace:src/api"]],\
     ["@blargbot/bbtag", ["workspace:src/bbtag"]],\
     ["@blargbot/bbtag-engine", ["workspace:src/bbtag-engine"]],\
-    ["@blargbot/bbtag-engine-tests", ["workspace:test/bbtag-engine"]],\
-    ["@blargbot/bbtag-tests", ["workspace:test/bbtag"]],\
+    ["@blargbot/bbtag-engine-tests", ["workspace:test/bbtag"]],\
+    ["@blargbot/bbtag-impl-tests", ["workspace:test/bbtag-impl"]],\
     ["@blargbot/cluster", ["workspace:src/cluster"]],\
     ["@blargbot/cluster-tests", ["workspace:test/cluster"]],\
     ["@blargbot/config", ["workspace:src/config"]],\
@@ -285,11 +285,11 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@blargbot/bbtag-engine-tests", [\
-      ["workspace:test/bbtag-engine", {\
-        "packageLocation": "./test/bbtag-engine/",\
+      ["workspace:test/bbtag", {\
+        "packageLocation": "./test/bbtag/",\
         "packageDependencies": [\
           ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"],\
-          ["@blargbot/bbtag-engine-tests", "workspace:test/bbtag-engine"],\
+          ["@blargbot/bbtag-engine-tests", "workspace:test/bbtag"],\
           ["@blargbot/test-util", "workspace:test/testUtil"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/color", "npm:3.0.3"],\
@@ -305,12 +305,12 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
-    ["@blargbot/bbtag-tests", [\
-      ["workspace:test/bbtag", {\
-        "packageLocation": "./test/bbtag/",\
+    ["@blargbot/bbtag-impl-tests", [\
+      ["workspace:test/bbtag-impl", {\
+        "packageLocation": "./test/bbtag-impl/",\
         "packageDependencies": [\
           ["@blargbot/bbtag", "workspace:src/bbtag"],\
-          ["@blargbot/bbtag-tests", "workspace:test/bbtag"],\
+          ["@blargbot/bbtag-impl-tests", "workspace:test/bbtag-impl"],\
           ["@blargbot/config", "workspace:src/config"],\
           ["@blargbot/core", "workspace:src/core"],\
           ["@blargbot/database", "workspace:src/database"],\

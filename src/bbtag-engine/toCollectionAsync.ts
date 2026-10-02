@@ -8,7 +8,7 @@ export async function toArrayAsync<T>(source: Awaitable<AwaitableIterable<T>>, t
         result.push(await transform(item, i++));
     return result;
 }
-export async function toSetAsync<T>(source: Awaitable<AwaitableIterable<T>>): Promise<Set<T>>
+export async function toSetAsync<T>(source: Awaitable<AwaitableIterable<T>>, transform?: (value: T, index: number) => Awaitable<T>): Promise<Set<T>>
 export async function toSetAsync<T, R>(source: Awaitable<AwaitableIterable<T>>, transform: (value: T, index: number) => Awaitable<R>): Promise<Set<R>>
 export async function toSetAsync<T>(source: Awaitable<AwaitableIterable<T>>, transform?: (value: T, index: number) => Awaitable<T>): Promise<Set<T>> {
     transform ??= v => v;
@@ -25,4 +25,10 @@ export async function* toAsyncIterator<T>(source: Awaitable<AwaitableIterable<T>
     let i = 0;
     for await (const item of await source)
         yield await transform(item, i++);
+}
+
+export async function isEmptyAsync<T>(source: Awaitable<AwaitableIterable<T>>): Promise<boolean> {
+    for await (const _ of await source)
+        return false;
+    return true;
 }

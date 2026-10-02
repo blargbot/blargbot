@@ -1,6 +1,6 @@
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
-import { BBTagRuntimeError, NotAnArrayError } from '../BBTagRuntimeError.js';
+import { BBTagRuntimeError, NotAnArrayError, NotANumberError } from '../BBTagRuntimeError.js';
 import { toNaturalSortedBy } from '../compare.js';
 import { defineReplacer } from '../defineReplacer.js';
 import { parse } from '../parse.js';
@@ -115,7 +115,7 @@ export const jsonStringifyReplacer = defineReplacer<VariablesLocals>(['jsonStrin
     parameters: ['input:{}', 'indent?:4'],
     returns: 'string',
     execute: async function jsonStringify(ctx, [{ value: input }, { value: indentStr }]) {
-        const indent = parse.int(indentStr, { throw: true });
+        const indent = parse.int(indentStr, { throw: NotANumberError });
         const { object } = await resolveObj(ctx, input);
         return JSON.stringify(object, null, indent);
     }
@@ -260,13 +260,13 @@ function setProp(target: JToken | undefined, prop: string, value: JToken | undef
 }
 function getArrayProp<T>(arr: ArrayLike<T>, prop: string): T | number | undefined {
     const key = toArrayKey(prop);
-    if (key === undefined)
+    if (key === null)
         return undefined;
     return arr[key];
 }
 function setArrayProp<T>(arr: T[], prop: string, value: T): void {
     const key = toArrayKey(prop);
-    if (key === undefined) {
+    if (key === null) {
         // NO-OP
     } else if (key === 'length') {
         if (value === undefined)
@@ -280,7 +280,7 @@ function setArrayProp<T>(arr: T[], prop: string, value: T): void {
         arr[key] = value;
     }
 }
-function toArrayKey(key: string): 'length' | number | undefined {
+function toArrayKey(key: string): 'length' | number | null {
     if (key === 'length')
         return 'length';
     return parse.int(key);

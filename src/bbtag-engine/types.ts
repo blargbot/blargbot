@@ -35,7 +35,6 @@ export interface SubtagSignature {
 }
 
 type SubtagReturnTypeValueMap = {
-    hex: number;
     number: number | bigint;
     boolean: boolean;
     string: string;

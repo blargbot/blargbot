@@ -1,24 +1,22 @@
 {
-    "name": "@blargbot/bbtag-tests",
+    "name": "@blargbot/bbtag-engine-tests",
     "version": "1.0.0",
     "private": true,
     "type": "module",
     "dependencies": {
-        "@blargbot/bbtag": "workspace:^",
-        "@blargbot/config": "workspace:^",
-        "@blargbot/core": "workspace:^",
-        "@blargbot/database": "workspace:^",
-        "@blargbot/domain": "workspace:^",
-        "@blargbot/formatting": "workspace:^",
-        "@blargbot/logger": "workspace:^",
+        "@blargbot/bbtag-engine": "workspace:^",
         "@blargbot/test-util": "workspace:^",
         "@blargbot/util": "workspace:^",
-        "eris": "^0.17.1",
+        "brainfuck-node": "^1.0.2",
+        "color": "^5.0.3",
+        "html-entities": "^2.3.3",
+        "limax": "^3.0.0",
         "moment-timezone": "^0.6.4",
-        "ts-mockito": "^2.6.1"
+        "ts-mockito": "^2.6.1",
+        "unorm": "^1.6.0"
     },
     "devDependencies": {
-        "@types/eris": "workspace:^",
-        "discord-api-types": "^0.37.20"
+        "@types/color": "^3.0.3",
+        "@types/unorm": "^1.3.28"
     }
 }

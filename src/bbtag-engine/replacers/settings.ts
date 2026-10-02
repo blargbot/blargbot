@@ -1,3 +1,4 @@
+import { NotABooleanError } from '../BBTagRuntimeError.js';
 import { defineReplacer } from '../defineReplacer.js';
 import { parse } from '../parse.js';
 import type { NsfwLocals, QuietLocals, ReasonLocals, SuppressLookupLocals } from './locals.js';
@@ -13,7 +14,7 @@ export const quietReplacer = defineReplacer<QuietLocals>('quiet', {
     parameters: ['isQuiet?:true'],
     returns: 'nothing',
     execute: function quiet(ctx, [{ value: quiet }]) {
-        ctx.locals.quiet = parse.boolean(quiet);
+        ctx.locals.quiet = parse.boolean(quiet, { fallback: false });
     }
 });
 export const reasonReplacer = defineReplacer<ReasonLocals>('reason', {
@@ -27,6 +28,6 @@ export const suppressLookupReplacer = defineReplacer<SuppressLookupLocals>('supp
     parameters: ['value?:true'],
     returns: 'nothing',
     execute: function suppressLookup(ctx, [{ value: value }]) {
-        ctx.locals.suppressLookup = value === '' || parse.boolean(value, { throw: true });
+        ctx.locals.suppressLookup = value === '' || parse.boolean(value, { throw: NotABooleanError });
     }
 });

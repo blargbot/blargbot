@@ -15,6 +15,6 @@ export const BufferEncoding = cleanType(z.enum(Object.keys({
     base64url: 'base64url',
     latin1: 'latin1',
     binary: 'binary',
-    hex: 'hex'
+    hex: 'color'
 } satisfies { [P in NodeJS.BufferEncoding]: P })));
 export type BufferEncoding = z.infer<typeof BufferEncoding>;

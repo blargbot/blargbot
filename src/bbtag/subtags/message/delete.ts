@@ -57,11 +57,11 @@ export class DeleteSubtag extends CompiledSubtag {
             throw new ChannelNotFoundError(channelStr);
 
         if (messageId.length === 0 || !guard.isTextableChannel(channel))
-            throw new MessageNotFoundError(channel.id, messageId).withDisplay('');
+            throw new (MessageNotFoundError.withDisplay(''))(channel.id, messageId);
 
         const msg = await context.getMessage(channel, messageId);
         if (msg === undefined)
-            throw new MessageNotFoundError(channel.id, messageId).withDisplay('');
+            throw new (MessageNotFoundError.withDisplay(''))(channel.id, messageId);
 
         try {
             await msg.delete();

@@ -1,29 +1,31 @@
-import { BBTagRuntimeError, NotABooleanError, NotANumberError } from './BBTagRuntimeError.js';
+import type { BBTagRuntimeThrowable } from './BBTagRuntimeError.js';
 
-type ThrowType = true | string
-type MaybeThrowType = false | ThrowType | undefined;
 type FallbackType<T> = T | (() => T);
-type MaybeFallbackType<T> = FallbackType<T> | (() => T | undefined);
+type MaybeFallbackType<T> = FallbackType<T> | (() => T | null | undefined);
 
 export interface ParseIntOptions {
     readonly radix?: number;
     readonly strict?: boolean;
-    readonly throw?: MaybeThrowType;
+    readonly throw?: BBTagRuntimeThrowable<[JToken | undefined]>;
     readonly fallback?: MaybeFallbackType<number>;
 }
 export interface ParseFloatOptions {
     readonly strict?: boolean;
-    readonly throw?: MaybeThrowType;
+    readonly throw?: BBTagRuntimeThrowable<[JToken | undefined]>;
     readonly fallback?: MaybeFallbackType<number>;
 }
 export interface ParseBooleanOptions {
     readonly includeNumbers?: boolean;
-    readonly throw?: MaybeThrowType;
+    readonly throw?: BBTagRuntimeThrowable<[JToken | undefined]>;
     readonly fallback?: MaybeFallbackType<boolean>;
 }
 export interface ParseDurationOptions {
-    readonly throw?: MaybeThrowType;
+    readonly throw?: BBTagRuntimeThrowable<[string]>;
     readonly fallback?: MaybeFallbackType<number>;
+}
+export interface ParseColorOptions {
+    readonly fallback?: MaybeFallbackType<number>;
+    readonly getByName?: (name: string) => number | null;
 }
 
 export const parse = {
@@ -31,24 +33,32 @@ export const parse = {
     float: parseFloat,
     boolean: parseBoolean,
     string: parseString,
-    duration: parseDuration
+    duration: parseDuration,
+    color: parseColor,
+    bigint(s: string | number | bigint): bigint | null {
+        if (typeof s === 'bigint')
+            return s;
+        try {
+            return BigInt(s);
+        } catch {
+            return null;
+        }
+    }
 };
 
-function parseInt(s: JToken | undefined, options: ParseIntOptions & { throw: ThrowType; }): number
+function parseInt(s: JToken | undefined, options: ParseIntOptions & { throw: NonNullable<unknown>; }): number
 function parseInt(s: JToken | undefined, options: ParseIntOptions & { fallback: FallbackType<number>; }): number
-function parseInt(s: JToken | undefined, options?: ParseIntOptions): number | undefined;
-function parseInt(s: JToken | undefined, options: ParseIntOptions = {}): number | undefined {
+function parseInt(s: JToken | undefined, options?: ParseIntOptions): number | null;
+function parseInt(s: JToken | undefined, options: ParseIntOptions = {}): number | null {
     const result = parseIntCore(s, options);
     if (!isNaN(result))
         return result;
     const fallback = callOrReturn(options.fallback);
-    if (fallback !== undefined)
+    if (typeof fallback === 'number')
         return fallback;
-    if (options.throw === true)
-        throw new NotANumberError(s);
-    if (typeof options.throw === 'string')
-        throw new NotANumberError(s).withDisplay(options.throw);
-    return undefined;
+    if (options.throw !== undefined)
+        throw new options.throw(s);
+    return null;
 }
 
 function parseIntCore(s: JToken | undefined, options: ParseIntOptions): number {
@@ -79,21 +89,19 @@ const radixRegexes = charset
     .split('')
     .map((_, i) => new RegExp(`^[+-]?[${charset.slice(0, i)}]+$`, 'i'));
 
-function parseFloat(s: JToken | undefined, options: ParseFloatOptions & { throw: ThrowType; }): number
+function parseFloat(s: JToken | undefined, options: ParseFloatOptions & { throw: NonNullable<unknown>; }): number
 function parseFloat(s: JToken | undefined, options: ParseFloatOptions & { fallback: FallbackType<number>; }): number
-function parseFloat(s: JToken | undefined, options?: ParseFloatOptions): number | undefined;
-function parseFloat(s: JToken | undefined, options: ParseFloatOptions = {}): number | undefined {
+function parseFloat(s: JToken | undefined, options?: ParseFloatOptions): number | null;
+function parseFloat(s: JToken | undefined, options: ParseFloatOptions = {}): number | null {
     const result = parseFloatCore(s, options);
     if (!isNaN(result))
         return result;
     const fallback = callOrReturn(options.fallback);
-    if (fallback !== undefined)
+    if (typeof fallback === 'number')
         return fallback;
-    if (options.throw === true)
-        throw new NotANumberError(s);
-    if (typeof options.throw === 'string')
-        throw new NotANumberError(s).withDisplay(options.throw);
-    return undefined;
+    if (options.throw !== undefined)
+        throw new options.throw(s);
+    return null;
 }
 
 function parseFloatCore(s: JToken | undefined, options: ParseFloatOptions): number {
@@ -111,23 +119,21 @@ function parseFloatCore(s: JToken | undefined, options: ParseFloatOptions): numb
 
 const floatTest = /^[+-]?\d+(?:\.\d+)?$/;
 
-function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions & { throw: ThrowType; }): boolean
+function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions & { throw: NonNullable<unknown>; }): boolean
 function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions & { fallback: FallbackType<boolean>; }): boolean
-function parseBoolean(value: JToken | undefined, options?: ParseBooleanOptions): boolean | undefined;
-function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions = {}): boolean | undefined {
+function parseBoolean(value: JToken | undefined, options?: ParseBooleanOptions): boolean | null;
+function parseBoolean(value: JToken | undefined, options: ParseBooleanOptions = {}): boolean | null {
     const result = parseBooleanCore(value, options);
-    if (result !== undefined)
+    if (result !== null)
         return result;
     const fallback = callOrReturn(options.fallback);
-    if (fallback !== undefined)
+    if (typeof fallback === 'boolean')
         return fallback;
-    if (options.throw === true)
-        throw new NotABooleanError(value);
-    if (typeof options.throw === 'string')
-        throw new NotABooleanError(value).withDisplay(options.throw);
-    return undefined;
+    if (options.throw !== undefined)
+        throw new options.throw(value);
+    return null;
 }
-function parseBooleanCore(value: JToken | undefined, options: ParseBooleanOptions): boolean | undefined {
+function parseBooleanCore(value: JToken | undefined, options: ParseBooleanOptions): boolean | null {
     if (typeof value === 'boolean')
         return value;
 
@@ -135,7 +141,7 @@ function parseBooleanCore(value: JToken | undefined, options: ParseBooleanOption
         return value !== 0;
 
     if (typeof value !== 'string') {
-        return undefined;
+        return null;
     }
 
     if (options.includeNumbers !== false) {
@@ -156,7 +162,7 @@ function parseBooleanCore(value: JToken | undefined, options: ParseBooleanOption
         case 'n':
             return false;
         default:
-            return undefined;
+            return null;
     }
 }
 
@@ -174,26 +180,25 @@ function callOrReturn<T>(value: T | (() => T)): T {
         : value;
 }
 
-function parseDuration(duration: string, options: ParseDurationOptions & { throw: ThrowType; }): number
-function parseDuration(duration: string, options: ParseDurationOptions & { fallback: FallbackType<number>; }): number
-function parseDuration(duration: string, options?: ParseDurationOptions): number | undefined
-function parseDuration(duration: string, options: ParseDurationOptions = {}): number | undefined {
+function parseDuration(value: string, options: ParseDurationOptions & { throw: NonNullable<unknown>; }): number
+function parseDuration(value: string, options: ParseDurationOptions & { fallback: FallbackType<number>; }): number
+function parseDuration(value: string, options?: ParseDurationOptions): number | null
+function parseDuration(value: string, options: ParseDurationOptions = {}): number | null {
     let matched = false;
     let result = 0;
+    let remain = value;
     for (const { regex, scale } of durationMatchers) {
-        duration = duration.replaceAll(regex, (_, count: string) => {
+        remain = remain.replaceAll(regex, (_, count: string) => {
             result += scale * globalThis.parseFloat(count);
             matched = true;
             return '';
         });
     }
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (!matched || duration.trim().length > 0) {
-        if (options.throw === true)
-            throw new BBTagRuntimeError('Invalid duration');
-        if (typeof options.throw === 'string')
-            throw new BBTagRuntimeError('Invalid duration').withDisplay(options.throw);
-        return undefined;
+    if (!matched || remain.trim().length > 0) {
+        if (options.throw !== undefined)
+            throw new options.throw(value);
+        return null;
     }
 
     return result;
@@ -220,3 +225,66 @@ const durationMatchers = [
     regex: new RegExp(`(\\d+) *(${x.names.join('|')})\\b`, `${x.flags}g`),
     scale: x.scale
 }));
+
+function parseColor(text: 'random', options?: ParseColorOptions): number;
+function parseColor(text: number | string, options?: ParseColorOptions): number | null
+function parseColor(text: number | string, options: ParseColorOptions = {}): number | null {
+    if (typeof text === 'number')
+        return text;
+
+    text = text.replace(/\s+/g, '').toLowerCase();
+
+    const name = text.replace(/[^a-z]/g, '');
+    if (name === 'random')
+        return Math.round(Math.random() * 0xFFFFFF);
+
+    const result = options.getByName?.(name);
+    if (typeof result === 'number')
+        return result;
+
+    //RGB 256,256,256
+    let match = /^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/.exec(text);
+    if (match !== null) {
+        const r = globalThis.parseInt(match[1]);
+        const g = globalThis.parseInt(match[2]);
+        const b = globalThis.parseInt(match[3]);
+        if (isNaN(r + g + b) || !isByte(r) || !isByte(g) || !isByte(b))
+            return null;
+        return globalThis.parseInt([r, g, b].map(x => x.toString(16).padStart(2, '0')).join(''), 16);
+    }
+
+    //Hex code with 6 digits
+    match = /^#?([0-9a-f]{6})$/i.exec(text);
+    if (match !== null)
+        return globalThis.parseInt(match[1], 16);
+
+    //Hex code with 3 digits
+    match = /^#?([0-9a-f]{3})$/i.exec(text);
+    if (match !== null)
+        return globalThis.parseInt(match[1].split('').map(v => v + v).join(''), 16);
+
+    //Decimal number
+    match = /^\.([0-9]{1,8})$/.exec(text);
+    if (match !== null) {
+        const value = globalThis.parseInt(match[1]);
+        if (isUInt24(value))
+            return value;
+    }
+
+    const fallback = callOrReturn(options.fallback);
+    if (typeof fallback === 'number')
+        return fallback;
+    return null;
+}
+
+function isInt(value: number): boolean {
+    return Number.isInteger(value);
+}
+
+function isByte(value: number): boolean {
+    return isInt(value) && value >= 0 && value < 265;
+}
+
+function isUInt24(value: number): boolean {
+    return isInt(value) && value >= 0 && value < 2 << 23;
+}

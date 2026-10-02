@@ -1,5 +1,6 @@
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
+import { NotAnArrayError, NotANumberError } from '../BBTagRuntimeError.js';
 import { cacheResult } from '../cacheResult.js';
 import { toNaturalSortedBy } from '../compare.js';
 import { defineReplacer } from '../defineReplacer.js';
@@ -42,7 +43,7 @@ export const joinReplacer = defineReplacer<VariablesLocals>('join', {
     parameters: ['array', 'text'],
     returns: 'string',
     execute: async function join(context, [{ value: arrayStr }, { value: separator }]) {
-        const { v: array } = await bbtagArray.deserializeOrGetArray(context, arrayStr, { throw: true });
+        const { v: array } = await bbtagArray.deserializeOrGetArray(context, arrayStr, { throw: NotAnArrayError });
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
         return array.join(separator);
     }
@@ -106,11 +107,11 @@ export const sliceReplacer = defineReplacer<VariablesLocals & FallbackLocals>('s
     parameters: ['array', 'start', 'end?:999999999999'],
     returns: 'json[]',
     execute: async function slice(ctx, [{ value: arrayStr }, { value: startStr }, { value: endStr }]) {
-        const arr = await bbtagArray.deserializeOrGetArray(ctx, arrayStr, { throw: true });
+        const arr = await bbtagArray.deserializeOrGetArray(ctx, arrayStr, { throw: NotAnArrayError });
         const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
 
-        const start = parse.int(startStr, { fallback, throw: true });
-        const end = parse.int(endStr, { fallback, throw: true });
+        const start = parse.int(startStr, { fallback, throw: NotANumberError });
+        const end = parse.int(endStr, { fallback, throw: NotANumberError });
         return arr.v.slice(start, end);
     }
 });
@@ -133,8 +134,8 @@ export const spliceReplacer = defineReplacer<VariablesLocals & FallbackLocals>(
         execute: async function spliceDelete(ctx, [{ value: array }, { value: startStr }, { value: delCountStr }]) {
             return await modifyArray(ctx, array, arr => {
                 const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
-                const start = parse.int(startStr, { fallback, throw: true });
-                const delCount = parse.int(delCountStr, { fallback, throw: true });
+                const start = parse.int(startStr, { fallback, throw: NotANumberError });
+                const delCount = parse.int(delCountStr, { fallback, throw: NotANumberError });
                 return arr.splice(start, delCount);
             }, (_, res) => res);
         }
@@ -145,8 +146,8 @@ export const spliceReplacer = defineReplacer<VariablesLocals & FallbackLocals>(
         execute: async function spliceReplace(ctx, [{ value: array }, { value: startStr }, { value: delCountStr }, ...items]) {
             return await modifyArray(ctx, array, arr => {
                 const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
-                const start = parse.int(startStr, { fallback, throw: true });
-                const delCount = parse.int(delCountStr, { fallback, throw: true });
+                const start = parse.int(startStr, { fallback, throw: NotANumberError });
+                const delCount = parse.int(delCountStr, { fallback, throw: NotANumberError });
                 const insert = bbtagArray.flattenArray(items.map(x => x.value));
                 return arr.splice(start, delCount, ...insert);
             }, (_, res) => res);
@@ -167,7 +168,7 @@ async function modifyArray<State, Result>(
     modify: (arr: JArray) => State,
     getResult: (arr: JArray | undefined, res: State) => Result
 ): Promise<Result> {
-    const { n: varName, v: array } = await bbtagArray.deserializeOrGetArray(context, arrayStr, { throw: true });
+    const { n: varName, v: array } = await bbtagArray.deserializeOrGetArray(context, arrayStr, { throw: NotAnArrayError });
 
     const state = modify(array);
     if (varName === undefined)

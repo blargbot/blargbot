@@ -1,6 +1,6 @@
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
-import { BBTagRuntimeError, NotEnoughArgumentsError, UnknownSubtagError } from '../BBTagRuntimeError.js';
+import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError, UnknownSubtagError } from '../BBTagRuntimeError.js';
 import { defineReplacer } from '../defineReplacer.js';
 import { parseBBTag } from '../language/parseBBTag.js';
 import { parse } from '../parse.js';
@@ -42,11 +42,11 @@ export const paramsReplacer = defineReplacer<FunctionLocals>('params', {
         if (!hasStart)
             return params.join(' ');
 
-        let from = parse.int(start, { throw: true });
+        let from = parse.int(start, { throw: NotANumberError });
         let to = hasEnd
             ? end.toLowerCase() === 'n'
                 ? params.length
-                : parse.int(end, { throw: true })
+                : parse.int(end, { throw: NotANumberError })
             : from + 1;
 
         // TODO This behaviour should be documented
@@ -94,7 +94,7 @@ export const execTagReplacer = defineReplacer<ExecTagLocals>(['execTag', 'exec']
         const tagName = name;
         const tag = await ctx.locals.getTag(tagName);
 
-        if (tag === undefined)
+        if (tag === null)
             throw new BBTagRuntimeError(`Tag not found: ${tagName}`);
 
         const input = args.length === 1
@@ -118,7 +118,7 @@ export const execCustomCommandReplacer = defineReplacer<ExecCustomCommandLocals>
         const tagName = name;
         const tag = await ctx.locals.getCustomCommand(tagName);
 
-        if (tag === undefined)
+        if (tag === null)
             throw new BBTagRuntimeError(`CCommand not found: ${tagName}`);
 
         const input = args.length === 1
@@ -137,7 +137,7 @@ export const execCustomCommandReplacer = defineReplacer<ExecCustomCommandLocals>
 
 function requireParams(context: BBTagContext<FunctionLocals>, subtagName: string): readonly string[] {
     const params = context.locals.functionParameters;
-    if (params === undefined)
+    if (params === null)
         throw new BBTagRuntimeError(`{${subtagName}} can only be used inside {function}`);
     return params;
 }

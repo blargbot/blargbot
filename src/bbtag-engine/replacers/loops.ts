@@ -1,6 +1,6 @@
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
-import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError } from '../BBTagRuntimeError.js';
+import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '../BBTagRuntimeError.js';
 import { cacheResult } from '../cacheResult.js';
 import type { SubtagArgument } from '../compilation/arguments/SubtagArgument.js';
 import { defineReplacer } from '../defineReplacer.js';
@@ -31,7 +31,7 @@ export const forReplacer = defineReplacer<VariablesLocals>('for', {
                 yield await code.execute();
 
                 const varEntry = await ctx.locals.variables.get(variable);
-                i = parse.float(varEntry.value, { throw: true });
+                i = parse.float(varEntry.value, { throw: NotANumberError });
                 if (ctx.returnDepth !== 0)
                     break;
             }
@@ -64,7 +64,7 @@ export const repeatReplacer = defineReplacer<FallbackLocals>(['repeat', 'loop'],
     returns: 'loop',
     execute: async function* repeatReplacer(ctx, [code, { value: amountStr }]) {
         const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
-        const amount = parse.int(amountStr, { fallback, throw: true });
+        const amount = parse.int(amountStr, { fallback, throw: NotANumberError });
         if (amount < 0)
             throw new BBTagRuntimeError('Can\'t be negative');
 

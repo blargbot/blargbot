@@ -1,4 +1,4 @@
-import { BBTagRuntimeError } from '../BBTagRuntimeError.js';
+import { BBTagRuntimeError, InvalidDurationError } from '../BBTagRuntimeError.js';
 import { defineReplacer } from '../defineReplacer.js';
 import { parse } from '../parse.js';
 import type { LockLocals, SleepLocals, TimerLocals } from './locals.js';
@@ -7,7 +7,7 @@ export const sleepReplacer = defineReplacer<SleepLocals>('sleep', {
     parameters: ['duration'],
     returns: 'nothing',
     execute: async function sleep(ctx, [{ value: duration }]) {
-        const durationMs = parse.duration(duration, { throw: true });
+        const durationMs = parse.duration(duration, { throw: InvalidDurationError });
         await ctx.locals.sleep(durationMs);
     }
 });
@@ -15,7 +15,7 @@ export const timerReplacer = defineReplacer<TimerLocals>('timer', {
     parameters: ['~code', 'duration'],
     returns: 'nothing',
     execute: async function timer(ctx, [{ code }, { value: duration }]) {
-        const durationMs = parse.duration(duration, { throw: true });
+        const durationMs = parse.duration(duration, { throw: InvalidDurationError });
         await ctx.locals.schedule(ctx, code, durationMs);
     }
 });

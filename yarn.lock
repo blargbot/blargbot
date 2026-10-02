@@ -40,9 +40,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/bbtag-engine-tests@workspace:test/bbtag-engine":
+"@blargbot/bbtag-engine-tests@workspace:test/bbtag":
   version: 0.0.0-use.local
-  resolution: "@blargbot/bbtag-engine-tests@workspace:test/bbtag-engine"
+  resolution: "@blargbot/bbtag-engine-tests@workspace:test/bbtag"
   dependencies:
     "@blargbot/bbtag-engine": "workspace:^"
     "@blargbot/test-util": "workspace:^"
@@ -65,9 +65,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/bbtag-tests@workspace:test/bbtag":
+"@blargbot/bbtag-impl-tests@workspace:test/bbtag-impl":
   version: 0.0.0-use.local
-  resolution: "@blargbot/bbtag-tests@workspace:test/bbtag"
+  resolution: "@blargbot/bbtag-impl-tests@workspace:test/bbtag-impl"
   dependencies:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"

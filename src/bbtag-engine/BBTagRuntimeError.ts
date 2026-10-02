@@ -5,22 +5,58 @@ export interface LocatedBBTagRuntimeError {
     readonly bbtag: BBTagSubtag;
 }
 export class UnrecoverableBBTagError extends Error {
-
+    public constructor(...args: ConstructorParameters<typeof Error>) {
+        super(...args);
+        this.name = new.target.name;
+    }
 }
 
-export class BBTagRuntimeError extends Error {
-    public display?: string;
+type Constructable = abstract new (...args: never) => unknown;
 
-    public constructor(
-        message: string,
-        public readonly detail?: string
-    ) {
-        super(message);
+export type BBTagRuntimeThrowable<Args extends readonly unknown[]> = new (...args: Args) => BBTagRuntimeError;
+
+export class BBTagRuntimeError extends Error {
+    public display: string | null = null;
+    static readonly #quietCache = new WeakMap<Constructable, Map<string, Constructable>>();
+
+    public static withQuiet<Args extends readonly unknown[], Error extends BBTagRuntimeError>(
+        this: new (...args: Args) => Error,
+        quiet: boolean,
+        display: string
+    ): new (...args: Args) => Error {
+        if (!quiet)
+            return this;
+        return BBTagRuntimeError.#getErrorWithDisplay(this, display);
+    }
+    public static withDisplay<Args extends readonly unknown[], Error extends BBTagRuntimeError>(
+        this: abstract new (...args: Args) => Error,
+        display: string
+    ): new (...args: Args) => Error {
+        return BBTagRuntimeError.#getErrorWithDisplay(this, display);
     }
 
-    public withDisplay(error?: string): this {
-        this.display = error;
-        return this;
+    static #getErrorWithDisplay<Args extends readonly unknown[], Error extends BBTagRuntimeError>(
+        base: abstract new (...args: Args) => BBTagRuntimeError,
+        display: string
+    ): new (...args: Args) => Error {
+        return BBTagRuntimeError.#quietCache
+            .getOrInsertComputed(base, () => new Map())
+            .getOrInsertComputed(display, () => {
+                const name = `${base.name}.withDisplay(${JSON.stringify(display)})`;
+                return {
+                    [name]: class extends base {
+                        public constructor(...args: Args) {
+                            super(...args);
+                            this.display = display;
+                        }
+                    }
+                }[name];
+            }) as new (...args: Args) => Error;
+    }
+
+    public constructor(message: string, public readonly detail?: string) {
+        super(message);
+        this.name = new.target.name;
     }
 }
 export class BBTagTypeError extends BBTagRuntimeError {
@@ -28,7 +64,6 @@ export class BBTagTypeError extends BBTagRuntimeError {
         super(`Not ${a} ${type}`, `${JSON.stringify(value)} is not ${a} ${type}`);
     }
 }
-
 export class InternalServerError extends BBTagRuntimeError {
     public constructor(error: unknown) {
         super('An internal server error has occurred', error instanceof Error ? error.message : typeof error === 'string' ? error : undefined);
@@ -79,5 +114,10 @@ export class InvalidOperatorError extends BBTagRuntimeError {
 export class AggregateBBTagError extends BBTagRuntimeError {
     public constructor(public readonly errors: readonly BBTagRuntimeError[]) {
         super(errors.map(e => e.message).join(', '), JSON.stringify(errors.map(e => e.detail)));
+    }
+}
+export class InvalidDurationError extends BBTagRuntimeError {
+    public constructor(value: string) {
+        super('Invalid duration', `${JSON.stringify(value)} is not a valid duration`);
     }
 }

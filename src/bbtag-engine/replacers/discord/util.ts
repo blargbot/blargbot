@@ -1,5 +1,26 @@
+import type { BBTagContext } from '../../BBTagContext.js';
+import { BBTagRuntimeError } from '../../BBTagRuntimeError.js';
 import { parse } from '../../parse.js';
-import type { SendEmbed } from './locals.js';
+import { toSetAsync } from '../../toCollectionAsync.js';
+import type { QuietLocals } from '../locals.js';
+import type { GuildRolesManageableLocals, SendEmbed } from './locals.js';
+
+export function toAuthorizer(noPerms: string): 'tag' | 'user' {
+    return noPerms !== '' ? 'tag' : 'user';
+}
+
+export function isQuiet(ctx: BBTagContext<QuietLocals>, quietStr = ''): boolean {
+    return ctx.locals.quiet || quietStr !== '';
+}
+
+export async function getManageableRoles(ctx: BBTagContext<GuildRolesManageableLocals>, errorMessage: string, mapping?: (value: bigint) => bigint): Promise<Set<bigint>>;
+export async function getManageableRoles<T>(ctx: BBTagContext<GuildRolesManageableLocals>, errorMessage: string, mapping: (value: bigint) => T): Promise<Set<T>>;
+export async function getManageableRoles(ctx: BBTagContext<GuildRolesManageableLocals>, errorMessage: string, mapping?: (value: bigint) => bigint): Promise<Set<bigint>> {
+    const manageableRoles = await toSetAsync(ctx.locals.discord.listManageableRoles(), mapping);
+    if (manageableRoles.size === 0)
+        throw new BBTagRuntimeError(errorMessage);
+    return manageableRoles;
+}
 
 export interface ParseEmbedOptions {
     allowMalformed?: boolean;
@@ -78,8 +99,8 @@ export function createEmbedParser(colorConverter: (text: string) => number | und
     function isJObject(value: JToken): value is JObject {
         return typeof value === 'object' && value !== null && !Array.isArray(value);
     }
-    function parseHex(value: string): number | undefined {
-        return /^#[a-f\d]+$/i.test(value) ? parse.int(value.slice(1), { radix: 16 }) : undefined;
+    function parseHex(value: string): number | null {
+        return /^#[a-f\d]+$/i.test(value) ? parse.int(value.slice(1), { radix: 16 }) : null;
     }
     function toEmbedAuthor(value: JToken | undefined): SendEmbed['author'] | false {
         if (value === undefined) return undefined;

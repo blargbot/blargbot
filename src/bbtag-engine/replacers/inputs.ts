@@ -1,4 +1,4 @@
-import { NotEnoughArgumentsError } from '../BBTagRuntimeError.js';
+import { NotANumberError, NotEnoughArgumentsError } from '../BBTagRuntimeError.js';
 import { defineReplacer } from '../defineReplacer.js';
 import { parse } from '../parse.js';
 import type { ArgsLocals, AuthorizerLocals, AuthorLocals, CommandLocals, CustomCommandLocals, FlagsLocals, PrefixLocals } from './locals.js';
@@ -16,7 +16,7 @@ export const argsReplacer = defineReplacer<ArgsLocals>(
         parameters: ['index'],
         returns: 'string',
         execute: function singleArg(ctx, [{ value: index }]) {
-            const i = parse.int(index, { throw: true });
+            const i = parse.int(index, { throw: NotANumberError });
 
             if (ctx.locals.args.length <= i || i < 0)
                 throw new NotEnoughArgumentsError(i + 1, ctx.locals.args.length);
@@ -29,10 +29,10 @@ export const argsReplacer = defineReplacer<ArgsLocals>(
         returns: 'string',
         execute: function sliceArgs(ctx, [{ value: start }, { value: end }]) {
             const args = ctx.locals.args;
-            let from = parse.int(start, { throw: true });
+            let from = parse.int(start, { throw: NotANumberError });
             let to = end.toLowerCase() === 'n'
                 ? args.length
-                : parse.int(end, { throw: true });
+                : parse.int(end, { throw: NotANumberError });
 
             // TODO This behaviour should be documented
             [from, to] = [from, to].sort((a, b) => a - b);

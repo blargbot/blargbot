@@ -3,10 +3,10 @@ import type { BBTagExpression } from '../language/BBTagExpression.js';
 import type { BBTagSubtag } from '../language/BBTagSubtag.js';
 
 export interface ArgsLocals {
-    args: string[];
+    readonly args: string[];
 }
 export interface PrefixLocals {
-    prefix: string;
+    readonly prefix: string;
 }
 
 type Letters = 'abcdefghijklmnopqrstuvwxyz';
@@ -15,40 +15,40 @@ type AlphaNumerics = `${Letters}${Uppercase<Letters>}${Digits}`
 type Characters<T extends string, Result = never> = T extends `${infer Char1}${infer Rest}` ? Characters<Rest, Char1 | Result> : Result;
 export type FlagCharacters = Characters<AlphaNumerics>;
 export interface FlagsLocals {
-    flags: { [P in FlagCharacters]?: readonly string[] } & { _: readonly string[]; };
+    readonly flags: { readonly [P in FlagCharacters]?: readonly string[] } & { readonly _: readonly string[]; };
 }
 
 export interface CustomCommandLocals {
-    isCC: boolean;
+    readonly isCC: boolean;
 }
 
 export interface CommandLocals {
-    commmandName: string;
+    readonly commmandName: string;
 }
 
 export interface AuthorizerLocals {
-    authorizerId: string;
+    readonly authorizerId: string;
 }
 
 export interface AuthorLocals {
-    authorId: string;
+    readonly authorId: string;
 }
 
 export interface FallbackLocals {
-    fallback?: string;
+    fallback: string | null;
 }
 
 export interface DebugLocals {
-    debug: DebugEntry[];
+    readonly debug: DebugEntry[];
 }
 
 export interface DebugEntry {
-    bbtag: BBTagSubtag;
-    text: string;
+    readonly bbtag: BBTagSubtag;
+    readonly text: string;
 }
 
 export interface RequestLocals {
-    httpRequest: (request: HttpRequest) => Awaitable<HttpResponse>;
+    readonly httpRequest: (request: HttpRequest) => Awaitable<HttpResponse>;
 }
 
 export type HttpMethod = 'GET' | 'QUERY' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH';
@@ -70,11 +70,11 @@ export interface HttpResponse {
 }
 
 export interface DumpLocals {
-    dump: (content: string) => Awaitable<URL>;
+    readonly dump: (content: string) => Awaitable<URL>;
 }
 
 export interface VariablesLocals {
-    variables: VariableStore;
+    readonly variables: VariableStore;
 }
 
 export interface VariableStore {
@@ -90,24 +90,24 @@ export interface VariableReference {
 }
 
 export interface ReplaceOutputLocals {
-    outputReplacers: Array<(output: string) => Awaitable<string>>;
+    readonly outputReplacers: Array<(output: string) => Awaitable<string>>;
 }
 
 export interface RegExpCompilerLocals {
-    compileRegExp: (pattern: string, flags: string) => Awaitable<SafeRegExp>;
+    readonly compileRegExp: (pattern: string, flags: string) => Awaitable<SafeRegExp>;
 }
 
 export interface SleepLocals {
-    sleep: (durationMs: number) => Promise<void>;
+    readonly sleep: (durationMs: number) => Promise<void>;
 }
 
 export interface TimerLocals {
-    schedule: (context: BBTagContext<object>, code: BBTagExpression, timeoutMs: number) => Awaitable<void>;
+    readonly schedule: (context: BBTagContext<object>, code: BBTagExpression, timeoutMs: number) => Awaitable<void>;
 }
 
 export interface LockLocals {
     inLock: boolean;
-    lock: (mode: 'read' | 'write', key: string) => Awaitable<AsyncDisposable | Disposable>;
+    readonly lock: (mode: 'read' | 'write', key: string) => Awaitable<AsyncDisposable | Disposable>;
 }
 
 export interface SafeRegExp {
@@ -118,11 +118,11 @@ export interface SafeRegExp {
 }
 
 export interface BrainfuckLocals {
-    brainfuck: (code: string, input: string) => Awaitable<string>;
+    readonly brainfuck: (code: string, input: string) => Awaitable<string>;
 }
 
-export interface TemporalLocals {
-    parseTime: (input: string, format: string, timezone: string) => undefined | TemporalValue;
+export interface TemporalOptions {
+    readonly parseTime: (input: string, format: string, timezone: string) => undefined | TemporalValue;
 }
 
 export interface TemporalValue {
@@ -131,19 +131,19 @@ export interface TemporalValue {
 }
 
 export interface DecancerLocals {
-    decancer: (value: string) => string;
+    readonly decancer: (value: string) => string;
 }
 
 export interface FunctionLocals {
-    functions: Record<`func.${string}`, BBTagExpression | undefined>;
-    functionParameters?: readonly string[];
+    readonly functions: Record<`func.${string}`, BBTagExpression | undefined>;
+    functionParameters: readonly string[] | null;
 }
 
 export interface ExecTagLocals {
-    getTag: (tagName: string) => Awaitable<ExecutableTag | undefined>;
+    readonly getTag: (tagName: string) => Awaitable<ExecutableTag | null>;
 }
 export interface ExecCustomCommandLocals {
-    getCustomCommand: (tagName: string) => Awaitable<ExecutableTag | undefined>;
+    readonly getCustomCommand: (tagName: string) => Awaitable<ExecutableTag | null>;
 }
 
 export interface ExecutableTag {
@@ -151,17 +151,17 @@ export interface ExecutableTag {
 }
 
 export interface NsfwLocals {
-    nsfw: { value?: string; };
+    readonly nsfw: { value: string | null; };
 }
 
 export interface QuietLocals {
-    quiet?: boolean;
+    quiet: boolean;
 }
 
 export interface ReasonLocals {
-    reason?: string;
+    reason: string | null;
 }
 
 export interface SuppressLookupLocals {
-    suppressLookup?: boolean;
+    suppressLookup: boolean;
 }

@@ -1,6 +1,6 @@
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
-import { BBTagRuntimeError, InvalidOperatorError } from '../BBTagRuntimeError.js';
+import { BBTagRuntimeError, InvalidOperatorError, NotABooleanError, NotANumberError } from '../BBTagRuntimeError.js';
 import { cacheResult } from '../cacheResult.js';
 import { defineReplacer } from '../defineReplacer.js';
 import { isNumericOperator, numericOperators } from '../operators.js';
@@ -47,8 +47,8 @@ export const randomIntReplacer = defineReplacer<FallbackLocals>(['randomInt', 'r
     returns: 'number',
     execute: function randomInt(ctx, [{ value: minStr }, { value: maxStr }]) {
         const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
-        const min = parse.int(minStr, { fallback, throw: true });
-        const max = parse.int(maxStr, { fallback, throw: true });
+        const min = parse.int(minStr, { fallback, throw: NotANumberError });
+        const max = parse.int(maxStr, { fallback, throw: NotANumberError });
         return min + Math.floor(Math.random() * (max - min));
     }
 });
@@ -131,7 +131,7 @@ export const mathReplacer = defineReplacer('math', {
             throw new InvalidOperatorError(operator);
 
         return bbtagArray.flattenArray(values.map(v => v.value))
-            .map(arg => parse.float(arg, { throw: true }))
+            .map(arg => parse.float(arg, { throw: NotANumberError }))
             .reduce(numericOperators[operator]);
     }
 });
@@ -154,8 +154,8 @@ export const baseReplacer = defineReplacer<FallbackLocals>(['base', 'radix'], {
     returns: 'string',
     execute: function base(ctx, [{ value: valueStr }, { value: originStr }, { value: radixStr }]) {
         const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
-        let origin = parse.int(originStr, { fallback, throw: true });
-        let radix = parse.int(radixStr, { fallback, throw: true });
+        let origin = parse.int(originStr, { fallback, throw: NotANumberError });
+        let radix = parse.int(radixStr, { fallback, throw: NotANumberError });
         if (!isValidRadix(origin))
             origin = fallback() ?? origin;
         if (!isValidRadix(radix))
@@ -163,7 +163,7 @@ export const baseReplacer = defineReplacer<FallbackLocals>(['base', 'radix'], {
         if (!isValidRadix(origin) || !isValidRadix(radix))
             throw new BBTagRuntimeError('Base must be between 2 and 36');
 
-        return parse.int(valueStr, { fallback, throw: true, radix: origin }).toString(radix);
+        return parse.int(valueStr, { fallback, throw: NotANumberError, radix: origin }).toString(radix);
     }
 });
 
@@ -172,20 +172,20 @@ function isValidRadix(value: number): value is number {
 }
 
 function roundUsing(value: string, roundFn: (value: number) => number): number {
-    return roundFn(parse.float(value, { throw: true }));
+    return roundFn(parse.float(value, { throw: NotANumberError }));
 }
 
 function absMultiple(values: string[]): number[] {
     return bbtagArray.flattenArray(values)
-        .map(s => parse.float(s, { throw: true }))
+        .map(s => parse.float(s, { throw: NotANumberError }))
         .map(Math.abs);
 }
 async function nudge(context: BBTagContext<VariablesLocals>, varName: string, amountStr: string, floorStr: string, scale: -1 | 1): Promise<number> {
-    let amount = parse.float(amountStr, { throw: true });
-    const floor = parse.boolean(floorStr, { throw: true });
+    let amount = parse.float(amountStr, { throw: NotANumberError });
+    const floor = parse.boolean(floorStr, { throw: NotABooleanError });
 
     const varRef = await context.locals.variables.get(varName);
-    let value = parse.float(varRef.value, { throw: true });
+    let value = parse.float(varRef.value, { throw: NotANumberError });
     if (floor) {
         value = Math.floor(value);
         amount = Math.floor(amount);
@@ -203,7 +203,7 @@ function aggregate(values: string[], aggregator: (v: number[]) => number): numbe
         if (typeof arg !== 'string' && typeof arg !== 'number')
             return NaN;
         const parsed = parse.float(arg);
-        if (parsed === undefined)
+        if (parsed === null)
             return NaN;
         parsedArgs.push(parsed);
     }
@@ -217,11 +217,11 @@ function numFormat(
     thousands: string
 ): string {
     const number = parse.float(numberStr);
-    if (number === undefined)
+    if (number === null)
         return 'NaN';
     let roundto = parse.int(roundToStr);
     const options: Intl.NumberFormatOptions = {}; // create formatter options
-    if (roundto !== undefined) {
+    if (roundto !== null) {
         roundto = Math.min(20, Math.max(-21, roundto));
         const trunclen = Math.trunc(number).toString().length;
         if (roundto >= 0) {

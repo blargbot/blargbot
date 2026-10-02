@@ -1,5 +1,5 @@
 import { bbtagArray } from '../bbtagArray.js';
-import { BBTagRuntimeError } from '../BBTagRuntimeError.js';
+import { BBTagRuntimeError, NotABooleanError } from '../BBTagRuntimeError.js';
 import { defineReplacer } from '../defineReplacer.js';
 import { runBool } from '../operators.js';
 import { parse } from '../parse.js';
@@ -26,7 +26,7 @@ export const ifReplacer = defineReplacer(
         parameters: ['boolean', '~then', '~else?'],
         returns: 'string',
         execute: async function ifThenElse(_, [{ value: bool }, thenCode, elseCode]) {
-            const next = parse.boolean(bool, { throw: true }) ? thenCode : elseCode;
+            const next = parse.boolean(bool, { throw: NotABooleanError }) ? thenCode : elseCode;
             return await next.wait();
         }
     },

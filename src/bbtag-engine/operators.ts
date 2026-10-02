@@ -136,10 +136,10 @@ export function runBool(left: string, operator: string, right: string): boolean 
     [left, right] = args;
 
     const leftBool = parse.boolean(left, { includeNumbers: false });
-    if (leftBool !== undefined)
+    if (leftBool !== null)
         left = leftBool.toString();
     const rightBool = parse.boolean(right, { includeNumbers: false });
-    if (rightBool !== undefined)
+    if (rightBool !== null)
         right = rightBool.toString();
 
     return comparisonOperators[op](left, right);

@@ -1,23 +1,22 @@
 import { defineReplacer } from '../defineReplacer.js';
 
-export interface HtmlEncoderLocals {
-    htmlEncoder: HtmlEncoder;
-}
 export interface HtmlEncoder {
-    encode(text: string): string;
-    decode(text: string): string;
+    encodeHtml(text: string): string;
+    decodeHtml(text: string): string;
 }
-export const htmlEncodeReplacer = defineReplacer<HtmlEncoderLocals>('htmlEncode', {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const htmlEncodeReplacerFactory = (options: HtmlEncoder) => defineReplacer('htmlEncode', {
     parameters: ['text'],
     returns: 'string',
-    execute: function htmlEncode(ctx, [{ value: text }]) {
-        return ctx.locals.htmlEncoder.encode(text);// TODO: use subtag.source
+    execute: function htmlEncode(_, [{ value: text }]) {
+        return options.encodeHtml(text);// TODO: use subtag.source
     }
 });
-export const htmlDecodeReplacer = defineReplacer<HtmlEncoderLocals>('htmlDecode', {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const htmlDecodeReplacerFactory = (options: HtmlEncoder) => defineReplacer('htmlDecode', {
     parameters: ['text+'],
     returns: 'string',
-    execute: function htmlDecode(ctx, text) {
-        return ctx.locals.htmlEncoder.decode(text.map(x => x.value).join(';'));
+    execute: function htmlDecode(_, text) {
+        return options.decodeHtml(text.map(x => x.value).join(';'));
     }
 });

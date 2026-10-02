@@ -141,6 +141,30 @@
                 "type": "npm",
                 "script": "watch"
             }
+        },
+        {
+            "name": "test: current (focused)",
+            "type": "node",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "runtimeExecutable": "yarn",
+            "runtimeArgs": [
+                "node",
+                "--test",
+                "--test-only",
+                "${fileDirname}/${fileBasenameNoExtension}.js"
+            ],
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+                "**/.pnp.cjs",
+                "**/.pnp.loader.mjs"
+            ],
+            "autoAttachChildProcesses": true,
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
+            }
         }
     ]
 }

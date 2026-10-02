@@ -13,4 +13,4 @@ export * from './replacers/settings.js';
 export * from './replacers/delay.js';
 export * from './replacers/discord.js';
 export { colorReplacerFactory } from './replacers/color.js';
-export { htmlEncodeReplacer, htmlDecodeReplacer } from './replacers/html.js';
+export { htmlEncodeReplacerFactory, htmlDecodeReplacerFactory } from './replacers/html.js';

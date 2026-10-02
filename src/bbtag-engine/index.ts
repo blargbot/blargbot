@@ -1,7 +1,7 @@
 export * as replacers from './replacers.js';
 export * from './replacers/locals.js';
 export { Color, ColorParser, Colorspace } from './replacers/color.js';
-export { HtmlEncoder, HtmlEncoderLocals } from './replacers/html.js';
+export { HtmlEncoder } from './replacers/html.js';
 export * from './language/index.js';
 export * from './bbtagArray.js';
 export * from './BBTagEngine.js';
@@ -31,4 +31,4 @@ export * from './compilation/SubtagSignatureParameterOptions.js';
 
 export * from './replacers/discord/errors.js';
 export * from './replacers/discord/locals.js';
-export * from './replacers/discord/util.js';
+export { EmbedParser, createEmbedParser, ParseEmbedOptions } from './replacers/discord/util.js';

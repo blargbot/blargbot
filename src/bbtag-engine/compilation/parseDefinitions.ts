@@ -119,7 +119,6 @@ function getExecute<Locals extends object>(definition: AnySubtagSignatureOptions
 const logicWrappers: { [P in keyof SubtagReturnTypeMap]: <Locals extends object>(factory: SubtagLogic<Locals, Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic<Locals> } = {
     'unknown': passthroughSubtagLogic,
     'number': stringifySubtagLogic,
-    'hex': next => stringifySubtagLogic(next, val => val.toString(16).padStart(6, '0')),
     'number[]': iterableSubtagLogic,
     'boolean': stringifySubtagLogic,
     'boolean|number': stringifySubtagLogic,
@@ -136,7 +135,6 @@ const logicWrappers: { [P in keyof SubtagReturnTypeMap]: <Locals extends object>
     'id[]': iterableSubtagLogic,
     'loop': stringIterableSubtagLogic,
     'error': voidSubtagLogic,
-    'hex[]': iterableSubtagLogic,
     'nothing[]': iterableSubtagLogic,
     'number|number[]': iterableOrSingleSubtagLogic
 };

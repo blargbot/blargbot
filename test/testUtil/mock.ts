@@ -61,7 +61,7 @@ export interface VerifyMock<T extends Mockable> {
 export class MockError extends Error {
     public constructor(...args: ConstructorParameters<typeof Error>) {
         super(...args);
-        this.name = MockError.name;
+        this.name = new.target.name;
     }
 }
 
@@ -148,6 +148,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                 break;
 
         }
+        new MockBrand(this.#shape, this);
         this.#strict = options?.loose !== true;
         this.#id = options?.id ?? null;
 
@@ -1217,8 +1218,8 @@ export interface ArgumentMatchers<out T = never> {
     readonly strict: <R>(value: R) => R;
     readonly satisfies: <R>(guard: (value: R) => boolean) => R;
     readonly asserts: <R>(guard: (value: R) => void) => R;
-    readonly oneOf: <R extends unknown[]>(...values: R) => R[number];
-    readonly instanceOf: <R>(ctor: abstract new (...args: never) => R) => R;
+    readonly oneOf: <const R extends readonly unknown[]>(...values: R) => R[number];
+    readonly instanceOf: <R>(ctor: abstract new (...args: never) => NoInfer<R>) => R;
     readonly looksLike: <R>(skeleton: R) => R;
     readonly looksLikeLoose: <R>(skeleton: R) => R;
     readonly sequenceEqual: <R>(items: R extends Iterable<infer Item> ? Iterable<Item> : never) => R;
@@ -1607,8 +1608,8 @@ const publicArgumentMatchers: ArgumentMatchers<never> = Object.freeze(Object.ass
         boolean: PublicArgumentMatcher.disguise<boolean>(booleanArgumentMatcher),
         bigint: PublicArgumentMatcher.disguise<bigint>(bigintArgumentMatcher),
         strict: v => PublicArgumentMatcher.disguise(new StrictArgumentMatcher(v)),
-        satisfies: v => PublicArgumentMatcher.disguise(new GuardedArgumentMatcher(v)),
-        asserts: v => PublicArgumentMatcher.disguise(new AssertingArgumentMatcher(v)),
+        satisfies: <R>(v: (value: R) => boolean) => PublicArgumentMatcher.disguise(new GuardedArgumentMatcher(v)),
+        asserts: <R>(v: (value: R) => void) => PublicArgumentMatcher.disguise(new AssertingArgumentMatcher(v)),
         oneOf: (...v) => PublicArgumentMatcher.disguise(new OneOfArgumentMatcher(...v.map(v => ArgumentMatcher.from(v)))),
         instanceOf: v => PublicArgumentMatcher.disguise(new InstanceOfArgumentMatcher(v)),
         sequenceEqual: v => PublicArgumentMatcher.disguise(new CollectionEqualMatcher(v, true)),
@@ -1665,47 +1666,48 @@ function keyToSource(key: PropertyKey): string {
 }
 
 function debugMatchers(expr: Expression, mock: Mock): string {
+    const $mock = mock.toString();
     switch (expr.kind) {
         case 'call': {
             if (expr.thisArg === thisArgumentMatcher || expr.thisArg === anyArgumentMatcher)
-                return `${mock.toString()}(${expr.parameters.map(p => p.toString()).join(',')})`;
-            return `${mock.toString()}.apply(${expr.thisArg.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
+                return `${$mock}(${expr.parameters.map(p => p.toString()).join(',')})`;
+            return `${$mock}.apply(${expr.thisArg.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }
         case 'new': {
             if (expr.newTarget === thisArgumentMatcher)
-                return `new ${mock.toString()}(${expr.parameters.map(p => p.toString()).join(',')})`;
-            return `new (class Derived extends ${mock.toString()} {...})(${expr.newTarget.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
+                return `new ${$mock}(${expr.parameters.map(p => p.toString()).join(',')})`;
+            return `new (class Derived extends ${$mock} {...})(${expr.newTarget.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }
         case 'method': {
             if (expr.thisArg === thisArgumentMatcher || expr.thisArg === anyArgumentMatcher)
-                return `${mock.toString()}${keyToProp(expr.name)}(${expr.parameters.map(p => p.toString()).join(',')})`;
-            return `${mock.toString()}${keyToProp(expr.name)}.apply(${expr.thisArg.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
+                return `${$mock}${keyToProp(expr.name)}(${expr.parameters.map(p => p.toString()).join(',')})`;
+            return `${$mock}${keyToProp(expr.name)}.apply(${expr.thisArg.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }
         case 'newNested': {
             if (expr.newTarget === thisArgumentMatcher)
-                return `new ${mock.toString()}${keyToProp(expr.name)}(${expr.parameters.map(p => p.toString()).join(',')})`;
-            return `new (class Derived extends ${mock.toString()}${keyToProp(expr.name)} {...})(${expr.newTarget.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
+                return `new ${$mock}${keyToProp(expr.name)}(${expr.parameters.map(p => p.toString()).join(',')})`;
+            return `new (class Derived extends ${$mock}${keyToProp(expr.name)} {...})(${expr.newTarget.toString()}, [${expr.parameters.map(p => p.toString()).join(',')}])`;
         }
         case 'get': {
-            return `$mock${keyToProp(expr.name)}`;
+            return `${$mock}${keyToProp(expr.name)}`;
         }
         case 'set': {
-            return `$mock${keyToProp(expr.name)} = ${expr.value.toString()}`;
+            return `${$mock}${keyToProp(expr.name)} = ${expr.value.toString()}`;
         }
         case 'delete': {
-            return `delete $mock${keyToProp(expr.name)}`;
+            return `delete ${$mock}${keyToProp(expr.name)}`;
         }
         case 'has': {
-            return `Reflect.has($mock, ${keyToSource(expr.name)})`;
+            return `Reflect.has(${$mock}, ${keyToSource(expr.name)})`;
         }
         case 'ownKeys': {
-            return 'Reflect.ownKeys($mock)';
+            return `Reflect.ownKeys(${$mock})`;
         }
         case 'getPrototype': {
-            return 'Reflect.getPrototypeOf($mock)';
+            return `Reflect.getPrototypeOf(${$mock})`;
         }
         case 'setPrototype': {
-            return `Reflect.setPrototypeOf($mock, ${expr.value.toString()})`;
+            return `Reflect.setPrototypeOf(${$mock}, ${expr.value.toString()})`;
         }
         case 'defineProperty': {
             const definition = [];
@@ -1721,16 +1723,16 @@ function debugMatchers(expr: Expression, mock: Mock): string {
                 definition.push(`set: ${expr.set.toString()}`);
             if (expr.value !== undefined)
                 definition.push(`value: ${expr.value.toString()}`);
-            return `Reflect.defineProperty($mock, ${keyToSource(expr.name)}, {${definition.join(',')}})`;
+            return `Reflect.defineProperty(${$mock}, ${keyToSource(expr.name)}, {${definition.join(',')}})`;
         }
         case 'getDescriptor': {
-            return `Reflect.getOwnPropertyDescriptor($mock, ${keyToSource(expr.name)})`;
+            return `Reflect.getOwnPropertyDescriptor(${$mock}, ${keyToSource(expr.name)})`;
         }
         case 'isExtensible': {
-            return 'Reflect.isExtensible($mock)';
+            return `Reflect.isExtensible(${$mock})`;
         }
         case 'preventExtensions': {
-            return 'Reflect.preventExtensions($mock)';
+            return `Reflect.preventExtensions(${$mock})`;
         }
     }
 }
@@ -1790,59 +1792,60 @@ function hasPrototype(target: unknown, prototype: unknown): boolean {
 }
 
 function debugInvocation(invocation: Invocation, mock: Mock): string {
+    const $mock = mock.toString();
     switch (invocation.kind) {
         case 'call': {
             if (hasPrototype(invocation.this, mock.instance) || invocation.this === undefined && typeof mock === 'function')
-                return `${mock.toString()}(${invocation.arguments.map(argToString).join(',')})`;
-            return `${mock.toString()}.apply(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
+                return `${$mock}(${invocation.arguments.map(argToString).join(',')})`;
+            return `${$mock}.apply(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
         }
         case 'new': {
             if (invocation.this === mock)
-                return `new ${mock.toString()}(${invocation.arguments.map(argToString).join(',')})`;
-            return `new (class Derived extends ${mock.toString()} {...})(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
+                return `new ${$mock}(${invocation.arguments.map(argToString).join(',')})`;
+            return `new (class Derived extends ${$mock} {...})(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
         }
         case 'method': {
             if (hasPrototype(invocation.this, mock.instance))
-                return `${mock.toString()}${keyToProp(invocation.name)}(${invocation.arguments.map(argToString).join(',')})`;
-            return `${mock.toString()}${keyToProp(invocation.name)}.apply(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
+                return `${$mock}${keyToProp(invocation.name)}(${invocation.arguments.map(argToString).join(',')})`;
+            return `${$mock}${keyToProp(invocation.name)}.apply(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
         }
         case 'newNested': {
             if (invocation.this === mock)
-                return `new ${mock.toString()}${keyToProp(invocation.name)}(${invocation.arguments.map(argToString).join(',')})`;
-            return `new (class Derived extends ${mock.toString()}${keyToProp(invocation.name)} {...})(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
+                return `new ${$mock}${keyToProp(invocation.name)}(${invocation.arguments.map(argToString).join(',')})`;
+            return `new (class Derived extends ${$mock}${keyToProp(invocation.name)} {...})(${argToString(invocation.this)}, [${invocation.arguments.map(argToString).join(',')}])`;
         }
         case 'get': {
-            return `$mock${keyToProp(invocation.name)}`;
+            return `${$mock}${keyToProp(invocation.name)}`;
         }
         case 'set': {
-            return `$mock${keyToProp(invocation.name)} = ${argToString(invocation.arguments[0])}`;
+            return `${$mock}${keyToProp(invocation.name)} = ${argToString(invocation.arguments[0])}`;
         }
         case 'delete': {
-            return `delete $mock${keyToProp(invocation.name)}`;
+            return `delete ${$mock}${keyToProp(invocation.name)}`;
         }
         case 'has': {
-            return `Reflect.has($mock, ${keyToSource(invocation.name)})`;
+            return `Reflect.has(${$mock}, ${keyToSource(invocation.name)})`;
         }
         case 'ownKeys': {
-            return 'Reflect.ownKeys($mock)';
+            return `Reflect.ownKeys(${$mock})`;
         }
         case 'getPrototype': {
-            return 'Reflect.getPrototypeOf($mock)';
+            return `Reflect.getPrototypeOf(${$mock})`;
         }
         case 'setPrototype': {
-            return `Reflect.setPrototypeOf($mock, ${argToString(invocation.arguments[0])})`;
+            return `Reflect.setPrototypeOf(${$mock}, ${argToString(invocation.arguments[0])})`;
         }
         case 'defineProperty': {
-            return `Reflect.defineProperty($mock, ${keyToSource(invocation.name)}, ${argToString(invocation.arguments[0])})`;
+            return `Reflect.defineProperty(${$mock}, ${keyToSource(invocation.name)}, ${argToString(invocation.arguments[0])})`;
         }
         case 'getDescriptor': {
-            return `Reflect.getOwnPropertyDescriptor($mock, ${keyToSource(invocation.name)})`;
+            return `Reflect.getOwnPropertyDescriptor(${$mock}, ${keyToSource(invocation.name)})`;
         }
         case 'isExtensible': {
-            return 'Reflect.isExtensible($mock)';
+            return `Reflect.isExtensible(${$mock})`;
         }
         case 'preventExtensions': {
-            return 'Reflect.preventExtensions($mock)';
+            return `Reflect.preventExtensions(${$mock})`;
         }
     }
 }
@@ -1926,9 +1929,22 @@ function isMatch(expression: Expression, invocation: Invocation, mockInstance: u
     }
 }
 
+function rewriteMockErrorStack<T extends (...args: never) => unknown>(fn: T): T {
+    return function callSafe(...args) {
+        try {
+            return fn(...args);
+        } catch (error) {
+            if (error instanceof MockError)
+                Error.captureStackTrace(error, callSafe);
+            throw error;
+        }
+    } as T;
+}
+
 function makeOpaqueProxy<T extends Mockable>(target: T, traps: ProxyHandler<T> & { fallback?: () => never; }): T {
     function getOrDefault<K extends keyof ProxyHandler<T>>(key: K, fallback: NonNullable<ProxyHandler<T>[K]>): NonNullable<ProxyHandler<T>[K]> {
-        return traps[key]?.bind(traps) as ProxyHandler<T>[K] ?? traps.fallback ?? fallback;
+        const impl = traps[key]?.bind(traps) as ProxyHandler<T>[K] ?? traps.fallback ?? fallback;
+        return rewriteMockErrorStack(impl);
     }
     return new Proxy(target, {
         apply: getOrDefault('apply', () => undefined),
@@ -1986,3 +2002,17 @@ const canMockDispose = (() => {
         return false;
     }
 })();
+
+class MockBrand<T extends Mockable> extends class {
+    public constructor(target: Mockable) {
+        return target;
+    }
+} {
+    // @ts-expect-error Intentional, its is a marker for debugging
+    // eslint-disable-next-line no-unused-private-class-members
+    readonly #mock: Mock<T>;
+    public constructor(target: T, mock: Mock<T>) {
+        super(target);
+        this.#mock = mock;
+    }
+}

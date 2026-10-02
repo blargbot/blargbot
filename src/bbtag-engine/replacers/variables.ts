@@ -1,5 +1,5 @@
 import { bbtagArray } from '../bbtagArray.js';
-import { BBTagRuntimeError } from '../BBTagRuntimeError.js';
+import { BBTagRuntimeError, NotANumberError } from '../BBTagRuntimeError.js';
 import { defineReplacer } from '../defineReplacer.js';
 import { parse } from '../parse.js';
 import type { VariablesLocals } from './locals.js';
@@ -15,7 +15,7 @@ export const getReplacer = defineReplacer<VariablesLocals>('get', {
         if (indexStr === '')
             return { v: result.value, n: result.key };
 
-        const index = parse.int(indexStr, { throw: true });
+        const index = parse.int(indexStr, { throw: NotANumberError });
         if (index < 0 || index >= result.value.length)
             throw new BBTagRuntimeError('Index out of range');
 
