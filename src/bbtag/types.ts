@@ -227,6 +227,7 @@ type SubtagReturnTypeValueMap = {
     string: string;
     id: string;
     json: JToken;
+    embed: eris.Embed;
     nothing: undefined;
 }
 
@@ -258,7 +259,7 @@ export type SubtagReturnTypeMap = {
 
 export interface SubtagOptions<TString> {
     readonly name: string;
-    readonly aliases?: undefined;
+    readonly aliases?: readonly string[];
     readonly category: SubtagType;
     readonly description?: TString;
     readonly deprecated?: string | boolean;

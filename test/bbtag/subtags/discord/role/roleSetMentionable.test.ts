@@ -95,7 +95,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([239479234734n]).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ noLookup: false, throw: LegacyRoleNotFoundError }))).resolves(2983749274n).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: false, throw: LegacyRoleNotFoundError }))).resolves(2983749274n).mustHappen(1);
             }
         },
         {
@@ -107,7 +107,20 @@ await runSubtagTests({
             setup(ctx) {
                 const roleId = random.bigint(10n ** 10n, 10n ** 20n);
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([roleId]).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ noLookup: false, throw: LegacyRoleNotFoundError }))).resolves(roleId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: false, throw: LegacyRoleNotFoundError }))).resolves(roleId).mustHappen(1);
+                ctx.discord.setup(m => m.setRoleMentionable(roleId, true)).resolves(false).mustHappen(1);
+            }
+        },
+        {
+            code: '{rolesetmentionable;3298746326924;true;q}',
+            expected: '',
+            errors: [
+                { start: 0, end: 41, error: new (FailedToEditRoleNoPermsError.withDisplay(''))() }
+            ],
+            setup(ctx) {
+                const roleId = random.bigint(10n ** 10n, 10n ** 20n);
+                ctx.discord.setup(m => m.listManageableRoles()).resolves([roleId]).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: true, throw: LegacyRoleNotFoundError }))).resolves(roleId).mustHappen(1);
                 ctx.discord.setup(m => m.setRoleMentionable(roleId, true)).resolves(false).mustHappen(1);
             }
         }

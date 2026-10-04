@@ -14,6 +14,13 @@ await runSubtagTests<VariablesLocals>({
             replacers: [replacers.jsonReplacer]
         },
         {
+            code: '{jsonvalues;jsonVar}',
+            expected: '[1,null]',
+            setup(ctx) {
+                ctx.variables.setup(m => m.get('jsonVar')).returns({ key: '~jsonVar', value: { first: 1, missing: undefined } }).mustHappen(1);
+            }
+        },
+        {
             code: '{jsonvalues;["a","bcd","ef"]}',
             expected: '["a","bcd","ef"]'
         },

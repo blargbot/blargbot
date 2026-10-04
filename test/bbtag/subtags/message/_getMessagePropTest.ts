@@ -4,8 +4,8 @@ import { snowflake } from '@blargbot/core';
 
 import type * as eris from 'eris';
 
-import type { SubtagTestCase } from '../../SubtagTestSuite.js';
-import { SubtagTestContext } from '../../SubtagTestSuite.js';
+import type { SubtagTestCase } from '/workspaces/blargbot/test/bbtag/subtags/SubtagTestSuite.js';
+import { SubtagTestContext } from '/workspaces/blargbot/test/bbtag/subtags/SubtagTestSuite.js';
 
 export function createGetMessagePropTestCases(options: GetMessagePropTestData): SubtagTestCase[] {
     return [...createGetMessagePropTestCasesIter(options)];

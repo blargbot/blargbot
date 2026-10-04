@@ -75,7 +75,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([239479234734n]).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ noLookup: false, throw: RoleNotFoundError }))).resolves(2983749274n).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: false, throw: RoleNotFoundError }))).resolves(2983749274n).mustHappen(1);
             }
         },
         {
@@ -89,7 +89,7 @@ await runSubtagTests({
                 const topRole = random.bigint(10n ** 10n, 10n ** 20n);
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([topRole, roleId]).mustHappen(1);
                 ctx.discord.setup(m => m.getRolePosition(topRole)).resolves(10).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ noLookup: false, throw: RoleNotFoundError }))).resolves(roleId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: false, throw: RoleNotFoundError }))).resolves(roleId).mustHappen(1);
             }
         },
         {
@@ -103,7 +103,22 @@ await runSubtagTests({
                 const topRole = random.bigint(10n ** 10n, 10n ** 20n);
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([topRole, roleId]).mustHappen(1);
                 ctx.discord.setup(m => m.getRolePosition(topRole)).resolves(10).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ noLookup: false, throw: RoleNotFoundError }))).resolves(roleId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: false, throw: RoleNotFoundError }))).resolves(roleId).mustHappen(1);
+                ctx.discord.setup(m => m.setRolePosition(roleId, 2)).resolves(false).mustHappen(1);
+            }
+        },
+        {
+            code: '{rolesetpos;3298746326924;2;q}',
+            expected: 'false',
+            errors: [
+                { start: 0, end: 30, error: new (FailedToEditRoleNoPermsError.withDisplay('false'))() }
+            ],
+            setup(ctx) {
+                const roleId = random.bigint(10n ** 10n, 10n ** 20n);
+                const topRole = random.bigint(10n ** 10n, 10n ** 20n);
+                ctx.discord.setup(m => m.listManageableRoles()).resolves([topRole, roleId]).mustHappen(1);
+                ctx.discord.setup(m => m.getRolePosition(topRole)).resolves(10).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: true, throw: RoleNotFoundError }))).resolves(roleId).mustHappen(1);
                 ctx.discord.setup(m => m.setRolePosition(roleId, 2)).resolves(false).mustHappen(1);
             }
         }

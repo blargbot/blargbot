@@ -1,6 +1,7 @@
+import moment from 'moment-timezone';
+
 import { bbtagArray } from '../../bbtagArray.js';
 import type { BBTagContext } from '../../BBTagContext.js';
-import type { BBTagRuntimeThrowable } from '../../BBTagRuntimeError.js';
 import { BBTagRuntimeError, InvalidDurationError, NotABooleanError, NotAnArrayError, NotANumberError } from '../../BBTagRuntimeError.js';
 import type { CompiledBBTagReplacer } from '../../compilation/CompiledBBTagReplacer.js';
 import { defineReplacer } from '../../defineReplacer.js';
@@ -8,14 +9,24 @@ import { parse } from '../../parse.js';
 import { isEmptyAsync, toArrayAsync, toSetAsync } from '../../toCollectionAsync.js';
 import { RoleNotFoundError, UserNotFoundError } from './errors.js';
 import type * as Locals from './locals.js';
+import type { DiscordPermissionName, DiscordPermissions } from './Permissions.js';
 import type { EmbedParser } from './util.js';
-import { isQuiet, toAuthorizer } from './util.js';
+import { isQuiet } from './util.js';
+
+async function hasHigherRole(ctx: BBTagContext<Locals.ModerationLocals>, moderatorId: bigint, targetId: bigint): Promise<boolean> {
+    return await ctx.locals.discord.getTopRolePosition(moderatorId) > await ctx.locals.discord.getTopRolePosition(targetId);
+}
+
+async function hasAnyPermissions(ctx: BBTagContext<Locals.ModerationLocals>, userId: bigint, ...permissions: Array<DiscordPermissions | bigint | DiscordPermissionName>): Promise<boolean> {
+    const actual = await ctx.locals.discord.getPermissions(userId);
+    return actual.hasAny(...permissions);
+}
 
 export const banReplacer = defineReplacer<Locals.GuildMemberBanLocals>('ban', {
-    parameters: ['user', 'daysToDelete?:1', 'reason?', 'timeToUnban?', 'noPerms?'],
+    parameters: ['target', 'daysToDelete?:1', 'reason?', 'timeToUnban?', 'noPerms?'],
     returns: 'boolean|number',
-    execute: async function ban(ctx, [{ value: userStr }, { value: daysToDeleteStr }, { value: reason }, { value: durationStr }, { value: noPerms }]) {
-        const userId = await ctx.locals.discord.queryUser(userStr, { global: true, throw: UserNotFoundError });
+    execute: async function ban(ctx, [{ value: targetStr }, { value: daysToDeleteStr }, { value: reason }, { value: durationStr }, { value: noPerms }]) {
+        const targetId = await ctx.locals.discord.queryUser(targetStr, { global: true, throw: UserNotFoundError });
         const daysToDelete = parse.int(daysToDeleteStr, { throw: NotANumberError.withDisplay('false') });
         let duration: number | null = null;
 
@@ -25,30 +36,46 @@ export const banReplacer = defineReplacer<Locals.GuildMemberBanLocals>('ban', {
         if (reason === '')
             reason = 'Tag Ban';
 
-        if (!await ctx.locals.discord.ban({
-            userId,
-            authorizer: toAuthorizer(noPerms),
-            daysToDelete,
-            duration,
-            reason
-        })) {
-            return false;
+        const { authorizerId, userId, botId, ownerId, banOverrides } = ctx.locals.discord;
+        const moderatorId = noPerms === '' ? userId : authorizerId;
+        if (!await hasAnyPermissions(ctx, botId, 'ADMINISTRATOR', 'BAN_MEMBERS'))
+            throw new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to ban users!');
+        if (targetId === ownerId)
+            throw new BBTagRuntimeError('User has no permissions', 'You cannot ban the guild owner!');
+        if (targetId === moderatorId)
+            throw new BBTagRuntimeError('User has no permissions', 'You cannot ban yourself!');
+        if (targetId === botId)
+            throw new BBTagRuntimeError('Bot has no permissions', 'I cannot ban myself!');
+        if (moderatorId !== ownerId && moderatorId !== botId) {
+            if (!await hasAnyPermissions(ctx, moderatorId, banOverrides, 'ADMINISTRATOR', 'BAN_MEMBERS'))
+                throw new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to ban users!');
+            if (!await hasHigherRole(ctx, moderatorId, targetId))
+                throw new BBTagRuntimeError('User has no permissions', 'You can only ban users whos top role is below your top role!');
         }
-        return duration ?? true;
+        if (!await hasHigherRole(ctx, botId, targetId))
+            throw new BBTagRuntimeError('Bot has no permissions', 'I can only ban users whos top role is below my top role!');
+
+        return await ctx.locals.discord.ban({ userId: targetId, moderatorId, daysToDelete, duration, reason })
+            ? duration ?? true
+            : false;
     }
 });
 export const unbanReplacer = defineReplacer<Locals.GuildMemberBanLocals>('unban', {
-    parameters: ['user', 'reason?', 'noPerms?'],
+    parameters: ['target', 'reason?', 'noPerms?'],
     returns: 'boolean',
-    execute: async function unban(ctx, [{ value: userStr }, { value: reason }, { value: noPerms }]) {
-        const userId = await ctx.locals.discord.queryUser(userStr, { global: true, throw: UserNotFoundError });
+    execute: async function unban(ctx, [{ value: targetStr }, { value: reason }, { value: noPerms }]) {
+        const targetId = await ctx.locals.discord.queryUser(targetStr, { global: true, throw: UserNotFoundError });
         if (reason === '')
             reason = 'Tag Unban';
-        return await ctx.locals.discord.unban({
-            userId,
-            authorizer: toAuthorizer(noPerms),
-            reason
-        });
+
+        const { authorizerId, userId, botId, ownerId, banOverrides: banPermissions } = ctx.locals.discord;
+        const moderatorId = noPerms === '' ? userId : authorizerId;
+        if (!await hasAnyPermissions(ctx, botId, 'ADMINISTRATOR', 'BAN_MEMBERS'))
+            throw new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to unban users!');
+        if (moderatorId !== ownerId && moderatorId !== botId && !await hasAnyPermissions(ctx, moderatorId, banPermissions, 'ADMINISTRATOR', 'BAN_MEMBERS'))
+            throw new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to unban users!');
+
+        return await ctx.locals.discord.unban({ userId: targetId, moderatorId, reason });
     }
 });
 export const dmReplacerFactory = (options: { parseEmbed: EmbedParser; }): CompiledBBTagReplacer<Locals.DiscordSendDmLocals> => defineReplacer('dm', {
@@ -104,23 +131,39 @@ export const userBoostDateReplacer = defineReplacer<Locals.GuildMemberBoostingLo
         const date = await ctx.locals.discord.getBoostTimestamp(userId);
         if (date === null)
             throw new BBTagRuntimeError('User not boosting');
-        return date.format(format);
+        return moment.utc(date).format(format);
     }
 });
 export const kickReplacer = defineReplacer<Locals.GuildMemberKickLocals>('kick', {
     parameters: ['user', 'reason?', 'noPerms?'],
     returns: 'string',
     execute: async function kick(ctx, [{ value: userStr }, { value: reason }, { value: noPerms }]) {
-        const userId = await ctx.locals.discord.queryUser(userStr, { quiet: true /* TODO why? */, throw: UserNotFoundError });
+        const targetId = await ctx.locals.discord.queryUser(userStr, { quiet: true /* TODO why? */, throw: UserNotFoundError });
         if (reason === '')
             reason = 'Tag Kick';
 
-        await ctx.locals.discord.kick({
-            userId,
-            authorizer: toAuthorizer(noPerms),
-            reason
-        });
-        return 'Success'; //TODO true/false response
+        const { authorizerId, userId, botId, ownerId, kickOverrides } = ctx.locals.discord;
+        const moderatorId = noPerms === '' ? userId : authorizerId;
+        if (!await hasAnyPermissions(ctx, botId, 'ADMINISTRATOR', 'KICK_MEMBERS'))
+            throw new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick users!');
+        if (targetId === ownerId)
+            throw new BBTagRuntimeError('User has no permissions', 'You cannot kick the guild owner!');
+        if (targetId === moderatorId)
+            throw new BBTagRuntimeError('User has no permissions', 'You cannot kick yourself!');
+        if (targetId === botId)
+            throw new BBTagRuntimeError('Bot has no permissions', 'I cannot kick myself!');
+        if (moderatorId !== ownerId && moderatorId !== botId) {
+            if (!await hasAnyPermissions(ctx, moderatorId, kickOverrides, 'ADMINISTRATOR', 'KICK_MEMBERS'))
+                throw new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!');
+            if (!await hasHigherRole(ctx, moderatorId, targetId))
+                throw new BBTagRuntimeError('User has no permissions', 'You can only kick users whos top role is below your top role!');
+        }
+        if (!await hasHigherRole(ctx, botId, targetId))
+            throw new BBTagRuntimeError('Bot has no permissions', 'I can only kick users whos top role is below my top role!');
+
+        if (!await ctx.locals.discord.kick({ userId: targetId, moderatorId, reason }))
+            throw new BBTagRuntimeError('Kick failed');
+        return 'Success';
     }
 });
 
@@ -162,37 +205,57 @@ export const randomUserReplacer = defineReplacer<Locals.GuildMemberListLocals>([
 export const timeoutReplacer = defineReplacer<Locals.GuildMemberTimeoutLocals>('timeout', {
     parameters: ['user', 'duration', 'reason?', 'noPerms?'],
     returns: 'string',
-    execute: async function timeout(ctx, [{ value: userStr }, { value: durationStr }, { value: reason }, { value: noPerms }]) {
+    execute: async function timeout(ctx, [{ value: targetStr }, { value: durationStr }, { value: reason }, { value: noPerms }]) {
         const duration = parse.duration(durationStr, { throw: InvalidDurationError });
-        const userId = await ctx.locals.discord.queryUser(userStr, { /* TODO why? */ quiet: true, throw: UserNotFoundError });
+        const targetId = await ctx.locals.discord.queryUser(targetStr, { /* TODO why? */ quiet: true, throw: UserNotFoundError });
 
         if (reason === '')
             reason = 'Tag Timeout';
 
-        if (await ctx.locals.discord.userTimeout.set({
-            userId,
-            authorizer: toAuthorizer(noPerms),
+        const { authorizerId, userId, botId, ownerId, timeoutOverrides } = ctx.locals.discord;
+        const moderatorId = noPerms === '' ? userId : authorizerId;
+        if (!await hasAnyPermissions(ctx, botId, 'ADMINISTRATOR', 'MODERATE_MEMBERS'))
+            throw new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to timeout users!');
+        if (targetId === ownerId)
+            throw new BBTagRuntimeError('User has no permissions', 'You cannot timeout the guild owner!');
+        if (targetId === moderatorId)
+            throw new BBTagRuntimeError('User has no permissions', 'You cannot timeout yourself!');
+        if (targetId === botId)
+            throw new BBTagRuntimeError('Bot has no permissions', 'I cannot timeout myself!');
+        if (await hasAnyPermissions(ctx, targetId, 'ADMINISTRATOR'))
+            throw new BBTagRuntimeError('User has no permissions', 'Administrators cannot be timed out!');
+        if (moderatorId !== ownerId && moderatorId !== botId) {
+            if (!await hasAnyPermissions(ctx, moderatorId, timeoutOverrides, 'ADMINISTRATOR', 'MODERATE_MEMBERS'))
+                throw new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to timeout users!');
+            if (!await hasHigherRole(ctx, moderatorId, targetId))
+                throw new BBTagRuntimeError('User has no permissions', 'You can only timeout users whos top role is below your top role!');
+        }
+        if (!await hasHigherRole(ctx, botId, targetId))
+            throw new BBTagRuntimeError('Bot has no permissions', 'I can only timeout users whos top role is below my top role!');
+
+        if (await ctx.locals.discord.setUserTimeout({
+            userId: targetId,
+            moderatorId,
             reason,
             duration
-        })) {
+        }))
             return 'Success';
-        }
 
-        if (duration === 0)
-            throw new BBTagRuntimeError('User is not timed out', `${userStr} is not timed out!`);
-        throw new BBTagRuntimeError('User is already timed out', `${userStr} is already timed out!`);
+        throw duration === 0
+            ? new BBTagRuntimeError('User is not timed out', `${targetStr} is not timed out!`)
+            : new BBTagRuntimeError('User is already timed out', `${targetStr} is already timed out!`);
     }
 });
 export const userTimeoutReplacer = defineReplacer<Locals.GuildMemberTimeoutLocals>(['userTimeout', 'timedoutUntil', 'userTimedoutUntil', 'memberTimeout', 'memberTimedoutUntil'], {
     parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ', 'user?', 'quiet?'],
     returns: 'string',
-    execute: async function userTimeout(ctx, [{ value: format }, { value: userStr }, { value: quietStr }]) {
-        const quiet = isQuiet(ctx, quietStr);
+    execute: async function userTimeout(ctx, [{ value: format }, { value: userStr, exists: hasUser }, { value: quietStr }]) {
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
-        const date = await ctx.locals.discord.userTimeout.get(userId);
+        const date = await ctx.locals.discord.getUserTimeout(userId);
         if (date === null)
             throw new BBTagRuntimeError('User not timed out');
-        return date.format(format);
+        return moment.utc(date).format(format);
     }
 });
 const userActivityTypes = {
@@ -206,8 +269,8 @@ const userActivityTypes = {
 export const userActivityReplacer = defineReplacer<Locals.GuildMemberActivityLocals>(['userActivity', 'userGame'], {
     parameters: ['user?', 'quiet?'],
     returns: 'string',
-    execute: async function userActivity(ctx, [{ value: userStr }, { value: quietStr }]) {
-        const quiet = isQuiet(ctx, quietStr);
+    execute: async function userActivity(ctx, [{ value: userStr, exists: hasUser }, { value: quietStr }]) {
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
         return (await ctx.locals.discord.getActivity(userId))?.name ?? 'nothing';
     }
@@ -215,8 +278,8 @@ export const userActivityReplacer = defineReplacer<Locals.GuildMemberActivityLoc
 export const userActivityTypeReplacer = defineReplacer<Locals.GuildMemberActivityLocals>(['userActivityType', 'userGameType'], {
     parameters: ['user?', 'quiet?'],
     returns: 'string',
-    execute: async function userActivityType(ctx, [{ value: userStr }, { value: quietStr }]) {
-        const quiet = isQuiet(ctx, quietStr);
+    execute: async function userActivityType(ctx, [{ value: userStr, exists: hasUser }, { value: quietStr }]) {
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
         const type = (await ctx.locals.discord.getActivity(userId))?.type;
         if (type === undefined || !Object.hasOwn(userActivityTypes, type))
@@ -227,8 +290,8 @@ export const userActivityTypeReplacer = defineReplacer<Locals.GuildMemberActivit
 export const userNameReplacer = defineReplacer<Locals.DiscordUserNameLocals>('userName', {
     parameters: ['user?', 'quiet?'],
     returns: 'string',
-    execute: async function userName(ctx, [{ value: userStr }, { value: quietStr }]) {
-        const quiet = isQuiet(ctx, quietStr);
+    execute: async function userName(ctx, [{ value: userStr, exists: hasUser }, { value: quietStr }]) {
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
         return await ctx.locals.discord.getUsername(userId);
     }
@@ -236,16 +299,16 @@ export const userNameReplacer = defineReplacer<Locals.DiscordUserNameLocals>('us
 export const userIdReplacer = defineReplacer<Locals.QueryDiscordUserLocals>('userId', {
     parameters: ['user?', 'quiet?'],
     returns: 'id',
-    execute: async function userId(ctx, [{ value: userStr }, { value: quietStr }]) {
-        const quiet = isQuiet(ctx, quietStr);
+    execute: async function userId(ctx, [{ value: userStr, exists: hasUser }, { value: quietStr }]) {
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         return await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
     }
 });
 export const userIsBotReplacer = defineReplacer<Locals.DiscordUserIsBotLocals>(['userIsBot', 'userBot'], {
     parameters: ['user?', 'quiet?'],
     returns: 'boolean',
-    execute: async function userIsBot(ctx, [{ value: userStr }, { value: quietStr }]) {
-        const quiet = isQuiet(ctx, quietStr);
+    execute: async function userIsBot(ctx, [{ value: userStr, exists: hasUser }, { value: quietStr }]) {
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
         return await ctx.locals.discord.isBot(userId);
     }
@@ -253,13 +316,13 @@ export const userIsBotReplacer = defineReplacer<Locals.DiscordUserIsBotLocals>([
 export const userStatusReplacer = defineReplacer<Locals.DiscordUserStatusLocals>('userStatus', {
     parameters: ['user?', 'quiet?'],
     returns: 'string',
-    execute: async function userStatus(ctx, [{ value: userStr }, { value: quietStr }]) {
-        const quiet = isQuiet(ctx, quietStr);
+    execute: async function userStatus(ctx, [{ value: userStr, exists: hasUser }, { value: quietStr }]) {
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
         return await ctx.locals.discord.getStatus(userId);
     }
 });
-export const userTimezoneReplacer = defineReplacer<Locals.DiscordUserTimezoneLocals>('userTimezone', {
+export const userTimezoneReplacer = defineReplacer<Locals.DiscordUserTimezoneLocals>('userTimeZone', {
     parameters: ['user?', 'quiet?'],
     returns: 'string',
     execute: async function userTimezone(ctx, [{ value: userStr }, { value: quietStr }]) {
@@ -272,9 +335,9 @@ export const userAvatarReplacer = defineReplacer<Locals.DiscordUserAvatarLocals>
     parameters: ['user?', 'quiet?'],
     returns: 'string',
     execute: async function userAvatar(ctx, args) {
-        const [{ value: userStr }, { value: quietStr }] = args;
+        const [{ value: userStr, exists: hasUser }, { value: quietStr }] = args;
         const globalOnly = args.subtagName.toLowerCase().endsWith('.global');
-        const quiet = isQuiet(ctx, quietStr);
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
         const url = await ctx.locals.discord.getAvatarUrl({ userId, globalOnly });
         return url.toString();
@@ -284,9 +347,9 @@ export const userNicknameReplacer = defineReplacer<Locals.DiscordUserNicknameLoc
     parameters: ['user?', 'quiet?'],
     returns: 'string',
     execute: async function userNickname(ctx, args) {
-        const [{ value: userStr }, { value: quietStr }] = args;
+        const [{ value: userStr, exists: hasUser }, { value: quietStr }] = args;
         const globalOnly = args.subtagName.toLowerCase().endsWith('.global');
-        const quiet = isQuiet(ctx, quietStr);
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
         return await ctx.locals.discord.getNickname({ userId, globalOnly });
     }
@@ -303,11 +366,11 @@ export const userSetNicknameReplacer = defineReplacer<Locals.GuildMemberSetNickn
 export const userCreatedAtReplacer = defineReplacer<Locals.DiscordUserCreatedDateLocals>('userCreatedAt', {
     parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ', 'user?', 'quiet?'],
     returns: 'string',
-    execute: async function userCreatedAt(ctx, [{ value: format }, { value: userStr }, { value: quietStr }]) {
-        const quiet = isQuiet(ctx, quietStr);
+    execute: async function userCreatedAt(ctx, [{ value: format }, { value: userStr, exists: hasUser }, { value: quietStr }]) {
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
         const date = ctx.locals.discord.getTimestamp(userId);
-        return date.format(format);
+        return moment.utc(date).format(format);
     }
 });
 export const userJoinedAtReplacer = defineReplacer<Locals.GuildMemberJoinedDateLocals>('userJoinedAt', {
@@ -317,36 +380,30 @@ export const userJoinedAtReplacer = defineReplacer<Locals.GuildMemberJoinedDateL
         const quiet = isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
         const date = await ctx.locals.discord.getJoinedTimestamp(userId);
-        return date.format(format);
+        return moment.utc(date).format(format);
     }
 });
 export const userRolesReplacer = defineReplacer<Locals.GuildMemberRolesLocals>('userRoles', {
     parameters: ['user?', 'quiet?'],
     returns: 'id[]',
-    execute: async function userRoles(ctx, [{ value: userStr }, { value: quietStr }]) {
-        const quiet = isQuiet(ctx, quietStr);
+    execute: async function userRoles(ctx, [{ value: userStr, exists: hasUser }, { value: quietStr }]) {
+        const quiet = !hasUser || isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
         return await ctx.locals.discord.listUserRoles(userId);
     }
 });
-async function assertValidRoles(ctx: BBTagContext<Locals.GuildAllRolesLocals>, roleIds: Iterable<string>, error: BBTagRuntimeThrowable<[string]>): Promise<void> {
-    const knownRoles = await toSetAsync(ctx.locals.discord.listAllRoles(), x => x.toString());
-    for (const roleId of roleIds) {
-        if (!knownRoles.has(roleId)) {
-            throw new error(roleId);
-        }
-    }
-}
 export const userHasAnyRoleReplacer = defineReplacer<Locals.GuildMemberHasRolesLocals>(['userHasAnyRole', 'userHasRole', 'hasAnyRole', 'hasRole'], {
     parameters: ['roleIds', 'user?', 'quiet?'],
     returns: 'boolean',
     execute: async function userHasAnyRole(ctx, [{ value: roleIdsStr }, { value: userStr }, { value: quietStr }]) {
         const quiet = isQuiet(ctx, quietStr);
         const arr = bbtagArray.deserialize(roleIdsStr) ?? { v: [roleIdsStr] };
-        const roleIds = new Set(arr.v.map(x => parse.string(x)));
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, 'false') });
+        const allRoles = await toSetAsync(ctx.locals.discord.listAllRoles(), roleId => roleId.toString());
 
-        await assertValidRoles(ctx, roleIds, RoleNotFoundError.withQuiet(quiet, 'false'));
+        const roleIds = new Set(arr.v.map(x => parse.string(x)).filter(v => allRoles.has(v)));
+        if (roleIds.size === 0)
+            throw new (RoleNotFoundError.withQuiet(quiet, 'false'))(roleIdsStr);
 
         for await (const roleId of await ctx.locals.discord.listUserRoles(userId)) {
             if (roleIds.has(roleId.toString()))
@@ -363,8 +420,13 @@ export const userHasAllRolesReplacer = defineReplacer<Locals.GuildMemberHasRoles
         const arr = bbtagArray.deserialize(roleIdsStr) ?? { v: [roleIdsStr] };
         const roleIds = new Set(arr.v.map(x => parse.string(x)));
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, 'false') });
+        const allRoles = await toSetAsync(ctx.locals.discord.listAllRoles(), x => x.toString());
 
-        await assertValidRoles(ctx, roleIds, RoleNotFoundError.withQuiet(quiet, 'false'));
+        for (const roleId of roleIds) {
+            if (!allRoles.has(roleId)) {
+                throw new (RoleNotFoundError.withQuiet(quiet, 'false'))(roleId);
+            }
+        }
 
         for await (const roleId of await ctx.locals.discord.listUserRoles(userId))
             roleIds.delete(roleId.toString());

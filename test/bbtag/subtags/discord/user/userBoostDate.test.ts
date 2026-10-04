@@ -1,4 +1,4 @@
-import type { GuildMemberBoostingLocals, TemporalValue } from '@blargbot/bbtag-engine';
+import type { GuildMemberBoostingLocals } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, replacers, UserNotFoundError } from '@blargbot/bbtag-engine';
 import { random } from '@blargbot/util';
 
@@ -15,10 +15,8 @@ await runSubtagTests({
             expected: '2021-01-01T00:00:00+00:00',
             setup(ctx) {
                 const userId = random.bigint(10n ** 10n, 10n ** 20n);
-                const date = ctx.createMock<TemporalValue>();
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
-                ctx.discord.setup(m => m.getBoostTimestamp(userId)).resolves(date.instance).mustHappen(1);
-                date.setup(m => m.format('YYYY-MM-DDTHH:mm:ssZ')).returns('2021-01-01T00:00:00+00:00').mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup(m => m.getBoostTimestamp(userId)).resolves(Date.UTC(2021, 0, 1)).mustHappen(1);
             }
         },
         ...createGetUserPropTestCases<GuildMemberBoostingLocals>({
@@ -30,9 +28,7 @@ await runSubtagTests({
                 {
                     expected: '2021-01-01T00:00:00+00:00',
                     setup(ctx, userId) {
-                        const date = ctx.createMock<TemporalValue>();
-                        ctx.discord.setup(m => m.getBoostTimestamp(userId)).resolves(date.instance).mustHappen(1);
-                        date.setup(m => m.format('YYYY-MM-DDTHH:mm:ssZ')).returns('2021-01-01T00:00:00+00:00').mustHappen(1);
+                        ctx.discord.setup(m => m.getBoostTimestamp(userId)).resolves(Date.UTC(2021, 0, 1)).mustHappen(1);
                     }
                 },
                 {
@@ -51,11 +47,9 @@ await runSubtagTests({
             },
             cases: [
                 {
-                    expected: '2021-01-01T00:00:00+00:00',
+                    expected: '01/01/2021',
                     setup(ctx, userId) {
-                        const date = ctx.createMock<TemporalValue>();
-                        ctx.discord.setup(m => m.getBoostTimestamp(userId)).resolves(date.instance).mustHappen(1);
-                        date.setup(m => m.format('DD/MM/YYYY')).returns('2021-01-01T00:00:00+00:00').mustHappen(1);
+                        ctx.discord.setup(m => m.getBoostTimestamp(userId)).resolves(Date.UTC(2021, 0, 1)).mustHappen(1);
                     }
                 },
                 {

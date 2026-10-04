@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, MessageNotFoundError, replacers } from '@blargbot/bbtag-engine';
 
 
-import { runSubtagTests, SubtagTestContext } from '../../SubtagTestSuite.js';
+import { runSubtagTests, SubtagTestContext } from '/workspaces/blargbot/test/bbtag/subtags/SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 await runSubtagTests({

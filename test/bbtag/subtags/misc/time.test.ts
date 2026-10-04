@@ -1,46 +1,19 @@
-import type { TemporalValue } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
-import type { Moment } from 'moment-timezone';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const now = moment.tz('2026-09-22T22:20:00Z', 'Etc/UTC');
-const prettyTimeMagnitudes = {
-    //defaults
-    year: 'year', years: 'years', y: 'y',
-    month: 'month', months: 'months', M: 'M',
-    week: 'week', weeks: 'weeks', w: 'w',
-    day: 'day', days: 'days', d: 'd',
-    hour: 'hour', hours: 'hours', h: 'h',
-    minute: 'minute', minutes: 'minutes', m: 'm',
-    second: 'second', seconds: 'seconds', s: 's',
-    millisecond: 'millisecond', milliseconds: 'milliseconds', ms: 'ms',
-    quarter: 'quarter', quarters: 'quarters', q: 'Q',
-    //Custom
-    mins: 'minutes', min: 'minute'
-} as const;
-
 await runSubtagTests({
-    replacer: replacers.timeReplacerFactory({
-        parseTime(text, format, timezone) {
-            const m = parseWithMoment(text, format, timezone);
-            if (!m.isValid())
-                return undefined;
-            return (function asTemporal(m: Moment): TemporalValue {
-                return {
-                    toTimezone(timezone) {
-                        return asTemporal(m.tz(timezone));
-                    },
-                    format(format) {
-                        return m.format(format);
-                    }
-                };
-            })(m);
-        }
-    }),
+    replacer: replacers.timeReplacer,
     names: ['time'],
     argCountBounds: { min: 0, max: 5 },
+    setup(_, __, test) {
+        test.mock.timers.enable({
+            apis: ['Date'],
+            now: new Date('2026-09-22T22:20:00Z')
+        });
+    },
     cases: [
         { code: '{time}', expected: now.format('YYYY-MM-DDTHH:mm:ssZ') },
         { code: '{time;}', expected: now.format('YYYY-MM-DDTHH:mm:ssZ') },
@@ -147,35 +120,3 @@ await runSubtagTests({
         { code: '{time;DD/MM/YYYY HH:mm;01/01/2022;DD/MM/YYYY;America/New_York;America/New_York}', expected: '01/01/2022 00:00' }
     ]
 });
-
-function parseWithMoment(text: string, format: string, timezone: string): moment.Moment {
-    const result = now.clone();
-    if (text === '')
-        return result;
-
-    switch (text.toLowerCase()) {
-        case 'now': return result;
-        case 'today': return result.startOf('day');
-        case 'tomorrow': return result.startOf('day').add(1, 'day');
-        case 'yesterday': return result.startOf('day').add(-1, 'days');
-    }
-
-    let match = /^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i.exec(text);
-    let sign = 1;
-    if (match === null) {
-        match = /^\s*(-?\d+(?:\.\d+)?)\s+(\S+)\s+ago\s*$/i.exec(text);
-        sign = -1;
-    }
-    if (match !== null) {
-        const magnitude = sign * parseFloat(match[1]);
-        const key = match[2].toLowerCase();
-        if (!Object.hasOwn(prettyTimeMagnitudes, key))
-            throw new Error(`Invalid quantity ${match[2]}`);
-        const quantity = prettyTimeMagnitudes[key];
-        return result.add(magnitude, quantity);
-    }
-
-    return format.length === 0
-        ? moment.tz(text, timezone)
-        : moment.tz(text, format, timezone);
-}

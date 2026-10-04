@@ -14,6 +14,9 @@ await runSubtagTests({
     }),
     names: ['roleCreate'],
     argCountBounds: { min: 1, max: 5 },
+    setup(ctx) {
+        ctx.discord.setup(m => m.authorPermissions).returns(~0n, { isFallback: true });
+    },
     cases: [
         {
             code: '{rolecreate;My role name}',
@@ -161,17 +164,17 @@ await runSubtagTests({
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([32946298746234n]).mustHappen(1);
             }
         },
-        // TODO migrate this once createRole is implemented.
-        // {
-        //     code: '{rolecreate;My role name;red;3297864;true;true}',
-        //     expected: '`Author missing requested permissions`',
-        //     errors: [
-        //         { start: 0, end: 47, error: new BBTagRuntimeError('Author missing requested permissions') }
-        //     ],
-        //     setup(ctx) {
-        //         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
-        //     }
-        // },
+        {
+            code: '{rolecreate;My role name;red;3297864;true;true}',
+            expected: '`Author missing requested permissions`',
+            errors: [
+                { start: 0, end: 47, error: new BBTagRuntimeError('Author missing requested permissions') }
+            ],
+            setup(ctx) {
+                ctx.discord.setup(m => m.listManageableRoles()).resolves([32946298746234n]).mustHappen(1);
+                ctx.discord.setup(m => m.authorPermissions).returns(0n).mustHappen(1);
+            }
+        },
         {
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '`Failed to create role: no perms`',

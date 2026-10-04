@@ -5,10 +5,6 @@ import { toSetAsync } from '../../toCollectionAsync.js';
 import type { QuietLocals } from '../locals.js';
 import type { GuildRolesManageableLocals, SendEmbed } from './locals.js';
 
-export function toAuthorizer(noPerms: string): 'tag' | 'user' {
-    return noPerms !== '' ? 'tag' : 'user';
-}
-
 export function isQuiet(ctx: BBTagContext<QuietLocals>, quietStr = ''): boolean {
     return ctx.locals.quiet || quietStr !== '';
 }

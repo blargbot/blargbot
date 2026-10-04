@@ -279,7 +279,8 @@ const RAW_RUNTIME_STATE =
       ["workspace:src/bbtag-engine", {\
         "packageLocation": "./src/bbtag-engine/",\
         "packageDependencies": [\
-          ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"]\
+          ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"],\
+          ["moment-timezone", "npm:0.5.48"]\
         ],\
         "linkType": "SOFT"\
       }]\

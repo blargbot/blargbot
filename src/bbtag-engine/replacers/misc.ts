@@ -1,5 +1,7 @@
 import { createHash, getHashes } from 'node:crypto';
 
+import moment from 'moment-timezone';
+
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
 import { BBTagRuntimeError, InvalidOperatorError, NotABooleanError, NotANumberError } from '../BBTagRuntimeError.js';
@@ -10,7 +12,7 @@ import type { LogicOperator } from '../operators.js';
 import { aggregationOperators, isLogicOperator, logicOperators, numericOperators, ordinalOperators, runBool, stringOperators } from '../operators.js';
 import { parse } from '../parse.js';
 import type { SubtagReturnTypeMap } from '../types.js';
-import type { ArgsLocals, BrainfuckLocals, DebugLocals, DecancerLocals, DumpLocals, FallbackLocals, HttpMethod, HttpRequest, RegExpCompilerLocals, ReplaceOutputLocals, RequestLocals, SafeRegExp, TemporalOptions, VariablesLocals } from './locals.js';
+import type { ArgsLocals, BrainfuckLocals, DebugLocals, DecancerLocals, DumpLocals, FallbackLocals, HttpMethod, HttpRequest, RegExpCompilerLocals, ReplaceOutputLocals, RequestLocals, SafeRegExp, VariablesLocals } from './locals.js';
 
 export const base64DecodeReplacer = defineReplacer(['base64Decode', 'aToB'], {
     parameters: ['text'],
@@ -193,7 +195,7 @@ export const logicReplacer = defineReplacer('logic', {
         return logicOperators[operator](parsed);
     }
 });
-export const md5Replacer = defineReplacer('md5', {
+export const md5Replacer = defineReplacer(['md5', 'md5encode'], {
     parameters: ['text'],
     returns: 'string',
     execute: function md5(_, [{ value: text }]) {
@@ -309,10 +311,10 @@ export const realPadReplacer = defineReplacer('realPad', {
     execute: function realPaddFull(_, [{ value: text }, { value: lengthStr }, { value: filler }, { value: direction }]) {
         const length = parse.int(lengthStr, { throw: NotANumberError });
         if (filler.length === 0)
-            filler = '';
+            filler = ' ';
         else if (filler.length !== 1)
             throw new BBTagRuntimeError('Filler must be 1 character');
-        switch (direction) {
+        switch (direction.toLowerCase()) {
             case 'left':
             case 'start':
                 return text.padStart(length, filler);
@@ -516,17 +518,59 @@ export const uriDecodeReplacer = defineReplacer('uriDecode', {
         }
     }
 });
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const timeReplacerFactory = (options: TemporalOptions) => defineReplacer('time', {
+
+export const timeReplacer = defineReplacer('time', {
     parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ', 'time?:now', 'parseFormat?', 'fromTimezone?:Etc/UTC', 'toTimezone?:Etc/UTC'],
     returns: 'string',
     execute: function time(_, [{ value: format }, { value: time }, { value: parseFormat }, { value: fromTimezone }, { value: toTimezone }]) {
-        const parsed = options.parseTime(time, parseFormat, fromTimezone);
-        if (parsed === undefined)
+        const parsed = parseTime(time, parseFormat, fromTimezone);
+        if (!parsed.isValid())
             throw new BBTagRuntimeError('Invalid date');
-        return parsed.toTimezone(toTimezone).format(format);
+        return parsed.tz(toTimezone).format(format);
     }
 });
+function parseTime(text: string, format: string, timezone: string): moment.Moment {
+    const now = moment().tz(timezone);
+    if (text === '')
+        return now;
+
+    switch (text.toLowerCase()) {
+        case 'now': return now;
+        case 'today': return now.startOf('day');
+        case 'tomorrow': return now.startOf('day').add(1, 'day');
+        case 'yesterday': return now.startOf('day').add(-1, 'days');
+    }
+
+    let match = /^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i.exec(text);
+    let sign = 1;
+    if (match === null) {
+        match = /^\s*(-?\d+(?:\.\d+)?)\s+(\S+)\s+ago\s*$/i.exec(text);
+        sign = -1;
+    }
+    if (match !== null) {
+        const magnitude = sign * parseFloat(match[1]);
+        const key = match[2].toLowerCase();
+        if (!Object.hasOwn(prettyTimeMagnitudes, key))
+            throw new Error(`Invalid quantity ${match[2]}`);
+        return now.add(prettyTimeMagnitudes[key], magnitude);
+    }
+
+    return format.length === 0
+        ? moment.tz(text, timezone)
+        : moment.tz(text, format, timezone);
+}
+const prettyTimeMagnitudes: Record<string, moment.unitOfTime.DurationConstructor> = {
+    year: 'year', years: 'years', y: 'y',
+    month: 'month', months: 'months', M: 'M',
+    week: 'week', weeks: 'weeks', w: 'w',
+    day: 'day', days: 'days', d: 'd',
+    hour: 'hour', hours: 'hours', h: 'h',
+    minute: 'minute', minutes: 'minutes', m: 'm',
+    second: 'second', seconds: 'seconds', s: 's',
+    millisecond: 'millisecond', milliseconds: 'milliseconds', ms: 'ms',
+    quarter: 'quarter', quarters: 'quarters', q: 'Q',
+    mins: 'minutes', min: 'minute'
+};
 export const decancerReplacer = defineReplacer<DecancerLocals>('decancer', {
     parameters: ['text'],
     returns: 'string',
@@ -563,6 +607,14 @@ export const requestReplacer = defineReplacer<RequestLocals>('request', {
     parameters: ['url', 'options?', 'data?'],
     returns: 'json',
     execute: async function request(ctx, [{ value: url }, { value: optionsStr }, { value: dataStr }]) {
+        const domainMatch = /^https?:\/\/(.+?)(?:\/.?|$)/i.exec(url);
+        if (domainMatch === null)
+            throw new BBTagRuntimeError(`A domain could not be extracted from url: ${url}`);
+
+        const domain = domainMatch[1].toLowerCase();
+        if (!await ctx.locals.canRequestDomain(domain))
+            throw new BBTagRuntimeError(`Domain is not whitelisted: ${domain}`);
+
         const request: HttpRequest = {
             method: 'GET',
             url: url,

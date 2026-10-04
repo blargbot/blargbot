@@ -5,5 +5,8 @@
     "type": "module",
     "exports": {
         ".": "./index.js"
+    },
+    "dependencies": {
+        "moment-timezone": "^0.5.48"
     }
 }

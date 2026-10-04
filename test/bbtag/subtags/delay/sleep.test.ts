@@ -36,7 +36,7 @@ await runSubtagTests({
             expected: '',
             retries: 5,
             setup(ctx) {
-                ctx.locals.setup(m => m.sleep(24 * 60 * 60_000)).resolves().mustHappen(1);
+                ctx.locals.setup(m => m.sleep(5 * 60_000)).resolves().mustHappen(1);
             }
         },
         {

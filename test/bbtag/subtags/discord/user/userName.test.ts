@@ -11,6 +11,7 @@ await runSubtagTests({
     cases: [
         ...createGetUserPropTestCases<DiscordUserNameLocals>({
             quiet: '',
+            quietNoArgs: true,
             generateCode(...args) {
                 return `{${['username', ...args].join(';')}}`;
             },

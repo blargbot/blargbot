@@ -4,10 +4,6 @@ import type { BBTagReplacer } from '@blargbot/bbtag-engine';
 import { BBTagEngine, composeReplacer, createEmbedParser, replacers } from '@blargbot/bbtag-engine';
 import Color from 'color';
 
-const temporal = {
-    toTimezone() { return this; },
-    format: () => ''
-};
 await describe('All replacers', async () => {
     await it('Should be constructable', () => {
         const replacer = composeReplacer(b =>
@@ -19,7 +15,6 @@ await describe('All replacers', async () => {
                 parseEmbed: createEmbedParser(() => undefined),
                 decodeHtml: () => '',
                 encodeHtml: () => '',
-                parseTime: () => temporal,
                 getColorByName: () => null
             })
         );
@@ -70,6 +65,7 @@ await describe('All replacers', async () => {
                         nsfw: { value: null },
                         outputReplacers: [],
                         prefix: '',
+                        now: () => 0,
                         schedule: () => { },
                         sleep: () => Promise.resolve(),
                         variables: {
@@ -88,7 +84,7 @@ await describe('All replacers', async () => {
                         reason: null,
                         suppressLookup: false,
                         fallback: null
-                    };
+                    } as Locals;
                 }
             },
             serializer: {

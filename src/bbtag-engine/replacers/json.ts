@@ -83,7 +83,7 @@ export const jsonValuesReplacer = defineReplacer<VariablesLocals>(['jsonValues',
     returns: 'json',
     execute: async function jsonValues(ctx, [{ value: input }, { value: path }]) {
         const value = await getPropPath(ctx, input, path);
-        return Object.values(value ?? {}).values().filter(x => x !== undefined).toArray();
+        return Object.values(value ?? {}).map(value => value ?? null);
     }
 });
 export const jsonSortReplacer = defineReplacer<VariablesLocals>(['jsonSort', 'jSort'], {

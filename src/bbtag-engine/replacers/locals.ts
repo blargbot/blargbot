@@ -49,6 +49,7 @@ export interface DebugEntry {
 
 export interface RequestLocals {
     readonly httpRequest: (request: HttpRequest) => Awaitable<HttpResponse>;
+    readonly canRequestDomain: (domain: string) => Awaitable<boolean>;
 }
 
 export type HttpMethod = 'GET' | 'QUERY' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'PATCH';
@@ -121,15 +122,6 @@ export interface BrainfuckLocals {
     readonly brainfuck: (code: string, input: string) => Awaitable<string>;
 }
 
-export interface TemporalOptions {
-    readonly parseTime: (input: string, format: string, timezone: string) => undefined | TemporalValue;
-}
-
-export interface TemporalValue {
-    toTimezone(timezone: string): TemporalValue;
-    format(format: string): string;
-}
-
 export interface DecancerLocals {
     readonly decancer: (value: string) => string;
 }
@@ -147,6 +139,7 @@ export interface ExecCustomCommandLocals {
 }
 
 export interface ExecutableTag {
+    readonly isAlias?: boolean;
     execute(context: BBTagContext<object>, args: string | string[]): Awaitable<string>;
 }
 

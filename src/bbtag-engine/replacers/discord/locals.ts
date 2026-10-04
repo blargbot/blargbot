@@ -1,5 +1,6 @@
 import type { BBTagRuntimeThrowable } from '../../BBTagRuntimeError.js';
-import type { NsfwLocals, QuietLocals, TemporalValue, VariablesLocals } from '../locals.js';
+import type { NsfwLocals, QuietLocals, VariablesLocals } from '../locals.js';
+import type { DiscordPermissions } from './Permissions.js';
 
 type QueryEntity<Options extends QueryEntityOptions, Result> =
     & ((searchText: string, options?: Options & { throw: NonNullable<unknown>; }) => Awaitable<Result>)
@@ -30,12 +31,30 @@ interface QueryRoleMixin {
 
 export interface QueryDiscordRoleLocals extends QuietLocals, DiscordLocals<QueryRoleMixin> { }
 
+interface QueryChannelMixin {
+    readonly queryChannel: QueryEntity<QueryEntityOptions, bigint>;
+}
+
+export interface QueryDiscordChannelLocals extends QuietLocals, DiscordLocals<QueryChannelMixin> { }
+
+interface ModerationMixin {
+    readonly ownerId: bigint;
+    readonly userId: bigint;
+    readonly authorizerId: bigint;
+    readonly botId: bigint;
+    readonly getPermissions: (userId: bigint) => Awaitable<DiscordPermissions>;
+    readonly getTopRolePosition: (userId: bigint) => Awaitable<number>;
+}
+
+export type ModerationLocals = DiscordLocals<ModerationMixin>;
+
 interface BanMixin {
+    readonly banOverrides: DiscordPermissions;
     readonly ban: (options: GuildMemberBanOptions) => Awaitable<boolean>;
     readonly unban: (options: GuildMemberModerationOptions) => Awaitable<boolean>;
 }
 
-export type GuildMemberBanLocals = DiscordLocals<BanMixin & QueryUserMixin>;
+export type GuildMemberBanLocals = DiscordLocals<BanMixin & QueryUserMixin & ModerationMixin>;
 
 interface SendDmMixin {
     readonly sendDM: (userId: bigint, message: string | undefined, embeds: SendEmbed[] | undefined) => Awaitable<bigint>;
@@ -48,17 +67,17 @@ export interface IsDiscordStaffLocals extends QuietLocals, DiscordLocals<QueryUs
 }
 
 interface GetBoostTimestampMixin {
-    readonly getBoostTimestamp: (userId: bigint) => Awaitable<TemporalValue | null>;
+    readonly getBoostTimestamp: (userId: bigint) => Awaitable<number | null>;
 }
 
 export interface GuildMemberBoostingLocals extends QuietLocals, DiscordLocals<QueryUserMixin & GetBoostTimestampMixin> { }
 
 interface KickMixin {
-    readonly kick: (options: GuildMemberModerationOptions) => Awaitable<void>;
-
+    readonly kickOverrides: DiscordPermissions;
+    readonly kick: (options: GuildMemberModerationOptions) => Awaitable<boolean>;
 }
 
-export type GuildMemberKickLocals = DiscordLocals<KickMixin & QueryUserMixin>;
+export type GuildMemberKickLocals = DiscordLocals<KickMixin & QueryUserMixin & UsernameMixin & ModerationMixin>;
 
 export interface GuildMemberWarningLocals extends QueryDiscordUserLocals {
     readonly warnings: {
@@ -75,13 +94,12 @@ interface ListAllMembersMixin {
 export type GuildMemberListLocals = DiscordLocals<ListAllMembersMixin>;
 
 interface TimeoutMixin {
-    readonly userTimeout: {
-        readonly get: (userId: bigint) => Awaitable<TemporalValue | null>;
-        readonly set: (options: GuildTimeoutOptions) => Awaitable<boolean>;
-    };
+    readonly timeoutOverrides: DiscordPermissions;
+    readonly getUserTimeout: (userId: bigint) => Awaitable<number | null>;
+    readonly setUserTimeout: (options: GuildTimeoutOptions) => Awaitable<boolean>;
 }
 
-export interface GuildMemberTimeoutLocals extends QuietLocals, DiscordLocals<QueryUserMixin & TimeoutMixin> { }
+export interface GuildMemberTimeoutLocals extends QuietLocals, DiscordLocals<QueryUserMixin & TimeoutMixin & UsernameMixin & ModerationMixin> { }
 
 interface ActivityMixin {
     readonly getActivity: (userId: bigint) => Awaitable<GuildMemberActivity | null>;
@@ -122,7 +140,7 @@ export interface DiscordUserTimezoneLocals extends QueryDiscordUserLocals {
 }
 
 interface SnowflakeTimestamp {
-    readonly getTimestamp: (snowflake: bigint) => TemporalValue;
+    readonly getTimestamp: (snowflake: bigint) => number;
 }
 
 export interface DiscordUserCreatedDateLocals extends QuietLocals, DiscordLocals<SnowflakeTimestamp & QueryUserMixin> { }
@@ -137,7 +155,7 @@ export interface DiscordUserMentionLocals extends QuietLocals, DiscordLocals<Men
 export interface GuildRoleMentionLocals extends QuietLocals, DiscordLocals<MentionsMixin & QueryRoleMixin> { }
 
 interface JoinedTimestampMixin {
-    readonly getJoinedTimestamp: (userId: bigint) => Awaitable<TemporalValue>;
+    readonly getJoinedTimestamp: (userId: bigint) => Awaitable<number>;
 }
 
 export interface GuildMemberJoinedDateLocals extends QuietLocals, DiscordLocals<JoinedTimestampMixin & QueryUserMixin> { }
@@ -146,15 +164,21 @@ interface ManageableRolesMixin {
     readonly listManageableRoles: () => Awaitable<AwaitableIterable<bigint>>;
 }
 
+interface AuthorPermissionsMixin {
+    readonly authorPermissions: bigint;
+}
+
 export type GuildRolesManageableLocals = DiscordLocals<ManageableRolesMixin>;
 
 interface UserRolesMixin {
+    // Lists all roles assigned to a user in descending position order.
     readonly listUserRoles: (userId: bigint) => Awaitable<AwaitableIterable<bigint>>;
 }
 
 export interface GuildMemberRolesLocals extends QuietLocals, DiscordLocals<UserRolesMixin & QueryUserMixin> { }
 
 interface AllRolesMixin {
+    // Lists all roles in descending position order.
     readonly listAllRoles: () => Awaitable<AwaitableIterable<bigint>>;
 }
 
@@ -188,7 +212,7 @@ interface CreateRoleMixin {
     readonly createRole: (options: CreateRoleOptions) => Awaitable<bigint | null>;
 }
 
-export interface GuildRoleCreateLocals extends QuietLocals, DiscordLocals<CreateRoleMixin & ManageableRolesMixin> { }
+export interface GuildRoleCreateLocals extends QuietLocals, DiscordLocals<CreateRoleMixin & ManageableRolesMixin & AuthorPermissionsMixin> { }
 
 interface DeleteRoleMixin {
     readonly deleteRole: (roleId: bigint) => Awaitable<boolean>;
@@ -218,7 +242,7 @@ interface SetRolePermissionsMixin {
     readonly setRolePermissions: (roleId: bigint, permissions: bigint) => Awaitable<boolean>;
 }
 
-export interface GuildRoleSetPermissionsLocals extends QuietLocals, DiscordLocals<SetRolePermissionsMixin & QueryRoleMixin & ManageableRolesMixin> { }
+export interface GuildRoleSetPermissionsLocals extends QuietLocals, DiscordLocals<SetRolePermissionsMixin & QueryRoleMixin & ManageableRolesMixin & AuthorPermissionsMixin> { }
 
 interface SetRolePositionMixin {
     readonly setRolePosition: (roleId: bigint, position: number) => Awaitable<boolean>;
@@ -255,7 +279,7 @@ interface RolePositionMixin {
 }
 
 export interface GuildRolePositionLocals extends QuietLocals, DiscordLocals<RolePositionMixin & QueryRoleMixin> { }
-export interface GuildRolesLocals extends QuietLocals, DiscordLocals<AllRolesMixin & UserRolesMixin & QueryUserMixin> { }
+export interface GuildRolesLocals extends QuietLocals, DiscordLocals<AllRolesMixin & UserRolesMixin & QueryUserMixin & RolePositionMixin> { }
 
 interface NicknameMixin {
     readonly getNickname: (options: DiscordUserDetailsOptions) => Awaitable<string>;
@@ -269,6 +293,18 @@ interface SetNicknameMixin {
 
 export interface GuildMemberSetNicknameLocals extends QuietLocals, DiscordLocals<SetNicknameMixin & QueryUserMixin> { }
 
+interface ListChannelsMixin {
+    readonly listChannels: (type: number) => Awaitable<AwaitableIterable<bigint>>;
+}
+
+export type GuildChannelListLocals = DiscordLocals<ListChannelsMixin>;
+
+interface ChannelCategoryMixin {
+    readonly getChannelCategory: (channelId: bigint) => Awaitable<bigint | null>;
+}
+
+export interface GuildChannelCategoryLocals extends QuietLocals, DiscordLocals<ChannelCategoryMixin & QueryChannelMixin> { }
+
 export interface DiscordUserDetailsOptions {
     userId: bigint;
     globalOnly: boolean;
@@ -276,7 +312,7 @@ export interface DiscordUserDetailsOptions {
 
 export interface GuildMemberModerationOptions {
     userId: bigint;
-    authorizer: 'tag' | 'user';
+    moderatorId: bigint;
     reason: string;
 }
 

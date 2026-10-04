@@ -49,7 +49,7 @@ export const randomIntReplacer = defineReplacer<FallbackLocals>(['randomInt', 'r
         const fallback = cacheResult(() => parse.int(ctx.locals.fallback));
         const min = parse.int(minStr, { fallback, throw: NotANumberError });
         const max = parse.int(maxStr, { fallback, throw: NotANumberError });
-        return min + Math.floor(Math.random() * (max - min));
+        return min + Math.floor(Math.random() * (max - min + 1));
     }
 });
 export const absoluteReplacer = defineReplacer(

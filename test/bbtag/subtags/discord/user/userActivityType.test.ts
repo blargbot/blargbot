@@ -11,6 +11,7 @@ await runSubtagTests({
     cases: [
         ...createGetUserPropTestCases<GuildMemberActivityLocals>({
             quiet: '',
+            quietNoArgs: true,
             generateCode(...args) {
                 return `{${['useractivitytype', ...args].join(';')}}`;
             },
@@ -79,6 +80,7 @@ await runSubtagTests({
         }),
         ...createGetUserPropTestCases<GuildMemberActivityLocals>({
             quiet: '',
+            quietNoArgs: true,
             generateCode(...args) {
                 return `{${['usergametype', ...args].join(';')}}`;
             },

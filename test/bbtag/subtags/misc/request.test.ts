@@ -13,6 +13,7 @@ await runSubtagTests<RequestLocals>({
         {
             code: '{request;https://httpbin.org/status/200}',
             setup(ctx) {
+                ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
                 ctx.locals.setup((m, $) => m.httpRequest($({
                     method: 'GET',
                     url: 'https://httpbin.org/status/200',
@@ -49,6 +50,7 @@ await runSubtagTests<RequestLocals>({
                 { start: 0, end: 40, error: new BBTagRuntimeError('Response too large') }
             ],
             setup(ctx) {
+                ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
                 ctx.locals.setup((m, $) => m.httpRequest($({
                     method: 'GET',
                     url: 'https://httpbin.org/status/200',
@@ -71,6 +73,7 @@ await runSubtagTests<RequestLocals>({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post"}}}',
             replacers: [replacers.escapeBBTagReplacer],
             setup(ctx) {
+                ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
                 ctx.locals.setup((m, $) => m.httpRequest($({
                     method: 'POST',
                     url: 'https://httpbin.org/post',
@@ -106,6 +109,7 @@ await runSubtagTests<RequestLocals>({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             replacers: [replacers.escapeBBTagReplacer],
             setup(ctx) {
+                ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
                 ctx.locals.setup((m, $) => m.httpRequest($({
                     method: 'POST',
                     url: 'https://httpbin.org/post',
@@ -144,6 +148,7 @@ await runSubtagTests<RequestLocals>({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;This isnt json}}',
             replacers: [replacers.escapeBBTagReplacer],
             setup(ctx) {
+                ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
                 ctx.locals.setup((m, $) => m.httpRequest($({
                     method: 'POST',
                     url: 'https://httpbin.org/post',
@@ -181,6 +186,7 @@ await runSubtagTests<RequestLocals>({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true,"content-type":"text/plain"}}};{escapebbtag;{"age":123}}}',
             replacers: [replacers.escapeBBTagReplacer],
             setup(ctx) {
+                ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
                 ctx.locals.setup((m, $) => m.httpRequest($({
                     method: 'POST',
                     url: 'https://httpbin.org/post',
@@ -219,6 +225,7 @@ await runSubtagTests<RequestLocals>({
             code: '{request;https://httpbin.org/get;{escapebbtag;{"method":"get","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             replacers: [replacers.escapeBBTagReplacer],
             setup(ctx) {
+                ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
                 ctx.locals.setup((m, $) => m.httpRequest($({
                     method: 'GET',
                     url: 'https://httpbin.org/get?age=123',
@@ -253,9 +260,34 @@ await runSubtagTests<RequestLocals>({
             }
         },
         {
+            code: '{request;https://httpbin.org/get?seed=1;{escapebbtag;{"method":"get"}};{escapebbtag;{"age":123}}}',
+            replacers: [replacers.escapeBBTagReplacer],
+            setup(ctx) {
+                const url = 'https://httpbin.org/get?seed=1&age=123';
+                ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
+                ctx.locals.setup((m, $) => m.httpRequest($({
+                    method: 'GET',
+                    url,
+                    headers: $.setEqual([]),
+                    body: new Uint8Array(0)
+                }))).resolves({
+                    url,
+                    status: 200,
+                    statusText: 'OK',
+                    headers: new Headers({ 'Content-Type': 'text/plain' }),
+                    body: toBytes('Success!'),
+                    isTruncated: false
+                });
+            },
+            assert(_, result) {
+                assert.equal((JSON.parse(result) as JObject).url, 'https://httpbin.org/get?seed=1&age=123');
+            }
+        },
+        {
             code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png}',
             setup(ctx) {
                 const url = 'https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png';
+                ctx.locals.setup(m => m.canRequestDomain('cdn.discordapp.com')).resolves(true).mustHappen(1);
                 ctx.locals.setup((m, $) => m.httpRequest($({
                     method: 'GET',
                     url,
@@ -293,6 +325,7 @@ await runSubtagTests<RequestLocals>({
             ],
             setup(ctx) {
                 const url = 'https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png';
+                ctx.locals.setup(m => m.canRequestDomain('cdn.discordapp.com')).resolves(true).mustHappen(1);
                 ctx.locals.setup((m, $) => m.httpRequest($({
                     method: 'GET',
                     url,
@@ -312,6 +345,7 @@ await runSubtagTests<RequestLocals>({
             code: '{request;https://httpbin.org/get;{escapebbtag;{"checkOk":false}}}',
             replacers: [replacers.escapeBBTagReplacer],
             setup(ctx) {
+                ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
                 ctx.locals.setup((m, $) => m.httpRequest($({
                     method: 'GET',
                     url: 'https://httpbin.org/get',
@@ -343,6 +377,32 @@ await runSubtagTests<RequestLocals>({
                 });
             }
         },
+        {
+            code: '{request;https://httpbin.org/get;{escapebbtag;{"checkOk":false}}}',
+            replacers: [replacers.escapeBBTagReplacer],
+            setup(ctx) {
+                const url = 'https://httpbin.org/get';
+                ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
+                ctx.locals.setup((m, $) => m.httpRequest($({
+                    method: 'GET',
+                    url,
+                    headers: $.setEqual([]),
+                    body: new Uint8Array(0)
+                }))).resolves({
+                    url,
+                    status: 403,
+                    statusText: 'Forbidden',
+                    headers: new Headers({ 'Content-Type': 'text/plain' }),
+                    body: toBytes('Denied'),
+                    isTruncated: false
+                });
+            },
+            assert(_, result) {
+                const response = JSON.parse(result) as JObject;
+                assert.equal(response.status, 403);
+                assert.equal(response.body, 'Denied');
+            }
+        },
         // TODO: Add these tests when domain whitelisting is reimplemented.
         // {
         //     code: '{request;a}',
@@ -366,7 +426,27 @@ await runSubtagTests<RequestLocals>({
             expected: '``',
             errors: [
                 { start: 0, end: 149, error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
+            ],
+            setup(ctx) {
+                ctx.locals.setup(m => m.canRequestDomain('cdn.discordapp.com')).resolves(true).mustHappen(1);
+            }
+        },
+        {
+            code: '{request;a}',
+            expected: '`A domain could not be extracted from url: a`',
+            errors: [
+                { start: 0, end: 11, error: new BBTagRuntimeError('A domain could not be extracted from url: a') }
             ]
+        },
+        {
+            code: '{request;http://test.com}',
+            expected: '`Domain is not whitelisted: test.com`',
+            errors: [
+                { start: 0, end: 25, error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
+            ],
+            setup(ctx) {
+                ctx.locals.setup(m => m.canRequestDomain('test.com')).resolves(false).mustHappen(1);
+            }
         }
     ]
 });

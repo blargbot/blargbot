@@ -32,3 +32,4 @@ export * from './compilation/SubtagSignatureParameterOptions.js';
 export * from './replacers/discord/errors.js';
 export * from './replacers/discord/locals.js';
 export { EmbedParser, createEmbedParser, ParseEmbedOptions } from './replacers/discord/util.js';
+export { DiscordPermissionName, DiscordPermissions } from './replacers/discord/Permissions.js';

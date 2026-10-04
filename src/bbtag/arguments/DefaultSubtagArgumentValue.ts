@@ -3,6 +3,7 @@ import type { SubtagSignatureValueParameter } from '../types.js';
 import type { SubtagArgument } from './SubtagArgument.js';
 
 export class DefaultSubtagArgumentValue implements SubtagArgument {
+    public readonly isCached = true;
     public get value(): string { return this.parameter.defaultValue; }
     public get code(): Statement {
         return {

@@ -23,6 +23,13 @@ await runSubtagTests({
             errors: [
                 { start: 0, end: 19, error: new InvalidDurationError('test') }
             ]
+        },
+        {
+            code: '{timer;{fail};0ms}',
+            expected: '`Invalid duration`',
+            errors: [
+                { start: 0, end: 18, error: new InvalidDurationError('0ms') }
+            ]
         }
     ]
 });

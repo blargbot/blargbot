@@ -16,7 +16,7 @@ await runSubtagTests({
             setup(ctx) {
                 const userId = random.bigint(10n ** 10n, 10n ** 20n);
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([2937192378371n]).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual([]))).resolves(true).mustHappen(1);
             }
         },
@@ -49,8 +49,8 @@ await runSubtagTests({
                 {
                     expected: 'true',
                     setup(ctx, userId, quiet) {
-                        ctx.discord.setup((m, $) => m.queryRole('r1', $({ noLookup: quiet, throw: RoleNotFoundError.withQuiet(quiet, 'false') }))).resolves(283674284762348926n).mustHappen(1);
-                        ctx.discord.setup((m, $) => m.queryRole('r2', $({ noLookup: quiet, throw: RoleNotFoundError.withQuiet(quiet, 'false') }))).resolves(234967249876489624n).mustHappen(1);
+                        ctx.discord.setup((m, $) => m.queryRole('r1', $({ quiet: quiet, throw: RoleNotFoundError.withQuiet(quiet, 'false') }))).resolves(283674284762348926n).mustHappen(1);
+                        ctx.discord.setup((m, $) => m.queryRole('r2', $({ quiet: quiet, throw: RoleNotFoundError.withQuiet(quiet, 'false') }))).resolves(234967249876489624n).mustHappen(1);
                         ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual([283674284762348926n, 234967249876489624n]))).resolves(true).mustHappen(1);
                     }
                 }
@@ -75,7 +75,7 @@ await runSubtagTests({
             setup(ctx) {
                 const userId = random.bigint(10n ** 10n, 10n ** 20n);
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([2937192378371n]).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.variables.setup(m => m.get('abc')).resolves({ key: '$abc', value: undefined }).mustHappen(1);
             }
         },
@@ -88,7 +88,7 @@ await runSubtagTests({
             setup(ctx) {
                 const userId = random.bigint(10n ** 10n, 10n ** 20n);
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([2937192378371n]).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: true, throw: UserNotFoundError.withDisplay('false') }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: true, throw: UserNotFoundError.withDisplay('false') }))).returns(userId).mustHappen(1);
                 ctx.variables.setup(m => m.get('abc')).resolves({ key: '$abc', value: undefined }).mustHappen(1);
             }
         },
@@ -101,8 +101,8 @@ await runSubtagTests({
             setup(ctx) {
                 const userId = random.bigint(10n ** 10n, 10n ** 20n);
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([2937192378371n]).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ noLookup: false, throw: RoleNotFoundError }))).rejects(new RoleNotFoundError('unknown role')).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ quiet: false, throw: RoleNotFoundError }))).rejects(new RoleNotFoundError('unknown role')).mustHappen(1);
             }
         },
         {
@@ -114,8 +114,8 @@ await runSubtagTests({
             setup(ctx) {
                 const userId = random.bigint(10n ** 10n, 10n ** 20n);
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([2937192378371n]).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: true, throw: UserNotFoundError.withDisplay('false') }))).returns(userId).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ noLookup: true, throw: RoleNotFoundError.withDisplay('false') })))
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: true, throw: UserNotFoundError.withDisplay('false') }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ quiet: true, throw: RoleNotFoundError.withDisplay('false') })))
                     .rejects(new (RoleNotFoundError.withDisplay('false'))('unknown role'))
                     .mustHappen(1);
             }

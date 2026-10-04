@@ -51,7 +51,7 @@ function* unknownRoleTestCases<Locals extends QueryDiscordRoleLocals>(options: G
         ],
         setup(ctx) {
             options.setup?.(ctx);
-            ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ noLookup: false, throw: notFound })))
+            ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ quiet: false, throw: notFound })))
                 .rejects(new notFound('unknown role'))
                 .mustHappen(1);
         }
@@ -70,7 +70,7 @@ function* unknownRoleTestCases<Locals extends QueryDiscordRoleLocals>(options: G
             ],
             setup(ctx) {
                 options.setup?.(ctx);
-                ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ noLookup: false, throw: notFound })))
+                ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ quiet: false, throw: notFound })))
                     .rejects(new notFound('unknown role'))
                     .mustHappen(1);
             }
@@ -83,7 +83,7 @@ function* unknownRoleTestCases<Locals extends QueryDiscordRoleLocals>(options: G
             ],
             setup(ctx) {
                 options.setup?.(ctx);
-                ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ noLookup: true, throw: quietError })))
+                ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ quiet: true, throw: quietError })))
                     .rejects(new quietError('unknown role'))
                     .mustHappen(1);
             }
@@ -123,7 +123,7 @@ function createTestCase<Locals extends QueryDiscordRoleLocals>(data: GetRoleProp
             // eslint-disable-next-line @typescript-eslint/unbound-method
             const withQuiet = BBTagRuntimeError.withQuiet<[string], BBTagRuntimeError>;
             const quietError = typeof data.quiet === 'boolean' ? data.notFound ?? RoleNotFoundError : withQuiet.apply(data.notFound ?? RoleNotFoundError, [quiet, data.quiet]);
-            ctx.discord.setup((m, $) => m.queryRole(searchText, $({ noLookup: quiet, throw: quietError })))
+            ctx.discord.setup((m, $) => m.queryRole(searchText, $({ quiet: quiet, throw: quietError })))
                 .resolves(roleId)
                 .mustHappen(1);
             testCase.setup?.(ctx, roleId, quiet);

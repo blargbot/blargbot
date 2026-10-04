@@ -2,6 +2,7 @@ import assert, { AssertionError } from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as inspector from 'node:inspector';
 import path from 'node:path';
+import type { TestContext } from 'node:test';
 import { describe, it } from 'node:test';
 
 import type { BBTagContext, BBTagExpression, BBTagReplacer, BBTagSerializer, BBTagSubtag, FallbackLocals, LocatedBBTagRuntimeError, QuietLocals, SourceMarker, SubtagArgumentArray } from '@blargbot/bbtag-engine';
@@ -15,9 +16,9 @@ export interface SubtagTestCase<Locals extends object = object> {
     readonly only?: boolean;
     readonly subtagName?: string;
     readonly expected?: string | RegExp | (() => string | RegExp);
-    readonly setup?: (context: SubtagTestContext<Locals>, bbtag: BBTagExpression) => Awaitable<void>;
-    readonly assert?: (context: BBTagContext<Locals>, result: string, test: SubtagTestContext<Locals>) => Awaitable<void>;
-    readonly teardown?: (context: SubtagTestContext<Locals>) => Awaitable<void>;
+    readonly setup?: (context: SubtagTestContext<Locals>, bbtag: BBTagExpression, nodeTest: TestContext) => Awaitable<void>;
+    readonly assert?: (context: BBTagContext<Locals>, result: string, test: SubtagTestContext<Locals>, nodeTest: TestContext) => Awaitable<void>;
+    readonly teardown?: (context: SubtagTestContext<Locals>, nodeTest: TestContext) => Awaitable<void>;
     readonly expectError?: {
         required?: boolean;
         handle: (error: unknown) => Awaitable<void>;
@@ -30,9 +31,9 @@ export interface SubtagTestCase<Locals extends object = object> {
 }
 
 interface TestSuiteConfig<Locals extends object> {
-    readonly setup: Array<(context: SubtagTestContext<Locals>, bbtag: BBTagExpression) => Awaitable<void>>;
-    readonly assert: Array<(context: BBTagContext<Locals>, result: string, test: SubtagTestContext<Locals>) => Awaitable<void>>;
-    readonly teardown: Array<(context: SubtagTestContext<Locals>) => Awaitable<void>>;
+    readonly setup: Array<(context: SubtagTestContext<Locals>, bbtag: BBTagExpression, nodeTest: TestContext) => Awaitable<void>>;
+    readonly assert: Array<(context: BBTagContext<Locals>, result: string, test: SubtagTestContext<Locals>, nodeTest: TestContext) => Awaitable<void>>;
+    readonly teardown: Array<(context: SubtagTestContext<Locals>, nodeTest: TestContext) => Awaitable<void>>;
 }
 
 export class MarkerError extends BBTagRuntimeError {
@@ -325,17 +326,17 @@ export class SubtagTestSuite<Locals extends object> {
             for (const testCase of this.#testCases) {
                 const retries = Math.max(testCase.retries ?? 0, 0);
                 const timeout = testCase.timeout === undefined ? undefined : (retries + 1) * testCase.timeout;
-                await it(getTestName(testCase), { skip: await shouldSkip(testCase), timeout, only: testCase.only }, async () => {
+                await it(getTestName(testCase), { skip: await shouldSkip(testCase), timeout, only: testCase.only }, async (t) => {
                     for (let attempt = 0; attempt < retries; attempt++) {
                         try {
-                            await runTestCase(subtag, testCase, config);
+                            await runTestCase(subtag, testCase, config, t);
                             return;
                         } catch {
                             /* NO-OP */
                         }
                     }
                     try {
-                        await runTestCase(subtag, testCase, config);
+                        await runTestCase(subtag, testCase, config, t);
                     } catch (error) {
                         if (error instanceof Error)
                             error.stack += `\n${stack}`;
@@ -382,7 +383,8 @@ async function shouldSkip<Locals extends object>(testCase: SubtagTestCase<Locals
 async function runTestCase<Locals extends object>(
     replacer: BBTagReplacer<Locals>,
     testCase: SubtagTestCase<Locals>,
-    config: TestSuiteConfig<Locals>
+    config: TestSuiteConfig<Locals>,
+    nodeTest: TestContext
 ): Promise<void> {
     const subtags = composeReplacer(b => b
         .register(replacer)
@@ -398,8 +400,8 @@ async function runTestCase<Locals extends object>(
     try {
         // arrange
         for (const setup of config.setup)
-            await setup(test, code);
-        await testCase.setup?.(test, code);
+            await setup(test, code, nodeTest);
+        testCase.setup?.(test, code, nodeTest);
 
         const expected = getExpectation(testCase);
 
@@ -424,9 +426,9 @@ async function runTestCase<Locals extends object>(
                 break;
         }
 
-        await testCase.assert?.(context, result.value, test);
+        testCase.assert?.(context, result.value, test, nodeTest);
         for (const assert of config.assert)
-            await assert.call(testCase, context, result.value, test);
+            await assert(context, result.value, test, nodeTest);
 
         if (typeof testCase.errors === 'function') {
             testCase.errors(context.errors);
@@ -445,8 +447,9 @@ async function runTestCase<Locals extends object>(
         }
         test.verifyAll();
     } finally {
+        testCase.teardown?.(test, nodeTest);
         for (const teardown of config.teardown)
-            await teardown(test);
+            await teardown(test, nodeTest);
     }
 }
 

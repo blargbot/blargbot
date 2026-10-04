@@ -8,7 +8,8 @@ export const sleepReplacer = defineReplacer<SleepLocals>('sleep', {
     returns: 'nothing',
     execute: async function sleep(ctx, [{ value: duration }]) {
         const durationMs = parse.duration(duration, { throw: InvalidDurationError });
-        await ctx.locals.sleep(durationMs);
+        const maxSleepMs = 5 * 60 * 1000;
+        await ctx.locals.sleep(Math.min(durationMs, maxSleepMs));
     }
 });
 export const timerReplacer = defineReplacer<TimerLocals>('timer', {
@@ -16,6 +17,9 @@ export const timerReplacer = defineReplacer<TimerLocals>('timer', {
     returns: 'nothing',
     execute: async function timer(ctx, [{ code }, { value: duration }]) {
         const durationMs = parse.duration(duration, { throw: InvalidDurationError });
+        if (durationMs <= 0)
+            throw new InvalidDurationError(duration);
+
         await ctx.locals.schedule(ctx, code, durationMs);
     }
 });

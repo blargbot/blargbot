@@ -137,6 +137,8 @@ const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLog
     'id[]': ArraySubtagLogic,
     'loop': StringIterableSubtagLogic,
     'error': IgnoreSubtagLogic,
+    'embed': StringSubtagLogic.withConversion(JSON.stringify),
+    'embed[]': ArraySubtagLogic,
     'hex[]': ArraySubtagLogic,
     'nothing[]': ArraySubtagLogic,
     'number|number[]': ArrayOrValueSubtagLogicWrapper

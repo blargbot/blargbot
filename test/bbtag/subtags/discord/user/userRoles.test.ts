@@ -11,6 +11,7 @@ await runSubtagTests({
     cases: [
         ...createGetUserPropTestCases<GuildMemberRolesLocals>({
             quiet: '',
+            quietNoArgs: true,
             generateCode(...args) {
                 return `{${['userroles', ...args].join(';')}}`;
             },

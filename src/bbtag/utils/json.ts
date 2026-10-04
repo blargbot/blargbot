@@ -77,8 +77,7 @@ export const json = Object.freeze({
                 return this.clean(input.v);
 
             for (const [key, value] of Object.entries(input))
-                if (value !== undefined)
-                    input[key] = this.clean(value);
+                input[key] = this.clean(value);
 
         }
         return input;
@@ -134,6 +133,7 @@ function setProp(target: JToken | undefined, prop: string, value: JToken | undef
                 throw new BBTagRuntimeError(`Cannot set property ${prop} on null`);
             if (Array.isArray(target))
                 return setArrayProp(target, prop, value);
+
             if (value === undefined)
                 delete target[prop];
             else

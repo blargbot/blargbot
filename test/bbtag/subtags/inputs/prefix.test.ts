@@ -14,7 +14,7 @@ await runSubtagTests({
                 ctx.locals.setup(m => m.prefix).returns('b!').mustHappen();
             }
         }
-        // TODO: Move this test once limits are reintroduced
+        // TODO: Move this test once setting the prefix is introduced.
         // {
         //     code: '{prefix}',
         //     expected: 'abc',

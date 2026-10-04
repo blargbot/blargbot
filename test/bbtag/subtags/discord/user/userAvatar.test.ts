@@ -13,6 +13,7 @@ await runSubtagTests({
     cases: [
         ...createGetUserPropTestCases<DiscordUserAvatarLocals>({
             quiet: '',
+            quietNoArgs: true,
             generateCode(...args) {
                 return `{${['useravatar', ...args].join(';')}}`;
             },
@@ -28,6 +29,7 @@ await runSubtagTests({
         }),
         ...createGetUserPropTestCases<DiscordUserAvatarLocals>({
             quiet: '',
+            quietNoArgs: true,
             generateCode(...args) {
                 return `{${['useravatar.global', ...args].join(';')}}`;
             },

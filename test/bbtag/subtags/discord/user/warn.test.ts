@@ -106,6 +106,16 @@ await runSubtagTests({
                 const userId = random.bigint(10n ** 10n, 10n ** 20n);
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ throw: UserNotFoundError }))).resolves(userId).mustHappen(1);
             }
+        },
+        {
+            code: '{warn;unknown user;abc}',
+            expected: '`No user found`',
+            errors: [
+                { start: 0, end: 23, error: new UserNotFoundError('unknown user') }
+            ],
+            setup(ctx) {
+                ctx.discord.setup((m, $) => m.queryUser('unknown user', $({ throw: UserNotFoundError }))).rejects(new UserNotFoundError('unknown user')).mustHappen(1);
+            }
         }
     ]
 });

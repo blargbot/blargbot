@@ -50,7 +50,7 @@ function* unknownUserCases<Locals extends QueryDiscordUserLocals>(options: GetUs
         ],
         setup(ctx) {
             options.setup?.(ctx);
-            ctx.discord.setup((m, $) => m.queryUser('unknown user', $({ noLookup: false, throw: UserNotFoundError })))
+            ctx.discord.setup((m, $) => m.queryUser('unknown user', $({ quiet: false, throw: UserNotFoundError })))
                 .rejects(new UserNotFoundError('unknown user'))
                 .mustHappen(1);
         }
@@ -65,7 +65,7 @@ function* unknownUserCases<Locals extends QueryDiscordUserLocals>(options: GetUs
             ],
             setup(ctx) {
                 options.setup?.(ctx);
-                ctx.discord.setup((m, $) => m.queryUser('unknown user', $({ noLookup: false, throw: UserNotFoundError })))
+                ctx.discord.setup((m, $) => m.queryUser('unknown user', $({ quiet: false, throw: UserNotFoundError })))
                     .rejects(new UserNotFoundError('unknown user'))
                     .mustHappen(1);
             }
@@ -79,7 +79,7 @@ function* unknownUserCases<Locals extends QueryDiscordUserLocals>(options: GetUs
             setup(ctx) {
                 options.setup?.(ctx);
                 const error = options.quiet !== undefined ? UserNotFoundError.withQuiet(true, options.quiet) : UserNotFoundError;
-                ctx.discord.setup((m, $) => m.queryUser('unknown user', $({ noLookup: true, throw: UserNotFoundError.withDisplay(quiet) })))
+                ctx.discord.setup((m, $) => m.queryUser('unknown user', $({ quiet: true, throw: UserNotFoundError.withDisplay(quiet) })))
                     .rejects(new error('unknown user'))
                     .mustHappen(1);
             }
@@ -90,6 +90,7 @@ function* unknownUserCases<Locals extends QueryDiscordUserLocals>(options: GetUs
 interface GetUserPropTestData<Locals extends object> {
     cases: Array<GetUserPropTestCase<Locals>>;
     quiet?: string;
+    quietNoArgs?: boolean;
     includeNoArgs?: boolean;
     generateCode: (...args: [] | [userStr: string] | [userStr: string, quiet: string]) => string;
     setup?: (context: SubtagTestContext<Locals>) => void;
@@ -114,10 +115,10 @@ function createTestCase<Locals extends QueryDiscordUserLocals>(data: GetUserProp
         setup(ctx) {
             data.setup?.(ctx);
             const userId = random.bigint(10n ** 10n, 10n ** 20n);
-            const quiet = typeof args[1] === 'string' && args[1] !== '';
+            const quiet = data.quietNoArgs === true && args.length === 0 || typeof args[1] === 'string' && args[1] !== '';
             const searchText = args[0] ?? '';
             const error = data.quiet !== undefined ? UserNotFoundError.withQuiet(quiet, data.quiet) : UserNotFoundError;
-            ctx.discord.setup((m, $) => m.queryUser(searchText, $({ noLookup: quiet, throw: error }))).resolves(userId).mustHappen(1);
+            ctx.discord.setup((m, $) => m.queryUser(searchText, $({ quiet: quiet, throw: error }))).resolves(userId).mustHappen(1);
 
             testCase.setup?.(ctx, userId, quiet);
         }

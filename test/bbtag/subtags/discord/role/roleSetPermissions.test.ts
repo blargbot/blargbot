@@ -11,6 +11,7 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: 3 },
     setup(ctx) {
         ctx.discord.setup(m => m.listManageableRoles()).resolves([21028192812n], { isFallback: true });
+        ctx.discord.setup(m => m.authorPermissions).returns(~0n, { isFallback: true });
     },
     cases: [
         ...createGetRolePropTestCases<GuildRoleSetPermissionsLocals>({
@@ -43,46 +44,19 @@ await runSubtagTests({
                         ctx.discord.setup(m => m.setRolePermissions(roleId, 239748n)).resolves(true).mustHappen(1);
                     }
                 }
-                // TODO migrate this once setRolePermissions is implemented
-                // {
-                //     title: 'Author is admin',
-                //     expected: '',
-                //     setup(_, ctx) {
-                //         ctx.roles.authorizer.permissions = eris.Constants.Permissions.administrator.toString();
-                //     },
-                //     postSetup(role, _, ctx) {
-                //         ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, $.looksLike({ permissions: 239748n }), 'Command User#0000'))
-                //             .thenResolve(role);
-                //     }
-                // },
-                // {
-                //     title: 'Author has permissions',
-                //     expected: '',
-                //     setup(_, ctx) {
-                //         ctx.roles.authorizer.permissions = (eris.Constants.Permissions.all & ~eris.Constants.Permissions.administrator).toString();
-                //     },
-                //     postSetup(role, _, ctx) {
-                //         ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, $.looksLike({ permissions: 239748n }), 'Command User#0000'))
-                //             .thenResolve(role);
-                //     }
-                // },
-                // {
-                //     title: 'Author has partial permissions',
-                //     expected: '',
-                //     setup(_, ctx) {
-                //         ctx.roles.authorizer.permissions = (
-                //             eris.Constants.Permissions.manageRoles
-                //             | eris.Constants.Permissions.viewAuditLog
-                //             | eris.Constants.Permissions.readMessageHistory
-                //         ).toString();
-                //     },
-                //     postSetup(role, _, ctx) {
-                //         ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, $.looksLike({ permissions: 65664n }), 'Command User#0000'))
-                //             .thenResolve(role);
-                //     }
-                // }
             ]
         }),
+        {
+            code: '{rolesetperms;3298746326924;7}',
+            expected: '',
+            setup(ctx) {
+                const roleId = 3298746326924n;
+                ctx.discord.setup(m => m.listManageableRoles()).resolves([roleId]).mustHappen(1);
+                ctx.discord.setup(m => m.authorPermissions).returns(5n).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: false, throw: LegacyRoleNotFoundError }))).resolves(roleId).mustHappen(1);
+                ctx.discord.setup(m => m.setRolePermissions(roleId, 5n)).resolves(true).mustHappen(1);
+            }
+        },
         {
             code: '{rolesetperms;3298746326924}',
             expected: '`Author cannot edit roles`',
@@ -101,7 +75,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([239479234734n]).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ noLookup: false, throw: LegacyRoleNotFoundError }))).resolves(2983749274n).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: false, throw: LegacyRoleNotFoundError }))).resolves(2983749274n).mustHappen(1);
             }
         },
         {
@@ -113,8 +87,22 @@ await runSubtagTests({
             setup(ctx) {
                 const roleId = random.bigint(10n ** 10n, 10n ** 20n);
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([roleId]).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ noLookup: false, throw: LegacyRoleNotFoundError }))).resolves(roleId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: false, throw: LegacyRoleNotFoundError }))).resolves(roleId).mustHappen(1);
                 ctx.discord.setup(m => m.setRolePermissions(roleId, 0n)).resolves(false).mustHappen(1);
+            }
+        },
+        {
+            code: '{rolesetperms;3298746326924;7;q}',
+            expected: '',
+            errors: [
+                { start: 0, end: 32, error: new (FailedToEditRoleNoPermsError.withDisplay(''))() }
+            ],
+            setup(ctx) {
+                const roleId = 3298746326924n;
+                ctx.discord.setup(m => m.listManageableRoles()).resolves([roleId]).mustHappen(1);
+                ctx.discord.setup(m => m.authorPermissions).returns(~0n).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: true, throw: LegacyRoleNotFoundError }))).resolves(roleId).mustHappen(1);
+                ctx.discord.setup(m => m.setRolePermissions(roleId, 7n)).resolves(false).mustHappen(1);
             }
         }
     ]

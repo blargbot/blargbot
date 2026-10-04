@@ -1,7 +1,8 @@
 import type { ExecCustomCommandLocals, ExecutableTag } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
+import type { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { runSubtagTests, type SubtagTestContext } from '../SubtagTestSuite.js';
 
 await runSubtagTests<ExecCustomCommandLocals>({
     replacer: replacers.execCustomCommandReplacer,
@@ -9,11 +10,11 @@ await runSubtagTests<ExecCustomCommandLocals>({
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
-            code: '{execcc;otherSubtag}',
+            code: '{execcc;OtherSubtag}',
             expected: 'Success!',
             setup(ctx) {
-                const mockTag = ctx.createMock<ExecutableTag>();
-                ctx.locals.setup(m => m.getCustomCommand('otherSubtag')).returns(mockTag.instance).mustHappen();
+                const mockTag = createMockTag(ctx);
+                ctx.locals.setup(m => m.getCustomCommand('OtherSubtag')).returns(mockTag.instance).mustHappen();
                 mockTag.setup((m, $) => m.execute(ctx.instance, $([]))).returns('Success!').mustHappen();
             }
         },
@@ -21,7 +22,7 @@ await runSubtagTests<ExecCustomCommandLocals>({
             code: '{execcc;otherSubtag;}',
             expected: 'Success!',
             setup(ctx) {
-                const mockTag = ctx.createMock<ExecutableTag>();
+                const mockTag = createMockTag(ctx);
                 ctx.locals.setup(m => m.getCustomCommand('otherSubtag')).returns(mockTag.instance).mustHappen();
                 mockTag.setup((m, $) => m.execute(ctx.instance, $([]))).returns('Success!').mustHappen();
             }
@@ -30,7 +31,7 @@ await runSubtagTests<ExecCustomCommandLocals>({
             code: '{execcc;otherSubtag;abc;\\"def\\";ghi}',
             expected: 'Success!',
             setup(ctx) {
-                const mockTag = ctx.createMock<ExecutableTag>();
+                const mockTag = createMockTag(ctx);
                 ctx.locals.setup(m => m.getCustomCommand('otherSubtag')).returns(mockTag.instance).mustHappen();
                 mockTag.setup((m, $) => m.execute(ctx.instance, $(['abc', '\\"def\\"', 'ghi']))).returns('Success!').mustHappen();
             }
@@ -40,7 +41,7 @@ await runSubtagTests<ExecCustomCommandLocals>({
             expected: 'Success!',
             replacers: [replacers.jsonReplacer],
             setup(ctx) {
-                const mockTag = ctx.createMock<ExecutableTag>();
+                const mockTag = createMockTag(ctx);
                 ctx.locals.setup(m => m.getCustomCommand('otherSubtag')).returns(mockTag.instance).mustHappen();
                 mockTag.setup((m, $) => m.execute(ctx.instance, $(['abc', '{"def":123}']))).returns('Success!').mustHappen();
             }
@@ -55,23 +56,17 @@ await runSubtagTests<ExecCustomCommandLocals>({
                 ctx.locals.setup(m => m.getCustomCommand('abc')).returns(null).mustHappen();
             }
         },
-        // Move this test to wherever getCustomCommand is properly impelemented.
-        // {
-        //     code: '{execcc;othersubtag}',
-        //     expected: '`Cannot execcc imported tag: othersubtag`',
-        //     errors: [
-        //         { start: 0, end: 20, error: new BBTagRuntimeError('Cannot execcc imported tag: othersubtag') }
-        //     ],
-        //     setup(ctx) {
-        //         ctx.ccommands['othersubtag'] = {
-        //             id: '0',
-        //             author: '212097368371683623',
-        //             content: '{assert}{eval}',
-        //             alias: 'otherSubtag',
-        //             cooldown: 7
-        //         };
-        //     }
-        // },
+        {
+            code: '{execcc;OtherSubtag}',
+            expected: '`Cannot execcc imported tag: OtherSubtag`',
+            errors: [
+                { start: 0, end: 20, error: new BBTagRuntimeError('Cannot execcc imported tag: OtherSubtag') }
+            ],
+            setup(ctx) {
+                const mockTag = createMockTag(ctx, true);
+                ctx.locals.setup(m => m.getCustomCommand('OtherSubtag')).returns(mockTag.instance).mustHappen();
+            }
+        },
         // TODO: Migrate this test when recursion limits are reintroduced
         // {
         //     code: '{execcc;otherSubtag}',
@@ -97,7 +92,7 @@ await runSubtagTests<ExecCustomCommandLocals>({
             code: '{execcc;otherSubtag;arg1;arg2;-f flag value}',
             expected: 'Success!',
             setup(ctx) {
-                const mockTag = ctx.createMock<ExecutableTag>();
+                const mockTag = createMockTag(ctx);
                 ctx.locals.setup(m => m.getCustomCommand('otherSubtag')).returns(mockTag.instance).mustHappen();
                 mockTag.setup((m, $) => m.execute(ctx.instance, $(['arg1', 'arg2', '-f flag value']))).returns('Success!').mustHappen();
             }
@@ -106,7 +101,7 @@ await runSubtagTests<ExecCustomCommandLocals>({
             code: '{execcc;otherSubtag;arg1 arg2 -f flag value}',
             expected: 'Success!',
             setup(ctx) {
-                const mockTag = ctx.createMock<ExecutableTag>();
+                const mockTag = createMockTag(ctx);
                 ctx.locals.setup(m => m.getCustomCommand('otherSubtag')).returns(mockTag.instance).mustHappen();
                 mockTag.setup((m, $) => m.execute(ctx.instance, $(['arg1', 'arg2', '-f', 'flag', 'value']))).returns('Success!').mustHappen();
             }
@@ -115,10 +110,16 @@ await runSubtagTests<ExecCustomCommandLocals>({
             code: '{execcc;otherSubtag;arg1 arg2 \\-f flag value}',
             expected: 'Success!',
             setup(ctx) {
-                const mockTag = ctx.createMock<ExecutableTag>();
+                const mockTag = createMockTag(ctx);
                 ctx.locals.setup(m => m.getCustomCommand('otherSubtag')).returns(mockTag.instance).mustHappen();
                 mockTag.setup((m, $) => m.execute(ctx.instance, $(['arg1', 'arg2', '-f', 'flag', 'value']))).returns('Success!').mustHappen();
             }
         }
     ]
 });
+
+function createMockTag(ctx: SubtagTestContext<ExecCustomCommandLocals>, isAlias = false): Mock<ExecutableTag> {
+    const mockTag = ctx.createMock<ExecutableTag>();
+    mockTag.setup(m => m.isAlias).returns(isAlias).mustHappen();
+    return mockTag;
+}

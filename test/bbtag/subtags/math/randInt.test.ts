@@ -12,6 +12,16 @@ await runSubtagTests({
         { code: '{randint;1030}', expected: /^1?[0-9]{1,3}$/ },
         { code: '{randint;1;9}', expected: /^[1-9]$/ },
         { code: '{randint;3;4}', expected: /^[3-4]$/ },
+        {
+            code: '{randint;3;4}',
+            expected: '4',
+            setup(_, __, t) { t.mock.method(Math, 'random', () => 0.9999999999999999); }
+        },
+        {
+            code: '{randint;9;10}',
+            expected: '9',
+            setup(_, __, t) { t.mock.method(Math, 'random', () => 0.0000000000000001); }
+        },
         { code: '{randint;1030;1030}', expected: '1030' },
         {
             code: '{randint;abc;1030}',

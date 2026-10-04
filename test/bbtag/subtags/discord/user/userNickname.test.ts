@@ -11,6 +11,7 @@ await runSubtagTests({
     cases: [
         ...createGetUserPropTestCases<DiscordUserNicknameLocals>({
             quiet: '',
+            quietNoArgs: true,
             generateCode(...args) {
                 return `{${['usernick', ...args].join(';')}}`;
             },
@@ -25,6 +26,7 @@ await runSubtagTests({
         }),
         ...createGetUserPropTestCases<DiscordUserNicknameLocals>({
             quiet: '',
+            quietNoArgs: true,
             generateCode(...args) {
                 return `{${['userNickname', ...args].join(';')}}`;
             },
@@ -39,6 +41,7 @@ await runSubtagTests({
         }),
         ...createGetUserPropTestCases<DiscordUserNicknameLocals>({
             quiet: '',
+            quietNoArgs: true,
             generateCode(...args) {
                 return `{${['usernick.global', ...args].join(';')}}`;
             },
@@ -53,6 +56,7 @@ await runSubtagTests({
         }),
         ...createGetUserPropTestCases<DiscordUserNicknameLocals>({
             quiet: '',
+            quietNoArgs: true,
             generateCode(...args) {
                 return `{${['userNickname.global', ...args].join(';')}}`;
             },

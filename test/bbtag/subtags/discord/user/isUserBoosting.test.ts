@@ -1,4 +1,4 @@
-import type { GuildMemberBoostingLocals, TemporalValue } from '@blargbot/bbtag-engine';
+import type { GuildMemberBoostingLocals } from '@blargbot/bbtag-engine';
 import { replacers } from '@blargbot/bbtag-engine';
 
 import { runSubtagTests } from '../../SubtagTestSuite.js';
@@ -19,8 +19,7 @@ await runSubtagTests({
                     title: 'the user is boosting',
                     expected: 'true',
                     setup(ctx, userId) {
-                        const date = ctx.createMock<TemporalValue>();
-                        ctx.discord.setup(m => m.getBoostTimestamp(userId)).resolves(date.instance).mustHappen(1);
+                        ctx.discord.setup(m => m.getBoostTimestamp(userId)).resolves(Date.UTC(2021, 0, 1)).mustHappen(1);
                     }
                 },
                 {

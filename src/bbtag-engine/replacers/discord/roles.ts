@@ -82,6 +82,8 @@ export const roleCreateReplacerFactory = (options: { getColorByName: (value: str
         const rolePerms = parse.bigint(permissionsStr);
         if (rolePerms === null)
             throw new BBTagRuntimeError('Permission not a number', `${JSON.stringify(permissionsStr)} is not a number`);
+        if ((rolePerms & ctx.locals.discord.authorPermissions) !== rolePerms)
+            throw new BBTagRuntimeError('Author missing requested permissions');
 
         const roleId = await ctx.locals.discord.createRole({
             name,
@@ -183,7 +185,6 @@ export const rolesReplacer = defineReplacer<Locals.GuildRolesLocals>('roles', {
 
         const quiet = isQuiet(ctx, quietStr);
         const userId = await ctx.locals.discord.queryUser(userStr, { quiet: quiet, throw: UserNotFoundError.withQuiet(quiet, '') });
-        // TODO: Implementation of this should guarantee the roles are ordered by their position.
         return await ctx.locals.discord.listUserRoles(userId);
     }
 });
@@ -261,7 +262,7 @@ export const roleSetPermissionsReplacer = defineReplacer<Locals.GuildRoleSetPerm
         if (!manageableRoles.has(roleId))
             throw new BBTagRuntimeError('Role above author');
 
-        const permissions = parse.bigint(permissionsStr) ?? 0n;
+        const permissions = (parse.bigint(permissionsStr) ?? 0n) & ctx.locals.discord.authorPermissions;
 
         if (!await ctx.locals.discord.setRolePermissions(roleId, permissions))
             throw new (FailedToEditRoleNoPermsError.withQuiet(quiet, ''))();

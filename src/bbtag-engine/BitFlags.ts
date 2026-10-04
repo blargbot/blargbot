@@ -1,13 +1,3 @@
-function or<T extends number | bigint>(a: T, b: T): T {
-    return (a | b) as T;
-}
-function and<T extends number | bigint>(a: T, b: T): T {
-    return (a & b) as T;
-}
-function not<T extends number | bigint>(a: T): T {
-    return (~a) as T;
-}
-
 export function defineBitFlags<Name extends string | symbol>(
     options: Record<Name, number>,
     zero: number
@@ -100,6 +90,15 @@ export function defineBitFlags<Flag extends number | bigint, Name extends string
     Object.freeze(BitFlags);
     return BitFlags as BitFlagsConstructor<Flag, Name>;
 }
+function or<T extends number | bigint>(a: T, b: T): T {
+    return (a | b) as T;
+}
+function and<T extends number | bigint>(a: T, b: T): T {
+    return (a & b) as T;
+}
+function not<T extends number | bigint>(a: T): T {
+    return (~a) as T;
+}
 
 type BitFlagConvertable<Flag extends number | bigint, Name extends string | symbol> = Flag | Name | { valueOf(): Flag; };
 export type BitFlagsConstructor<Flag extends number | bigint, Name extends string | symbol = string | symbol> = {
@@ -120,3 +119,6 @@ export interface BitFlags<Flag extends number | bigint, Name extends string | sy
     normalize(): BitFlags<Flag, Name>;
     hasExtra(): boolean;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type BitFlagNames<T extends BitFlags<any, any>> = T extends BitFlags<infer _, infer Name> ? Name : never;

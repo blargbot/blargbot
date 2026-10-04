@@ -23,7 +23,7 @@ await runSubtagTests({
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual(roles.slice(0, 3)))).resolves(true).mustHappen(1);
             }
         },
@@ -35,7 +35,7 @@ await runSubtagTests({
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(0, 3)).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
             }
         },
         {
@@ -46,7 +46,7 @@ await runSubtagTests({
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual(roles.slice(0, 3)))).resolves(true).mustHappen(1);
             }
         },
@@ -58,7 +58,7 @@ await runSubtagTests({
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual(roles.slice(0, 3)))).resolves(true).mustHappen(1);
             }
         },
@@ -83,7 +83,7 @@ await runSubtagTests({
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles.slice(1)).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
             }
         },
         {
@@ -97,7 +97,7 @@ await runSubtagTests({
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles.slice(1)).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles.slice(1)).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
             }
         },
         {
@@ -108,7 +108,7 @@ await runSubtagTests({
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('other user', $({ noLookup: false, throw: UserNotFoundError }))).resolves(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('other user', $({ quiet: false, throw: UserNotFoundError }))).resolves(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual(roles.slice(0, 3)))).resolves(true).mustHappen(1);
             }
         },
@@ -121,7 +121,7 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('other user', $({ noLookup: false, throw: UserNotFoundError })))
+                ctx.discord.setup((m, $) => m.queryUser('other user', $({ quiet: false, throw: UserNotFoundError })))
                     .rejects(new UserNotFoundError('other user'))
                     .mustHappen(1);
             }
@@ -136,7 +136,7 @@ await runSubtagTests({
                 ctx.locals.setup(m => m.quiet).returns(true);
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('other user', $({ noLookup: true, throw: UserNotFoundError.withDisplay('false') })))
+                ctx.discord.setup((m, $) => m.queryUser('other user', $({ quiet: true, throw: UserNotFoundError.withDisplay('false') })))
                     .rejects(new (UserNotFoundError.withDisplay('false'))('other user'))
                     .mustHappen(1);
             }
@@ -150,7 +150,7 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
-                ctx.discord.setup((m, $) => m.queryUser('other user', $({ noLookup: true, throw: UserNotFoundError.withDisplay('false') })))
+                ctx.discord.setup((m, $) => m.queryUser('other user', $({ quiet: true, throw: UserNotFoundError.withDisplay('false') })))
                     .rejects(new (UserNotFoundError.withDisplay('false'))('other user'))
                     .mustHappen(1);
             }

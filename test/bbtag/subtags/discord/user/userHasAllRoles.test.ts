@@ -18,7 +18,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const userId = random.bigint(10n ** 10n, 10n ** 20n);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves([]).mustHappen(1);
             }
         },
@@ -135,7 +135,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const userId = random.bigint(10n ** 10n, 10n ** 20n);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves([]).mustHappen(1);
             }
         },
@@ -147,7 +147,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const userId = random.bigint(10n ** 10n, 10n ** 20n);
-                ctx.discord.setup((m, $) => m.queryUser('', $({ noLookup: true, throw: UserNotFoundError.withDisplay('false') }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: true, throw: UserNotFoundError.withDisplay('false') }))).returns(userId).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves([]).mustHappen(1);
             }
         }

@@ -91,11 +91,10 @@ export const execTagReplacer = defineReplacer<ExecTagLocals>(['execTag', 'exec']
     parameters: ['name', 'args*'],
     returns: 'string',
     execute: async function execTag(ctx, [{ value: name }, ...args]) {
-        const tagName = name;
-        const tag = await ctx.locals.getTag(tagName);
+        const tag = await ctx.locals.getTag(name);
 
         if (tag === null)
-            throw new BBTagRuntimeError(`Tag not found: ${tagName}`);
+            throw new BBTagRuntimeError(`Tag not found: ${name}`);
 
         const input = args.length === 1
             ? splitArg(args[0].value)
@@ -115,11 +114,12 @@ export const execCustomCommandReplacer = defineReplacer<ExecCustomCommandLocals>
     parameters: ['name', 'args*'],
     returns: 'string',
     execute: async function execTag(ctx, [{ value: name }, ...args]) {
-        const tagName = name;
-        const tag = await ctx.locals.getCustomCommand(tagName);
+        const tag = await ctx.locals.getCustomCommand(name);
 
         if (tag === null)
-            throw new BBTagRuntimeError(`CCommand not found: ${tagName}`);
+            throw new BBTagRuntimeError(`CCommand not found: ${name}`);
+        if (tag.isAlias === true)
+            throw new BBTagRuntimeError(`Cannot execcc imported tag: ${name}`);
 
         const input = args.length === 1
             ? splitArg(args[0].value)

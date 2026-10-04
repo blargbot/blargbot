@@ -8,6 +8,7 @@ await runSubtagTests({
     argCountBounds: { min: 2, max: 2 },
     cases: [
         { code: '{randstr;abcdefg;5}', expected: /^([a-g])(?!\1{4})[a-g]{4}$/, retries: 5 },
+        { code: '{randstr;abcdefg;-1}', expected: '' },
         { code: '{randstr;123abc456xyz;7}', expected: /^([abcxyz1-6])(?!\1{6})[abcxyz1-6]{6}$/, retries: 5 },
         {
             code: '{randstr;123abc456xyz;b}',

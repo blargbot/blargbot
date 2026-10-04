@@ -10,6 +10,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
     #value?: string;
     readonly #context: BBTagContext;
 
+    public get isCached(): boolean { return this.#value !== undefined; }
     public get raw(): string { return this.code.source; }
     public get value(): string {
         if (this.#value === undefined)

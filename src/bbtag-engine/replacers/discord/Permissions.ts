@@ -1,3 +1,4 @@
+import type { BitFlagNames } from '../../BitFlags.js';
 import { defineBitFlags } from '../../BitFlags.js';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -57,3 +58,4 @@ export const DiscordPermissions = defineBitFlags({
 }, 0n);
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DiscordPermissions extends InstanceType<typeof DiscordPermissions> { }
+export type DiscordPermissionName = BitFlagNames<DiscordPermissions>;
