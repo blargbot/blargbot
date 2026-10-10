@@ -1,10 +1,10 @@
-import { parse } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError, UserNotFoundError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.dm;
 
@@ -72,9 +72,9 @@ export class DMSubtag extends CompiledSubtag {
                 cache = this.#dmCache[member.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
             }
 
-            context.data.nsfw === undefined
-                ? await context.util.send(channel, { content, embeds })
-                : await context.util.send(channel, { content: context.data.nsfw });
+            await (context.data.nsfw === undefined
+                ? context.util.send(channel, { content, embeds })
+                : context.util.send(channel, { content: context.data.nsfw }));
             cache.count++;
         } catch (e: unknown) {
             context.logger.error('DM failed', e);

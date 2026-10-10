@@ -1,9 +1,10 @@
-import { LangSubtag } from '@blargbot/bbtag/subtags/misc/lang';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new LangSubtag(),
+await runSubtagTests({
+    replacer: replacers.langReplacer,
+    names: ['lang'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{lang;}', expected: '' },

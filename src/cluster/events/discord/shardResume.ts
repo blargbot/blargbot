@@ -1,5 +1,5 @@
-import { Cluster } from '@blargbot/cluster';
-import { DiscordEventService } from '@blargbot/core/serviceTypes';
+import type { Cluster } from '@blargbot/cluster';
+import { DiscordEventService } from '@blargbot/core';
 
 export class DiscordShardResumeHandler extends DiscordEventService<'shardResume'> {
     public constructor(cluster: Cluster) {

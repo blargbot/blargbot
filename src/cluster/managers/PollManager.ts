@@ -1,13 +1,12 @@
-import { Cluster } from '@blargbot/cluster';
-import { PollResponse } from '@blargbot/cluster/types';
-import { Emote } from '@blargbot/core/Emote';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { PollEventOptions } from '@blargbot/domain/models';
+import type { Cluster, PollResponse } from '@blargbot/cluster';
+import type { Emote } from '@blargbot/core';
+import { FormattableMessageContent } from '@blargbot/core';
+import type { PollEventOptions } from '@blargbot/domain';
 import { util } from '@blargbot/formatting';
-import { AllowedMentions, KnownGuildTextableChannel, User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import type eris from 'eris';
+import moment from 'moment-timezone';
 
-import templates from '../text';
+import { templates } from '../text.js';
 
 export class PollManager {
     readonly #cluster: Cluster;
@@ -19,13 +18,13 @@ export class PollManager {
     }
 
     public async createPoll(
-        channel: KnownGuildTextableChannel,
-        author: User,
+        channel: eris.KnownGuildTextableChannel,
+        author: eris.User,
         emojis: Emote[],
         title: string,
         description: string | undefined,
         colour: number,
-        duration: Duration,
+        duration: moment.Duration,
         announce: boolean
     ): Promise<PollResponse> {
         if (duration.asMilliseconds() === 0)
@@ -36,7 +35,7 @@ export class PollManager {
 
         const endTime = moment().add(duration);
         let content: string | undefined = undefined;
-        const allowedMentions: AllowedMentions = {};
+        const allowedMentions: eris.AllowedMentions = {};
 
         if (announce) {
             const result = await this.#cluster.announcements.loadConfig(channel.guild, author, channel);

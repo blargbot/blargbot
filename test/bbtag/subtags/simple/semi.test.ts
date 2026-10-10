@@ -1,9 +1,10 @@
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new SemiSubtag(),
+await runSubtagTests({
+    replacer: replacers.semiReplacer,
+    names: ['semi'],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         { code: '{semi}', expected: ';' }

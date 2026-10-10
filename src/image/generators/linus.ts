@@ -1,8 +1,7 @@
-import { BaseApiImageGenerator } from '@blargbot/image/BaseApiImageGenerator';
-import { ImageWorker } from '@blargbot/image/ImageWorker';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
 
-export class LinusGeneratorGenerator extends BaseApiImageGenerator<'linus'> {
-    public constructor(worker: ImageWorker) {
-        super('linus', worker);
-    }
+import type { GeneratorContext } from '../GeneratorContext.js';
+
+export async function linus(request: ImageRequestData<'linus'>, context: GeneratorContext): Promise<ImageResponse> {
+    return await context.renderApi('linus', { image: request.imageUrl });
 }

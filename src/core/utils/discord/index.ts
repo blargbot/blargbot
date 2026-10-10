@@ -1,10 +1,10 @@
-import * as emojiString from './emojiString';
-import * as getLimit from './getLimit';
-import * as getMemberColour from './getMemberColour';
-import * as getMemberPosition from './getMemberPosition';
-import * as overflowText from './overflowText';
+import * as emojiString from './emojiString.js';
+import * as getLimit from './getLimit.js';
+import * as getMemberColour from './getMemberColour.js';
+import * as getMemberPosition from './getMemberPosition.js';
+import * as overflowText from './overflowText.js';
 
-export { MessageComponent, MessageStringComponent } from './getLimit';
+export { MessageComponent, MessageStringComponent } from './getLimit.js';
 
 export const discord = {
     ...getLimit,

@@ -1,16 +1,17 @@
-import { CommandOptions, CommandResult } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
-import { ImageGeneratorMap } from '@blargbot/image/types';
-import { Duration, duration } from 'moment-timezone';
+import type { CommandOptions, CommandResult } from '@blargbot/cluster';
+import { CommandType } from '@blargbot/cluster';
+import type { ImageRequest } from '@blargbot/contracts';
+import { asBuffer } from '@blargbot/util';
+import moment from 'moment-timezone';
 
-import templates from '../text';
-import { CommandContext } from './CommandContext';
-import { GlobalCommand } from './GlobalCommand';
-import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware';
+import { templates } from '../text.js';
+import type { CommandContext } from './CommandContext.js';
+import { GlobalCommand } from './GlobalCommand.js';
+import { RatelimitMiddleware, SendTypingMiddleware, SingleThreadMiddleware } from './middleware/index.js';
 
 export interface GlobalImageCommandOptions extends Omit<CommandOptions<CommandContext>, 'category'> {
     dontLimitChannel?: boolean;
-    ratelimit?: Duration;
+    ratelimit?: moment.Duration;
 }
 
 export abstract class GlobalImageCommand extends GlobalCommand {
@@ -22,19 +23,23 @@ export abstract class GlobalImageCommand extends GlobalCommand {
 
         if (options.dontLimitChannel !== true)
             this.middleware.push(new SingleThreadMiddleware(c => c.channel.id));
-        this.middleware.push(new RatelimitMiddleware(options.ratelimit ?? duration(5, 'seconds'), c => c.author.id));
+        this.middleware.push(new RatelimitMiddleware(options.ratelimit ?? moment.duration(5, 'seconds'), c => c.author.id));
         this.middleware.push(new SendTypingMiddleware());
     }
 
-    protected async renderImage<T extends keyof ImageGeneratorMap>(context: CommandContext, command: T, data: ImageGeneratorMap[T]): Promise<CommandResult> {
-        const result = await context.cluster.images.render(command, data);
-        if (result === undefined || result.data.length === 0)
+    protected async renderImage(context: CommandContext, data: ImageRequest): Promise<CommandResult> {
+        const result = await context.cluster.images.render(data, { ttl: 10_000 })
+            .catch(error => {
+                context.logger.error('Error while rendering', data, error);
+                return null;
+            });
+        if (result === null || result.data.length === 0)
             return templates.commands.$errors.renderFailed;
 
         return {
             file: [
                 {
-                    file: result.data,
+                    file: asBuffer(result.data),
                     name: result.fileName
                 }
             ]

@@ -1,7 +1,8 @@
 {
     "name": "blargbot",
-    "packageManager": "yarn@3.3.0",
+    "packageManager": "yarn@4.18.0",
     "private": true,
+    "type": "module",
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
     "main": "index.js",
     "workspaces": [
@@ -10,33 +11,36 @@
         "definitions/*"
     ],
     "devDependencies": {
-        "@types/node": "^16.18.3",
-        "@typescript-eslint/eslint-plugin": "^5.44.0",
-        "@typescript-eslint/parser": "^5.44.0",
-        "@yarnpkg/sdks": "^3.0.0-rc.31",
-        "cross-env": "^7.0.3",
-        "del-cli": "^5.0.0",
-        "eslint": "^8.28.0",
-        "eslint-plugin-import": "^2.26.0",
-        "eslint-plugin-simple-import-sort": "^8.0.0",
-        "mocha": "^10.1.0",
-        "nyc": "^15.1.0",
-        "ts-node": "^10.9.1",
-        "typescript": "^4.9.3",
-        "yarn": "^1.22.19"
+        "@eslint/compat": "^2.1.1",
+        "@eslint/eslintrc": "^3.3.7",
+        "@eslint/js": "^10.0.1",
+        "@stylistic/eslint-plugin": "^5.10.0",
+        "@types/node": "^26.6.3",
+        "@typescript-eslint/eslint-plugin": "^8.69.0",
+        "@typescript-eslint/parser": "^8.69.0",
+        "@yarnpkg/sdks": "^3.3.1",
+        "eslint": "^10.9.1",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-simple-import-sort": "^14.0.0",
+        "globals": "^17.12.0",
+        "typescript": "^6.0.3",
+        "yarn": "^1.22.22"
     },
     "scripts": {
         "filecount": "cloc ./ --exclude-dir=node_modules --exclude-ext=js,msj,cjs",
-        "start": "node index.js",
-        "test": "cross-env TZ=utc mocha --config mocharc.json --recursive --parallel --reporter dot",
-        "check": "yarn rebuild && yarn run rebuild && yarn run lint && yarn run test",
-        "ci": "yarn rebuild && yarn run rebuild && yarn run lint && yarn run coverage",
-        "coverage": "nyc yarn test",
-        "build": "tsc --build --force",
+        "start": "node --enable-source-maps index.js",
+        "test": "node --enable-source-maps index.test.js",
+        "check": "yarn run rebuild && yarn run lint && yarn run test",
+        "ci": "yarn run rebuild && yarn run lint && yarn run test --coverage",
+        "build": "tsc --build",
         "watch": "tsc --watch",
-        "rebuild": "yarn run clean && yarn run build",
+        "rebuild": "tsc --build --clean",
         "lint": "eslint --ext .ts,.mts,.cts ./",
-        "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"**/*.mjs\" \"**/*.mjs.map\" \"**/*.cjs\" \"**/*.cjs.map\" \"!node_modules\" \"coverage/\" \".nyc_output/\""
+        "start:image-worker": "yarn workspace @blargbot/image node --enable-source-maps ./start.js",
+        "start:discord-rest": "yarn workspace @blargbot/discord-rest-service node --enable-source-maps ./start.js",
+        "start:gateway-worker": "yarn workspace @blargbot/discord-gateway-worker node --enable-source-maps ./start.js",
+        "start:gateway-orchestrator": "yarn workspace @blargbot/discord-gateway-orchestrator node --enable-source-maps ./start.js",
+        "start:gateway-relay": "yarn workspace @blargbot/discord-gateway-relay node --enable-source-maps ./start.js"
     },
     "repository": {
         "type": "git",
@@ -48,13 +52,7 @@
         "url": "https://github.com/blargbot/blargbot/issues"
     },
     "homepage": "https://github.com/blargbot/blargbot#readme",
-    "dependenciesMeta": {
-        "mocha": {
-            "unplugged": true
-        }
-    },
     "resolutions": {
-        "@types/mocha@^10.0.0": "patch:@types/mocha@npm:10.0.0#./.yarn/patches/@types-mocha-npm-10.0.0-a2509f7d26.patch",
         "eris@^0.17.1": "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch"
     }
 }

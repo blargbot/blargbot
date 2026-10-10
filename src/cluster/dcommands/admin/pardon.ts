@@ -1,11 +1,10 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, parse } from '@blargbot/cluster/utils';
-import { FlagResult } from '@blargbot/domain/models';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, GuildCommand, parse } from '@blargbot/cluster';
+import type { FlagResult } from '@blargbot/domain';
 import { util } from '@blargbot/formatting';
-import { Member } from 'eris';
+import type * as eris from 'eris';
 
-import templates from '../../text';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.pardon;
 
@@ -28,7 +27,7 @@ export class PardonCommand extends GuildCommand {
         });
     }
 
-    public async pardon(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<CommandResult> {
+    public async pardon(context: GuildCommandContext, member: eris.Member, flags: FlagResult): Promise<CommandResult> {
         const reason = flags.r?.merge().value;
         const count = parse.int(flags.c?.merge().value ?? 1, { strict: true }) ?? NaN;
 

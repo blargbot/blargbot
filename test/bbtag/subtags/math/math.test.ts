@@ -1,13 +1,14 @@
-import { InvalidOperatorError, NotANumberError } from '@blargbot/bbtag/errors';
-import { MathSubtag } from '@blargbot/bbtag/subtags/math/math';
-import { NumericOperator } from '@blargbot/bbtag/utils';
+import type { NumericOperator } from '@blargbot/bbtag-engine';
+import { InvalidOperatorError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const exp = Math.pow;
 
-runSubtagTests({
-    subtag: new MathSubtag(),
+await runSubtagTests({
+    replacer: replacers.mathReplacer,
+    names: ['math'],
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         ...createTestCases([0], { '%': 0, '*': 0, '+': 0, '-': 0, '/': 0, '^': 0 }),
@@ -18,14 +19,14 @@ runSubtagTests({
             code: '{math;abc;1;2;3}',
             expected: '`Invalid operator`',
             errors: [
-                { start: 0, end: 16, error: new InvalidOperatorError('abc') }
+                { error: new InvalidOperatorError('abc') }
             ]
         },
         {
             code: '{math;/;1;abc;3}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 16, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         }
     ]

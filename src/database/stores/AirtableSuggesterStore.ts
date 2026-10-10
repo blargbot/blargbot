@@ -1,9 +1,8 @@
-import { Suggester } from '@blargbot/domain/models';
-import { SuggesterStore } from '@blargbot/domain/stores';
-import { Logger } from '@blargbot/logger';
-import { AirtableBase } from 'airtable/lib/airtable_base';
+import type { Suggester, SuggesterStore } from '@blargbot/domain';
+import type { Logger } from '@blargbot/logger';
+import type { AirtableBase } from 'airtable/lib/airtable_base.js';
 
-import { AirtableDbTable } from '../tables/AirtableDbTable';
+import { AirtableDbTable } from '../tables/AirtableDbTable.js';
 
 export class AirtableSuggesterStore implements SuggesterStore {
     readonly #table: AirtableDbTable<Suggester>;

@@ -2,6 +2,10 @@
     "name": "@blargbot/master",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
     "dependencies": {
         "@blargbot/api": "workspace:^",
         "@blargbot/cluster": "workspace:^",
@@ -12,13 +16,11 @@
         "@blargbot/logger": "workspace:^",
         "@blargbot/res": "workspace:^",
         "eris": "^0.17.1",
-        "moment-timezone": "^0.5.39",
-        "node-fetch": "^2.6.7",
+        "moment-timezone": "^0.6.4",
         "prom-client": "^14.1.0",
         "strip-ansi": "^6.0.1"
     },
     "devDependencies": {
-        "@types/eris": "workspace:^",
-        "@types/node-fetch": "^2.6.2"
+        "@types/eris": "workspace:^"
     }
 }

@@ -1,8 +1,9 @@
-import { Api } from '@blargbot/api/Api';
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
-import { ChatLog, ChatLogIndex, DiscordTagSet } from '@blargbot/domain/models';
-import { APIEmbed } from 'discord-api-types/v9';
+import type { ChatLog, ChatLogIndex, DiscordTagSet } from '@blargbot/domain';
+import type { APIEmbed } from 'discord-api-types/v9';
+
+import type { Api } from '../Api.js';
+import { BaseRoute } from '../BaseRoute.js';
+import type { ApiResponse } from '../types.js';
 
 export class ChatLogsRoute extends BaseRoute<['/chatlogs']> {
     readonly #api: Api;

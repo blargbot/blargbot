@@ -1,10 +1,10 @@
-import { parse } from '@blargbot/core/utils';
+import { parse } from '@blargbot/core';
 
-import { SubtagArgument } from '../../arguments';
-import { CompiledSubtag } from '../../compilation';
-import { InvalidOperatorError, NotABooleanError } from '../../errors';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils';
+import type { SubtagArgument } from '../../arguments/index.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { InvalidOperatorError, NotABooleanError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.if;
 
@@ -78,10 +78,10 @@ export class IfSubtag extends CompiledSubtag {
             operator = evaluator;
         } else if (bbtag.isComparisonOperator(value1)) {
             operator = value1;
-            [value1, evaluator] = [evaluator, value1];
+            value1 = evaluator;
         } else if (bbtag.isComparisonOperator(value2)) {
             operator = value2;
-            [evaluator, value2] = [value2, evaluator];
+            value2 = evaluator;
         } else
             throw new InvalidOperatorError(evaluator);
 

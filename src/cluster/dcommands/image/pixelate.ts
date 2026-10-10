@@ -1,10 +1,10 @@
-import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { guard } from '@blargbot/core/utils';
-import { parse } from '@blargbot/core/utils/parse';
-import { User } from 'eris';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalImageCommand } from '@blargbot/cluster';
+import { guard, parse } from '@blargbot/core';
+import type * as eris from 'eris';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.pixelate;
 
@@ -38,7 +38,7 @@ export class PixelateCommand extends GlobalImageCommand {
         });
     }
 
-    public async renderUser(context: CommandContext, user: User, scale: number): Promise<CommandResult> {
+    public async renderUser(context: CommandContext, user: eris.User, scale: number): Promise<CommandResult> {
         return await this.render(context, user.avatarURL, scale);
     }
 
@@ -47,6 +47,6 @@ export class PixelateCommand extends GlobalImageCommand {
         if (!guard.isUrl(url))
             return cmd.default.invalidUrl({ url });
 
-        return await this.renderImage(context, 'pixelate', { url: url, scale });
+        return await this.renderImage(context, { type: 'pixelate', imageUrl: url, scale });
     }
 }

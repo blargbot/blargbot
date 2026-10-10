@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '../errors';
-import { SourceMarker } from './SourceMarker';
-import { Statement } from './Statement';
-import { SubtagCall } from './SubtagCall';
+import { BBTagRuntimeError } from '../errors/index.js';
+import type { SourceMarker } from './SourceMarker.js';
+import type { Statement } from './Statement.js';
+import type { SubtagCall } from './SubtagCall.js';
 
 type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
     : T extends SubtagCall ? MutableSubtagCall
@@ -169,9 +169,11 @@ export interface SourceToken {
     end: SourceMarker;
 }
 
-export const enum SourceTokenType {
-    CONTENT,
-    STARTSUBTAG,
-    ENDSUBTAG,
-    ARGUMENTDELIMITER
-}
+export type SourceTokenType = typeof SourceTokenType[keyof typeof SourceTokenType];
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const SourceTokenType = Object.freeze({
+    CONTENT: 0,
+    STARTSUBTAG: 1,
+    ENDSUBTAG: 2,
+    ARGUMENTDELIMITER: 3
+});

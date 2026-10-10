@@ -1,9 +1,10 @@
-import { CapitalizeSubtag } from '@blargbot/bbtag/subtags/misc/capitalize';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new CapitalizeSubtag(),
+await runSubtagTests({
+    replacer: replacers.capitalizeReplacer,
+    names: ['capitalize'],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         {

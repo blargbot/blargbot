@@ -1,16 +1,16 @@
-import { ChannelSettings } from './ChannelSettings';
-import { CommandPermissions } from './CommandPermissions';
-import { GuildAnnounceOptions } from './GuildAnnounceOptions';
-import { GuildAutoresponses } from './GuildAutoresponses';
-import { GuildCensors } from './GuildCensors';
-import { GuildCommandTag } from './GuildCommandTag';
-import { GuildModlogEntry } from './GuildModlogEntry';
-import { GuildRolemes } from './GuildRolemes';
-import { GuildTriggerTag } from './GuildTriggerTag';
-import { GuildVotebans } from './GuildVotebans';
-import { GuildWarnings } from './GuildWarnings';
-import { StoredGuildEventLogType } from './StoredGuildEventLogType';
-import { StoredGuildSettings } from './StoredGuildSettings';
+import type { ChannelSettings } from './ChannelSettings.js';
+import type { CommandPermissions } from './CommandPermissions.js';
+import type { GuildAnnounceOptions } from './GuildAnnounceOptions.js';
+import type { GuildAutoresponses } from './GuildAutoresponses.js';
+import type { GuildCensors } from './GuildCensors.js';
+import type { GuildCommandTag } from './GuildCommandTag.js';
+import type { GuildModlogEntry } from './GuildModlogEntry.js';
+import type { GuildRolemes } from './GuildRolemes.js';
+import type { GuildTriggerTag } from './GuildTriggerTag.js';
+import type { GuildVotebans } from './GuildVotebans.js';
+import type { GuildWarnings } from './GuildWarnings.js';
+import type { StoredGuildEventLogType } from './StoredGuildEventLogType.js';
+import type { StoredGuildSettings } from './StoredGuildSettings.js';
 
 export interface StoredGuild {
     readonly guildid: string;

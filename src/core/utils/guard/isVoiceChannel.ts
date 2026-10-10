@@ -1,20 +1,20 @@
-import { Constants, KnownChannel, KnownVoiceChannel } from 'eris';
+import * as eris from 'eris';
 
-type ChannelType = typeof Constants['ChannelTypes'];
+type ChannelType = typeof eris.Constants['ChannelTypes'];
 const isVoiceMap: Record<ChannelType[keyof ChannelType], boolean> = {
-    [Constants.ChannelTypes.DM]: false,
-    [Constants.ChannelTypes.GROUP_DM]: false,
-    [Constants.ChannelTypes.GUILD_CATEGORY]: false,
-    [Constants.ChannelTypes.GUILD_NEWS]: false,
-    [Constants.ChannelTypes.GUILD_NEWS_THREAD]: false,
-    [Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: false,
-    [Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: false,
-    [Constants.ChannelTypes.GUILD_STAGE_VOICE]: true,
-    [Constants.ChannelTypes.GUILD_STORE]: false,
-    [Constants.ChannelTypes.GUILD_TEXT]: false,
-    [Constants.ChannelTypes.GUILD_VOICE]: true
+    [eris.Constants.ChannelTypes.DM]: false,
+    [eris.Constants.ChannelTypes.GROUP_DM]: false,
+    [eris.Constants.ChannelTypes.GUILD_CATEGORY]: false,
+    [eris.Constants.ChannelTypes.GUILD_NEWS]: false,
+    [eris.Constants.ChannelTypes.GUILD_NEWS_THREAD]: false,
+    [eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: false,
+    [eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: false,
+    [eris.Constants.ChannelTypes.GUILD_STAGE_VOICE]: true,
+    [eris.Constants.ChannelTypes.GUILD_STORE]: false,
+    [eris.Constants.ChannelTypes.GUILD_TEXT]: false,
+    [eris.Constants.ChannelTypes.GUILD_VOICE]: true
 };
 
-export function isVoiceChannel<T extends KnownChannel>(channel: T): channel is T & KnownVoiceChannel {
+export function isVoiceChannel<T extends eris.KnownChannel>(channel: T): channel is T & eris.KnownVoiceChannel {
     return isVoiceMap[channel.type];
 }

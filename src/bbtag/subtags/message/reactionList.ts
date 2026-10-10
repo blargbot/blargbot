@@ -1,12 +1,11 @@
-import { Emote } from '@blargbot/core/Emote';
-import { snowflake } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError } from 'eris';
+import { Emote, snowflake } from '@blargbot/core';
+import * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index';
-import templates from '../../text';
-import { SubtagType } from '../../utils/index';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.reactionList;
 
@@ -76,7 +75,7 @@ export class ReactionListSubtag extends CompiledSubtag {
                 const reactionUsers = await message.getReaction(emote.toApi());
                 users.push(...reactionUsers.map(u => u.id));
             } catch (err: unknown) {
-                if (!(err instanceof DiscordRESTError) || err.code !== ApiError.UNKNOWN_EMOJI)
+                if (!(err instanceof eris.DiscordRESTError) || err.code !== eris.ApiError.UNKNOWN_EMOJI)
                     throw err;
                 errors.push(emote);
             }
@@ -89,12 +88,11 @@ export class ReactionListSubtag extends CompiledSubtag {
 
     #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
         let channel = context.channel.id;
-        let message = '';
 
         if (args.length >= 2 && snowflake.test(args[1]))
             channel = args.splice(0, 1)[0];
 
-        message = args.splice(0, 1)[0];
+        const message = args.splice(0, 1)[0];
 
         if (args.length === 0)
             return [channel, message, undefined];

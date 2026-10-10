@@ -1,6 +1,6 @@
-import { GuildSettingDocs } from '@blargbot/domain/models';
+import type { GuildSettingDocs } from '@blargbot/domain';
 
-import templates from '../../text';
+import { templates } from '../../text.js';
 
 export const guildSettings: GuildSettingDocs = {
     makelogs: {

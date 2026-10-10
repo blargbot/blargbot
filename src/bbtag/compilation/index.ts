@@ -1,1 +1,1 @@
-export * from './CompiledSubtag';
+export * from './CompiledSubtag.js';

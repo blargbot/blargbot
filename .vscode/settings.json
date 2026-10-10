@@ -1,6 +1,12 @@
 {
   "files.exclude": {
-    "node_modules": true
+    "node_modules": true,
+    "**/*.js": true,
+    "**/*.js.map": true,
+    "**/*.cjs": true,
+    "**/*.cjs.map": true,
+    "**/*.mjs": true,
+    "**/*.mjs.map": true
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
@@ -10,9 +16,9 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "*.ts": "$(capture).js, $(capture).d.ts",
-    "*.mts": "$(capture).mjs, $(capture).d.mts, $(capture).js, $(capture).d.ts",
-    "*.cts": "$(capture).cjs, $(capture).d.cts, $(capture).js, $(capture).d.ts",
+    "*.ts": "",
+    "*.mts": "",
+    "*.cts": "",
     "*.js": "$(capture).js.map, $(capture).min.js, $(capture).d.ts",
     "*.cjs": "$(capture).cjs.map, $(capture).min.cjs, $(capture).d.cts",
     "*.mjs": "$(capture).mjs.map, $(capture).min.mjs, $(capture).d.mts",
@@ -24,7 +30,6 @@
   "editor.insertSpaces": true,
   "editor.tabSize": 4,
   "prettier.useTabs": false,
-  "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "search.exclude": {
     "**/.yarn": true,
     "**/.pnp.*": true,
@@ -32,7 +37,6 @@
     "**/*.js.map": true
   },
   "eslint.nodePath": ".yarn/sdks",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
   "cSpell.language": "en-GB",
   "cSpell.words": [
     "blargbot",
@@ -41,5 +45,7 @@
     "subtag",
     "subtags",
     "timedout"
-  ]
+  ],
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "js/ts.tsdk.path": ".yarn/sdks/typescript/lib",
 }

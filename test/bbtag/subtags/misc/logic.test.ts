@@ -1,11 +1,12 @@
-import { InvalidOperatorError, NotABooleanError } from '@blargbot/bbtag/errors';
-import { LogicSubtag } from '@blargbot/bbtag/subtags/misc/logic';
-import { LogicOperator } from '@blargbot/bbtag/utils';
+import type { LogicOperator } from '@blargbot/bbtag-engine';
+import { InvalidOperatorError, isLogicOperator, NotABooleanError, replacers } from '@blargbot/bbtag-engine';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new LogicSubtag(),
+await runSubtagTests({
+    replacer: replacers.logicReplacer,
+    names: ['logic'],
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {
@@ -14,7 +15,7 @@ runSubtagTests({
             errors: [
                 { start: 7, end: 13, error: new MarkerError('eval', 7) },
                 { start: 18, end: 24, error: new MarkerError('eval', 18) },
-                { start: 0, end: 25, error: new InvalidOperatorError('aaaa') }
+                { error: new InvalidOperatorError('aaaa') }
             ]
         },
         ...generateTestCases([true], { '!': false, '&&': true, '^': true, '||': true, xor: true }),
@@ -31,7 +32,7 @@ runSubtagTests({
             expected: '`Not a boolean`',
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 0, end: 20, error: new NotABooleanError('aaaa') }
+                { error: new NotABooleanError('aaaa') }
             ]
         },
         {
@@ -39,7 +40,7 @@ runSubtagTests({
             expected: '`Not a boolean`',
             errors: [
                 { start: 14, end: 20, error: new MarkerError('eval', 14) },
-                { start: 0, end: 25, error: new NotABooleanError('aaaa') }
+                { error: new NotABooleanError('aaaa') }
             ]
         },
         {
@@ -47,14 +48,14 @@ runSubtagTests({
             expected: '`Not a boolean`',
             errors: [
                 { start: 10, end: 16, error: new MarkerError('eval', 10) },
-                { start: 0, end: 21, error: new NotABooleanError('aaaa') }
+                { error: new NotABooleanError('aaaa') }
             ]
         }
     ]
 });
 
 function generateTestCases(args: boolean[], results: Record<LogicOperator | '^', boolean>): SubtagTestCase[] {
-    return Object.entries(results).flatMap(([operator, expected]) => [
+    return Object.entries(results).filter(x => isLogicOperator(x[0])).flatMap(([operator, expected]) => [
         { code: `{logic;${operator};${args.join(';')}}`, expected: expected.toString() },
         { code: `{logic;${args.join(';')};${operator}}`, expected: expected.toString() },
         { code: `{logic;${args[0]};${[operator, ...args.slice(1)].join(';')}}`, expected: expected.toString() }

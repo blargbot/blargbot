@@ -1,4 +1,4 @@
-import { BBTagRuntimeError } from './BBTagRuntimeError';
+import { BBTagRuntimeError } from './BBTagRuntimeError.js';
 
 export class ChannelNotFoundError extends BBTagRuntimeError {
     public constructor(public readonly value: string) {

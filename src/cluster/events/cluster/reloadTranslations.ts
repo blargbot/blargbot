@@ -1,5 +1,5 @@
-import { Cluster } from '@blargbot/cluster';
-import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
+import type { Cluster } from '@blargbot/cluster';
+import { ClusterEventService } from '@blargbot/cluster';
 
 export class ClusterReloadTranslationsHandler extends ClusterEventService<'reloadTranslations'> {
     public constructor(

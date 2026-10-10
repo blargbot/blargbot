@@ -1,6 +1,6 @@
-import { Statement } from '../language';
-import { SubtagSignatureValueParameter } from '../types';
-import { SubtagArgument } from './SubtagArgument';
+import type { Statement } from '../language/index.js';
+import type { SubtagSignatureValueParameter } from '../types.js';
+import type { SubtagArgument } from './SubtagArgument.js';
 
 export class DefaultSubtagArgumentValue implements SubtagArgument {
     public readonly isCached = true;

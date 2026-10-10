@@ -1,11 +1,11 @@
-import { CommandArgument, CommandArrayArgument, CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandGreedyParameter, CommandVariableTypeName } from '@blargbot/cluster/types';
-import { humanize } from '@blargbot/cluster/utils';
-import { Binder } from '@blargbot/core/Binder';
-import { Binding, BindingResultAsyncIterator } from '@blargbot/core/types';
+import type { CommandArgument, CommandArrayArgument, CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandGreedyParameter, CommandVariableTypeName } from '@blargbot/cluster';
+import { humanize } from '@blargbot/cluster';
+import type { Binding, BindingResultAsyncIterator } from '@blargbot/core';
+import { Binder } from '@blargbot/core';
 
-import { CommandContext } from '../../CommandContext';
-import { createCommandArgument, populateMissingArgumentAccessors } from '../commandArgument';
-import { CommandBindingBase } from './CommandBindingBase';
+import type { CommandContext } from '../../CommandContext.js';
+import { createCommandArgument, populateMissingArgumentAccessors } from '../commandArgument.js';
+import { CommandBindingBase } from './CommandBindingBase.js';
 
 export class GreedyBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext> {
     public readonly name: string;

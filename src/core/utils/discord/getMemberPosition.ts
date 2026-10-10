@@ -1,5 +1,5 @@
-import { Member } from 'eris';
+import type * as eris from 'eris';
 
-export function getMemberPosition(member: Member | undefined): number {
+export function getMemberPosition(member: eris.Member | undefined): number {
     return Math.max(...member?.roles.map(r => member.guild.roles.get(r)?.position ?? -Infinity) ?? [-Infinity]);
 }

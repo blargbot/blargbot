@@ -1,0 +1,62 @@
+import { config } from '@blargbot/config';
+import { AmqpConnection, getDiscordGatewayOrchestrationChannel, getDiscordRestChannel } from '@blargbot/contracts';
+import { createRequestHandler } from '@blargbot/discord-rest-service';
+import { createLogger } from '@blargbot/logger';
+import { createGatewayManager } from '@discordeno/gateway';
+import { createRestManager } from '@discordeno/rest';
+import { GatewayIntents } from '@discordeno/types';
+
+import { installDistributedSharding } from './installDistributedSharding.js';
+
+const logger = createLogger(config, 'DGO');
+logger.setGlobal();
+
+const discord = createRestManager({
+    token: config.discord.token,
+    applicationId: config.discord.applicationId,
+    logger
+});
+
+const amqp = new AmqpConnection(config.amqp.url, { logger });
+const amqpChannel = amqp.createChannel();
+
+const restChannel = await getDiscordRestChannel(amqpChannel);
+const gatewayOrchestrationChannel = await getDiscordGatewayOrchestrationChannel(amqpChannel, 'root');
+
+discord.makeRequest = createRequestHandler({
+    discord,
+    queue: restChannel
+});
+
+const botInfo = await discord.getGatewayBot();
+const gateway = createGatewayManager({
+    token: config.discord.token,
+    intents: GatewayIntents.Guilds
+        | GatewayIntents.GuildMembers
+        | GatewayIntents.GuildModeration
+        | GatewayIntents.GuildPresences
+        | GatewayIntents.GuildMessages
+        | GatewayIntents.GuildMessageReactions
+        | GatewayIntents.GuildExpressions
+        | GatewayIntents.DirectMessages
+        | GatewayIntents.DirectMessageReactions,
+    connection: botInfo,
+    totalShards: botInfo.shards,
+    logger,
+    resharding: {
+        enabled: true,
+        shardsFullPercentage: 80,
+        checkInterval: 8 * 60 * 60_000,
+        getSessionInfo: discord.getGatewayBot
+    }
+});
+
+await installDistributedSharding({
+    gateway,
+    channel: gatewayOrchestrationChannel,
+    clusterTimeoutMs: 15_000,
+    topologyDebounceMs: 15_000,
+    pruneDelayMs: 60_000
+});
+
+await gateway.spawnShards();

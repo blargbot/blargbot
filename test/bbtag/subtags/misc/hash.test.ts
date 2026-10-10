@@ -1,14 +1,16 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { HashSubtag } from '@blargbot/bbtag/subtags/misc/hash';
+import { getHashes } from 'node:crypto';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
+
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 function hashMissing(algorithm: string): boolean {
-    return !HashSubtag.methods.includes(algorithm);
+    return !getHashes().includes(algorithm);
 }
 
-runSubtagTests({
-    subtag: new HashSubtag(),
+await runSubtagTests({
+    replacer: replacers.hashReplacer,
+    names: ['hash'],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         { code: '{hash;brown}', expected: '94011702' },
@@ -26,7 +28,7 @@ runSubtagTests({
             expected: '`Unsupported hash`',
             errors: [
                 { start: 14, end: 20, error: new MarkerError('eval', 14) },
-                { start: 0, end: 21, error: new BBTagRuntimeError('Unsupported hash', 'invalid is not a supported hash algorithm') }
+                { error: new BBTagRuntimeError('Unsupported hash', 'invalid is not a supported hash algorithm') }
             ]
         }
     ]

@@ -1,0 +1,243 @@
+import { defineConfig, globalIgnores } from "eslint/config";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import _import from "eslint-plugin-import";
+import { fixupPluginRules } from "@eslint/compat";
+import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import globals from "globals";
+import tsParser from "@typescript-eslint/parser";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import js from "@eslint/js";
+import { FlatCompat } from "@eslint/eslintrc";
+import stylistic from '@stylistic/eslint-plugin'
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const compat = new FlatCompat({
+    baseDirectory: __dirname,
+    recommendedConfig: js.configs.recommended,
+    allConfig: js.configs.all
+});
+
+export default defineConfig([
+    globalIgnores(["**/*.js", "**/*.cjs", "**/*.mjs", "definitions/*", ".yarn/*", ".pnp.*"]),
+    {
+        extends: compat.extends("eslint:recommended"),
+
+        plugins: {
+            "simple-import-sort": simpleImportSort,
+            import: fixupPluginRules(_import),
+            '@stylistic': stylistic,
+        },
+
+        languageOptions: {
+            ecmaVersion: 8,
+            sourceType: "module",
+
+            parserOptions: {
+                ecmaFeatures: {
+                    arrowFunctions: true,
+                    binaryLiterals: true,
+                    blockBindings: true,
+                    classes: true,
+                    defaultParams: true,
+                    destructuring: true,
+                    forOf: true,
+                    generators: true,
+                    modules: true,
+                    objectLiteralComputedProperties: true,
+                    objectLiteralDuplicateProperties: true,
+                    objectLiteralShorthandMethods: true,
+                    objectLiteralShorthandProperties: true,
+                    octalLiterals: true,
+                    regexUFlag: true,
+                    regexYFlag: true,
+                    spread: true,
+                    superInFunctions: true,
+                    templateStrings: true,
+                    unicodeCodePointEscapes: true,
+                    globalReturn: true,
+                },
+            },
+        },
+
+        rules: {
+            eqeqeq: "error",
+            "eol-last": ["warn", "always"],
+
+            "no-multiple-empty-lines": ["warn", {
+                max: 1,
+                maxEOF: 0,
+                maxBOF: 0,
+            }],
+
+            strict: "error",
+            semi: "error",
+            "prefer-template": "error",
+            "no-useless-concat": "error",
+
+            quotes: ["error", "single", {
+                avoidEscape: false,
+            }],
+
+            indent: ["error", 4, {
+                SwitchCase: 1,
+            }],
+
+            "simple-import-sort/imports": "error",
+            "import/first": "error",
+            "import/newline-after-import": "error",
+            "import/no-duplicates": "error",
+            "comma-spacing": "error",
+            "no-global-assign": "error",
+            "no-console": "error",
+            "no-alert": "error",
+            "no-lone-blocks": "warn",
+            "no-new-func": "error",
+            "no-proto": "error",
+            "no-iterator": "error",
+            "no-lonely-if": "error",
+            "no-var": "error",
+
+            "max-statements-per-line": ["error", {
+                max: 1,
+            }],
+
+            "one-var-declaration-per-line": ["error", "always"],
+            "one-var": ["error", "never"],
+
+            "brace-style": ["warn", "1tbs", {
+                allowSingleLine: true,
+            }],
+
+            "comma-dangle": "warn",
+            "no-sequences": "error",
+            "no-else-return": "error",
+            "guard-for-in": "warn",
+            "no-trailing-spaces": "warn",
+        },
+    },
+    {
+        files: ["**/*.ts", "**/*.cts", "**/*.mts"],
+
+        extends: compat.extends(
+            "plugin:@typescript-eslint/recommended",
+            "plugin:@typescript-eslint/eslint-recommended",
+            "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        ),
+
+        plugins: {
+            "@typescript-eslint": typescriptEslint,
+        },
+
+        languageOptions: {
+            globals: {
+                ...globals.node,
+            },
+
+            parser: tsParser,
+            ecmaVersion: 5,
+            sourceType: "commonjs",
+
+            parserOptions: {
+                project: "./tsconfig.json",
+            },
+        },
+
+        rules: {
+            strict: "off",
+            "@typescript-eslint/no-unsafe-enum-comparison": "off",
+            "@typescript-eslint/no-unused-vars": ["error", {
+                varsIgnorePattern: "^_.*$",
+                ignoreRestSiblings: true,
+            }],
+
+            "@typescript-eslint/explicit-member-accessibility": "error",
+
+            "@typescript-eslint/restrict-template-expressions": ["error", {
+                allowNumber: true,
+                allowBoolean: true,
+                allowAny: false,
+                allowNullish: false,
+            }],
+
+            "@typescript-eslint/naming-convention": ["error",
+                {
+                    selector: "default",
+                    format: ["camelCase"],
+                    leadingUnderscore: "allow",
+                    trailingUnderscore: "allow",
+                },
+                {
+                    selector: "enumMember",
+                    format: ["UPPER_CASE"],
+                },
+                {
+                    selector: "typeLike",
+                    format: ["PascalCase"],
+                },
+                {
+                    selector: "import",
+                    format: ["camelCase", "PascalCase"],
+                },
+                {
+                    selector: ["objectLiteralProperty", "objectLiteralMethod"],
+                    format: null,
+                }
+            ],
+
+            "@typescript-eslint/no-unnecessary-condition": ["error", {
+                allowConstantLoopConditions: true,
+            }],
+
+            "@stylistic/no-extra-parens": "error",
+            "@typescript-eslint/no-require-imports": "error",
+            "@typescript-eslint/prefer-for-of": "error",
+            "@typescript-eslint/prefer-includes": "warn",
+            "@typescript-eslint/prefer-nullish-coalescing": "warn",
+            "@typescript-eslint/prefer-optional-chain": "error",
+            "@typescript-eslint/prefer-readonly": "error",
+            "@typescript-eslint/prefer-reduce-type-parameter": "error",
+            "@typescript-eslint/prefer-string-starts-ends-with": "error",
+            "@typescript-eslint/prefer-ts-expect-error": "error",
+            "@typescript-eslint/consistent-type-imports": "error",
+
+            "@typescript-eslint/strict-boolean-expressions": ["error", {
+                allowString: false,
+                allowNumber: false,
+                allowNullableObject: false,
+                allowNullableBoolean: false,
+                allowNullableString: false,
+                allowNullableNumber: false,
+                allowAny: false,
+                allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing: true,
+            }],
+
+            "@typescript-eslint/no-unsafe-argument": "error",
+            "@typescript-eslint/unbound-method": "error",
+
+            "@typescript-eslint/array-type": ["error", {
+                default: "array-simple",
+                readonly: "array-simple",
+            }],
+
+            "@stylistic/member-delimiter-style": ["error", {
+                multiline: {
+                    delimiter: "semi",
+                    requireLast: true,
+                },
+
+                singleline: {
+                    delimiter: "semi",
+                    requireLast: true,
+                },
+            }],
+
+            "@typescript-eslint/class-literal-property-style": ["error", "fields"],
+            "@typescript-eslint/return-await": ["error", "always"],
+
+            "@typescript-eslint/explicit-function-return-type": ["error", {
+                allowExpressions: true,
+            }],
+        },
+    }]);

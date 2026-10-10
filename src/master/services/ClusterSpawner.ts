@@ -1,7 +1,6 @@
-import templates from '@blargbot/cluster/text';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { BaseService } from '@blargbot/core/serviceTypes';
-import { Master } from '@blargbot/master';
+import { templates } from '@blargbot/cluster';
+import { BaseService, FormattableMessageContent } from '@blargbot/core';
+import type { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 
 export class ClusterSpawner extends BaseService {

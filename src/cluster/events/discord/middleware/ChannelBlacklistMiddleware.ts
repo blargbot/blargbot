@@ -1,16 +1,16 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
-import { guard } from '@blargbot/cluster/utils';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
-import { KnownMessage } from 'eris';
+import type { ClusterUtilities } from '@blargbot/cluster';
+import { guard } from '@blargbot/cluster';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core';
+import type * as eris from 'eris';
 
-export class ChannelBlacklistMiddleware implements IMiddleware<KnownMessage, boolean> {
+export class ChannelBlacklistMiddleware implements IMiddleware<eris.KnownMessage, boolean> {
     readonly #util: ClusterUtilities;
 
     public constructor(util: ClusterUtilities) {
         this.#util = util;
     }
 
-    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: eris.KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         if (!guard.isGuildMessage(context))
             return await next();
 

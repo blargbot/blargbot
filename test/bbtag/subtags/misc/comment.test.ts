@@ -1,9 +1,10 @@
-import { CommentSubtag } from '@blargbot/bbtag/subtags/misc/comment';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new CommentSubtag(),
+await runSubtagTests({
+    replacer: replacers.commentReplacer,
+    names: ['comment', '//'],
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         { code: '{comment}', expected: '' },

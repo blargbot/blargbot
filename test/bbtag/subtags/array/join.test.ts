@@ -1,19 +1,20 @@
-import { NotAnArrayError } from '@blargbot/bbtag/errors';
-import { JoinSubtag } from '@blargbot/bbtag/subtags/array/join';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { TagVariableType } from '@blargbot/domain/models';
+import { NotAnArrayError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new JoinSubtag(),
+await runSubtagTests({
+    replacer: replacers.joinReplacer,
+    names: ['join'],
     argCountBounds: { min: 2, max: 2 },
     cases: [
         {
             code: '{join;a;b}',
             expected: '`Not an array`',
+            setup(ctx) {
+                ctx.variables.setup(m => m.get('a')).returns({ key: '$arr1', value: undefined }).mustHappen();
+            },
             errors: [
-                { start: 0, end: 10, error: new NotAnArrayError('a') }
+                { error: new NotAnArrayError('a') }
             ]
         },
         { code: '{join;[1,2,3];x}', expected: '1x2x3' },
@@ -23,28 +24,25 @@ runSubtagTests({
             code: '{join;arr1;~}',
             expected: 'this~is~arr1',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
+                ctx.variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
             }
         },
         {
             code: '{join;var1;~}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 13, error: new NotAnArrayError('var1') }
+                { error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'This is var1');
+                ctx.variables.setup(m => m.get('var1')).returns({ key: '$var1', value: 'This is var1' }).mustHappen();
             }
         },
         {
             code: '{join;{get;arr1};~}',
             expected: 'this~is~arr1',
-            subtags: [new GetSubtag()],
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
+                ctx.variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
             }
         }
     ]

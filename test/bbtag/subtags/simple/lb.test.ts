@@ -1,9 +1,10 @@
-import { LbSubtag } from '@blargbot/bbtag/subtags/simple/lb';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new LbSubtag(),
+await runSubtagTests({
+    replacer: replacers.lbReplacer,
+    names: ['lb'],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         { code: '{lb}', expected: '{' }

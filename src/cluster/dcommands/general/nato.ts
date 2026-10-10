@@ -1,9 +1,8 @@
-import { GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.nato;
 

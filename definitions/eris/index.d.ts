@@ -1,6 +1,6 @@
 import 'eris';
 
-export module 'eris' {
+declare module 'eris' {
     export type UserChannelInteraction<TChannel extends KnownTextableChannel = KnownTextableChannel> = { channel: TChannel; author: User; }
     export type ChannelInteraction<TChannel extends KnownTextableChannel = KnownTextableChannel> = { channel: TChannel; author: never; }
 

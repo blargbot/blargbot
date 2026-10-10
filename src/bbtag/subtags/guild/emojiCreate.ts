@@ -1,13 +1,12 @@
-import { guard } from '@blargbot/core/utils';
-import { parse } from '@blargbot/core/utils/parse';
-import { DiscordRESTError } from 'eris';
-import fetch from 'node-fetch';
+import { guard, parse } from '@blargbot/core';
+import { asBuffer } from '@blargbot/util';
+import * as eris from 'eris';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { BBTagRuntimeError } from '../../errors/index';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils/index';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.emojiCreate;
 
@@ -55,9 +54,9 @@ export class EmojiCreateSubtag extends CompiledSubtag {
 
         const image: string = parse.url(options.image);
         if (guard.isUrl(image)) {
-            const res = await fetch(image);
+            const res = await context.fetch(image);
             const contentType = res.headers.get('content-type');
-            options.image = `data:${contentType ?? ''};base64,${(await res.buffer()).toString('base64')}`;
+            options.image = `data:${contentType ?? ''};base64,${asBuffer(await res.bytes()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
@@ -66,6 +65,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         const roleArray = await bbtag.tagArray.deserializeOrGetArray(context, rolesStr);
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
+                // eslint-disable-next-line @typescript-eslint/no-base-to-string
                 const role = await context.queryRole(roleQuery?.toString() ?? '', { noLookup: true });
                 if (role !== undefined) {
                     options.roles.push(role.id);
@@ -77,7 +77,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
             const emoji = await context.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, context.auditReason());
             return emoji.id;
         } catch (err: unknown) {
-            if (!(err instanceof DiscordRESTError))
+            if (!(err instanceof eris.DiscordRESTError))
                 throw err;
 
             const parts = err.message.split('\n').map(m => m.trim());

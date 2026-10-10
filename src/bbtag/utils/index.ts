@@ -1,16 +1,16 @@
-import { parseBBTag } from '../language/parseBBTag';
-import { createDebugOutput } from './debugOutput';
-import { json } from './json';
-import * as operators from './operators';
-import { overrides } from './overrides';
-import { stringify } from './stringify';
-import { stringifyParameters } from './stringifyParameters';
-import { tagArray } from './tagArray';
+import { parseBBTag } from '../language/parseBBTag.js';
+import { createDebugOutput } from './debugOutput.js';
+import { json } from './json.js';
+import * as operators from './operators.js';
+import { overrides } from './overrides.js';
+import { stringify } from './stringify.js';
+import { stringifyParameters } from './stringifyParameters.js';
+import { tagArray } from './tagArray.js';
 
-export { ComparisonOperator, LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from './operators';
-export { JsonResolveResult } from './json';
-export * from './subtagType';
-export * from './subtagArgumentKind';
+export { ComparisonOperator, LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from './operators.js';
+export { JsonResolveResult } from './json.js';
+export * from './subtagType.js';
+export * from './subtagArgumentKind.js';
 
 export const bbtag = Object.freeze({
     createDebugOutput,

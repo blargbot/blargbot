@@ -1,8 +1,7 @@
-import { Timer } from '@blargbot/core/Timer';
-import { guard } from '@blargbot/core/utils';
+import { guard, Timer } from '@blargbot/core';
 
-import { BBTagContext } from './BBTagContext';
-import { TagVariableScopeProvider } from './tagVariableScopeProviders';
+import type { BBTagContext } from './BBTagContext.js';
+import type { TagVariableScopeProvider } from './tagVariableScopeProviders.js';
 
 export interface VariableReference {
     readonly key: string;

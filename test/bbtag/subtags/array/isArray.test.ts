@@ -1,11 +1,10 @@
-import { IsArraySubtag } from '@blargbot/bbtag/subtags/array/isArray';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { TagVariableType } from '@blargbot/domain/models';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new IsArraySubtag(),
+await runSubtagTests({
+    replacer: replacers.isArrayReplacer,
+    names: ['isArray'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{isarray;[1,2,3]}', expected: 'true' },
@@ -16,10 +15,9 @@ runSubtagTests({
         {
             code: '{isarray;{get;arr1}}',
             expected: 'true',
-            subtags: [new GetSubtag()],
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
+                ctx.variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: ['this', 'is', 'arr1'] }).mustHappen();
             }
         }
     ]

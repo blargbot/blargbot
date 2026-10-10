@@ -1,18 +1,16 @@
 import { bbtag } from '@blargbot/bbtag';
-import { Cluster, ClusterUtilities } from '@blargbot/cluster';
-import { CommandContext, GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, discord, parse } from '@blargbot/cluster/utils';
-import { SendContent } from '@blargbot/core/types';
-import { StoredTag } from '@blargbot/domain/models';
-import { IFormattable, util } from '@blargbot/formatting';
-import { User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
-import fetch from 'node-fetch';
+import type { Cluster, ClusterUtilities, CommandContext, CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, discord, GuildCommand, parse } from '@blargbot/cluster';
+import type { SendContent } from '@blargbot/core';
+import type { StoredTag } from '@blargbot/domain';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import type * as eris from 'eris';
+import moment from 'moment-timezone';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.tag;
 
@@ -248,7 +246,7 @@ export class TagCommand extends GuildCommand {
             if (context.message.attachments.length > 0) {
                 const firstAttachment = context.message.attachments[0];
                 if (firstAttachment.filename.endsWith('.bbtag') || firstAttachment.filename.endsWith('.txt'))
-                    content = await (await fetch(firstAttachment.url)).text();
+                    content = await (await context.util.fetch(firstAttachment.url)).text();
             }
         }
 
@@ -277,7 +275,7 @@ export class TagCommand extends GuildCommand {
             if (context.message.attachments.length > 0) {
                 const firstAttachment = context.message.attachments[0];
                 if (firstAttachment.filename.endsWith('.bbtag') || firstAttachment.filename.endsWith('.txt'))
-                    content = await (await fetch(firstAttachment.url)).text();
+                    content = await (await context.util.fetch(firstAttachment.url)).text();
             }
         }
         return await this.#saveTag(context, cmd.set.success, match.name, content, match.tag);
@@ -401,7 +399,7 @@ export class TagCommand extends GuildCommand {
         return cmd.permDelete.success({ name: tagName });
     }
 
-    public async setTagCooldown(context: GuildCommandContext, tagName: string, cooldown?: Duration): Promise<CommandResult> {
+    public async setTagCooldown(context: GuildCommandContext, tagName: string, cooldown?: moment.Duration): Promise<CommandResult> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
             return cmd.cooldown.cooldownZero;
 
@@ -463,7 +461,7 @@ export class TagCommand extends GuildCommand {
                         },
                         {
                             name: cmd.info.embed.field.favourited.name,
-                            value: cmd.info.embed.field.favourited.value({ count: Object.values(match.favourites ?? {}).filter(v => v).length }),
+                            value: cmd.info.embed.field.favourited.value({ count: Object.values(match.favourites ?? {}).filter(Boolean).length }),
                             inline: true
                         },
                         ...match.reports === undefined || match.reports === 0 ? [] : [{
@@ -756,7 +754,7 @@ export class TagCommand extends GuildCommand {
     async #logChange(
         context: CommandContext,
         action: TagChangeAction,
-        user: User,
+        user: eris.User,
         messageId: string,
         details: Record<string, string>): Promise<void> {
         await context.send(context.config.discord.channels.taglog, {
@@ -794,12 +792,14 @@ function normalizeName(title: string): string {
     return title.replace(/[^\d\w .,/#!$%^&*;:{}[\]=\-_~()]/gi, '');
 }
 
-const enum TagChangeAction {
-    CREATE = 'Create',
-    RENAME = 'Rename',
-    EDIT = 'Edit',
-    DELETE = 'Delete'
-}
+type TagChangeAction = typeof TagChangeAction[keyof typeof TagChangeAction];
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const TagChangeAction = Object.freeze({
+    CREATE: 'Create',
+    RENAME: 'Rename',
+    EDIT: 'Edit',
+    DELETE: 'Delete'
+});
 
 const tagChangeActionColour: { [P in TagChangeAction]: number } = {
     [TagChangeAction.CREATE]: 0x0eed24,

@@ -1,9 +1,10 @@
-import { ZwsSubtag } from '@blargbot/bbtag/subtags/simple/zws';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new ZwsSubtag(),
+await runSubtagTests({
+    replacer: replacers.zwsReplacer,
+    names: ['zws'],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

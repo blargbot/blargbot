@@ -1,15 +1,16 @@
-import { IPCContracts } from '@blargbot/core/types';
-import { getRange } from '@blargbot/core/utils';
-import { Logger } from '@blargbot/logger';
+import type { IPCContracts } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
+import { Iterable, Semaphore } from '@blargbot/util';
 import EventEmitter from 'eventemitter3';
 
-import { Semaphore } from '../Semaphore';
-import { WorkerConnection } from './WorkerConnection';
+import type { WorkerConnection } from './WorkerConnection.js';
 
-export const enum RespawnStrategy {
-    SPAWN_THEN_KILL,
-    KILL_THEN_SPAWN
-}
+export type RespawnStrategy = typeof RespawnStrategy[keyof typeof RespawnStrategy];
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const RespawnStrategy = Object.freeze({
+    SPAWN_THEN_KILL: 0,
+    KILL_THEN_SPAWN: 1
+});
 
 export interface WorkerPoolOptions {
     readonly type: string;
@@ -129,13 +130,15 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
     }
 
     public async spawnAll(timeoutMs = this.defaultTimeout): Promise<Worker[]> {
-        return await Promise.all(getRange(0, this.workerCount - 1)
-            .map(id => this.spawn(id, timeoutMs)));
+        return await Promise.all(
+            Iterable.range(0, this.workerCount).map(id => this.spawn(id, timeoutMs))
+        );
     }
 
     public async killAll(): Promise<void> {
-        await Promise.all(getRange(0, this.workerCount - 1)
-            .map(id => this.kill(id)));
+        await Promise.all(
+            Iterable.range(0, this.workerCount).map(id => this.kill(id))
+        );
     }
 
     public forEach(callback: (id: number, worker: Worker | undefined) => Promise<void>): Promise<void>;

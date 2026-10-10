@@ -1,10 +1,10 @@
-import { randChoose } from '@blargbot/core/utils';
+import { random } from '@blargbot/util';
 
-import { SubtagArgument } from '../../arguments/index';
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils/index';
+import type { SubtagArgument } from '../../arguments/index.js';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { templates } from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.randomChoose;
 
@@ -36,7 +36,7 @@ export class RandomChooseSubtag extends CompiledSubtag {
     }
 
     public async randChooseArg(choices: readonly SubtagArgument[]): Promise<string> {
-        return await randChoose(choices).wait();
+        return await random.pick(choices).wait();
     }
 
     public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {
@@ -44,6 +44,6 @@ export class RandomChooseSubtag extends CompiledSubtag {
         if (choices === undefined)
             return arrayStr;
 
-        return randChoose(choices.v);
+        return random.pick(choices.v);
     }
 }

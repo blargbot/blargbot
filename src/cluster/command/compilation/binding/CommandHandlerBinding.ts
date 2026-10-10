@@ -1,9 +1,9 @@
-import { CommandBinderState, CommandSignatureHandler } from '@blargbot/cluster/types';
-import { Binder } from '@blargbot/core/Binder';
-import { BindingResultValue } from '@blargbot/core/types';
+import type { CommandBinderState, CommandSignatureHandler } from '@blargbot/cluster';
+import type { BindingResultValue } from '@blargbot/core';
+import { Binder } from '@blargbot/core';
 
-import { CommandContext } from '../../CommandContext';
-import { CommandBindingBase } from './CommandBindingBase';
+import type { CommandContext } from '../../CommandContext.js';
+import { CommandBindingBase } from './CommandBindingBase.js';
 
 export class CommandHandlerBinding<TContext extends CommandContext> extends CommandBindingBase<TContext> {
     readonly #signature: CommandSignatureHandler<TContext>;

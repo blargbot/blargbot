@@ -1,8 +1,8 @@
-import { SubtagArgumentArray } from '../arguments';
-import { BBTagContext } from '../BBTagContext';
-import { SubtagCall } from '../language';
-import { SubtagLogic } from './SubtagLogic';
-import { SubtagLogicWrapper } from './SubtagLogicWrapper';
+import type { SubtagArgumentArray } from '../arguments/index.js';
+import type { BBTagContext } from '../BBTagContext.js';
+import type { SubtagCall } from '../language/index.js';
+import type { SubtagLogic } from './SubtagLogic.js';
+import { SubtagLogicWrapper } from './SubtagLogicWrapper.js';
 
 export class StringifySubtagLogic<T extends { toString(): string; }> extends SubtagLogicWrapper {
     public constructor(public readonly logic: SubtagLogic<Awaitable<T>>) {

@@ -1,9 +1,10 @@
-import { RbSubtag } from '@blargbot/bbtag/subtags/simple/rb';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new RbSubtag(),
+await runSubtagTests({
+    replacer: replacers.rbReplacer,
+    names: ['rb'],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         { code: '{rb}', expected: '}' }

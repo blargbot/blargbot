@@ -1,6 +1,12 @@
 {
     "name": "@blargbot/bbtag",
     "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js",
+        "./subtags": "./subtags/index.js"
+    },
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
@@ -8,21 +14,22 @@
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
-        "@blargbot/mapping": "workspace:^",
+        "@blargbot/util": "workspace:^",
         "brainfuck-node": "^1.0.2",
-        "color": "^4.2.3",
+        "color": "^5.0.3",
         "eris": "^0.17.1",
         "html-entities": "^2.3.3",
-        "moment-timezone": "^0.5.39",
-        "node-fetch": "^2.6.7",
-        "rwlock": "^5.0.0"
+        "moment-timezone": "^0.6.4",
+        "rwlock": "^5.0.0",
+        "zod": "^4.6.5"
     },
     "devDependencies": {
+        "@blargbot/test-util": "workspace:^",
         "@types/brainfuck-node": "workspace:^",
         "@types/color": "^3.0.3",
         "@types/eris": "workspace:^",
-        "@types/node-fetch": "^2.6.2",
         "@types/rwlock": "^5.0.3",
-        "discord-api-types": "^0.37.20"
+        "discord-api-types": "^0.37.20",
+        "ts-mockito": "^2.6.1"
     }
 }

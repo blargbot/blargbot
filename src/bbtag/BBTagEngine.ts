@@ -1,26 +1,28 @@
-import { Timer } from '@blargbot/core/Timer';
-import { sleep } from '@blargbot/core/utils';
-import { Database } from '@blargbot/database';
-import { Logger } from '@blargbot/logger';
-import { Client as Discord } from 'eris';
+import { guard, Timer } from '@blargbot/core';
+import type { Database } from '@blargbot/database';
+import type { Logger } from '@blargbot/logger';
+import { sleep } from '@blargbot/util';
+import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import { BBTagContext } from './BBTagContext';
-import { BBTagUtilities, InjectionContext } from './BBTagUtilities';
-import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors';
-import { Statement, SubtagCall } from './language';
-import { Subtag } from './Subtag';
-import { TagCooldownManager } from './TagCooldownManager';
-import templates from './text';
-import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult } from './types';
-import { bbtag as bbtagUtil } from './utils';
+import { BBTagContext } from './BBTagContext.js';
+import type { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';
+import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors/index.js';
+import type { Statement, SubtagCall } from './language/index.js';
+import type { Subtag } from './Subtag.js';
+import { TagCooldownManager } from './TagCooldownManager.js';
+import { templates } from './text.js';
+import type { AnalysisResults, BBTagContextOptions, ExecutionResult } from './types.js';
+import { BBTagRuntimeState } from './types.js';
+import { bbtag as bbtagUtil } from './utils/index.js';
 
 export class BBTagEngine {
     readonly #cooldowns: TagCooldownManager;
-    public get discord(): Discord { return this.dependencies.discord; }
+    public get discord(): eris.Client { return this.dependencies.discord; }
     public get logger(): Logger { return this.dependencies.logger; }
     public get database(): Database { return this.dependencies.database; }
     public get util(): BBTagUtilities { return this.dependencies.util; }
+    public get fetch(): typeof fetch { return this.dependencies.fetch; }
     public readonly subtags: ReadonlyMap<string, Subtag>;
 
     public constructor(
@@ -183,9 +185,7 @@ export class BBTagEngine {
         for (const call of getSubtagCalls(statement)) {
             if (call.name.values.length === 0)
                 result.warnings.push({ location: call.start, message: templates.analysis.unnamed });
-            else if (call.name.values.some(p => typeof p !== 'string'))
-                result.warnings.push({ location: call.start, message: templates.analysis.dynamic });
-            else {
+            else if (guard.every(call.name.values, guard.isTypeOf('string'))) {
                 const subtag = this.subtags.get(call.name.values.join(''));
                 // TODO Detect unknown subtags
                 switch (typeof subtag?.deprecated) {
@@ -196,7 +196,8 @@ export class BBTagEngine {
                     case 'string':
                         result.warnings.push({ location: call.start, message: templates.analysis.deprecated(subtag) });
                 }
-            }
+            } else
+                result.warnings.push({ location: call.start, message: templates.analysis.dynamic });
         }
 
         return result;

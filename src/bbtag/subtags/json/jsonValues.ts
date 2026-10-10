@@ -1,7 +1,7 @@
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils/index';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { templates } from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.jsonValues;
 
@@ -28,8 +28,8 @@ export class JsonValuesSubtag extends CompiledSubtag {
         const obj = (await bbtag.json.resolveObj(context, input)).object;
 
         if (path !== '')
-            return Object.values(bbtag.json.get(obj, path) ?? {});
+            return Object.values(bbtag.json.get(obj, path) ?? {}) as JToken;
 
-        return Object.values(obj);
+        return Object.values(obj) as JToken;
     }
 }

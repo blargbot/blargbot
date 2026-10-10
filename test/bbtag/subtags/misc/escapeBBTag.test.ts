@@ -1,9 +1,10 @@
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new EscapeBBTagSubtag(),
+await runSubtagTests({
+    replacer: replacers.escapeBBTagReplacer,
+    names: ['escapeBBTag', 'escape'],
     argCountBounds: { min: 0, max: Infinity },
     cases: [
         { code: '{escapebbtag}', expected: '' },
