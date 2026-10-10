@@ -1,21 +1,23 @@
-import { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster/types';
-import { discord, guard } from '@blargbot/cluster/utils';
-import { UnmuteEventOptions } from '@blargbot/domain/models';
-import { format, IFormattable } from '@blargbot/formatting';
-import { mapping } from '@blargbot/mapping';
-import { Constants, Guild, KnownGuildChannel, Member, Role, User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import type { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster';
+import { discord, guard } from '@blargbot/cluster';
+import { zodStringToJson } from '@blargbot/core';
+import type { UnmuteEventOptions } from '@blargbot/domain';
+import type { IFormattable } from '@blargbot/formatting';
+import { format } from '@blargbot/formatting';
+import * as eris from 'eris';
+import moment from 'moment-timezone';
+import z from 'zod';
 
-import templates from '../../text';
-import { ModerationManager } from '../ModerationManager';
-import { ModerationManagerBase } from './ModerationManagerBase';
+import { templates } from '../../text.js';
+import type { ModerationManager } from '../ModerationManager.js';
+import { ModerationManagerBase } from './ModerationManagerBase.js';
 
 export class MuteManager extends ModerationManagerBase {
     public constructor(manager: ModerationManager) {
         super(manager);
     }
 
-    public async mute(member: Member, moderator: User, reason?: IFormattable<string>, duration?: Duration): Promise<MuteResult> {
+    public async mute(member: eris.Member, moderator: eris.User, reason?: IFormattable<string>, duration?: moment.Duration): Promise<MuteResult> {
         const role = await this.#getMuteRole(member.guild);
         if (role === undefined)
             return 'roleMissing';
@@ -47,7 +49,7 @@ export class MuteManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async unmute(member: Member, moderator: User, reason?: IFormattable<string>): Promise<UnmuteResult> {
+    public async unmute(member: eris.Member, moderator: eris.User, reason?: IFormattable<string>): Promise<UnmuteResult> {
         const role = await this.#getMuteRole(member.guild);
         if (role === undefined || !member.roles.includes(role.id))
             return 'notMuted';
@@ -66,7 +68,7 @@ export class MuteManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async ensureMutedRole(guild: Guild): Promise<EnsureMutedRoleResult> {
+    public async ensureMutedRole(guild: eris.Guild): Promise<EnsureMutedRoleResult> {
         const currentRole = await this.#getMuteRole(guild);
         if (currentRole !== undefined)
             return 'success';
@@ -93,25 +95,25 @@ export class MuteManager extends ModerationManagerBase {
         return 'success';
     }
 
-    async #configureChannel(channel: KnownGuildChannel, mutedRole: Role): Promise<void> {
+    async #configureChannel(channel: eris.KnownGuildChannel, mutedRole: eris.Role): Promise<void> {
         try {
             let deny = 0n;
             if (guard.isTextableChannel(channel))
-                deny |= Constants.Permissions.sendMessages;
+                deny |= eris.Constants.Permissions.sendMessages;
             else if (guard.isVoiceChannel(channel))
-                deny |= Constants.Permissions.voiceSpeak;
+                deny |= eris.Constants.Permissions.voiceSpeak;
             else if (guard.isCategoryChannel(channel))
-                deny |= Constants.Permissions.sendMessages | Constants.Permissions.voiceSpeak;
+                deny |= eris.Constants.Permissions.sendMessages | eris.Constants.Permissions.voiceSpeak;
             if (deny !== 0n) {
                 const formatter = await this.manager.cluster.util.getFormatter(channel.guild);
-                await channel.editPermission(mutedRole.id, 0n, deny, Constants.PermissionOverwriteTypes.ROLE, templates.mute.createReason[format](formatter));
+                await channel.editPermission(mutedRole.id, 0n, deny, eris.Constants.PermissionOverwriteTypes.ROLE, templates.mute.createReason[format](formatter));
             }
         } catch (err: unknown) {
             this.cluster.logger.error('Failed to set permissions for muted role', mutedRole.id, 'in channel', channel.id, err);
         }
     }
 
-    async #getMuteRole(guild: Guild): Promise<Role | undefined> {
+    async #getMuteRole(guild: eris.Guild): Promise<eris.Role | undefined> {
         // TODO mutedrole setting can be role id or tag
         const role = await this.cluster.database.guilds.getSetting(guild.id, 'mutedrole');
         if (role === undefined)
@@ -128,11 +130,20 @@ export class MuteManager extends ModerationManagerBase {
         if (member === undefined)
             return;
 
-        const mapResult = mapDuration(event.duration);
-        const duration = mapResult.valid ? mapResult.value : undefined;
+        const mapResult = mapDuration.safeParse(event.duration);
+        const duration = mapResult.success ? mapResult.data : undefined;
 
         await this.unmute(member, this.cluster.discord.user, templates.mute.autoUnmute({ duration }));
     }
 }
 
-const mapDuration = mapping.json(mapping.duration);
+const mapDuration = zodStringToJson
+    .pipe(z.union([z.string(), z.number()]))
+    .transform((v, ctx) => {
+        try {
+            return moment.duration(v);
+        } catch {
+            ctx.addIssue('Invalid duration');
+            return z.NEVER;
+        }
+    });

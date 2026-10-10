@@ -1,9 +1,10 @@
-import { EmojisSubtag } from '@blargbot/bbtag/subtags/guild/emojis';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new EmojisSubtag(),
+await runSubtagTests({
+    replacer: replacers.emojisReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 1 },
     setup(ctx) {
         ctx.roles.other.id = '329476274682462386432';

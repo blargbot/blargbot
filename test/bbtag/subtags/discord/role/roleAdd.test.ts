@@ -1,0 +1,159 @@
+import { BBTagRuntimeError, replacers, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag-engine';
+import { random } from '@blargbot/util';
+
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+
+const roles = [
+    3298746326924n,
+    9238476938485n,
+    4384304833430n,
+    ...Array.from({ length: 4 }, () => random.bigint(10n ** 10n, 10n ** 20n))
+];
+
+await runSubtagTests({
+    replacer: replacers.roleAddReplacer,
+    names: ['roleAdd', 'addRole'],
+    argCountBounds: { min: 1, max: 3 },
+    cases: [
+        {
+            code: `{roleadd;${roles[0]}}`,
+            expected: 'true',
+            setup(ctx) {
+                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual(roles.slice(0, 3)))).resolves(true).mustHappen(1);
+            }
+        },
+        {
+            code: `{roleadd;${roles[0]}}`,
+            expected: 'false',
+            setup(ctx) {
+                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(0, 3)).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+            }
+        },
+        {
+            code: `{roleadd;["${roles[0]}","${roles[1]}"]}`,
+            expected: 'true',
+            setup(ctx) {
+                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual(roles.slice(0, 3)))).resolves(true).mustHappen(1);
+            }
+        },
+        {
+            code: `{roleadd;["${roles[0]}",null]}`,
+            expected: 'true',
+            setup(ctx) {
+                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual(roles.slice(0, 3)))).resolves(true).mustHappen(1);
+            }
+        },
+        {
+            code: `{roleadd;${roles[0]}}`,
+            expected: '`Author cannot add roles`',
+            errors: [
+                { start: 0, end: 23, error: new BBTagRuntimeError('Author cannot add roles') }
+            ],
+            setup(ctx) {
+                ctx.discord.setup(m => m.listManageableRoles()).resolves([]).mustHappen(1);
+            }
+        },
+        {
+            code: `{roleadd;${roles[0]}}`,
+            expected: '`Role above author`',
+            errors: [
+                { start: 0, end: 23, error: new BBTagRuntimeError('Role above author') }
+            ],
+            setup(ctx) {
+                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                ctx.discord.setup(m => m.listManageableRoles()).resolves(roles.slice(1)).mustHappen(1);
+                ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+            }
+        },
+        {
+            code: `{roleadd;${roles[0]}}`,
+            expected: '`No role found`',
+            errors: [
+                { start: 0, end: 23, error: new RoleNotFoundError(roles[0].toString()) }
+            ],
+            setup(ctx) {
+                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                ctx.discord.setup(m => m.listManageableRoles()).resolves(roles.slice(1)).mustHappen(1);
+                ctx.discord.setup(m => m.listAllRoles()).resolves(roles.slice(1)).mustHappen(1);
+                ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
+            }
+        },
+        {
+            code: `{roleadd;${roles[0]};other user}`,
+            expected: 'true',
+            setup(ctx) {
+                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('other user', $({ quiet: false, throw: UserNotFoundError }))).resolves(userId).mustHappen(1);
+                ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual(roles.slice(0, 3)))).resolves(true).mustHappen(1);
+            }
+        },
+        {
+            code: `{roleadd;${roles[0]};other user}`,
+            expected: '`No user found`',
+            errors: [
+                { start: 0, end: 34, error: new UserNotFoundError('other user') }
+            ],
+            setup(ctx) {
+                ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('other user', $({ quiet: false, throw: UserNotFoundError })))
+                    .rejects(new UserNotFoundError('other user'))
+                    .mustHappen(1);
+            }
+        },
+        {
+            code: `{roleadd;${roles[0]};other user}`,
+            expected: 'false',
+            errors: [
+                { start: 0, end: 34, error: new (UserNotFoundError.withDisplay('false'))('other user') }
+            ],
+            setup(ctx) {
+                ctx.locals.setup(m => m.quiet).returns(true);
+                ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('other user', $({ quiet: true, throw: UserNotFoundError.withDisplay('false') })))
+                    .rejects(new (UserNotFoundError.withDisplay('false'))('other user'))
+                    .mustHappen(1);
+            }
+        },
+        {
+            code: `{roleadd;${roles[0]};other user;q}`,
+            expected: 'false',
+            errors: [
+                { start: 0, end: 36, error: new (UserNotFoundError.withDisplay('false'))('other user') }
+            ],
+            setup(ctx) {
+                ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
+                ctx.discord.setup((m, $) => m.queryUser('other user', $({ quiet: true, throw: UserNotFoundError.withDisplay('false') })))
+                    .rejects(new (UserNotFoundError.withDisplay('false'))('other user'))
+                    .mustHappen(1);
+            }
+        }
+    ]
+});

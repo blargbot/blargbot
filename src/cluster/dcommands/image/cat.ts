@@ -1,16 +1,16 @@
-import { Cluster } from '@blargbot/cluster';
-import { GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, randInt } from '@blargbot/cluster/utils';
+import type { Cluster } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
-import { Handler as Wolken } from 'wolken';
+import { random } from '@blargbot/util';
+import wolken from 'wolken';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.cat;
 
 export class CatCommand extends GlobalCommand {
-    readonly #client: Wolken;
+    readonly #client: wolken;
 
     public constructor(cluster: Cluster) {
         super({
@@ -25,7 +25,7 @@ export class CatCommand extends GlobalCommand {
             ]
         });
 
-        this.#client = new Wolken(cluster.config.general.wolke, 'Wolke', 'blargbot/6.0.0');
+        this.#client = new wolken(cluster.config.general.wolke, 'Wolke', 'blargbot/6.0.0');
     }
 
     public async render(): Promise<CommandResult> {
@@ -35,7 +35,7 @@ export class CatCommand extends GlobalCommand {
                 {
                     image: { url: res.url },
                     footer: { text: util.literal('Powered by weeb.sh') },
-                    color: randInt(0x1, 0xffffff)
+                    color: random.int(0x1, 0xffffff)
                 }
             ]
         };

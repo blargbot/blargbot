@@ -1,12 +1,10 @@
-import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag/errors';
-import { SliceSubtag } from '@blargbot/bbtag/subtags/array/slice';
-import { TagVariableType } from '@blargbot/domain/models';
-import { expect } from 'chai';
+import { NotAnArrayError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new SliceSubtag(),
+await runSubtagTests({
+    replacer: replacers.sliceReplacer,
+    names: ['slice'],
     argCountBounds: { min: 2, max: 3 },
     cases: [
         {
@@ -14,7 +12,10 @@ runSubtagTests({
             expected: '`Not an array`',
             errors: [
                 { start: 0, end: 13, error: new NotAnArrayError('abc') }
-            ]
+            ],
+            setup(ctx) {
+                ctx.variables.setup(m => m.get('abc')).returns({ key: '$abc', value: undefined }).mustHappen();
+            }
         },
         {
             code: '{slice;[1,2,3,4];0}',
@@ -50,24 +51,14 @@ runSubtagTests({
             code: '{slice;arr1;1}',
             expected: '[2,3,4]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
-            },
-            async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
-                expect((await bbctx.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
+                ctx.variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: [1, 2, 3, 4] }).mustHappen();
             }
         },
         {
             code: '{slice;arr1;1;3}',
             expected: '[2,3]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
-            },
-            async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4]);
-                expect((await bbctx.variables.get('arr1')).value).to.deep.equal([1, 2, 3, 4]);
+                ctx.variables.setup(m => m.get('arr1')).returns({ key: '$arr1', value: [1, 2, 3, 4] }).mustHappen();
             }
         }
     ]

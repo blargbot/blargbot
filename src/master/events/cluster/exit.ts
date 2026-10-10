@@ -1,9 +1,7 @@
-import { ClusterConnection } from '@blargbot/cluster';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
-import { WorkerState } from '@blargbot/core/worker';
+import type { ClusterConnection } from '@blargbot/cluster';
+import { FormattableMessageContent, WorkerPoolEventService, WorkerState } from '@blargbot/core';
 import { util } from '@blargbot/formatting';
-import { Master } from '@blargbot/master';
+import type { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 
 export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection, 'exit'> {

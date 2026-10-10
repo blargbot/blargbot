@@ -4,7 +4,7 @@ services:
   editor:
     build: editor
     init: true
-        
+
   postgres:
     build: postgres
     environment:
@@ -43,6 +43,15 @@ services:
       - 29016:8080
     volumes:
       - rethink:/data
+
+  rabbitmq:
+    build: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: blargbot
+      RABBITMQ_DEFAULT_PASS: BlargPass123
+    ports:
+      - 15672:15672
+      - 5672:5672
 
 volumes:
   rethink:

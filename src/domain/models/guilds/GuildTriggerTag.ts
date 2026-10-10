@@ -1,4 +1,4 @@
-import { GuildTagBase } from './GuildTagBase';
+import type { GuildTagBase } from './GuildTagBase.js';
 
 export interface GuildTriggerTag extends GuildTagBase {
     readonly content: string;

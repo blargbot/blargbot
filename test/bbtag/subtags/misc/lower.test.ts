@@ -1,9 +1,10 @@
-import { LowerSubtag } from '@blargbot/bbtag/subtags/misc/lower';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new LowerSubtag(),
+await runSubtagTests({
+    replacer: replacers.lowerReplacer,
+    names: ['lower'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{lower;}', expected: '' },

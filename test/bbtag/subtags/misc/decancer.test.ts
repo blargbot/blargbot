@@ -1,11 +1,29 @@
-import { DecancerSubtag } from '@blargbot/bbtag/subtags/misc/decancer';
+import { replacers } from '@blargbot/bbtag-engine';
+import limax from 'limax';
+import unorm from 'unorm';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new DecancerSubtag(),
+await runSubtagTests({
+    replacer: replacers.decancerReplacer,
+    names: ['decancer'],
     argCountBounds: { min: 1, max: 1 },
+    setup(ctx) {
+        ctx.locals.setup(m => m.decancer).returns(value => {
+            const opt = {
+                tone: false,
+                separateNumbers: false,
+                separateApostrophes: false,
+                maintainCase: true,
+                custom: Array.from('., !\'"?0123456789'),
+                replacement: '\u200b'
+            };
+            return unorm.nfkd(value)
+                .replace(/[^ ]+/g, text => limax(text, opt))
+                .replaceAll(opt.replacement, '');
+        });
+    },
     cases: [
-        { code: '{decancer;ḩ̸̪̓̍a̶̗̤̎́h̵͉͓͗̀ā̷̜̼̄ ̷̧̓í̴̯̎m̵͚̜̽ ̸̛̝ͅs̴͚̜̈o̴̦̗̊ ̷͎͋ȩ̵͐d̶͎̂̇g̴̲͓̀͝y̶̠̓̿}', expected: 'haha im so edgy', retries: 1 }
+        { code: '{decancer;\u200bḩ̸̪̓̍a̶̗̤̎́h̵͉͓͗̀ā̷̜̼̄ ̷̧̓í̴̯̎m̵͚̜̽ ̸̛̝ͅs̴͚̜̈o̴̦̗̊ ̷͎͋ȩ̵͐d̶͎̂̇g̴̲͓̀͝y̶̠̓̿}', expected: 'haha im so edgy' }
     ]
 });

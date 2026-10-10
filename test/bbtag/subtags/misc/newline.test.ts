@@ -1,10 +1,10 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { NewlineSubtag } from '@blargbot/bbtag/subtags/misc/newline';
+import { NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new NewlineSubtag(),
+await runSubtagTests({
+    replacer: replacers.newlineReplacer,
+    names: ['newline', 'n'],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         { code: '{newline}', expected: '\n' },
@@ -15,7 +15,7 @@ runSubtagTests({
         {
             code: '{newline;a}',
             expected: '\n\n\n',
-            setup(ctx) { ctx.rootScope.fallback = '3'; }
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('3'); }
         },
         {
             code: '{newline;a}',

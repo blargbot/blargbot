@@ -1,37 +1,41 @@
-import { FileSubtag } from '@blargbot/bbtag/subtags/message/file';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { replacers } from '@blargbot/bbtag-engine';
 
-runSubtagTests({
-    subtag: new FileSubtag(),
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.fileReplacer,
+    names: [],
     argCountBounds: { min: 2, max: 2 },
     cases: [
         {
             code: '{file;abcdef;def}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.file).to.not.be.undefined.and.not.be.null;
-                expect(ctx.data.file?.file).to.equal('abcdef');
-                expect(ctx.data.file?.name).to.equal('def');
+                assert.notEqual(ctx.data.file, undefined);
+                assert.equal(ctx.data.file?.file, 'abcdef');
+                assert.equal(ctx.data.file.name, 'def');
             }
         },
         {
             code: '{file;buffer:abcdef;def}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.file).to.not.be.undefined.and.not.be.null;
-                expect(ctx.data.file?.file).to.be.instanceOf(Buffer).and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
-                expect(ctx.data.file?.name).to.equal('def');
+                assert.notEqual(ctx.data.file, undefined);
+                assert.equal(ctx.data.file?.name, 'def');
+                const actual = Buffer.from(ctx.data.file.file).toString();
+                const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
+                assert.equal(actual, expected);
             }
         },
         {
             code: '{file;Buffer:abcdef;def}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.file).to.not.be.undefined.and.not.be.null;
-                expect(ctx.data.file?.file).to.equal('Buffer:abcdef');
-                expect(ctx.data.file?.name).to.equal('def');
+                assert.notEqual(ctx.data.file, undefined);
+                assert.equal(ctx.data.file?.file, 'Buffer:abcdef');
+                assert.equal(ctx.data.file.name, 'def');
             }
         }
     ]

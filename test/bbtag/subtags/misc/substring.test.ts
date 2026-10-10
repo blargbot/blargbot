@@ -1,10 +1,10 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { SubstringSubtag } from '@blargbot/bbtag/subtags/misc/substring';
+import { NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new SubstringSubtag(),
+await runSubtagTests({
+    replacer: replacers.substringReplacer,
+    names: ['substring'],
     argCountBounds: { min: 2, max: 3 },
     cases: [
         { code: '{substring;This is some text;5}', expected: 'is some text' },
@@ -12,7 +12,7 @@ runSubtagTests({
         {
             code: '{substring;This is some text;{eval}aaa}',
             expected: 'some text',
-            setup(ctx) { ctx.rootScope.fallback = '8'; },
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('8'); },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) }
             ]
@@ -20,7 +20,7 @@ runSubtagTests({
         {
             code: '{substring;This is some text;{eval}aaa}',
             expected: 'bbb',
-            setup(ctx) { ctx.rootScope.fallback = 'bbb'; },
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('bbb'); },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) },
                 { start: 0, end: 39, error: new NotANumberError('aaa') }
@@ -31,7 +31,7 @@ runSubtagTests({
         {
             code: '{substring;This is some text;{eval}aaa;12}',
             expected: 'some',
-            setup(ctx) { ctx.rootScope.fallback = '8'; },
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('8'); },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) }
             ]
@@ -39,7 +39,7 @@ runSubtagTests({
         {
             code: '{substring;This is some text;8;{eval}aaa}',
             expected: 'some',
-            setup(ctx) { ctx.rootScope.fallback = '12'; },
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('12'); },
             errors: [
                 { start: 31, end: 37, error: new MarkerError('eval', 31) }
             ]
@@ -47,7 +47,7 @@ runSubtagTests({
         {
             code: '{substring;This is some text;{eval}aaa;{eval}bbb}',
             expected: '',
-            setup(ctx) { ctx.rootScope.fallback = '12'; },
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('12'); },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) },
                 { start: 39, end: 45, error: new MarkerError('eval', 39) }
@@ -56,7 +56,7 @@ runSubtagTests({
         {
             code: '{substring;This is some text;8;{eval}aaa}',
             expected: 'ccc',
-            setup(ctx) { ctx.rootScope.fallback = 'ccc'; },
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('ccc'); },
             errors: [
                 { start: 31, end: 37, error: new MarkerError('eval', 31) },
                 { start: 0, end: 41, error: new NotANumberError('aaa') }
@@ -65,7 +65,7 @@ runSubtagTests({
         {
             code: '{substring;This is some text;{eval}aaa;{eval}bbb}',
             expected: 'ccc',
-            setup(ctx) { ctx.rootScope.fallback = 'ccc'; },
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('ccc'); },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) },
                 { start: 39, end: 45, error: new MarkerError('eval', 39) },

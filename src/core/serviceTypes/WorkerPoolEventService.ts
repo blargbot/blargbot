@@ -1,7 +1,6 @@
-import { GetWorkerPoolEventHandler, IPCContracts, ProcessMessageHandler, WorkerIPCContractNames, WorkerPoolEventContext } from '@blargbot/core/types';
-import { WorkerConnection, WorkerPool } from '@blargbot/core/worker';
+import type { GetWorkerPoolEventHandler, IPCContracts, ProcessMessageHandler, WorkerConnection, WorkerIPCContractNames, WorkerPool, WorkerPoolEventContext } from '@blargbot/core';
 
-import { BaseService } from './BaseService';
+import { BaseService } from './BaseService.js';
 
 export abstract class WorkerPoolEventService<TWorker extends WorkerConnection<IPCContracts>, Contract extends WorkerIPCContractNames<TWorker>> extends BaseService {
     public readonly type: string;

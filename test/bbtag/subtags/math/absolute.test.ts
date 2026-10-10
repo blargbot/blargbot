@@ -1,10 +1,10 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { AbsoluteSubtag } from '@blargbot/bbtag/subtags/math/absolute';
+import { NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new AbsoluteSubtag(),
+await runSubtagTests({
+    replacer: replacers.absoluteReplacer,
+    names: ['absolute', 'abs'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         { code: '{abs;12345}', expected: '12345' },

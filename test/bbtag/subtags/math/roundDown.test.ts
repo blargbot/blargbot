@@ -1,10 +1,10 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { RoundDownSubtag } from '@blargbot/bbtag/subtags/math/roundDown';
+import { NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new RoundDownSubtag(),
+await runSubtagTests({
+    replacer: replacers.roundDownReplacer,
+    names: ['roundDown', 'floor'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{rounddown;5}', expected: '5' },

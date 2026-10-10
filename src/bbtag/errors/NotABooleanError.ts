@@ -1,4 +1,4 @@
-import { BBTagTypeError } from './BBTagTypeError';
+import { BBTagTypeError } from './BBTagTypeError.js';
 
 export class NotABooleanError extends BBTagTypeError {
     public constructor(value: JToken | undefined) {

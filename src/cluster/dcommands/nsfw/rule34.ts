@@ -1,11 +1,11 @@
-import { GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, shuffle } from '@blargbot/cluster/utils';
-import { mapping } from '@blargbot/mapping';
-import fetch from 'node-fetch';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand } from '@blargbot/cluster';
+import { random } from '@blargbot/util';
 import xml2js from 'xml2js';
+import z from 'zod';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.rule34;
 
@@ -19,13 +19,13 @@ export class Rule34Command extends GlobalCommand {
                 {
                     parameters: '{tags[]}',
                     description: cmd.default.description,
-                    execute: (_, [tags]) => this.getRule34(tags.asStrings)
+                    execute: (ctx, [tags]) => this.getRule34(tags.asStrings, ctx)
                 }
             ]
         });
     }
 
-    public async getRule34(tags: readonly string[]): Promise<CommandResult> {
+    public async getRule34(tags: readonly string[], context: CommandContext): Promise<CommandResult> {
         if (tags.length === 0)
             return cmd.default.noTags;
 
@@ -37,19 +37,19 @@ export class Rule34Command extends GlobalCommand {
         if (tags.length === 0)
             return cmd.default.unsafeTags;
 
-        const response = await requestXmlSafe(`http://rule34.paheal.net/api/danbooru/find_posts/index.xml?tags=${tags.join('%20')}&limit=50`);
-        const doc = r34Mapping(response);
-        if (!doc.valid)
+        const response = await this.#requestXmlSafe(`http://rule34.paheal.net/api/danbooru/find_posts/index.xml?tags=${tags.join('%20')}&limit=50`, context);
+        const doc = r34Mapping.safeParse(response);
+        if (!doc.success)
             return cmd.default.noResults;
 
-        const posts = doc.value.posts.tag
+        const posts = doc.data.posts.tag
             .map(t => t.$)
             .filter(p => p.file_url !== undefined && /\.(gif|jpg|png|jpeg)$/.test(p.file_url));
 
         if (posts.length === 0)
             return cmd.default.noResults;
 
-        shuffle(posts);
+        random.ishuffle(posts);
         const selected = posts.slice(0, 3);
 
         return {
@@ -64,28 +64,26 @@ export class Rule34Command extends GlobalCommand {
             }))
         };
     }
-}
 
-async function requestXmlSafe(url: string): Promise<unknown> {
-    try {
-        const response = await fetch(url);
-        return await xml2js.parseStringPromise(await response.text()) as unknown;
-    } catch {
-        return undefined;
+    async #requestXmlSafe(url: string, context: CommandContext): Promise<unknown> {
+        try {
+            const response = await context.util.fetch(url);
+            return await xml2js.parseStringPromise(await response.text()) as unknown;
+        } catch {
+            return undefined;
+        }
     }
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
-const r34Mapping = mapping.object({
-    posts: mapping.object({
-        tag: mapping.array(mapping.object({
-            '$': mapping.object({
-                author: mapping.string.optional,
-                file_url: mapping.string.optional,
-                date: mapping.date.optional,
-                source: mapping.string.optional
+const r34Mapping = z.object({
+    posts: z.object({
+        tag: z.array(z.object({
+            '$': z.object({
+                author: z.string().optional(),
+                file_url: z.string().optional(),
+                date: z.iso.date().optional(),
+                source: z.string().optional()
             })
         }))
     })
 });
-/* eslint-enable @typescript-eslint/naming-convention */

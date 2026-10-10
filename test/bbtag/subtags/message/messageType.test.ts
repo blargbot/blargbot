@@ -1,11 +1,11 @@
-import { MessageTypeSubtag } from '@blargbot/bbtag/subtags/message/messageType';
-import { snowflake } from '@blargbot/core/utils';
-import { MessageType } from 'discord-api-types/v9';
+import { replacers } from '@blargbot/bbtag-engine';
+import { snowflake } from '@blargbot/core';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
 
-const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageType[P] } = {
+import { runSubtagTests, SubtagTestContext } from '../../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
+
+const messageTypes: { [P in Extract<keyof typeof MessageType, string>]: typeof MessageType[P] } = {
     ['Default']: MessageType.Default,
     ['RecipientAdd']: MessageType.RecipientAdd,
     ['RecipientRemove']: MessageType.RecipientRemove,
@@ -32,8 +32,9 @@ const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageTy
     ['AutoModerationAction']: MessageType.AutoModerationAction
 };
 
-runSubtagTests({
-    subtag: new MessageTypeSubtag(),
+await runSubtagTests({
+    replacer: replacers.messageTypeReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetMessagePropTestCases({

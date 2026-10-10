@@ -1,10 +1,10 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { SpaceSubtag } from '@blargbot/bbtag/subtags/misc/space';
+import { NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new SpaceSubtag(),
+await runSubtagTests({
+    replacer: replacers.spaceReplacer,
+    names: ['space', 's'],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         { code: '{space}', expected: ' ' },

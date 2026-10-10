@@ -1,13 +1,16 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { LastMessageIdSubtag } from '@blargbot/bbtag/subtags/channel/lastMessageId';
-import { APITextChannel } from 'discord-api-types/v9';
-import { Constants } from 'eris';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
 
-runSubtagTests({
-    subtag: new LastMessageIdSubtag(),
+
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
+
+// /workspaces/blargbot/.yarn/cache/discord-api-types-npm-0.37.20-e3242ea9fb-5595f44f66.zip/node_modules/discord-api-types/payloads/v9/channel.d.ts
+// \workspaces\blargbot\.yarn\cache\discord-api-types-npm-0.37.20-e3242ea9fb-5595f44f66.zip\node_modules\discord-api-types\payloads\v9\channel.d.ts
+
+await runSubtagTests({
+    replacer: replacers.lastMessageIdReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         ...createGetChannelPropTestCases({
@@ -40,7 +43,7 @@ runSubtagTests({
                 { start: 0, end: 15, error: new BBTagRuntimeError('Channel must be a textable channel') }
             ],
             setup(ctx) {
-                ctx.channels.command.type = Constants.ChannelTypes.GUILD_STORE;
+                ctx.channels.command.type = eris.Constants.ChannelTypes.GUILD_CATEGORY;
             }
         }
     ]

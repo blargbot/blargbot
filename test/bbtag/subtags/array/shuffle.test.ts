@@ -1,13 +1,28 @@
-import { NotAnArrayError } from '@blargbot/bbtag/errors';
-import { ShuffleSubtag } from '@blargbot/bbtag/subtags/array/shuffle';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { TagVariableType } from '@blargbot/domain/models';
-import { expect } from 'chai';
+import assert from 'node:assert';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import type { ArgsLocals, VariablesLocals } from '@blargbot/bbtag-engine';
+import { NotAnArrayError, replacers } from '@blargbot/bbtag-engine';
 
-runSubtagTests({
-    subtag: new ShuffleSubtag(),
+import { runSubtagTests } from '../SubtagTestSuite.js';
+
+function hasSameMembers(a: Iterable<unknown>, b: Iterable<unknown>): boolean {
+    const arrA = [...a];
+    const arrB = [...b];
+    if (arrA.length !== arrB.length)
+        return false;
+
+    for (const item of arrA) {
+        const index = arrB.indexOf(item);
+        if (index === -1)
+            return false;
+        arrB.splice(index, 1);
+    }
+    return true;
+}
+
+await runSubtagTests<VariablesLocals & ArgsLocals>({
+    replacer: replacers.shuffleReplacer,
+    names: ['shuffle'],
     argCountBounds: { min: 0, max: 1 },
     cases: [
         {
@@ -15,11 +30,10 @@ runSubtagTests({
             expected: '',
             retries: 1,
             setup(ctx) {
-                ctx.options.inputRaw = 'arg1 arg2 arg3 arg4';
+                ctx.locals.setup(m => m.args).returns(['arg1', 'arg2', 'arg3', 'arg4']);
             },
-            assert(bbctx) {
-                expect(bbctx.input).to.not.deep.equal(['arg1', 'arg2', 'arg3', 'arg4']);
-                expect(bbctx.input).to.have.members(['arg1', 'arg2', 'arg3', 'arg4']);
+            assert(ctx) {
+                assert(hasSameMembers(ctx.locals.args, ['arg1', 'arg2', 'arg3', 'arg4']));
             }
         },
         {
@@ -27,7 +41,10 @@ runSubtagTests({
             expected: '`Not an array`',
             errors: [
                 { start: 0, end: 13, error: new NotAnArrayError('abc') }
-            ]
+            ],
+            setup(ctx) {
+                ctx.variables.setup(m => m.get('abc')).returns({ key: '$abc', value: undefined }).mustHappen();
+            }
         },
         {
             code: '{shuffle;var1}',
@@ -36,34 +53,29 @@ runSubtagTests({
                 { start: 0, end: 14, error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
+                ctx.variables.setup(m => m.get('var1')).returns({ key: '$var1', value: undefined }).mustHappen();
             }
         },
         {
             code: '{shuffle;[1,2,3,4,5,6]}',
             retries: 1,
             assert(_, result) {
-                expect(result).to.not.equal('[1,2,3,4,5,6]');
+                assert.notEqual(result, '[1,2,3,4,5,6]');
                 const jResult = JSON.parse(result);
-                expect(jResult).to.have.members([1, 2, 3, 4, 5, 6]);
+                assert(Array.isArray(jResult), `${result} should have been an array.`);
+                assert.equal(jResult.length, 6);
+                for (const value of [1, 2, 3, 4, 5, 6])
+                    assert(jResult.includes(value), `${result} is missing ${value}`);
             }
         },
         {
             code: '{shuffle;{get;arr1}}',
             expected: '',
-            subtags: [new GetSubtag()],
-            retries: 1,
-            setupSaveVariables: false,
+            replacers: [replacers.getReplacer],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
-            },
-            async assert(bbctx, _, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' })).to.deep.equal([1, 2, 3, 4, 5, 6]);
-                const result = (await bbctx.variables.get('arr1')).value;
-                expect(result).to.not.deep.equal([1, 2, 3, 4, 5, 6]);
-                expect(result).to.have.members([1, 2, 3, 4, 5, 6]);
+                const items = [1, 2, 3, 4, 5, 6];
+                ctx.variables.setup(m => m.get('arr1')).returns({ key: '$abc', value: [...items] }).mustHappen();
+                ctx.variables.setup((m, $) => m.set('$abc', $.satisfies(v => Array.isArray(v) && hasSameMembers(v, items)))).returns().mustHappen();
             }
         }
     ]

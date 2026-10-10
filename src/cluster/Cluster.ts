@@ -1,25 +1,27 @@
-import { BBTagEngine, subtags } from '@blargbot/bbtag';
-import { ClusterOptions } from '@blargbot/cluster/types';
-import { Configuration } from '@blargbot/config';
-import { BaseClient } from '@blargbot/core/BaseClient';
-import { ModuleLoader } from '@blargbot/core/modules';
-import { BaseService } from '@blargbot/core/serviceTypes';
-import { EvalResult } from '@blargbot/core/types';
-import { ImagePool } from '@blargbot/image';
-import { Logger } from '@blargbot/logger';
-import { GatewayIntentBits } from 'discord-api-types/v9';
-import moment, { duration, Moment } from 'moment-timezone';
-import { inspect } from 'util';
+import { inspect } from 'node:util';
 
-import { ClusterBBTagUtilities } from './ClusterBBTagUtilities';
-import { ClusterUtilities } from './ClusterUtilities';
-import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
-import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager';
+import { BBTagEngine, subtags } from '@blargbot/bbtag';
+import type { ClusterOptions } from '@blargbot/cluster';
+import type { Configuration } from '@blargbot/config';
+import { getImageChannel, type ImageChannel } from '@blargbot/contracts';
+import type { EvalResult } from '@blargbot/core';
+import { BaseClient, BaseService, ModuleLoader } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
+import { ResetValue } from '@blargbot/util';
+import { GatewayIntentBits } from 'discord-api-types/v9';
+import moment from 'moment-timezone';
+
+import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';
+import { ClusterUtilities } from './ClusterUtilities.js';
+import type { ClusterWorker } from './ClusterWorker.js';
+import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
+import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
 
 export class Cluster extends BaseClient {
+    readonly #images = new ResetValue<ImageChannel>();
+
     public readonly id: number;
-    public readonly createdAt: Moment;
+    public readonly createdAt: moment.Moment;
     public readonly worker: ClusterWorker;
     public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
@@ -27,7 +29,6 @@ export class Cluster extends BaseClient {
     public readonly autoresponses: AutoresponseManager;
     public readonly contributors: ContributorManager;
     public readonly bbtag: BBTagEngine;
-    public readonly images: ImagePool;
     public readonly events: ModuleLoader<BaseService>;
     public readonly botStaff: BotStaffManager;
     public readonly moderation: ModerationManager;
@@ -44,15 +45,21 @@ export class Cluster extends BaseClient {
     public readonly guilds: GuildManager;
     public readonly announcements: AnnouncementManager;
 
+    public get images(): ImageChannel {
+        return this.#images.value;
+    }
+
     public constructor(
         worker: ClusterWorker,
         logger: Logger,
         config: Configuration,
+        fetch: typeof globalThis.fetch,
         options: ClusterOptions
     ) {
         super({
             logger,
             config,
+            fetch,
             discordConfig: {
                 autoreconnect: true,
                 allowedMentions: {
@@ -89,14 +96,13 @@ export class Cluster extends BaseClient {
         this.createdAt = Object.freeze(moment());
         this.guilds = new GuildManager(this);
         this.domains = new DomainManager(this.database.vars);
-        this.images = new ImagePool(this.id, config.discord.images, this.logger);
         this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users, this.discord);
         this.commands = new AggregateCommandManager(this, {
             custom: new CustomCommandManager(this),
-            default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
+            default: new DefaultCommandManager(`${import.meta.dirname}/dcommands`, this)
         });
-        this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
-        this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
+        this.events = new ModuleLoader(`${import.meta.dirname}/events`, BaseService, [this], this.logger, e => e.name);
+        this.services = new ModuleLoader(`${import.meta.dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
         this.timeouts = new TimeoutManager(this);
         this.autoresponses = new AutoresponseManager(this);
@@ -111,10 +117,10 @@ export class Cluster extends BaseClient {
             discord: this.discord,
             logger: this.logger,
             util: new ClusterBBTagUtilities(this),
-            subtags: Object.values(subtags.all)
-                .map(subtag => new subtag())
+            subtags: Object.values(subtags).map(subtag => new subtag()),
+            fetch: this.fetch
         });
-        this.intervals = new IntervalManager(this, duration(10, 's'));
+        this.intervals = new IntervalManager(this, moment.duration(10, 's'));
         this.rolemes = new RolemeManager(this);
         this.help = new CommandDocumentationManager(this);
         this.awaiter = new AwaiterManager(this.logger);
@@ -134,10 +140,16 @@ export class Cluster extends BaseClient {
         await Promise.all([
             super.start(),
             this.connectDiscordGateway(),
-            this.commands.load()
+            this.commands.load(),
+            this.#connectImageChannel()
         ]);
 
         await this.services.init();
+    }
+
+    async #connectImageChannel(): Promise<void> {
+        this.#images.resolve(await getImageChannel(this.amqp));
+        this.logger.init('Image connection ready.');
     }
 
     public async eval(this: Cluster, author: string, text: string): Promise<EvalResult> {

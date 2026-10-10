@@ -1,8 +1,8 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.addDomain;
 

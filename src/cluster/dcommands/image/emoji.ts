@@ -1,9 +1,10 @@
-import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
-import { Emote } from '@blargbot/core/Emote';
+import type { CommandContext } from '@blargbot/cluster';
+import { GlobalImageCommand } from '@blargbot/cluster';
+import { Emote } from '@blargbot/core';
 import { util } from '@blargbot/formatting';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.emoji;
 
@@ -35,6 +36,6 @@ export class EmojiCommand extends GlobalImageCommand {
         if (parsedEmoji.id !== undefined)
             return util.literal(`https://cdn.discordapp.com/emojis/${parsedEmoji.id}.${parsedEmoji.animated ? 'gif' : 'png'}`);
 
-        return await this.renderImage(context, 'emoji', { name: parsedEmoji.name, size, svg });
+        return await this.renderImage(context, { type: 'emoji', name: parsedEmoji.name, size, svg });
     }
 }

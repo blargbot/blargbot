@@ -1,10 +1,9 @@
 import { bbtag } from '@blargbot/bbtag';
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType } from '@blargbot/cluster/utils';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, GuildCommand  } from '@blargbot/cluster';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.interval;
 

@@ -44,11 +44,13 @@ interface SmartSplitTokenContext {
     digestRanges(): Generator<SmartSplitItem>;
 }
 
-const enum SmartSplitTokenType {
-    LITERAL,
-    QUOTE,
-    BREAK
-}
+type SmartSplitTokenType = typeof SmartSplitTokenType[keyof typeof SmartSplitTokenType];
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const SmartSplitTokenType = Object.freeze({
+    LITERAL: 0,
+    QUOTE: 1,
+    BREAK: 2
+});
 
 interface SmartSplitToken {
     readonly type: SmartSplitTokenType;

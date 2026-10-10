@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new JsonSubtag(),
+await runSubtagTests({
+    replacer: replacers.jsonReplacer,
+    names: ['json', 'j'],
     argCountBounds: { min: 0, max: { count: 1, noEval: [0] } },
     cases: [
         {

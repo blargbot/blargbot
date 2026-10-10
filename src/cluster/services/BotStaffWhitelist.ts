@@ -1,5 +1,5 @@
-import { Cluster } from '@blargbot/cluster';
-import { IntervalService } from '@blargbot/core/serviceTypes';
+import type { Cluster } from '@blargbot/cluster';
+import { IntervalService } from '@blargbot/core';
 
 export class BotStaffWhitelistInterval extends IntervalService {
     public readonly type: string = 'bot';

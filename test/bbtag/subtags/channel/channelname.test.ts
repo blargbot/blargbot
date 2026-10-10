@@ -1,10 +1,11 @@
-import { ChannelNameSubtag } from '@blargbot/bbtag/subtags/channel/channelName';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-runSubtagTests({
-    subtag: new ChannelNameSubtag(),
+await runSubtagTests({
+    replacer: replacers.channelNameReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({

@@ -1,2 +1,1 @@
-export * from './ImageConnection';
-export * from './ImagePool';
+export * from './types.js';

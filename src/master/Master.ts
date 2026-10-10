@@ -1,19 +1,17 @@
+import { inspect } from 'node:util';
+
 import { ApiPool } from '@blargbot/api';
 import { ClusterPool } from '@blargbot/cluster';
-import { Configuration } from '@blargbot/config';
-import { BaseClient } from '@blargbot/core/BaseClient';
-import { ModuleLoader } from '@blargbot/core/modules';
-import { BaseService } from '@blargbot/core/serviceTypes';
-import { EvalResult } from '@blargbot/core/types';
-import { Logger } from '@blargbot/logger';
-import { MasterOptions } from '@blargbot/master/types';
+import type { Configuration } from '@blargbot/config';
+import type { EvalResult } from '@blargbot/core';
+import { BaseClient, BaseService, ModuleLoader } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
 import moment from 'moment-timezone';
-import fetch from 'node-fetch';
-import { metric } from 'prom-client';
-import { inspect } from 'util';
+import type { metric } from 'prom-client';
 
-import { ClusterStatsManager } from './managers';
-import { MasterWorker } from './MasterWorker';
+import { ClusterStatsManager } from './managers/index.js';
+import type { MasterWorker } from './MasterWorker.js';
+import type { MasterOptions } from './types.js';
 
 export class Master extends BaseClient {
     public readonly clusters: ClusterPool;
@@ -28,11 +26,13 @@ export class Master extends BaseClient {
     public constructor(
         logger: Logger,
         config: Configuration,
+        fetch: typeof globalThis.fetch,
         options: MasterOptions
     ) {
         super({
             logger,
             config,
+            fetch,
             discordConfig: {
                 restMode: true,
                 intents: [],
@@ -46,8 +46,8 @@ export class Master extends BaseClient {
         this.clusterStats = new ClusterStatsManager(this.api);
         this.metrics = {};
         this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
-        this.eventHandlers = new ModuleLoader(`${__dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
-        this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
+        this.eventHandlers = new ModuleLoader(`${import.meta.dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
+        this.services = new ModuleLoader(`${import.meta.dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
 
         this.services.on('add', module => void module.start());
         this.services.on('remove', module => void module.stop());
@@ -68,13 +68,14 @@ export class Master extends BaseClient {
 
     async #hello(): Promise<void> {
         try {
-            await fetch(`https://discord.com/api/channels/${this.config.discord.channels.botlog}/messages`, {
+            let token = this.config.discord.token;
+            if (!token.startsWith('Bot '))
+                token = `Bot ${token}`;
+            await this.fetch(`https://discord.com/api/channels/${this.config.discord.channels.botlog}/messages`, {
                 method: 'POST',
                 headers: {
-                    /* eslint-disable @typescript-eslint/naming-convention */
-                    'Authorization': this.config.discord.token,
+                    'Authorization': token,
                     'Content-Type': 'application/json'
-                    /* eslint-enable @typescript-eslint/naming-convention */
                 },
                 body: JSON.stringify({ content: `My master process just initialized on <t:${moment().unix()}>.` })
             });

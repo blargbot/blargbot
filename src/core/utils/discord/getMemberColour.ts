@@ -1,6 +1,6 @@
-import { Member } from 'eris';
+import type * as eris from 'eris';
 
-export function getMemberColour(member: Member): number {
+export function getMemberColour(member: eris.Member): number {
     let result = 0;
     let position = -Infinity;
     for (const id of member.roles) {

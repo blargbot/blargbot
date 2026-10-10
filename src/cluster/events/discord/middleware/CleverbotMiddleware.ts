@@ -1,23 +1,22 @@
-import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
-import { guard } from '@blargbot/cluster/utils';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { metrics } from '@blargbot/core/Metrics';
-import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
+import { URLSearchParams } from 'node:url';
+
+import type { ClusterUtilities } from '@blargbot/cluster';
+import { guard } from '@blargbot/cluster';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core';
+import { FormattableMessageContent, metrics } from '@blargbot/core';
 import { util } from '@blargbot/formatting';
-import { KnownMessage } from 'eris';
-import fetch from 'node-fetch';
-import { URLSearchParams } from 'url';
+import type * as eris from 'eris';
 
-import templates from '../../../text';
+import { templates } from '../../../text.js';
 
-export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
+export class CleverbotMiddleware implements IMiddleware<eris.KnownMessage, boolean> {
     readonly #util: ClusterUtilities;
 
     public constructor(util: ClusterUtilities) {
         this.#util = util;
     }
 
-    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: eris.KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         if (await next())
             return true;
 
@@ -34,7 +33,7 @@ export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
         return true;
     }
 
-    async #reply(context: KnownMessage): Promise<void> {
+    async #reply(context: eris.KnownMessage): Promise<void> {
         metrics.cleverbotStats.inc();
         await context.channel.sendTyping();
         const query = await this.#util.resolveTags(context, context.content);
@@ -50,7 +49,7 @@ export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
         const form = new URLSearchParams();
         form.append('input', message);
 
-        const result = await fetch(this.#util.config.general.cleverbotApi, {
+        const result = await this.#util.fetch(this.#util.config.general.cleverbotApi, {
             method: 'POST',
             body: form
         });

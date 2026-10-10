@@ -1,6 +1,6 @@
-import { Api } from '@blargbot/api/Api';
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
+import type { Api } from '../Api.js';
+import { BaseRoute } from '../BaseRoute.js';
+import type { ApiResponse } from '../types.js';
 
 export class CommandsRoute extends BaseRoute<['/commands']> {
     readonly #api: Api;

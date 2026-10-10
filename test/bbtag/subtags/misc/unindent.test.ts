@@ -1,9 +1,10 @@
-import { UnindentSubtag } from '@blargbot/bbtag/subtags/misc/unindent';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new UnindentSubtag(),
+await runSubtagTests({
+    replacer: replacers.unindentReplacer,
+    names: ['unindent', 'ui'],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         { code: '{unindent;this is a test:\n    1. abc\n      a. 123\n    2. xyz\n    3. aaaa}', expected: 'this is a test:\n1. abc\n  a. 123\n2. xyz\n3. aaaa' },

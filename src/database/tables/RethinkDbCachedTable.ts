@@ -1,14 +1,14 @@
-import { Cache } from '@blargbot/core/Cache';
-import { guard, sleep } from '@blargbot/core/utils';
-import { Logger } from '@blargbot/logger';
-import { UpdateRequest } from 'rethinkdb';
+import { Cache, guard } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
+import { sleep } from '@blargbot/util';
+import type { UpdateRequest } from 'rethinkdb';
 
-import { RethinkDb } from '../clients';
-import { RethinkDbTable } from './RethinkDbTable';
+import type { RethinkDb } from '../clients/index.js';
+import { RethinkDbTable } from './RethinkDbTable.js';
 
 export class RethinkDbCachedTable<Table extends { [P in KeyName]: string }, KeyName extends string> extends RethinkDbTable<Table> {
     public readonly cache: Cache<string, Table>;
-    #keyName: KeyName;
+    readonly #keyName: KeyName;
 
     public constructor(
         table: string,
@@ -114,7 +114,7 @@ export class RethinkDbCachedTable<Table extends { [P in KeyName]: string }, KeyN
 
     async #watchChangesCore(shouldCache: (id: string) => boolean = () => true): Promise<never> {
         this.logger.info(`Registering a ${this.table} changefeed!`);
-        // eslint-disable-next-line no-constant-condition
+
         while (true) {
             try {
                 const changefeed = this.stream(t => t.changes({ squash: true }));

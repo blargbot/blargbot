@@ -1,11 +1,11 @@
-import { ChannelsSubtag } from '@blargbot/bbtag/subtags/channel/channels';
-import { ChannelType } from 'discord-api-types/v9';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests, SubtagTestContext } from '../../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-runSubtagTests({
-    subtag: new ChannelsSubtag(),
+await runSubtagTests({
+    replacer: replacers.channelsReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({

@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { ChooseSubtag } from '@blargbot/bbtag/subtags/misc/choose';
+import { BBTagRuntimeError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new ChooseSubtag(),
+await runSubtagTests({
+    replacer: replacers.chooseReplacer,
+    names: ['choose'],
     argCountBounds: { min: 2, max: Infinity },
     cases: [
         {

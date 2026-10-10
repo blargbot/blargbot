@@ -1,9 +1,10 @@
-import { GuildMembersSubtag } from '@blargbot/bbtag/subtags/guild/guildMembers';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new GuildMembersSubtag(),
+await runSubtagTests({
+    replacer: replacers.guildMembersReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

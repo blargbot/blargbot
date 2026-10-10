@@ -1,27 +1,27 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ChannelCreateSubtag } from '@blargbot/bbtag/subtags/channel/channelCreate';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { argument } from '@blargbot/test-util/mock';
-import { ChannelType, OverwriteType } from 'discord-api-types/v9';
-import { ApiError, CategoryChannel, Channel, Constants, NewsChannel, TextChannel, VoiceChannel } from 'eris';
+import { BBTagRuntimeError, ChannelCreateSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
-runSubtagTests({
-    subtag: new ChannelCreateSubtag(),
+
+
+import type { SubtagTestContext } from '../../SubtagTestSuite.js';
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.channelCreateReplacer,
+    names: [],
     argCountBounds: { min: 1, max: 3 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.administrator.toString();
+        ctx.roles.authorizer.permissions = eris.Constants.Permissions.administrator.toString();
     },
     cases: [
         {
             code: '{channelcreate;My new channel}',
             expected: '28376128632132',
             setup(ctx) {
-                const channel = ctx.createMock(TextChannel);
-                channel.setup(m => m.id).thenReturn('28376128632132');
+                const channel = ctx.createMock(eris.TextChannel);
+                channel.setup(m => m.id).returns('28376128632132');
 
-                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, argument.isDeepEqual({
+                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $.looksLike({
                     bitrate: undefined,
                     nsfw: undefined,
                     parentID: undefined,
@@ -34,21 +34,21 @@ runSubtagTests({
             }
         },
         ...[
-            { type: 'text', instance: TextChannel, code: ChannelType.GuildText },
-            { type: 'voice', instance: VoiceChannel, code: ChannelType.GuildVoice },
-            { type: 'category', instance: CategoryChannel, code: ChannelType.GuildCategory },
-            { type: 'news', instance: NewsChannel, code: ChannelType.GuildAnnouncement },
-            { type: 'this is some garbage', instance: TextChannel, code: ChannelType.GuildText },
-            { type: '', instance: TextChannel, code: ChannelType.GuildText }
+            { type: 'text', instance: eris.TextChannel, code: ChannelType.GuildText },
+            { type: 'voice', instance: eris.VoiceChannel, code: ChannelType.GuildVoice },
+            { type: 'category', instance: eris.CategoryChannel, code: ChannelType.GuildCategory },
+            { type: 'news', instance: eris.NewsChannel, code: ChannelType.GuildAnnouncement },
+            { type: 'this is some garbage', instance: eris.TextChannel, code: ChannelType.GuildText },
+            { type: '', instance: eris.TextChannel, code: ChannelType.GuildText }
         ].flatMap(({ type, instance, code }) => [
             {
                 code: `{channelcreate;My new channel;${type}}`,
                 expected: '28376128632132',
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<Channel>(instance);
+                    const channel = ctx.createMock<eris.Channel>(instance);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, argument.isDeepEqual({
+                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, $.looksLike({
                         bitrate: undefined,
                         nsfw: undefined,
                         parentID: undefined,
@@ -63,12 +63,12 @@ runSubtagTests({
             {
                 code: `{channelcreate;My new channel;${type};{escapebbtag;{}}}`,
                 expected: '28376128632132',
-                subtags: [new EscapeBBTagSubtag()],
+                subtags: [replacers.escapeBBTagReplacer],
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<Channel>(instance);
+                    const channel = ctx.createMock<eris.Channel>(instance);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, argument.isDeepEqual({
+                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, $.looksLike({
                         bitrate: undefined,
                         nsfw: undefined,
                         parentID: undefined,
@@ -105,12 +105,12 @@ runSubtagTests({
                     userLimit: 32042430
                 })}}}`,
                 expected: '28376128632132',
-                subtags: [new EscapeBBTagSubtag()],
+                subtags: [replacers.escapeBBTagReplacer],
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<Channel>(instance);
+                    const channel = ctx.createMock<eris.Channel>(instance);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, argument.isDeepEqual({
+                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, $.looksLike({
                         bitrate: 1234,
                         nsfw: true,
                         parentID: '23987233279389273',
@@ -160,12 +160,12 @@ runSubtagTests({
                     userLimit: '32042430'
                 })}}}`,
                 expected: '28376128632132',
-                subtags: [new EscapeBBTagSubtag()],
+                subtags: [replacers.escapeBBTagReplacer],
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<Channel>(instance);
+                    const channel = ctx.createMock<eris.Channel>(instance);
                     channel.setup(m => m.id).thenReturn('28376128632132');
 
-                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, argument.isDeepEqual({
+                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, $.looksLike({
                         bitrate: 1234,
                         nsfw: true,
                         parentID: '23987233279389273',
@@ -201,12 +201,12 @@ runSubtagTests({
                 ]
             })}}}`,
             expected: '28376128632132',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             setup(ctx: SubtagTestContext) {
-                const channel = ctx.createMock(TextChannel);
+                const channel = ctx.createMock(eris.TextChannel);
                 channel.setup(m => m.id).thenReturn('28376128632132');
 
-                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, argument.isDeepEqual({
+                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $.looksLike({
                     bitrate: undefined,
                     nsfw: undefined,
                     parentID: undefined,
@@ -236,12 +236,12 @@ runSubtagTests({
                 ]
             })}}}`,
             expected: '`Author missing requested permissions`',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             errors: [
                 { start: 0, end: 124, error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx: SubtagTestContext) {
-                ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
+                ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
             }
         },
         {
@@ -265,10 +265,10 @@ runSubtagTests({
             code: '{channelcreate;My new channel}',
             expected: '28376128632132',
             setup(ctx) {
-                const channel = ctx.createMock(TextChannel);
-                channel.setup(m => m.id).thenReturn('28376128632132');
+                const channel = ctx.createMock(eris.TextChannel);
+                channel.setup(m => m.id).returns('28376128632132');
 
-                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, argument.isDeepEqual({
+                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $.looksLike({
                     bitrate: undefined,
                     nsfw: undefined,
                     parentID: undefined,
@@ -287,8 +287,8 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, argument.isDeepEqual({
+                const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
+                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $.looksLike({
                     bitrate: undefined,
                     nsfw: undefined,
                     parentID: undefined,
@@ -307,8 +307,8 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
-                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, argument.isDeepEqual({
+                const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
+                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $.looksLike({
                     bitrate: undefined,
                     nsfw: undefined,
                     parentID: undefined,

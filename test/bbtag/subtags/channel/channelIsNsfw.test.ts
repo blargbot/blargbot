@@ -1,11 +1,12 @@
-import { ChannelIsNsfwSubtag } from '@blargbot/bbtag/subtags/channel/channelIsNsfw';
-import { APITextChannel } from 'discord-api-types/v9';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
 
-runSubtagTests({
-    subtag: new ChannelIsNsfwSubtag(),
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
+
+await runSubtagTests({
+    replacer: replacers.channelIsNsfwReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({

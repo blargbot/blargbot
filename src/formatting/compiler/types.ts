@@ -1,7 +1,7 @@
-import { ReplacementContext } from './ReplacementContext';
+import type { ReplacementContext, ReplacementValue } from './ReplacementContext.js';
 
 export interface IValueResolver {
-    (context: ReplacementContext): unknown;
+    (context: ReplacementContext): ReplacementValue;
 }
 
 export interface IFormatStringCompiler {

@@ -1,14 +1,14 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { EmojiDeleteSubtag } from '@blargbot/bbtag/subtags/guild/emojiDelete';
-import { Constants } from 'eris';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
 
-runSubtagTests({
-    subtag: new EmojiDeleteSubtag(),
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.emojiDeleteReplacer,
+    names: [],
     argCountBounds: { min: 1, max: 1 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageEmojisAndStickers.toString();
+        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageEmojisAndStickers.toString();
     },
     cases: [
         {

@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { UriDecodeSubtag } from '@blargbot/bbtag/subtags/misc/uriDecode';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new UriDecodeSubtag(),
+await runSubtagTests({
+    replacer: replacers.uriDecodeReplacer,
+    names: ['uriDecode'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{uridecode;JavaScript_%D1%88%D0%B5%D0%BB%D0%BB%D1%8B}', expected: 'JavaScript_шеллы' },

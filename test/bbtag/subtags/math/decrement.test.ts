@@ -1,61 +1,38 @@
-import { NotABooleanError, NotANumberError } from '@blargbot/bbtag/errors';
-import { DecrementSubtag } from '@blargbot/bbtag/subtags/math/decrement';
-import { TagVariableType } from '@blargbot/domain/models/index';
-import { expect } from 'chai';
+import type { VariablesLocals } from '@blargbot/bbtag-engine';
+import { NotABooleanError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import type { SubtagTestContext } from '../SubtagTestSuite.js';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new DecrementSubtag(),
+await runSubtagTests({
+    replacer: replacers.decrementReplacer,
+    names: ['decrement'],
     argCountBounds: { min: 1, max: 3 },
     cases: [
         {
             code: '{decrement;_myVariable}',
             expected: '17',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 18, 17); }
         },
         {
             code: '{decrement;_myVariable}',
             expected: '17',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18.1);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 18.1, 17); }
         },
         {
             code: '{decrement;_myVariable}',
             expected: '17',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18.9999);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 18.9999, 17); }
         },
         {
             code: '{decrement;_myVariable}',
             expected: '17',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, '18');
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(17);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', '18', 17); }
         },
         {
             code: '{decrement;_myVariable}',
             expected: '`Not a number`',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 'abc');
-                Object.freeze(ctx.tagVariables);
-            },
+            setup(ctx) { setupChange(ctx, '_myVariable', 'abc'); },
             errors: [
                 { start: 0, end: 23, error: new NotANumberError('abc') }
             ]
@@ -63,40 +40,21 @@ runSubtagTests({
         {
             code: '{decrement;_myVariable;3}',
             expected: '19',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 22, 19); }
         },
         {
             code: '{decrement;_myVariable;3}',
             expected: '19',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22.1);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 22.1, 19); }
         },
         {
             code: '{decrement;_myVariable;3.6}',
             expected: '19',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(19);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 22, 19); }
         },
         {
             code: '{decrement;_myVariable;xyz}',
             expected: '`Not a number`',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
-                Object.freeze(ctx.tagVariables);
-            },
             errors: [
                 { start: 0, end: 27, error: new NotANumberError('xyz') }
             ]
@@ -104,73 +62,45 @@ runSubtagTests({
         {
             code: '{decrement;_myVariable;9;true}',
             expected: '7',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 16, 7); }
         },
         {
             code: '{decrement;_myVariable;9;true}',
             expected: '7',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16.1);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 16.1, 7); }
         },
         {
             code: '{decrement;_myVariable;9.6;true}',
             expected: '7',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 16, 7); }
         },
         {
             code: '{decrement;_myVariable;9;false}',
             expected: '7',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 16, 7); }
         },
         {
             code: '{decrement;_myVariable;9;false}',
             expected: '7.100000000000001',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16.1);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(7.100000000000001);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 16.1, 7.100000000000001); }
         },
         {
             code: '{decrement;_myVariable;9.6;false}',
             expected: '6.4',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
-            },
-            assert(_, __, ctx) {
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' })).to.equal(6.4);
-            }
+            setup(ctx) { setupChange(ctx, '_myVariable', 16, 6.4); }
         },
         {
             code: '{decrement;_myVariable;;abc}',
             expected: '`Not a boolean`',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
-                Object.freeze(ctx.tagVariables);
-            },
             errors: [
                 { start: 0, end: 28, error: new NotABooleanError('abc') }
             ]
         }
     ]
 });
+
+function setupChange(ctx: SubtagTestContext<VariablesLocals>, name: string, current: JToken | undefined, setTo?: JToken): void {
+    ctx.variables.setup(m => m.get(name)).returns({ key: '$var', value: current }).mustHappen();
+    if (arguments.length > 3)
+        ctx.variables.setup(m => m.set(name, setTo)).returns().mustHappen();
+}

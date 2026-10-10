@@ -1,9 +1,9 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
-import { User } from 'eris';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand, guard, humanize } from '@blargbot/cluster';
+import type * as eris from 'eris';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.decancer;
 
@@ -27,7 +27,7 @@ export class DecancerCommand extends GlobalCommand {
         });
     }
 
-    public async decancerUser(context: CommandContext, user: User): Promise<CommandResult> {
+    public async decancerUser(context: CommandContext, user: eris.User): Promise<CommandResult> {
         if (!guard.isGuildCommandContext(context))
             return this.decancerText(user.username);
 

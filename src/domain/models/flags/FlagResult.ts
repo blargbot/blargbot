@@ -1,4 +1,4 @@
-import { FlagResultValueSet } from './FlagResultValueSet';
+import type { FlagResultValueSet } from './FlagResultValueSet.js';
 
 type FlagResultBase = { readonly [P in Alphanumeric]?: FlagResultValueSet }
 export interface FlagResult extends FlagResultBase {

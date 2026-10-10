@@ -1,12 +1,12 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ChannelCategorySubtag } from '@blargbot/bbtag/subtags/channel/channelCategory';
-import { APITextChannel } from 'discord-api-types/v9';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
 
-runSubtagTests({
-    subtag: new ChannelCategorySubtag(),
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
+
+await runSubtagTests({
+    replacer: replacers.channelCategoryReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({
@@ -28,7 +28,7 @@ runSubtagTests({
             code: '{channelcategory}',
             expected: '',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Channel has no parent').withDisplay('') }
+                { start: 0, end: 17, error: new (BBTagRuntimeError.withDisplay(''))('Channel has no parent') }
             ]
         }
     ]

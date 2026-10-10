@@ -1,0 +1,26 @@
+import { replacers } from '@blargbot/bbtag-engine';
+
+import { runSubtagTests } from '../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.argsLengthReplacer,
+    names: ['argsLength'],
+    argCountBounds: { min: 0, max: 0 },
+    cases: [
+        {
+            code: '{argslength}',
+            expected: '0',
+            setup(ctx) { ctx.locals.setup(x => x.args).returns([]); }
+        },
+        {
+            code: '{argslength}',
+            expected: '4',
+            setup(ctx) { ctx.locals.setup(x => x.args).returns(['this', 'is', 'a', 'test']); }
+        },
+        {
+            code: '{argslength}',
+            expected: '3',
+            setup(ctx) { ctx.locals.setup(x => x.args).returns(['this', 'is a', 'test']); }
+        }
+    ]
+});

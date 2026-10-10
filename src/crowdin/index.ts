@@ -1,8 +1,9 @@
-import { ITranslationSource, LanguageDetails } from '@blargbot/formatting';
-import fetch from 'node-fetch';
-import path from 'path';
+import path from 'node:path';
+
+import type { ITranslationSource, LanguageDetails } from '@blargbot/formatting';
 
 export class CrowdinTranslationSource implements ITranslationSource {
+    readonly #fetch: typeof globalThis.fetch;
     readonly #manifestUrl: string;
     readonly #contentUrl: (fileName: string, timestamp: number) => string;
     readonly #languageMapUrl: string;
@@ -12,7 +13,8 @@ export class CrowdinTranslationSource implements ITranslationSource {
 
     public readonly languages: ReadonlyMap<string, LanguageDetails>;
 
-    public constructor(distribution: string) {
+    public constructor(distribution: string, fetch: typeof globalThis.fetch) {
+        this.#fetch = fetch;
         this.#manifestUrl = `https://distributions.crowdin.net/${distribution}/manifest.json`;
         this.#contentUrl = (fileName, timestamp) => `https://distributions.crowdin.net/${distribution}/content${fileName}?timestamp=${timestamp}`;
         this.#languageMapUrl = 'https://api.crowdin.com/api/v2/languages?limit=500';
@@ -57,7 +59,7 @@ export class CrowdinTranslationSource implements ITranslationSource {
     async #loadLanguageFiles(fileUrls: URL[], language: CrowdinLanguage): Promise<void> {
         const strings: Array<[string, string]> = [];
         for (const fileUrl of fileUrls) {
-            const response = await fetch(fileUrl, { headers: { ['Accept']: 'application/json' } });
+            const response = await this.#fetch(fileUrl, { headers: { ['Accept']: 'application/json' } });
             const data = await response.json() as CrowdinLanguageTree;
             strings.push(...this.#flattenJson([path.basename(fileUrl.pathname, '.json')], data));
         }
@@ -96,13 +98,13 @@ export class CrowdinTranslationSource implements ITranslationSource {
     }
 
     async #getLanguageMap(): Promise<CrowdinLanguage[]> {
-        const response = await fetch(this.#languageMapUrl, { headers: { ['Accept']: 'application/json' } });
+        const response = await this.#fetch(this.#languageMapUrl, { headers: { ['Accept']: 'application/json' } });
         const json = await response.json() as { data: Array<{ data: CrowdinLanguage; }>; };
         return json.data.map(({ data }) => data);
     }
 
     async #getManifest(): Promise<CrowdinManifest> {
-        const response = await fetch(this.#manifestUrl, { headers: { ['Accept']: 'application/json' } });
+        const response = await this.#fetch(this.#manifestUrl, { headers: { ['Accept']: 'application/json' } });
         const manifest = await response.json() as CrowdinManifest;
         return manifest;
     }

@@ -1,12 +1,12 @@
-import { parse } from '@blargbot/core/utils';
-import { mapping } from '@blargbot/mapping';
-import fetch, { FetchError } from 'node-fetch';
+import { parse, zodStringToJson } from '@blargbot/core';
+import { BufferWriterStream } from '@blargbot/util';
+import z from 'zod';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.request;
 
@@ -48,16 +48,15 @@ export class RequestSubtag extends CompiledSubtag {
         const request = {
             method: 'GET',
             headers: {} as Record<string, string>,
-            size: 8000000,
             body: undefined as string | undefined
         };
 
         if (optionsStr !== '') {
-            const mappedOptions = mapOptions(optionsStr);
-            if (!mappedOptions.valid)
+            const mappedOptions = mapOptions.safeParse(optionsStr);
+            if (!mappedOptions.success)
                 throw new BBTagRuntimeError('', `Invalid request options "${optionsStr}"`);
-            request.method = mappedOptions.value.method;
-            request.headers = mappedOptions.value.headers;
+            request.method = mappedOptions.data.method;
+            request.headers = mappedOptions.data.headers;
         }
 
         let data;
@@ -69,7 +68,6 @@ export class RequestSubtag extends CompiledSubtag {
         if (request.method === 'GET') {
             if (typeof data === 'object' && data !== null) {
                 query = new URLSearchParams(Object.fromEntries(Object.entries(data).map(([k, v]) => [k, parse.string(v as JToken)] as const))).toString();
-                data = undefined;
             }
         } else if (data !== undefined) {
             if (!Object.keys(request.headers).map(h => h.toLowerCase()).includes('content-type'))
@@ -80,15 +78,7 @@ export class RequestSubtag extends CompiledSubtag {
         }
 
         try {
-            const response = await fetch(url + (query !== undefined ? `?${query}` : ''), request);
-            const result = {
-                status: response.status,
-                statusText: response.statusText,
-                contentType: response.headers.get('content-type'),
-                date: response.headers.get('date'),
-                url: response.url
-            };
-
+            const response = await context.fetch(url + (query !== undefined ? `?${query}` : ''), request);
             /*
                 I personally absolutely hate how blarg decides to error if a status code is not consider 'ok'
                 A lot of APIs actually have meaningful errors, coupled with a 'not-ok' status and it's ass that blarg doesn't return it.
@@ -97,35 +87,43 @@ export class RequestSubtag extends CompiledSubtag {
             if (!(response.status >= 200 && response.status < 400))
                 throw new BBTagRuntimeError(`${response.status} ${response.statusText}`);
 
+            const result = {
+                status: response.status,
+                statusText: response.statusText,
+                contentType: response.headers.get('content-type'),
+                date: response.headers.get('date'),
+                url: response.url
+            };
+
             if (result.contentType?.startsWith('text') !== false)
                 return { body: await response.text(), ...result };
 
             if (result.contentType.includes('application/json'))
                 return { body: await response.json() as JToken, ...result };
 
-            const body = await response.buffer();
-            return { body: body.toString('base64'), ...result };
-        } catch (err: unknown) {
-            if (!(err instanceof FetchError))
-                throw err;
+            if (response.body === null)
+                return { body: '', ...result };
 
-            switch (err.type) {
-                case 'max-size':
-                    throw new BBTagRuntimeError('Response too large', err.message);
-            }
+            const body = new BufferWriterStream({ maxSize: 8000000 });
+            await response.body.pipeTo(body);
+            return { body: (await body.getResult()).toString('base64'), ...result };
+        } catch (err: unknown) {
+            if (err instanceof Error && err.message === 'Max size has been reached.')
+                throw new BBTagRuntimeError('Response too large', err.message);
+
             throw err;
         }
     }
 }
 
-const mapOptions = mapping.json(mapping.object({
-    method: mapping.string
-        .map(s => s.toUpperCase())
-        .chain(mapping.in('GET', 'POST', 'PUT', 'PATCH', 'DELETE'))
-        .optional
-        .map(v => v ?? 'GET'),
-    headers: mapping.choice(
-        mapping.json(mapping.record(mapping.jToken.map(parse.string))),
-        mapping.record(mapping.jToken.map(parse.string))
-    ).optional.map(v => v ?? {})
+const mapOptions = zodStringToJson.pipe(z.object({
+    method: z.string()
+        .transform(s => s.toUpperCase())
+        .pipe(z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']))
+        .optional()
+        .default('GET'),
+    headers: z.union([
+        zodStringToJson.pipe(z.record(z.string(), z.json().transform(v => parse.string(v)))),
+        z.record(z.string(), z.json().transform(v => parse.string(v)))
+    ]).optional().default(() => ({}))
 }));

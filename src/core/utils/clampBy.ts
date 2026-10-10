@@ -1,4 +1,4 @@
-import { clamp } from './clamp';
+import { clamp } from './clamp.js';
 
 export function clampBy<T>(value: T, min: T, max: T, valueOf: (value: T) => number | string | bigint): T {
     const minVal = valueOf(min);

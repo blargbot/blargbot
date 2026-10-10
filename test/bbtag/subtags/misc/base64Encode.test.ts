@@ -1,9 +1,10 @@
-import { Base64EncodeSubtag } from '@blargbot/bbtag/subtags/misc/base64Encode';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new Base64EncodeSubtag(),
+await runSubtagTests({
+    replacer: replacers.base64EncodeReplacer,
+    names: ['base64Encode', 'bToA'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {

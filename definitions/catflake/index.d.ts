@@ -1,4 +1,4 @@
-export module 'catflake' {
+declare module 'catflake' {
     export interface CatflakeOptions {
         readonly epoch?: number;
         readonly incrementBits?: number;

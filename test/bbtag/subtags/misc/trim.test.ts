@@ -1,14 +1,14 @@
-import { SpaceSubtag } from '@blargbot/bbtag/subtags/misc/space';
-import { TrimSubtag } from '@blargbot/bbtag/subtags/misc/trim';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new TrimSubtag(),
+await runSubtagTests({
+    replacer: replacers.trimReplacer,
+    names: ['trim'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{trim;abc}', expected: 'abc' },
         { code: '{trim;   def   }', expected: 'def' },
-        { code: '{trim;{space;10}ghi{space;10}}', expected: 'ghi', subtags: [new SpaceSubtag()] }
+        { code: '{trim;{space;10}ghi{space;10}}', expected: 'ghi', replacers: [replacers.spaceReplacer] }
     ]
 });

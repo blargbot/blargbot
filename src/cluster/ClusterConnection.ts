@@ -1,7 +1,9 @@
-import { WorkerConnection } from '@blargbot/core/worker';
-import { Logger } from '@blargbot/logger';
+import { fileURLToPath } from 'node:url';
 
-import { ClusterIPCContract } from './types';
+import { WorkerConnection } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
+
+import type { ClusterIPCContract } from './types.js';
 
 export class ClusterConnection extends WorkerConnection<ClusterIPCContract> {
     public constructor(
@@ -11,7 +13,7 @@ export class ClusterConnection extends WorkerConnection<ClusterIPCContract> {
         maxMemory: number,
         logger: Logger
     ) {
-        super(id, '@blargbot/cluster', require.resolve('@blargbot/cluster/start'), logger);
+        super(id, '@blargbot/cluster', fileURLToPath(import.meta.resolve('./start.js')), logger);
         this.args.push(`--max-old-space-size=${maxMemory}`);
         this.env.CLUSTER_ID = id.toString();
         this.env.SHARDS_MAX = shardCount.toString();

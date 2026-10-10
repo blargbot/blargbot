@@ -1,11 +1,11 @@
-import { GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, randInt } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
-import { mapping } from '@blargbot/mapping';
-import fetch, { Response } from 'node-fetch';
+import { random } from '@blargbot/util';
+import z from 'zod';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.commit;
 
@@ -18,21 +18,21 @@ export class CommitCommand extends GlobalCommand {
                 {
                     parameters: '{commitNumber:integer?}',
                     description: cmd.default.description,
-                    execute: (_, [commitNumber]) => this.getCommit(commitNumber.asOptionalInteger)
+                    execute: (ctx, [commitNumber]) => this.getCommit(commitNumber.asOptionalInteger, ctx)
                 }
             ]
         });
     }
 
-    public async getCommit(commitNumber: number | undefined): Promise<CommandResult> {
-        const commitCount = await this.#fetchCommitCount();
+    public async getCommit(commitNumber: number | undefined, context: CommandContext): Promise<CommandResult> {
+        const commitCount = await this.#fetchCommitCount(context);
         if (commitCount === 0)
             return cmd.default.noCommits;
 
-        commitNumber ??= randInt(1, commitCount);
+        commitNumber ??= random.int(1, commitCount);
         commitNumber = Math.min(commitCount, Math.max(commitNumber, 1));
 
-        const commit = await this.#fetchCommit(commitCount - commitNumber);
+        const commit = await this.#fetchCommit(commitCount - commitNumber, context);
         if (commit === undefined)
             return cmd.default.unknownCommit;
 
@@ -52,8 +52,8 @@ export class CommitCommand extends GlobalCommand {
         };
     }
 
-    async #fetchCommitCount(): Promise<number> {
-        const response = await this.#fetchCommitRaw(0);
+    async #fetchCommitCount(context: CommandContext): Promise<number> {
+        const response = await this.#fetchCommitRaw(0, context);
         const link = response.headers.get('Link');
         if (link === null)
             return 0;
@@ -65,53 +65,34 @@ export class CommitCommand extends GlobalCommand {
         return parseInt(match[1]) + 1;
     }
 
-    async #fetchCommit(commitNumber: number): Promise<CommitData | undefined> {
+    async #fetchCommit(commitNumber: number, context: CommandContext): Promise<CommitData | undefined> {
         try {
-            const response = await this.#fetchCommitRaw(commitNumber);
-            const mapped = commitMapping(await response.json());
-            return mapped.valid ? mapped.value[0] : undefined;
+            const response = await this.#fetchCommitRaw(commitNumber, context);
+            const mapped = commitMapping.safeParse(await response.json());
+            return mapped.success ? mapped.data[0] : undefined;
         } catch {
             return undefined;
         }
     }
 
-    async #fetchCommitRaw(commitNumber: number): Promise<Response> {
-        return await fetch(`https://api.github.com/repos/blargbot/blargbot/commits?per_page=1&page=${commitNumber}`);
+    async #fetchCommitRaw(commitNumber: number, context: CommandContext): Promise<Response> {
+        return await context.util.fetch(`https://api.github.com/repos/blargbot/blargbot/commits?per_page=1&page=${commitNumber}`);
     }
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
-interface CommitData {
-    sha: string;
-    html_url: string;
-    author?: {
-        login: string;
-        avatar_url: string;
-        html_url: string;
-    };
-    commit: {
-        author: {
-            name: string;
-        };
-        message: string;
-    };
-}
-
-const commitMapping = mapping.array(
-    mapping.object<CommitData>({
-        author: mapping.object<CommitData['author']>({
-            avatar_url: mapping.string,
-            html_url: mapping.string,
-            login: mapping.string
-        }).optional,
-        commit: mapping.object({
-            author: mapping.object({
-                name: mapping.string
-            }),
-            message: mapping.string
+const commitMapping = z.object({
+    author: z.object({
+        avatar_url: z.string(),
+        html_url: z.string(),
+        login: z.string()
+    }).optional(),
+    commit: z.object({
+        author: z.object({
+            name: z.string()
         }),
-        html_url: mapping.string,
-        sha: mapping.string
-    })
-);
-/* eslint-enable @typescript-eslint/naming-convention */
+        message: z.string()
+    }),
+    html_url: z.string(),
+    sha: z.string()
+}).array();
+type CommitData = z.infer<typeof commitMapping>[number];

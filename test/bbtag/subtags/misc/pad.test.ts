@@ -1,12 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { PadSubtag } from '@blargbot/bbtag/subtags/misc/pad';
-import { expect } from 'chai';
-import { it } from 'mocha';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new PadSubtag(),
+await runSubtagTests({
+    replacer: replacers.padReplacer,
+    names: ['pad'],
     argCountBounds: { min: 3, max: 3 },
     cases: [
         { code: '{pad;left;;}', expected: '' },
@@ -51,10 +49,5 @@ runSubtagTests({
                 { start: 0, end: 29, error: new BBTagRuntimeError('Invalid direction') }
             ]
         }
-    ],
-    runOtherTests(s) {
-        it('Should be deprecated', () => {
-            expect(s.deprecated).to.equal('realpad');
-        });
-    }
+    ]
 });

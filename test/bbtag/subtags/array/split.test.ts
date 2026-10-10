@@ -1,9 +1,10 @@
-import { SplitSubtag } from '@blargbot/bbtag/subtags/array/split';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new SplitSubtag(),
+await runSubtagTests({
+    replacer: replacers.splitReplacer,
+    names: ['split'],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         { code: '{split;abc123}', expected: '["a","b","c","1","2","3"]' },

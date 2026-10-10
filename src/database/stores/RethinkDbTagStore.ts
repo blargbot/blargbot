@@ -1,9 +1,8 @@
-import { StoredTag } from '@blargbot/domain/models';
-import { TagStore } from '@blargbot/domain/stores';
-import { Logger } from '@blargbot/logger';
+import type { StoredTag, TagStore } from '@blargbot/domain';
+import type { Logger } from '@blargbot/logger';
 
-import { RethinkDb } from '../clients';
-import { RethinkDbTable } from '../tables/RethinkDbTable';
+import type { RethinkDb } from '../clients/index.js';
+import { RethinkDbTable } from '../tables/RethinkDbTable.js';
 
 export class RethinkDbTagStore implements TagStore {
     readonly #table: RethinkDbTable<StoredTag>;

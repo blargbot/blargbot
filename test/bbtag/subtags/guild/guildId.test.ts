@@ -1,9 +1,10 @@
-import { GuildIdSubtag } from '@blargbot/bbtag/subtags/guild/guildId';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new GuildIdSubtag(),
+await runSubtagTests({
+    replacer: replacers.guildIdReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

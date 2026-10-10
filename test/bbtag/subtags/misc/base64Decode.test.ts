@@ -1,9 +1,10 @@
-import { Base64DecodeSubtag } from '@blargbot/bbtag/subtags/misc/base64Decode';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new Base64DecodeSubtag(),
+await runSubtagTests({
+    replacer: replacers.base64DecodeReplacer,
+    names: ['base64Decode', 'aToB'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {

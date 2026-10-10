@@ -1,12 +1,13 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors';
-import { DeleteSubtag } from '@blargbot/bbtag/subtags/message/delete';
-import { expect } from 'chai';
-import { KnownGuildChannel } from 'eris';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, replacers } from '@blargbot/bbtag-engine';
+import type * as eris from 'eris';
 
-runSubtagTests({
-    subtag: new DeleteSubtag(),
+import { runSubtagTests, SubtagTestContext } from '../../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.deleteReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 2 },
     cases: [
         {
@@ -96,7 +97,7 @@ runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id = '9876543212345678';
             },
             errors: [
-                { start: 0, end: 9, error: new MessageNotFoundError('9876543212345678', '').withDisplay('') }
+                { start: 0, end: 9, error: new (MessageNotFoundError.withDisplay(''))('9876543212345678', '') }
             ]
         },
         {
@@ -111,7 +112,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.getMessage(bbctx.channel, '1234567890123456', false)).thenResolve(undefined);
             },
             errors: [
-                { start: 0, end: 25, error: new MessageNotFoundError('9876543212345678', '1234567890123456').withDisplay('') }
+                { start: 0, end: 25, error: new (MessageNotFoundError.withDisplay(''))('9876543212345678', '1234567890123456') }
             ]
         },
         {
@@ -147,8 +148,8 @@ runSubtagTests({
 
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get('987654322123456142') as KnownGuildChannel;
-                expect(channel).to.not.be.undefined;
+                const channel = bbctx.guild.channels.get('987654322123456142') as eris.KnownGuildChannel;
+                assert.notEqual(channel, undefined);
 
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: '987654322123456142',

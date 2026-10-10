@@ -1,23 +1,23 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { SlowModeSubtag } from '@blargbot/bbtag/subtags/channel/slowMode';
-import { argument } from '@blargbot/test-util/mock';
-import { ApiError, Constants, TextChannel } from 'eris';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
 
-runSubtagTests({
-    subtag: new SlowModeSubtag(),
+
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.slowModeReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 2 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
+        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
     },
     cases: [
         {
             code: '{slowmode}',
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.editChannel(ctx.channels.command.id, argument.isDeepEqual({ rateLimitPerUser: 0 }), 'Command User#0000'))
-                    .thenResolve(ctx.createMock(TextChannel).instance);
+                ctx.discord.setup(m => m.editChannel(ctx.channels.command.id, $.looksLike({ rateLimitPerUser: 0 }), 'Command User#0000'))
+                    .thenResolve(ctx.createMock(eris.TextChannel).instance);
             }
         },
         {
@@ -25,8 +25,8 @@ runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1234')).thenResolve([]);
-                ctx.discord.setup(m => m.editChannel(ctx.channels.command.id, argument.isDeepEqual({ rateLimitPerUser: 1234 }), 'Command User#0000'))
-                    .thenResolve(ctx.createMock(TextChannel).instance);
+                ctx.discord.setup(m => m.editChannel(ctx.channels.command.id, $.looksLike({ rateLimitPerUser: 1234 }), 'Command User#0000'))
+                    .thenResolve(ctx.createMock(eris.TextChannel).instance);
             }
         },
         {
@@ -38,7 +38,7 @@ runSubtagTests({
                     throw new Error('Failed to locate channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '2342543235325252345')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 }), 'Command User#0000'))
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({ rateLimitPerUser: 0 }), 'Command User#0000'))
                     .thenResolve(channel);
             }
         },
@@ -51,7 +51,7 @@ runSubtagTests({
                     throw new Error('Failed to locate channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '2342543235325252345')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({ rateLimitPerUser: 21600 }), 'Command User#0000'))
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({ rateLimitPerUser: 21600 }), 'Command User#0000'))
                     .thenResolve(channel);
             }
         },
@@ -64,7 +64,7 @@ runSubtagTests({
                     throw new Error('Failed to locate channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '2342543235325252345')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 }), 'Command User#0000'))
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({ rateLimitPerUser: 0 }), 'Command User#0000'))
                     .thenResolve(channel);
             }
         },
@@ -75,13 +75,13 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
+                const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Failed to locate channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '2342543235325252345')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 }), 'Command User#0000')).thenReject(err);
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({ rateLimitPerUser: 0 }), 'Command User#0000')).thenReject(err);
             }
         },
         {
@@ -91,13 +91,13 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 const channel = bbctx.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Failed to locate channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '2342543235325252345')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({ rateLimitPerUser: 0 }), 'Command User#0000')).thenReject(err);
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({ rateLimitPerUser: 0 }), 'Command User#0000')).thenReject(err);
             }
         }
     ]

@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { BaseNumberSubtag } from '@blargbot/bbtag/subtags/math/base';
+import { BBTagRuntimeError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new BaseNumberSubtag(),
+await runSubtagTests({
+    replacer: replacers.baseReplacer,
+    names: ['base', 'radix'],
     argCountBounds: { min: 2, max: 3 },
     cases: [
         { code: '{base;10;16}', expected: 'a' },
@@ -29,7 +29,7 @@ runSubtagTests({
             code: '{base;10;37}',
             expected: '12',
             setup(ctx) {
-                ctx.rootScope.fallback = '8';
+                ctx.locals.setup(m => m.fallback).returns('8');
             }
         },
         {
@@ -50,14 +50,14 @@ runSubtagTests({
             code: '{base;10;1;16}',
             expected: 'a',
             setup(ctx) {
-                ctx.rootScope.fallback = '10';
+                ctx.locals.setup(m => m.fallback).returns('10');
             }
         },
         {
             code: '{base;10;37;16}',
             expected: 'a',
             setup(ctx) {
-                ctx.rootScope.fallback = '10';
+                ctx.locals.setup(m => m.fallback).returns('10');
             }
         },
         {
@@ -78,14 +78,14 @@ runSubtagTests({
             code: '{base;10;abc;16}',
             expected: 'a',
             setup(ctx) {
-                ctx.rootScope.fallback = '10';
+                ctx.locals.setup(m => m.fallback).returns('10');
             }
         },
         {
             code: '{base;10;16;abc}',
             expected: '20',
             setup(ctx) {
-                ctx.rootScope.fallback = '8';
+                ctx.locals.setup(m => m.fallback).returns('8');
             }
         },
         {
@@ -99,7 +99,7 @@ runSubtagTests({
             code: '{base;ghi;16;11}',
             expected: '85',
             setup(ctx) {
-                ctx.rootScope.fallback = '93';
+                ctx.locals.setup(m => m.fallback).returns('93');
             }
         }
     ]

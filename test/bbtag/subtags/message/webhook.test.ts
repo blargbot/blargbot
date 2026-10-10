@@ -1,24 +1,24 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { WebhookSubtag } from '@blargbot/bbtag/subtags/message/webhook';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { argument } from '@blargbot/test-util/mock';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { BBTagRuntimeError, EscapeBBTagSubtag, WebhookSubtag } from '@blargbot/bbtag-engine';
 
-runSubtagTests({
-    subtag: new WebhookSubtag(),
+
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.webhookReplacer,
+    names: [],
     argCountBounds: { min: 2, max: 8 },
     cases: [
         {
             code: '{webhook;abc;def}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '`Error executing webhook: Test error`',
             errors: [
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: Test error') }
             ],
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: undefined,
                     avatarURL: undefined,
                     content: undefined,
@@ -29,13 +29,13 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '`Error executing webhook: 404 NotFound on POST /webhooks`',
             errors: [
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: 404 NotFound on POST /webhooks') }
             ],
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: undefined,
                     avatarURL: undefined,
                     content: undefined,
@@ -46,7 +46,7 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '`Error executing webhook: UNKNOWN`',
             errors: [
                 { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: UNKNOWN') }
@@ -55,7 +55,7 @@ runSubtagTests({
                 const error = new Error('This should be caught not thrown');
 
                 ctx.logger.setup(m => m.error('Error executing webhook', error)).thenReturn(undefined);
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: undefined,
                     avatarURL: undefined,
                     content: undefined,
@@ -66,10 +66,10 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: undefined,
                     avatarURL: undefined,
                     content: undefined,
@@ -80,10 +80,10 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: undefined,
                     avatarURL: undefined,
                     content: 'ghi',
@@ -94,10 +94,10 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"color":"This isnt an embed"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: undefined,
                     avatarURL: undefined,
                     content: 'ghi',
@@ -108,10 +108,10 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: undefined,
                     avatarURL: undefined,
                     content: 'ghi',
@@ -122,10 +122,10 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: 'jkl',
                     avatarURL: undefined,
                     content: 'ghi',
@@ -136,10 +136,10 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: 'jkl',
                     avatarURL: 'mno',
                     content: 'ghi',
@@ -150,57 +150,85 @@ runSubtagTests({
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;pqrs}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: 'jkl',
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0x70, 0x71, 0x72, 0x73])).value, name: 'file.txt' }]
+                    file: [{
+                        file: $.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x70, 0x71, 0x72, 0x73]).toString();
+                            assert.equal(actual, expected);
+                        }).value,
+                        name: 'file.txt'
+                    }]
                 }))).thenResolve(undefined);
             }
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;buffer:pqrs}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: 'jkl',
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0xa6, 0xaa, 0xec])).value, name: 'file.txt' }]
+                    file: [{
+                        file: $.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0xa6, 0xaa, 0xec]).toString();
+                            assert.equal(actual, expected);
+                        }).value,
+                        name: 'file.txt'
+                    }]
                 }))).thenResolve(undefined);
             }
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;pqrs;tuv}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: 'jkl',
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0x70, 0x71, 0x72, 0x73])).value, name: 'tuv' }]
+                    file: [{
+                        file: $.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x70, 0x71, 0x72, 0x73]).toString();
+                            assert.equal(actual, expected);
+                        }).value,
+                        name: 'tuv'
+                    }]
                 }))).thenResolve(undefined);
             }
         },
         {
             code: '{webhook;abc;def;ghi;{escapebbtag;{"title":"My cool embed"}};jkl;mno;buffer:pqrs;tuv}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.executeWebhook('abc', 'def', argument.isDeepEqual({
+                ctx.discord.setup(m => m.executeWebhook('abc', 'def', $.looksLike({
                     username: 'jkl',
                     avatarURL: 'mno',
                     content: 'ghi',
                     embeds: [{ title: 'My cool embed' }],
-                    file: [{ file: argument.assert<Buffer>(value => expect(value).to.be.instanceOf(Buffer).and.to.equalBytes([0xa6, 0xaa, 0xec])).value, name: 'tuv' }]
+                    file: [{
+                        file: $.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0xa6, 0xaa, 0xec]).toString();
+                            assert.equal(actual, expected);
+                        }).value,
+                        name: 'tuv'
+                    }]
                 }))).thenResolve(undefined);
             }
         }

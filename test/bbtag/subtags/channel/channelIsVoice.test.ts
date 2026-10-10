@@ -1,11 +1,12 @@
-import { ChannelIsVoiceSubtag } from '@blargbot/bbtag/subtags/channel/channelIsVoice';
-import { Constants } from 'eris';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
 
-runSubtagTests({
-    subtag: new ChannelIsVoiceSubtag(),
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
+
+await runSubtagTests({
+    replacer: replacers.channelIsVoiceReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetChannelPropTestCases({
@@ -19,16 +20,15 @@ runSubtagTests({
                 ['GUILD_VOICE']: true,
                 ['GUILD_CATEGORY']: false,
                 ['GUILD_NEWS']: false,
-                ['GUILD_STORE']: false,
                 ['GUILD_NEWS_THREAD']: false,
                 ['GUILD_PUBLIC_THREAD']: false,
                 ['GUILD_PRIVATE_THREAD']: false,
                 ['GUILD_STAGE_VOICE']: true
             }).map(([key, success]) => ({
-                title: `Channel is a ${key} (${Constants.ChannelTypes[key]})`,
+                title: `Channel is a ${key} (${eris.Constants.ChannelTypes[key]})`,
                 expected: success.toString(),
                 setup(channel) {
-                    channel.type = Constants.ChannelTypes[key];
+                    channel.type = eris.Constants.ChannelTypes[key];
                 }
             }))
 

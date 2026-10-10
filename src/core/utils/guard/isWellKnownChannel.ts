@@ -1,5 +1,5 @@
-import { Channel, KnownChannel, PossiblyUncachedTextableChannel } from 'eris';
+import * as eris from 'eris';
 
-export function isWellKnownChannel<T extends PossiblyUncachedTextableChannel>(channel: T): channel is T & KnownChannel {
-    return channel instanceof Channel;
+export function isWellKnownChannel<T extends eris.PossiblyUncachedTextableChannel>(channel: T): channel is T & eris.KnownChannel {
+    return channel instanceof eris.Channel;
 }

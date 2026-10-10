@@ -1,11 +1,11 @@
-import { guard } from '@blargbot/core/utils';
+import { guard } from '@blargbot/core';
 import Color from 'color';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError } from '../../errors';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.color;
 
@@ -48,6 +48,7 @@ export class ColorSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Invalid color', 'value was empty');
 
         const arr = await bbtag.tagArray.deserializeOrGetArray(context, colorStr);
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
 
         const inputConverter = getConverter(inputStr ?? '');

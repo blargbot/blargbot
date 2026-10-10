@@ -1,8 +1,9 @@
-import { Api } from '@blargbot/api/Api';
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
-import { GuildTriggerTag } from '@blargbot/domain/models';
-import { mapping } from '@blargbot/mapping';
+import type { GuildTriggerTag } from '@blargbot/domain';
+import z from 'zod';
+
+import type { Api } from '../../Api.js';
+import { BaseRoute } from '../../BaseRoute.js';
+import type { ApiResponse } from '../../types.js';
 
 export class AutoresponsesRoute extends BaseRoute<['/guilds/:guildId/autoresponses']> {
     readonly #api: Api;
@@ -16,7 +17,7 @@ export class AutoresponsesRoute extends BaseRoute<['/guilds/:guildId/autorespons
 
         this.addRoute('/', {
             get: ({ request }) => this.listAutoresponses(request.params.guildId),
-            post: ({ request }) => this.createAutoresponse(request.params.guildId, request.body)
+            post: () => this.createAutoresponse()
         });
 
         this.addRoute('/:id', {
@@ -26,15 +27,12 @@ export class AutoresponsesRoute extends BaseRoute<['/guilds/:guildId/autorespons
         });
     }
 
-    public async createAutoresponse(guildId: string, body: unknown): Promise<ApiResponse> {
-        guildId;
-        body;
-        await Promise.resolve();
+    public createAutoresponse(): ApiResponse {
         return this.badRequest({ message: 'Creating autoresponses via the API isnt supported yet!' });
     }
 
     public async deleteAutoresponse(guildId: string, id: string): Promise<ApiResponse> {
-        const key = this.mapRequestValue(id, mapId);
+        const key = await this.mapRequestValue(id, mapId);
 
         if (!await this.#api.database.guilds.setAutoresponse(guildId, key, undefined))
             return this.notFound();
@@ -51,7 +49,7 @@ export class AutoresponsesRoute extends BaseRoute<['/guilds/:guildId/autorespons
     }
 
     public async getAutoresponse(guildId: string, id: string): Promise<ApiResponse> {
-        const key = this.mapRequestValue(id, mapId);
+        const key = await this.mapRequestValue(id, mapId);
         const autoresponse = await this.#api.database.guilds.getAutoresponse(guildId, key);
         if (autoresponse === undefined)
             return this.notFound();
@@ -60,8 +58,8 @@ export class AutoresponsesRoute extends BaseRoute<['/guilds/:guildId/autorespons
     }
 
     public async editAutoresponse(guildId: string, id: string, body: unknown, userId: string): Promise<ApiResponse> {
-        const request = this.mapRequestValue(body, mapUpdate);
-        const key = this.mapRequestValue(id, mapId);
+        const request = await this.mapRequestValue(body, mapUpdate);
+        const key = await this.mapRequestValue(id, mapId);
         const autoresponse = await this.#api.database.guilds.getAutoresponse(guildId, key);
         if (autoresponse === undefined)
             return this.notFound();
@@ -88,8 +86,11 @@ export class AutoresponsesRoute extends BaseRoute<['/guilds/:guildId/autorespons
     }
 }
 
-const mapUpdate = mapping.object({
-    content: mapping.string
-});
+const mapUpdate = z.compile(z.object({
+    content: z.string()
+}));
 
-const mapId = mapping.choice(mapping.in('everything' as const), mapping.number);
+const mapId = z.compile(z.union([
+    z.enum(['everything']),
+    z.string().regex(/^\d+$/).transform(Number)
+]));

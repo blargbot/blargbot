@@ -1,9 +1,10 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
-import { exec } from 'child_process';
+import { exec } from 'node:child_process';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
+
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.update;
 
@@ -71,9 +72,9 @@ export class UpdateCommand extends GlobalCommand {
                 file: Buffer.from(result),
                 name: 'output.txt'
             };
-            message === undefined
-                ? await context.reply({ content, file: [file] })
-                : await context.edit(message, { content, file: [file] });
+            await (message === undefined
+                ? context.reply({ content, file: [file] })
+                : context.edit(message, { content, file: [file] }));
             return result;
         } catch (err: unknown) {
             const content = cmd.default.command.error({ command });
@@ -82,9 +83,9 @@ export class UpdateCommand extends GlobalCommand {
                 file: Buffer.from(result),
                 name: 'output.txt'
             };
-            message === undefined
-                ? await context.reply({ content, file: [file] })
-                : await context.edit(message, { content, file: [file] });
+            await (message === undefined
+                ? context.reply({ content, file: [file] })
+                : context.edit(message, { content, file: [file] }));
             throw err;
         }
     }

@@ -1,10 +1,11 @@
-import { MessageSenderSubtag } from '@blargbot/bbtag/subtags/message/messageSender';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-runSubtagTests({
-    subtag: new MessageSenderSubtag(),
+await runSubtagTests({
+    replacer: replacers.messageSenderReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetMessagePropTestCases({

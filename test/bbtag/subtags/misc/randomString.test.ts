@@ -1,18 +1,19 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { RandomStringSubtag } from '@blargbot/bbtag/subtags/misc/randomString';
+import { BBTagRuntimeError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new RandomStringSubtag(),
+await runSubtagTests({
+    replacer: replacers.randomStringReplacer,
+    names: ['randomString', 'randString', 'randStr'],
     argCountBounds: { min: 2, max: 2 },
     cases: [
         { code: '{randstr;abcdefg;5}', expected: /^([a-g])(?!\1{4})[a-g]{4}$/, retries: 5 },
+        { code: '{randstr;abcdefg;-1}', expected: '' },
         { code: '{randstr;123abc456xyz;7}', expected: /^([abcxyz1-6])(?!\1{6})[abcxyz1-6]{6}$/, retries: 5 },
         {
             code: '{randstr;123abc456xyz;b}',
             expected: /^([abcxyz1-6])(?!\1{6})[abcxyz1-6]{6}$/,
-            setup(ctx) { ctx.rootScope.fallback = '7'; },
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('7'); },
             retries: 5
         },
         {
@@ -36,7 +37,7 @@ runSubtagTests({
         {
             code: '{randstr;{eval}123abc456xyz;{eval}a}',
             expected: 'b',
-            setup(ctx) { ctx.rootScope.fallback = 'b'; },
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('b'); },
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 28, end: 34, error: new MarkerError('eval', 28) },

@@ -1,23 +1,20 @@
-import { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId';
-import { ReactionSubtag } from '@blargbot/bbtag/subtags/message/reaction';
-import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser';
-import { WaitReactionSubtag } from '@blargbot/bbtag/subtags/message/waitReaction';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
-import { AwaitReactionsResponse } from '@blargbot/bbtag/types';
-import { Emote } from '@blargbot/core/Emote';
-import { argument } from '@blargbot/test-util/mock';
-import { expect } from 'chai';
-import { Guild, KnownMessage, Member, Message, TextChannel, User } from 'eris';
+import assert from 'node:assert/strict';
 
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import type { AwaitReactionsResponse, BBTagUtilities } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, WaitReactionSubtag } from '@blargbot/bbtag-engine';
+import { Emote } from '@blargbot/core';
+
+
+
+import type { SubtagTestContext } from '../../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../../SubtagTestSuite.js';
 
 type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitReaction']>[1], undefined>;
-const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');
+const anyCondition = $.is((v): v is AwaitCondition => typeof v === 'function');
 
-runSubtagTests({
-    subtag: new WaitReactionSubtag(),
+await runSubtagTests({
+    replacer: replacers.waitReactionReplacer,
+    names: [],
     argCountBounds: { min: 1, max: { count: 5, noEval: [3] } },
     cases: [
         {
@@ -28,7 +25,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '23642834762378964232');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(undefined, [rejectedReaction]));
             }
         },
@@ -43,7 +40,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
             }
         },
@@ -58,7 +55,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
             }
         },
@@ -73,7 +70,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '34897465835684954375', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874', '34897465835684954375', '9328479238794834798487']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874', '34897465835684954375', '9328479238794834798487']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
             }
         },
@@ -87,13 +84,13 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -108,13 +105,13 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -129,27 +126,27 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
 
-                const member1 = ctx.createMock(Member);
-                const user1 = ctx.createMock(User);
-                member1.setup(m => m.user).thenReturn(user1.instance);
-                user1.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member1 = ctx.createMock(eris.Member);
+                const user1 = ctx.createMock(eris.User);
+                member1.setup(m => m.user).returns(user1.instance);
+                user1.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member1.instance]);
 
-                const member2 = ctx.createMock(Member);
-                const user2 = ctx.createMock(User);
-                member2.setup(m => m.user).thenReturn(user2.instance);
-                user2.setup(m => m.id).thenReturn('9234874534905735485');
+                const member2 = ctx.createMock(eris.Member);
+                const user2 = ctx.createMock(eris.User);
+                member2.setup(m => m.user).returns(user2.instance);
+                user2.setup(m => m.id).returns('9234874534905735485');
                 ctx.util.setup(m => m.getUser('9234874534905735485')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '9234874534905735485')).thenResolve([member2.instance]);
 
-                const member3 = ctx.createMock(Member);
-                const user3 = ctx.createMock(User);
-                member3.setup(m => m.user).thenReturn(user3.instance);
-                user3.setup(m => m.id).thenReturn('39857623874642873');
+                const member3 = ctx.createMock(eris.Member);
+                const user3 = ctx.createMock(eris.User);
+                member3.setup(m => m.user).returns(user3.instance);
+                user3.setup(m => m.id).returns('39857623874642873');
                 ctx.util.setup(m => m.getUser('39857623874642873')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '39857623874642873')).thenResolve([member3.instance]);
             }
@@ -165,13 +162,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '❌', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -187,13 +184,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -209,13 +206,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -231,13 +228,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -253,13 +250,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -275,13 +272,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -297,13 +294,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -318,13 +315,13 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -336,7 +333,7 @@ runSubtagTests({
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) }
             ],
-            subtags: [new OperatorSubtag(), new MessageIdSubtag()],
+            subtags: [replacers.operatorReplacer, replacers.messageIdReplacer],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -345,13 +342,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '238746283794634234', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -363,7 +360,7 @@ runSubtagTests({
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) }
             ],
-            subtags: [new OperatorSubtag(), new ReactionSubtag()],
+            subtags: [replacers.operatorReplacer, replacers.reactionReplacer],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -372,13 +369,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -389,7 +386,7 @@ runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) }
             ],
-            subtags: [new OperatorSubtag(), new ReactionUserSubtag()],
+            subtags: [replacers.operatorReplacer, replacers.reactionUserReplacer],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
@@ -397,13 +394,13 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -424,13 +421,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -448,13 +445,13 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const rejectedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 60000))
                     .thenCall(createFakeAwaiterFactory(undefined, [rejectedReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -475,13 +472,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 10000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 10000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -502,13 +499,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 0))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 0))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -529,13 +526,13 @@ runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 300000))
+                ctx.util.setup(m => m.awaitReaction($.looksLike(['328974628744623874']), anyCondition.value, 300000))
                     .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
+                const member = ctx.createMock(eris.Member);
+                const user = ctx.createMock(eris.User);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
             }
@@ -546,7 +543,7 @@ runSubtagTests({
 function createFakeAwaiterFactory(result: AwaitReactionsResponse | undefined, expectedFails: AwaitReactionsResponse[] = []): BBTagUtilities['awaitReaction'] {
     return async (_: unknown, condition: AwaitCondition) => {
         for (const value of expectedFails)
-            expect(await condition(value)).to.be.false;
+            assert.equal(await condition(value), false);
         if (result === undefined)
             return undefined;
         if (await condition(result))
@@ -557,15 +554,15 @@ function createFakeAwaiterFactory(result: AwaitReactionsResponse | undefined, ex
 
 function createFilterableReaction(
     ctx: SubtagTestContext,
-    guild: Guild,
+    guild: eris.Guild,
     emote: string,
     messageId: string,
     channelId = ctx.channels.command.id,
     userId = ctx.users.command.id
 ): AwaitReactionsResponse {
-    const message = ctx.createMock<KnownMessage>(Message);
-    const channel = ctx.createMock(TextChannel);
-    const reactor = ctx.createMock(User);
+    const message = ctx.createMock<eris.KnownMessage>(eris.Message);
+    const channel = ctx.createMock(eris.TextChannel);
+    const reactor = ctx.createMock(eris.User);
     message.setup(m => m.channel).thenReturn(channel.instance);
     message.setup(m => m.id, false).thenReturn(messageId);
     channel.setup(m => m.guild).thenReturn(guild);
@@ -584,8 +581,8 @@ function createRejectedReaction(
     emote: string,
     userId = ctx.users.command.id
 ): AwaitReactionsResponse {
-    const message = ctx.createMock<KnownMessage>(Message);
-    const reactor = ctx.createMock(User);
+    const message = ctx.createMock<eris.KnownMessage>(eris.Message);
+    const reactor = ctx.createMock(eris.User);
     reactor.setup(m => m.id).thenReturn(userId);
 
     return {

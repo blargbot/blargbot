@@ -1,9 +1,10 @@
-import { GuildCreatedAtSubtag } from '@blargbot/bbtag/subtags/guild/guildCreatedAt';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new GuildCreatedAtSubtag(),
+await runSubtagTests({
+    replacer: replacers.guildCreatedAtReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 1 },
     setup(ctx) {
         ctx.guild.id = '417411399422312468';

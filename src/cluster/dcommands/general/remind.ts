@@ -1,10 +1,10 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, guard } from '@blargbot/cluster/utils';
-import { parse } from '@blargbot/core/utils';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand, guard } from '@blargbot/cluster';
+import { parse } from '@blargbot/core';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.remind;
 

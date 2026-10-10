@@ -1,6 +1,10 @@
 {
   "name": "typescript",
-  "version": "4.9.3-sdk",
+  "version": "6.0.3-sdk",
   "main": "./lib/typescript.js",
-  "type": "commonjs"
+  "type": "commonjs",
+  "bin": {
+    "tsc": "./bin/tsc",
+    "tsserver": "./bin/tsserver"
+  }
 }

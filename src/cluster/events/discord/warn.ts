@@ -1,5 +1,5 @@
-import { Cluster } from '@blargbot/cluster';
-import { DiscordEventService } from '@blargbot/core/serviceTypes';
+import type { Cluster } from '@blargbot/cluster';
+import { DiscordEventService } from '@blargbot/core';
 
 export class DiscordWarnHandler extends DiscordEventService<'warn'> {
     public constructor(cluster: Cluster) {

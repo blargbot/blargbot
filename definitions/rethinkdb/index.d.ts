@@ -1,7 +1,7 @@
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 
-export module 'rethinkdb' {
-    import { ConnectionOptions as TLSConnectionOptions } from 'tls';
+declare module 'rethinkdb' {
+    import { ConnectionOptions as TLSConnectionOptions } from 'node:tls';
 
     export function connect(opts: ConnectionOptions, cb: (err: ReqlDriverError, conn: Connection) => void): void;
     export function connect(host: string, cb: (err: ReqlDriverError, conn: Connection) => void): void;

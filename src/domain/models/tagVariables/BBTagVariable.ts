@@ -1,4 +1,4 @@
-import { TagVariableType } from './TagVariableType';
+import type { TagVariableType } from './TagVariableType.js';
 
 export interface BBTagVariable {
     readonly name: string;

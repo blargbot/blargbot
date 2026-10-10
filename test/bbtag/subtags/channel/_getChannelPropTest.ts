@@ -1,9 +1,9 @@
-import { BBTagContext } from '@blargbot/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors';
-import { APIChannel } from 'discord-api-types/v9';
-import { KnownGuildChannel } from 'eris';
+import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { ChannelNotFoundError } from '@blargbot/bbtag-engine';
 
-import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
+import type * as eris from 'eris';
+
+import type { SubtagTestCase, SubtagTestContext } from '../../SubtagTestSuite.js';
 
 export function createGetChannelPropTestCases(options: GetChannelPropTestData): SubtagTestCase[] {
     return [...createGetChannelPropTestCasesIter(options)];
@@ -73,8 +73,8 @@ interface GetChannelPropTestCase {
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, quietStr?: string]) => string;
     setup?: (channel: APIChannel, context: SubtagTestContext) => void;
-    postSetup?: (channel: KnownGuildChannel, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, channel: KnownGuildChannel, context: BBTagContext, test: SubtagTestContext) => void;
+    postSetup?: (channel: eris.KnownGuildChannel, context: BBTagContext, test: SubtagTestContext) => void;
+    assert?: (result: string, channel: eris.KnownGuildChannel, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetChannelPropTestData, testCase: GetChannelPropTestCase, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetChannelPropTestData['generateCode']>): SubtagTestCase {

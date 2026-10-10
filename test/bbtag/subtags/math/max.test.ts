@@ -1,9 +1,10 @@
-import { MaxSubtag } from '@blargbot/bbtag/subtags/math/max';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new MaxSubtag(),
+await runSubtagTests({
+    replacer: replacers.maxReplacer,
+    names: ['max'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         { code: '{max;1;2;3;4;5}', expected: '5' },

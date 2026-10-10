@@ -1,4 +1,4 @@
-import { BBTagRuntimeError } from './BBTagRuntimeError';
+import { BBTagRuntimeError } from './BBTagRuntimeError.js';
 
 export class NotEnoughArgumentsError extends BBTagRuntimeError {
     public constructor(public readonly min: number, public readonly actual: number) {

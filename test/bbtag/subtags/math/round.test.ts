@@ -1,10 +1,10 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { RoundSubtag } from '@blargbot/bbtag/subtags/math/round';
+import { NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new RoundSubtag(),
+await runSubtagTests({
+    replacer: replacers.roundReplacer,
+    names: ['round'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{round;5}', expected: '5' },

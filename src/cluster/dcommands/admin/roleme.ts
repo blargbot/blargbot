@@ -1,13 +1,13 @@
 import { bbtag } from '@blargbot/bbtag';
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, guard } from '@blargbot/cluster/utils';
-import { GuildRolemeEntry } from '@blargbot/domain/models';
-import { IFormattable, util } from '@blargbot/formatting';
-import { Constants } from 'eris';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, guard, GuildCommand  } from '@blargbot/cluster';
+import type { GuildRolemeEntry } from '@blargbot/domain';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import * as eris from 'eris';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.roleMe;
 
@@ -151,11 +151,11 @@ export class RolemeCommand extends GuildCommand {
             const caseSensitive = await context.queryConfirm({
                 prompt: cmd.common.caseSensitiveQuery.prompt,
                 cancel: {
-                    style: Constants.ButtonStyles.SECONDARY,
+                    style: eris.Constants.ButtonStyles.SECONDARY,
                     label: cmd.common.caseSensitiveQuery.cancel
                 },
                 continue: {
-                    style: Constants.ButtonStyles.SECONDARY,
+                    style: eris.Constants.ButtonStyles.SECONDARY,
                     label: cmd.common.caseSensitiveQuery.continue
                 }
             });
@@ -183,7 +183,7 @@ export class RolemeCommand extends GuildCommand {
                 parse: message => ({ success: true, value: message.channelMentions }),
                 cancel: {
                     label: cmd.common.channelsQuery.cancel,
-                    style: Constants.ButtonStyles.PRIMARY
+                    style: eris.Constants.ButtonStyles.PRIMARY
                 }
             });
 
@@ -406,7 +406,7 @@ export class RolemeCommand extends GuildCommand {
             },
             cancel: {
                 label: cmd.common.rolesQuery.cancel,
-                style: Constants.ButtonStyles.PRIMARY
+                style: eris.Constants.ButtonStyles.PRIMARY
             }
         });
 

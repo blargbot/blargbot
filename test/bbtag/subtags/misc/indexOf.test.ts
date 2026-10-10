@@ -1,11 +1,10 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { IndexOfSubtag } from '@blargbot/bbtag/subtags/misc/indexOf';
+import { NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new IndexOfSubtag(),
+await runSubtagTests({
+    replacer: replacers.indexOfReplacer,
+    names: ['indexOf'],
     argCountBounds: { min: 2, max: 3 },
     cases: [
         { code: '{indexof;This is some text;s}', expected: '3' },
@@ -20,7 +19,7 @@ runSubtagTests({
         {
             code: '{indexof;This is some text;s;a}',
             expected: '6',
-            setup(ctx) { ctx.rootScope.fallback = '4'; }
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('4'); }
         },
         {
             code: '{indexof;This is some text;s;a}',
@@ -32,10 +31,10 @@ runSubtagTests({
         {
             code: '{indexof;This is some text;s;a}',
             expected: 'b',
-            setup(ctx) { ctx.rootScope.fallback = 'b'; },
             errors: [
                 { start: 0, end: 31, error: new NotANumberError('a') }
-            ]
+            ],
+            setup(ctx) { ctx.locals.setup(m => m.fallback).returns('b'); }
         },
 
         { code: '{indexof;[1,2,3,4,"5",5,6];5}', expected: '4' },
@@ -51,6 +50,6 @@ runSubtagTests({
         { code: '{indexof;This is some text;z}', expected: '-1' },
         { code: '{indexof;;z}', expected: '-1' },
         { code: '{indexof;[];a}', expected: '-1' },
-        { code: '{indexof;{escapebbtag;{"n":"abc","v":["a"]}};a}', expected: '0', subtags: [new EscapeBBTagSubtag()] }
+        { code: '{indexof;{escapebbtag;{"n":"abc","v":["a"]}};a}', expected: '0', replacers: [replacers.escapeBBTagReplacer] }
     ]
 });

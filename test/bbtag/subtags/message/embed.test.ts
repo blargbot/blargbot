@@ -1,29 +1,30 @@
-import { EmbedSubtag } from '@blargbot/bbtag/subtags/message/embed';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { EmbedSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag-engine';
 
-runSubtagTests({
-    subtag: new EmbedSubtag(),
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.embedReplacer,
+    names: [],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                assert.deepEqual(ctx.data.embeds, [
                     { title: 'Hello!' }
                 ]);
             }
         },
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"author":{ "name": "abc" }}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                assert.deepEqual(ctx.data.embeds, [
                     { title: 'Hello!' },
                     { author: { name: 'abc' } }
                 ]);
@@ -31,10 +32,10 @@ runSubtagTests({
         },
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"title": false}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                assert.deepEqual(ctx.data.embeds, [
                     { title: 'Hello!' },
                     { fields: [{ name: 'Malformed JSON', value: '{"title":false}' }], malformed: true }
                 ]);
@@ -42,10 +43,10 @@ runSubtagTests({
         },
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}};{escapebbtag;{"author":{ "name": "abc" }}};{escapebbtag;[{"title":"embed array 1"}, {"title": "embed array 2"}]}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                assert.deepEqual(ctx.data.embeds, [
                     { title: 'Hello!' },
                     { author: { name: 'abc' } },
                     { title: 'embed array 1' },

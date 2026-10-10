@@ -1,9 +1,10 @@
-import { NumberFormatSubtag } from '@blargbot/bbtag/subtags/math/numberFormat';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new NumberFormatSubtag(),
+await runSubtagTests({
+    replacer: replacers.numberFormatReplacer,
+    names: ['numberFormat', 'numFormat'],
     argCountBounds: { min: 2, max: 4 },
     cases: [
         { code: '{numformat;123456.789;2}', expected: '123456.79' },

@@ -1,12 +1,11 @@
-import { guard, snowflake } from '@blargbot/core/utils';
-import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensorExceptions, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@blargbot/domain/models';
-import { GuildStore } from '@blargbot/domain/stores';
-import { Logger } from '@blargbot/logger';
-import { UpdateData } from 'rethinkdb';
+import { guard, snowflake } from '@blargbot/core';
+import type { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensorExceptions, GuildCensors, GuildCommandTag, GuildDetails, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildStore, GuildTriggerTag, GuildVoteban, GuildVotebans, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings  } from '@blargbot/domain';
+import type { Logger } from '@blargbot/logger';
+import type { UpdateData } from 'rethinkdb';
 
-import { RethinkDb } from '../clients';
-import { RethinkDbCachedTable } from '../tables/RethinkDbCachedTable';
-import { RethinkDbTable } from '../tables/RethinkDbTable';
+import type { RethinkDb } from '../clients/index.js';
+import { RethinkDbCachedTable } from '../tables/RethinkDbCachedTable.js';
+import type { RethinkDbTable } from '../tables/RethinkDbTable.js';
 
 export class RethinkDbGuildStore implements GuildStore {
     readonly #table: RethinkDbCachedTable<StoredGuild, 'guildid'>;
@@ -460,7 +459,7 @@ export class RethinkDbGuildStore implements GuildStore {
             return [];
 
         const payload = commands.reduce<Record<string, CommandPermissions>>((p, c) => {
-            p[c] = this.#table.updateExpr(<CommandPermissions>permissions);
+            p[c] = this.#table.updateExpr(permissions);
             return p;
         }, {});
         if (commands.length === 0 || !await this.#table.update(guildId, { commandperms: payload }))

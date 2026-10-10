@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ReactionSubtag } from '@blargbot/bbtag/subtags/message/reaction';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new ReactionSubtag(),
+await runSubtagTests({
+    replacer: replacers.reactionReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

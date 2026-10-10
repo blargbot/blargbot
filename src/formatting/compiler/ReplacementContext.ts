@@ -1,7 +1,9 @@
-import { IFormatter } from '../types';
+import type { IFormatter } from '../types.js';
 
 export interface ReplacementContext {
     readonly formatter: IFormatter;
-    readonly valueStack: readonly unknown[];
-    withValue<T>(value: unknown, action: (value: this) => T): T;
+    readonly valueStack: readonly ReplacementValue[];
+    withValue<T>(value: ReplacementValue, action: (value: this) => T): T;
 }
+
+export type ReplacementValue = unknown

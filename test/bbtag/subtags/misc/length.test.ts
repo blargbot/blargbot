@@ -1,11 +1,10 @@
-import { UnknownSubtagError } from '@blargbot/bbtag/errors';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { LengthSubtag } from '@blargbot/bbtag/subtags/misc/length';
+import { replacers, UnknownSubtagError } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new LengthSubtag(),
+await runSubtagTests({
+    replacer: replacers.lengthReplacer,
+    names: ['length'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{length;}', expected: '0' },
@@ -19,7 +18,7 @@ runSubtagTests({
                 { start: 8, end: 26, error: new UnknownSubtagError('"n":"abc","v":[]') }
             ]
         },
-        { code: '{length;{escapebbtag;{"n":"abc","v":[]}}}', expected: '0', subtags: [new EscapeBBTagSubtag()] },
+        { code: '{length;{escapebbtag;{"n":"abc","v":[]}}}', expected: '0', replacers: [replacers.escapeBBTagReplacer] },
         { code: '{length;[1,2,3,4]}', expected: '4' },
         { code: '{length;["a","b","cde","f","g"]}', expected: '5' }
     ]

@@ -1,16 +1,12 @@
-import { Cluster } from '@blargbot/cluster';
-import { Command, CommandContext } from '@blargbot/cluster/command';
-import { CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types';
-import { commandTypeDetails, guard } from '@blargbot/cluster/utils';
-import { metrics } from '@blargbot/core/Metrics';
-import { ModuleLoader } from '@blargbot/core/modules';
-import { Timer } from '@blargbot/core/Timer';
-import { NextMiddleware } from '@blargbot/core/types';
-import { CommandPermissions, FlagDefinition } from '@blargbot/domain/models';
-import { IFormattable } from '@blargbot/formatting';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import type { Cluster, CommandContext, CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster';
+import { Command, commandTypeDetails, guard } from '@blargbot/cluster';
+import type { NextMiddleware } from '@blargbot/core';
+import { metrics, ModuleLoader, Timer } from '@blargbot/core';
+import type { CommandPermissions, FlagDefinition } from '@blargbot/domain';
+import type { IFormattable } from '@blargbot/formatting';
+import * as eris from 'eris';
 
-import { CommandManager } from './CommandManager';
+import { CommandManager } from './CommandManager.js';
 
 export class DefaultCommandManager extends CommandManager<Command> {
     public readonly modules: ModuleLoader<Command>;
@@ -29,7 +25,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
             this.modules.reload(this.modules.source(commands));
     }
 
-    protected async getCore(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetCoreResult<Command>> {
+    protected async getCore(name: string, location?: eris.Guild | eris.KnownTextableChannel, user?: eris.User): Promise<CommandGetCoreResult<Command>> {
         const command = this.modules.get(name);
         if (command === undefined)
             return { state: 'NOT_FOUND' };
@@ -41,7 +37,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
         if (location === undefined)
             return { state: 'FOUND', detail: new NormalizedCommand(command, { permission: defaultPermission }) };
 
-        const guild = location instanceof Guild ? location
+        const guild = location instanceof eris.Guild ? location
             : guard.isGuildChannel(location) ? location.guild
                 : undefined;
 
@@ -59,7 +55,7 @@ export class DefaultCommandManager extends CommandManager<Command> {
             yield command.name;
     }
 
-    public async configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
+    public async configure(user: eris.User, names: string[], guild: eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         if (names.length === 0)
             return [];
 

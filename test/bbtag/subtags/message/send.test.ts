@@ -1,14 +1,14 @@
-import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag/errors';
-import { SendSubtag } from '@blargbot/bbtag/subtags/message/send';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { argument } from '@blargbot/test-util/mock';
-import { expect } from 'chai';
-import { KnownGuildTextableChannel, Message } from 'eris';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { BBTagRuntimeError, ChannelNotFoundError, EscapeBBTagSubtag, SendSubtag } from '@blargbot/bbtag-engine';
 
-runSubtagTests({
-    subtag: new SendSubtag(),
+import type * as eris from 'eris';
+
+import { runSubtagTests, SubtagTestContext } from '../../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.sendReplacer,
+    names: [],
     argCountBounds: { min: 2, max: 5 },
     cases: [
         {
@@ -43,7 +43,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: undefined,
                     file: undefined,
@@ -54,7 +54,7 @@ runSubtagTests({
                 }))).thenReject(new BBTagRuntimeError('Test error'));
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.be.empty;
+                assert.equal(bbctx.data.ownedMsgs.length, 0);
             }
         },
         {
@@ -79,7 +79,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: undefined,
                     file: undefined,
@@ -90,7 +90,7 @@ runSubtagTests({
                 }))).thenReject(ctx.createRESTError(0, 'Test error'));
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.be.empty;
+                assert.equal(bbctx.data.ownedMsgs.length, 0);
             }
         },
         {
@@ -118,7 +118,7 @@ runSubtagTests({
 
                 ctx.logger.setup(m => m.error('Failed to send!', error)).thenReturn(undefined);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: undefined,
                     file: undefined,
@@ -129,7 +129,7 @@ runSubtagTests({
                 }))).thenReject(error);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.be.empty;
+                assert.equal(bbctx.data.ownedMsgs.length, 0);
             }
         },
         {
@@ -143,7 +143,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -158,7 +158,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: undefined,
                     file: undefined,
@@ -171,13 +171,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -186,7 +186,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -201,7 +201,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     file: undefined,
@@ -214,7 +214,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
@@ -227,7 +227,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -242,7 +242,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: undefined,
                     file: undefined,
@@ -253,13 +253,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -267,7 +267,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -282,7 +282,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     file: undefined,
@@ -293,13 +293,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -308,7 +308,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -323,7 +323,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: undefined,
@@ -336,13 +336,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -350,7 +350,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -365,7 +365,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: undefined,
@@ -376,13 +376,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -391,7 +391,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -406,7 +406,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{ file: 'my file content', name: 'file.txt' }],
@@ -419,13 +419,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -433,7 +433,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -448,7 +448,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{ file: 'my file content', name: 'file.txt' }],
@@ -459,13 +459,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -474,7 +474,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -489,13 +489,14 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{
-                        file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
-                                .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
+                        file: $.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
+                            assert.equal(actual, expected);
                         }).value,
                         name: 'file.txt'
                     }],
@@ -508,13 +509,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -522,7 +523,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -537,13 +538,14 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{
-                        file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
-                                .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
+                        file: $.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
+                            assert.equal(actual, expected);
                         }).value,
                         name: 'file.txt'
                     }],
@@ -554,13 +556,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content;test.zip}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -569,7 +571,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -584,7 +586,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{ file: 'my file content', name: 'test.zip' }],
@@ -597,13 +599,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};my file content;test.zip}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -611,7 +613,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -626,7 +628,7 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{ file: 'my file content', name: 'test.zip' }],
@@ -637,13 +639,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Custom command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef;test.zip}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = true;
@@ -652,7 +654,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -667,13 +669,14 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{
-                        file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
-                                .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
+                        file: $.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
+                            assert.equal(actual, expected);
                         }).value,
                         name: 'test.zip'
                     }],
@@ -686,13 +689,13 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         },
         {
             title: 'Tag command',
             code: '{send;1923681361978632931;abc;{escapebbtag;{"title":"New embed!"}};buffer:abcdef;test.zip}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.options.isCC = false;
@@ -700,7 +703,7 @@ runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message: Message<KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
+                const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
                     channel_id: bbctx.channel.id
                 }, ctx.users.command));
@@ -715,13 +718,14 @@ runSubtagTests({
                 bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, $.looksLike({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{
-                        file: argument.assert<Buffer>(value => {
-                            expect(value).to.be.instanceOf(Buffer)
-                                .and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
+                        file: $.assert<Buffer>(value => {
+                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                            const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
+                            assert.equal(actual, expected);
                         }).value,
                         name: 'test.zip'
                     }],
@@ -732,7 +736,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
+                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
             }
         }
     ]

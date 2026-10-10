@@ -1,10 +1,10 @@
-import { Role } from 'eris';
+import { guard } from '@blargbot/core';
 
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation/index';
-import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors/index';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils/index';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleRemove;
 
@@ -54,8 +54,8 @@ export class RoleRemoveSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        const roleStrs = bbtag.tagArray.deserialize(roleStr)?.v.map(v => v?.toString() ?? '~') ?? [roleStr];
-        const roles = roleStrs.map(role => context.guild.roles.get(role)).filter((r): r is Role => r !== undefined);
+        const roleStrs = bbtag.tagArray.deserialize(roleStr)?.v.filter(guard.isTypeOf('string', 'number')) ?? [roleStr];
+        const roles = roleStrs.map(role => context.guild.roles.get(role)).filter((r): r is Exclude<typeof r, undefined> => r !== undefined);
 
         if (roles.length === 0)
             throw new RoleNotFoundError(roleStr);

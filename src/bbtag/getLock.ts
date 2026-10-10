@@ -1,4 +1,5 @@
-import { TagVariableScope, TagVariableType } from '@blargbot/domain/models';
+import type { TagVariableScope } from '@blargbot/domain';
+import { TagVariableType } from '@blargbot/domain';
 import ReadWriteLock from 'rwlock';
 
 const locks: Record<string, ReadWriteLock | undefined> = {};

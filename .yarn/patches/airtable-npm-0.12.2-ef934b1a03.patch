@@ -1,0 +1,44 @@
+diff --git a/build/airtable.browser.js b/build/airtable.browser.js
+index a21733b91ca808663f9dd1078101066e20161b72..af8b828095bc6ad513149912bab9d5917d7695a0 100644
+--- a/build/airtable.browser.js
++++ b/build/airtable.browser.js
+@@ -326,9 +326,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+     return (mod && mod.__esModule) ? mod : { "default": mod };
+ };
+ // istanbul ignore file
+-var node_fetch_1 = __importDefault(require("node-fetch"));
+-var browserGlobal = typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null; // self is the global in web workers
+-module.exports = !browserGlobal ? node_fetch_1.default : browserGlobal.fetch.bind(browserGlobal);
++module.exports = fetch;
+ 
+ },{"node-fetch":20}],8:[function(require,module,exports){
+ "use strict";
+diff --git a/lib/airtable.umd.js b/lib/airtable.umd.js
+index 920061c8c32bcf393d67c85a0852a7c9899baac1..23af0f9b554fce27ebf1d7de89ec1c708f0bcd31 100644
+--- a/lib/airtable.umd.js
++++ b/lib/airtable.umd.js
+@@ -326,9 +326,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+     return (mod && mod.__esModule) ? mod : { "default": mod };
+ };
+ // istanbul ignore file
+-var node_fetch_1 = __importDefault(require("node-fetch"));
+-var browserGlobal = typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null; // self is the global in web workers
+-module.exports = !browserGlobal ? node_fetch_1.default : browserGlobal.fetch.bind(browserGlobal);
++module.exports = fetch;
+ 
+ },{"node-fetch":20}],8:[function(require,module,exports){
+ "use strict";
+diff --git a/lib/fetch.js b/lib/fetch.js
+index ce03e4b1d038415cdf84daef037469ca4538b526..ee828e12e7191ad4080fda011336f75a05844677 100644
+--- a/lib/fetch.js
++++ b/lib/fetch.js
+@@ -3,7 +3,5 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+     return (mod && mod.__esModule) ? mod : { "default": mod };
+ };
+ // istanbul ignore file
+-var node_fetch_1 = __importDefault(require("node-fetch"));
+-var browserGlobal = typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : null; // self is the global in web workers
+-module.exports = !browserGlobal ? node_fetch_1.default : browserGlobal.fetch.bind(browserGlobal);
++module.exports = fetch;
+ //# sourceMappingURL=fetch.js.map
+\ No newline at end of file

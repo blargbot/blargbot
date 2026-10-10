@@ -1,9 +1,10 @@
-import { MinSubtag } from '@blargbot/bbtag/subtags/math/min';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new MinSubtag(),
+await runSubtagTests({
+    replacer: replacers.minReplacer,
+    names: ['min'],
     argCountBounds: { min: 1, max: Infinity },
     cases: [
         { code: '{min;1;2;3;4;5}', expected: '1' },

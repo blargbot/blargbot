@@ -1,3 +1,3 @@
-export * from './isFormattable';
-export * from './literal';
-export * from './toArray';
+export * from './isFormattable.js';
+export * from './literal.js';
+export * from './toArray.js';

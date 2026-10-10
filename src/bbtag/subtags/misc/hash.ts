@@ -1,9 +1,9 @@
-import { createHash, getHashes } from 'crypto';
+import { createHash, getHashes } from 'node:crypto';
 
-import { CompiledSubtag } from '../../compilation';
-import { BBTagRuntimeError } from '../../errors';
-import templates from '../../text';
-import { SubtagType } from '../../utils';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { BBTagRuntimeError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.hash;
 
@@ -54,7 +54,7 @@ export class HashSubtag extends CompiledSubtag {
                 : Buffer.from(text);
 
         const hash = createHash(algorithm.toLowerCase());
-        return hash.update(data).digest('hex');
+        return hash.update(new Uint8Array(data.buffer, data.byteOffset, data.byteLength)).digest('hex');
     }
 }
 

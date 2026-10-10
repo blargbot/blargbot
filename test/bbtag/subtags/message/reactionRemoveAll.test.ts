@@ -1,12 +1,12 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags/message/reactionRemoveAll';
-import { Constants } from 'eris';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
 
-runSubtagTests({
-    subtag: new ReactionRemoveAllSubtag(),
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
+
+await runSubtagTests({
+    replacer: replacers.reactionRemoveAllReplacer,
+    names: [],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetMessagePropTestCases({
@@ -29,7 +29,7 @@ runSubtagTests({
                     expected: '',
                     setup(channel, message, ctx) {
                         ctx.isStaff = true;
-                        ctx.roles.bot.permissions = Constants.Permissions.manageMessages.toString();
+                        ctx.roles.bot.permissions = eris.Constants.Permissions.manageMessages.toString();
                         ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).thenResolve(undefined);
                     }
                 },
@@ -38,7 +38,7 @@ runSubtagTests({
                     expected: '',
                     setup(channel, message, ctx) {
                         ctx.isStaff = false;
-                        ctx.roles.bot.permissions = Constants.Permissions.manageMessages.toString();
+                        ctx.roles.bot.permissions = eris.Constants.Permissions.manageMessages.toString();
                         ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).thenResolve(undefined);
                     },
                     postSetup(_, message, bbctx) {
@@ -51,7 +51,7 @@ runSubtagTests({
                     error: new BBTagRuntimeError('Author must be staff to modify unrelated messages'),
                     setup(_, __, ctx) {
                         ctx.isStaff = false;
-                        ctx.roles.bot.permissions = Constants.Permissions.manageMessages.toString();
+                        ctx.roles.bot.permissions = eris.Constants.Permissions.manageMessages.toString();
                     }
                 }
             ]

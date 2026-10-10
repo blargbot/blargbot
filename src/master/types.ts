@@ -1,11 +1,11 @@
-import { MasterWorker } from './MasterWorker';
+import type { MasterWorker } from './MasterWorker.js';
 
 export interface MasterOptions {
     readonly avatars: readonly string[];
     readonly worker: MasterWorker;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type MasterIPCContract = {
 
 }

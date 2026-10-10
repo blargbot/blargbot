@@ -1,9 +1,10 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, randChoose, randInt } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
+import { random } from '@blargbot/util';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.rr;
 
@@ -23,7 +24,7 @@ export class RussianRouletteCommand extends GlobalCommand {
     }
 
     public async play(context: CommandContext, bullets: number, emote: string | undefined): Promise<CommandResult> {
-        emote ??= randChoose(emotes);
+        emote ??= random.pick(emotes);
         if (bullets <= 0)
             return cmd.default.notEnoughBullets;
         if (bullets === 6)
@@ -55,7 +56,7 @@ export class RussianRouletteCommand extends GlobalCommand {
                 context.edit(query.prompt, cmd.default.chicken),
                 you?.edit('🐔')
             ]);
-        } else if (randInt(1, 6) <= bullets) {
+        } else if (random.int(1, 6) <= bullets) {
             await Promise.all([
                 you?.edit('💥🔫'),
                 context.edit(query.prompt, cmd.default.died)

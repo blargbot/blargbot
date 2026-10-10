@@ -1,4 +1,4 @@
-import { BBTagRuntimeError } from './BBTagRuntimeError';
+import { BBTagRuntimeError } from './BBTagRuntimeError.js';
 
 export class TooManyLoopsError extends BBTagRuntimeError {
     public constructor(public readonly max: number) {

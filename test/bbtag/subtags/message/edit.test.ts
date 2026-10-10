@@ -1,14 +1,14 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors';
-import { EditSubtag } from '@blargbot/bbtag/subtags/message/edit';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { argument } from '@blargbot/test-util/mock';
-import { expect } from 'chai';
-import { KnownGuildTextableChannel } from 'eris';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { BBTagRuntimeError, ChannelNotFoundError, EditSubtag, EscapeBBTagSubtag, MessageNotFoundError } from '@blargbot/bbtag-engine';
 
-runSubtagTests({
-    subtag: new EditSubtag(),
+import type * as eris from 'eris';
+
+import { runSubtagTests, SubtagTestContext } from '../../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.editReplacer,
+    names: [],
     argCountBounds: { min: 2, max: 4 },
     cases: [
         {
@@ -72,15 +72,15 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, $.looksLike({
                     content: 'New message text',
-                    embeds: argument.exact(message.embeds)
+                    embeds: $.exact(message.embeds)
                 }))).thenResolve(message);
             }
         },
         {
             code: '{edit;12345678901234567;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -91,7 +91,7 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, $.looksLike({
                     content: 'Original message text',
                     embeds: [{ title: 'New embed!' }]
                 }))).thenResolve(message);
@@ -99,7 +99,7 @@ runSubtagTests({
         },
         {
             code: '{edit;12345678901234567;{escapebbtag;{"title":false}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -110,9 +110,9 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, $.looksLike({
                     content: '{"title":false}',
-                    embeds: argument.exact(message.embeds)
+                    embeds: $.exact(message.embeds)
                 }))).thenResolve(message);
             }
         },
@@ -128,15 +128,15 @@ runSubtagTests({
                 }, ctx.users.bot));
 
                 ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, $.looksLike({
                     content: '',
-                    embeds: argument.exact(message.embeds)
+                    embeds: $.exact(message.embeds)
                 }))).thenResolve(message);
             }
         },
         {
             code: '{edit;12345678901234567;New message text;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -148,7 +148,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12345678901234567')).thenResolve([]);
                 ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, $.looksLike({
                     content: 'New message text',
                     embeds: [{ title: 'New embed!' }]
                 }))).thenResolve(message);
@@ -156,7 +156,7 @@ runSubtagTests({
         },
         {
             code: '{edit;12345678901234567;{escapebbtag;{"title":"New embed!"}};New message text}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -168,7 +168,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '12345678901234567')).thenResolve([]);
                 ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(bbctx.channel.id, message.id, $.looksLike({
                     content: '{"title":"New embed!"}',
                     embeds: [{ fields: [{ name: 'Malformed JSON', value: '"New message text"' }], malformed: true }]
                 }))).thenResolve(message);
@@ -200,8 +200,9 @@ runSubtagTests({
                 ctx.channels.general.id = '9876543212345678';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get('9876543212345678') as KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                const channel = bbctx.guild.channels.get('9876543212345678') as eris.KnownGuildTextableChannel;
+                assert.notEqual(channel, undefined);
+                assert.notEqual(channel, null);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -211,22 +212,23 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channel.id)).thenResolve([channel]);
                 ctx.util.setup(m => m.getMessage(channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(channel.id, message.id, $.looksLike({
                     content: 'New message text',
-                    embeds: argument.exact(message.embeds)
+                    embeds: $.exact(message.embeds)
                 }))).thenResolve(message);
             }
         },
         {
             code: '{edit;9876543212345678;12345678901234567;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get('9876543212345678') as KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                const channel = bbctx.guild.channels.get('9876543212345678') as eris.KnownGuildTextableChannel;
+                assert.notEqual(channel, undefined);
+                assert.notEqual(channel, null);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -236,7 +238,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channel.id)).thenResolve([channel]);
                 ctx.util.setup(m => m.getMessage(channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(channel.id, message.id, $.looksLike({
                     content: 'Original message text',
                     embeds: [{ title: 'New embed!' }]
                 }))).thenResolve(message);
@@ -244,14 +246,15 @@ runSubtagTests({
         },
         {
             code: '{edit;9876543212345678;12345678901234567;{escapebbtag;{"title":false}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get('9876543212345678') as KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                const channel = bbctx.guild.channels.get('9876543212345678') as eris.KnownGuildTextableChannel;
+                assert.notEqual(channel, undefined);
+                assert.notEqual(channel, null);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -261,9 +264,9 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channel.id)).thenResolve([channel]);
                 ctx.util.setup(m => m.getMessage(channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(channel.id, message.id, $.looksLike({
                     content: '{"title":false}',
-                    embeds: argument.exact(message.embeds)
+                    embeds: $.exact(message.embeds)
                 }))).thenResolve(message);
             }
         },
@@ -274,8 +277,9 @@ runSubtagTests({
                 ctx.channels.general.id = '9876543212345678';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get('9876543212345678') as KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                const channel = bbctx.guild.channels.get('9876543212345678') as eris.KnownGuildTextableChannel;
+                assert.notEqual(channel, undefined);
+                assert.notEqual(channel, null);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -285,22 +289,23 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channel.id)).thenResolve([channel]);
                 ctx.util.setup(m => m.getMessage(channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(channel.id, message.id, $.looksLike({
                     content: '',
-                    embeds: argument.exact(message.embeds)
+                    embeds: $.exact(message.embeds)
                 }))).thenResolve(message);
             }
         },
         {
             code: '{edit;9876543212345678;12345678901234567;New message text;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get('9876543212345678') as KnownGuildTextableChannel;
-                expect(channel).to.not.be.undefined.and.not.be.null;
+                const channel = bbctx.guild.channels.get('9876543212345678') as eris.KnownGuildTextableChannel;
+                assert.notEqual(channel, undefined);
+                assert.notEqual(channel, null);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: channel.id,
                     id: '12345678901234567',
@@ -310,7 +315,7 @@ runSubtagTests({
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channel.id)).thenResolve([channel]);
                 ctx.util.setup(m => m.getMessage(channel, '12345678901234567', false)).thenResolve(message);
-                ctx.discord.setup(m => m.editMessage(channel.id, message.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editMessage(channel.id, message.id, $.looksLike({
                     content: 'New message text',
                     embeds: [{ title: 'New embed!' }]
                 }))).thenResolve(message);
@@ -319,7 +324,7 @@ runSubtagTests({
         {
             title: 'When no channel is found',
             code: '{edit;9876543212345678;12345678901234567;New message text;{escapebbtag;{"title":"New embed!"}}}',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             expected: '`No channel found`',
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '9876543212345678')).thenResolve([]);

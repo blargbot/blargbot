@@ -1,60 +1,60 @@
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
-import { JsonCleanSubtag } from '@blargbot/bbtag/subtags/json/jsonClean';
-import { TagVariableType } from '@blargbot/domain/models';
+import type { VariablesLocals } from '@blargbot/bbtag-engine';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new JsonCleanSubtag(),
+await runSubtagTests<VariablesLocals>({
+    replacer: replacers.jsonCleanReplacer,
+    names: ['jsonClean', 'jClean'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         {
             code: '{jsonclean;{j;{"test":"[]"}}}',
             expected: '{"test":[]}',
-            subtags: [new JsonSubtag()]
+            replacers: [replacers.jsonReplacer]
         },
         {
             code: '{jsonclean;{j;{"test":"[\\"{}\\"]"}}}',
             expected: '{"test":[{}]}',
-            subtags: [new JsonSubtag()]
+            replacers: [replacers.jsonReplacer]
         },
         {
             code: '{jsonclean;{j;["test","[\\"{}\\"]"]}}',
             expected: '["test",[{}]]',
-            subtags: [new JsonSubtag()]
+            replacers: [replacers.jsonReplacer]
         },
         {
             code: '{jsonclean;{j;{"n":"arr1","v":["abc","{\\"x\\":\\"5\\"}"]}}}',
             expected: '["abc",{"x":"5"}]',
-            subtags: [new JsonSubtag()]
+            replacers: [replacers.jsonReplacer]
         },
         {
             code: '{jsonclean;arr1}',
             expected: '[{"x":{}}]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['{"x":"{}"}']);
+                ctx.variables.setup(m => m.get('arr1')).returns({ key: '~', value: ['{"x":"{}"}'] }).mustHappen();
             }
         },
         {
             code: '{jsonclean;obj1}',
             expected: '{"a":{"x":{}}}',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'obj1' }, { a: '{"x":"{}"}' });
+                ctx.variables.setup(m => m.get('obj1')).returns({ key: '~', value: { a: '{"x":"{}"}' } }).mustHappen();
             }
         },
         {
             code: '{jsonclean;var1}',
             expected: '{"a":{"x":{}}}',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, '{"a":"{\\"x\\":\\"{}\\"}"}');
+                ctx.variables.setup(m => m.get('var1')).returns({ key: '~', value: '{"a":"{\\"x\\":\\"{}\\"}"}' }).mustHappen();
             }
         },
         {
             code: '{jsonclean;abc}',
-            expected: '{}'
+            expected: '{}',
+            setup(ctx) {
+                ctx.variables.setup(m => m.get('abc')).returns({ key: '~', value: undefined }).mustHappen();
+            }
         }
     ]
 });

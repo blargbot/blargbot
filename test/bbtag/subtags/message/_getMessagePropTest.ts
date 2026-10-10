@@ -1,10 +1,11 @@
-import { BBTagContext } from '@blargbot/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors';
-import { snowflake } from '@blargbot/core/utils';
-import { APIChannel, APIMessage } from 'discord-api-types/v9';
-import { GuildTextableChannel, KnownGuildChannel, KnownTextableChannel, Message } from 'eris';
+import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag-engine';
+import { snowflake } from '@blargbot/core';
 
-import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
+import type * as eris from 'eris';
+
+import type { SubtagTestCase } from '/workspaces/blargbot/test/bbtag/subtags/SubtagTestSuite.js';
+import { SubtagTestContext } from '/workspaces/blargbot/test/bbtag/subtags/SubtagTestSuite.js';
 
 export function createGetMessagePropTestCases(options: GetMessagePropTestData): SubtagTestCase[] {
     return [...createGetMessagePropTestCasesIter(options)];
@@ -63,7 +64,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             code: options.generateCode('0987654321123456789', '12345678998765432', 'q'),
             expected: options.quiet ?? '`No message found`',
             errors: [
-                { start: 0, end: options.generateCode('0987654321123456789', '12345678998765432', 'q').length, error: new MessageNotFoundError('0987654321123456789', '12345678998765432').withDisplay(options.quiet) }
+                { start: 0, end: options.generateCode('0987654321123456789', '12345678998765432', 'q').length, error: new (MessageNotFoundError.withDisplay(options.quiet))('0987654321123456789', '12345678998765432') }
             ],
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
@@ -79,7 +80,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             code: options.generateCode('98765434567889121', '12345678998765432', 'q'),
             expected: options.quiet ?? '`No channel found`',
             errors: [
-                { start: 0, end: options.generateCode('98765434567889121', '12345678998765432', 'q').length, error: new ChannelNotFoundError('98765434567889121').withDisplay(options.quiet) }
+                { start: 0, end: options.generateCode('98765434567889121', '12345678998765432', 'q').length, error: new (ChannelNotFoundError.withDisplay(options.quiet))('98765434567889121') }
             ],
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '98765434567889121')).thenResolve([]);
@@ -103,14 +104,14 @@ interface GetMessagePropTestCase {
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, messageId?: string, quietStr?: string]) => string;
     setup?: (channel: APIChannel, message: APIMessage, context: SubtagTestContext) => void;
-    postSetup?: (channel: KnownGuildChannel, message: Message<KnownTextableChannel>, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, channel: KnownGuildChannel, message: Message<KnownTextableChannel>, context: BBTagContext, test: SubtagTestContext) => void;
+    postSetup?: (channel: eris.KnownGuildChannel, message: eris.Message<eris.KnownTextableChannel>, context: BBTagContext, test: SubtagTestContext) => void;
+    assert?: (result: string, channel: eris.KnownGuildChannel, message: eris.Message<eris.KnownTextableChannel>, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTestCase, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetMessagePropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     const apiMessageMap = new WeakMap<SubtagTestContext, APIMessage>();
-    const messageMap = new WeakMap<SubtagTestContext, Message<KnownTextableChannel>>();
+    const messageMap = new WeakMap<SubtagTestContext, eris.Message<eris.KnownTextableChannel>>();
     return {
         title: testCase.title,
         code,
@@ -139,7 +140,7 @@ function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTe
             if (channelQuery !== undefined && channelQuery !== '')
                 ctx.util.setup(m => m.findChannels(bbctx.guild, channelQuery)).thenResolve([channel]);
 
-            const message = apiMessage === ctx.message ? bbctx.message as Message<GuildTextableChannel> : ctx.createMessage(apiMessage);
+            const message = apiMessage === ctx.message ? bbctx.message as eris.Message<eris.GuildTextableChannel> : ctx.createMessage(apiMessage);
             const messageQuery = args[1];
             if (messageQuery !== undefined && messageQuery !== '') {
                 ctx.util.setup(m => m.getMessage(channel, messageQuery), false).thenResolve(message);

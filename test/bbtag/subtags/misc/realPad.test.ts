@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { RealPadSubtag } from '@blargbot/bbtag/subtags/misc/realPad';
+import { BBTagRuntimeError, NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new RealPadSubtag(),
+await runSubtagTests({
+    replacer: replacers.realPadReplacer,
+    names: ['realPad'],
     argCountBounds: { min: 2, max: 4 },
     cases: [
         { code: '{realpad;;5}', expected: '     ' },
@@ -31,6 +31,7 @@ runSubtagTests({
         { code: '{realpad;;5;;left}', expected: '     ' },
         { code: '{realpad;A;5;;left}', expected: '    A' },
         { code: '{realpad;AB;5;;left}', expected: '   AB' },
+        { code: '{realpad;AB;5;;LEFT}', expected: '   AB' },
         { code: '{realpad;ABC;5;;left}', expected: '  ABC' },
         { code: '{realpad;ABCD;5;;left}', expected: ' ABCD' },
         { code: '{realpad;ABCDE;5;;left}', expected: 'ABCDE' },
@@ -39,6 +40,7 @@ runSubtagTests({
         { code: '{realpad;A;5;1;right}', expected: 'A1111' },
         { code: '{realpad;AB;5;1;right}', expected: 'AB111' },
         { code: '{realpad;ABC;5;1;right}', expected: 'ABC11' },
+        { code: '{realpad;ABC;5;1;end}', expected: 'ABC11' },
         { code: '{realpad;ABCD;5;1;right}', expected: 'ABCD1' },
         { code: '{realpad;ABCDE;5;1;right}', expected: 'ABCDE' },
         { code: '{realpad;ABCDEF;5;1;right}', expected: 'ABCDEF' },
@@ -46,6 +48,7 @@ runSubtagTests({
         { code: '{realpad;A;5;2;left}', expected: '2222A' },
         { code: '{realpad;AB;5;2;left}', expected: '222AB' },
         { code: '{realpad;ABC;5;2;left}', expected: '22ABC' },
+        { code: '{realpad;ABC;5;2;start}', expected: '22ABC' },
         { code: '{realpad;ABCD;5;2;left}', expected: '2ABCD' },
         { code: '{realpad;ABCDE;5;2;left}', expected: 'ABCDE' },
         { code: '{realpad;ABCDEF;5;2;left}', expected: 'ABCDEF' },

@@ -1,6 +1,5 @@
-import { Cluster } from '@blargbot/cluster';
-import { TimeoutManager } from '@blargbot/cluster/managers';
-import { IntervalService } from '@blargbot/core/serviceTypes';
+import type { Cluster, TimeoutManager } from '@blargbot/cluster';
+import { IntervalService } from '@blargbot/core';
 
 export class TimeoutRefresh extends IntervalService {
     readonly #timeouts: TimeoutManager;

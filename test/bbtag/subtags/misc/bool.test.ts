@@ -1,8 +1,8 @@
-import { InvalidOperatorError } from '@blargbot/bbtag/errors';
-import { BoolSubtag } from '@blargbot/bbtag/subtags/misc/bool';
-import { bbtag, OrdinalOperator, StringOperator } from '@blargbot/bbtag/utils';
+import type { OrdinalOperator, StringOperator } from '@blargbot/bbtag-engine';
+import { InvalidOperatorError, isOrdinalOperator, isStringOperator, replacers } from '@blargbot/bbtag-engine';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const isEqualTo = { '!=': false, '<': false, '<=': true, '==': true, '>': false, '>=': true, 'startswith': true, 'endswith': true, 'includes': true, 'contains': true } as const;
 const isGreaterThan = { '!=': true, '<': false, '<=': false, '==': false, '>': true, '>=': true } as const;
@@ -12,8 +12,9 @@ const startsWith = { 'startswith': true, 'endswith': false, 'includes': true, 'c
 const endsWith = { 'startswith': false, 'endswith': true, 'includes': true, 'contains': true } as const;
 const doesntContain = { 'startswith': false, 'endswith': false, 'includes': false, 'contains': false } as const;
 
-runSubtagTests({
-    subtag: new BoolSubtag(),
+await runSubtagTests({
+    replacer: replacers.boolReplacer,
+    names: ['bool'],
     argCountBounds: { min: 3, max: 3 },
     cases: [
         ...generateOrdinalTestCases('123', isEqualTo, '123'),
@@ -54,7 +55,7 @@ function generateOrdinalTestCases(left: boolean | string, tests: Record<OrdinalO
     const leftStrs = typeof left === 'boolean' ? left ? ['true', 't', 'yes', 'y'] : ['false', 'f', 'no', 'n'] : [left];
     const rightStrs = typeof right === 'boolean' ? right ? ['true', 't', 'yes', 'y'] : ['false', 'f', 'no', 'n'] : [right];
 
-    return Object.entries(tests).filter(x => bbtag.isOrdinalOperator(x[0])).flatMap(([op, expected]) => {
+    return Object.entries(tests).filter(v => isOrdinalOperator(v[0])).flatMap(([op, expected]) => {
         const expectedStr = expected.toString();
 
         return leftStrs.flatMap(l => rightStrs.flatMap(r => [
@@ -69,7 +70,7 @@ function generateStringTestCases(left: boolean | string, tests: Record<StringOpe
     const leftStrs = typeof left === 'boolean' ? left ? ['true', 't', 'yes', 'y'] : ['false', 'f', 'no', 'n'] : [left];
     const rightStrs = typeof right === 'boolean' ? right ? ['true', 't', 'yes', 'y'] : ['false', 'f', 'no', 'n'] : [right];
 
-    return Object.entries(tests).filter(x => bbtag.isStringOperator(x[0])).flatMap(([op, expected]) => {
+    return Object.entries(tests).filter(v => isStringOperator(v[0])).flatMap(([op, expected]) => {
         const expectedStr = expected.toString();
 
         return leftStrs.flatMap(l => rightStrs.flatMap(r => [

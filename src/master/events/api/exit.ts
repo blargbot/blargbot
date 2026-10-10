@@ -1,7 +1,6 @@
-import { ApiConnection } from '@blargbot/api';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
-import { WorkerState } from '@blargbot/core/worker';
-import { Master } from '@blargbot/master';
+import type { ApiConnection } from '@blargbot/api';
+import { WorkerPoolEventService, WorkerState } from '@blargbot/core';
+import type { Master } from '@blargbot/master';
 import moment from 'moment-timezone';
 
 export class ApiExitHandler extends WorkerPoolEventService<ApiConnection, 'exit'> {

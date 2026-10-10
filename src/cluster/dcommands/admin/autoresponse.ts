@@ -1,12 +1,12 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils';
-import { guard } from '@blargbot/core/utils';
-import { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain/models';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, GuildCommand, parse } from '@blargbot/cluster';
+import { createSafeRegExp, guard } from '@blargbot/core';
+import type { GuildFilteredAutoresponse, GuildTriggerTag } from '@blargbot/domain';
 import { util } from '@blargbot/formatting';
+import { Iterable, random } from '@blargbot/util';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.autoResponse;
 
@@ -363,7 +363,7 @@ export class AutoResponseCommand extends GuildCommand {
         const testPhrases = [];
         for (const set of [letters, numbers, symbols, holyShitSymbols]) {
             for (let i = 0; i < 5; i++) {
-                testPhrases.push(randChoose(set, randInt(5, 25)).join(''));
+                testPhrases.push(random.stream(set).take(random.int(5, 25)).toArray().join(''));
             }
         }
         context.logger.log('Testing the regex', result.regex, 'with the following phrases:\n', testPhrases);
@@ -377,6 +377,7 @@ export class AutoResponseCommand extends GuildCommand {
 const symbols = '!@#$%^&*()_+{}|\\[]-=:";\'<>?,./';
 const numbers = '0123456790';
 const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const holyShitSymbols = getRange(0xf0ff, 0xffff, { maxCount: -1 })
+const holyShitSymbols = Iterable.range(0xf0ff, 0x0f00)
     .map(i => String.fromCharCode(i))
+    .toArray()
     .join('');

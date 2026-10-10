@@ -1,8 +1,8 @@
-import { BBTagContext } from '../../BBTagContext';
-import { CompiledSubtag } from '../../compilation';
-import { NotAnArrayError } from '../../errors';
-import templates from '../../text';
-import { bbtag, SubtagType } from '../../utils';
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { NotAnArrayError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.join;
 
@@ -30,6 +30,7 @@ export class JoinSubtag extends CompiledSubtag {
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);
 
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         return array.join(separator);
     }
 }

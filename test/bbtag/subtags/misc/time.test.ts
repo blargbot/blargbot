@@ -1,35 +1,44 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { TimeSubtag } from '@blargbot/bbtag/subtags/misc/time';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
 import moment from 'moment-timezone';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new TimeSubtag(),
+const now = moment.tz('2026-09-22T22:20:00Z', 'Etc/UTC');
+await runSubtagTests({
+    replacer: replacers.timeReplacer,
+    names: ['time'],
     argCountBounds: { min: 0, max: 5 },
+    setup(_, __, test) {
+        test.mock.timers.enable({
+            apis: ['Date'],
+            now: new Date('2026-09-22T22:20:00Z')
+        });
+    },
     cases: [
-        { code: '{time}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;;;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;;;;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
+        { code: '{time}', expected: now.format('YYYY-MM-DDTHH:mm:ssZ') },
+        { code: '{time;}', expected: now.format('YYYY-MM-DDTHH:mm:ssZ') },
+        { code: '{time;;}', expected: now.format('YYYY-MM-DDTHH:mm:ssZ') },
+        { code: '{time;;;}', expected: now.format('YYYY-MM-DDTHH:mm:ssZ') },
+        { code: '{time;;;;}', expected: now.format('YYYY-MM-DDTHH:mm:ssZ') },
+        { code: '{time;;;;;}', expected: now.format('YYYY-MM-DDTHH:mm:ssZ') },
 
-        { code: '{time;;now}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;today}', expected: () => moment.tz('Etc/UTC').startOf('day').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;tomorrow}', expected: () => moment.tz('Etc/UTC').startOf('day').add(1, 'day').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;yesterday}', expected: () => moment.tz('Etc/UTC').startOf('day').add(-1, 'day').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
+        { code: '{time;;now}', expected: now.format('YYYY-MM-DDTHH:mm:ssZ') },
+        { code: '{time;;today}', expected: now.clone().startOf('day').format('YYYY-MM-DDTHH:mm:ssZ') },
+        { code: '{time;;tomorrow}', expected: now.clone().startOf('day').add(1, 'day').format('YYYY-MM-DDTHH:mm:ssZ') },
+        { code: '{time;;yesterday}', expected: now.clone().startOf('day').add(-1, 'day').format('YYYY-MM-DDTHH:mm:ssZ') },
+        { code: '{time;;10 minutes ago}', expected: now.clone().add(-10, 'minutes').format('YYYY-MM-DDTHH:mm:ssZ') },
+        { code: '{time;;in 10 minutes}', expected: now.clone().add(10, 'minutes').format('YYYY-MM-DDTHH:mm:ssZ') },
 
-        { code: '{time;X}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
-        { code: '{time;X;}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
-        { code: '{time;X;;}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
-        { code: '{time;X;;;}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
-        { code: '{time;X;;;;}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
-        { code: '{time;DD/MM/YYYY}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
-        { code: '{time;DD/MM/YYYY;}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
-        { code: '{time;DD/MM/YYYY;;}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
-        { code: '{time;DD/MM/YYYY;;;}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
-        { code: '{time;DD/MM/YYYY;;;;}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
+        { code: '{time;X}', expected: now.format('X') },
+        { code: '{time;X;}', expected: now.format('X') },
+        { code: '{time;X;;}', expected: now.format('X') },
+        { code: '{time;X;;;}', expected: now.format('X') },
+        { code: '{time;X;;;;}', expected: now.format('X') },
+        { code: '{time;DD/MM/YYYY}', expected: now.format('DD/MM/YYYY') },
+        { code: '{time;DD/MM/YYYY;}', expected: now.format('DD/MM/YYYY') },
+        { code: '{time;DD/MM/YYYY;;}', expected: now.format('DD/MM/YYYY') },
+        { code: '{time;DD/MM/YYYY;;;}', expected: now.format('DD/MM/YYYY') },
+        { code: '{time;DD/MM/YYYY;;;;}', expected: now.format('DD/MM/YYYY') },
 
         { code: '{time;;1640995200}', expected: '`Invalid date`', errors: [{ start: 0, end: 18, error: new BBTagRuntimeError('Invalid date') }] },
         { code: '{time;;1640995200;}', expected: '`Invalid date`', errors: [{ start: 0, end: 19, error: new BBTagRuntimeError('Invalid date') }] },

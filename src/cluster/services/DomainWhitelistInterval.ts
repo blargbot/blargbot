@@ -1,9 +1,9 @@
-import { Cluster } from '@blargbot/cluster';
-import { IntervalService } from '@blargbot/core/serviceTypes';
+import type { Cluster } from '@blargbot/cluster';
+import { IntervalService } from '@blargbot/core';
 
 export class DomainWhitelistInterval extends IntervalService {
     public readonly type: string = 'bbtag';
-    #cluster: Cluster;
+    readonly #cluster: Cluster;
 
     public constructor(cluster: Cluster) {
         super(15, 'minutes', cluster.logger, true);

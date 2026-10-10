@@ -1,10 +1,10 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { RoundUpSubtag } from '@blargbot/bbtag/subtags/math/roundUp';
+import { NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new RoundUpSubtag(),
+await runSubtagTests({
+    replacer: replacers.roundUpReplacer,
+    names: ['roundUp', 'ceil'],
     argCountBounds: { min: 1, max: 1 },
     cases: [
         { code: '{roundup;5}', expected: '5' },

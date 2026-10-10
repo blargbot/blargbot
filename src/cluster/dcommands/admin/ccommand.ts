@@ -1,20 +1,20 @@
-import { bbtag } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types';
-import { codeBlock, CommandType, guard, parse, snowflake } from '@blargbot/cluster/utils';
-import { Configuration } from '@blargbot/config';
-import { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain/models';
-import { IFormattable, util } from '@blargbot/formatting';
-import { mapping } from '@blargbot/mapping';
-import { createHmac } from 'crypto';
-import { Role } from 'eris';
-import moment, { Duration } from 'moment-timezone';
-import fetch from 'node-fetch';
+import { createHmac } from 'node:crypto';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager';
-import templates from '../../text';
+import { bbtag } from '@blargbot/bbtag';
+import type { Cluster, CommandContext, CommandResult, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster';
+import { CommandType, guard, GuildCommand, parse } from '@blargbot/cluster';
+import type { Configuration } from '@blargbot/config';
+import { codeBlock, snowflake } from '@blargbot/core';
+import type { NamedGuildCommandTag, NamedGuildSourceCommandTag } from '@blargbot/domain';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import type * as eris from 'eris';
+import moment from 'moment-timezone';
+import z from 'zod';
+
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.ccommand;
 
@@ -342,7 +342,7 @@ export class CustomCommandCommand extends GuildCommand {
         }
     }
 
-    public async setCommandCooldown(context: GuildCommandContext, commandName: string, cooldown?: Duration): Promise<CommandResult> {
+    public async setCommandCooldown(context: GuildCommandContext, commandName: string, cooldown?: moment.Duration): Promise<CommandResult> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
             return cmd.cooldown.mustBePositive;
 
@@ -446,7 +446,7 @@ export class CustomCommandCommand extends GuildCommand {
         return cmd.hide.success({ name: match.name, hidden: isNowHidden });
     }
 
-    public async setCommandRoles(context: GuildCommandContext, commandName: string, roles: readonly Role[]): Promise<CommandResult> {
+    public async setCommandRoles(context: GuildCommandContext, commandName: string, roles: readonly eris.Role[]): Promise<CommandResult> {
         const match = await this.#requestEditableCommand(context, commandName);
         if ('response' in match)
             return match.response;
@@ -520,7 +520,7 @@ export class CustomCommandCommand extends GuildCommand {
             content: cmd.shrinkwrap.success,
             file: [
                 {
-                    file: JSON.stringify(<SignedGuildShrinkwrap>{
+                    file: JSON.stringify({
                         signature: signShrinkwrap(shrinkwrap, context.config),
                         payload: shrinkwrap
                     }, null, 2),
@@ -537,25 +537,22 @@ export class CustomCommandCommand extends GuildCommand {
             shrinkwrapUrl = context.message.attachments[0].url;
         }
 
-        const content = await requestSafe(shrinkwrapUrl);
-        const signedShrinkwrap = mapSignedGuildShrinkwrap(content);
-        if (!signedShrinkwrap.valid)
+        const content = await requestSafe(context, shrinkwrapUrl);
+        const signedShrinkwrap = mapSignedGuildShrinkwrap.safeParse(content);
+        if (!signedShrinkwrap.success)
             return cmd.install.malformed;
 
         const importSteps: Array<() => Promise<unknown>> = [];
         const steps = [];
 
-        const warning = signedShrinkwrap.value.signature === undefined ? cmd.install.confirm.unsigned
-            : signedShrinkwrap.value.signature !== signShrinkwrap(signedShrinkwrap.value.payload, context.config) ? cmd.install.confirm.tampered
+        const warning = signedShrinkwrap.data.signature === undefined ? cmd.install.confirm.unsigned
+            : signedShrinkwrap.data.signature !== signShrinkwrap(signedShrinkwrap.data.payload, context.config) ? cmd.install.confirm.tampered
                 : undefined;
 
         const guildId = context.channel.guild.id;
         const commandNames = new Set((await context.database.guilds.getCustomCommands(guildId)).map(c => c.name));
-        const shrinkwrap = signedShrinkwrap.value.payload;
+        const shrinkwrap = signedShrinkwrap.data.payload;
         for (const [commandName, command] of Object.entries(shrinkwrap.cc)) {
-            if (command === undefined)
-                continue;
-
             if (commandNames.has(commandName.toLowerCase())) {
                 steps.push(cmd.install.confirm.skip({ name: commandName }));
                 continue;
@@ -752,37 +749,33 @@ function signShrinkwrap(shrinkwrap: GuildShrinkwrap, config: Configuration): str
     return createHmac('sha256', config.general.shrinkwrapKey).update(content).digest('hex');
 }
 
-async function requestSafe(url: string): Promise<unknown> {
+async function requestSafe(context: CommandContext, url: string): Promise<unknown> {
     try {
-        const response = await fetch(url);
-        return await response.json() as unknown;
+        const response = await context.util.fetch(url);
+        return await response.json();
     } catch {
         return undefined;
     }
 }
 
-const mapCustomCommandShrinkwrap = mapping.object<CustomCommandShrinkwrap>({
-    content: mapping.string,
-    cooldown: mapping.number.optional,
-    flags: mapping.array(
-        mapping.object<FlagDefinition<string>>({
-            description: mapping.string,
-            word: mapping.string,
-            flag: mapping.in(...guard.isFlagChar.accept)
-        })
-    ).optional,
-    help: mapping.string.optional,
-    hidden: mapping.boolean.optional,
-    roles: mapping.array(mapping.string).optional,
-    disabled: mapping.boolean.optional,
-    permission: mapping.string.optional
-});
-
-const mapGuildShrinkwrap = mapping.object<GuildShrinkwrap>({
-    cc: mapping.record(mapCustomCommandShrinkwrap)
-});
-
-const mapSignedGuildShrinkwrap = mapping.object<SignedGuildShrinkwrap>({
-    signature: mapping.string.optional,
-    payload: mapping.choice(mapping.json(mapGuildShrinkwrap), mapGuildShrinkwrap)
-});
+const mapSignedGuildShrinkwrap = z.object({
+    signature: z.string().optional(),
+    payload: z.object({
+        cc: z.record(
+            z.string(),
+            z.object({
+                content: z.string(),
+                cooldown: z.number().optional(),
+                flags: z.object({
+                    description: z.string(),
+                    word: z.string(),
+                    flag: z.enum(guard.isFlagChar.accept)
+                }).array().optional(),
+                help: z.string().optional(),
+                hidden: z.boolean().optional(),
+                roles: z.string().array().optional(),
+                disabled: z.boolean().optional(),
+                permission: z.string().optional()
+            }))
+    })
+}) satisfies z.ZodType<SignedGuildShrinkwrap>;

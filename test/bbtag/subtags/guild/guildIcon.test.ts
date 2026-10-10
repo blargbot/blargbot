@@ -1,9 +1,10 @@
-import { GuildIconSubtag } from '@blargbot/bbtag/subtags/guild/guildIcon';
+import { replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new GuildIconSubtag(),
+await runSubtagTests({
+    replacer: replacers.guildIconReplacer,
+    names: [],
     argCountBounds: { min: 0, max: 0 },
     cases: [
         {

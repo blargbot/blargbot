@@ -1,14 +1,16 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { HashSubtag } from '@blargbot/bbtag/subtags/misc/hash';
+import { getHashes } from 'node:crypto';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
+
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 function hashMissing(algorithm: string): boolean {
-    return !HashSubtag.methods.includes(algorithm);
+    return !getHashes().includes(algorithm);
 }
 
-runSubtagTests({
-    subtag: new HashSubtag(),
+await runSubtagTests({
+    replacer: replacers.hashReplacer,
+    names: ['hash'],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         { code: '{hash;brown}', expected: '94011702' },

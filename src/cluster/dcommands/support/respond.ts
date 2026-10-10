@@ -1,8 +1,8 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.respond;
 
@@ -29,7 +29,7 @@ export class RespondCommand extends GlobalCommand {
             return cmd.default.notFound;
 
         await context.database.suggestions.update(id, {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+
             Notes: `${response} (${context.author.username}#${context.author.discriminator})${feedback.Notes !== undefined ? `\n\n${feedback.Notes}` : ''}`
         });
 

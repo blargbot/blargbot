@@ -1,10 +1,9 @@
-import { ResettableStoredUserData, StoredUser, StoredUsername, UserDetails, UserTodo } from '@blargbot/domain/models';
-import { UserStore } from '@blargbot/domain/stores';
-import { Logger } from '@blargbot/logger';
-import { UpdateData } from 'rethinkdb';
+import type { ResettableStoredUserData, StoredUser, StoredUsername, UserDetails, UserStore, UserTodo  } from '@blargbot/domain';
+import type { Logger } from '@blargbot/logger';
+import type { UpdateData } from 'rethinkdb';
 
-import { RethinkDb } from '../clients';
-import { RethinkDbCachedTable } from '../tables/RethinkDbCachedTable';
+import type { RethinkDb } from '../clients/index.js';
+import { RethinkDbCachedTable } from '../tables/RethinkDbCachedTable.js';
 
 export class RethinkDbUserStore implements UserStore {
     readonly #table: RethinkDbCachedTable<StoredUser, 'userid'>;

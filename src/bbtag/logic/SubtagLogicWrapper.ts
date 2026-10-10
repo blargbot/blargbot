@@ -1,11 +1,11 @@
-import { SubtagArgumentArray } from '../arguments';
-import { BBTagContext } from '../BBTagContext';
-import { BBTagRuntimeError } from '../errors';
-import { SubtagCall } from '../language';
-import { SubtagLogic } from './SubtagLogic';
+import type { SubtagArgumentArray } from '../arguments/index.js';
+import type { BBTagContext } from '../BBTagContext.js';
+import { BBTagRuntimeError } from '../errors/index.js';
+import type { SubtagCall } from '../language/index.js';
+import type { SubtagLogic } from './SubtagLogic.js';
 
 export abstract class SubtagLogicWrapper implements SubtagLogic {
-    public async *execute(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string | undefined> {
+    public async *execute(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string | undefined, void, void> {
         try {
             yield* await this.getResults(context, args, subtag);
         } catch (error: unknown) {
@@ -15,9 +15,9 @@ export abstract class SubtagLogicWrapper implements SubtagLogic {
         }
     }
 
-    protected abstract getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): Awaitable<AsyncIterable<string | undefined> | Iterable<string | undefined>>;
+    protected abstract getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): Awaitable<AsyncIterable<string | undefined, void, void> | Iterable<string | undefined, void, void>>;
 
-    protected async *toAsyncIterable<T>(source: AsyncIterable<T> | Iterable<T>): AsyncGenerator<T, void, undefined> {
+    protected async *toAsyncIterable<T>(source: AsyncIterable<T> | Iterable<T>): AsyncGenerator<T, void, void> {
         yield* source;
     }
 

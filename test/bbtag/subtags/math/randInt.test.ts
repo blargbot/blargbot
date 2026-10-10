@@ -1,10 +1,10 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { RandomIntSubtag } from '@blargbot/bbtag/subtags/math/randomInt';
+import { NotANumberError, replacers } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new RandomIntSubtag(),
+await runSubtagTests({
+    replacer: replacers.randomIntReplacer,
+    names: ['randomInt', 'randInt'],
     argCountBounds: { min: 1, max: 2 },
     cases: [
         { code: '{randint;9}', expected: /^[0-9]$/ },
@@ -12,6 +12,16 @@ runSubtagTests({
         { code: '{randint;1030}', expected: /^1?[0-9]{1,3}$/ },
         { code: '{randint;1;9}', expected: /^[1-9]$/ },
         { code: '{randint;3;4}', expected: /^[3-4]$/ },
+        {
+            code: '{randint;3;4}',
+            expected: '4',
+            setup(_, __, t) { t.mock.method(Math, 'random', () => 0.9999999999999999); }
+        },
+        {
+            code: '{randint;9;10}',
+            expected: '9',
+            setup(_, __, t) { t.mock.method(Math, 'random', () => 0.0000000000000001); }
+        },
         { code: '{randint;1030;1030}', expected: '1030' },
         {
             code: '{randint;abc;1030}',

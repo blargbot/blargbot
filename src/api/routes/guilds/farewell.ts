@@ -1,7 +1,8 @@
-import { Api } from '@blargbot/api/Api';
-import { BaseRoute } from '@blargbot/api/BaseRoute';
-import { ApiResponse } from '@blargbot/api/types';
-import { mapping } from '@blargbot/mapping';
+import z from 'zod';
+
+import type { Api } from '../../Api.js';
+import { BaseRoute } from '../../BaseRoute.js';
+import type { ApiResponse } from '../../types.js';
 
 export class FarewellRoute extends BaseRoute<['/guilds/:guildId/farewell']> {
     readonly #api: Api;
@@ -28,7 +29,7 @@ export class FarewellRoute extends BaseRoute<['/guilds/:guildId/farewell']> {
     }
 
     public async setFarewell(guildId: string, body: unknown, userId: string): Promise<ApiResponse> {
-        const request = this.mapRequestValue(body, mapTag);
+        const request = await this.mapRequestValue(body, mapTag);
 
         const current = await this.#api.database.guilds.getFarewell(guildId);
         const result = { ...current, ...request, author: userId };
@@ -57,6 +58,6 @@ export class FarewellRoute extends BaseRoute<['/guilds/:guildId/farewell']> {
     }
 }
 
-const mapTag = mapping.object({
-    content: mapping.string
-});
+const mapTag = z.compile(z.object({
+    content: z.string()
+}));

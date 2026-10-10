@@ -1,28 +1,29 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ReactionAddSubtag } from '@blargbot/bbtag/subtags/message/reactionAdd';
-import { Emote } from '@blargbot/core/Emote';
-import { argument } from '@blargbot/test-util/mock';
-import { expect } from 'chai';
-import { Constants } from 'eris';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
+import { Emote } from '@blargbot/core';
+
+
+
+import { runSubtagTests, SubtagTestContext } from '../../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 const unicodeEmote = Emote.parse('🤔');
 const guildEmote = Emote.parse('<:notlikecat:280110565161041921>');
 
-runSubtagTests({
-    subtag: new ReactionAddSubtag(),
+await runSubtagTests({
+    replacer: replacers.reactionAddReplacer,
+    names: [],
     argCountBounds: { min: 1, max: Infinity },
     setup(ctx) {
-        ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
+        ctx.roles.bot.permissions = eris.Constants.Permissions.addReactions.toString();
     },
     cases: [
         {
             code: '{reactadd;🤔}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal(['🤔']);
+                assert.deepEqual(bbctx.data.reactions, ['🤔']);
             }
         },
         ...createGetMessagePropTestCases({
@@ -35,7 +36,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(_, message, __, ctx) {
-                        ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote]))).thenResolve({ success: [unicodeEmote], failed: [] });
+                        ctx.util.setup(m => m.addReactions(message, $.looksLike([unicodeEmote]))).thenResolve({ success: [unicodeEmote], failed: [] });
                     }
                 },
                 {
@@ -51,10 +52,10 @@ runSubtagTests({
             code: '{reactadd;🤔<:notlikecat:280110565161041921>}',
             expected: '',
             setup(ctx) {
-                ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
+                ctx.roles.bot.permissions = eris.Constants.Permissions.addReactions.toString();
             },
             assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
+                assert.deepEqual(bbctx.data.reactions, [unicodeEmote.toString(), guildEmote.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
@@ -67,7 +68,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(_, message, __, ctx) {
-                        ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote, guildEmote]))).thenResolve({ success: [unicodeEmote, guildEmote], failed: [] });
+                        ctx.util.setup(m => m.addReactions(message, $.looksLike([unicodeEmote, guildEmote]))).thenResolve({ success: [unicodeEmote, guildEmote], failed: [] });
                     }
                 }
             ]
@@ -76,10 +77,10 @@ runSubtagTests({
             code: '{reactadd;🤔;<:notlikecat:280110565161041921>}',
             expected: '',
             setup(ctx) {
-                ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
+                ctx.roles.bot.permissions = eris.Constants.Permissions.addReactions.toString();
             },
             assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
+                assert.deepEqual(bbctx.data.reactions, [unicodeEmote.toString(), guildEmote.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
@@ -92,7 +93,7 @@ runSubtagTests({
                 {
                     expected: '',
                     postSetup(_, message, __, ctx) {
-                        ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote, guildEmote]))).thenResolve({ success: [unicodeEmote, guildEmote], failed: [] });
+                        ctx.util.setup(m => m.addReactions(message, $.looksLike([unicodeEmote, guildEmote]))).thenResolve({ success: [unicodeEmote, guildEmote], failed: [] });
                     }
                 }
             ]
@@ -108,7 +109,7 @@ runSubtagTests({
             code: '{reactadd;abc;🤔;ghi}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal(['🤔']);
+                assert.deepEqual(bbctx.data.reactions, ['🤔']);
             }
         },
         {
@@ -121,7 +122,7 @@ runSubtagTests({
                 }, ctx.users.command));
 
                 ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, false)).thenResolve(message);
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote]))).thenResolve({ success: [], failed: [unicodeEmote] });
+                ctx.util.setup(m => m.addReactions(message, $.looksLike([unicodeEmote]))).thenResolve({ success: [], failed: [unicodeEmote] });
             },
             errors: [
                 { start: 0, end: 33, error: new BBTagRuntimeError('I cannot add \'🤔\' as reactions') }

@@ -1,17 +1,16 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ChannelEditSubtag } from '@blargbot/bbtag/subtags/channel/channelEdit';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { argument } from '@blargbot/test-util/mock';
-import { ChannelType } from 'discord-api-types/v9';
-import { ApiError, Constants } from 'eris';
+import { BBTagRuntimeError, ChannelEditSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag-engine';
 
-import { runSubtagTests } from '../SubtagTestSuite';
 
-runSubtagTests({
-    subtag: new ChannelEditSubtag(),
+
+
+import { runSubtagTests } from '../../SubtagTestSuite.js';
+
+await runSubtagTests({
+    replacer: replacers.channelEditReplacer,
+    names: [],
     argCountBounds: { min: 1, max: 2 },
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageChannels.toString();
+        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
     },
     cases: [
         {
@@ -27,7 +26,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -61,7 +60,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -95,7 +94,7 @@ runSubtagTests({
                 locked: true
             })}}}`,
             expected: '1293671282973698',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
             },
@@ -105,7 +104,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({
                     bitrate: 123,
                     name: 'new channel name',
                     nsfw: true,
@@ -136,7 +135,7 @@ runSubtagTests({
                 invitable: true
             })}}}`,
             expected: '1293671282973698',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
                 ctx.channels.general.type = ChannelType.GuildPublicThread;
@@ -147,7 +146,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({
                     archived: true,
                     autoArchiveDuration: 4320,
                     locked: true,
@@ -181,7 +180,7 @@ runSubtagTests({
                 locked: 'true'
             })}}}`,
             expected: '1293671282973698',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
             },
@@ -191,7 +190,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({
                     bitrate: 123,
                     name: 'new channel name',
                     nsfw: true,
@@ -222,7 +221,7 @@ runSubtagTests({
                 invitable: 'true'
             })}}}`,
             expected: '1293671282973698',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             setup(ctx) {
                 ctx.channels.general.id = '1293671282973698';
                 ctx.channels.general.type = ChannelType.GuildPublicThread;
@@ -233,7 +232,7 @@ runSubtagTests({
                     throw new Error('Unable to get channel under test');
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1293671282973698')).thenResolve([channel]);
-                ctx.discord.setup(m => m.editChannel(channel.id, argument.isDeepEqual({
+                ctx.discord.setup(m => m.editChannel(channel.id, $.looksLike({
                     archived: true,
                     autoArchiveDuration: 4320,
                     locked: true,
@@ -266,7 +265,7 @@ runSubtagTests({
         {
             code: '{channeledit;1293671282973698}',
             expected: '`Author cannot edit this channel`',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             errors: [
                 { start: 0, end: 30, error: new BBTagRuntimeError('Author cannot edit this channel') }
             ],
@@ -292,7 +291,7 @@ runSubtagTests({
                 invitable: true
             })}}}`,
             expected: '`Invalid JSON`',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             errors: [
                 { start: 0, end: 168, error: new BBTagRuntimeError('Invalid JSON') }
             ],
@@ -318,7 +317,7 @@ runSubtagTests({
                 locked: true
             })}}}`,
             expected: '`Invalid JSON`',
-            subtags: [new EscapeBBTagSubtag()],
+            subtags: [replacers.escapeBBTagReplacer],
             errors: [
                 { start: 0, end: 243, error: new BBTagRuntimeError('Invalid JSON') }
             ],
@@ -340,10 +339,10 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
+                const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.editChannel('2384762844234324', argument.isDeepEqual({
+                ctx.discord.setup(m => m.editChannel('2384762844234324', $.looksLike({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -370,10 +369,10 @@ runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
+                const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.editChannel('2384762844234324', argument.isDeepEqual({
+                ctx.discord.setup(m => m.editChannel('2384762844234324', $.looksLike({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,

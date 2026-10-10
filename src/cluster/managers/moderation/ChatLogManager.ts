@@ -1,7 +1,9 @@
-import { Cluster } from '@blargbot/cluster';
-import { guard, snowflake } from '@blargbot/cluster/utils';
-import { ChatLog, ChatLogIndex, ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models';
-import { KnownMessage, Message, PossiblyUncachedMessage, PossiblyUncachedTextableChannel } from 'eris';
+import type { Cluster } from '@blargbot/cluster';
+import { guard } from '@blargbot/cluster';
+import { snowflake } from '@blargbot/core';
+import type { ChatLog, ChatLogIndex, ChatLogSearchOptions } from '@blargbot/domain';
+import { ChatLogType } from '@blargbot/domain';
+import * as eris from 'eris';
 
 export class ChatLogManager {
     public constructor(
@@ -10,7 +12,7 @@ export class ChatLogManager {
 
     }
 
-    public async messageCreated(message: KnownMessage): Promise<void> {
+    public async messageCreated(message: eris.KnownMessage): Promise<void> {
         if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
             return;
 
@@ -21,15 +23,15 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: message.author.id,
-            attachments: message.attachments.map(a => a.url)
+            attachment: message.attachments.map(a => a.url)
         }, ChatLogType.CREATE);
     }
 
-    public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
+    public async messageDeleted(message: eris.PossiblyUncachedMessage): Promise<void> {
         if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
             return;
 
-        const chatlog = message instanceof Message
+        const chatlog = message instanceof eris.Message
             ? {
                 content: message.content,
                 embeds: message.embeds,
@@ -47,11 +49,11 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: chatlog.userid,
-            attachments: chatlog.attachments
+            attachment: 'attachments' in chatlog ? chatlog.attachments : chatlog.attachment
         }, ChatLogType.DELETE);
     }
 
-    public async messageUpdated(message: Message<PossiblyUncachedTextableChannel>): Promise<void> {
+    public async messageUpdated(message: eris.Message<eris.PossiblyUncachedTextableChannel>): Promise<void> {
         if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true || !guard.hasValue(message.author))
             return;
 
@@ -62,7 +64,7 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: message.author.id,
-            attachments: message.attachments.map(a => a.url)
+            attachment: message.attachments.map(a => a.url)
         }, ChatLogType.UPDATE);
     }
 

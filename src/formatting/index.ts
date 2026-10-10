@@ -1,9 +1,9 @@
-import * as util from './util';
+import * as util from './util/index.js';
 
-export * from './compiler';
-export * from './middleware';
-export * from './Formatter';
-export * from './FormatString';
-export * from './types';
+export * from './compiler/index.js';
+export * from './middleware/index.js';
+export * from './Formatter.js';
+export * from './FormatString.js';
+export * from './types.js';
 
 export { util };

@@ -1,10 +1,10 @@
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, parse, randInt } from '@blargbot/cluster/utils';
-import { Emote } from '@blargbot/core/Emote';
-import { Duration, duration } from 'moment-timezone';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, GuildCommand, parse } from '@blargbot/cluster';
+import { Emote } from '@blargbot/core';
+import { random } from '@blargbot/util';
+import moment from 'moment-timezone';
 
-import templates from '../../text';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.poll;
 
@@ -41,7 +41,7 @@ export class PollCommand extends GuildCommand {
         const emojis = options.emojis === undefined ? defaultEmotes : Emote.findAll(options.emojis);
         const time = typeof options.time === 'string'
             ? parse.duration(options.time) ?? options.time
-            : options.time ?? duration(1, 'minute');
+            : options.time ?? moment.duration(1, 'minute');
 
         if (typeof time === 'string')
             return cmd.default.invalidDuration({ duration: time });
@@ -49,7 +49,7 @@ export class PollCommand extends GuildCommand {
         let color: number | undefined;
         switch (typeof options.color) {
             case 'undefined':
-                color = randInt(0, 0xffffff);
+                color = random.int(0, 0xffffff);
                 break;
             case 'number':
                 color = options.color;
@@ -89,7 +89,7 @@ export class PollCommand extends GuildCommand {
 }
 
 interface PollOptions {
-    time?: string | Duration;
+    time?: string | moment.Duration;
     emojis?: string;
     title: string;
     description?: string;

@@ -1,11 +1,17 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { BrainfuckSubtag } from '@blargbot/bbtag/subtags/misc/brainfuck';
+import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
+import Brainfuck from 'brainfuck-node';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new BrainfuckSubtag(),
+await runSubtagTests({
+    replacer: replacers.brainfuckReplacer,
+    names: ['brainfuck'],
     argCountBounds: { min: 1, max: 2 },
+    setup(context) {
+        context.locals.setup(m => m.brainfuck).returns((code, input) => {
+            return new Brainfuck().execute(code, input).output;
+        });
+    },
     cases: [
         {
             code: '{brainfuck;-[------->+<]>-.-[->+++++<]>++.+++++++..+++.[--->+<]>-----.---[->+++<]>.-[--->+<]>---.+++.------.--------.-[--->+<]>.}',
