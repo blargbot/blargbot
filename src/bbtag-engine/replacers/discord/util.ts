@@ -3,10 +3,25 @@ import { BBTagRuntimeError } from '../../BBTagRuntimeError.js';
 import { parse } from '../../parse.js';
 import { toSetAsync } from '../../toCollectionAsync.js';
 import type { QuietLocals } from '../locals.js';
-import type { GuildRolesManageableLocals, SendEmbed } from './locals.js';
+import type { DiscordPermissionName, DiscordPermissions } from './enums.js';
+import type { GuildRolesManageableLocals, ModerationLocals, PermissionsLocals, SendEmbed } from './locals.js';
 
 export function isQuiet(ctx: BBTagContext<QuietLocals>, quietStr = ''): boolean {
     return ctx.locals.quiet || quietStr !== '';
+}
+
+export async function hasHigherRole(ctx: BBTagContext<ModerationLocals>, moderatorId: bigint, targetId: bigint): Promise<boolean> {
+    return await ctx.locals.discord.getTopRolePosition(moderatorId) > await ctx.locals.discord.getTopRolePosition(targetId);
+}
+
+export async function hasAnyPermissions(ctx: BBTagContext<PermissionsLocals>, userId: bigint, ...permissions: Array<DiscordPermissions | bigint | DiscordPermissionName>): Promise<boolean> {
+    const actual = await ctx.locals.discord.getPermissions(userId);
+    return actual.has('ADMINISTRATOR') || actual.hasAny(...permissions);
+}
+
+export async function hasAnyPermissionsIn(ctx: BBTagContext<PermissionsLocals>, userId: bigint, channelId: bigint, ...permissions: Array<DiscordPermissions | bigint | DiscordPermissionName>): Promise<boolean> {
+    const actual = await ctx.locals.discord.getPermissions(userId, channelId);
+    return actual.has('ADMINISTRATOR') || actual.hasAny(...permissions);
 }
 
 export async function getManageableRoles(ctx: BBTagContext<GuildRolesManageableLocals>, errorMessage: string, mapping?: (value: bigint) => bigint): Promise<Set<bigint>>;

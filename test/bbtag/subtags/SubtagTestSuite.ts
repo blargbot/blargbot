@@ -23,7 +23,7 @@ export interface SubtagTestCase<Locals extends object = object> {
         required?: boolean;
         handle: (error: unknown) => Awaitable<void>;
     };
-    readonly errors?: ReadonlyArray<{ start: number | SourceMarker; end: number | SourceMarker; error: BBTagRuntimeError; }> | ((errors: LocatedBBTagRuntimeError[]) => void);
+    readonly errors?: ReadonlyArray<{ start?: number | SourceMarker; end?: number | SourceMarker; error: BBTagRuntimeError; }> | ((errors: LocatedBBTagRuntimeError[]) => void);
     readonly skip?: boolean | (() => Awaitable<boolean>);
     readonly replacers?: Iterable<BBTagReplacer<Locals>>;
     readonly retries?: number;
@@ -440,8 +440,8 @@ async function runTestCase<Locals extends object>(
             }));
             const expected = testCase.errors?.map(err => ({
                 error: noStack(err.error),
-                start: sourceMarker(err.start, testCase.code),
-                end: sourceMarker(err.end, testCase.code)
+                start: sourceMarker(err.start ?? 0, testCase.code),
+                end: sourceMarker(err.end ?? testCase.code.length, testCase.code)
             })) ?? [];
             assert.deepEqual(errors, expected);
         }

@@ -98,7 +98,7 @@ await runSubtagTests<VariablesLocals>({
             code: '{jsonstringify;true;abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 24, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         }
     ]

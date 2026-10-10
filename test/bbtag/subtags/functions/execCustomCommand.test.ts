@@ -50,7 +50,7 @@ await runSubtagTests<ExecCustomCommandLocals>({
             code: '{execcc;abc}',
             expected: '`CCommand not found: abc`',
             errors: [
-                { start: 0, end: 12, error: new BBTagRuntimeError('CCommand not found: abc') }
+                { error: new BBTagRuntimeError('CCommand not found: abc') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.getCustomCommand('abc')).returns(null).mustHappen();
@@ -60,7 +60,7 @@ await runSubtagTests<ExecCustomCommandLocals>({
             code: '{execcc;OtherSubtag}',
             expected: '`Cannot execcc imported tag: OtherSubtag`',
             errors: [
-                { start: 0, end: 20, error: new BBTagRuntimeError('Cannot execcc imported tag: OtherSubtag') }
+                { error: new BBTagRuntimeError('Cannot execcc imported tag: OtherSubtag') }
             ],
             setup(ctx) {
                 const mockTag = createMockTag(ctx, true);
@@ -72,7 +72,7 @@ await runSubtagTests<ExecCustomCommandLocals>({
         //     code: '{execcc;otherSubtag}',
         //     expected: '`Terminated recursive tag after 200 execs.`',
         //     errors: [
-        //         { start: 0, end: 20, error: new SubtagStackOverflowError(200) }
+        //         {  error: new SubtagStackOverflowError(200) }
         //     ],
         //     setup(ctx) {
         //         ctx.options.data = { stackSize: 200 };

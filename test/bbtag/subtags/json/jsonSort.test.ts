@@ -62,7 +62,7 @@ await runSubtagTests<VariablesLocals>({
             code: '{jsonsort;arrayVar;points;a}',
             expected: '`Cannot read property points at index 1, 1 total failures`',
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Cannot read property points at index 1, 1 total failures') }
+                { error: new BBTagRuntimeError('Cannot read property points at index 1, 1 total failures') }
             ],
             setup(ctx) {
                 ctx.variables.setup(m => m.get('arrayVar')).returns({
@@ -79,7 +79,7 @@ await runSubtagTests<VariablesLocals>({
             code: '{jsonsort;arrayVar;abc;a}',
             expected: '`Cannot read property abc at index 0, 4 total failures`',
             errors: [
-                { start: 0, end: 25, error: new BBTagRuntimeError('Cannot read property abc at index 0, 4 total failures') }
+                { error: new BBTagRuntimeError('Cannot read property abc at index 0, 4 total failures') }
             ],
             setup(ctx) {
                 ctx.variables.setup(m => m.get('arrayVar')).returns({
@@ -96,7 +96,7 @@ await runSubtagTests<VariablesLocals>({
             code: '{jsonsort;testVar;abc;a}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 24, error: new NotAnArrayError('testVar') }
+                { error: new NotAnArrayError('testVar') }
             ],
             setup(ctx) {
                 ctx.variables.setup(m => m.get('testVar')).returns({ key: '~arrayVar', value: 'xyz' }).mustHappen(1);

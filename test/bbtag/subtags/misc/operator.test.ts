@@ -24,7 +24,7 @@ await runSubtagTests({
             expected: '`Invalid operator`',
             errors: [
                 { start: 10, end: 16, error: new MarkerError('eval', 10) },
-                { start: 0, end: 17, error: new InvalidOperatorError('operator') }
+                { error: new InvalidOperatorError('operator') }
             ]
         },
         ...createNumericTestCases([0], { '%': 0, '*': 0, '+': 0, '-': 0, '/': 0, '^': 0 }),

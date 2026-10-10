@@ -57,6 +57,7 @@ type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, 'nothing'>
     & SubtagReturnTypeUnion<['string', 'nothing']>
     & SubtagReturnTypeUnion<['json[]', 'nothing']>
     & SubtagReturnTypeUnion<['json', 'nothing']>
+    & SubtagReturnTypeUnion<['id', 'nothing']>
     & {
         unknown: AsyncIterable<string>;
         nothing: void;

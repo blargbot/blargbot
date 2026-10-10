@@ -34,7 +34,7 @@ await runSubtagTests({
             expected: '`Not a number`',
             setup(ctx) { setupChange(ctx, '_myVariable', 'abc'); },
             errors: [
-                { start: 0, end: 23, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
@@ -56,7 +56,7 @@ await runSubtagTests({
             code: '{increment;_myVariable;xyz}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 27, error: new NotANumberError('xyz') }
+                { error: new NotANumberError('xyz') }
             ]
         },
         {
@@ -93,7 +93,7 @@ await runSubtagTests({
             code: '{increment;_myVariable;;abc}',
             expected: '`Not a boolean`',
             errors: [
-                { start: 0, end: 28, error: new NotABooleanError('abc') }
+                { error: new NotABooleanError('abc') }
             ]
         }
     ]

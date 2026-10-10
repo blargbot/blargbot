@@ -54,13 +54,13 @@ declare global {
         : Result;
 
     interface ObjectConstructor {
-        keys<TKey extends string>(value: { [P in TKey]: unknown }): TKey[];
+        keys<TKey extends string | number>(value: { [P in TKey]: unknown }): `${TKey}`[];
         keys<TString extends string>(value: TString): Array<`${number}`>;
         keys<TArray extends unknown[]>(value: TArray): Array<`${number}`>;
         keys(value: number | boolean | bigint): [];
-        values<T>(value: Exclude<T, undefined | null>): T extends Array<infer R> ? R[] : T extends number | boolean | bigint ? [] : T extends string ? SplitString<T, ''> : Array<T[keyof T]>;
-        entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]: TValue; }): Array<[TKey & string, TValue]>;
-        entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]?: TValue; }): Array<[TKey & string, TValue | undefined]>;
+        values<T>(value: NonNullable<T>): T extends Array<infer R> ? R[] : T extends number | boolean | bigint ? [] : T extends string ? SplitString<T, ''> : Array<T[keyof T]>;
+        entries<TKey extends string | number, TValue>(value: { [P in TKey]: TValue; }): Array<[`${TKey}`, TValue]>;
+        entries<TKey extends string | number, TValue>(value: { [P in TKey]?: TValue; }): Array<[`${TKey}`, TValue | undefined]>;
         entries(value: object): Array<[string, unknown]>;
         create<T, U>(o: T, properties: { [P in keyof U]: TypedPropertyDescriptor<U[P]> }): T & U;
         create<T extends object>(value: T): T;
@@ -90,11 +90,11 @@ declare global {
     }
 
     interface Set<T> {
-        has<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
+        has<R>(value: R): value is T & R;
     }
 
     interface ReadonlySet<T> {
-        has<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
+        has<R>(value: R): value is T & R;
     }
 
     type Awaitable<T> = T | PromiseLike<T>;

@@ -1,7 +1,7 @@
 import type { QueryDiscordRoleLocals } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, RoleNotFoundError } from '@blargbot/bbtag-engine';
-import { random } from '@blargbot/util';
 
+import { randomSnowflake } from '../../randomSnowflake.js';
 import type { SubtagTestCase, SubtagTestContext } from '../../SubtagTestSuite.js';
 
 export function createGetRolePropTestCases<Locals extends QueryDiscordRoleLocals>(options: GetRolePropTestData<Locals>): Array<SubtagTestCase<Locals>> {
@@ -47,7 +47,7 @@ function* unknownRoleTestCases<Locals extends QueryDiscordRoleLocals>(options: G
         code: options.generateCode('unknown role'),
         expected: `\`${new notFound('unknown role').message}\``,
         errors: [
-            { start: 0, end: options.generateCode('unknown role').length, error: new notFound('unknown role') }
+            { error: new notFound('unknown role') }
         ],
         setup(ctx) {
             options.setup?.(ctx);
@@ -66,7 +66,7 @@ function* unknownRoleTestCases<Locals extends QueryDiscordRoleLocals>(options: G
             code: options.generateCode('unknown role', ''),
             expected: `\`${new notFound('unknown role').message}\``,
             errors: [
-                { start: 0, end: options.generateCode('unknown role', '').length, error: new notFound('unknown role') }
+                { error: new notFound('unknown role') }
             ],
             setup(ctx) {
                 options.setup?.(ctx);
@@ -79,7 +79,7 @@ function* unknownRoleTestCases<Locals extends QueryDiscordRoleLocals>(options: G
             code: options.generateCode('unknown role', 'q'),
             expected: quiet === true ? `\`${new quietError('unknown role').message}\`` : quiet,
             errors: [
-                { start: 0, end: options.generateCode('unknown role', 'q').length, error: new quietError('unknown role') }
+                { error: new quietError('unknown role') }
             ],
             setup(ctx) {
                 options.setup?.(ctx);
@@ -114,14 +114,12 @@ function createTestCase<Locals extends QueryDiscordRoleLocals>(data: GetRoleProp
         code,
         title: testCase.title,
         expected: () => testCase.expected,
-        errors: testCase.error === undefined ? [] : [{ start: 0, end: code.length, error: testCase.error }],
+        errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
             data.setup?.(ctx);
-            const roleId = random.bigint(10n ** 10n, 10n ** 20n);
+            const roleId = randomSnowflake('roleId');
             const quiet = typeof args[1] === 'string' && args[1] !== '';
             const searchText = args[0];
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            const withQuiet = BBTagRuntimeError.withQuiet<[string], BBTagRuntimeError>;
             const quietError = typeof data.quiet === 'boolean' ? data.notFound ?? RoleNotFoundError : withQuiet.apply(data.notFound ?? RoleNotFoundError, [quiet, data.quiet]);
             ctx.discord.setup((m, $) => m.queryRole(searchText, $({ quiet: quiet, throw: quietError })))
                 .resolves(roleId)
@@ -130,3 +128,5 @@ function createTestCase<Locals extends QueryDiscordRoleLocals>(data: GetRoleProp
         }
     };
 }
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const withQuiet = BBTagRuntimeError.withQuiet<[string], BBTagRuntimeError>;

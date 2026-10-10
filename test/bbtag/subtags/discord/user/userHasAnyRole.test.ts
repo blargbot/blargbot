@@ -1,7 +1,7 @@
 import type { GuildMemberHasRolesLocals } from '@blargbot/bbtag-engine';
 import { replacers, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag-engine';
-import { random } from '@blargbot/util';
 
+import { randomSnowflake } from '../../randomSnowflake.js';
 import { runSubtagTests } from '../../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
@@ -14,10 +14,10 @@ await runSubtagTests({
             code: '{userhasrole;}',
             expected: '`No role found`',
             errors: [
-                { start: 0, end: 14, error: new RoleNotFoundError('') }
+                { error: new RoleNotFoundError('') }
             ],
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves([]).mustHappen(1);
             }
@@ -131,10 +131,10 @@ await runSubtagTests({
             code: '{userhasrole;aaaaaa}',
             expected: '`No role found`',
             errors: [
-                { start: 0, end: 20, error: new RoleNotFoundError('aaaaaa') }
+                { error: new RoleNotFoundError('aaaaaa') }
             ],
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves([]).mustHappen(1);
             }
@@ -143,10 +143,10 @@ await runSubtagTests({
             code: '{userhasrole;aaaaaa;;q}',
             expected: 'false',
             errors: [
-                { start: 0, end: 23, error: new (RoleNotFoundError.withDisplay('false'))('aaaaaa') }
+                { error: new (RoleNotFoundError.withDisplay('false'))('aaaaaa') }
             ],
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: true, throw: UserNotFoundError.withDisplay('false') }))).returns(userId).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves([]).mustHappen(1);
             }
@@ -155,7 +155,7 @@ await runSubtagTests({
             code: '{userhasrole;["12345678901234567","9876544321098765"]}',
             expected: 'true',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves([12345678901234567n]).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves([12345678901234567n]).mustHappen(1);

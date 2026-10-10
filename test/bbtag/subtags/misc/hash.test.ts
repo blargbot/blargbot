@@ -28,7 +28,7 @@ await runSubtagTests({
             expected: '`Unsupported hash`',
             errors: [
                 { start: 14, end: 20, error: new MarkerError('eval', 14) },
-                { start: 0, end: 21, error: new BBTagRuntimeError('Unsupported hash', 'invalid is not a supported hash algorithm') }
+                { error: new BBTagRuntimeError('Unsupported hash', 'invalid is not a supported hash algorithm') }
             ]
         }
     ]

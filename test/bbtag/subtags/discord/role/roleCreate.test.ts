@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, replacers } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, FailedToCreateRoleNoPermsError, replacers } from '@blargbot/bbtag-engine';
 
 import { runSubtagTests } from '../../SubtagTestSuite.js';
 
@@ -148,7 +148,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '`Author cannot create roles`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Author cannot create roles') }
+                { error: new BBTagRuntimeError('Author cannot create roles') }
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([]).mustHappen(1);
@@ -158,7 +158,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;red;abc;true;true}',
             expected: '`Permission not a number`',
             errors: [
-                { start: 0, end: 43, error: new BBTagRuntimeError('Permission not a number', '"abc" is not a number') }
+                { error: new BBTagRuntimeError('Permission not a number', '"abc" is not a number') }
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([32946298746234n]).mustHappen(1);
@@ -168,7 +168,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '`Author missing requested permissions`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Author missing requested permissions') }
+                { error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([32946298746234n]).mustHappen(1);
@@ -179,7 +179,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '`Failed to create role: no perms`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms') }
+                { error: new FailedToCreateRoleNoPermsError() }
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([32946298746234n]).mustHappen(1);

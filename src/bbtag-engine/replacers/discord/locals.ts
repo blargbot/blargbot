@@ -1,6 +1,6 @@
 import type { BBTagRuntimeThrowable } from '../../BBTagRuntimeError.js';
 import type { NsfwLocals, QuietLocals, VariablesLocals } from '../locals.js';
-import type { DiscordPermissions } from './Permissions.js';
+import type { AutoArchiveDuration, ChannelType, DiscordPermissions, ForumLayoutType, ForumSortOrder, PermissionOverwriteType, VideoQualityMode } from './enums.js';
 
 type QueryEntity<Options extends QueryEntityOptions, Result> =
     & ((searchText: string, options?: Options & { throw: NonNullable<unknown>; }) => Awaitable<Result>)
@@ -37,16 +37,20 @@ interface QueryChannelMixin {
 
 export interface QueryDiscordChannelLocals extends QuietLocals, DiscordLocals<QueryChannelMixin> { }
 
-interface ModerationMixin {
+interface ModerationMixin extends PermissionsMixin {
+    readonly getTopRolePosition: (userId: bigint) => Awaitable<number>;
+}
+export type ModerationLocals = DiscordLocals<ModerationMixin>;
+
+interface PermissionsMixin {
+    readonly getPermissions: (userId: bigint, channelId?: bigint) => Awaitable<DiscordPermissions>;
     readonly ownerId: bigint;
     readonly userId: bigint;
     readonly authorizerId: bigint;
     readonly botId: bigint;
-    readonly getPermissions: (userId: bigint) => Awaitable<DiscordPermissions>;
-    readonly getTopRolePosition: (userId: bigint) => Awaitable<number>;
 }
 
-export type ModerationLocals = DiscordLocals<ModerationMixin>;
+export type PermissionsLocals = DiscordLocals<PermissionsMixin>;
 
 interface BanMixin {
     readonly banOverrides: DiscordPermissions;
@@ -294,16 +298,161 @@ interface SetNicknameMixin {
 export interface GuildMemberSetNicknameLocals extends QuietLocals, DiscordLocals<SetNicknameMixin & QueryUserMixin> { }
 
 interface ListChannelsMixin {
-    readonly listChannels: (type: number) => Awaitable<AwaitableIterable<bigint>>;
+    readonly listChannels:
+    & (() => Awaitable<AwaitableIterable<bigint>>)
+    & ((type: number) => Awaitable<AwaitableIterable<bigint>>)
+    & ((parentId: bigint) => Awaitable<AwaitableIterable<bigint>>);
 }
 
-export type GuildChannelListLocals = DiscordLocals<ListChannelsMixin>;
+export interface GuildChannelListLocals extends QuietLocals, DiscordLocals<QueryChannelMixin & ListChannelsMixin> { }
+
+interface ChannelTypeMixin {
+    readonly getChannelType: (channelId: bigint) => Awaitable<number | null>;
+}
+
+export interface GuildChannelTypeLocals extends QuietLocals, DiscordLocals<QueryChannelMixin & ChannelTypeMixin> { }
+
+interface ChannelNsfwMixin {
+    readonly isChannelNsfw: (channelId: bigint) => Awaitable<boolean>;
+}
+
+export interface GuildChannelNsfwLocals extends QuietLocals, DiscordLocals<QueryChannelMixin & ChannelNsfwMixin> { }
+
+interface ChannelNameMixin {
+    readonly getChannelName: (channelId: bigint) => Awaitable<string | null>;
+}
+
+export interface GuildChannelNameLocals extends QuietLocals, DiscordLocals<QueryChannelMixin & ChannelNameMixin> { }
+
+interface ChannelPositionMixin {
+    readonly getChannelPosition: (channelId: bigint) => Awaitable<number | null>;
+}
+
+export interface GuildChannelPositionLocals extends QuietLocals, DiscordLocals<QueryChannelMixin & ChannelPositionMixin & ChannelTypeMixin> { }
 
 interface ChannelCategoryMixin {
     readonly getChannelCategory: (channelId: bigint) => Awaitable<bigint | null>;
 }
 
 export interface GuildChannelCategoryLocals extends QuietLocals, DiscordLocals<ChannelCategoryMixin & QueryChannelMixin> { }
+
+interface ChannelLastMessageIdMixin {
+    readonly getLastMessageId: (channelId: bigint) => Awaitable<bigint | null>;
+}
+
+export interface GuildChannelLastMessageIdLocals extends QuietLocals, DiscordLocals<ChannelLastMessageIdMixin & ChannelTypeMixin & QueryChannelMixin> { }
+
+interface CreateChannelMixin {
+    readonly createChannel: (options: CreateChannelOptions) => Awaitable<bigint | null>;
+}
+
+export type GuildChannelCreateLocals = DiscordLocals<CreateChannelMixin & PermissionsMixin>;
+
+interface DeleteChannelMixin {
+    readonly deleteChannel: (channelId: bigint) => Awaitable<boolean>;
+}
+
+export interface GuildChannelDeleteLocals extends QuietLocals, DiscordLocals<DeleteChannelMixin & QueryChannelMixin & PermissionsMixin> { }
+
+interface EditChannelMixin {
+    readonly editChannel: (channelId: bigint, options: EditThreadOptions | EditChannelOptions) => Awaitable<boolean>;
+}
+
+export type GuildChannelEditLocals = DiscordLocals<EditChannelMixin & ChannelTypeMixin & QueryChannelMixin & PermissionsMixin>;
+
+interface SetChannelPermissionMixin {
+    readonly setChannelPermission: (channelId: bigint, entityId: bigint, kind: PermissionOverwriteType, allow: bigint, deny: bigint) => Awaitable<boolean>;
+}
+
+export type GuildChannelSetPermissionLocals = DiscordLocals<SetChannelPermissionMixin & ChannelTypeMixin & QueryChannelMixin & PermissionsMixin>;
+
+interface SetChannelPositionMixin {
+    readonly setChannelPosition: (channelId: bigint, position: number) => Awaitable<boolean>;
+}
+
+export type GuildChannelSetPositionLocals = DiscordLocals<SetChannelPositionMixin & ChannelTypeMixin & QueryChannelMixin & PermissionsMixin>;
+
+interface SetChannelRateLimitMixin {
+    readonly setChannelRateLimit: (channelId: bigint, rateLimit: number) => Awaitable<boolean>;
+}
+
+export type GuildChannelSetRateLimitLocals = DiscordLocals<SetChannelRateLimitMixin & QueryChannelMixin & PermissionsMixin>;
+
+export interface PermissionOverwrite {
+    allow: bigint;
+    deny: bigint;
+    id: bigint;
+    type: PermissionOverwriteType;
+};
+
+export type ForumTag = {
+    name: string;
+    moderated?: boolean;
+    emojiID?: bigint;
+    emojiName?: string;
+};
+
+export type EmojiRef = {
+    emojiID: bigint;
+} | {
+    emojiName: string;
+};
+
+export interface CreateChannelOptions {
+    name: string;
+    type?: ChannelType;
+    topic?: string;
+    bitrate?: number;
+    userLimit?: number;
+    rateLimitPerUser?: number;
+    position?: number;
+    permissionOverwrites?: PermissionOverwrite[];
+    parentID?: bigint;
+    nsfw?: boolean;
+    rtcRegion?: string;
+    videoQualityMode?: VideoQualityMode;
+    defaultAutoArchiveDuration?: AutoArchiveDuration;
+    defaultReactionEmoji?: EmojiRef;
+    availableTags?: ForumTag[];
+    defaultSortOrder?: ForumSortOrder;
+    flags?: number;
+    defaultThreadRateLimitPerUser?: number;
+    defaultForumLayout?: ForumLayoutType;
+    reason?: string;
+};
+export interface EditChannelOptions {
+    name?: null | string;
+    type?: null | ChannelType;
+    position?: null | number;
+    topic?: null | string;
+    nsfw?: null | boolean;
+    rateLimitPerUser?: null | number;
+    bitrate?: null | number;
+    userLimit?: null | number;
+    permissionOverwrites?: null | PermissionOverwrite[];
+    parentID?: null | bigint;
+    rtcRegion?: null | string;
+    videoQualityMode?: null | VideoQualityMode;
+    defaultAutoArchiveDuration?: null | AutoArchiveDuration;
+    flags?: null | number;
+    availableTags?: null | ForumTag[];
+    defaultReactionEmoji?: null | EmojiRef;
+    defaultThreadRateLimitPerUser?: null | number;
+    defaultSortOrder?: null | ForumSortOrder;
+    defaultForumLayout?: null | ForumLayoutType;
+    reason?: string;
+};
+export interface EditThreadOptions {
+    name?: null | string;
+    archived?: null | boolean;
+    autoArchiveDuration?: null | AutoArchiveDuration;
+    locked?: null | boolean;
+    invitable?: null | boolean;
+    rateLimitPerUser?: null | number;
+    flags?: null | number;
+    appliedTags?: null | bigint[];
+    reason?: string;
+};
 
 export interface DiscordUserDetailsOptions {
     userId: bigint;

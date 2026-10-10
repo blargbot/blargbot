@@ -45,7 +45,7 @@ await runSubtagTests({
                 { start: 6, end: 12, error: new MarkerError('eval', 6) },
                 { start: 13, end: 19, error: new MarkerError('eval', 13) },
                 { start: 22, end: 28, error: new MarkerError('eval', 22) },
-                { start: 0, end: 29, error: new InvalidOperatorError('op') }
+                { error: new InvalidOperatorError('op') }
             ]
         }
     ]

@@ -24,14 +24,14 @@ await runSubtagTests({
             code: '{timeout;other user;abc}',
             expected: '`Invalid duration`',
             errors: [
-                { start: 0, end: 24, error: new InvalidDurationError('abc') }
+                { error: new InvalidDurationError('abc') }
             ]
         },
         {
             code: '{timeout;abc;1s}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 16, error: new UserNotFoundError('abc') }
+                { error: new UserNotFoundError('abc') }
             ],
             setup(ctx) {
                 ctx.discord.setup((m, $) => m.queryUser('abc', $({ quiet: true, throw: UserNotFoundError })))
@@ -44,7 +44,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User is already timed out`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User is already timed out', 'other user is already timed out!') }
+                { error: new BBTagRuntimeError('User is already timed out', 'other user is already timed out!') }
             ],
             setup(ctx) {
                 const { targetId, userId } = setupTimeoutAuthorization(ctx, 'user');
@@ -85,7 +85,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to timeout users!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to timeout users!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -112,7 +112,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You cannot timeout the guild owner!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You cannot timeout the guild owner!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -138,7 +138,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You cannot timeout yourself!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You cannot timeout yourself!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -164,7 +164,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I cannot timeout myself!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I cannot timeout myself!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -190,7 +190,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'Administrators cannot be timed out!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'Administrators cannot be timed out!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -216,7 +216,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to timeout users!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to timeout users!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -243,7 +243,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You can only timeout users whos top role is below your top role!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You can only timeout users whos top role is below your top role!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -272,7 +272,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I can only timeout users whos top role is below my top role!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I can only timeout users whos top role is below my top role!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -435,7 +435,7 @@ await runSubtagTests({
             code: '{timeout;other user;-1d}',
             expected: '`Invalid duration`',
             errors: [
-                { start: 0, end: 24, error: new InvalidDurationError('-1d') }
+                { error: new InvalidDurationError('-1d') }
             ]
         },
         {
@@ -443,7 +443,7 @@ await runSubtagTests({
             code: '{timeout;other user;0s}',
             expected: '`User is not timed out`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
+                { error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
             ],
             setup(ctx) {
                 const { targetId, userId } = setupTimeoutAuthorization(ctx, 'user');
@@ -500,7 +500,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to timeout users!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to timeout users!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -528,7 +528,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You can only timeout users whos top role is below your top role!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You can only timeout users whos top role is below your top role!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -580,7 +580,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I can only timeout users whos top role is below my top role!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I can only timeout users whos top role is below my top role!') }
             ],
             setup(ctx) {
                 const { targetId } = setupTimeoutAuthorization(ctx, 'user', {
@@ -721,7 +721,7 @@ await runSubtagTests({
             code: '{timeout;other user;0s}',
             expected: '`User is not timed out`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
+                { error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
             ],
             setup(ctx) {
                 const { targetId, userId } = setupTimeoutAuthorization(ctx, 'user');

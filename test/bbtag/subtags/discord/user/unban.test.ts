@@ -18,7 +18,7 @@ await runSubtagTests({
             code: '{unban;abc}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 11, error: new UserNotFoundError('abc') }
+                { error: new UserNotFoundError('abc') }
             ],
             setup(ctx) {
                 ctx.discord.setup((m, $) => m.queryUser('abc', $({ global: true, throw: UserNotFoundError })))
@@ -67,7 +67,7 @@ await runSubtagTests({
             code: '{unban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 18, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to unban users!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to unban users!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -93,7 +93,7 @@ await runSubtagTests({
             code: '{unban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 18, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to unban users!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to unban users!') }
             ],
             setup(ctx) {
                 const botId = id('botId');

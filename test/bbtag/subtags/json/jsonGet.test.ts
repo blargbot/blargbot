@@ -17,7 +17,7 @@ await runSubtagTests<VariablesLocals>({
             code: '{jsonget;10;0.test}',
             expected: '`Cannot read property test of undefined`',
             errors: [
-                { start: 0, end: 19, error: new BBTagRuntimeError('Cannot read property test of undefined') }
+                { error: new BBTagRuntimeError('Cannot read property test of undefined') }
             ],
             setup(ctx) {
                 ctx.variables.setup(m => m.get('10')).returns({ key: '~', value: undefined }).mustHappen(1);
@@ -27,7 +27,7 @@ await runSubtagTests<VariablesLocals>({
             code: '{jsonget;"abc";0.test}',
             expected: '`Cannot read property test of undefined`',
             errors: [
-                { start: 0, end: 22, error: new BBTagRuntimeError('Cannot read property test of undefined') }
+                { error: new BBTagRuntimeError('Cannot read property test of undefined') }
             ],
             setup(ctx) {
                 ctx.variables.setup(m => m.get('"abc"')).returns({ key: '~', value: undefined }).mustHappen(1);
@@ -37,7 +37,7 @@ await runSubtagTests<VariablesLocals>({
             code: '{jsonget;true;0.test}',
             expected: '`Cannot read property test of undefined`',
             errors: [
-                { start: 0, end: 21, error: new BBTagRuntimeError('Cannot read property test of undefined') }
+                { error: new BBTagRuntimeError('Cannot read property test of undefined') }
             ],
             setup(ctx) {
                 ctx.variables.setup(m => m.get('true')).returns({ key: '~', value: undefined }).mustHappen(1);

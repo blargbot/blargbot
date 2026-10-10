@@ -46,7 +46,7 @@ await runSubtagTests<FunctionLocals>({
             code: '{func.test}',
             expected: '`Unknown subtag func.test`',
             errors: [
-                { start: 0, end: 11, error: new UnknownSubtagError('func.test') }
+                { error: new UnknownSubtagError('func.test') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.functions).returns({}).mustHappen();
@@ -59,7 +59,7 @@ await runSubtagTests<FunctionLocals>({
         //     code: '{func.test}',
         //     expected: '`Terminated recursive tag after 200 execs.`',
         //     errors: [
-        //         { start: 0, end: 11, error: new SubtagStackOverflowError(200) }
+        //         {  error: new SubtagStackOverflowError(200) }
         //     ],
         //     setup(ctx) {
         //         ctx.options.data = { stackSize: 200 };

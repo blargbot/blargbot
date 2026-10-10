@@ -49,7 +49,7 @@ await runSubtagTests<ExecTagLocals>({
             code: '{exec;abc}',
             expected: '`Tag not found: abc`',
             errors: [
-                { start: 0, end: 10, error: new BBTagRuntimeError('Tag not found: abc') }
+                { error: new BBTagRuntimeError('Tag not found: abc') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.getTag('abc')).returns(null).mustHappen();
@@ -60,7 +60,7 @@ await runSubtagTests<ExecTagLocals>({
         //     code: '{exec;otherSubtag}',
         //     expected: '`Terminated recursive tag after 200 execs.`',
         //     errors: [
-        //         { start: 0, end: 18, error: new SubtagStackOverflowError(200) }
+        //         {  error: new SubtagStackOverflowError(200) }
         //     ],
         //     setup(ctx) {
         //         ctx.options.data = { stackSize: 200 };

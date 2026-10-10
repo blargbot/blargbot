@@ -1,7 +1,7 @@
 import type { GuildRoleSetPermissionsLocals } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, FailedToEditRoleNoPermsError, LegacyRoleNotFoundError, replacers } from '@blargbot/bbtag-engine';
-import { random } from '@blargbot/util';
 
+import { randomSnowflake } from '../../randomSnowflake.js';
 import { runSubtagTests } from '../../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
@@ -61,7 +61,7 @@ await runSubtagTests({
             code: '{rolesetperms;3298746326924}',
             expected: '`Author cannot edit roles`',
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Author cannot edit roles') }
+                { error: new BBTagRuntimeError('Author cannot edit roles') }
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([]).mustHappen(1);
@@ -71,7 +71,7 @@ await runSubtagTests({
             code: '{rolesetperms;3298746326924}',
             expected: '`Role above author`',
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Role above author') }
+                { error: new BBTagRuntimeError('Role above author') }
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([239479234734n]).mustHappen(1);
@@ -82,10 +82,10 @@ await runSubtagTests({
             code: '{rolesetperms;3298746326924}',
             expected: '`Failed to edit role: no perms`',
             errors: [
-                { start: 0, end: 28, error: new FailedToEditRoleNoPermsError() }
+                { error: new FailedToEditRoleNoPermsError() }
             ],
             setup(ctx) {
-                const roleId = random.bigint(10n ** 10n, 10n ** 20n);
+                const roleId = randomSnowflake('roleId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([roleId]).mustHappen(1);
                 ctx.discord.setup((m, $) => m.queryRole('3298746326924', $({ quiet: false, throw: LegacyRoleNotFoundError }))).resolves(roleId).mustHappen(1);
                 ctx.discord.setup(m => m.setRolePermissions(roleId, 0n)).resolves(false).mustHappen(1);
@@ -95,7 +95,7 @@ await runSubtagTests({
             code: '{rolesetperms;3298746326924;7;q}',
             expected: '',
             errors: [
-                { start: 0, end: 32, error: new (FailedToEditRoleNoPermsError.withDisplay(''))() }
+                { error: new (FailedToEditRoleNoPermsError.withDisplay(''))() }
             ],
             setup(ctx) {
                 const roleId = 3298746326924n;

@@ -49,7 +49,7 @@ await runSubtagTests<VariablesLocals>({
             expected: '`Cannot read property to of undefined`',
             replacers: [replacers.jsonReplacer],
             errors: [
-                { start: 0, end: 41, error: new BBTagRuntimeError('Cannot read property to of undefined') }
+                { error: new BBTagRuntimeError('Cannot read property to of undefined') }
             ]
         }
     ]

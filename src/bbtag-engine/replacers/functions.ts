@@ -24,9 +24,8 @@ export const funcReplacer = defineReplacer<FunctionLocals>(['func.'], {
         const prefixedName = ensurePrefix('func.', args.subtagName.toLowerCase());
         if (prefixedName !== args.subtagName)
             throw new UnknownSubtagError(args.subtagName);
-        const source = ctx.locals.functions[prefixedName];
-        if (source === undefined)
-            throw new UnknownSubtagError(prefixedName);
+        const source = ctx.locals.functions[prefixedName]
+            ?? new UnknownSubtagError(prefixedName).throw();
 
         using _scope = ctx.pushScope();
         ctx.locals.functionParameters = args.map(arg => arg.value);
@@ -91,10 +90,8 @@ export const execTagReplacer = defineReplacer<ExecTagLocals>(['execTag', 'exec']
     parameters: ['name', 'args*'],
     returns: 'string',
     execute: async function execTag(ctx, [{ value: name }, ...args]) {
-        const tag = await ctx.locals.getTag(name);
-
-        if (tag === null)
-            throw new BBTagRuntimeError(`Tag not found: ${name}`);
+        const tag = await ctx.locals.getTag(name)
+            ?? new BBTagRuntimeError(`Tag not found: ${name}`).throw();
 
         const input = args.length === 1
             ? splitArg(args[0].value)
@@ -114,10 +111,8 @@ export const execCustomCommandReplacer = defineReplacer<ExecCustomCommandLocals>
     parameters: ['name', 'args*'],
     returns: 'string',
     execute: async function execTag(ctx, [{ value: name }, ...args]) {
-        const tag = await ctx.locals.getCustomCommand(name);
-
-        if (tag === null)
-            throw new BBTagRuntimeError(`CCommand not found: ${name}`);
+        const tag = await ctx.locals.getCustomCommand(name)
+            ?? new BBTagRuntimeError(`CCommand not found: ${name}`).throw();
         if (tag.isAlias === true)
             throw new BBTagRuntimeError(`Cannot execcc imported tag: ${name}`);
 
@@ -136,9 +131,8 @@ export const execCustomCommandReplacer = defineReplacer<ExecCustomCommandLocals>
 });
 
 function requireParams(context: BBTagContext<FunctionLocals>, subtagName: string): readonly string[] {
-    const params = context.locals.functionParameters;
-    if (params === null)
-        throw new BBTagRuntimeError(`{${subtagName}} can only be used inside {function}`);
+    const params = context.locals.functionParameters
+        ?? new BBTagRuntimeError(`{${subtagName}} can only be used inside {function}`).throw();
     return params;
 }
 

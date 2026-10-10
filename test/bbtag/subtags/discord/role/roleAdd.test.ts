@@ -1,13 +1,13 @@
 import { BBTagRuntimeError, replacers, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag-engine';
-import { random } from '@blargbot/util';
 
+import { randomSnowflake } from '../../randomSnowflake.js';
 import { runSubtagTests } from '../../SubtagTestSuite.js';
 
 const roles = [
     3298746326924n,
     9238476938485n,
     4384304833430n,
-    ...Array.from({ length: 4 }, () => random.bigint(10n ** 10n, 10n ** 20n))
+    ...Array.from({ length: 4 }, (_, i) => randomSnowflake(`roleId${i + 3}`))
 ];
 
 await runSubtagTests({
@@ -19,7 +19,7 @@ await runSubtagTests({
             code: `{roleadd;${roles[0]}}`,
             expected: 'true',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
@@ -31,7 +31,7 @@ await runSubtagTests({
             code: `{roleadd;${roles[0]}}`,
             expected: 'false',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(0, 3)).mustHappen(1);
@@ -42,7 +42,7 @@ await runSubtagTests({
             code: `{roleadd;["${roles[0]}","${roles[1]}"]}`,
             expected: 'true',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
@@ -54,7 +54,7 @@ await runSubtagTests({
             code: `{roleadd;["${roles[0]}",null]}`,
             expected: 'true',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
@@ -66,7 +66,7 @@ await runSubtagTests({
             code: `{roleadd;${roles[0]}}`,
             expected: '`Author cannot add roles`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Author cannot add roles') }
+                { error: new BBTagRuntimeError('Author cannot add roles') }
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([]).mustHappen(1);
@@ -76,10 +76,10 @@ await runSubtagTests({
             code: `{roleadd;${roles[0]}}`,
             expected: '`Role above author`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Role above author') }
+                { error: new BBTagRuntimeError('Role above author') }
             ],
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles.slice(1)).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
@@ -90,10 +90,10 @@ await runSubtagTests({
             code: `{roleadd;${roles[0]}}`,
             expected: '`No role found`',
             errors: [
-                { start: 0, end: 23, error: new RoleNotFoundError(roles[0].toString()) }
+                { error: new RoleNotFoundError(roles[0].toString()) }
             ],
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles.slice(1)).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles.slice(1)).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
@@ -104,7 +104,7 @@ await runSubtagTests({
             code: `{roleadd;${roles[0]};other user}`,
             expected: 'true',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listAllRoles()).resolves(roles).mustHappen(1);
                 ctx.discord.setup(m => m.listUserRoles(userId)).resolves(roles.slice(1, 3)).mustHappen(1);
@@ -116,7 +116,7 @@ await runSubtagTests({
             code: `{roleadd;${roles[0]};other user}`,
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 34, error: new UserNotFoundError('other user') }
+                { error: new UserNotFoundError('other user') }
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);
@@ -130,7 +130,7 @@ await runSubtagTests({
             code: `{roleadd;${roles[0]};other user}`,
             expected: 'false',
             errors: [
-                { start: 0, end: 34, error: new (UserNotFoundError.withDisplay('false'))('other user') }
+                { error: new (UserNotFoundError.withDisplay('false'))('other user') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.quiet).returns(true);
@@ -145,7 +145,7 @@ await runSubtagTests({
             code: `{roleadd;${roles[0]};other user;q}`,
             expected: 'false',
             errors: [
-                { start: 0, end: 36, error: new (UserNotFoundError.withDisplay('false'))('other user') }
+                { error: new (UserNotFoundError.withDisplay('false'))('other user') }
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves(roles).mustHappen(1);

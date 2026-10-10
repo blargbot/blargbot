@@ -58,7 +58,7 @@ await runSubtagTests<VariablesLocals>({
             code: '{jsonset;[123,456];length}',
             expected: '`Invalid array length`',
             errors: [
-                { start: 0, end: 26, error: new BBTagRuntimeError('Invalid array length') }
+                { error: new BBTagRuntimeError('Invalid array length') }
             ]
         },
         {
@@ -66,7 +66,7 @@ await runSubtagTests<VariablesLocals>({
             expected: '`Cannot set property myProp on "{\\"myProp\\":123}"`',
             replacers: [replacers.jsonReplacer],
             errors: [
-                { start: 0, end: 72, error: new BBTagRuntimeError('Cannot set property myProp on "{\\"myProp\\":123}"') }
+                { error: new BBTagRuntimeError('Cannot set property myProp on "{\\"myProp\\":123}"') }
             ]
         },
         {

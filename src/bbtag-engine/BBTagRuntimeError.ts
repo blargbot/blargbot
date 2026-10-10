@@ -58,6 +58,10 @@ export class BBTagRuntimeError extends Error {
         super(message);
         this.name = new.target.name;
     }
+
+    public throw(): never {
+        throw this;
+    }
 }
 export class BBTagTypeError extends BBTagRuntimeError {
     public constructor(a: 'a' | 'an', type: string, public readonly value: JToken | undefined) {

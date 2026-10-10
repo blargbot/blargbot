@@ -132,7 +132,7 @@ await runSubtagTests({
             code: '{get;arrayVar;10}',
             expected: '`Index out of range`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Index out of range') }
+                { error: new BBTagRuntimeError('Index out of range') }
             ],
             setup(ctx) {
                 setupVariables(ctx, 'arrayVar', [1, 2, 3, 4, 5], '$var');
@@ -142,7 +142,7 @@ await runSubtagTests({
             code: '{get;arrayVar;-1}',
             expected: '`Index out of range`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Index out of range') }
+                { error: new BBTagRuntimeError('Index out of range') }
             ],
             setup(ctx) {
                 setupVariables(ctx, 'arrayVar', [1, 2, 3, 4, 5], '$var');
@@ -205,7 +205,7 @@ function setupVariables(ctx: SubtagTestContext<VariablesLocals>, varName: string
 //             code: '{get;*myVariableName;abc}',
 //             expected: '`Not a number`',
 //             errors: [
-//                 { start: 0, end: 25, error: new NotANumberError('abc') }
+//                 {  error: new NotANumberError('abc') }
 //             ],
 //             async postSetup(ctx) {
 //                 await ctx.variables.set('*myVariableName', [1, 2, 3]);
@@ -215,7 +215,7 @@ function setupVariables(ctx: SubtagTestContext<VariablesLocals>, varName: string
 //             code: '{get;*myVariableName;4}',
 //             expected: '`Index out of range`',
 //             errors: [
-//                 { start: 0, end: 23, error: new BBTagRuntimeError('Index out of range') }
+//                 {  error: new BBTagRuntimeError('Index out of range') }
 //             ],
 //             async postSetup(ctx) {
 //                 await ctx.variables.set('*myVariableName', [1, 2, 3]);
@@ -225,7 +225,7 @@ function setupVariables(ctx: SubtagTestContext<VariablesLocals>, varName: string
 //             code: '{get;*myVariableName;-1}',
 //             expected: '`Index out of range`',
 //             errors: [
-//                 { start: 0, end: 24, error: new BBTagRuntimeError('Index out of range') }
+//                 {  error: new BBTagRuntimeError('Index out of range') }
 //             ],
 //             async postSetup(ctx) {
 //                 await ctx.variables.set('*myVariableName', [1, 2, 3]);

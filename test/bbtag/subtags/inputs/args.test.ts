@@ -40,21 +40,21 @@ await runSubtagTests({
             code: '{args;7}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 8, error: new NotEnoughArgumentsError(8, 5) }
+                { error: new NotEnoughArgumentsError(8, 5) }
             ]
         },
         {
             code: '{args;-1}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 9, error: new NotEnoughArgumentsError(0, 5) }
+                { error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
             code: '{args;abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 10, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
@@ -93,42 +93,42 @@ await runSubtagTests({
             code: '{args;6;7}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 10, error: new NotEnoughArgumentsError(7, 5) }
+                { error: new NotEnoughArgumentsError(7, 5) }
             ]
         },
         {
             code: '{args;7;6}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 10, error: new NotEnoughArgumentsError(7, 5) }
+                { error: new NotEnoughArgumentsError(7, 5) }
             ]
         },
         {
             code: '{args;-1;2}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(0, 5) }
+                { error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
             code: '{args;2;-1}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(0, 5) }
+                { error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
             code: '{args;abc;4}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 12, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{args;2;def}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 12, error: new NotANumberError('def') }
+                { error: new NotANumberError('def') }
             ]
         }
     ]

@@ -67,7 +67,7 @@ await runSubtagTests({
             code: '{function;func.;{fail}}',
             expected: '`Must provide a name`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Must provide a name') }
+                { error: new BBTagRuntimeError('Must provide a name') }
             ],
             assert(ctx) {
                 assert.equal(ctx.locals.functions['func.'], undefined);

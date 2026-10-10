@@ -38,7 +38,7 @@ await runSubtagTests({
             code: '{lock;reading;~test;{fail}}',
             expected: '`Mode must be \'read\' or \'write\'`',
             errors: [
-                { start: 0, end: 27, error: new BBTagRuntimeError('Mode must be \'read\' or \'write\'', 'reading') }
+                { error: new BBTagRuntimeError('Mode must be \'read\' or \'write\'', 'reading') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.inLock).returns(false).mustHappen(1);
@@ -48,7 +48,7 @@ await runSubtagTests({
             code: '{lock;writing;~test;{fail}}',
             expected: '`Mode must be \'read\' or \'write\'`',
             errors: [
-                { start: 0, end: 27, error: new BBTagRuntimeError('Mode must be \'read\' or \'write\'', 'writing') }
+                { error: new BBTagRuntimeError('Mode must be \'read\' or \'write\'', 'writing') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.inLock).returns(false).mustHappen(1);
@@ -58,7 +58,7 @@ await runSubtagTests({
             code: '{lock;read;;{fail}}',
             expected: '`Key cannot be empty`',
             errors: [
-                { start: 0, end: 19, error: new BBTagRuntimeError('Key cannot be empty') }
+                { error: new BBTagRuntimeError('Key cannot be empty') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.inLock).returns(false).mustHappen(1);

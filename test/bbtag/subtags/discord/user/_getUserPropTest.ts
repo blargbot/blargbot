@@ -1,7 +1,7 @@
 import type { BBTagRuntimeError, QueryDiscordUserLocals } from '@blargbot/bbtag-engine';
 import { UserNotFoundError } from '@blargbot/bbtag-engine';
-import { random } from '@blargbot/util';
 
+import { randomSnowflake } from '../../randomSnowflake.js';
 import type { SubtagTestCase, SubtagTestContext } from '../../SubtagTestSuite.js';
 
 export function createGetUserPropTestCases<Locals extends QueryDiscordUserLocals>(options: GetUserPropTestData<Locals>): Array<SubtagTestCase<Locals>> {
@@ -46,7 +46,7 @@ function* unknownUserCases<Locals extends QueryDiscordUserLocals>(options: GetUs
         code: options.generateCode('unknown user'),
         expected: '`No user found`',
         errors: [
-            { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
+            { error: new UserNotFoundError('unknown user') }
         ],
         setup(ctx) {
             options.setup?.(ctx);
@@ -61,7 +61,7 @@ function* unknownUserCases<Locals extends QueryDiscordUserLocals>(options: GetUs
             code: options.generateCode('unknown user', ''),
             expected: '`No user found`',
             errors: [
-                { start: 0, end: options.generateCode('unknown user', '').length, error: new UserNotFoundError('unknown user') }
+                { error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
                 options.setup?.(ctx);
@@ -74,7 +74,7 @@ function* unknownUserCases<Locals extends QueryDiscordUserLocals>(options: GetUs
             code: options.generateCode('unknown user', 'q'),
             expected: options.quiet ?? '`No user found`',
             errors: [
-                { start: 0, end: options.generateCode('unknown user', 'q').length, error: new (UserNotFoundError.withDisplay(quiet))('unknown user') }
+                { error: new (UserNotFoundError.withDisplay(quiet))('unknown user') }
             ],
             setup(ctx) {
                 options.setup?.(ctx);
@@ -111,10 +111,10 @@ function createTestCase<Locals extends QueryDiscordUserLocals>(data: GetUserProp
         code,
         title: testCase.title,
         expected: () => testCase.expected,
-        errors: testCase.error === undefined ? [] : [{ start: 0, end: code.length, error: testCase.error }],
+        errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
             data.setup?.(ctx);
-            const userId = random.bigint(10n ** 10n, 10n ** 20n);
+            const userId = randomSnowflake('userId');
             const quiet = data.quietNoArgs === true && args.length === 0 || typeof args[1] === 'string' && args[1] !== '';
             const searchText = args[0] ?? '';
             const error = data.quiet !== undefined ? UserNotFoundError.withQuiet(quiet, data.quiet) : UserNotFoundError;

@@ -35,14 +35,14 @@ await runSubtagTests({
             expected: '`Invalid Regex`',
             errors: [
                 { start: 23, end: 29, error: new MarkerError('eval', 23) },
-                { start: 0, end: 30, error: new BBTagRuntimeError('Invalid Regex') }
+                { error: new BBTagRuntimeError('Invalid Regex') }
             ]
         }, {
             code: '{regexreplace;{fail};{eval}}',
             expected: '`Invalid Regex`',
             errors: [
                 { start: 21, end: 27, error: new MarkerError('eval', 21) },
-                { start: 0, end: 28, error: new BBTagRuntimeError('Invalid Regex') }
+                { error: new BBTagRuntimeError('Invalid Regex') }
             ]
         },
         {
@@ -50,7 +50,7 @@ await runSubtagTests({
             expected: '`Unsafe Regex`',
             errors: [
                 { start: 24, end: 30, error: new MarkerError('eval', 24) },
-                { start: 0, end: 31, error: new BBTagRuntimeError('Unsafe Regex') }
+                { error: new BBTagRuntimeError('Unsafe Regex') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.compileRegExp('^(a+)+$', ''))
@@ -75,7 +75,7 @@ await runSubtagTests({
             expected: '`Regex too long`',
             errors: [
                 { start: 2018, end: 2024, error: new MarkerError('eval', 2018) },
-                { start: 0, end: 2025, error: new BBTagRuntimeError('Regex too long') }
+                { error: new BBTagRuntimeError('Regex too long') }
             ]
         },
         {
@@ -83,7 +83,7 @@ await runSubtagTests({
             expected: '`Invalid regular expression: /?{fail}/: Nothing to repeat`',
             errors: [
                 { start: 23, end: 29, error: new MarkerError('eval', 23) },
-                { start: 0, end: 30, error: new BBTagRuntimeError('Invalid regular expression: /?{fail}/: Nothing to repeat') }
+                { error: new BBTagRuntimeError('Invalid regular expression: /?{fail}/: Nothing to repeat') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.compileRegExp('?{fail}', ''))
@@ -101,7 +101,7 @@ await runSubtagTests({
             errors: [
                 { start: 14, end: 20, error: new MarkerError('eval', 14) },
                 { start: 30, end: 36, error: new MarkerError('eval', 30) },
-                { start: 0, end: 37, error: new BBTagRuntimeError('Invalid Regex') }
+                { error: new BBTagRuntimeError('Invalid Regex') }
             ]
         }, {
             code: '{regexreplace;{eval};{fail};{eval}}',
@@ -109,7 +109,7 @@ await runSubtagTests({
             errors: [
                 { start: 14, end: 20, error: new MarkerError('eval', 14) },
                 { start: 28, end: 34, error: new MarkerError('eval', 28) },
-                { start: 0, end: 35, error: new BBTagRuntimeError('Invalid Regex') }
+                { error: new BBTagRuntimeError('Invalid Regex') }
             ]
         },
         {
@@ -118,7 +118,7 @@ await runSubtagTests({
             errors: [
                 { start: 14, end: 20, error: new MarkerError('eval', 14) },
                 { start: 31, end: 37, error: new MarkerError('eval', 31) },
-                { start: 0, end: 38, error: new BBTagRuntimeError('Unsafe Regex') }
+                { error: new BBTagRuntimeError('Unsafe Regex') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.compileRegExp('^(a+)+$', ''))
@@ -139,7 +139,7 @@ await runSubtagTests({
             errors: [
                 { start: 14, end: 20, error: new MarkerError('eval', 14) },
                 { start: 2025, end: 2031, error: new MarkerError('eval', 2025) },
-                { start: 0, end: 2032, error: new BBTagRuntimeError('Regex too long') }
+                { error: new BBTagRuntimeError('Regex too long') }
             ]
         },
         {
@@ -148,7 +148,7 @@ await runSubtagTests({
             errors: [
                 { start: 14, end: 20, error: new MarkerError('eval', 14) },
                 { start: 30, end: 36, error: new MarkerError('eval', 30) },
-                { start: 0, end: 37, error: new BBTagRuntimeError('Invalid regular expression: /?{fail}/: Nothing to repeat') }
+                { error: new BBTagRuntimeError('Invalid regular expression: /?{fail}/: Nothing to repeat') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.compileRegExp('?{fail}', ''))

@@ -33,7 +33,7 @@ await runSubtagTests({
             replacers: [replacers.lbReplacer],
             expected: '`Unmatched \'{\' at 0`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Unmatched \'{\' at 0') }
+                { error: new BBTagRuntimeError('Unmatched \'{\' at 0') }
             ]
         },
         {
@@ -41,7 +41,7 @@ await runSubtagTests({
             replacers: [replacers.rbReplacer],
             expected: '`Unexpected \'}\' at 4`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Unexpected \'}\' at 4') }
+                { error: new BBTagRuntimeError('Unexpected \'}\' at 4') }
             ]
         }
     ]

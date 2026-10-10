@@ -112,7 +112,7 @@ await runSubtagTests({
             code: '{splice;var1;2;2;a;[[1,2,"d"]];e;f}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 35, error: new NotAnArrayError('var1') }
+                { error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
                 ctx.variables.setup(m => m.get('var1')).returns({ key: '$var1', value: undefined }).mustHappen(1);
@@ -122,14 +122,14 @@ await runSubtagTests({
             code: '{splice;[1,2,3,4,5,6];abc;2;a;[[1,2,"d"]];e;f}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 46, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{splice;[1,2,3,4,5,6];2;def;a;[[1,2,"d"]];e;f}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 46, error: new NotANumberError('def') }
+                { error: new NotANumberError('def') }
             ]
         }
     ]

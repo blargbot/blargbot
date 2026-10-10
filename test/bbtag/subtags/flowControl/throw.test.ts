@@ -11,14 +11,14 @@ await runSubtagTests({
             code: '{throw}',
             expected: '`A custom error occurred`',
             errors: [
-                { start: 0, end: 7, error: new BBTagRuntimeError('A custom error occurred', 'A user defined error') }
+                { error: new BBTagRuntimeError('A custom error occurred', 'A user defined error') }
             ]
         },
         {
             code: '{throw;abc}',
             expected: '`abc`',
             errors: [
-                { start: 0, end: 11, error: new BBTagRuntimeError('abc', 'A user defined error') }
+                { error: new BBTagRuntimeError('abc', 'A user defined error') }
             ]
         }
     ]

@@ -35,7 +35,7 @@ await runSubtagTests<SuppressLookupLocals>({
             code: '{suppresslookup;abc}',
             expected: '`Not a boolean`',
             errors: [
-                { start: 0, end: 20, error: new NotABooleanError('abc') }
+                { error: new NotABooleanError('abc') }
             ]
         },
         {

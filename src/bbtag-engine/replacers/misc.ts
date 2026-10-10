@@ -1,6 +1,7 @@
 import { createHash, getHashes } from 'node:crypto';
 
 import moment from 'moment-timezone';
+import z from 'zod';
 
 import { bbtagArray } from '../bbtagArray.js';
 import type { BBTagContext } from '../BBTagContext.js';
@@ -11,6 +12,7 @@ import { defineReplacer } from '../defineReplacer.js';
 import type { LogicOperator } from '../operators.js';
 import { aggregationOperators, isLogicOperator, logicOperators, numericOperators, ordinalOperators, runBool, stringOperators } from '../operators.js';
 import { parse } from '../parse.js';
+import { jsonSchema } from '../schemas.js';
 import type { SubtagReturnTypeMap } from '../types.js';
 import type { ArgsLocals, BrainfuckLocals, DebugLocals, DecancerLocals, DumpLocals, FallbackLocals, HttpMethod, HttpRequest, RegExpCompilerLocals, ReplaceOutputLocals, RequestLocals, SafeRegExp, VariablesLocals } from './locals.js';
 
@@ -607,9 +609,8 @@ export const requestReplacer = defineReplacer<RequestLocals>('request', {
     parameters: ['url', 'options?', 'data?'],
     returns: 'json',
     execute: async function request(ctx, [{ value: url }, { value: optionsStr }, { value: dataStr }]) {
-        const domainMatch = /^https?:\/\/(.+?)(?:\/.?|$)/i.exec(url);
-        if (domainMatch === null)
-            throw new BBTagRuntimeError(`A domain could not be extracted from url: ${url}`);
+        const domainMatch = /^https?:\/\/(.+?)(?:\/.?|$)/i.exec(url)
+            ?? new BBTagRuntimeError(`A domain could not be extracted from url: ${url}`).throw();
 
         const domain = domainMatch[1].toLowerCase();
         if (!await ctx.locals.canRequestDomain(domain))
@@ -624,11 +625,12 @@ export const requestReplacer = defineReplacer<RequestLocals>('request', {
 
         let options;
         if (optionsStr !== '') {
-            options = parseOptions(optionsStr);
-            if (options === undefined)
+            const parsed = requestOptionsSchema.safeParse(optionsStr);
+            if (!parsed.success)
                 throw new BBTagRuntimeError('', `Invalid request options "${optionsStr}"`);
-            request.method = options.method ?? 'GET';
-            for (const [key, value] of Object.entries(options.headers ?? {}))
+            options = parsed.data;
+            request.method = options.method;
+            for (const [key, value] of Object.entries(options.headers))
                 request.headers.append(key, value);
         }
 
@@ -679,63 +681,27 @@ export const requestReplacer = defineReplacer<RequestLocals>('request', {
     }
 });
 
-interface RequestOptions {
-    method?: HttpMethod;
-    headers?: Record<string, string>;
-    checkOk?: boolean;
-}
-
-function tryParseJson(input: string): JToken | undefined {
-    try {
-        return JSON.parse(input);
-    } catch {
-        return undefined;
-    }
-}
-
-function parseOptions(optionsStr: string): RequestOptions | undefined {
-    const json = tryParseJson(optionsStr);
-    if (json === undefined)
-        return undefined;
-    if (typeof json !== 'object' || json === null)
-        return undefined;
-    const result: RequestOptions = {};
-    if ('checkOk' in json) {
-        if (typeof json.checkOk !== 'boolean')
-            return undefined;
-        result.checkOk = json.checkOk;
-    }
-    if ('method' in json) {
-        if (typeof json.method !== 'string')
-            return undefined;
-        const method = json.method.toUpperCase();
-        switch (method) {
-            case 'GET':
-            case 'POST':
-            case 'PATCH':
-            case 'OPTIONS':
-            case 'DELETE':
-            case 'PUT':
-            case 'QUERY':
-            case 'HEAD':
-                result.method = method;
-                break;
-            default:
-                return undefined;
-        }
-    }
-    if ('headers' in json) {
-        let headers = json.headers;
-        if (typeof headers === 'string') {
-            headers = tryParseJson(headers) ?? headers;
-        }
-        if (typeof headers !== 'object' || headers === null)
-            return undefined;
-        result.headers = toStringRecord(headers);
-    }
-
-    return result;
-}
+const requestOptionsSchema = z.compile(jsonSchema(z.object({
+    method: z.string()
+        .transform(s => s.toUpperCase())
+        .pipe(z.enum(Object.keys({
+            GET: null,
+            QUERY: null,
+            HEAD: null,
+            POST: null,
+            PUT: null,
+            DELETE: null,
+            OPTIONS: null,
+            PATCH: null
+        } satisfies Record<HttpMethod, null>)))
+        .optional()
+        .default('GET'),
+    headers: z.union([
+        jsonSchema(z.record(z.string(), z.json().transform(v => parse.string(v)))),
+        z.record(z.string(), z.json().transform(v => parse.string(v)))
+    ]).optional().default(() => ({})),
+    checkOk: z.boolean().optional().default(true)
+})));
 
 function asUInt8Array(source: Pick<Uint8Array, 'buffer' | 'byteLength' | 'byteOffset'>): Uint8Array {
     return new Uint8Array(source.buffer, source.byteOffset, source.byteLength);

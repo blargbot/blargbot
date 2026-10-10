@@ -43,13 +43,10 @@ export const colorReplacerFactory = (options: { parseColor: ColorParser; }) => d
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
         const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
 
-        const inputConverter = getConverter(inFormat);
-        if (inputConverter === undefined)
-            throw new BBTagRuntimeError('Invalid input method', `${JSON.stringify(inFormat)} is not valid`);
-
-        const outputConverter = getConverter(outFormat);
-        if (outputConverter === undefined)
-            throw new BBTagRuntimeError('Invalid output method', `${JSON.stringify(outFormat)} is not valid`);
+        const inputConverter = getConverter(inFormat)
+            ?? new BBTagRuntimeError('Invalid input method', `${JSON.stringify(inFormat)} is not valid`).throw();
+        const outputConverter = getConverter(outFormat)
+            ?? new BBTagRuntimeError('Invalid output method', `${JSON.stringify(outFormat)} is not valid`).throw();
 
         try {
             const color = inputConverter.toColor(options.parseColor, input);
@@ -85,7 +82,7 @@ function toChannels(value: string, channels: 4): [number, number, number, number
 function toChannels(value: string, channels: number): number[] {
     const match = new RegExp(`^\\(?(-?\\d+(?:\\.\\d+)?(?:,-?\\d+(?:\\.\\d+)?){${channels - 1}})\\)?$`).exec(value);
     if (match === null)
-        throw new Error('Invalid channels');
+        throw new BBTagRuntimeError('Invalid channels');
 
     return match[0].split(',').map(parseFloat);
 }

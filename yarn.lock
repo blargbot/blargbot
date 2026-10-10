@@ -64,6 +64,7 @@ __metadata:
   resolution: "@blargbot/bbtag-engine@workspace:src/bbtag-engine"
   dependencies:
     moment-timezone: "npm:^0.5.48"
+    zod: "npm:^4.6.5"
   languageName: unknown
   linkType: soft
 

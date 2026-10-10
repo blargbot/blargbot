@@ -14,7 +14,7 @@ await runSubtagTests({
                 ctx.variables.setup(m => m.get('a')).returns({ key: '$arr1', value: undefined }).mustHappen();
             },
             errors: [
-                { start: 0, end: 10, error: new NotAnArrayError('a') }
+                { error: new NotAnArrayError('a') }
             ]
         },
         { code: '{join;[1,2,3];x}', expected: '1x2x3' },
@@ -31,7 +31,7 @@ await runSubtagTests({
             code: '{join;var1;~}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 13, error: new NotAnArrayError('var1') }
+                { error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
                 ctx.variables.setup(m => m.get('var1')).returns({ key: '$var1', value: 'This is var1' }).mustHappen();

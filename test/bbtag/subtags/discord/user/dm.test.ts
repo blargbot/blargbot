@@ -1,7 +1,7 @@
 import type { DiscordSendDmLocals } from '@blargbot/bbtag-engine';
 import { createEmbedParser, replacers, UserNotFoundError } from '@blargbot/bbtag-engine';
-import { random } from '@blargbot/util';
 
+import { randomSnowflake } from '../../randomSnowflake.js';
 import { MarkerError, runSubtagTests } from '../../SubtagTestSuite.js';
 
 await runSubtagTests<DiscordSendDmLocals>({
@@ -14,7 +14,7 @@ await runSubtagTests<DiscordSendDmLocals>({
             expected: '`No user found`',
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 0, end: 16, error: new UserNotFoundError('aaaa') }
+                { error: new UserNotFoundError('aaaa') }
             ],
             setup(ctx) {
                 ctx.discord.setup((m, $) => m.queryUser('aaaa', $({ throw: UserNotFoundError })))
@@ -26,8 +26,8 @@ await runSubtagTests<DiscordSendDmLocals>({
             code: '{dm;other user;Hello!}',
             expected: '',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
-                const messageId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
+                const messageId = randomSnowflake('messageId');
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ throw: UserNotFoundError }))).resolves(userId).mustHappen(1);
                 ctx.discord.setup(m => m.sendDM(userId, 'Hello!', undefined)).resolves(messageId).mustHappen(1);
                 ctx.locals.setup(m => m.nsfw).returns({ value: null }).mustHappen(1);
@@ -38,8 +38,8 @@ await runSubtagTests<DiscordSendDmLocals>({
             replacers: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
-                const messageId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
+                const messageId = randomSnowflake('messageId');
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ throw: UserNotFoundError }))).resolves(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.sendDM(userId, undefined, $.looksLike([{ title: 'Hi!' }]))).resolves(messageId).mustHappen(1);
                 ctx.locals.setup(m => m.nsfw).returns({ value: null }).mustHappen(1);
@@ -50,8 +50,8 @@ await runSubtagTests<DiscordSendDmLocals>({
             replacers: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
-                const messageId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
+                const messageId = randomSnowflake('messageId');
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ throw: UserNotFoundError }))).resolves(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.sendDM(userId, 'Hello there!', $.looksLike([{ title: 'General Kenobi!' }]))).resolves(messageId).mustHappen(1);
                 ctx.locals.setup(m => m.nsfw).returns({ value: null }).mustHappen(1);
@@ -62,8 +62,8 @@ await runSubtagTests<DiscordSendDmLocals>({
             replacers: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
-                const messageId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
+                const messageId = randomSnowflake('messageId');
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ throw: UserNotFoundError }))).resolves(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.sendDM(
                     userId,
@@ -78,8 +78,8 @@ await runSubtagTests<DiscordSendDmLocals>({
             replacers: [replacers.escapeBBTagReplacer],
             expected: '',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
-                const messageId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
+                const messageId = randomSnowflake('messageId');
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ throw: UserNotFoundError }))).resolves(userId).mustHappen(1);
                 ctx.discord.setup(m => m.sendDM(userId, 'No nsfw in dms', undefined)).resolves(messageId).mustHappen(1);
                 ctx.locals.setup(m => m.nsfw).returns({ value: 'No nsfw in dms' }).mustHappen(1);

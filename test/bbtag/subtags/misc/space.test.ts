@@ -18,7 +18,7 @@ await runSubtagTests({
             expected: '`Not a number`',
             errors: [
                 { start: 7, end: 13, error: new MarkerError('eval', 7) },
-                { start: 0, end: 17, error: new NotANumberError('aaa') }
+                { error: new NotANumberError('aaa') }
             ]
         }
     ]

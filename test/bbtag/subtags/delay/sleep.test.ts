@@ -43,7 +43,7 @@ await runSubtagTests({
             code: '{sleep;abc}',
             expected: '`Invalid duration`',
             errors: [
-                { start: 0, end: 11, error: new InvalidDurationError('abc') }
+                { error: new InvalidDurationError('abc') }
             ]
         }
     ]

@@ -1,7 +1,7 @@
 import type { GuildMemberSetRolesLocals } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, NotAnArrayError, replacers, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag-engine';
-import { random } from '@blargbot/util';
 
+import { randomSnowflake } from '../../randomSnowflake.js';
 import { runSubtagTests } from '../../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
@@ -14,7 +14,7 @@ await runSubtagTests({
             code: '{usersetroles}',
             expected: 'true',
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([2937192378371n]).mustHappen(1);
                 ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.setUserRoles(userId, $.setEqual([]))).resolves(true).mustHappen(1);
@@ -60,7 +60,7 @@ await runSubtagTests({
             code: '{usersetroles}',
             expected: '`Author cannot remove roles`',
             errors: [
-                { start: 0, end: 14, error: new BBTagRuntimeError('Author cannot remove roles') }
+                { error: new BBTagRuntimeError('Author cannot remove roles') }
             ],
             setup(ctx) {
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([]).mustHappen(1);
@@ -70,10 +70,10 @@ await runSubtagTests({
             code: '{usersetroles;abc}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 18, error: new NotAnArrayError('abc') }
+                { error: new NotAnArrayError('abc') }
             ],
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([2937192378371n]).mustHappen(1);
                 ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.variables.setup(m => m.get('abc')).resolves({ key: '$abc', value: undefined }).mustHappen(1);
@@ -83,10 +83,10 @@ await runSubtagTests({
             code: '{usersetroles;abc;;q}',
             expected: 'false',
             errors: [
-                { start: 0, end: 21, error: new (NotAnArrayError.withDisplay('false'))('abc') }
+                { error: new (NotAnArrayError.withDisplay('false'))('abc') }
             ],
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([2937192378371n]).mustHappen(1);
                 ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: true, throw: UserNotFoundError.withDisplay('false') }))).returns(userId).mustHappen(1);
                 ctx.variables.setup(m => m.get('abc')).resolves({ key: '$abc', value: undefined }).mustHappen(1);
@@ -96,10 +96,10 @@ await runSubtagTests({
             code: '{usersetroles;["unknown role"]}',
             expected: '`No role found`',
             errors: [
-                { start: 0, end: 31, error: new RoleNotFoundError('unknown role') }
+                { error: new RoleNotFoundError('unknown role') }
             ],
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([2937192378371n]).mustHappen(1);
                 ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: false, throw: UserNotFoundError }))).returns(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ quiet: false, throw: RoleNotFoundError }))).rejects(new RoleNotFoundError('unknown role')).mustHappen(1);
@@ -109,10 +109,10 @@ await runSubtagTests({
             code: '{usersetroles;["unknown role"];;q}',
             expected: 'false',
             errors: [
-                { start: 0, end: 34, error: new (RoleNotFoundError.withDisplay('false'))('unknown role') }
+                { error: new (RoleNotFoundError.withDisplay('false'))('unknown role') }
             ],
             setup(ctx) {
-                const userId = random.bigint(10n ** 10n, 10n ** 20n);
+                const userId = randomSnowflake('userId');
                 ctx.discord.setup(m => m.listManageableRoles()).resolves([2937192378371n]).mustHappen(1);
                 ctx.discord.setup((m, $) => m.queryUser('', $({ quiet: true, throw: UserNotFoundError.withDisplay('false') }))).returns(userId).mustHappen(1);
                 ctx.discord.setup((m, $) => m.queryRole('unknown role', $({ quiet: true, throw: RoleNotFoundError.withDisplay('false') })))

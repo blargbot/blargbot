@@ -19,14 +19,14 @@ await runSubtagTests({
             code: '{math;abc;1;2;3}',
             expected: '`Invalid operator`',
             errors: [
-                { start: 0, end: 16, error: new InvalidOperatorError('abc') }
+                { error: new InvalidOperatorError('abc') }
             ]
         },
         {
             code: '{math;/;1;abc;3}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 16, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         }
     ]

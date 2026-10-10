@@ -18,7 +18,7 @@ await runSubtagTests({
             code: '{kick;abc}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 10, error: new UserNotFoundError('abc') }
+                { error: new UserNotFoundError('abc') }
             ],
             setup(ctx) {
                 ctx.discord.setup((m, $) => m.queryUser('abc', $({ quiet: true, throw: UserNotFoundError })))
@@ -30,7 +30,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`Kick failed`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Kick failed') }
+                { error: new BBTagRuntimeError('Kick failed') }
             ],
             setup(ctx) {
                 const { targetId, userId } = setupKickAuthorization(ctx, 'user');
@@ -67,7 +67,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick users!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick users!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -92,7 +92,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You cannot kick the guild owner!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You cannot kick the guild owner!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -116,7 +116,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You cannot kick yourself!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You cannot kick yourself!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -140,7 +140,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Bot has no permissions', 'I cannot kick myself!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I cannot kick myself!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -164,7 +164,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -190,7 +190,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You can only kick users whos top role is below your top role!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You can only kick users whos top role is below your top role!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -218,7 +218,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Bot has no permissions', 'I can only kick users whos top role is below my top role!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I can only kick users whos top role is below my top role!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -308,7 +308,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -335,7 +335,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You can only kick users whos top role is below your top role!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You can only kick users whos top role is below your top role!') }
             ],
             setup(ctx) {
                 const botId = id('botId');
@@ -385,7 +385,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Bot has no permissions', 'I can only kick users whos top role is below my top role!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I can only kick users whos top role is below my top role!') }
             ],
             setup(ctx) {
                 const botId = id('botId');

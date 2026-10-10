@@ -46,7 +46,7 @@ await runSubtagTests({
                 { start: 5, end: 11, error: new MarkerError('eval', 5) },
                 { start: 15, end: 21, error: new MarkerError('eval', 15) },
                 { start: 22, end: 28, error: new MarkerError('eval', 22) },
-                { start: 0, end: 29, error: new BBTagRuntimeError('Invalid direction') }
+                { error: new BBTagRuntimeError('Invalid direction') }
             ]
         }
     ]

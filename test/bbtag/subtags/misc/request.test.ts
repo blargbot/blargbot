@@ -47,7 +47,7 @@ await runSubtagTests<RequestLocals>({
             code: '{request;https://httpbin.org/status/200}',
             expected: '`Response too large`',
             errors: [
-                { start: 0, end: 40, error: new BBTagRuntimeError('Response too large') }
+                { error: new BBTagRuntimeError('Response too large') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.canRequestDomain('httpbin.org')).resolves(true).mustHappen(1);
@@ -321,7 +321,7 @@ await runSubtagTests<RequestLocals>({
             code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png}',
             expected: '`403 Forbidden`',
             errors: [
-                { start: 0, end: 124, error: new BBTagRuntimeError('403 Forbidden') }
+                { error: new BBTagRuntimeError('403 Forbidden') }
             ],
             setup(ctx) {
                 const url = 'https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png';
@@ -408,14 +408,14 @@ await runSubtagTests<RequestLocals>({
         //     code: '{request;a}',
         //     expected: '`A domain could not be extracted from url: a`',
         //     errors: [
-        //         { start: 0, end: 11, error: new BBTagRuntimeError('A domain could not be extracted from url: a') }
+        //         {  error: new BBTagRuntimeError('A domain could not be extracted from url: a') }
         //     ]
         // },
         // {
         //     code: '{request;http://test.com}',
         //     expected: '`Domain is not whitelisted: test.com`',
         //     errors: [
-        //         { start: 0, end: 25, error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
+        //         {  error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
         //     ],
         //     setup(ctx) {
         //         ctx.util.setup(m => m.canRequestDomain('test.com')).thenReturn(false);
@@ -425,7 +425,7 @@ await runSubtagTests<RequestLocals>({
             code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png;this isnt a valid option}',
             expected: '``',
             errors: [
-                { start: 0, end: 149, error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
+                { error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.canRequestDomain('cdn.discordapp.com')).resolves(true).mustHappen(1);
@@ -435,14 +435,14 @@ await runSubtagTests<RequestLocals>({
             code: '{request;a}',
             expected: '`A domain could not be extracted from url: a`',
             errors: [
-                { start: 0, end: 11, error: new BBTagRuntimeError('A domain could not be extracted from url: a') }
+                { error: new BBTagRuntimeError('A domain could not be extracted from url: a') }
             ]
         },
         {
             code: '{request;http://test.com}',
             expected: '`Domain is not whitelisted: test.com`',
             errors: [
-                { start: 0, end: 25, error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
+                { error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
             ],
             setup(ctx) {
                 ctx.locals.setup(m => m.canRequestDomain('test.com')).resolves(false).mustHappen(1);

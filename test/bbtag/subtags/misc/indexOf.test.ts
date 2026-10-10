@@ -25,14 +25,14 @@ await runSubtagTests({
             code: '{indexof;This is some text;s;a}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 31, error: new NotANumberError('a') }
+                { error: new NotANumberError('a') }
             ]
         },
         {
             code: '{indexof;This is some text;s;a}',
             expected: 'b',
             errors: [
-                { start: 0, end: 31, error: new NotANumberError('a') }
+                { error: new NotANumberError('a') }
             ],
             setup(ctx) { ctx.locals.setup(m => m.fallback).returns('b'); }
         },

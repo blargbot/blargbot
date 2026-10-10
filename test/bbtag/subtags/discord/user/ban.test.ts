@@ -1,13 +1,9 @@
 import type { GuildMemberBanLocals } from '@blargbot/bbtag-engine';
 import { BBTagRuntimeError, DiscordPermissions, NotANumberError, replacers, UserNotFoundError } from '@blargbot/bbtag-engine';
-import { random } from '@blargbot/util';
 
+import { randomSnowflake } from '../../randomSnowflake.js';
 import type { SubtagTestContext } from '../../SubtagTestSuite.js';
 import { runSubtagTests } from '../../SubtagTestSuite.js';
-
-function id(name: string): bigint {
-    return `${name}<${random.bigint(10n ** 10n, 10n ** 20n)}>` as unknown as bigint;
-}
 
 await runSubtagTests({
     replacer: replacers.banReplacer,
@@ -18,7 +14,7 @@ await runSubtagTests({
             code: '{ban;abc}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 9, error: new UserNotFoundError('abc') }
+                { error: new UserNotFoundError('abc') }
             ],
             setup(ctx) {
                 ctx.discord.setup((m, $) => m.queryUser('abc', $({ global: true, throw: UserNotFoundError })))
@@ -68,14 +64,14 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to ban users!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to ban users!') }
             ],
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -93,13 +89,13 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions', 'You cannot ban the guild owner!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You cannot ban the guild owner!') }
             ],
             setup(ctx) {
-                const botId = id('botId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(ownerId)
@@ -117,13 +113,13 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions', 'You cannot ban yourself!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You cannot ban yourself!') }
             ],
             setup(ctx) {
-                const botId = id('botId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(userId)
@@ -141,13 +137,13 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions', 'I cannot ban myself!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I cannot ban myself!') }
             ],
             setup(ctx) {
-                const botId = id('botId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(botId)
@@ -165,14 +161,14 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to ban users!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to ban users!') }
             ],
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -191,14 +187,14 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions', 'You can only ban users whos top role is below your top role!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You can only ban users whos top role is below your top role!') }
             ],
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -219,14 +215,14 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions', 'I can only ban users whos top role is below my top role!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I can only ban users whos top role is below my top role!') }
             ],
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -248,11 +244,11 @@ await runSubtagTests({
             code: '{ban;other user;;;5 days}',
             expected: (5 * 24 * 60 * 60_000).toString(),
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -281,11 +277,11 @@ await runSubtagTests({
             code: '{ban;other user;;;;yes}',
             expected: 'true',
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -314,11 +310,11 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: 'true',
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup(m => m.authorizerId).returns(authorizerId).mustHappen(1);
                 ctx.discord.setup(m => m.userId).returns(userId).mustHappen(1);
@@ -345,14 +341,14 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to ban users!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to ban users!') }
             ],
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup(m => m.authorizerId).returns(authorizerId).mustHappen(1);
                 ctx.discord.setup(m => m.userId).returns(userId).mustHappen(1);
@@ -372,14 +368,14 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions', 'You can only ban users whos top role is below your top role!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You can only ban users whos top role is below your top role!') }
             ],
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -424,14 +420,14 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions', 'I can only ban users whos top role is below my top role!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I can only ban users whos top role is below my top role!') }
             ],
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -477,10 +473,10 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: 'true',
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -508,10 +504,10 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: 'true',
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -540,11 +536,11 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: 'true',
             setup(ctx) {
-                const botId = id('botId');
-                const targetId = id('targetId');
-                const userId = id('userId');
-                const ownerId = id('ownerId');
-                const authorizerId = id('authorizerId');
+                const botId = randomSnowflake('botId');
+                const targetId = randomSnowflake('targetId');
+                const userId = randomSnowflake('userId');
+                const ownerId = randomSnowflake('ownerId');
+                const authorizerId = randomSnowflake('authorizerId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -633,10 +629,10 @@ await runSubtagTests({
             code: '{ban;other user;abc}',
             expected: 'false',
             errors: [
-                { start: 0, end: 20, error: new (NotANumberError.withDisplay('false'))('abc') }
+                { error: new (NotANumberError.withDisplay('false'))('abc') }
             ],
             setup(ctx) {
-                const targetId = id('targetId');
+                const targetId = randomSnowflake('targetId');
 
                 ctx.discord.setup((m, $) => m.queryUser('other user', $({ global: true, throw: UserNotFoundError })))
                     .returns(targetId)
@@ -802,11 +798,11 @@ function setupBanAuthorization(
     ctx: SubtagTestContext<GuildMemberBanLocals>,
     moderator: 'user' | 'authorizer',
     {
-        botId = id('botId'),
-        targetId = id('targetId'),
-        userId = id('userId'),
-        ownerId = id('ownerId'),
-        authorizerId = id('authorizerId'),
+        botId = randomSnowflake('botId'),
+        targetId = randomSnowflake('targetId'),
+        userId = randomSnowflake('userId'),
+        ownerId = randomSnowflake('ownerId'),
+        authorizerId = randomSnowflake('authorizerId'),
         botPosition = 10,
         moderatorPosition = 9,
         targetPosition = 8
