@@ -8,39 +8,40 @@ import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new FunctionInvokeSubtag(),
     argCountBounds: { min: 0, max: Infinity },
+    names: ['func.'],
     cases: [
         {
             code: '{func.test}',
             expected: 'Success!',
             subtags: [new AssertSubtag(ctx => {
-                assert.deepEqual(ctx.scopes.local.paramsarray, []);
-                assert.equal(ctx.data.stackSize, 123);
+                assert.deepEqual(ctx.local.paramsarray, []);
+                assert.equal(ctx.root.recursion.depth, 123);
                 return 'Success!';
             })],
-            setup(ctx) {
-                ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
-                ctx.options.data = { stackSize: 122 };
+            postSetup(ctx) {
+                ctx.root.functions.set('test', bbtag.parse('{assert}'));
+                ctx.root.recursion.depth = 122;
             },
             assert(ctx) {
-                assert.equal(ctx.scopes.local.paramsarray, undefined);
-                assert.equal(ctx.data.stackSize, 122);
+                assert.equal(ctx.local.paramsarray, undefined);
+                assert.equal(ctx.root.recursion.depth, 122);
             }
         },
         {
             code: '{func.test;arg1;arg2;["arg3","arg3"];arg4;}',
             expected: 'Success!',
             subtags: [new AssertSubtag(ctx => {
-                assert.deepEqual(ctx.scopes.local.paramsarray, ['arg1', 'arg2', '["arg3","arg3"]', 'arg4', '']);
-                assert.equal(ctx.data.stackSize, 123);
+                assert.deepEqual(ctx.local.paramsarray, ['arg1', 'arg2', '["arg3","arg3"]', 'arg4', '']);
+                assert.equal(ctx.root.recursion.depth, 123);
                 return 'Success!';
             })],
-            setup(ctx) {
-                ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
-                ctx.options.data = { stackSize: 122 };
+            postSetup(ctx) {
+                ctx.root.functions.set('test', bbtag.parse('{assert}'));
+                ctx.root.recursion.depth = 122;
             },
             assert(ctx) {
-                assert.equal(ctx.scopes.local.paramsarray, undefined);
-                assert.equal(ctx.data.stackSize, 122);
+                assert.equal(ctx.local.paramsarray, undefined);
+                assert.equal(ctx.root.recursion.depth, 122);
             }
         },
         {
@@ -56,13 +57,13 @@ await runSubtagTests({
             errors: [
                 { start: 0, end: 11, error: new SubtagStackOverflowError(200) }
             ],
-            setup(ctx) {
-                ctx.options.data = { stackSize: 200 };
-                ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
+            postSetup(ctx) {
+                ctx.root.recursion.depth = 200;
+                ctx.root.functions.set('test', bbtag.parse('{assert}'));
             },
             assert(ctx) {
-                assert.equal(ctx.data.stackSize, 200);
-                assert.equal(ctx.data.state, BBTagRuntimeState.ABORT);
+                assert.equal(ctx.root.recursion.depth, 200);
+                assert.equal(ctx.state, BBTagRuntimeState.ABORT);
             }
         }
     ]

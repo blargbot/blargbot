@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RoundDownSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['roundDown', 'floor'],
     cases: [
         { code: '{rounddown;5}', expected: '5' },
         { code: '{rounddown;9.2}', expected: '9' },

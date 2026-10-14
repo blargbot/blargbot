@@ -7,23 +7,24 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new FileSubtag(),
     argCountBounds: { min: 2, max: 2 },
+    names: ['file'],
     cases: [
         {
             code: '{file;abcdef;def}',
             expected: '',
             assert(ctx) {
-                assert.notEqual(ctx.data.file, undefined);
-                assert.equal(ctx.data.file?.file, 'abcdef');
-                assert.equal(ctx.data.file.name, 'def');
+                assert.notEqual(ctx.root.output.files, undefined);
+                assert.equal(ctx.root.output.files?.[0]?.file, 'abcdef');
+                assert.equal(ctx.root.output.files[0].name, 'def');
             }
         },
         {
             code: '{file;buffer:abcdef;def}',
             expected: '',
             assert(ctx) {
-                assert.notEqual(ctx.data.file, undefined);
-                assert.equal(ctx.data.file?.name, 'def');
-                const actual = Buffer.from(ctx.data.file.file).toString();
+                assert.notEqual(ctx.root.output.files, undefined);
+                assert.equal(ctx.root.output.files?.[0]?.name, 'def');
+                const actual = Buffer.from(ctx.root.output.files[0].file).toString();
                 const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
                 assert.equal(actual, expected);
             }
@@ -32,9 +33,7 @@ await runSubtagTests({
             code: '{file;Buffer:abcdef;def}',
             expected: '',
             assert(ctx) {
-                assert.notEqual(ctx.data.file, undefined);
-                assert.equal(ctx.data.file?.file, 'Buffer:abcdef');
-                assert.equal(ctx.data.file.name, 'def');
+                assert.deepEqual(ctx.root.output.files, [{ file: 'Buffer:abcdef', name: 'def' }]);
             }
         }
     ]

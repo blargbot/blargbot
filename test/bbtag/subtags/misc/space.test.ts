@@ -6,6 +6,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new SpaceSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['space', 's'],
     cases: [
         { code: '{space}', expected: ' ' },
         { code: '{space;}', expected: ' ' },

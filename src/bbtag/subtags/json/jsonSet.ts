@@ -52,7 +52,7 @@ export class JsonSetSubtag extends CompiledSubtag {
         bbtag.json.set(target.object, path, value, create);
 
         if (target.variable !== undefined) {
-            await context.variables.set(target.variable, target.object);
+            await context.root.variables.set(target.variable, target.object);
             return undefined;
         }
 

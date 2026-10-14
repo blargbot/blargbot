@@ -20,7 +20,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
                     exampleCode: tag.trigger.exampleCode,
                     exampleOut: tag.trigger.exampleOut,
                     returns: 'embed[]',
-                    execute: (ctx) => this.getMessageEmbeds(ctx, ctx.channel.id, ctx.message.id, false)
+                    execute: (ctx) => this.getMessageEmbeds(ctx, ctx.local.message.channel.id, ctx.local.message.id, false)
                 },
                 {
                     parameters: ['messageid'],
@@ -28,7 +28,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
                     exampleCode: tag.inCurrent.exampleCode,
                     exampleOut: tag.inCurrent.exampleOut,
                     returns: 'embed[]',
-                    execute: (ctx, [messageId]) => this.getMessageEmbeds(ctx, ctx.channel.id, messageId.value, false)
+                    execute: (ctx, [messageId]) => this.getMessageEmbeds(ctx, ctx.local.message.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
@@ -48,7 +48,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
         messageStr: string,
         quiet: boolean
     ): Promise<eris.Embed[]> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)

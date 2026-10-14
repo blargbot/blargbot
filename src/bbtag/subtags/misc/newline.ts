@@ -28,7 +28,7 @@ export class NewlineSubtag extends CompiledSubtag {
     }
 
     public getNewlines(ctx: BBTagContext, countStr: string): string {
-        const count = parse.int(countStr) ?? parse.int(ctx.scopes.local.fallback ?? '');
+        const count = parse.int(countStr) ?? parse.int(ctx.local.fallback ?? '');
         if (count === undefined)
             throw new NotANumberError(countStr);
 

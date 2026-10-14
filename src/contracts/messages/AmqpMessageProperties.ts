@@ -5,7 +5,7 @@ import { cleanType } from '../util.js';
 import { AmqpTable } from './AmqpValue.js';
 import { BufferEncoding } from './BufferEncoding.js';
 
-const output = z.compile(z.object({
+const output = z.compile(z.strictObject({
     contentType: z.string().optional().catch(undefined),
     contentEncoding: BufferEncoding.optional().catch(undefined),
     replyTo: z.string().optional().catch(undefined),
@@ -21,7 +21,7 @@ const output = z.compile(z.object({
     appId: z.string().optional().catch(undefined),
     clusterId: z.string().optional().catch(undefined)
 } satisfies { [P in keyof MessageProperties]: unknown }));
-const input = z.compile(z.object<MessageProperties>({
+const input = z.compile(z.strictObject<MessageProperties>({
     contentType: z.any(),
     contentEncoding: z.any(),
     headers: z.any(),

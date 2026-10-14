@@ -18,6 +18,7 @@ const isFalse = { '!=': false, '<': false, '<=': false, '==': false, '>': false,
 await runSubtagTests({
     subtag: new OperatorSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['operator', '!', '!=', '%', '&&', '*', '+', '-', '/', '<', '<=', '==', '>', '>=', '??', '^', 'xor', '||', 'contains', 'endswith', 'includes', 'startswith'],
     cases: [
         {
             code: '{operator;{eval}}',

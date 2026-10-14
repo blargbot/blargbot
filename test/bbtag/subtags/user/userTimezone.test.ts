@@ -1,11 +1,22 @@
+import type { GetUserTimezoneThunk } from '@blargbot/bbtag/subtags';
 import { UserTimezoneSubtag } from '@blargbot/bbtag/subtags';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
+const getUserTimezone = new Mock<GetUserTimezoneThunk>({ callable: true });
+
 await runSubtagTests({
-    subtag: new UserTimezoneSubtag(),
+    subtag: new UserTimezoneSubtag({
+        getUserTimezone: getUserTimezone.instance
+    }),
     argCountBounds: { min: 0, max: 2 },
+    names: ['userTimeZone'],
+    setup(ctx) {
+        ctx.addMock(getUserTimezone);
+        getUserTimezone.reset();
+    },
     cases: [
         ...createGetUserPropTestCases({
             quiet: '',
@@ -15,20 +26,20 @@ await runSubtagTests({
             cases: [
                 {
                     expected: 'UTC',
-                    setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getProp(member.user.id, 'timezone')).thenResolve(undefined);
+                    setup(member) {
+                        getUserTimezone.setup(m => m(member.user.id)).resolves(undefined);
                     }
                 },
                 {
                     expected: 'abc',
-                    setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getProp(member.user.id, 'timezone')).thenResolve('abc');
+                    setup(member) {
+                        getUserTimezone.setup(m => m(member.user.id)).resolves('abc');
                     }
                 },
                 {
                     expected: 'Etc/UTC',
-                    setup(member, ctx) {
-                        ctx.userTable.setup(m => m.getProp(member.user.id, 'timezone')).thenResolve('Etc/UTC');
+                    setup(member) {
+                        getUserTimezone.setup(m => m(member.user.id)).resolves('Etc/UTC');
                     }
                 }
             ]

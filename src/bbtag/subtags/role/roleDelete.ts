@@ -31,7 +31,7 @@ export class RoleDeleteSubtag extends CompiledSubtag {
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot delete roles');
 
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const role = await context.queryRole(roleStr, {
             noErrors: quiet,
             noLookup: quiet

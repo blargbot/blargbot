@@ -62,7 +62,7 @@ export class XKCDCommand extends GlobalCommand {
     }
 }
 
-const comicInfoMapping = z.object({
+const comicInfoMapping = z.strictObject({
     num: z.number(),
     title: z.string(),
     year: z.string(),

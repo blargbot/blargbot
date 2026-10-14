@@ -13,7 +13,8 @@ const tag = templates.subtags.request;
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
 export class RequestSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #fetch: typeof globalThis.fetch;
+    public constructor({ fetch }: { fetch: typeof globalThis.fetch; }) {
         super({
             name: 'request',
             category: SubtagType.BOT,
@@ -29,6 +30,7 @@ export class RequestSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#fetch = fetch;
     }
 
     public async requestUrl(
@@ -78,7 +80,7 @@ export class RequestSubtag extends CompiledSubtag {
         }
 
         try {
-            const response = await context.fetch(url + (query !== undefined ? `?${query}` : ''), request);
+            const response = await this.#fetch(url + (query !== undefined ? `?${query}` : ''), request);
             /*
                 I personally absolutely hate how blarg decides to error if a status code is not consider 'ok'
                 A lot of APIs actually have meaningful errors, coupled with a 'not-ok' status and it's ass that blarg doesn't return it.
@@ -116,7 +118,7 @@ export class RequestSubtag extends CompiledSubtag {
     }
 }
 
-const mapOptions = zodStringToJson.pipe(z.object({
+const mapOptions = zodStringToJson.pipe(z.strictObject({
     method: z.string()
         .transform(s => s.toUpperCase())
         .pipe(z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']))

@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new Base64EncodeSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['base64Encode', 'bToA'],
     cases: [
         {
             code: '{base64encode;Success!}',

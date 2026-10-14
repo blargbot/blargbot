@@ -21,7 +21,7 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
 
-                    execute: (ctx) => this.isUserBoosting(ctx.member!)
+                    execute: (ctx) => this.isUserBoosting(ctx.local.message.member)
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -36,7 +36,7 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
     }
 
     public async findIsUserBoosting(context: BBTagContext, userStr: string, quiet: boolean): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const member = await context.queryMember(userStr, { noLookup: quiet });
 
         if (member === undefined) {

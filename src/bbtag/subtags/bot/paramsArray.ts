@@ -25,7 +25,7 @@ export class ParamsArraySubtag extends CompiledSubtag {
     }
 
     public getParamsArray(context: BBTagContext): readonly string[] {
-        const params = context.scopes.local.paramsarray;
+        const params = context.local.paramsarray;
         if (params === undefined)
             throw new BBTagRuntimeError('{paramsarray} can only be used inside {function}');
         return params;

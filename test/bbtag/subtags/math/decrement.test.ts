@@ -9,6 +9,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new DecrementSubtag(),
     argCountBounds: { min: 1, max: 3 },
+    names: ['decrement'],
     cases: [
         {
             code: '{decrement;_myVariable}',

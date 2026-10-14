@@ -1,6 +1,5 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
 import { DMSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
@@ -8,6 +7,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new DMSubtag(),
     argCountBounds: { min: 2, max: 3 },
+    names: ['dm'],
     cases: [
         {
             code: '{dm;aaaa;{eval}}',
@@ -17,32 +17,31 @@ await runSubtagTests({
                 { start: 0, end: 16, error: new UserNotFoundError('aaaa') }
             ],
             setup(ctx) {
-                ctx.options.rootTagName = 'mySuperCoolTestingTag';
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'aaaa'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'aaaa'))
+                    .mustHappen(1)
+                    .resolves([]);
             }
         },
         {
             code: '{dm;other user;Hello!}',
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                const channel = ctx.createMock(eris.PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                const channel = ctx.createMock<eris.PrivateChannel>();
+                member.setup(m => m.id).returns(ctx.users.other.id);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.getDMChannel()).resolves(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(1)
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hello!' })))
-                    .verifiable(1)
-                    .thenResolve();
+                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                    .mustHappen(1)
+                    .resolves(null!);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: 'Hello!' })))
+                    .mustHappen(1)
+                    .resolves(null!);
             }
         },
         {
@@ -50,22 +49,22 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                const channel = ctx.createMock(eris.PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                const channel = ctx.createMock<eris.PrivateChannel>();
+                member.setup(m => m.id).returns(ctx.users.other.id);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.getDMChannel()).resolves(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(1)
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ embeds: [{ title: 'Hi!' }] })))
-                    .verifiable(1)
-                    .thenResolve();
+                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                    .mustHappen(1)
+                    .resolves(null!);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ embeds: [{ title: 'Hi!' }] })))
+                    .mustHappen(1)
+                    .resolves(null!);
             }
         },
         {
@@ -73,22 +72,22 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                const channel = ctx.createMock(eris.PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                const channel = ctx.createMock<eris.PrivateChannel>();
+                member.setup(m => m.id).returns(ctx.users.other.id);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.getDMChannel()).resolves(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(1)
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] })))
-                    .verifiable(1)
-                    .thenResolve();
+                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                    .mustHappen(1)
+                    .resolves(null!);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] })))
+                    .mustHappen(1)
+                    .resolves(null!);
             }
         },
         {
@@ -96,66 +95,66 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                const channel = ctx.createMock(eris.PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                const channel = ctx.createMock<eris.PrivateChannel>();
+                member.setup(m => m.id).returns(ctx.users.other.id);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.getDMChannel()).resolves(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(1)
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] })))
-                    .verifiable(1)
-                    .thenResolve();
+                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                    .mustHappen(1)
+                    .resolves(null!);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] })))
+                    .mustHappen(1)
+                    .resolves(null!);
             }
         },
         {
             code: '{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}',
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                const channel = ctx.createMock(eris.PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                const channel = ctx.createMock<eris.PrivateChannel>();
+                member.setup(m => m.id).returns(ctx.users.other.id);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.getDMChannel()).resolves(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(x => x.times(5))
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(x => x.times(1))
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hi!' })))
-                    .verifiable(x => x.times(5))
-                    .thenResolve();
+                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'other user'))
+                    .mustHappen(5)
+                    .resolves([member.instance]);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                    .mustHappen(1)
+                    .resolves(null!);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: 'Hi!' })))
+                    .mustHappen(5)
+                    .resolves(null!);
             }
         },
         {
             code: '{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}',
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                const channel = ctx.createMock(eris.PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                const channel = ctx.createMock<eris.PrivateChannel>();
+                member.setup(m => m.id).returns(ctx.users.other.id);
+                member.setup(m => m.user).returns(user.instance);
+                user.setup(m => m.getDMChannel()).resolves(channel.instance);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(x => x.times(6))
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(x => x.times(2))
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hi!' })))
-                    .verifiable(x => x.times(6))
-                    .thenResolve();
+                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'other user'))
+                    .mustHappen(6)
+                    .resolves([member.instance]);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                    .mustHappen(2)
+                    .resolves(null!);
+                ctx.util.setup((m, $) => m.send(channel.instance, $({ content: 'Hi!' })))
+                    .mustHappen(6)
+                    .resolves(null!);
             }
         }
     ]

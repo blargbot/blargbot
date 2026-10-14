@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new AbsoluteSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['absolute', 'abs'],
     cases: [
         { code: '{abs;12345}', expected: '12345' },
         { code: '{abs;-9876}', expected: '9876' },

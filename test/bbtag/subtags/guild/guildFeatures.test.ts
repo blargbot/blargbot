@@ -7,6 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new GuildFeaturesSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['guildFeatures', 'features'],
     cases: [
         {
             code: '{guildfeatures}',

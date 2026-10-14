@@ -35,11 +35,11 @@ export class ChannelsSubtag extends CompiledSubtag {
     }
 
     public getChannels(context: BBTagContext): string[] {
-        return context.guild.channels.map(c => c.id);
+        return context.local.message.channel.guild.channels.map(c => c.id);
     }
 
     public async getChannelsInCategory(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string[]> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)

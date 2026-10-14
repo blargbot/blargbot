@@ -9,6 +9,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new IncrementSubtag(),
     argCountBounds: { min: 1, max: 3 },
+    names: ['increment'],
     cases: [
         {
             code: '{increment;_myVariable}',

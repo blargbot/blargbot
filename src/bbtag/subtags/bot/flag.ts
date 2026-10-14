@@ -30,6 +30,6 @@ export class FlagSubtag extends CompiledSubtag {
         if (!guard.isFlagChar(flagName) && flagName !== '_')
             return undefined;
 
-        return context.flaggedInput[flagName]?.merge().value;
+        return context.local.input.flags[flagName]?.merge().value;
     }
 }

@@ -34,7 +34,7 @@ export class BaseNumberSubtag extends CompiledSubtag {
         originStr: string,
         radixStr: string
     ): string {
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
+        const fallback = new Lazy(() => parse.int(context.local.fallback ?? ''));
         let origin = parse.int(originStr) ?? fallback.value;
         if (origin === undefined)
             throw new NotANumberError(originStr);

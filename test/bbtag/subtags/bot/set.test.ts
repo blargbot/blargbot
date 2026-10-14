@@ -4,7 +4,6 @@ import { SetSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import type { TagVariableScope } from '@blargbot/domain';
 import { TagVariableType } from '@blargbot/domain';
-import { argument } from '@blargbot/test-util/mock.js';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -12,6 +11,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new SetSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['set'],
     cases: [
         ...createTestCases([
             // {
@@ -23,7 +23,7 @@ await runSubtagTests({
                 db: { name: 'testTag', type: TagVariableType.LOCAL_TAG },
                 varName: 'varName',
                 setup(ctx) {
-                    ctx.options.tagName = 'testTag';
+                    ctx.input.tagName = 'testTag';
                 }
             },
             {
@@ -31,9 +31,9 @@ await runSubtagTests({
                 db: { guildId: '234983689742643223984', name: 'testTag', type: TagVariableType.LOCAL_CC },
                 varName: 'varName',
                 setup(ctx) {
-                    ctx.options.tagName = 'testTag';
+                    ctx.input.tagName = 'testTag';
                     ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
-                    ctx.options.isCC = true;
+                    ctx.input.tagVars = false;
                 }
             },
             {
@@ -55,7 +55,7 @@ await runSubtagTests({
                 varName: 'varName',
                 setup(ctx) {
                     ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
-                    ctx.options.isCC = true;
+                    ctx.input.tagVars = false;
                 }
             },
             {
@@ -88,7 +88,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                 setupSaveVariables: false,
                 setup,
                 async assert(bbctx) {
-                    assert.deepEqual((await bbctx.variables.get(`${prefix}${varName}`)).value, value);
+                    assert.deepEqual((await bbctx.root.variables.get(`${prefix}${varName}`)).value, value);
                 }
             };
             yield {
@@ -98,14 +98,14 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                 setupSaveVariables: false,
                 async setup(ctx, ...args) {
                     if (db !== undefined) {
-                        ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ [varName]: value }), argument.isDeepEqual(db)))
-                            .thenResolve(undefined);
+                        ctx.tagVariablesTable.setup((m, $) => m.upsert($({ [varName]: value }), $(db)))
+                            .resolves(undefined);
                         ctx.tagVariables.set({ scope: db, name: varName }, snowflake.create().toString());
                     }
                     await setup?.call(this, ctx, ...args);
                 },
                 async assert(bbctx) {
-                    assert.deepEqual((await bbctx.variables.get(`${prefix}${varName}`)).value, value);
+                    assert.deepEqual((await bbctx.root.variables.get(`${prefix}${varName}`)).value, value);
                 }
             };
             yield {
@@ -123,7 +123,7 @@ function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: 
                     await setup?.call(this, ctx, ...args);
                 },
                 async assert(bbctx) {
-                    assert.deepEqual((await bbctx.variables.get(`${prefix}${varName}`)).value, value);
+                    assert.deepEqual((await bbctx.root.variables.get(`${prefix}${varName}`)).value, value);
                 }
             };
         }

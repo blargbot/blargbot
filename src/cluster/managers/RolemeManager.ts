@@ -1,4 +1,5 @@
 import type { ExecutionResult } from '@blargbot/bbtag';
+import { limits } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
 import { FormattableMessageContent, guard } from '@blargbot/core';
 import type { GuildRolemeEntry } from '@blargbot/domain';
@@ -52,12 +53,17 @@ export class RolemeManager {
 
         return await this.#cluster.bbtag.execute(tag.content, {
             message: trigger,
-            rootTagName: 'roleme',
-            limit: 'customCommandLimit',
-            inputRaw: '',
+            tagName: 'roleme',
+            input: '',
+            flagDefinitions: [],
+            silent: false,
             isCC: true,
-            authorId: tag.author ?? undefined,
-            authorizerId: tag.authorizer ?? undefined
+            tagVars: false,
+            limit: new limits.CustomCommandLimit(trigger.channel.guild),
+            author: tag.author ?? undefined,
+            authorizer: tag.authorizer ?? undefined,
+            cooldown: 0,
+            prefix: undefined
         });
     }
 }

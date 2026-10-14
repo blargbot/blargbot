@@ -1,3 +1,4 @@
+import { limits } from '@blargbot/bbtag';
 import type { Cluster, CommandContext, CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster';
 import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster';
 import { metrics } from '@blargbot/core';
@@ -117,19 +118,20 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             return;
         }
 
-        const { content, ...options } = details;
-
         metrics.commandCounter.labels('custom', 'custom').inc();
-        await context.cluster.bbtag.execute(content, {
-            ...options,
-            authorId: options.author,
-            authorizerId: options.authorizer,
-            rootTagName: context.commandName,
+        await context.cluster.bbtag.execute(details.content, {
             message: context.message,
-            inputRaw: context.argsString,
+            tagName: context.commandName,
+            input: context.argsString,
+            flagDefinitions: details.flags ?? [],
+            silent: false,
             isCC: true,
-            limit: 'customCommandLimit',
-            prefix: context.prefix
+            tagVars: details.tagVars,
+            limit: new limits.CustomCommandLimit(context.channel.guild),
+            author: details.author ?? undefined,
+            authorizer: details.authorizer ?? undefined,
+            prefix: context.prefix,
+            cooldown: details.cooldown ?? 0
         });
         return undefined;
     }

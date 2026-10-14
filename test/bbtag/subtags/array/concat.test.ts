@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ConcatSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['concat'],
     cases: [
         { code: '{concat;["this", "is"];["an", "array"]}', expected: '["this","is","an","array"]' },
         { code: '{concat;a;b;c;[1, 2, 3]}', expected: '["a","b","c",1,2,3]' },
@@ -14,7 +15,7 @@ await runSubtagTests({
             expected: '["this","is","arr1","this","is","arr2"]',
             subtags: [new GetSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr2' }, ['this', 'is', 'arr2']);
             }

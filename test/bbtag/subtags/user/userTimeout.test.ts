@@ -7,6 +7,7 @@ import { createGetUserPropTestCases } from './_getUserPropTest.js';
 await runSubtagTests({
     subtag: new UserTimeoutSubtag(),
     argCountBounds: { min: 0, max: 3 },
+    names: ['userTimeout', 'memberTimedoutUntil', 'memberTimeout', 'timedoutUntil', 'userTimedoutUntil'],
     cases: [
         {
             code: '{usertimeout}',

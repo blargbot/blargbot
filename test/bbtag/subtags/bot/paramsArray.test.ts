@@ -6,21 +6,22 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ParamsArraySubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['paramsArray'],
     cases: [
         {
             code: '{paramsarray}',
             expected: '[]',
-            setup(ctx) { ctx.rootScope.paramsarray = []; }
+            postSetup(ctx) { ctx.root.paramsarray = []; }
         },
         {
             code: '{paramsarray}',
             expected: '["this","is","a","test"]',
-            setup(ctx) { ctx.rootScope.paramsarray = ['this', 'is', 'a', 'test']; }
+            postSetup(ctx) { ctx.root.paramsarray = ['this', 'is', 'a', 'test']; }
         },
         {
             code: '{paramsarray}',
             expected: '["this","is a","test"]',
-            setup(ctx) { ctx.rootScope.paramsarray = ['this', 'is a', 'test']; }
+            postSetup(ctx) { ctx.root.paramsarray = ['this', 'is a', 'test']; }
         },
         {
             code: '{paramsarray}',
@@ -28,8 +29,8 @@ await runSubtagTests({
             errors: [
                 { start: 0, end: 13, error: new BBTagRuntimeError('{paramsarray} can only be used inside {function}') }
             ],
-            setup(ctx) {
-                ctx.rootScope.paramsarray = undefined;
+            postSetup(ctx) {
+                ctx.root.paramsarray = undefined;
             }
         }
     ]

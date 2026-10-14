@@ -21,7 +21,7 @@ export class ChannelIsVoiceSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx) => this.isVoiceChannel(ctx, ctx.channel.id, true)
+                    execute: (ctx) => this.isVoiceChannel(ctx, ctx.local.message.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -40,7 +40,7 @@ export class ChannelIsVoiceSubtag extends CompiledSubtag {
         channelStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)

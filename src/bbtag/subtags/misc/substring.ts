@@ -28,7 +28,7 @@ export class SubstringSubtag extends CompiledSubtag {
     }
 
     public substring(context: BBTagContext, text: string, startStr: string, endStr: string): string {
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
+        const fallback = new Lazy(() => parse.int(context.local.fallback ?? ''));
         const start = parse.int(startStr) ?? fallback.value;
         if (start === undefined)
             throw new NotANumberError(startStr);

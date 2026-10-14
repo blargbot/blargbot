@@ -24,6 +24,6 @@ export class GuildIdSubtag extends CompiledSubtag {
     }
 
     public getGuildId(context: BBTagContext): string {
-        return context.guild.id;
+        return context.local.message.channel.guild.id;
     }
 }

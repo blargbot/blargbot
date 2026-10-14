@@ -6,6 +6,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ChooseSubtag(),
     argCountBounds: { min: 2, max: Infinity },
+    names: ['choose'],
     cases: [
         {
             code: '{choose;abc;{fail}}',

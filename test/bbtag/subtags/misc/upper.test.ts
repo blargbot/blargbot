@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new UpperSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['upper'],
     cases: [
         { code: '{upper;}', expected: '' },
         { code: '{upper;AbC}', expected: 'ABC' },

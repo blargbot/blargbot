@@ -24,6 +24,6 @@ export class GuildOwnerIdSubtag extends CompiledSubtag {
     }
 
     public getGuildOwnerId(context: BBTagContext): string {
-        return context.guild.ownerID;
+        return context.local.message.channel.guild.ownerID;
     }
 }

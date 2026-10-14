@@ -27,7 +27,7 @@ export class IndexOfSubtag extends CompiledSubtag {
     }
 
     public indexOf(context: BBTagContext, text: string, query: string, startStr: string): number {
-        const from = parse.int(startStr) ?? parse.int(context.scopes.local.fallback ?? '');
+        const from = parse.int(startStr) ?? parse.int(context.local.fallback ?? '');
         if (from === undefined)
             throw new NotANumberError(startStr);
 

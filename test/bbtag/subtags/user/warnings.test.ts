@@ -1,11 +1,22 @@
+import type { GetWarnings } from '@blargbot/bbtag/subtags';
 import { WarningsSubtag } from '@blargbot/bbtag/subtags';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
+const getWarnings = new Mock<GetWarnings>({ callable: true });
+
 await runSubtagTests({
-    subtag: new WarningsSubtag(),
+    subtag: new WarningsSubtag({
+        getWarnings: getWarnings.instance
+    }),
     argCountBounds: { min: 0, max: 2 },
+    names: ['warnings'],
+    setup(ctx) {
+        ctx.addMock(getWarnings);
+        getWarnings.reset();
+    },
     cases: [
         ...createGetUserPropTestCases({
             quiet: undefined,
@@ -16,19 +27,19 @@ await runSubtagTests({
                 {
                     expected: '0',
                     setup(member, ctx) {
-                        ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, member.user.id)).thenResolve(undefined);
+                        getWarnings.setup(m => m(ctx.guild.id, member.user.id)).resolves(undefined);
                     }
                 },
                 {
                     expected: '0',
                     setup(member, ctx) {
-                        ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, member.user.id)).thenResolve(0);
+                        getWarnings.setup(m => m(ctx.guild.id, member.user.id)).resolves(0);
                     }
                 },
                 {
                     expected: '1234',
                     setup(member, ctx) {
-                        ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, member.user.id)).thenResolve(1234);
+                        getWarnings.setup(m => m(ctx.guild.id, member.user.id)).resolves(1234);
                     }
                 }
             ]

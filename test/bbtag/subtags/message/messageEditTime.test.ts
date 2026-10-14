@@ -7,6 +7,7 @@ import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 await runSubtagTests({
     subtag: new MessageEditTimeSubtag(),
     argCountBounds: { min: 0, max: 3 },
+    names: ['messageEditTime'],
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,

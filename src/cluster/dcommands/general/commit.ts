@@ -80,14 +80,14 @@ export class CommitCommand extends GlobalCommand {
     }
 }
 
-const commitMapping = z.object({
-    author: z.object({
+const commitMapping = z.strictObject({
+    author: z.strictObject({
         avatar_url: z.string(),
         html_url: z.string(),
         login: z.string()
     }).optional(),
-    commit: z.object({
-        author: z.object({
+    commit: z.strictObject({
+        author: z.strictObject({
             name: z.string()
         }),
         message: z.string()

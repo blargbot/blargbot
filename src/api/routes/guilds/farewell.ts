@@ -58,6 +58,6 @@ export class FarewellRoute extends BaseRoute<['/guilds/:guildId/farewell']> {
     }
 }
 
-const mapTag = z.compile(z.object({
+const mapTag = z.compile(z.strictObject({
     content: z.string()
 }));

@@ -4,7 +4,7 @@ import z from 'zod';
 import { asBuffer, asUint8Array, bufferToJson, cleanType, jsonToBuffer, takeBytes } from '../util.js';
 import { AmqpMessage } from './AmqpMessage.js';
 
-const commonHeaders = z.object({
+const commonHeaders = z.strictObject({
     method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']),
     url: z.templateLiteral(['/', z.string()]),
     unauthorized: z.boolean().optional(),
@@ -15,8 +15,8 @@ const commonHeaders = z.object({
 
 const output = z.intersection(
     commonHeaders,
-    z.object({
-        files: z.object({
+    z.strictObject({
+        files: z.strictObject({
             name: z.string(),
             blob: z.instanceof(Blob)
         }).array().optional(),
@@ -26,22 +26,22 @@ const output = z.intersection(
 
 const metaSchema = z.compile(z.intersection(
     commonHeaders,
-    z.object({
-        files: z.object({
+    z.strictObject({
+        files: z.strictObject({
             name: z.string(),
             type: z.string(),
             length: z.int()
         }).array().optional(),
         body: z.union([
-            z.object({
+            z.strictObject({
                 kind: z.literal('formData'),
                 value: z.union([
-                    z.object({
+                    z.strictObject({
                         kind: z.literal('text'),
                         name: z.string(),
                         value: z.string()
                     }),
-                    z.object({
+                    z.strictObject({
                         kind: z.literal('file'),
                         name: z.string(),
                         fileName: z.string(),
@@ -50,7 +50,7 @@ const metaSchema = z.compile(z.intersection(
                     })
                 ]).array()
             }),
-            z.object({
+            z.strictObject({
                 kind: z.literal('json'),
                 value: z.unknown()
             })

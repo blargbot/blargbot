@@ -7,6 +7,7 @@ import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 await runSubtagTests({
     subtag: new ChannelIsNsfwSubtag(),
     argCountBounds: { min: 0, max: 2 },
+    names: ['channelIsNsfw', 'isNsfw'],
     cases: [
         ...createGetChannelPropTestCases({
             quiet: '',

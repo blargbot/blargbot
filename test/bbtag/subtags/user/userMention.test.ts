@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { UserMentionSubtag } from '@blargbot/bbtag/subtags';
-import * as eris from 'eris';
+import type * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
@@ -9,6 +9,7 @@ import { createGetUserPropTestCases } from './_getUserPropTest.js';
 await runSubtagTests({
     subtag: new UserMentionSubtag(),
     argCountBounds: { min: 0, max: 3 },
+    names: ['userMention'],
     cases: [
         ...createGetUserPropTestCases({
             quiet: '',
@@ -22,7 +23,7 @@ await runSubtagTests({
                         member.user.id = '12345678900987236';
                     },
                     assert(_, __, ctx) {
-                        assert.deepEqual(ctx.data.allowedMentions.users, ['12345678900987236']);
+                        assert.deepEqual(ctx.root.allowedMentions.users, new Set(['12345678900987236']));
                     }
                 },
                 {
@@ -31,7 +32,7 @@ await runSubtagTests({
                         member.user.id = '098765434512212678';
                     },
                     assert(_, __, ctx) {
-                        assert.deepEqual(ctx.data.allowedMentions.users, ['098765434512212678']);
+                        assert.deepEqual(ctx.root.allowedMentions.users, new Set(['098765434512212678']));
                     }
                 },
                 {
@@ -40,7 +41,7 @@ await runSubtagTests({
                         member.user.id = '876543456782978367654';
                     },
                     assert(_, __, ctx) {
-                        assert.deepEqual(ctx.data.allowedMentions.users, ['876543456782978367654']);
+                        assert.deepEqual(ctx.root.allowedMentions.users, new Set(['876543456782978367654']));
                     }
                 }
             ]
@@ -52,7 +53,7 @@ await runSubtagTests({
                 ctx.users.command.id = '12345678900987236';
             },
             assert(ctx) {
-                assert.deepEqual(ctx.data.allowedMentions.users, ['12345678900987236']);
+                assert.deepEqual(ctx.root.allowedMentions.users, new Set(['12345678900987236']));
             }
         },
         {
@@ -62,7 +63,7 @@ await runSubtagTests({
                 ctx.users.command.id = '12345678900987236';
             },
             assert(ctx) {
-                assert.deepEqual(ctx.data.allowedMentions.users, []);
+                assert.deepEqual(ctx.root.allowedMentions.users, new Set([]));
             }
         },
         {
@@ -72,7 +73,7 @@ await runSubtagTests({
                 ctx.users.command.id = '12345678900987236';
             },
             assert(ctx) {
-                assert.deepEqual(ctx.data.allowedMentions.users, ['12345678900987236']);
+                assert.deepEqual(ctx.root.allowedMentions.users, new Set(['12345678900987236']));
             }
         },
         {
@@ -83,17 +84,17 @@ await runSubtagTests({
                 ctx.users.other.id = '098765434512212678';
             },
             postSetup(bbctx, ctx) {
-                const otherMember = ctx.createMock(eris.Member);
-                const otherUser = ctx.createMock(eris.User);
-                otherMember.setup(m => m.user, false).thenReturn(otherUser.instance);
-                otherUser.setup(m => m.id).thenReturn('098765434512212678');
-                otherUser.setup(m => m.mention).thenReturn('<@098765434512212678>');
+                const otherMember = ctx.createMock<eris.Member>();
+                const otherUser = ctx.createMock<eris.User>();
+                otherMember.setup(m => m.user).returns(otherUser.instance, { isFallback: true });
+                otherUser.setup(m => m.id).returns('098765434512212678');
+                otherUser.setup(m => m.mention).returns('<@098765434512212678>');
 
-                ctx.util.setup(m => m.getUser('098765434512212678')).verifiable(1).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '098765434512212678')).verifiable(1).thenResolve([otherMember.instance]);
+                ctx.util.setup(m => m.getUser('098765434512212678')).mustHappen(1).resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '098765434512212678')).mustHappen(1).resolves([otherMember.instance]);
             },
             assert(ctx) {
-                assert.deepEqual(ctx.data.allowedMentions.users, ['12345678900987236', '098765434512212678']);
+                assert.deepEqual(ctx.root.allowedMentions.users, new Set(['12345678900987236', '098765434512212678']));
             }
         }
     ]

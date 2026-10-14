@@ -71,7 +71,7 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
         const errored = [];
         for (const reaction of reactions) {
             try {
-                await context.limit.check(context, 'reactremove:requests');
+                await context.root.limit.check(context, 'reactremove:requests');
                 await message.removeReaction(reaction.toApi(), user.id);
             } catch (err: unknown) {
                 if (!(err instanceof eris.DiscordRESTError))
@@ -96,10 +96,10 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
     async #bindArguments(context: BBTagContext, rawArgs: SubtagArgumentArray): Promise<[channel: string, message: string, user: string, reactions: Emote[] | undefined]> {
         const args = [...rawArgs];
         if (args.length === 1)
-            return [context.channel.id, args[0].value, context.user.id, undefined];
+            return [context.local.message.channel.id, args[0].value, context.local.message.author.id, undefined];
 
         const channel = await context.queryChannel(args[0].value, { noLookup: true, noErrors: true });
-        const channelId = channel?.id ?? context.channel.id;
+        const channelId = channel?.id ?? context.local.message.channel.id;
         if (channel !== undefined)
             args.shift();
 
@@ -107,10 +107,10 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
         if (args.length === 0)
             // {reactremove;<messageId>}
             // {reactremove;<channel>;<messageId>}
-            return [channelId, message, context.user.id, undefined];
+            return [channelId, message, context.local.message.author.id, undefined];
 
         const user = await context.queryUser(args[0].value, { noLookup: true, noErrors: true });
-        const userId = user?.id ?? context.user.id;
+        const userId = user?.id ?? context.local.message.author.id;
         if (user !== undefined)
             args.shift();
 

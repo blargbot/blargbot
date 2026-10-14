@@ -2,33 +2,42 @@ import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { EscapeBBTagSubtag, RequestSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const fetch = new Mock<typeof globalThis.fetch>({ callable: true });
+
 await runSubtagTests({
-    subtag: new RequestSubtag(),
+    subtag: new RequestSubtag({
+        fetch: fetch.instance
+    }),
     argCountBounds: { min: 1, max: 3 },
+    names: ['request'],
+    setup(ctx) {
+        ctx.addMock(fetch);
+        fetch.reset();
+    },
     cases: [
         {
             code: '{request;https://httpbin.org/status/200}',
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
+                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).returns(true);
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://httpbin.org/status/200', argument.isDeepEqual({
+                fetch.setup((m, $) => m('https://httpbin.org/status/200', $({
                     method: 'GET',
                     headers: {},
                     body: undefined
                 })))
-                    .thenResolve(response.instance);
-                response.setup(m => m.status).thenReturn(200);
-                response.setup(m => m.statusText).thenReturn('OK');
-                response.setup(m => m.headers).thenReturn(new Headers({
+                    .resolves(response.instance);
+                response.setup(m => m.status).returns(200);
+                response.setup(m => m.statusText).returns('OK');
+                response.setup(m => m.headers).returns(new Headers({
                     'Content-Type': 'text/html; charset=utf-8',
                     'Date': 'Wed, 26 Aug 2026 12:16:19 GMT'
                 }));
-                response.setup(m => m.url).thenReturn('https://httpbin.org/status/200');
-                response.setup(m => m.text()).thenResolve('Success!');
+                response.setup(m => m.url).returns('https://httpbin.org/status/200');
+                response.setup(m => m.text()).resolves('Success!');
             },
             assert(_, result) {
                 const response = JSON.parse(result) as JObject;
@@ -46,22 +55,22 @@ await runSubtagTests({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post"}}}',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
+                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).returns(true);
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://httpbin.org/post', argument.isDeepEqual({
+                fetch.setup((m, $) => m('https://httpbin.org/post', $({
                     method: 'POST',
                     headers: {},
                     body: ''
                 })))
-                    .thenResolve(response.instance);
-                response.setup(m => m.status).thenReturn(200);
-                response.setup(m => m.statusText).thenReturn('OK');
-                response.setup(m => m.headers).thenReturn(new Headers({
+                    .resolves(response.instance);
+                response.setup(m => m.status).returns(200);
+                response.setup(m => m.statusText).returns('OK');
+                response.setup(m => m.headers).returns(new Headers({
                     'Content-Type': 'application/json',
                     'Date': 'Wed, 26 Aug 2026 12:16:19 GMT'
                 }));
-                response.setup(m => m.url).thenReturn('https://httpbin.org/post');
-                response.setup(m => m.json()).thenResolve({
+                response.setup(m => m.url).returns('https://httpbin.org/post');
+                response.setup(m => m.json()).resolves({
                     success: true
                 });
             },
@@ -83,9 +92,9 @@ await runSubtagTests({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
+                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).returns(true);
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://httpbin.org/post', argument.isDeepEqual({
+                fetch.setup((m, $) => m('https://httpbin.org/post', $({
                     method: 'POST',
                     headers: {
                         'x-test': 'true',
@@ -93,15 +102,15 @@ await runSubtagTests({
                     },
                     body: '{"age":123}'
                 })))
-                    .thenResolve(response.instance);
-                response.setup(m => m.status).thenReturn(200);
-                response.setup(m => m.statusText).thenReturn('OK');
-                response.setup(m => m.headers).thenReturn(new Headers({
+                    .resolves(response.instance);
+                response.setup(m => m.status).returns(200);
+                response.setup(m => m.statusText).returns('OK');
+                response.setup(m => m.headers).returns(new Headers({
                     'Content-Type': 'application/json',
                     'Date': 'Wed, 26 Aug 2026 12:16:19 GMT'
                 }));
-                response.setup(m => m.url).thenReturn('https://httpbin.org/post');
-                response.setup(m => m.json()).thenResolve({
+                response.setup(m => m.url).returns('https://httpbin.org/post');
+                response.setup(m => m.json()).resolves({
                     success: true
                 });
             },
@@ -123,24 +132,24 @@ await runSubtagTests({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;This isnt json}}',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
+                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).returns(true);
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://httpbin.org/post', argument.isDeepEqual({
+                fetch.setup((m, $) => m('https://httpbin.org/post', $({
                     method: 'POST',
                     headers: {
                         'x-test': 'true'
                     },
                     body: 'This isnt json'
                 })))
-                    .thenResolve(response.instance);
-                response.setup(m => m.status).thenReturn(200);
-                response.setup(m => m.statusText).thenReturn('OK');
-                response.setup(m => m.headers).thenReturn(new Headers({
+                    .resolves(response.instance);
+                response.setup(m => m.status).returns(200);
+                response.setup(m => m.statusText).returns('OK');
+                response.setup(m => m.headers).returns(new Headers({
                     'Content-Type': 'application/json',
                     'Date': 'Wed, 26 Aug 2026 12:16:19 GMT'
                 }));
-                response.setup(m => m.url).thenReturn('https://httpbin.org/post');
-                response.setup(m => m.json()).thenResolve({
+                response.setup(m => m.url).returns('https://httpbin.org/post');
+                response.setup(m => m.json()).resolves({
                     success: true
                 });
             },
@@ -162,9 +171,9 @@ await runSubtagTests({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true,"content-type":"text/plain"}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
+                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).returns(true);
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://httpbin.org/post', argument.isDeepEqual({
+                fetch.setup((m, $) => m('https://httpbin.org/post', $({
                     method: 'POST',
                     headers: {
                         'x-test': 'true',
@@ -172,15 +181,15 @@ await runSubtagTests({
                     },
                     body: '{"age":123}'
                 })))
-                    .thenResolve(response.instance);
-                response.setup(m => m.status).thenReturn(200);
-                response.setup(m => m.statusText).thenReturn('OK');
-                response.setup(m => m.headers).thenReturn(new Headers({
+                    .resolves(response.instance);
+                response.setup(m => m.status).returns(200);
+                response.setup(m => m.statusText).returns('OK');
+                response.setup(m => m.headers).returns(new Headers({
                     'Content-Type': 'application/json',
                     'Date': 'Wed, 26 Aug 2026 12:16:19 GMT'
                 }));
-                response.setup(m => m.url).thenReturn('https://httpbin.org/post');
-                response.setup(m => m.json()).thenResolve({
+                response.setup(m => m.url).returns('https://httpbin.org/post');
+                response.setup(m => m.json()).resolves({
                     success: true
                 });
             },
@@ -202,24 +211,24 @@ await runSubtagTests({
             code: '{request;https://httpbin.org/get;{escapebbtag;{"method":"get","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).thenReturn(true);
+                ctx.util.setup(m => m.canRequestDomain('httpbin.org')).returns(true);
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://httpbin.org/get?age=123', argument.isDeepEqual({
+                fetch.setup((m, $) => m('https://httpbin.org/get?age=123', $({
                     method: 'GET',
                     headers: {
                         'x-test': 'true'
                     },
                     body: undefined
                 })))
-                    .thenResolve(response.instance);
-                response.setup(m => m.status).thenReturn(200);
-                response.setup(m => m.statusText).thenReturn('OK');
-                response.setup(m => m.headers).thenReturn(new Headers({
+                    .resolves(response.instance);
+                response.setup(m => m.status).returns(200);
+                response.setup(m => m.statusText).returns('OK');
+                response.setup(m => m.headers).returns(new Headers({
                     'Content-Type': 'application/json',
                     'Date': 'Wed, 26 Aug 2026 12:16:19 GMT'
                 }));
-                response.setup(m => m.url).thenReturn('https://httpbin.org/get?age=123');
-                response.setup(m => m.json()).thenResolve({
+                response.setup(m => m.url).returns('https://httpbin.org/get?age=123');
+                response.setup(m => m.json()).resolves({
                     success: true
                 });
             },
@@ -240,23 +249,23 @@ await runSubtagTests({
         {
             code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png}',
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
+                ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).returns(true);
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png', argument.isDeepEqual({
+                fetch.setup((m, $) => m('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png', $({
                     method: 'GET',
                     headers: {},
                     body: undefined
                 })))
-                    .thenResolve(response.instance);
-                response.setup(m => m.status).thenReturn(200);
-                response.setup(m => m.statusText).thenReturn('OK');
-                response.setup(m => m.headers).thenReturn(new Headers({
+                    .resolves(response.instance);
+                response.setup(m => m.status).returns(200);
+                response.setup(m => m.statusText).returns('OK');
+                response.setup(m => m.headers).returns(new Headers({
                     'Content-Type': 'image/png',
                     'Date': 'Wed, 26 Aug 2026 12:16:19 GMT'
                 }));
-                response.setup(m => m.url).thenReturn('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png');
+                response.setup(m => m.url).returns('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png');
                 const body = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64');
-                response.setup(m => m.body).thenReturn(ReadableStream.from([body.subarray(0, 15), body.subarray(15)]));
+                response.setup(m => m.body).returns(ReadableStream.from([body.subarray(0, 15), body.subarray(15)]));
             },
             assert(_, result) {
                 const response = JSON.parse(result) as JObject;
@@ -277,16 +286,16 @@ await runSubtagTests({
                 { start: 0, end: 124, error: new BBTagRuntimeError('403 Forbidden') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
+                ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).returns(true);
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png', argument.isDeepEqual({
+                fetch.setup((m, $) => m('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png', $({
                     method: 'GET',
                     headers: {},
                     body: undefined
                 })))
-                    .thenResolve(response.instance);
-                response.setup(m => m.status).thenReturn(403);
-                response.setup(m => m.statusText).thenReturn('Forbidden');
+                    .resolves(response.instance);
+                response.setup(m => m.status).returns(403);
+                response.setup(m => m.statusText).returns('Forbidden');
             }
         },
         {
@@ -303,7 +312,7 @@ await runSubtagTests({
                 { start: 0, end: 25, error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('test.com')).thenReturn(false);
+                ctx.util.setup(m => m.canRequestDomain('test.com')).returns(false);
             }
         },
         {
@@ -313,7 +322,7 @@ await runSubtagTests({
                 { start: 0, end: 149, error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).thenReturn(true);
+                ctx.util.setup(m => m.canRequestDomain('cdn.discordapp.com')).returns(true);
             }
         }
     ]

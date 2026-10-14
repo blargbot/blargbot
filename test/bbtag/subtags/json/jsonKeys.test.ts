@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new JsonKeysSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['jsonKeys', 'jKeys'],
     cases: [
         {
             code: '{jsonkeys;{j;{"abc":1,"def":2,"ghi":3}}}',

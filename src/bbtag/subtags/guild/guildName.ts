@@ -24,6 +24,6 @@ export class GuildNameSubtag extends CompiledSubtag {
     }
 
     public getGuildName(context: BBTagContext): string {
-        return context.guild.name;
+        return context.local.message.channel.guild.name;
     }
 }

@@ -43,7 +43,7 @@ export class DecrementSubtag extends CompiledSubtag {
         if (floor === undefined)
             throw new NotABooleanError(floorStr);
 
-        const valueRaw = await context.variables.get(varName);
+        const valueRaw = await context.root.variables.get(varName);
         let value: number | undefined;
         switch (typeof valueRaw.value) {
             case 'string':
@@ -62,7 +62,7 @@ export class DecrementSubtag extends CompiledSubtag {
         }
 
         value -= amount;
-        await context.variables.set(varName, value);
+        await context.root.variables.set(varName, value);
 
         return value;
     }

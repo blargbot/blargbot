@@ -25,6 +25,6 @@ export class IsCustomCommandSubtag extends CompiledSubtag {
     }
 
     public isCC(context: BBTagContext): boolean {
-        return context.isCC;
+        return context.root.isCC;
     }
 }

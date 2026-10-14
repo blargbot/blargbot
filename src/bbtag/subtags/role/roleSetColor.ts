@@ -45,7 +45,7 @@ export class RoleSetColorSubtag extends CompiledSubtag {
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const role = await context.queryRole(roleStr, { noLookup: quiet });
         const color = parse.color(colorStr !== '' ? colorStr : 0);
 

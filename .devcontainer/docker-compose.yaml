@@ -4,7 +4,7 @@ services:
   editor:
     build: editor
     init: true
-        
+
   postgres:
     build: postgres
     environment:

@@ -1,16 +1,12 @@
 import type { Emote } from '@blargbot/core';
-import type { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain';
+import type { FlagDefinition, FlagResult, GuildCommandTag, StoredTag } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import type * as eris from 'eris';
-import type ReadWriteLock from 'rwlock';
 
 import type { VariableCache } from './Caching.js';
 import type { BBTagRuntimeError } from './errors/index.js';
-import type { SourceMarker, Statement, SubtagCall } from './language/index.js';
-import type { limits, RuntimeLimit } from './limits/index.js';
-import type { ScopeManager } from './ScopeManager.js';
-import type { SubtagCallStack } from './SubtagCallStack.js';
-import type { TagCooldownManager } from './TagCooldownManager.js';
+import type { BBTagExpression, SourceMarker, SubtagCall } from './language/index.js';
+import type { RuntimeLimit } from './limits/index.js';
 import type { SubtagType } from './utils/index.js';
 
 export interface AnalysisResults {
@@ -26,24 +22,77 @@ export interface AnalysisResult {
 export type BBTagArray = { n?: string; v: JArray; };
 
 export interface BBTagRuntimeScope {
-    // Everything here should be immutable types.
-    // Mutable types will modify globally when editing a local scope if not careful
-
-    quiet?: boolean;
-    fallback?: string;
-    noLookupErrors?: boolean;
-    reason?: string;
+    tagName: string;
+    message: BBTagContextMessage;
+    quiet: boolean | undefined;
+    fallback: string | undefined;
+    noLookupErrors: boolean | undefined;
+    reason: string | undefined;
     inLock: boolean;
-    paramsarray?: readonly string[];
-    reaction?: string;
-    reactUser?: string;
-
-    // Functions are intended to be stored globally so a mutable type is fine
-    readonly functions: Record<string, Statement | undefined>;
-    readonly isTag: boolean;
+    paramsarray: readonly string[] | undefined;
+    reaction: string | undefined;
+    reactUser: string | undefined;
+    input: BBTagInput;
+    cooldown: number;
 }
+export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
+    readonly recursion: { depth: number; };
+    readonly output: {
+        nsfw?: string;
+        messageId?: string;
+        embeds?: eris.EmbedOptions[];
+        files?: eris.FileContent[];
+        replace?: { regex: RegExp | string; with: string; };
+        readonly reactions: string[];
+    };
+    readonly variables: VariableCache;
+    readonly limit: RuntimeLimit;
+    readonly author: string | undefined;
+    readonly authorizer: string;
+    readonly prefix: string | undefined;
+    readonly isCC: boolean;
+    readonly silent: boolean;
+    readonly flagDefinitions: ReadonlyArray<FlagDefinition<string>>;
+    readonly functions: Map<string, BBTagExpression>;
+    readonly queryCache: {
+        count: number;
+        readonly user: Map<string, string>;
+        readonly role: Map<string, string>;
+        readonly channel: Map<string, string>;
+    };
+    readonly ownedMessageIds: Set<string>;
+    readonly tagCache: Map<string, StoredTag>;
+    readonly ccCache: Map<string, GuildCommandTag>;
+    readonly allowedMentions: {
+        readonly users: Set<string>;
+        readonly roles: Set<string>;
+        everybody: boolean;
+    };
+}
+
+export interface BBTagRuntimeInput {
+    readonly cooldown: number;
+    readonly author: string | undefined;
+    readonly authorizer: string | undefined;
+    readonly prefix: string | undefined;
+    readonly isCC: boolean;
+    readonly tagVars: boolean;
+    readonly tagName: string;
+    readonly flagDefinitions: ReadonlyArray<FlagDefinition<string>>;
+    readonly input: string;
+    readonly limit: RuntimeLimit;
+    readonly message: BBTagContextMessage;
+    readonly silent: boolean;
+}
+
+export interface BBTagInput {
+    readonly raw: string;
+    readonly array: readonly string[];
+    readonly flags: FlagResult;
+}
+
 export interface SerializedRuntimeLimit {
-    type: keyof typeof limits;
+    type: string;
     rules: { [key: string]: JToken[]; };
 }
 
@@ -58,57 +107,54 @@ export interface SerializedBBTagContext {
         embeds: eris.Embed[];
     };
     isCC: boolean;
-    scope: BBTagRuntimeScope;
+    scope: {
+        quiet?: boolean;
+        fallback?: string;
+        noLookupErrors?: boolean;
+        reason?: string;
+        inLock: boolean;
+        paramsarray?: string[];
+        reaction?: string;
+        reactUser?: string;
+        functions: Record<string, BBTagExpression>;
+        isTag: boolean;
+    };
     inputRaw: string;
     flags: ReadonlyArray<FlagDefinition<string>>;
-    data: Pick<BBTagContextState, 'query' | 'ownedMsgs' | 'stackSize' | 'allowedMentions'>;
+    data: {
+        query: {
+            count: number;
+            user: Record<string, string>;
+            role: Record<string, string>;
+            channel: Record<string, string>;
+        };
+        ownedMsgs: string[];
+        allowedMentions: {
+            users: string[];
+            roles: string[];
+            everybody: boolean;
+        };
+        stackSize: number;
+    };
     tagName: string;
     rootTagName: string;
     author: string | undefined;
     authorizer: string | undefined;
     prefix: string | undefined;
     tagVars: boolean;
-    tempVars: JObject;
+    tempVars: Record<string, JToken>;
     limit: SerializedRuntimeLimit;
 }
 
-export type BBTagContextMessage = Pick<eris.Message<eris.KnownGuildTextableChannel>,
-    | 'id'
-    | 'createdAt'
-    | 'content'
-    | 'channel'
-    | 'member'
-    | 'author'
-    | 'attachments'
-    | 'embeds'
->
-export interface BBTagContextState {
-    query: {
-        count: number;
-        user: Record<string, string | undefined>;
-        role: Record<string, string | undefined>;
-        channel: Record<string, string | undefined>;
-    };
-    outputMessage: string | undefined;
-    ownedMsgs: string[];
-    state: BBTagRuntimeState;
-    stackSize: number;
-    embeds: undefined | eris.EmbedOptions[];
-    file: undefined | eris.FileContent;
-    reactions: string[];
-    nsfw: undefined | string;
-    replace: undefined | { regex: RegExp | string; with: string; };
-    break: number;
-    continue: number;
-    subtags: Record<string, number[] | undefined>;
-    cache: Record<string, NamedGuildCommandTag | StoredTag | null>;
-    subtagCount: number;
-    allowedMentions: {
-        users: string[];
-        roles: string[];
-        everybody: boolean;
-    };
-
+export type BBTagContextMessage = {
+    id: string;
+    content: string;
+    embeds: eris.Embed[];
+    createdAt: number;
+    channel: eris.KnownGuildTextableChannel;
+    member: eris.Member;
+    author: eris.User;
+    attachments: eris.Attachment[];
 }
 
 export interface LocatedRuntimeError {
@@ -138,28 +184,6 @@ export interface FindEntityOptions {
     noErrors?: boolean;
 }
 
-export interface BBTagContextOptions {
-    readonly message: BBTagContextMessage;
-    readonly inputRaw: string;
-    readonly flags?: ReadonlyArray<FlagDefinition<string>>;
-    readonly isCC: boolean;
-    readonly tagVars?: boolean;
-    readonly authorId?: string;
-    readonly authorizerId?: string;
-    readonly rootTagName?: string;
-    readonly tagName?: string;
-    readonly cooldown?: number;
-    readonly cooldowns?: TagCooldownManager;
-    readonly locks?: Record<string, ReadWriteLock | undefined>;
-    readonly limit: RuntimeLimit | keyof typeof limits;
-    readonly silent?: boolean;
-    readonly data?: Partial<BBTagContextState>;
-    readonly scopes?: ScopeManager;
-    readonly variables?: VariableCache;
-    readonly callStack?: SubtagCallStack;
-    readonly prefix?: string;
-}
-
 export interface ExecutionResult {
     readonly source: string;
     readonly tagName: string;
@@ -171,7 +195,7 @@ export interface ExecutionResult {
         readonly total: number;
         readonly database: number;
         readonly active: number;
-        readonly subtag: { readonly [subtag: string]: readonly number[] | undefined; };
+        readonly subtag: ReadonlyMap<string, readonly number[]>;
     };
     readonly database: {
         readonly committed: number;

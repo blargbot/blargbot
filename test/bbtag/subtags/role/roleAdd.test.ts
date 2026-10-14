@@ -1,6 +1,5 @@
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag';
 import { RoleAddSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -8,6 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RoleAddSubtag(),
     argCountBounds: { min: 1, max: 3 },
+    names: ['roleAdd', 'addRole'],
     setup(ctx) {
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
     },
@@ -17,8 +17,8 @@ await runSubtagTests({
             expected: 'true',
             setup(ctx) {
                 ctx.roles.other.id = '3298746326924';
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.other.id] }), 'Command User#0000'))
-                    .thenResolve();
+                ctx.discord.setup((m, $) => m.editGuildMember(ctx.guild.id, ctx.users.command.id, $({ roles: [ctx.roles.command.id, ctx.roles.other.id] }), 'Command User#0000'))
+                    .resolves(null!);
             }
         },
         {
@@ -35,8 +35,8 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.other.id, ctx.roles.bot.id] }), 'Command User#0000'))
-                    .thenResolve();
+                ctx.discord.setup((m, $) => m.editGuildMember(ctx.guild.id, ctx.users.command.id, $({ roles: [ctx.roles.command.id, ctx.roles.other.id, ctx.roles.bot.id] }), 'Command User#0000'))
+                    .resolves(null!);
             }
         },
         {
@@ -45,8 +45,8 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.roles.other.id = '3298746326924';
                 ctx.roles.bot.id = '9238476938485';
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.other.id] }), 'Command User#0000'))
-                    .thenResolve();
+                ctx.discord.setup((m, $) => m.editGuildMember(ctx.guild.id, ctx.users.command.id, $({ roles: [ctx.roles.command.id, ctx.roles.other.id] }), 'Command User#0000'))
+                    .resolves(null!);
             }
         },
         {
@@ -81,15 +81,15 @@ await runSubtagTests({
             expected: 'true',
             setup(ctx) {
                 ctx.roles.bot.id = '3298746326924';
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.other.id, argument.isDeepEqual({ roles: [ctx.roles.other.id, ctx.roles.bot.id] }), 'Command User#0000'))
-                    .thenResolve();
+                ctx.discord.setup((m, $) => m.editGuildMember(ctx.guild.id, ctx.users.other.id, $({ roles: [ctx.roles.other.id, ctx.roles.bot.id] }), 'Command User#0000'))
+                    .resolves(null!);
             },
             postSetup(bbctx, ctx) {
-                const member = bbctx.guild.members.get(ctx.users.other.id);
+                const member = bbctx.local.message.channel.guild.members.get(ctx.users.other.id);
                 if (member === undefined)
                     throw new Error('Unable to find member under test');
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([member]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .resolves([member]);
             }
         },
         {
@@ -99,8 +99,8 @@ await runSubtagTests({
                 { start: 0, end: 34, error: new UserNotFoundError('other user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .resolves([]);
             }
         },
         {
@@ -109,12 +109,10 @@ await runSubtagTests({
             errors: [
                 { start: 0, end: 34, error: new UserNotFoundError('other user').withDisplay('false') }
             ],
-            setup(ctx) {
-                ctx.rootScope.quiet = true;
-            },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([]);
+                bbctx.root.quiet = true;
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .resolves([]);
             }
         },
         {
@@ -124,8 +122,8 @@ await runSubtagTests({
                 { start: 0, end: 36, error: new UserNotFoundError('other user').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .resolves([]);
             }
         }
     ]

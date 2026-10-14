@@ -26,6 +26,6 @@ export class QuietSubtag extends CompiledSubtag {
     }
 
     public setQuiet(context: BBTagContext, valueStr: string): void {
-        context.scopes.local.quiet = parse.boolean(valueStr);
+        context.local.quiet = parse.boolean(valueStr);
     }
 }

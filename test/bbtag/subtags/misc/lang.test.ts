@@ -5,6 +5,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new LangSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['lang'],
     cases: [
         { code: '{lang;}', expected: '' },
         { code: '{lang;abc}', expected: '' },

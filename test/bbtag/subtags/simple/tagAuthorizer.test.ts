@@ -5,16 +5,17 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new TagAuthorizerSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['tagAuthorizer', 'ccAuthorizer', 'customCommandAuthorizer'],
     cases: [
         {
             code: '{tagauthorizer}',
             expected: '1234567',
-            setup(ctx) { ctx.options.authorId = '1234567'; }
+            setup(ctx) { ctx.input.authorizer = '1234567'; }
         },
         {
             code: '{ccauthorizer}',
             expected: 'abcdefg',
-            setup(ctx) { ctx.options.authorId = 'abcdefg'; }
+            setup(ctx) { ctx.input.authorizer = 'abcdefg'; }
         }
     ]
 });

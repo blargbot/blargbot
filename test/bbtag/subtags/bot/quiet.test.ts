@@ -7,40 +7,41 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new QuietSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['quiet'],
     cases: [
         {
             code: '{quiet}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.scopes.local.quiet, true);
+                assert.equal(ctx.local.quiet, true);
             }
         },
         {
             code: '{quiet;}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.scopes.local.quiet, true);
+                assert.equal(ctx.local.quiet, true);
             }
         },
         {
             code: '{quiet;true}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.scopes.local.quiet, true);
+                assert.equal(ctx.local.quiet, true);
             }
         },
         {
             code: '{quiet;false}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.scopes.local.quiet, false);
+                assert.equal(ctx.local.quiet, false);
             }
         },
         {
             code: '{quiet;abc}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.scopes.local.quiet, undefined);
+                assert.equal(ctx.local.quiet, undefined);
             }
         }
     ]

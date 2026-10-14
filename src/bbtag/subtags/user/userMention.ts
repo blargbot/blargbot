@@ -20,7 +20,7 @@ export class UserMentionSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'string',
-                    execute: (ctx) => this.userMention(ctx, ctx.user.id, false, 'false')
+                    execute: (ctx) => this.userMention(ctx, ctx.local.message.author.id, false, 'false')
                 },
                 {
                     parameters: ['user', 'quiet?', 'noPing?:false'],
@@ -40,7 +40,7 @@ export class UserMentionSubtag extends CompiledSubtag {
         quiet: boolean,
         noPingStr: string
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const noPing = parse.boolean(noPingStr);
         if (noPing === undefined)
             throw new NotABooleanError(noPing);
@@ -52,8 +52,8 @@ export class UserMentionSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        if (!noPing && !context.data.allowedMentions.users.includes(user.id))
-            context.data.allowedMentions.users.push(user.id);
+        if (!noPing)
+            context.root.allowedMentions.users.add(user.id);
         return user.mention;
     }
 }

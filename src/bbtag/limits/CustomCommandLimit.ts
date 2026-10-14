@@ -2,13 +2,14 @@ import type * as eris from 'eris';
 
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors/index.js';
 import { templates } from '../text.js';
+import { registerRuntimeLimit } from './BaseRuntimeLimit.js';
 import { GlobalLimit } from './GlobalLimit.js';
 import { staffOnlyRule, UseCountRule } from './rules/index.js';
 
+@registerRuntimeLimit('customCommandLimit')
 export class CustomCommandLimit extends GlobalLimit {
     public constructor(guild?: eris.Guild) {
-        super('customCommandLimit');
-
+        super();
         this.addRules('ban', staffOnlyRule)
             .addRules('unban', staffOnlyRule)
             .addRules('guildbans', staffOnlyRule)

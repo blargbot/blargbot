@@ -24,6 +24,6 @@ export class NsfwSubtag extends CompiledSubtag {
     }
 
     public setNsfw(context: BBTagContext, message: string): void {
-        context.data.nsfw = message;
+        context.root.output.nsfw = message;
     }
 }

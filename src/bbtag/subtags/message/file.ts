@@ -27,6 +27,6 @@ export class FileSubtag extends CompiledSubtag {
         const data = fileContent.startsWith('buffer:')
             ? Buffer.from(fileContent.substring(7), 'base64')
             : fileContent;
-        context.data.file = { file: data, name: fileName };
+        context.root.output.files = [{ file: data, name: fileName }];
     }
 }

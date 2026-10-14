@@ -34,7 +34,7 @@ export class ShiftSubtag extends CompiledSubtag {
 
         const result = array.shift();
         if (varName !== undefined)
-            await context.variables.set(varName, array);
+            await context.root.variables.set(varName, array);
 
         return result;
     }

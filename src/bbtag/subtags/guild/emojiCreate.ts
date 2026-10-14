@@ -17,7 +17,8 @@ interface EmojiCreateOptions {
 }
 
 export class EmojiCreateSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #fetch: typeof globalThis.fetch;
+    public constructor({ fetch }: { fetch: typeof globalThis.fetch; }) {
         super({
             name: 'emojiCreate',
             category: SubtagType.GUILD,
@@ -32,6 +33,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#fetch = fetch;
     }
 
     public async createEmoji(
@@ -54,7 +56,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
 
         const image: string = parse.url(options.image);
         if (guard.isUrl(image)) {
-            const res = await context.fetch(image);
+            const res = await this.#fetch(image);
             const contentType = res.headers.get('content-type');
             options.image = `data:${contentType ?? ''};base64,${asBuffer(await res.bytes()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
@@ -74,7 +76,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         }
 
         try {
-            const emoji = await context.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, context.auditReason());
+            const emoji = await context.local.message.channel.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, context.auditReason());
             return emoji.id;
         } catch (err: unknown) {
             if (!(err instanceof eris.DiscordRESTError))

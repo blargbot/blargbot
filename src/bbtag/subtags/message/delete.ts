@@ -22,7 +22,7 @@ export class DeleteSubtag extends CompiledSubtag {
                     exampleCode: tag.trigger.exampleCode,
                     exampleOut: tag.trigger.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx) => this.deleteMessage(ctx, ctx.channel.id, ctx.message.id)
+                    execute: (ctx) => this.deleteMessage(ctx, ctx.local.message.channel.id, ctx.local.message.id)
                 },
                 {
                     parameters: ['messageId'],
@@ -30,7 +30,7 @@ export class DeleteSubtag extends CompiledSubtag {
                     exampleCode: tag.inCurrent.exampleCode,
                     exampleOut: tag.inCurrent.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx, [messageId]) => this.deleteMessage(ctx, ctx.channel.id, messageId.value)
+                    execute: (ctx, [messageId]) => this.deleteMessage(ctx, ctx.local.message.channel.id, messageId.value)
                 },
                 {
                     parameters: ['channel', 'messageId'],

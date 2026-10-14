@@ -163,10 +163,10 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
     public async setTimeout(context: BBTagContext, content: string, timeout: moment.Duration): Promise<void> {
         await this.cluster.timeouts.insert('tag', {
             version: 4,
-            source: context.guild.id,
-            channel: context.channel.id,
+            source: context.local.message.channel.guild.id,
+            channel: context.local.message.channel.id,
             endtime: moment().add(timeout).valueOf(),
-            context: JSON.stringify(context.serialize()),
+            context: JSON.stringify(context.engine.serialize(context)),
             content: content
         });
     }

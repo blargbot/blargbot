@@ -1,4 +1,5 @@
 import type { ExecutionResult } from '@blargbot/bbtag';
+import { limits } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/core';
 import type { GuildTriggerTag } from '@blargbot/domain';
@@ -37,10 +38,6 @@ export class GreetingManager {
 
     async #execute(command: GuildTriggerTag, channel: eris.KnownGuildTextableChannel, member: eris.Member, name: string): Promise<ExecutionResult> {
         return await this.cluster.bbtag.execute(command.content, {
-            authorId: command.author ?? undefined,
-            inputRaw: '',
-            isCC: true,
-            limit: 'customCommandLimit',
             message: {
                 attachments: [],
                 author: member.user,
@@ -51,9 +48,17 @@ export class GreetingManager {
                 member: member,
                 createdAt: moment().valueOf()
             },
-            authorizerId: command.authorizer ?? undefined,
+            tagName: name,
+            input: '',
+            flagDefinitions: [],
+            silent: false,
+            isCC: true,
             tagVars: false,
-            rootTagName: name
+            limit: new limits.CustomCommandLimit(channel.guild),
+            author: command.author ?? undefined,
+            authorizer: command.authorizer ?? undefined,
+            cooldown: 0,
+            prefix: undefined
         });
     }
 

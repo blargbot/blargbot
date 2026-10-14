@@ -1,4 +1,5 @@
 import { guard } from '@blargbot/core';
+import type { ColorInstance } from 'color';
 import Color from 'color';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -10,6 +11,7 @@ import { bbtag, SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.color;
 
 export type ColorFormat = keyof typeof colorConverters;
+type Color = ColorInstance;
 
 export class ColorSubtag extends CompiledSubtag {
     public constructor() {

@@ -23,7 +23,7 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: message.author.id,
-            attachment: message.attachments.map(a => a.url)
+            attachments: message.attachments.map(a => a.url)
         }, ChatLogType.CREATE);
     }
 
@@ -49,7 +49,7 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: chatlog.userid,
-            attachment: 'attachments' in chatlog ? chatlog.attachments : chatlog.attachment
+            attachments: chatlog.attachments
         }, ChatLogType.DELETE);
     }
 
@@ -64,7 +64,7 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: message.author.id,
-            attachment: message.attachments.map(a => a.url)
+            attachments: message.attachments.map(a => a.url)
         }, ChatLogType.UPDATE);
     }
 

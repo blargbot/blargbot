@@ -5,16 +5,17 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new IsCustomCommandSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['isCustomCommand', 'isCC'],
     cases: [
         {
             code: '{iscc}',
             expected: 'true',
-            setup(ctx) { ctx.options.isCC = true; }
+            setup(ctx) { ctx.input.isCC = true; }
         },
         {
             code: '{iscc}',
             expected: 'false',
-            setup(ctx) { ctx.options.isCC = false; }
+            setup(ctx) { ctx.input.isCC = false; }
         }
     ]
 });

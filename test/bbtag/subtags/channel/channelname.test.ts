@@ -6,6 +6,7 @@ import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 await runSubtagTests({
     subtag: new ChannelNameSubtag(),
     argCountBounds: { min: 0, max: 2 },
+    names: ['channelName', 'categoryName'],
     cases: [
         ...createGetChannelPropTestCases({
             quiet: '',

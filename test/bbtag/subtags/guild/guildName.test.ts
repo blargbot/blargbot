@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new GuildNameSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['guildName'],
     cases: [
         {
             code: '{guildname}',

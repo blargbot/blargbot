@@ -86,7 +86,7 @@ export class AutoresponsesRoute extends BaseRoute<['/guilds/:guildId/autorespons
     }
 }
 
-const mapUpdate = z.compile(z.object({
+const mapUpdate = z.compile(z.strictObject({
     content: z.string()
 }));
 

@@ -21,7 +21,7 @@ export class LastMessageIdSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'id',
-                    execute: (ctx) => this.getLastMessageID(ctx, ctx.channel.id)
+                    execute: (ctx) => this.getLastMessageID(ctx, ctx.local.message.channel.id)
                 },
                 {
                     parameters: ['channel'],
@@ -40,8 +40,8 @@ export class LastMessageIdSubtag extends CompiledSubtag {
         channelStr: string
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr, {
-            noLookup: context.scopes.local.quiet,
-            noErrors: context.scopes.local.noLookupErrors
+            noLookup: context.local.quiet,
+            noErrors: context.local.noLookupErrors
         });
 
         if (channel === undefined)

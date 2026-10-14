@@ -1,4 +1,5 @@
 import type { SubtagCall } from './language/index.js';
+import { memoize } from './memoize.js';
 
 export class SubtagCallStack {
     readonly #callCounts: Record<string, number | undefined>;
@@ -11,18 +12,19 @@ export class SubtagCallStack {
         this.#callCounts = {};
     }
 
-    public push(subtagName: string, subtag: SubtagCall): void {
+    public push(subtagName: string, subtag: SubtagCall): Disposable {
         this.#nameStack.push(subtagName);
         this.#callStack.push(subtag);
         this.#callCounts[subtagName] = (this.#callCounts[subtagName] ?? 0) + 1;
-    }
-
-    public pop(): void {
-        const subtagName = this.#nameStack.pop();
-        if (subtagName === undefined)
-            throw new Error('Callstack is empty');
-        this.#callStack.pop();
-        (<number>this.#callCounts[subtagName])--;
+        return {
+            [Symbol.dispose]: memoize(() => {
+                const subtagName = this.#nameStack.pop();
+                if (subtagName === undefined)
+                    throw new Error('Callstack is empty');
+                this.#callStack.pop();
+                this.#callCounts[subtagName]!--;
+            })
+        };
     }
 
     public contains(subtagName: string): boolean {

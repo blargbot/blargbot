@@ -1,4 +1,4 @@
-import { bbtag } from '@blargbot/bbtag';
+import { bbtag, limits } from '@blargbot/bbtag';
 import type { ModerationType } from '@blargbot/cluster';
 import { guard } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core';
@@ -71,12 +71,17 @@ export class CensorManager extends ModerationManagerBase {
 
             const result = await this.cluster.bbtag.execute(tag.content, {
                 message: message,
-                rootTagName: 'censor',
-                limit: 'customCommandLimit',
-                inputRaw: message.content,
+                tagName: 'censor',
+                silent: false,
+                input: message.content,
+                flagDefinitions: [],
                 isCC: true,
-                authorId: tag.author ?? undefined,
-                authorizerId: tag.authorizer ?? undefined
+                tagVars: false,
+                limit: new limits.CustomCommandLimit(),
+                author: tag.author ?? undefined,
+                authorizer: tag.authorizer ?? undefined,
+                cooldown: 0,
+                prefix: undefined
             });
 
             if (debugCtx?.channelId === message.channel.id)

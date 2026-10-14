@@ -1,6 +1,5 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { ChannelCreateSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
 import { ChannelType, OverwriteType } from 'discord-api-types/v9';
 import * as eris from 'eris';
 
@@ -10,6 +9,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ChannelCreateSubtag(),
     argCountBounds: { min: 1, max: 3 },
+    names: ['channelCreate'],
     setup(ctx) {
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.administrator.toString();
     },
@@ -18,10 +18,10 @@ await runSubtagTests({
             code: '{channelcreate;My new channel}',
             expected: '28376128632132',
             setup(ctx) {
-                const channel = ctx.createMock(eris.TextChannel);
-                channel.setup(m => m.id).thenReturn('28376128632132');
+                const channel = ctx.createMock<eris.TextChannel>();
+                channel.setup(m => m.id).returns('28376128632132');
 
-                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $({
                     bitrate: undefined,
                     nsfw: undefined,
                     parentID: undefined,
@@ -30,7 +30,7 @@ await runSubtagTests({
                     userLimit: undefined,
                     permissionOverwrites: undefined,
                     reason: 'Command User#0000'
-                }), undefined)).thenResolve(channel.instance);
+                }), undefined)).resolves(channel.instance);
             }
         },
         ...[
@@ -45,10 +45,11 @@ await runSubtagTests({
                 code: `{channelcreate;My new channel;${type}}`,
                 expected: '28376128632132',
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<eris.Channel>(instance);
-                    channel.setup(m => m.id).thenReturn('28376128632132');
+                    const channel = ctx.createMock<eris.Channel>();
+                    channel.setup(Reflect.getPrototypeOf).returns(instance.prototype);
+                    channel.setup(m => m.id).returns('28376128632132');
 
-                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, argument.isDeepEqual({
+                    ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', code, $({
                         bitrate: undefined,
                         nsfw: undefined,
                         parentID: undefined,
@@ -57,7 +58,7 @@ await runSubtagTests({
                         userLimit: undefined,
                         permissionOverwrites: undefined,
                         reason: 'Command User#0000'
-                    }), undefined)).thenResolve(channel.instance);
+                    }), undefined)).resolves(channel.instance);
                 }
             },
             {
@@ -65,10 +66,11 @@ await runSubtagTests({
                 expected: '28376128632132',
                 subtags: [new EscapeBBTagSubtag()],
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<eris.Channel>(instance);
-                    channel.setup(m => m.id).thenReturn('28376128632132');
+                    const channel = ctx.createMock<eris.Channel>();
+                    channel.setup(Reflect.getPrototypeOf).returns(instance.prototype);
+                    channel.setup(m => m.id).returns('28376128632132');
 
-                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, argument.isDeepEqual({
+                    ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', code, $({
                         bitrate: undefined,
                         nsfw: undefined,
                         parentID: undefined,
@@ -77,7 +79,7 @@ await runSubtagTests({
                         userLimit: undefined,
                         permissionOverwrites: undefined,
                         reason: 'Command User#0000'
-                    }), undefined)).thenResolve(channel.instance);
+                    }), undefined)).resolves(channel.instance);
                 }
             },
             {
@@ -107,10 +109,11 @@ await runSubtagTests({
                 expected: '28376128632132',
                 subtags: [new EscapeBBTagSubtag()],
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<eris.Channel>(instance);
-                    channel.setup(m => m.id).thenReturn('28376128632132');
+                    const channel = ctx.createMock<eris.Channel>();
+                    channel.setup(Reflect.getPrototypeOf).returns(instance.prototype);
+                    channel.setup(m => m.id).returns('28376128632132');
 
-                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, argument.isDeepEqual({
+                    ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', code, $({
                         bitrate: 1234,
                         nsfw: true,
                         parentID: '23987233279389273',
@@ -132,7 +135,7 @@ await runSubtagTests({
                         topic: 'xyz123',
                         reason: 'abcdef',
                         userLimit: 32042430
-                    }), undefined)).thenResolve(channel.instance);
+                    }), undefined)).resolves(channel.instance);
                 }
             },
             {
@@ -162,10 +165,11 @@ await runSubtagTests({
                 expected: '28376128632132',
                 subtags: [new EscapeBBTagSubtag()],
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<eris.Channel>(instance);
-                    channel.setup(m => m.id).thenReturn('28376128632132');
+                    const channel = ctx.createMock<eris.Channel>();
+                    channel.setup(Reflect.getPrototypeOf).returns(instance.prototype);
+                    channel.setup(m => m.id).returns('28376128632132');
 
-                    ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', code, argument.isDeepEqual({
+                    ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', code, $({
                         bitrate: 1234,
                         nsfw: true,
                         parentID: '23987233279389273',
@@ -187,7 +191,7 @@ await runSubtagTests({
                         topic: 'xyz123',
                         reason: 'abcdef',
                         userLimit: 32042430
-                    }), undefined)).thenResolve(channel.instance);
+                    }), undefined)).resolves(channel.instance);
                 }
             }
         ]),
@@ -203,10 +207,10 @@ await runSubtagTests({
             expected: '28376128632132',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx: SubtagTestContext) {
-                const channel = ctx.createMock(eris.TextChannel);
-                channel.setup(m => m.id).thenReturn('28376128632132');
+                const channel = ctx.createMock<eris.TextChannel>();
+                channel.setup(m => m.id).returns('28376128632132');
 
-                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $({
                     bitrate: undefined,
                     nsfw: undefined,
                     parentID: undefined,
@@ -222,7 +226,7 @@ await runSubtagTests({
                     topic: undefined,
                     reason: 'Command User#0000',
                     userLimit: undefined
-                }), undefined)).thenResolve(channel.instance);
+                }), undefined)).resolves(channel.instance);
             }
         },
         {
@@ -265,10 +269,10 @@ await runSubtagTests({
             code: '{channelcreate;My new channel}',
             expected: '28376128632132',
             setup(ctx) {
-                const channel = ctx.createMock(eris.TextChannel);
-                channel.setup(m => m.id).thenReturn('28376128632132');
+                const channel = ctx.createMock<eris.TextChannel>();
+                channel.setup(m => m.id).returns('28376128632132');
 
-                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $({
                     bitrate: undefined,
                     nsfw: undefined,
                     parentID: undefined,
@@ -277,7 +281,7 @@ await runSubtagTests({
                     userLimit: undefined,
                     permissionOverwrites: undefined,
                     reason: 'Command User#0000'
-                }), undefined)).thenResolve(channel.instance);
+                }), undefined)).resolves(channel.instance);
             }
         },
         {
@@ -288,7 +292,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
-                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $({
                     bitrate: undefined,
                     nsfw: undefined,
                     parentID: undefined,
@@ -297,7 +301,7 @@ await runSubtagTests({
                     userLimit: undefined,
                     permissionOverwrites: undefined,
                     reason: 'Command User#0000'
-                }), undefined)).thenReject(err);
+                }), undefined)).rejects(err);
             }
         },
         {
@@ -308,7 +312,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                ctx.discord.setup(m => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $({
                     bitrate: undefined,
                     nsfw: undefined,
                     parentID: undefined,
@@ -317,7 +321,7 @@ await runSubtagTests({
                     userLimit: undefined,
                     permissionOverwrites: undefined,
                     reason: 'Command User#0000'
-                }), undefined)).thenReject(err);
+                }), undefined)).rejects(err);
             }
         }
     ]

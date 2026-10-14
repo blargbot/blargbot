@@ -8,6 +8,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new LogicSubtag(),
     argCountBounds: { min: 2, max: Infinity },
+    names: ['logic'],
     cases: [
         {
             code: '{logic;{eval}aaaa;{eval}}',

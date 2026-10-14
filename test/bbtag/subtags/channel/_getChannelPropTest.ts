@@ -39,7 +39,7 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
             { start: 0, end: options.generateCode('12345678998765432').length, error: notFound('12345678998765432') }
         ],
         postSetup(bbctx, ctx) {
-            ctx.util.setup(m => m.findChannels(bbctx.guild, '12345678998765432')).thenResolve([]);
+            ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12345678998765432')).resolves([]);
         }
     };
     if (options.quiet !== false) {
@@ -51,7 +51,7 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
                 { start: 0, end: options.generateCode('12345678998765432', 'q').length, error: notFound('12345678998765432').withDisplay(options.quiet) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '12345678998765432')).thenResolve([]);
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12345678998765432')).resolves([]);
             }
         };
     }
@@ -93,20 +93,20 @@ function createTestCase(data: GetChannelPropTestData, testCase: GetChannelPropTe
                 ctx.message.channel_id = channel.id;
         },
         postSetup(bbctx, ctx) {
-            const channel = bbctx.guild.channels.get(ctx.channels[channelKey].id);
+            const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels[channelKey].id);
             if (channel === undefined)
                 throw new Error('Cannot find the channel under test');
 
             const channelQuery = args[0];
             if (channelQuery !== undefined && channelQuery !== '')
-                ctx.util.setup(m => m.findChannels(bbctx.guild, channelQuery)).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, channelQuery)).resolves([channel]);
 
             testCase.postSetup?.(channel, bbctx, ctx);
         },
         assert(bbctx, result, ctx) {
             if (testCase.assert === undefined)
                 return;
-            const channel = bbctx.guild.channels.get(ctx.channels[channelKey].id);
+            const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels[channelKey].id);
             if (channel === undefined)
                 throw new Error('Cannot find the channel under test');
             testCase.assert(result, channel, bbctx, ctx);

@@ -122,12 +122,12 @@ export class TagsRoute extends BaseRoute<['/tags']> {
     }
 }
 
-const mapCreateTag = z.compile(z.object({
+const mapCreateTag = z.compile(z.strictObject({
     content: z.string(),
     name: z.string()
 }));
 
-const mapUpdateTag = z.compile(z.object({
+const mapUpdateTag = z.compile(z.strictObject({
     content: z.string().optional(),
     name: z.string().optional()
 }));

@@ -32,7 +32,7 @@ export class RoleMentionSubtag extends CompiledSubtag {
         quiet: boolean,
         noPingStr: string
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const noPing = parse.boolean(noPingStr);
         if (noPing === undefined)
             throw new NotABooleanError(noPing);
@@ -44,8 +44,8 @@ export class RoleMentionSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        if (!noPing && !context.data.allowedMentions.roles.includes(role.id))
-            context.data.allowedMentions.roles.push(role.id);
+        if (!noPing)
+            context.root.allowedMentions.roles.add(role.id);
         return role.mention;
     }
 }

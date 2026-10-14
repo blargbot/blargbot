@@ -6,6 +6,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RealPadSubtag(),
     argCountBounds: { min: 2, max: 4 },
+    names: ['realPad'],
     cases: [
         { code: '{realpad;;5}', expected: '     ' },
         { code: '{realpad;A;5}', expected: 'A    ' },

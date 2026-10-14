@@ -6,6 +6,7 @@ import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 await runSubtagTests({
     subtag: new MessageTextSubtag(),
     argCountBounds: { min: 0, max: 3 },
+    names: ['messageText', 'text'],
     cases: [
         ...createGetMessagePropTestCases({
             quiet: '',

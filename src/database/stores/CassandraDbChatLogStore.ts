@@ -92,7 +92,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
             msgtime: new Date(),
             type: type,
             embeds: JSON.stringify(message.embeds),
-            attachment: JSON.stringify(message.attachment)
+            attachment: JSON.stringify(message.attachments)
         };
         await this.#db.execute(
             `INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)\nVALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)\nUSING TTL ${lifespan}`,
@@ -119,7 +119,7 @@ export class CassandraDbChatLogStore implements ChatLogStore {
 
 const mapLongToString = z.instanceof(types.Long).transform(v => v.toString());
 
-const mapChatLog = z.object({
+const mapChatLog = z.strictObject({
     attachment: z.union([
         zodStringToJson.pipe(z.string().array()),
         z.string().transform(v => [v]),
@@ -135,7 +135,10 @@ const mapChatLog = z.object({
     msgtime: z.instanceof(Date),
     type: z.enum(ChatLogType),
     userid: mapLongToString
-});
+}).transform(({ attachment, ...rest }) => ({
+    attachments: attachment,
+    ...rest
+}));
 
 function stringifyType(type: ChatLogType): string {
     switch (type) {

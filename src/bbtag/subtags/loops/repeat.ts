@@ -33,16 +33,16 @@ export class RepeatSubtag extends CompiledSubtag {
         amountStr: string,
         code: SubtagArgument
     ): AsyncIterable<string> {
-        const amount = parse.int(amountStr) ?? parse.int(context.scopes.local.fallback ?? '');
+        const amount = parse.int(amountStr) ?? parse.int(context.local.fallback ?? '');
         if (amount === undefined)
             throw new NotANumberError(amountStr);
         if (amount < 0)
             throw new BBTagRuntimeError('Can\'t be negative');
 
         for (let i = 0; i < amount; i++) {
-            await context.limit.check(context, 'repeat:loops');
+            await context.root.limit.check(context, 'repeat:loops');
             yield await code.execute();
-            if (context.data.state !== BBTagRuntimeState.RUNNING)
+            if (context.state !== BBTagRuntimeState.RUNNING)
                 break;
         }
     }

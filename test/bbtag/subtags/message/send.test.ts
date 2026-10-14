@@ -1,15 +1,25 @@
 import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag';
+import type { CanPingEveryoneThunk } from '@blargbot/bbtag/subtags';
 import { EscapeBBTagSubtag, SendSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
+import { Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
+const canPingEveryone = new Mock<CanPingEveryoneThunk>({ callable: true });
+
 await runSubtagTests({
-    subtag: new SendSubtag(),
+    subtag: new SendSubtag({
+        canPingEveryone: canPingEveryone.instance
+    }),
     argCountBounds: { min: 2, max: 5 },
+    names: ['send'],
+    setup(ctx) {
+        ctx.addMock(canPingEveryone);
+        canPingEveryone.reset();
+    },
     cases: [
         {
             code: '{send;1923681361978632931;abc}',
@@ -18,7 +28,7 @@ await runSubtagTests({
                 { start: 0, end: 30, error: new ChannelNotFoundError('1923681361978632931') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([]);
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([]);
             }
         },
         {
@@ -28,33 +38,35 @@ await runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Test error') }
             ],
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.input.isCC = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: undefined,
                     file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: undefined,
+                        users: undefined
                     }
-                }))).thenReject(new BBTagRuntimeError('Test error'));
+                }))).rejects(new BBTagRuntimeError('Test error'));
             },
             assert(bbctx) {
-                assert.equal(bbctx.data.ownedMsgs.length, 0);
+                assert.equal(bbctx.root.ownedMessageIds.size, 0);
             }
         },
         {
@@ -64,33 +76,35 @@ await runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to send: Test error') }
             ],
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.input.isCC = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: undefined,
                     file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: undefined,
+                        users: undefined
                     }
-                }))).thenReject(ctx.createRESTError(0, 'Test error'));
+                }))).rejects(ctx.createRESTError(0, 'Test error'));
             },
             assert(bbctx) {
-                assert.equal(bbctx.data.ownedMsgs.length, 0);
+                assert.equal(bbctx.root.ownedMessageIds.size, 0);
             }
         },
         {
@@ -100,36 +114,38 @@ await runSubtagTests({
                 { start: 0, end: 30, error: new BBTagRuntimeError('Failed to send: UNKNOWN') }
             ],
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.input.isCC = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 const error = new Error('This error should have been caught, not thrown!');
 
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.logger.setup(m => m.error('Failed to send!', error)).thenReturn(undefined);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.logger.setup(m => m.error('Failed to send!', error)).returns(undefined);
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: undefined,
                     file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: undefined,
+                        users: undefined
                     }
-                }))).thenReject(error);
+                }))).rejects(error);
             },
             assert(bbctx) {
-                assert.equal(bbctx.data.ownedMsgs.length, 0);
+                assert.equal(bbctx.root.ownedMessageIds.size, 0);
             }
         },
         {
@@ -137,28 +153,28 @@ await runSubtagTests({
             code: '{send;1923681361978632931;abc}',
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
+                ctx.input.isCC = true;
+                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: undefined,
                     file: undefined,
@@ -168,10 +184,10 @@ await runSubtagTests({
                         roles: roleMentions,
                         users: userMentions
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -180,28 +196,28 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
+                ctx.input.isCC = true;
+                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     file: undefined,
@@ -211,10 +227,10 @@ await runSubtagTests({
                         roles: roleMentions,
                         users: userMentions
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -222,38 +238,40 @@ await runSubtagTests({
             code: '{send;1923681361978632931;abc}',
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.input.isCC = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: undefined,
                     file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: undefined,
+                        users: undefined
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -262,38 +280,40 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.input.isCC = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: undefined,
+                        users: undefined
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -302,28 +322,28 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
+                ctx.input.isCC = true;
+                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: undefined,
@@ -333,10 +353,10 @@ await runSubtagTests({
                         roles: roleMentions,
                         users: userMentions
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -345,38 +365,40 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.input.isCC = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: undefined,
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: undefined,
+                        users: undefined
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -385,28 +407,28 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
+                ctx.input.isCC = true;
+                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{ file: 'my file content', name: 'file.txt' }],
@@ -416,10 +438,10 @@ await runSubtagTests({
                         roles: roleMentions,
                         users: userMentions
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -428,38 +450,40 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.input.isCC = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{ file: 'my file content', name: 'file.txt' }],
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: undefined,
+                        users: undefined
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -468,36 +492,36 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
+                ctx.input.isCC = true;
+                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{
-                        file: argument.assert<Buffer>(value => {
-                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                        file: $.asserts(value => {
+                            const actual = Buffer.from(value).toString();
                             const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
                             assert.equal(actual, expected);
-                        }).value,
+                        }),
                         name: 'file.txt'
                     }],
                     nsfw: 'This is a nsfw message',
@@ -506,10 +530,10 @@ await runSubtagTests({
                         roles: roleMentions,
                         users: userMentions
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -518,45 +542,47 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.input.isCC = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{
-                        file: argument.assert<Buffer>(value => {
-                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                        file: $.asserts(value => {
+                            const actual = Buffer.from(value).toString();
                             const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
                             assert.equal(actual, expected);
-                        }).value,
+                        }),
                         name: 'file.txt'
                     }],
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: undefined,
+                        users: undefined
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -565,28 +591,28 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
+                ctx.input.isCC = true;
+                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{ file: 'my file content', name: 'test.zip' }],
@@ -596,10 +622,10 @@ await runSubtagTests({
                         roles: roleMentions,
                         users: userMentions
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -608,38 +634,40 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.input.isCC = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{ file: 'my file content', name: 'test.zip' }],
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: undefined,
+                        users: undefined
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -648,36 +676,36 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
+                ctx.input.isCC = true;
+                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{
-                        file: argument.assert<Buffer>(value => {
-                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                        file: $.asserts(value => {
+                            const actual = Buffer.from(value).toString();
                             const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
                             assert.equal(actual, expected);
-                        }).value,
+                        }),
                         name: 'test.zip'
                     }],
                     nsfw: 'This is a nsfw message',
@@ -686,10 +714,10 @@ await runSubtagTests({
                         roles: roleMentions,
                         users: userMentions
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -698,45 +726,47 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '239476239742340234',
             setup(ctx) {
-                ctx.options.isCC = false;
+                ctx.input.isCC = false;
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const message: eris.Message<eris.KnownGuildTextableChannel> = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '239476239742340234',
-                    channel_id: bbctx.channel.id
+                    channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.data.nsfw = 'This is a nsfw message';
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
+                bbctx.root.output.nsfw = 'This is a nsfw message';
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
-                ctx.util.setup(m => m.send(general as eris.KnownGuildTextableChannel, argument.isDeepEqual({
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup((m, $) => m.send(general as eris.KnownGuildTextableChannel, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     file: [{
-                        file: argument.assert<Buffer>(value => {
-                            const actual = Buffer.from(value as ArrayBufferLike).toString();
+                        file: $.asserts(value => {
+                            const actual = Buffer.from(value).toString();
                             const expected = Buffer.from([0x69, 0xb7, 0x1d, 0x79]).toString();
                             assert.equal(actual, expected);
-                        }).value,
+                        }),
                         name: 'test.zip'
                     }],
                     nsfw: 'This is a nsfw message',
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: undefined,
+                        users: undefined
                     }
-                }))).thenResolve(message);
+                }))).resolves(message);
             },
             assert(bbctx) {
-                assert(bbctx.data.ownedMsgs.includes('239476239742340234'));
+                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
             }
         }
     ]

@@ -285,7 +285,7 @@ function mapKeys<TKey extends string, TValue, TResult>(
     return Object.entries(source)
         .reduce<{ [P in TKey]?: TResult }>((r, [key, value]) => {
             if (value !== undefined)
-                r[key] = map(value, key);
+                r[key as TKey] = map(value, key as TKey);
             return r;
         }, {});
 }

@@ -1,18 +1,16 @@
-import type ReadWriteLock from 'rwlock';
-
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import { getLock } from '../../getLock.js';
-import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
+import type { getLock as $getLock } from '../../getLock.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.lock;
 
 export class LockSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getLock: typeof $getLock;
+    public constructor({ getLock }: { getLock: typeof $getLock; }) {
         super({
             name: 'lock',
             category: SubtagType.BOT,
@@ -27,6 +25,7 @@ export class LockSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getLock = getLock;
     }
 
     public async lock(
@@ -35,39 +34,34 @@ export class LockSubtag extends CompiledSubtag {
         key: string,
         code: SubtagArgument
     ): Promise<string> {
-        if (context.scopes.local.inLock)
+        if (context.local.inLock)
             throw new BBTagRuntimeError('Lock cannot be nested');
 
-        mode = mode.toLowerCase();
+        let m = mode.toLowerCase();
+        m = `${m.slice(0, 1).toUpperCase()}${m.slice(1)}`;
 
-        if (!isValidLockMode(mode)) {
+        if (!isValidLockMode(m)) {
             throw new BBTagRuntimeError('Mode must be \'read\' or \'write\'', mode);
         }
 
         if (key.length === 0)
             throw new BBTagRuntimeError('Key cannot be empty');
 
-        const provider = tagVariableScopeProviders.find((s) => key.startsWith(s.prefix));
+        const provider = context.root.variables.scopes.entries.find((s) => key.startsWith(s.prefix));
         if (provider === undefined)
             throw new Error('Missing default variable scope!');
 
-        const scope = provider.getScope(context);
-        const lock = getLock(scope, key.substring(provider.prefix.length));
-        const release = await lockAsync(lock, `${mode}Lock`);
+        const lock = this.#getLock(provider.scope, key.substring(provider.prefix.length));
+        await using _handle = await lock[`enter${m}`]();
         try {
-            context.scopes.local.inLock = true;
+            context.local.inLock = true;
             return await code.wait();
         } finally {
-            context.scopes.local.inLock = false;
-            release();
+            context.local.inLock = false;
         }
     }
 }
 
-function lockAsync(lock: ReadWriteLock, mode: 'readLock' | 'writeLock'): Promise<() => void> {
-    return new Promise(resolve => lock[mode](release => resolve(release)));
-}
-
-function isValidLockMode(mode: string): mode is 'read' | 'write' {
-    return ['read', 'write'].includes(mode);
+function isValidLockMode(mode: string): mode is 'Read' | 'Write' {
+    return ['Read', 'Write'].includes(mode);
 }

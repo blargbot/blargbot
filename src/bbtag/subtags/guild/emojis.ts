@@ -34,7 +34,7 @@ export class EmojisSubtag extends CompiledSubtag {
     }
 
     public getAllEmojis(context: BBTagContext): string[] {
-        return context.guild.emojis.map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
+        return context.local.message.channel.guild.emojis.map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
     }
 
     public async getEmojisForRole(context: BBTagContext, roleStr: string): Promise<string[]> {
@@ -45,7 +45,7 @@ export class EmojisSubtag extends CompiledSubtag {
 
         const roleId = role?.id ?? roleStr;
 
-        const emojis = context.guild.emojis.filter(e => (e.roles as string[] | undefined)?.includes(roleId) === true)
+        const emojis = context.local.message.channel.guild.emojis.filter(e => (e.roles as string[] | undefined)?.includes(roleId) === true)
             .map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
         return emojis;
     }

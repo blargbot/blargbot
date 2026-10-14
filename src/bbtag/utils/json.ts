@@ -15,7 +15,7 @@ export const json = Object.freeze({
         if (typeof obj === 'object' && obj !== null)
             return { variable: undefined, object: obj };
 
-        const variable = await context.variables.get(input);
+        const variable = await context.root.variables.get(input);
         if (typeof variable.value === 'object' && variable.value !== null)
             return { variable: input, object: variable.value };
 
@@ -77,7 +77,7 @@ export const json = Object.freeze({
                 return this.clean(input.v);
 
             for (const [key, value] of Object.entries(input))
-                input[key] = this.clean(value);
+                input[key] = this.clean(value!);
 
         }
         return input;

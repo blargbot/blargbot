@@ -9,12 +9,13 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RepeatSubtag(),
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 2, noEval: [0] } },
+    names: ['repeat', 'loop'],
     cases: [
         {
             code: '{repeat;abc;10}',
             expected: 'abcabcabcabcabcabcabcabcabcabc',
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(10).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).mustHappen(10).resolves(undefined);
             }
         },
         {
@@ -22,14 +23,14 @@ await runSubtagTests({
             expected: '1,2,3,4,5,6,7,8,',
             subtags: [new IncrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(8).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).mustHappen(8).resolves(undefined);
             },
             async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 8);
+                assert.equal((await bbctx.root.variables.get('index')).value, 8);
                 assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 8);
             }
         },
@@ -52,16 +53,16 @@ await runSubtagTests({
             expected: '1,2,3,4,5,6',
             subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag(), new IncrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(6).thenResolve(undefined);
+                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).mustHappen(6).resolves(undefined);
             },
             async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 6);
+                assert.equal((await bbctx.root.variables.get('index')).value, 6);
                 assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 6);
-                assert.equal(bbctx.data.state, BBTagRuntimeState.ABORT);
+                assert.equal(bbctx.state, BBTagRuntimeState.ABORT);
             }
         },
         {
@@ -72,19 +73,19 @@ await runSubtagTests({
             ],
             subtags: [new IncrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(5).thenCall(() => {
+                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).mustHappen(5).invokesAsync(() => {
                     if (i++ >= 4)
                         throw new BBTagRuntimeError('Too many loops');
                     return undefined;
                 });
             },
             async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.variables.get('index')).value, 4);
+                assert.equal((await bbctx.root.variables.get('index')).value, 4);
                 assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }), 4);
             }
         }

@@ -135,12 +135,12 @@ export class CCommandsRoute extends BaseRoute<['/guilds/:guildId/ccommands']> {
     }
 }
 
-const mapCreateCommand = z.compile(z.object({
+const mapCreateCommand = z.compile(z.strictObject({
     content: z.string(),
     name: z.string()
 }));
 
-const mapUpdateCommand = z.compile(z.object({
+const mapUpdateCommand = z.compile(z.strictObject({
     content: z.string().optional(),
     name: z.string().optional()
 }));

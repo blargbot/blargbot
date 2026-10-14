@@ -6,6 +6,7 @@ import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ChannelCategoriesSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['channelCategories', 'categories'],
     cases: [
         {
             code: '{channelcategories}',

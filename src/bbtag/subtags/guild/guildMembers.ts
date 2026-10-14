@@ -24,7 +24,7 @@ export class GuildMembersSubtag extends CompiledSubtag {
     }
 
     public async getMembers(context: BBTagContext): Promise<string[]> {
-        await context.util.ensureMemberCache(context.channel.guild);
-        return context.guild.members.map(m => m.user.id);
+        await context.util.ensureMemberCache(context.local.message.channel.guild);
+        return context.local.message.channel.guild.members.map(m => m.user.id);
     }
 }

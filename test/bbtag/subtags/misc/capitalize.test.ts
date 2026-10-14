@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new CapitalizeSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['capitalize'],
     cases: [
         {
             code: '{capitalize;this is a test}',

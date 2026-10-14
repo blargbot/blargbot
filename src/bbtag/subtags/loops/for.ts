@@ -52,21 +52,21 @@ export class ForSubtag extends CompiledSubtag {
 
         try {
             for (let i = initial; bbtag.operate(operator as OrdinalOperator, i.toString(), limit.toString()); i += increment) {
-                await context.limit.check(context, 'for:loops');
-                await context.variables.set(varName, i);
+                await context.root.limit.check(context, 'for:loops');
+                await context.root.variables.set(varName, i);
                 yield await code.execute();
 
-                const varEntry = await context.variables.get(varName);
+                const varEntry = await context.root.variables.get(varName);
                 i = parse.float(parse.string(varEntry.value)) ?? NaN;
 
                 if (isNaN(i))
                     throw new NotANumberError(varEntry.value);
 
-                if (context.data.state !== BBTagRuntimeState.RUNNING)
+                if (context.state !== BBTagRuntimeState.RUNNING)
                     break;
             }
         } finally {
-            context.variables.reset([varName]);
+            context.root.variables.reset([varName]);
         }
     }
 }

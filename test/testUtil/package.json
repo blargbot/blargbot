@@ -3,10 +3,12 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
     "dependencies": {
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",
-        "@blargbot/formatting": "workspace:^",
-        "ts-mockito": "^2.6.1"
+        "@blargbot/formatting": "workspace:^"
     }
 }

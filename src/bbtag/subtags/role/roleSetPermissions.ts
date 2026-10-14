@@ -46,8 +46,8 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
-        const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
-        const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.scopes.local.noLookupErrors });
+        const quiet = typeof context.local.quiet === 'boolean' ? context.local.quiet : quietStr !== '';
+        const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.local.noLookupErrors });
         const perms = parse.bigInt(permsStr) ?? 0n;
 
         const mappedPerms = perms & context.permission.allow;

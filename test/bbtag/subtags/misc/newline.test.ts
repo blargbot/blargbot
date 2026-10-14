@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new NewlineSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['newline', 'n'],
     cases: [
         { code: '{newline}', expected: '\n' },
         { code: '{newline;}', expected: '\n' },
@@ -15,7 +16,7 @@ await runSubtagTests({
         {
             code: '{newline;a}',
             expected: '\n\n\n',
-            setup(ctx) { ctx.rootScope.fallback = '3'; }
+            postSetup(ctx) { ctx.root.fallback = '3'; }
         },
         {
             code: '{newline;a}',

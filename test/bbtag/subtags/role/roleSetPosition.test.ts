@@ -8,6 +8,7 @@ import { createGetRolePropTestCases } from './_getRolePropTest.js';
 await runSubtagTests({
     subtag: new RoleSetPositionSubtag(),
     argCountBounds: { min: 2, max: 3 },
+    names: ['roleSetPosition', 'roleSetPos'],
     setup(ctx) {
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
         ctx.members.authorizer.roles.push(ctx.roles.top.id);
@@ -21,7 +22,7 @@ await runSubtagTests({
                 {
                     expected: 'true',
                     setup(role, ctx) {
-                        ctx.discord.setup(m => m.editRolePosition(ctx.guild.id, role.id, 0)).thenResolve(undefined);
+                        ctx.discord.setup(m => m.editRolePosition(ctx.guild.id, role.id, 0)).resolves(undefined);
                     }
                 }
             ]
@@ -34,7 +35,7 @@ await runSubtagTests({
                 {
                     expected: 'true',
                     setup(role, ctx) {
-                        ctx.discord.setup(m => m.editRolePosition(ctx.guild.id, role.id, 2)).thenResolve(undefined);
+                        ctx.discord.setup(m => m.editRolePosition(ctx.guild.id, role.id, 2)).resolves(undefined);
                     }
                 }
             ]
@@ -59,12 +60,12 @@ await runSubtagTests({
                 ctx.roles.bot.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('3298746326924');
+                const role = bbctx.local.message.channel.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '3298746326924'))
+                    .resolves([role]);
             }
         },
         {
@@ -77,12 +78,12 @@ await runSubtagTests({
                 ctx.roles.top.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('3298746326924');
+                const role = bbctx.local.message.channel.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '3298746326924'))
+                    .resolves([role]);
             }
         },
         {
@@ -95,12 +96,12 @@ await runSubtagTests({
                 ctx.roles.bot.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('3298746326924');
+                const role = bbctx.local.message.channel.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '3298746326924'))
+                    .resolves([role]);
             }
         },
         {
@@ -114,14 +115,14 @@ await runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
-                const role = bbctx.guild.roles.get('3298746326924');
+                const role = bbctx.local.message.channel.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '3298746326924'))
+                    .resolves([role]);
                 ctx.discord.setup(m => m.editRolePosition(ctx.guild.id, role.id, 2))
-                    .thenReject(err);
+                    .rejects(err);
             }
         },
         {
@@ -135,14 +136,14 @@ await runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                const role = bbctx.guild.roles.get('3298746326924');
+                const role = bbctx.local.message.channel.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '3298746326924'))
+                    .resolves([role]);
                 ctx.discord.setup(m => m.editRolePosition(ctx.guild.id, role.id, 2))
-                    .thenReject(err);
+                    .rejects(err);
             }
         }
     ]

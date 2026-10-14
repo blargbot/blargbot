@@ -19,7 +19,7 @@ export class ChannelNameSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'string',
-                    execute: (ctx) => this.getChannelName(ctx, ctx.channel.id, true)
+                    execute: (ctx) => this.getChannelName(ctx, ctx.local.message.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -38,7 +38,7 @@ export class ChannelNameSubtag extends CompiledSubtag {
         channelStr: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)

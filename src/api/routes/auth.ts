@@ -63,6 +63,6 @@ export class AuthRoute extends BaseRoute<['/auth']> {
     }
 }
 
-const mapValidateBody = z.compile(z.object({
+const mapValidateBody = z.compile(z.strictObject({
     code: z.string()
 }));

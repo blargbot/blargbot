@@ -73,7 +73,7 @@ export class DanbooruCommand extends GlobalCommand {
     }
 }
 
-const danbooruMapping = z.object({
+const danbooruMapping = z.strictObject({
     has_children: z.boolean().optional(),
     file_url: z.string().optional(),
     tag_string_artist: z.string().optional(),

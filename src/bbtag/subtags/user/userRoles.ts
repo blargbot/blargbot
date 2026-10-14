@@ -39,7 +39,7 @@ export class UserRolesSubtag extends CompiledSubtag {
         userId: string,
         quiet: boolean
     ): Promise<Iterable<string>> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const member = await context.queryMember(userId, { noLookup: quiet });
 
         if (member === undefined) {

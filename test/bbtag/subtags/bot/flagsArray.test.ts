@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new FlagsArraySubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['flagsArray'],
     cases: [
         {
             code: '{flagsarray}',
@@ -14,8 +15,7 @@ await runSubtagTests({
             code: '{flagsarray}',
             expected: '["_","a","b","c","e","E"]',
             setup(ctx) {
-                ctx.options.inputRaw = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
-                ctx.options.flags = [
+                ctx.input.flagDefinitions = [
                     {
                         description: '',
                         flag: 'e',
@@ -27,6 +27,7 @@ await runSubtagTests({
                         word: 'else'
                     }
                 ];
+                ctx.input.input = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
             }
         }
     ]

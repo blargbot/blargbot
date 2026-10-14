@@ -13,7 +13,7 @@ export class TagCooldownManager {
         const key = this.#getKey(context);
         const value = this.#cooldowns[key];
         if (value !== undefined)
-            return value.clone().add(context.cooldown);
+            return value.clone().add(context.local.cooldown);
         return this.#cooldowns[key] = moment();
     }
 
@@ -22,6 +22,6 @@ export class TagCooldownManager {
     }
 
     #getKey(context: BBTagContext): string {
-        return `${context.guild.id}:${context.isCC}:${context.user.id}:${context.tagName}`;
+        return `${context.local.message.channel.guild.id}:${context.root.isCC}:${context.local.message.author.id}:${context.local.tagName}`;
     }
 }

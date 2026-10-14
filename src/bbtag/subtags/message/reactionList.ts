@@ -19,7 +19,7 @@ export class ReactionListSubtag extends CompiledSubtag {
                 {
                     parameters: [],
                     returns: 'error',
-                    execute: (ctx) => { throw new MessageNotFoundError(ctx.channel.id, ''); }
+                    execute: (ctx) => { throw new MessageNotFoundError(ctx.local.message.channel.id, ''); }
                 },
                 {
                     parameters: ['messageid'],
@@ -87,7 +87,7 @@ export class ReactionListSubtag extends CompiledSubtag {
     }
 
     #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
-        let channel = context.channel.id;
+        let channel = context.local.message.channel.id;
 
         if (args.length >= 2 && snowflake.test(args[1]))
             channel = args.splice(0, 1)[0];
@@ -101,9 +101,9 @@ export class ReactionListSubtag extends CompiledSubtag {
     }
 
     public async getReactions(context: BBTagContext, messageId: string): Promise<string[]> {
-        const msg = await context.getMessage(context.channel, messageId, true);
+        const msg = await context.getMessage(context.local.message.channel, messageId, true);
         if (msg === undefined)
-            throw new MessageNotFoundError(context.channel.id, messageId);
+            throw new MessageNotFoundError(context.local.message.channel.id, messageId);
         return Object.keys(msg.reactions);
     }
 }

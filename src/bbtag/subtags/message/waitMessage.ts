@@ -3,7 +3,7 @@ import { clamp, guard, parse } from '@blargbot/core';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
-import type { Statement } from '../../language/index.js';
+import type { BBTagExpression } from '../../language/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
@@ -42,14 +42,14 @@ export class WaitMessageSubtag extends CompiledSubtag {
         context: BBTagContext,
         channelStr: string,
         userStr: string,
-        condition: Statement,
+        condition: BBTagExpression,
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string]> {
         const channels = await this.bulkLookup(channelStr, i => context.queryChannel(i, { noLookup: true }), ChannelNotFoundError)
-            ?? [context.channel];
+            ?? [context.local.message.channel];
 
         const users = await this.bulkLookup(userStr, i => context.queryUser(i, { noLookup: true }), UserNotFoundError)
-            ?? [context.user];
+            ?? [context.local.message.author];
 
         const timeout = clamp(parse.float(timeoutStr) ?? NaN, 0, 300);
         if (isNaN(timeout))
@@ -63,7 +63,9 @@ export class WaitMessageSubtag extends CompiledSubtag {
             if (!userSet.has(message.author.id) || !guard.isGuildMessage(message))
                 return false;
 
-            const resultStr = await context.withChild({ message }, async context => await context.eval(condition));
+            using scope = context.usingScope();
+            scope.message = message;
+            const resultStr = await context.eval(condition);
             const result = parse.boolean(resultStr.trim());
             if (result === undefined)
                 throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);

@@ -9,6 +9,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new JsonSetSubtag(),
     argCountBounds: { min: 2, max: 4 },
+    names: ['jsonSet', 'jSet'],
     cases: [
         {
             code: '{jsonset;{j;{"test": 123, "other": 456}};test}',
@@ -24,28 +25,28 @@ await runSubtagTests({
             code: '{jsonset;null;myProp;123}',
             expected: '',
             async assert(bbctx) {
-                assert.deepEqual((await bbctx.variables.get('null')).value, { myProp: '123' });
+                assert.deepEqual((await bbctx.root.variables.get('null')).value, { myProp: '123' });
             }
         },
         {
             code: '{jsonset;"abc";myProp;123}',
             expected: '',
             async assert(bbctx) {
-                assert.deepEqual((await bbctx.variables.get('"abc"')).value, { myProp: '123' });
+                assert.deepEqual((await bbctx.root.variables.get('"abc"')).value, { myProp: '123' });
             }
         },
         {
             code: '{jsonset;true;myProp;123}',
             expected: '',
             async assert(bbctx) {
-                assert.deepEqual((await bbctx.variables.get('true')).value, { myProp: '123' });
+                assert.deepEqual((await bbctx.root.variables.get('true')).value, { myProp: '123' });
             }
         },
         {
             code: '{jsonset;123;myProp;123}',
             expected: '',
             async assert(bbctx) {
-                assert.deepEqual((await bbctx.variables.get('123')).value, { myProp: '123' });
+                assert.deepEqual((await bbctx.root.variables.get('123')).value, { myProp: '123' });
             }
         },
         {
@@ -77,11 +78,11 @@ await runSubtagTests({
             expected: '',
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'jsonVar' }, { test: 123, other: JSON.stringify({ myProp: 123 }) });
             },
             async assert(bbctx) {
-                assert.deepEqual((await bbctx.variables.get('jsonVar')).value, { test: 123, other: { myProp: '10' } });
+                assert.deepEqual((await bbctx.root.variables.get('jsonVar')).value, { test: 123, other: { myProp: '10' } });
             }
         }
     ]

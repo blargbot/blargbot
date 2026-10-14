@@ -1,19 +1,19 @@
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
 import { BanSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
-import * as eris from 'eris';
+import type { ArgumentMatchers } from '@blargbot/test-util';
+import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-function isDuration(ms: number): moment.Duration {
-    return argument.is(moment.isDuration).and(x =>
-        x.asMilliseconds() === ms).value;
+function isDuration<T>($: ArgumentMatchers<T>, ms: number): moment.Duration {
+    return $.satisfies(v => moment.isDuration(v) && v.asMilliseconds() === ms);
 }
 
 await runSubtagTests({
     subtag: new BanSubtag(),
     argCountBounds: { min: 1, max: 5 },
+    names: ['ban'],
     cases: [
         {
             code: '{ban;abc}',
@@ -23,49 +23,49 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.getUser('abc'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'abc'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'abc'))
+                    .mustHappen(1)
+                    .resolves([]);
             }
         },
         {
             code: '{ban;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
             code: '{ban;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('alreadyBanned');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('alreadyBanned');
             }
         },
         {
@@ -75,19 +75,19 @@ await runSubtagTests({
                 { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('memberTooHigh');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('memberTooHigh');
             }
         },
         {
@@ -97,19 +97,19 @@ await runSubtagTests({
                 { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('moderatorNoPerms');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('moderatorNoPerms');
             }
         },
         {
@@ -119,19 +119,19 @@ await runSubtagTests({
                 { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('moderatorTooLow');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('moderatorTooLow');
             }
         },
         {
@@ -141,57 +141,57 @@ await runSubtagTests({
                 { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('noPerms');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('noPerms');
             }
         },
         {
             code: '{ban;other user;5}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 5, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 5, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
             code: '{ban;other user;-1}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, -1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, -1, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
@@ -201,15 +201,15 @@ await runSubtagTests({
                 { start: 0, end: 20, error: new NotANumberError('abc').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
             }
         },
@@ -217,164 +217,164 @@ await runSubtagTests({
             code: '{ban;other user;;My custom reason}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'My custom reason', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'My custom reason', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
             code: '{ban;other user;7;My custom reason}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 7, 'My custom reason', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 7, 'My custom reason', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
             code: '{ban;other user;;;5 days}',
             expected: '432000000',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(432000000)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, 432000000)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
             code: '{ban;other user;7;My custom reason;2 hours}',
             expected: '7200000',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 7, 'My custom reason', isDuration(7200000)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 7, 'My custom reason', isDuration($, 7200000)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
             code: '{ban;other user;;;;x}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
+                const authorizer = bbctx.local.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, authorizer, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, authorizer, 1, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
             code: '{ban;other user;;;;false}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
+                const authorizer = bbctx.local.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, authorizer, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, authorizer, 1, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
             code: '{ban;other user;;;;true}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
+                const authorizer = bbctx.local.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, authorizer, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, authorizer, 1, 'Tag Ban', isDuration($, Infinity)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
             code: '{ban;other user;4;My custom reason;2 hours 30s;abc}',
             expected: '7230000',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                member.setup(m => m.user).returns(user.instance);
+                const authorizer = bbctx.local.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                    .mustHappen(1)
+                    .resolves(undefined);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, authorizer, 4, 'My custom reason', isDuration(7230000)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, authorizer, 4, 'My custom reason', isDuration($, 7230000)))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         }
     ]

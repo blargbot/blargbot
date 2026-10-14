@@ -4,12 +4,12 @@ import z from 'zod';
 import { asBuffer, asUint8Array, bufferToJson, cleanType, jsonToBuffer, takeBytes } from '../util.js';
 import { AmqpMessage } from './AmqpMessage.js';
 
-const output = z.object({
+const output = z.strictObject({
     fileName: z.string(),
     data: z.instanceof(Uint8Array<ArrayBufferLike>)
 }).or(z.null());
 
-const metaSchema = z.compile(z.object({
+const metaSchema = z.compile(z.strictObject({
     fileName: z.string(),
     dataLength: z.number()
 }));

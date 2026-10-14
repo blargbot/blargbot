@@ -1,3 +1,5 @@
+import * as s from './subtags/index.js';
+
 export * from './utils/index.js';
 export * from './language/index.js';
 export * from './BBTagContext.js';
@@ -9,14 +11,13 @@ export * from './RegexSubtag.js';
 export * from './Caching.js';
 export * from './BBTagEngine.js';
 export * from './limits/index.js';
-export * from './ScopeManager.js';
 export * from './SubtagCallStack.js';
 export * from './TagCooldownManager.js';
-export * from './tagVariableScopeProviders.js';
+export * from './tagVariableScopeProvider.js';
 export * from './types.js';
 export * from './getLock.js';
 export * from './compilation/index.js';
 export * from './text.js';
 export * from './errors/index.js';
 export * from './limits/index.js';
-export * as subtags from './subtags/index.js';
+export const subtags = { ...s };

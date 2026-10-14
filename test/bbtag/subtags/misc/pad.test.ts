@@ -9,6 +9,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new PadSubtag(),
     argCountBounds: { min: 3, max: 3 },
+    names: ['pad'],
     cases: [
         { code: '{pad;left;;}', expected: '' },
         { code: '{pad;right;;}', expected: '' },

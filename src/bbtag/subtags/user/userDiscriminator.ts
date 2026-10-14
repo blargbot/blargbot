@@ -39,7 +39,7 @@ export class UserDiscriminatorSubtag extends CompiledSubtag {
         userId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user === undefined) {

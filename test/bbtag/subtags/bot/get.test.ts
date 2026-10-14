@@ -8,8 +8,9 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new GetSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['get'],
     cases: [
-        ...generateTestCases(false, 'testTag', [
+        ...generateTestCases(true, 'testTag', [
             { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_TAG value', expected: 'LOCAL_TAG value' },
             { args: ['~myVariableName'], key: undefined, value: undefined, expected: '' },
             { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'GLOBAL value', expected: 'GLOBAL value' },
@@ -23,7 +24,7 @@ await runSubtagTests({
             { args: ['*myVariableName', '2'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' },
             { args: ['*myVariableName', 'abc'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'This isnt an array', expected: 'This isnt an array' }
         ]),
-        ...generateTestCases(true, 'testTag', [
+        ...generateTestCases(false, 'testTag', [
             { args: ['myVariableName'], key: { scope: { type: TagVariableType.LOCAL_CC, guildId: '23904768237436873424', name: 'testTag' }, name: 'myVariableName' }, value: 'LOCAL_CC value', expected: 'LOCAL_CC value' },
             { args: ['~myVariableName'], key: undefined, value: undefined, expected: '' },
             { args: ['*myVariableName'], key: { scope: { type: TagVariableType.GLOBAL }, name: 'myVariableName' }, value: 'GLOBAL value', expected: 'GLOBAL value' },
@@ -43,7 +44,7 @@ await runSubtagTests({
                 { start: 0, end: 25, error: new NotANumberError('abc') }
             ],
             async postSetup(ctx) {
-                await ctx.variables.set('*myVariableName', [1, 2, 3]);
+                await ctx.root.variables.set('*myVariableName', [1, 2, 3]);
             }
         },
         {
@@ -53,7 +54,7 @@ await runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Index out of range') }
             ],
             async postSetup(ctx) {
-                await ctx.variables.set('*myVariableName', [1, 2, 3]);
+                await ctx.root.variables.set('*myVariableName', [1, 2, 3]);
             }
         },
         {
@@ -63,15 +64,15 @@ await runSubtagTests({
                 { start: 0, end: 24, error: new BBTagRuntimeError('Index out of range') }
             ],
             async postSetup(ctx) {
-                await ctx.variables.set('*myVariableName', [1, 2, 3]);
+                await ctx.root.variables.set('*myVariableName', [1, 2, 3]);
             }
         }
     ]
 });
 
-function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args: string[]; key: Parameters<SubtagTestContext['tagVariables']['get']>[0] | undefined; value: JToken | undefined; expected: string; }>): Generator<SubtagTestCase> {
+function* generateTestCases(tagVars: boolean, tagName: string, cases: Array<{ args: string[]; key: Parameters<SubtagTestContext['tagVariables']['get']>[0] | undefined; value: JToken | undefined; expected: string; }>): Generator<SubtagTestCase> {
     for (const { args, key, value, expected } of cases) {
-        const title = isCC ? 'Custom command' : 'Tag';
+        const title = tagVars ? 'Tag' : 'Custom command';
         const code = `{${['get', ...args].join(';')}}`;
         yield {
             title: `From DB and ${title}`,
@@ -81,8 +82,8 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 ctx.guild.id = '23904768237436873424';
                 ctx.roles.everyone.id = ctx.guild.id;
                 ctx.users.command.id = '823764823946284623234';
-                ctx.options.isCC = isCC;
-                ctx.options.tagName = tagName;
+                ctx.input.tagVars = tagVars;
+                ctx.input.tagName = tagName;
                 if (key !== undefined) {
                     if (value === undefined)
                         ctx.tagVariables.delete(key);
@@ -99,11 +100,11 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 ctx.guild.id = '23904768237436873424';
                 ctx.roles.everyone.id = ctx.guild.id;
                 ctx.users.command.id = '823764823946284623234';
-                ctx.options.isCC = isCC;
-                ctx.options.tagName = tagName;
+                ctx.input.tagVars = tagVars;
+                ctx.input.tagName = tagName;
             },
             async postSetup(bbctx) {
-                await bbctx.variables.set(args[0], value);
+                await bbctx.root.variables.set(args[0], value);
             }
         };
         yield {
@@ -114,8 +115,8 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 ctx.guild.id = '23904768237436873424';
                 ctx.roles.everyone.id = ctx.guild.id;
                 ctx.users.command.id = '823764823946284623234';
-                ctx.options.isCC = isCC;
-                ctx.options.tagName = tagName;
+                ctx.input.tagVars = tagVars;
+                ctx.input.tagName = tagName;
                 if (key !== undefined) {
                     if (value === undefined)
                         ctx.tagVariables.delete(key);
@@ -124,7 +125,7 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 }
             },
             async postSetup(bbctx) {
-                await bbctx.variables.set(args[0], 'FAIL');
+                await bbctx.root.variables.set(args[0], 'FAIL');
             }
         };
     }

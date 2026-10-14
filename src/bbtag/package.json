@@ -16,10 +16,10 @@
         "@blargbot/logger": "workspace:^",
         "@blargbot/util": "workspace:^",
         "brainfuck-node": "^1.0.2",
-        "color": "^4.2.3",
+        "color": "^5.0.3",
         "eris": "^0.17.1",
         "html-entities": "^2.3.3",
-        "moment-timezone": "^0.5.39",
+        "moment-timezone": "^0.6.4",
         "rwlock": "^5.0.0",
         "zod": "^4.6.5"
     },
@@ -29,7 +29,6 @@
         "@types/color": "^3.0.3",
         "@types/eris": "workspace:^",
         "@types/rwlock": "^5.0.3",
-        "discord-api-types": "^0.37.20",
-        "ts-mockito": "^2.6.1"
+        "discord-api-types": "^0.37.20"
     }
 }

@@ -85,6 +85,6 @@ export class RolemesRoute extends BaseRoute<['/guilds/:guildId/rolemes']> {
 
 const mapId = z.compile(z.string().regex(/^\d+$/).transform(Number));
 
-const mapTag = z.compile(z.object({
+const mapTag = z.compile(z.strictObject({
     content: z.string()
 }));

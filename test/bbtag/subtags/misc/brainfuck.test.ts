@@ -6,6 +6,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new BrainfuckSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['brainfuck'],
     cases: [
         {
             code: '{brainfuck;-[------->+<]>-.-[->+++++<]>++.+++++++..+++.[--->+<]>-----.---[->+++<]>.-[--->+<]>---.+++.------.--------.-[--->+<]>.}',

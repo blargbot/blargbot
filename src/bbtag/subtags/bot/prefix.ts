@@ -5,8 +5,14 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.prefix;
 
+export interface GetPrefixThunk {
+    (guildId: string): Promise<string | readonly string[] | undefined>;
+}
+
 export class PrefixSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getPrefix: GetPrefixThunk;
+    readonly #defaultPrefix: string;
+    public constructor({ getPrefix, defaultPrefix }: { getPrefix: GetPrefixThunk; defaultPrefix: string; }) {
         super({
             name: 'prefix',
             category: SubtagType.BOT,
@@ -21,17 +27,17 @@ export class PrefixSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getPrefix = getPrefix;
+        this.#defaultPrefix = defaultPrefix;
     }
 
     public async getPrefix(context: BBTagContext): Promise<string> {
-        if (context.prefix !== undefined)
-            return context.prefix;
+        if (context.root.prefix !== undefined)
+            return context.root.prefix;
 
-        const prefix = await context.database.guilds.getSetting(context.guild.id, 'prefix');
-        switch (typeof prefix) {
-            case 'string': return prefix;
-            case 'undefined': return context.util.defaultPrefix;
-            default: return prefix[0];
-        }
+        const result = await this.#getPrefix(context.local.message.channel.guild.id) ?? this.#defaultPrefix;
+        if (Array.isArray(result))
+            return result[0];
+        return result;
     }
 }

@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new SwitchSubtag(),
     argCountBounds: { min: 3, max: Infinity },
+    names: ['switch'],
     cases: [
         { code: '{switch;abc;abc;aaaa;def;{fail};ghi;{fail}}', expected: 'aaaa' },
         { code: '{switch;def;abc;{fail};def;bbbb;ghi;{fail}}', expected: 'bbbb' },

@@ -6,6 +6,7 @@ import { createGetRolePropTestCases } from './_getRolePropTest.js';
 await runSubtagTests({
     subtag: new RolePositionSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['rolePosition', 'rolePos'],
     cases: [
         ...createGetRolePropTestCases({
             quiet: '',

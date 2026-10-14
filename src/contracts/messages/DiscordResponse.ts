@@ -3,7 +3,7 @@ import z from 'zod';
 import { amqpJsonCodec } from '../util.js';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const DiscordResponse = amqpJsonCodec(z.object({
+export const DiscordResponse = amqpJsonCodec(z.strictObject({
     status: z.int(),
     statusText: z.string().optional(),
     body: z.unknown()

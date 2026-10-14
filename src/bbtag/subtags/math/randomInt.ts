@@ -33,7 +33,7 @@ export class RandomIntSubtag extends CompiledSubtag {
         minStr: string,
         maxStr: string
     ): number {
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
+        const fallback = new Lazy(() => parse.int(context.local.fallback ?? ''));
         const min = parse.int(minStr) ?? fallback.value;
         if (min === undefined)
             throw new NotANumberError(minStr);

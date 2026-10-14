@@ -58,6 +58,6 @@ export class GreetingRoute extends BaseRoute<['/guilds/:guildId/greeting']> {
     }
 }
 
-const mapTag = z.compile(z.object({
+const mapTag = z.compile(z.strictObject({
     content: z.string()
 }));

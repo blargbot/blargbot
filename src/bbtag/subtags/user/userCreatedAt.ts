@@ -35,7 +35,7 @@ export class UserCreatedAtSubtag extends CompiledSubtag {
     }
 
     public async getUserCreatedAt(context: BBTagContext, format: string, userStr: string, quiet: boolean): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const user = await context.queryUser(userStr, { noLookup: quiet });
 
         if (user === undefined) {

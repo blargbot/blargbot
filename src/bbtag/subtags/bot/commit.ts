@@ -41,6 +41,6 @@ export class CommitSubtag extends CompiledSubtag {
         const values = args.length === 0
             ? undefined
             : bbtag.tagArray.flattenArray(args).map(value => parse.string(value));
-        await context.variables.persist(values);
+        await context.root.variables.persist(values);
     }
 }

@@ -8,6 +8,7 @@ globalThis.fetch = () => {
 };
 
 const coverage = process.argv.includes('--coverage');
+const noDot = process.argv.includes('--spec');
 const results = run({
     files: [`${import.meta.dirname}/test/index.test.js`],
     coverage,
@@ -19,7 +20,7 @@ const results = run({
     functionCoverage: 90
 });
 
-results.compose(coverage ? spec : dot).pipe(stdout);
+results.compose(coverage || noDot ? spec : dot).pipe(stdout);
 if (coverage) {
     const reportDir = `${import.meta.dirname}/test-results`;
     if (!fs.existsSync(reportDir))

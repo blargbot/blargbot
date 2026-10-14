@@ -1,4 +1,4 @@
-import { bbtag } from '@blargbot/bbtag';
+import { bbtag, limits } from '@blargbot/bbtag';
 import type { Cluster, ClusterUtilities, CommandContext, CommandResult, GuildCommandContext } from '@blargbot/cluster';
 import { CommandType, discord, GuildCommand, parse } from '@blargbot/cluster';
 import type { SendContent } from '@blargbot/core';
@@ -189,14 +189,16 @@ export class TagCommand extends GuildCommand {
 
         const result = await context.bbtag.execute(match.content, {
             message: context.message,
-            inputRaw: input ?? '',
+            tagName: match.name,
+            input: input ?? '',
+            flagDefinitions: match.flags ?? [],
+            cooldown: match.cooldown ?? 0,
+            silent: false,
             isCC: false,
-            limit: 'tagLimit',
-            rootTagName: match.name,
-            authorId: match.author,
-            authorizerId: match.author,
-            flags: match.flags,
-            cooldown: match.cooldown,
+            tagVars: true,
+            limit: new limits.TagLimit(context.message.channel.guild),
+            author: match.author,
+            authorizer: match.author,
             prefix: context.prefix
         });
 
@@ -215,12 +217,17 @@ export class TagCommand extends GuildCommand {
     ): Promise<CommandResult> {
         const result = await context.bbtag.execute(content, {
             message: context.message,
-            inputRaw: input,
+            tagName: 'test',
+            input: input,
+            flagDefinitions: [],
+            silent: false,
             isCC: false,
-            limit: 'tagLimit',
-            rootTagName: 'test',
-            authorId: context.author.id,
-            prefix: context.prefix
+            tagVars: true,
+            limit: new limits.TagLimit(context.message.channel.guild),
+            author: context.author.id,
+            authorizer: undefined,
+            prefix: context.prefix,
+            cooldown: 0
         });
 
         if (!debug)

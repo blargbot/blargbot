@@ -23,7 +23,7 @@ export class UserBoostDateSubtag extends CompiledSubtag {
                     exampleOut: tag.target.exampleOut,
                     returns: 'string',
 
-                    execute: (ctx, [format]) => this.getUserBoostDate(ctx.member!, format.value)
+                    execute: (ctx, [format]) => this.getUserBoostDate(ctx.local.message.member, format.value)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],
@@ -38,7 +38,7 @@ export class UserBoostDateSubtag extends CompiledSubtag {
     }
 
     public async findUserBoostDate(context: BBTagContext, format: string, userStr: string, quiet: boolean): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const member = await context.queryMember(userStr, { noLookup: quiet });
 
         if (member === undefined) {

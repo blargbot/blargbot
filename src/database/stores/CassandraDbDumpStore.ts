@@ -41,7 +41,7 @@ export class CassandraDbDumpStore implements DumpStore {
 }
 
 const mapLongToSnowflake = z.instanceof(types.Long).transform(v => v.toString()).refine(snowflake.test);
-const mapDump = z.object({
+const mapDump = z.strictObject({
     id: mapLongToSnowflake,
     channelid: mapLongToSnowflake,
     content: z.string().nullish().transform(v => v ?? undefined),

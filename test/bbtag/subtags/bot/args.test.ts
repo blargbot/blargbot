@@ -6,8 +6,9 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ArgsSubtag(),
     argCountBounds: { min: 0, max: 2 },
+    names: ['args'],
     setup(ctx) {
-        ctx.options.inputRaw = 'arg1 arg2 "arg3 arg3" arg4 "arg5"';
+        ctx.input.input = 'arg1 arg2 "arg3 arg3" arg4 "arg5"';
     },
     cases: [
         {
@@ -18,14 +19,14 @@ await runSubtagTests({
             code: '{args}',
             expected: '',
             setup(ctx) {
-                ctx.options.inputRaw = '';
+                ctx.input.input = '';
             }
         },
         {
             code: '{args}',
             expected: '{json;{\n "key": "value"\n}}',
             setup(ctx) {
-                ctx.options.inputRaw = '{json;{\n  "key": "value"\n}}';
+                ctx.input.input = '{json;{\n  "key": "value"\n}}';
             }
         },
         {

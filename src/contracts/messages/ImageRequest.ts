@@ -6,30 +6,30 @@ import { amqpJsonCodec } from '../util.js';
 export const ImageRequest = amqpJsonCodec(z.discriminatedUnion(
     'type',
     [
-        z.object({
+        z.strictObject({
             type: z.literal(['truth', 'clyde', 'clippy', 'delete', 'pccheck', 'sonicsays', 'thesearch']),
             text: z.string()
         }),
-        z.object({
+        z.strictObject({
             type: z.literal(['starVsTheForcesOf', 'distort', 'art', 'clint', 'linus']),
             imageUrl: z.url()
         }),
-        z.object({
+        z.strictObject({
             type: z.literal('stupid'),
             imageUrl: z.url().optional(),
             text: z.string()
         }),
-        z.object({
+        z.strictObject({
             type: z.literal('pixelate'),
             imageUrl: z.url(),
             scale: z.number()
         }),
-        z.object({
+        z.strictObject({
             type: z.literal('free'),
             top: z.string(),
             bottom: z.string().optional()
         }),
-        z.object({
+        z.strictObject({
             type: z.literal('caption'),
             imageUrl: z.url(),
             top: z.string().optional(),
@@ -50,22 +50,22 @@ export const ImageRequest = amqpJsonCodec(z.discriminatedUnion(
                 'whitney.ttf'
             ])
         }),
-        z.object({
+        z.strictObject({
             type: z.literal('cah'),
             white: z.string().array(),
             black: z.string()
         }),
-        z.object({
+        z.strictObject({
             type: z.literal('emoji'),
             name: z.string(),
             size: z.number(),
             svg: z.boolean()
         }),
-        z.object({
+        z.strictObject({
             type: z.literal('color'),
             color: z.string().array().readonly()
         }),
-        z.object({
+        z.strictObject({
             type: z.literal('shit'),
             text: z.string(),
             plural: z.boolean()

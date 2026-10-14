@@ -24,7 +24,7 @@ export class ReasonSubtag extends CompiledSubtag {
     }
 
     public setReason(context: BBTagContext, reason: string): void {
-        context.scopes.local.reason = reason;
+        context.local.reason = reason;
 
     }
 }

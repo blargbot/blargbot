@@ -6,6 +6,7 @@ import { createGetUserPropTestCases } from './_getUserPropTest.js';
 await runSubtagTests({
     subtag: new UserAvatarSubtag(),
     argCountBounds: { min: 0, max: 2 },
+    names: ['userAvatar'],
     cases: [
         ...createGetUserPropTestCases({
             quiet: '',

@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new JsonSubtag(),
     argCountBounds: { min: 0, max: { count: 1, noEval: [0] } },
+    names: ['json', 'j'],
     cases: [
         {
             code: '{json;{"a": 5, "b": "test", "c": false, "d": null, "e": [1,"2",true,null, {}], "f":{"g":{"h":"abc"}}}}',

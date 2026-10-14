@@ -19,15 +19,15 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
                 {
                     parameters: [],
                     returns: 'string',
-                    execute: (ctx) => this.getMessageEditTime(ctx, ctx.channel.id, ctx.message.id, 'x')
+                    execute: (ctx) => this.getMessageEditTime(ctx, ctx.local.message.channel.id, ctx.local.message.id, 'x')
                 },
                 {
                     parameters: ['format|messageid'],
                     returns: 'string',
                     execute: (context, [formatOrMessageId]) => {
                         if (snowflake.test(formatOrMessageId.value))
-                            return this.getMessageEditTime(context, context.channel.id, formatOrMessageId.value, 'x');
-                        return this.getMessageEditTime(context, context.channel.id, context.message.id, formatOrMessageId.value);
+                            return this.getMessageEditTime(context, context.local.message.channel.id, formatOrMessageId.value, 'x');
+                        return this.getMessageEditTime(context, context.local.message.channel.id, context.local.message.id, formatOrMessageId.value);
                     }
                 },
                 {
@@ -36,7 +36,7 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
                     execute: async (context, [channelOrMessageId, messageIdOrFormat]) => {
                         if (snowflake.test(messageIdOrFormat.value))
                             return await this.getMessageEditTime(context, channelOrMessageId.value, messageIdOrFormat.value, 'x');
-                        return await this.getMessageEditTime(context, context.channel.id, channelOrMessageId.value, messageIdOrFormat.value);
+                        return await this.getMessageEditTime(context, context.local.message.channel.id, channelOrMessageId.value, messageIdOrFormat.value);
                     }
                 },
                 {

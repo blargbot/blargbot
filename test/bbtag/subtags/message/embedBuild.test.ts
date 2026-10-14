@@ -19,6 +19,7 @@ const testData = {
 await runSubtagTests({
     subtag: new EmbedBuildSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['embedBuild', 'buildEmbed'],
     cases: [
         {
             code: '{buildembed;title}',

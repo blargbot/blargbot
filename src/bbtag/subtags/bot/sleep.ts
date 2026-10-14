@@ -1,7 +1,7 @@
 import { parse } from '@blargbot/core';
+import type { sleep as $sleep } from '@blargbot/util';
 import moment from 'moment-timezone';
 
-import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
@@ -12,7 +12,8 @@ const tag = templates.subtags.sleep;
 const maxSleep = moment.duration(5, 'minutes');
 
 export class SleepSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #sleep: typeof $sleep;
+    public constructor({ sleep }: { sleep: typeof $sleep; }) {
         super({
             name: 'sleep',
             category: SubtagType.BOT,
@@ -23,13 +24,14 @@ export class SleepSubtag extends CompiledSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx, [duration]) => this.sleep(ctx, duration.value)
+                    execute: (_, [duration]) => this.sleep(duration.value)
                 }
             ]
         });
+        this.#sleep = sleep;
     }
 
-    public async sleep(context: BBTagContext, duration: string): Promise<void> {
+    public async sleep(duration: string): Promise<void> {
         let delay = parse.duration(duration);
         if (delay === undefined)
             throw new BBTagRuntimeError('Invalid duration');
@@ -37,6 +39,6 @@ export class SleepSubtag extends CompiledSubtag {
         if (delay.asMilliseconds() > maxSleep.asMilliseconds())
             delay = maxSleep;
 
-        await context.sleep(delay.asMilliseconds());
+        await this.#sleep(delay.asMilliseconds());
     }
 }

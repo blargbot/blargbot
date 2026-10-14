@@ -239,5 +239,8 @@ export default defineConfig([
             "@typescript-eslint/explicit-function-return-type": ["error", {
                 allowExpressions: true,
             }],
+            "@typescript-eslint/no-empty-object-type": ["error", {
+                allowInterfaces: 'with-single-extends'
+            }]
         },
     }]);

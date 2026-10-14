@@ -1,11 +1,16 @@
 import { guard, Timer } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
 
-import type { BBTagContext } from './BBTagContext.js';
-import type { TagVariableScopeProvider } from './tagVariableScopeProviders.js';
+import type { TagVariableScopeEntry, TagVariableScopeProvider } from './tagVariableScopeProvider.js';
 
 export interface VariableReference {
     readonly key: string;
     get value(): undefined | JToken;
+}
+
+export interface VariableCacheHooks {
+    readonly commitStarted?: () => Disposable;
+    readonly chunkCommitted?: (size: number) => void;
 }
 
 interface ValueSource {
@@ -23,8 +28,9 @@ export class VariableCache {
     }
 
     public constructor(
-        public readonly context: BBTagContext,
-        public readonly scopeProviders: readonly TagVariableScopeProvider[]
+        public readonly scopes: TagVariableScopeProvider,
+        public readonly hooks: VariableCacheHooks,
+        public readonly logger: Logger
     ) {
         this.#cache = {};
     }
@@ -44,17 +50,16 @@ export class VariableCache {
         if (!forced && entry !== undefined)
             return entry;
 
-        const provider = this.scopeProviders.find(s => variable.startsWith(s.prefix));
-        if (provider === undefined)
+        const scope = this.scopes.find(variable);
+        if (scope === undefined)
             throw new Error('Missing default variable scope!');
 
-        const varName = variable.substring(provider.prefix.length);
-        const scope = provider.getScope(this.context);
+        const varName = variable.substring(scope.prefix.length);
         try {
-            const value = scope !== undefined ? await this.context.database.tagVariables.get(varName, scope) : undefined;
-            return this.#cache[variable] = new CacheEntry(this.context, provider, varName, value);
+            const value = await scope.get(varName);
+            return this.#cache[variable] = new CacheEntry(scope, varName, value, this.logger);
         } catch (err: unknown) {
-            this.context.logger.error(err, this.context.isCC, this.context.rootTagName);
+            this.logger.error(err, { tagName: this.scopes.tagName, tagVariables: this.scopes.isTag });
             throw err;
         }
     }
@@ -81,11 +86,8 @@ export class VariableCache {
     }
 
     public async persist(variables?: string[]): Promise<void> {
-        const execRunning = this.context.execTimer.running;
-        if (execRunning)
-            this.context.execTimer.end();
-        this.context.dbTimer.resume();
-        const pools = new Map<TagVariableScopeProvider, Record<string, JToken | undefined>>();
+        using _ = this.hooks.commitStarted?.();
+        const pools = new Map<TagVariableScopeEntry, Record<string, JToken | undefined>>();
         for (const entry of this.#getCached(variables)) {
             if (!entry.changed)
                 continue;
@@ -98,20 +100,15 @@ export class VariableCache {
             entry.persist();
         }
 
-        for (const [provider, pool] of pools) {
+        for (const [scope, pool] of pools) {
             const timer = new Timer().start();
             const objectCount = Object.keys(pool).length;
-            this.context.logger.bbtag('Committing', objectCount, 'objects to the', provider.prefix, 'pool.');
-            const scope = provider.getScope(this.context);
-            if (scope !== undefined)
-                await this.context.database.tagVariables.upsert(pool, scope);
+            this.logger.bbtag('Committing', objectCount, 'objects to the', scope.prefix, 'pool.');
+            await scope.upsert(pool);
             timer.end();
-            this.context.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', provider.prefix, 'pool in', timer.elapsed, 'ms.');
-            this.context.dbObjectsCommitted += objectCount;
+            this.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', scope.prefix, 'pool in', timer.elapsed, 'ms.');
+            this.hooks.chunkCommitted?.(objectCount);
         }
-        this.context.dbTimer.end();
-        if (execRunning)
-            this.context.execTimer.resume();
     }
 }
 
@@ -123,10 +120,10 @@ class CacheEntry {
     public get changed(): boolean { return !this.#initialValue.isEqual(this.value); }
 
     public constructor(
-        public readonly context: BBTagContext,
-        public readonly scope: TagVariableScopeProvider,
+        public readonly scope: TagVariableScopeEntry,
         public readonly key: string,
-        value: JToken | undefined
+        value: JToken | undefined,
+        public readonly logger: Logger
     ) {
         this.#initialValue = CacheEntry.#captureValue(value);
         this.value = this.#initialValue.get();

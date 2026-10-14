@@ -8,8 +8,7 @@
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/test-util": "workspace:^",
-        "eris": "^0.17.1",
-        "ts-mockito": "^2.6.1"
+        "eris": "^0.17.1"
     },
     "devDependencies": {
         "@types/eris": "workspace:^"

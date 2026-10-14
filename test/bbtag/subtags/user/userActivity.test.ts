@@ -8,6 +8,7 @@ import { createGetUserPropTestCases } from './_getUserPropTest.js';
 await runSubtagTests({
     subtag: new UserActivitySubtag(),
     argCountBounds: { min: 0, max: 2 },
+    names: ['userActivity', 'userGame'],
     cases: [
         ...createGetUserPropTestCases({
             quiet: '',

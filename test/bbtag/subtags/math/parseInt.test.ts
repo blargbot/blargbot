@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ParseIntSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['parseInt'],
     cases: [
         { code: '{parseint;123}', expected: '123' },
         { code: '{parseint;123.456}', expected: '123' },

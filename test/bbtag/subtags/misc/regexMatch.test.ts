@@ -6,6 +6,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RegexMatchSubtag(),
     argCountBounds: { min: 2, max: { count: 2, noEval: [1] } },
+    names: ['regexMatch', 'match'],
     cases: [
         { code: '{regexmatch;a1b2c3;/[a-z]\\d/g}', expected: '["a1","b2","c3"]' },
         { code: '{regexmatch;ffff;/[a-z]\\d/g}', expected: '[]' },

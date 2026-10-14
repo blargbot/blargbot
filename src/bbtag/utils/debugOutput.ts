@@ -8,8 +8,8 @@ import { stringify } from './stringify.js';
 
 export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; file: eris.FileContent[]; } {
     const performance: Record<string, unknown> = {};
-    for (const [key, times] of Object.entries(result.duration.subtag)) {
-        if (times !== undefined && times.length > 0) {
+    for (const [key, times] of result.duration.subtag) {
+        if (times.length > 0) {
             const totalTime = times.reduce((l, r) => l + r);
             performance[key] = {
                 count: times.length,

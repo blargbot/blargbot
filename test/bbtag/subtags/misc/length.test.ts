@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new LengthSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['length'],
     cases: [
         { code: '{length;}', expected: '0' },
         { code: '{length;abc}', expected: '3' },

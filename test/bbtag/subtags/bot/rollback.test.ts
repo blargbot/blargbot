@@ -9,8 +9,9 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RollbackSubtag(),
     argCountBounds: { min: 0, max: Infinity },
+    names: ['rollback'],
     setup(ctx) {
-        ctx.options.tagName = 'testTag';
+        ctx.input.tagName = 'testTag';
         ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 22);
         ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var2' }, 'def');
         ctx.tagVariables.set({ scope: { type: TagVariableType.GLOBAL }, name: 'var5' }, 22);
@@ -21,16 +22,16 @@ await runSubtagTests({
         ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'var10' }, 'def');
     },
     async postSetup(bbctx) {
-        await bbctx.variables.set('var1', 5);
-        await bbctx.variables.set('var2', 'abc');
-        await bbctx.variables.set('~var3', 5);
-        await bbctx.variables.set('~var4', 'abc');
-        await bbctx.variables.set('*var5', 5);
-        await bbctx.variables.set('*var6', 'abc');
-        await bbctx.variables.set('@var7', 5);
-        await bbctx.variables.set('@var8', 'abc');
-        await bbctx.variables.set('_var9', 5);
-        await bbctx.variables.set('_var10', 'abc');
+        await bbctx.root.variables.set('var1', 5);
+        await bbctx.root.variables.set('var2', 'abc');
+        await bbctx.root.variables.set('~var3', 5);
+        await bbctx.root.variables.set('~var4', 'abc');
+        await bbctx.root.variables.set('*var5', 5);
+        await bbctx.root.variables.set('*var6', 'abc');
+        await bbctx.root.variables.set('@var7', 5);
+        await bbctx.root.variables.set('@var8', 'abc');
+        await bbctx.root.variables.set('_var9', 5);
+        await bbctx.root.variables.set('_var10', 'abc');
     },
     cases: [
         {
@@ -73,6 +74,6 @@ await runSubtagTests({
 });
 
 async function assertCacheState(bbctx: BBTagContext, expected: Record<string, JToken | undefined>): Promise<void> {
-    const values = await Promise.all(Object.keys(expected).map(async k => [k, (await bbctx.variables.get(k)).value] as const));
+    const values = await Promise.all(Object.keys(expected).map(async k => [k, (await bbctx.root.variables.get(k)).value] as const));
     assert.deepEqual(Object.fromEntries(values), expected);
 }

@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new HtmlEncodeSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['htmlEncode'],
     cases: [
         {
             code: '{htmlencode;<p>Hello & welcome! Im your host, Blargbot!</p>}',

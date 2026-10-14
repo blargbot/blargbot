@@ -7,6 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new TimeSubtag(),
     argCountBounds: { min: 0, max: 5 },
+    names: ['time'],
     cases: [
         { code: '{time}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
         { code: '{time;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },

@@ -4,11 +4,11 @@ import z from 'zod';
 import { amqpJsonCodec } from '../util.js';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const SetPresenceRequest = amqpJsonCodec(z.object({
+export const SetPresenceRequest = amqpJsonCodec(z.strictObject({
     afk: z.boolean(),
     since: z.number().nullable(),
     status: z.enum(Object.keys(PresenceStatus)).exclude(['offline']),
-    activities: z.object({
+    activities: z.strictObject({
         name: z.string(),
         type: z.enum(ActivityTypes),
         url: z.string().nullable().optional(),

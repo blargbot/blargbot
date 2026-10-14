@@ -42,9 +42,9 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
         },
         postSetup(bbctx, ctx) {
-            ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432'), false).thenResolve(undefined);
-            ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432', false), false).thenResolve(undefined);
-            ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432', true), false).thenResolve(undefined);
+            ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432')).resolves(undefined, { isFallback: true });
+            ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432', false)).resolves(undefined, { isFallback: true });
+            ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432', true)).resolves(undefined, { isFallback: true });
         }
     };
     yield {
@@ -55,7 +55,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             { start: 0, end: options.generateCode('98765434567889121', '12345678998765432').length, error: new ChannelNotFoundError('98765434567889121') }
         ],
         postSetup(bbctx, ctx) {
-            ctx.util.setup(m => m.findChannels(bbctx.guild, '98765434567889121')).thenResolve([]);
+            ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '98765434567889121')).resolves([]);
         }
     };
     if (options.quiet !== false) {
@@ -70,9 +70,9 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
                 ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
             },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432'), false).thenResolve(undefined);
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432', false), false).thenResolve(undefined);
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432', true), false).thenResolve(undefined);
+                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432')).resolves(undefined, { isFallback: true });
+                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432', false)).resolves(undefined, { isFallback: true });
+                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432', true)).resolves(undefined, { isFallback: true });
             }
         };
         yield {
@@ -83,7 +83,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
                 { start: 0, end: options.generateCode('98765434567889121', '12345678998765432', 'q').length, error: new ChannelNotFoundError('98765434567889121').withDisplay(options.quiet) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '98765434567889121')).thenResolve([]);
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '98765434567889121')).resolves([]);
             }
         };
     }
@@ -129,7 +129,7 @@ function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTe
             apiMessageMap.set(ctx, message);
         },
         postSetup(bbctx, ctx) {
-            const channel = bbctx.guild.channels.get(ctx.channels[channelKey].id);
+            const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels[channelKey].id);
             if (channel === undefined)
                 throw new Error('Cannot find the channel under test');
             const apiMessage = apiMessageMap.get(ctx);
@@ -138,14 +138,14 @@ function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTe
 
             const channelQuery = args[0];
             if (channelQuery !== undefined && channelQuery !== '')
-                ctx.util.setup(m => m.findChannels(bbctx.guild, channelQuery)).thenResolve([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, channelQuery)).resolves([channel]);
 
-            const message = apiMessage === ctx.message ? bbctx.message as eris.Message<eris.GuildTextableChannel> : ctx.createMessage(apiMessage);
+            const message = apiMessage === ctx.message ? bbctx.root.message as eris.Message<eris.GuildTextableChannel> : ctx.createMessage(apiMessage);
             const messageQuery = args[1];
             if (messageQuery !== undefined && messageQuery !== '') {
-                ctx.util.setup(m => m.getMessage(channel, messageQuery), false).thenResolve(message);
-                ctx.util.setup(m => m.getMessage(channel, messageQuery, false), false).thenResolve(message);
-                ctx.util.setup(m => m.getMessage(channel, messageQuery, true), false).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(channel, messageQuery)).resolves(message, { isFallback: true });
+                ctx.util.setup(m => m.getMessage(channel, messageQuery, false)).resolves(message, { isFallback: true });
+                ctx.util.setup(m => m.getMessage(channel, messageQuery, true)).resolves(message, { isFallback: true });
             }
 
             messageMap.set(ctx, message);
@@ -154,7 +154,7 @@ function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTe
         assert(bbctx, result, ctx) {
             if (testCase.assert === undefined)
                 return;
-            const channel = bbctx.guild.channels.get(ctx.channels[channelKey].id);
+            const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels[channelKey].id);
             if (channel === undefined)
                 throw new Error('Cannot find the channel under test');
             const message = messageMap.get(ctx);

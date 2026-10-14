@@ -38,6 +38,6 @@ export class RollbackSubtag extends CompiledSubtag {
         const keys = args.length === 0
             ? undefined
             : bbtag.tagArray.flattenArray(args).map(v => parse.string(v));
-        context.variables.reset(keys);
+        context.root.variables.reset(keys);
     }
 }

@@ -1,5 +1,5 @@
 import type { Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType } from '@blargbot/bbtag';
-import { bbtag, limits, tagTypeDetails, tagVariableScopeProviders } from '@blargbot/bbtag';
+import { bbtag, createTagVariableScopeProvider, limits, tagTypeDetails } from '@blargbot/bbtag';
 import type { SendContent } from '@blargbot/core';
 import { guard } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
@@ -10,6 +10,8 @@ import type { Documentation, DocumentationPage, DocumentationPaged } from './Doc
 import { DocumentationTreeManager } from './DocumentationTreeManager.js';
 
 const doc = templates.documentation.bbtag;
+
+const tagVariableScopeProviders = createTagVariableScopeProvider().entries;
 
 export class BBTagDocumentationManager extends DocumentationTreeManager {
     readonly #cluster: Cluster;
@@ -253,15 +255,19 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                         name: doc.subtag.pages.signature.exampleOut.name,
                         value: doc.subtag.pages.signature.exampleOut.value({ text: signature.exampleOut })
                     },
-                    ...Object.values(limits)
-                        .flatMap(l => {
-                            const limit = new l();
-                            const rules = limit.rulesFor(subtag.name);
-                            return rules.length === 0 ? [] : [{
-                                name: doc.subtag.pages.signature.limit.name[limit.id],
-                                value: doc.subtag.pages.signature.limit.value({ rules })
-                            }];
-                        })
+                    ...([
+                        ['customCommandLimit', limits.CustomCommandLimit],
+                        ['everythingAutoResponseLimit', limits.EverythingAutoResponseLimit],
+                        ['generalAutoResponseLimit', limits.GeneralAutoResponseLimit],
+                        ['tagLimit', limits.TagLimit]
+                    ] as const).flatMap(([name, type]) => {
+                        const limit = new type();
+                        const rules = limit.rulesFor(subtag.name);
+                        return rules.length === 0 ? [] : [{
+                            name: doc.subtag.pages.signature.limit.name[name],
+                            value: doc.subtag.pages.signature.limit.value({ rules })
+                        }];
+                    })
                 ]
             }
         };

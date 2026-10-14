@@ -10,6 +10,7 @@ function hashMissing(algorithm: string): boolean {
 await runSubtagTests({
     subtag: new HashSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['hash'],
     cases: [
         { code: '{hash;brown}', expected: '94011702' },
         { code: '{hash;}', expected: '0' },

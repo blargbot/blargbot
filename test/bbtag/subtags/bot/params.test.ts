@@ -6,8 +6,9 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ParamsSubtag(),
     argCountBounds: { min: 0, max: 2 },
-    setup(ctx) {
-        ctx.rootScope.paramsarray = ['arg1', 'arg2', 'arg3 arg3', 'arg4', 'arg5'];
+    names: ['params'],
+    postSetup(ctx) {
+        ctx.root.paramsarray = ['arg1', 'arg2', 'arg3 arg3', 'arg4', 'arg5'];
     },
     cases: [
         {
@@ -17,8 +18,8 @@ await runSubtagTests({
         {
             code: '{params}',
             expected: '',
-            setup(ctx) {
-                ctx.rootScope.paramsarray = [];
+            postSetup(ctx) {
+                ctx.root.paramsarray = [];
             }
         },
         {
@@ -130,8 +131,8 @@ await runSubtagTests({
             errors: [
                 { start: 0, end: 8, error: new BBTagRuntimeError('{params} can only be used inside {function}') }
             ],
-            setup(ctx) {
-                ctx.rootScope.paramsarray = undefined;
+            postSetup(ctx) {
+                ctx.root.paramsarray = undefined;
             }
         },
         {
@@ -140,8 +141,8 @@ await runSubtagTests({
             errors: [
                 { start: 0, end: 10, error: new BBTagRuntimeError('{params} can only be used inside {function}') }
             ],
-            setup(ctx) {
-                ctx.rootScope.paramsarray = undefined;
+            postSetup(ctx) {
+                ctx.root.paramsarray = undefined;
             }
         },
         {
@@ -150,8 +151,8 @@ await runSubtagTests({
             errors: [
                 { start: 0, end: 12, error: new BBTagRuntimeError('{params} can only be used inside {function}') }
             ],
-            setup(ctx) {
-                ctx.rootScope.paramsarray = undefined;
+            postSetup(ctx) {
+                ctx.root.paramsarray = undefined;
             }
         }
     ]

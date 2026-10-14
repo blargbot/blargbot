@@ -4,7 +4,7 @@ import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export const disabledRule: RuntimeLimitRule = Object.seal({
     check(context, subtagName) {
-        throw new SubtagDisabledError(subtagName, context.limit.id);
+        throw new SubtagDisabledError(subtagName, context.root.limit.type);
     },
     displayText(subtagName) {
         return templates.limits.rules.disabled.default({ subtagName });

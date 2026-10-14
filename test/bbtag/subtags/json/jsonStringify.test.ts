@@ -7,6 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new JsonStringifySubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['jsonStringify', 'jStringify'],
     cases: [
         {
             code: '{jsonstringify;{j;{}}}',
@@ -79,7 +80,7 @@ await runSubtagTests({
     }
 }`,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVar' }, { abc: 123, def: { ghi: [1, 2, 3] } });
             }
         },

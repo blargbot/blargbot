@@ -8,6 +8,7 @@ import { createGetRolePropTestCases } from './_getRolePropTest.js';
 await runSubtagTests({
     subtag: new RoleMentionSubtag(),
     argCountBounds: { min: 1, max: 3 },
+    names: ['roleMention'],
     cases: [
         ...createGetRolePropTestCases({
             quiet: '',
@@ -21,7 +22,7 @@ await runSubtagTests({
                         role.id = '89176598273912362713';
                     },
                     assert(_, __, ctx) {
-                        assert(ctx.data.allowedMentions.roles.includes('89176598273912362713'));
+                        assert.deepEqual(ctx.root.allowedMentions.roles, new Set(['89176598273912362713']));
                     }
                 }
             ]
@@ -33,14 +34,14 @@ await runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(ctx.roles.other.id);
+                const role = bbctx.local.message.channel.guild.roles.get(ctx.roles.other.id);
                 if (role === undefined)
                     throw new Error('Cannot find the role under test');
                 ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .thenResolve([role]);
+                    .resolves([role]);
             },
             assert(bbctx) {
-                assert.deepEqual(bbctx.data.allowedMentions.roles, ['347865137576334534']);
+                assert.deepEqual(bbctx.root.allowedMentions.roles, new Set(['347865137576334534']));
             }
         },
         {
@@ -50,14 +51,14 @@ await runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(ctx.roles.other.id);
+                const role = bbctx.local.message.channel.guild.roles.get(ctx.roles.other.id);
                 if (role === undefined)
                     throw new Error('Cannot find the role under test');
                 ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .thenResolve([role]);
+                    .resolves([role]);
             },
             assert(bbctx) {
-                assert.deepEqual(bbctx.data.allowedMentions.roles, []);
+                assert.deepEqual(bbctx.root.allowedMentions.roles, new Set([]));
             }
         },
         {
@@ -67,14 +68,14 @@ await runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(ctx.roles.other.id);
+                const role = bbctx.local.message.channel.guild.roles.get(ctx.roles.other.id);
                 if (role === undefined)
                     throw new Error('Cannot find the role under test');
                 ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .thenResolve([role]);
+                    .resolves([role]);
             },
             assert(bbctx) {
-                assert.deepEqual(bbctx.data.allowedMentions.roles, ['347865137576334534']);
+                assert.deepEqual(bbctx.root.allowedMentions.roles, new Set(['347865137576334534']));
             }
         }
     ]

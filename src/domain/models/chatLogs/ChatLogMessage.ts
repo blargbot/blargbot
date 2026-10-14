@@ -1,6 +1,6 @@
 export interface ChatLogMessage {
     readonly content: string;
-    readonly attachment: string[];
+    readonly attachments: string[];
     readonly userid: string;
     readonly msgid: string;
     readonly channelid: string;

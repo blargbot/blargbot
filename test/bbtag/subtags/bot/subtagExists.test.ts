@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new SubtagExistsSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['subtagExists'],
     cases: [
         {
             code: '{subtagexists;subtagexists}',
@@ -38,13 +39,13 @@ await runSubtagTests({
         {
             code: '{subtagexists;func.abc}',
             expected: 'false',
-            setup(ctx) {
-                ctx.rootScope.functions['abc'] = {
+            postSetup(ctx) {
+                ctx.root.functions.set('abc', {
                     end: { index: 0, line: 0, column: 0 },
                     start: { index: 0, line: 0, column: 0 },
                     source: '',
                     values: []
-                };
+                });
             }
         }
     ]

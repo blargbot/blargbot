@@ -7,6 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new DebugSubtag(),
     argCountBounds: { min: 0, max: Infinity },
+    names: ['debug'],
     cases: [
         {
             code: '{debug}',

@@ -1,6 +1,5 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { RoleSetPermissionsSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -9,6 +8,7 @@ import { createGetRolePropTestCases } from './_getRolePropTest.js';
 await runSubtagTests({
     subtag: new RoleSetPermissionsSubtag(),
     argCountBounds: { min: 1, max: 3 },
+    names: ['roleSetPermissions', 'roleSetPerms'],
     setup(ctx) {
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
         ctx.members.authorizer.roles.push(ctx.roles.top.id);
@@ -24,8 +24,8 @@ await runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 0n }), 'Command User#0000'))
-                            .thenResolve(role);
+                        ctx.discord.setup((m, $) => m.editRole(ctx.guild.id, role.id, $({ permissions: 0n }), 'Command User#0000'))
+                            .resolves(role);
                     }
                 }
             ]
@@ -40,8 +40,8 @@ await runSubtagTests({
                 {
                     expected: '',
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 0n }), 'Command User#0000'))
-                            .thenResolve(role);
+                        ctx.discord.setup((m, $) => m.editRole(ctx.guild.id, role.id, $({ permissions: 0n }), 'Command User#0000'))
+                            .resolves(role);
                     }
                 }
             ]
@@ -56,8 +56,8 @@ await runSubtagTests({
                     title: 'Author is missing permissions',
                     expected: '',
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 0n }), 'Command User#0000'))
-                            .thenResolve(role);
+                        ctx.discord.setup((m, $) => m.editRole(ctx.guild.id, role.id, $({ permissions: 0n }), 'Command User#0000'))
+                            .resolves(role);
                     }
                 },
                 {
@@ -67,8 +67,8 @@ await runSubtagTests({
                         ctx.roles.authorizer.permissions = eris.Constants.Permissions.administrator.toString();
                     },
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 239748n }), 'Command User#0000'))
-                            .thenResolve(role);
+                        ctx.discord.setup((m, $) => m.editRole(ctx.guild.id, role.id, $({ permissions: 239748n }), 'Command User#0000'))
+                            .resolves(role);
                     }
                 },
                 {
@@ -78,8 +78,8 @@ await runSubtagTests({
                         ctx.roles.authorizer.permissions = (eris.Constants.Permissions.all & ~eris.Constants.Permissions.administrator).toString();
                     },
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 239748n }), 'Command User#0000'))
-                            .thenResolve(role);
+                        ctx.discord.setup((m, $) => m.editRole(ctx.guild.id, role.id, $({ permissions: 239748n }), 'Command User#0000'))
+                            .resolves(role);
                     }
                 },
                 {
@@ -93,8 +93,8 @@ await runSubtagTests({
                         ).toString();
                     },
                     postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 65664n }), 'Command User#0000'))
-                            .thenResolve(role);
+                        ctx.discord.setup((m, $) => m.editRole(ctx.guild.id, role.id, $({ permissions: 65664n }), 'Command User#0000'))
+                            .resolves(role);
                     }
                 }
             ]
@@ -119,12 +119,12 @@ await runSubtagTests({
                 ctx.roles.top.id = '3298746326924';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('3298746326924');
+                const role = bbctx.local.message.channel.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '3298746326924'))
+                    .resolves([role]);
             }
         },
         {
@@ -138,14 +138,14 @@ await runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
-                const role = bbctx.guild.roles.get('3298746326924');
+                const role = bbctx.local.message.channel.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 0n }), 'Command User#0000'))
-                    .thenReject(err);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '3298746326924'))
+                    .resolves([role]);
+                ctx.discord.setup((m, $) => m.editRole(ctx.guild.id, role.id, $({ permissions: 0n }), 'Command User#0000'))
+                    .rejects(err);
             }
         },
         {
@@ -159,14 +159,14 @@ await runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                const role = bbctx.guild.roles.get('3298746326924');
+                const role = bbctx.local.message.channel.guild.roles.get('3298746326924');
                 if (role === undefined)
                     throw new Error('Unable to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 0n }), 'Command User#0000'))
-                    .thenReject(err);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '3298746326924'))
+                    .resolves([role]);
+                ctx.discord.setup((m, $) => m.editRole(ctx.guild.id, role.id, $({ permissions: 0n }), 'Command User#0000'))
+                    .rejects(err);
             }
         }
     ]

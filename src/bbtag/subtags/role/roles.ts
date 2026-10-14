@@ -35,7 +35,7 @@ export class RolesSubtag extends CompiledSubtag {
     }
 
     public getGuildRoles(context: BBTagContext): string[] {
-        return [...context.guild.roles.values()]
+        return [...context.local.message.channel.guild.roles.values()]
             .sort((a, b) => b.position - a.position)
             .map(r => r.id);
     }
@@ -45,7 +45,7 @@ export class RolesSubtag extends CompiledSubtag {
         userId: string,
         quiet: boolean
     ): Promise<string[]> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const member = await context.queryMember(userId, { noLookup: quiet });
 
         if (member === undefined) {

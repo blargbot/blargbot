@@ -1,5 +1,6 @@
 import type { ImplicitArrayBuffer } from 'node:buffer';
 
+export * from './AsyncIterable.js';
 export * from './AsyncResetValue.js';
 export * from './BalancedWorkerShardMap.js';
 export * from './BufferWriter.js';

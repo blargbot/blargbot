@@ -1,6 +1,7 @@
 import type { ClusterUtilities, CommandDefinition, CommandOptions, CommandResult } from '@blargbot/cluster';
 import { commandTypeDetails } from '@blargbot/cluster';
-import { type IMiddleware, type NextMiddleware, runMiddleware } from '@blargbot/core';
+import type { IMiddleware, NextMiddleware } from '@blargbot/core';
+import { runMiddleware } from '@blargbot/core';
 import type * as eris from 'eris';
 
 import { templates } from '../text.js';

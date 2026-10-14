@@ -28,7 +28,7 @@ export class GuildBansSubtag extends CompiledSubtag {
 
     public async getGuildBans(context: BBTagContext): Promise<string[]> {
         try {
-            return await context.util.getBannedUsers(context.guild);
+            return await context.util.getBannedUsers(context.local.message.channel.guild);
         } catch (err: unknown) {
             if (!(err instanceof eris.DiscordRESTError))
                 throw err;

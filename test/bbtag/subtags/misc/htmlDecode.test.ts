@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new HtmlDecodeSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['htmlDecode'],
     cases: [
         {
             code: '{htmldecode;&lt;p&gt;Hello &amp; welcome! Im your host&semi;&nbsp; Blargbot!&lt;/p&gt;}',

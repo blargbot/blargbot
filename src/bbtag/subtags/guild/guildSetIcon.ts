@@ -11,7 +11,8 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.guildSetIcon;
 
 export class GuildSetIconSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #fetch: typeof globalThis.fetch;
+    public constructor({ fetch }: { fetch: typeof globalThis.fetch; }) {
         super({
             name: 'guildSetIcon',
             category: SubtagType.GUILD,
@@ -27,6 +28,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#fetch = fetch;
     }
 
     public async setGuildIcon(context: BBTagContext, image: string): Promise<void> {
@@ -35,7 +37,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
 
         image = parse.url(image);
         if (guard.isUrl(image)) {
-            const res = await context.fetch(image);
+            const res = await this.#fetch(image);
             const contentType = res.headers.get('content-type');
             image = `data:${contentType ?? ''};base64,${asBuffer(await res.bytes()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
@@ -43,7 +45,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
         }
 
         try {
-            await context.guild.edit({ icon: image }, context.auditReason());
+            await context.local.message.channel.guild.edit({ icon: image }, context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof eris.DiscordRESTError))
                 throw err;

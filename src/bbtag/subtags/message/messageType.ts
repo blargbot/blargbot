@@ -36,9 +36,9 @@ export class MessageTypeSubtag extends CompiledSubtag {
     public async getCurrentMessageType(
         context: BBTagContext
     ): Promise<number> {
-        const msg = await context.getMessage(context.channel, context.message.id);
+        const msg = await context.getMessage(context.local.message.channel, context.local.message.id);
         if (msg === undefined)
-            throw new MessageNotFoundError(context.channel.id, context.message.id);
+            throw new MessageNotFoundError(context.local.message.channel.id, context.local.message.id);
         return msg.type;
     }
 

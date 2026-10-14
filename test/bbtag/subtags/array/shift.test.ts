@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import { NotAnArrayError } from '@blargbot/bbtag';
 import { GetSubtag, ShiftSubtag } from '@blargbot/bbtag/subtags';
 import { TagVariableType } from '@blargbot/domain';
-import { argument } from '@blargbot/test-util/mock.js';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     subtag: new ShiftSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['shift'],
     cases: [
         {
             code: '{shift;abc}',
@@ -25,7 +25,7 @@ await runSubtagTests({
                 { start: 0, end: 12, error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
             }
         },
@@ -39,12 +39,12 @@ await runSubtagTests({
             subtags: [new GetSubtag()],
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
             },
             async assert(bbctx, _, ctx) {
                 assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), ['this', 'is', 'arr1']);
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['is', 'arr1']);
+                assert.deepEqual((await bbctx.root.variables.get('arr1')).value, ['is', 'arr1']);
             }
         },
         {
@@ -53,12 +53,12 @@ await runSubtagTests({
             subtags: [new GetSubtag()],
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
             },
             async assert(bbctx, _, ctx) {
                 assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), ['this', 'is', 'arr1']);
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['is', 'arr1']);
+                assert.deepEqual((await bbctx.root.variables.get('arr1')).value, ['is', 'arr1']);
             }
         },
         {
@@ -67,12 +67,12 @@ await runSubtagTests({
             subtags: [new GetSubtag()],
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.tagVariablesTable.setup(m => m.upsert(argument.isDeepEqual({ arr1: ['is', 'arr1'] }), argument.isDeepEqual({ type: TagVariableType.LOCAL_TAG, name: 'testTag' }))).thenResolve(undefined);
+                ctx.tagVariablesTable.setup((m, $) => m.upsert($({ arr1: ['is', 'arr1'] }), $({ type: TagVariableType.LOCAL_TAG, name: 'testTag' }))).resolves(undefined);
             },
             async assert(bbctx) {
-                assert.deepEqual((await bbctx.variables.get('arr1')).value, ['is', 'arr1']);
+                assert.deepEqual((await bbctx.root.variables.get('arr1')).value, ['is', 'arr1']);
             }
         },
         {

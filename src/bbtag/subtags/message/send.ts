@@ -10,8 +10,13 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.send;
 
+export interface CanPingEveryoneThunk {
+    (guildId: string): Promise<boolean>;
+}
+
 export class SendSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #canPingEveryone: CanPingEveryoneThunk;
+    public constructor({ canPingEveryone }: { canPingEveryone: CanPingEveryoneThunk; }) {
         super({
             name: 'send',
             category: SubtagType.MESSAGE,
@@ -43,6 +48,7 @@ export class SendSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#canPingEveryone = canPingEveryone;
     }
 
     public async send(context: BBTagContext, channelId: string, message?: string, embed?: eris.EmbedOptions[] | MalformedEmbed[], file?: eris.FileContent): Promise<string> {
@@ -53,19 +59,17 @@ export class SendSubtag extends CompiledSubtag {
         if (typeof file?.file === 'string' && file.file.startsWith('buffer:'))
             file.file = Buffer.from(file.file.slice(7), 'base64');
 
-        const disableEveryone = !context.isCC
-            || (await context.database.guilds.getSetting(channel.guild.id, 'disableeveryone')
-                ?? !context.data.allowedMentions.everybody);
-
         try {
             const sent = await context.util.send(channel, {
                 content: message,
                 embeds: embed,
-                nsfw: context.data.nsfw,
+                nsfw: context.root.output.nsfw,
                 allowedMentions: {
-                    everyone: !disableEveryone,
-                    roles: context.isCC ? context.data.allowedMentions.roles : undefined,
-                    users: context.isCC ? context.data.allowedMentions.users : undefined
+                    everyone: context.root.allowedMentions.everybody
+                        && context.root.isCC
+                        && await this.#canPingEveryone(channel.guild.id),
+                    roles: context.root.isCC ? [...context.root.allowedMentions.roles] : undefined,
+                    users: context.root.isCC ? [...context.root.allowedMentions.users] : undefined
                 },
                 file: file !== undefined ? [file] : undefined
             });
@@ -73,7 +77,7 @@ export class SendSubtag extends CompiledSubtag {
             if (sent === undefined)
                 throw new BBTagRuntimeError('Send unsuccessful');
 
-            context.data.ownedMsgs.push(sent.id);
+            context.root.ownedMessageIds.add(sent.id);
             return sent.id;
         } catch (err: unknown) {
             if (err instanceof BBTagRuntimeError)

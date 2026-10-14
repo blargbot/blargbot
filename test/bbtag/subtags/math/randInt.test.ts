@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RandomIntSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['randomInt', 'randInt'],
     cases: [
         { code: '{randint;9}', expected: /^[0-9]$/ },
         { code: '{randint;4}', expected: /^[0-4]$/ },

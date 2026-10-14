@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new EscapeBBTagSubtag(),
     argCountBounds: { min: 0, max: Infinity },
+    names: ['escapeBBTag', 'escape'],
     cases: [
         { code: '{escapebbtag}', expected: '' },
         { code: '{escapebbtag;{eval}}', expected: '{eval}' },

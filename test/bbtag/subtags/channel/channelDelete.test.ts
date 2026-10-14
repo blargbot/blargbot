@@ -9,6 +9,7 @@ import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 await runSubtagTests({
     subtag: new ChannelDeleteSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['channelDelete'],
     setup(ctx) {
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
     },
@@ -24,7 +25,7 @@ await runSubtagTests({
                 {
                     expected: '',
                     setup(channel, ctx) {
-                        ctx.discord.setup(m => m.deleteChannel(channel.id, 'Command User#0000')).thenResolve(undefined);
+                        ctx.discord.setup(m => m.deleteChannel(channel.id, 'Command User#0000')).resolves(undefined);
                     }
                 }
             ]
@@ -37,7 +38,7 @@ await runSubtagTests({
                 ctx.roles.authorizer.permissions = eris.Constants.Permissions.administrator.toString();
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenResolve(undefined);
+                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).resolves(undefined);
             }
         },
         {
@@ -51,7 +52,7 @@ await runSubtagTests({
                 ];
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenResolve(undefined);
+                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).resolves(undefined);
             }
         },
         {
@@ -76,7 +77,7 @@ await runSubtagTests({
                 const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenReject(err);
+                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).rejects(err);
             }
         },
         {
@@ -89,7 +90,7 @@ await runSubtagTests({
                 const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 ctx.channels.command.id = '2384762844234324';
                 ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).thenReject(err);
+                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).rejects(err);
             }
         }
     ]

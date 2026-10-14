@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new CommentSubtag(),
     argCountBounds: { min: 0, max: Infinity },
+    names: ['comment', '//'],
     cases: [
         { code: '{comment}', expected: '' },
         { code: '{comment;{fail}}', expected: '' },

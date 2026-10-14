@@ -40,7 +40,7 @@ export class WhileSubtag extends CompiledSubtag {
         val2Raw: SubtagArgument | string,
         codeRaw: SubtagArgument
     ): AsyncIterable<string> {
-        while (context.data.state === BBTagRuntimeState.RUNNING) {
+        while (context.state === BBTagRuntimeState.RUNNING) {
 
             let right = await val1Raw.execute();
             let operator = typeof evaluator === 'string' ? evaluator : await evaluator.execute();
@@ -58,12 +58,12 @@ export class WhileSubtag extends CompiledSubtag {
 
             if (!bbtag.isComparisonOperator(operator)) {
                 //TODO invalid operator stuff here
-                await context.limit.check(context, 'while:loops');
+                await context.root.limit.check(context, 'while:loops');
                 yield await codeRaw.execute();
             } else if (!bbtag.operate(operator, right, left))
                 break;
             else {
-                await context.limit.check(context, 'while:loops');
+                await context.root.limit.check(context, 'while:loops');
                 yield await codeRaw.execute();
             }
         }

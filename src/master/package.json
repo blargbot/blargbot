@@ -16,7 +16,7 @@
         "@blargbot/logger": "workspace:^",
         "@blargbot/res": "workspace:^",
         "eris": "^0.17.1",
-        "moment-timezone": "^0.5.39",
+        "moment-timezone": "^0.6.4",
         "prom-client": "^14.1.0",
         "strip-ansi": "^6.0.1"
     },

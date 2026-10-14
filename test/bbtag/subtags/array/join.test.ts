@@ -7,6 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new JoinSubtag(),
     argCountBounds: { min: 2, max: 2 },
+    names: ['join'],
     cases: [
         {
             code: '{join;a;b}',
@@ -22,7 +23,7 @@ await runSubtagTests({
             code: '{join;arr1;~}',
             expected: 'this~is~arr1',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
             }
         },
@@ -33,7 +34,7 @@ await runSubtagTests({
                 { start: 0, end: 13, error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'This is var1');
             }
         },
@@ -42,7 +43,7 @@ await runSubtagTests({
             expected: 'this~is~arr1',
             subtags: [new GetSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
             }
         }

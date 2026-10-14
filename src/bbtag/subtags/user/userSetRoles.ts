@@ -22,7 +22,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.user.id, false)
+                    execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.local.message.author.id, false)
                 },
                 {
                     parameters: ['roleArray', 'user', 'quiet?'],
@@ -50,10 +50,10 @@ export class UserSetRolesSubtag extends CompiledSubtag {
          * Quiet suppresses all errors here instead of just the user errors
          * I feel like that is how it *should* work
         */
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const member = await context.queryMember(userStr, {
             noLookup: quiet,
-            noErrors: context.scopes.local.noLookupErrors
+            noErrors: context.local.noLookupErrors
         });
         if (member === undefined) {
             throw new UserNotFoundError(userStr)
@@ -71,7 +71,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
         for (const roleStr of roleArr.v.map(v => parse.string(v))) {
             const role = await context.queryRole(roleStr, {
                 noLookup: quiet,
-                noErrors: context.scopes.local.noLookupErrors
+                noErrors: context.local.noLookupErrors
             });
             if (role === undefined) {
                 throw new RoleNotFoundError(roleStr)

@@ -58,7 +58,7 @@ export const tagArray = Object.freeze({
         if (obj !== undefined)
             return obj;
 
-        const arr = await context.variables.get(value);
+        const arr = await context.root.variables.get(value);
         if (Array.isArray(arr.value))
             return { v: arr.value, n: value };
 
@@ -69,7 +69,7 @@ export const tagArray = Object.freeze({
         if (obj !== undefined)
             return obj.v;
 
-        const arr = await context.variables.get(value);
+        const arr = await context.root.variables.get(value);
         if (Array.isArray(arr.value) || typeof arr.value === 'string')
             return arr.value;
 
@@ -80,7 +80,7 @@ export const tagArray = Object.freeze({
     }
 });
 
-const mapBBTagArrayCore = z.object({
+const mapBBTagArrayCore = z.strictObject({
     n: z.string().optional(),
     v: z.json().array()
 });

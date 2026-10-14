@@ -31,16 +31,16 @@ export class FilterSubtag extends CompiledSubtag {
         const array = await bbtag.tagArray.deserializeOrGetIterable(context, source) ?? [];
         try {
             for (const item of array) {
-                await context.limit.check(context, 'filter:loops');
-                await context.variables.set(varName, item);
+                await context.root.limit.check(context, 'filter:loops');
+                await context.root.variables.set(varName, item);
                 if (parse.boolean((await code.execute()).trim()) === true)
                     yield item;
 
-                if (context.data.state !== BBTagRuntimeState.RUNNING)
+                if (context.state !== BBTagRuntimeState.RUNNING)
                     break;
             }
         } finally {
-            context.variables.reset([varName]);
+            context.root.variables.reset([varName]);
         }
     }
 }

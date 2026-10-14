@@ -1,12 +1,13 @@
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors/index.js';
 import { templates } from '../text.js';
+import { registerRuntimeLimit } from './BaseRuntimeLimit.js';
 import { GlobalLimit } from './GlobalLimit.js';
 import { disabledRule, staffOnlyRule, UseCountRule } from './rules/index.js';
 
+@registerRuntimeLimit('generalAutoResponseLimit')
 export class GeneralAutoResponseLimit extends GlobalLimit {
     public constructor() {
-        super('generalAutoResponseLimit');
-
+        super();
         this.addRules('ban', staffOnlyRule)
             .addRules('unban', staffOnlyRule)
             .addRules('guildbans', staffOnlyRule)

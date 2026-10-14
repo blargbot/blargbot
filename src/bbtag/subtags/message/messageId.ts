@@ -24,6 +24,6 @@ export class MessageIdSubtag extends CompiledSubtag {
     }
 
     public getMessageId(context: BBTagContext): string {
-        return context.message.id;
+        return context.local.message.id;
     }
 }

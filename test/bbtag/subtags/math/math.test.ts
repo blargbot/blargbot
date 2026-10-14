@@ -10,6 +10,7 @@ const exp = Math.pow;
 await runSubtagTests({
     subtag: new MathSubtag(),
     argCountBounds: { min: 2, max: Infinity },
+    names: ['math'],
     cases: [
         ...createTestCases([0], { '%': 0, '*': 0, '+': 0, '-': 0, '/': 0, '^': 0 }),
         ...createTestCases([1], { '%': 1, '*': 1, '+': 1, '-': 1, '/': 1, '^': 1 }),

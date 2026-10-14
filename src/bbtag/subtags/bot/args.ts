@@ -46,7 +46,7 @@ export class ArgsSubtag extends CompiledSubtag {
     }
 
     public getAllArgs(context: BBTagContext): string {
-        return context.input.join(' ');
+        return context.local.input.array.join(' ');
     }
 
     public getArg(context: BBTagContext, index: string): string {
@@ -54,10 +54,10 @@ export class ArgsSubtag extends CompiledSubtag {
         if (i === undefined)
             throw new NotANumberError(index);
 
-        if (context.input.length <= i || i < 0)
-            throw new NotEnoughArgumentsError(i + 1, context.input.length);
+        if (context.local.input.array.length <= i || i < 0)
+            throw new NotEnoughArgumentsError(i + 1, context.local.input.array.length);
 
-        return context.input[i];
+        return context.local.input.array[i];
     }
 
     public getArgs(
@@ -70,7 +70,7 @@ export class ArgsSubtag extends CompiledSubtag {
             throw new NotANumberError(start);
 
         let to = end.toLowerCase() === 'n'
-            ? context.input.length
+            ? context.local.input.array.length
             : parse.int(end);
 
         if (to === undefined)
@@ -80,9 +80,9 @@ export class ArgsSubtag extends CompiledSubtag {
         if (from > to)
             from = [to, to = from][0];
 
-        if (context.input.length <= from || from < 0)
-            throw new NotEnoughArgumentsError(from + 1, context.input.length);
+        if (context.local.input.array.length <= from || from < 0)
+            throw new NotEnoughArgumentsError(from + 1, context.local.input.array.length);
 
-        return context.input.slice(from, to).join(' ');
+        return context.local.input.array.slice(from, to).join(' ');
     }
 }

@@ -20,13 +20,13 @@ export class FunctionInvokeSubtag extends CompiledSubtag {
     }
 
     public async invokeFunction(context: BBTagContext, functionName: string, args: string[]): Promise<string> {
-        const func = context.scopes.local.functions[functionName.toLowerCase()];
+        const func = context.root.functions.get(functionName.toLowerCase());
         if (func === undefined)
             throw new UnknownSubtagError(`func.${functionName}`);
 
-        return await context.withStack(() => context.withScope(async scope => {
-            scope.paramsarray = args;
-            return await context.eval(func);
-        }));
+        using _stack = context.usingStack();
+        using scope = context.usingScope();
+        scope.paramsarray = args;
+        return await context.eval(func);
     }
 }

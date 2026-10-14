@@ -3,11 +3,13 @@ import { parse } from '@blargbot/core';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
-import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
+import { createTagVariableScopeProvider } from '../../tagVariableScopeProvider.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.get;
+
+const tagVariableScopeProviders = createTagVariableScopeProvider().entries;
 
 export class GetSubtag extends CompiledSubtag {
     public constructor() {
@@ -36,7 +38,7 @@ export class GetSubtag extends CompiledSubtag {
     }
 
     public async get(context: BBTagContext, variableName: string): Promise<JToken | undefined> {
-        const result = await context.variables.get(variableName);
+        const result = await context.root.variables.get(variableName);
         if (!Array.isArray(result.value))
             return result.value;
 
@@ -44,7 +46,7 @@ export class GetSubtag extends CompiledSubtag {
     }
 
     public async getArray(context: BBTagContext, variableName: string, indexStr: string): Promise<JToken | undefined> {
-        const result = await context.variables.get(variableName);
+        const result = await context.root.variables.get(variableName);
         if (!Array.isArray(result.value))
             return result.value;
 

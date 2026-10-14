@@ -7,6 +7,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new EmojiDeleteSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['emojiDelete'],
     setup(ctx) {
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageEmojisAndStickers.toString();
     },
@@ -15,7 +16,7 @@ await runSubtagTests({
             code: '{emojidelete;234762389364243}',
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.deleteGuildEmoji(ctx.guild.id, '234762389364243', 'Command User#0000')).thenResolve(undefined);
+                ctx.discord.setup(m => m.deleteGuildEmoji(ctx.guild.id, '234762389364243', 'Command User#0000')).resolves(undefined);
             }
         },
         {
@@ -36,7 +37,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(0, 'This is an error');
-                ctx.discord.setup(m => m.deleteGuildEmoji(ctx.guild.id, '234762389364243', 'Command User#0000')).thenReject(error);
+                ctx.discord.setup(m => m.deleteGuildEmoji(ctx.guild.id, '234762389364243', 'Command User#0000')).rejects(error);
             }
         },
         {
@@ -47,7 +48,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(0, 'This is an error\nAnd this is line 2');
-                ctx.discord.setup(m => m.deleteGuildEmoji(ctx.guild.id, '234762389364243', 'Command User#0000')).thenReject(error);
+                ctx.discord.setup(m => m.deleteGuildEmoji(ctx.guild.id, '234762389364243', 'Command User#0000')).rejects(error);
             }
         }
     ]

@@ -6,8 +6,13 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.warnings;
 
+export interface GetWarnings {
+    (guildId: string, userId: string): Awaitable<number | undefined>;
+}
+
 export class WarningsSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getWarnings: GetWarnings;
+    public constructor({ getWarnings }: { getWarnings: GetWarnings; }) {
         super({
             name: 'warnings',
             category: SubtagType.USER,
@@ -22,6 +27,7 @@ export class WarningsSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getWarnings = getWarnings;
     }
 
     public async getUserWarnings(context: BBTagContext, userQuery: string, quiet: boolean): Promise<number> {
@@ -30,6 +36,6 @@ export class WarningsSubtag extends CompiledSubtag {
         if (user === undefined)
             throw new UserNotFoundError(userQuery);
 
-        return await context.database.guilds.getWarnings(context.guild.id, user.id) ?? 0;
+        return await this.#getWarnings(context.local.message.channel.guild.id, user.id) ?? 0;
     }
 }

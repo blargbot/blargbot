@@ -9,6 +9,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new JsonSortSubtag(),
     argCountBounds: { min: 2, max: 3 },
+    names: ['jsonSort', 'jSort'],
     cases: [
         {
             code: '{jsonsort;{j;[{"points": 10, "name": "Blargbot"},{"points": 3, "name": "UNO"},{"points": 6, "name": "Stupid cat"},{"points": 12, "name": "Winner"}]};points}',
@@ -25,7 +26,7 @@ await runSubtagTests({
             expected: '',
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
@@ -34,7 +35,7 @@ await runSubtagTests({
                 ]);
             },
             async assert(bbctx) {
-                assert.deepEqual((await bbctx.variables.get('arrayVar')).value, [
+                assert.deepEqual((await bbctx.root.variables.get('arrayVar')).value, [
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
                     { points: 10, name: 'Blargbot' },
@@ -47,7 +48,7 @@ await runSubtagTests({
             expected: '',
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
@@ -56,7 +57,7 @@ await runSubtagTests({
                 ]);
             },
             async assert(bbctx) {
-                assert.deepEqual((await bbctx.variables.get('arrayVar')).value, [
+                assert.deepEqual((await bbctx.root.variables.get('arrayVar')).value, [
                     { points: 12, name: 'Winner' },
                     { points: 10, name: 'Blargbot' },
                     { points: 6, name: 'Stupid cat' },
@@ -72,7 +73,7 @@ await runSubtagTests({
             ],
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { test: 3, name: 'UNO' },
@@ -89,7 +90,7 @@ await runSubtagTests({
             ],
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
                     { points: 10, name: 'Blargbot' },
                     { points: 3, name: 'UNO' },
@@ -106,7 +107,7 @@ await runSubtagTests({
             ],
             setupSaveVariables: false,
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'testVar' }, 'xyz');
             }
         }

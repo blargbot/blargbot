@@ -3,11 +3,11 @@ import z from 'zod';
 import { amqpJsonCodec } from '../util.js';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const ClusterStats = amqpJsonCodec(z.object({
+export const ClusterStats = amqpJsonCodec(z.strictObject({
     clusterId: z.string(),
     timestamp: z.number(),
     activeGroupId: z.string().optional(),
-    shards: z.object({
+    shards: z.strictObject({
         shardId: z.int().gte(0),
         totalShards: z.int().gte(0),
         groupIds: z.string().array(),

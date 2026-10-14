@@ -8,17 +8,17 @@ import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new InjectSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['inject'],
     cases: [
         {
             code: '{inject;{lb}assert{rb}}',
             subtags: [new LbSubtag(), new RbSubtag(), new AssertSubtag(ctx => {
-                assert.equal(ctx.parent, undefined);
-                assert.equal(ctx.data.stackSize, 123);
+                assert.equal(ctx.root.recursion.depth, 123);
                 return 'Inject successful';
             })],
             expected: 'Inject successful',
-            setup(ctx) {
-                ctx.options.data = { stackSize: 122 };
+            postSetup(ctx) {
+                ctx.root.recursion.depth = 122;
             }
         },
         {

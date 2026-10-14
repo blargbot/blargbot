@@ -6,13 +6,14 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new SubstringSubtag(),
     argCountBounds: { min: 2, max: 3 },
+    names: ['substring'],
     cases: [
         { code: '{substring;This is some text;5}', expected: 'is some text' },
         { code: '{substring;This is some text;0}', expected: 'This is some text' },
         {
             code: '{substring;This is some text;{eval}aaa}',
             expected: 'some text',
-            setup(ctx) { ctx.rootScope.fallback = '8'; },
+            postSetup(ctx) { ctx.root.fallback = '8'; },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) }
             ]
@@ -20,7 +21,7 @@ await runSubtagTests({
         {
             code: '{substring;This is some text;{eval}aaa}',
             expected: 'bbb',
-            setup(ctx) { ctx.rootScope.fallback = 'bbb'; },
+            postSetup(ctx) { ctx.root.fallback = 'bbb'; },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) },
                 { start: 0, end: 39, error: new NotANumberError('aaa') }
@@ -31,7 +32,7 @@ await runSubtagTests({
         {
             code: '{substring;This is some text;{eval}aaa;12}',
             expected: 'some',
-            setup(ctx) { ctx.rootScope.fallback = '8'; },
+            postSetup(ctx) { ctx.root.fallback = '8'; },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) }
             ]
@@ -39,7 +40,7 @@ await runSubtagTests({
         {
             code: '{substring;This is some text;8;{eval}aaa}',
             expected: 'some',
-            setup(ctx) { ctx.rootScope.fallback = '12'; },
+            postSetup(ctx) { ctx.root.fallback = '12'; },
             errors: [
                 { start: 31, end: 37, error: new MarkerError('eval', 31) }
             ]
@@ -47,7 +48,7 @@ await runSubtagTests({
         {
             code: '{substring;This is some text;{eval}aaa;{eval}bbb}',
             expected: '',
-            setup(ctx) { ctx.rootScope.fallback = '12'; },
+            postSetup(ctx) { ctx.root.fallback = '12'; },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) },
                 { start: 39, end: 45, error: new MarkerError('eval', 39) }
@@ -56,7 +57,7 @@ await runSubtagTests({
         {
             code: '{substring;This is some text;8;{eval}aaa}',
             expected: 'ccc',
-            setup(ctx) { ctx.rootScope.fallback = 'ccc'; },
+            postSetup(ctx) { ctx.root.fallback = 'ccc'; },
             errors: [
                 { start: 31, end: 37, error: new MarkerError('eval', 31) },
                 { start: 0, end: 41, error: new NotANumberError('aaa') }
@@ -65,7 +66,7 @@ await runSubtagTests({
         {
             code: '{substring;This is some text;{eval}aaa;{eval}bbb}',
             expected: 'ccc',
-            setup(ctx) { ctx.rootScope.fallback = 'ccc'; },
+            postSetup(ctx) { ctx.root.fallback = 'ccc'; },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) },
                 { start: 39, end: 45, error: new MarkerError('eval', 39) },

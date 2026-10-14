@@ -38,7 +38,7 @@ export class UserIsBotSubtag extends CompiledSubtag {
         userId: string,
         quiet: boolean
     ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user === undefined) {

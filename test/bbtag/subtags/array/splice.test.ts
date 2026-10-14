@@ -9,12 +9,13 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new SpliceSubtag(),
     argCountBounds: { min: 2, max: Infinity },
+    names: ['splice'],
     cases: [
         {
             code: '{splice;arr1;0}',
             expected: '[]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -25,7 +26,7 @@ await runSubtagTests({
             code: '{splice;arr1;1}',
             expected: '[]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -36,7 +37,7 @@ await runSubtagTests({
             code: '{splice;arr1;2;1}',
             expected: '[3]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -47,7 +48,7 @@ await runSubtagTests({
             code: '{splice;arr1;1;3}',
             expected: '[2,3,4]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -58,7 +59,7 @@ await runSubtagTests({
             code: '{splice;arr1;4;3}',
             expected: '[5,6]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -69,7 +70,7 @@ await runSubtagTests({
             code: '{splice;arr1;2;0;a}',
             expected: '[]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -80,7 +81,7 @@ await runSubtagTests({
             code: '{splice;arr1;2;1;a}',
             expected: '[3]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -91,7 +92,7 @@ await runSubtagTests({
             code: '{splice;arr1;2;2;a;b;c;d;e;f}',
             expected: '[3,4]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -102,7 +103,7 @@ await runSubtagTests({
             code: '{splice;arr1;2;2;a;1;2;d;e;f}',
             expected: '[3,4]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -113,7 +114,7 @@ await runSubtagTests({
             code: '{splice;arr1;2;2;a;[1,2,"d"];e;f}',
             expected: '[3,4]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -124,7 +125,7 @@ await runSubtagTests({
             code: '{splice;arr1;2;2;a;[[1,2,"d"]];e;f}',
             expected: '[3,4]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -136,7 +137,7 @@ await runSubtagTests({
             expected: '[3,4]',
             subtags: [new GetSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
             },
             assert(_, __, ctx) {
@@ -154,7 +155,7 @@ await runSubtagTests({
                 { start: 0, end: 35, error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, 'abc');
             }
         },

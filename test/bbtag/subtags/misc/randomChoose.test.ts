@@ -7,6 +7,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RandomChooseSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['randomChoose', 'randChoose'],
     cases: [
         {
             code: '{randchoose;{eval}5}',

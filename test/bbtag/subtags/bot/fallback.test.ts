@@ -8,6 +8,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new FallbackSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['fallback'],
     cases: [
         {
             code: '{fallback}{xyz}',
@@ -16,7 +17,7 @@ await runSubtagTests({
                 { start: 10, end: 15, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                assert.equal(ctx.scopes.local.fallback, undefined);
+                assert.equal(ctx.local.fallback, undefined);
             }
         },
         {
@@ -26,7 +27,7 @@ await runSubtagTests({
                 { start: 14, end: 19, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                assert.equal(ctx.scopes.local.fallback, 'abc');
+                assert.equal(ctx.local.fallback, 'abc');
             }
         },
         {
@@ -37,7 +38,7 @@ await runSubtagTests({
                 { start: 44, end: 49, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                assert.equal(ctx.scopes.local.fallback, undefined);
+                assert.equal(ctx.local.fallback, undefined);
             }
         }
     ]

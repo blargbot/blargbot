@@ -28,6 +28,6 @@ export class ReturnSubtag extends CompiledSubtag {
 
     public setReturn(context: BBTagContext, forcedStr: string): void {
         const forced = parse.boolean(forcedStr, true);
-        context.data.state = forced ? BBTagRuntimeState.ABORT : BBTagRuntimeState.RETURN;
+        context.state = forced ? BBTagRuntimeState.ABORT : BBTagRuntimeState.RETURN;
     }
 }

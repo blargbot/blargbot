@@ -8,15 +8,17 @@ export function cleanType<Schema extends z.ZodType>(schema: Schema): z.ZodType<S
     return schema;
 }
 
-export function takeBytes(source: Uint8Array, count: number): [taken: Uint8Array, remain: Uint8Array] {
+export function takeBytes(source: Uint8Array, count: number): [taken: Uint8Array<ArrayBuffer>, remain: Uint8Array<ArrayBuffer>] {
     if (source.byteLength < count)
         throw new Error(`Buffer too small. Attempted to take ${count} bytes, but only ${source.byteLength} are available.`);
 
     return [source.slice(0, count), source.slice(count)];
 }
 
-export function asUint8Array<Array extends ArrayBufferLike>(buffer: Buffer<Array>): Uint8Array<Array> {
-    return new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+export function asUint8Array<Array extends ArrayBufferLike>(buffer: Buffer<Array>): Uint8Array<ArrayBuffer> {
+    if (buffer.buffer instanceof ArrayBuffer)
+        return new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+    return new Uint8Array(buffer);
 }
 
 export function jsonToBuffer(value: unknown, encoding?: BufferEncoding, replacer?: (key: string, value: unknown) => unknown): Uint8Array<ArrayBuffer> {

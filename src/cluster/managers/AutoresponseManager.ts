@@ -1,4 +1,4 @@
-import { bbtag } from '@blargbot/bbtag';
+import { bbtag, limits } from '@blargbot/bbtag';
 import type { Cluster, WhitelistResponse } from '@blargbot/cluster';
 import { guard, humanize } from '@blargbot/cluster';
 import { FormattableMessageContent, zodStringToJson } from '@blargbot/core';
@@ -107,16 +107,22 @@ export class AutoresponseManager {
 
     async #executeCore(msg: eris.Message<eris.KnownGuildTextableChannel>, id: `${number}` | 'everything', tag: GuildTriggerTag, args: string[]): Promise<void> {
         this.#logAutoresponses(msg.channel.guild.id, id);
-
+        const isEverything = id === 'everything';
         const result = await this.#cluster.bbtag.execute(tag.content, {
             message: msg,
-            limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',
-            authorId: tag.author ?? undefined,
-            authorizerId: tag.authorizer ?? undefined,
-            inputRaw: args.length === 1 ? msg.content : humanize.smartSplit.inverse(args),
+            tagName: `_autoresponse_${id}`,
+            input: args.length === 1 ? msg.content : humanize.smartSplit.inverse(args),
+            flagDefinitions: [],
+            silent: isEverything,
             isCC: true,
-            rootTagName: `_autoresponse_${id}`,
-            silent: id === 'everything'
+            tagVars: false,
+            limit: isEverything
+                ? new limits.EverythingAutoResponseLimit()
+                : new limits.GeneralAutoResponseLimit(),
+            author: tag.author ?? undefined,
+            authorizer: tag.authorizer ?? undefined,
+            cooldown: 0,
+            prefix: undefined
         });
 
         const key = `${msg.channel.guild.id}|${id}|${msg.author.id}`;
@@ -185,7 +191,7 @@ const emojiValues = {
 const mapArData = z.base64()
     .transform(v => Buffer.from(v, 'base64').toString())
     .pipe(zodStringToJson)
-    .pipe(z.object({
+    .pipe(z.strictObject({
         channel: z.string(),
         guild: z.string()
     }));

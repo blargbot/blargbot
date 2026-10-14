@@ -13,7 +13,6 @@
         "strictBindCallApply": true,
         "strictPropertyInitialization": true,
         "forceConsistentCasingInFileNames": true,
-        "experimentalDecorators": true,
         "alwaysStrict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
@@ -23,7 +22,9 @@
         "skipLibCheck": true,
         "useUnknownInCatchVariables": true,
         "lib": [
-            "ES2025"
+            "ES2025",
+            "ESNext.Temporal",
+            "ESNext.Collection",
         ]
     }
 }

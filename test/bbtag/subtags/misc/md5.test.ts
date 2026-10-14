@@ -8,6 +8,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new Md5Subtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['md5', 'md5encode'],
     cases: [
         { code: '{md5;some cool text here}', expected: 'dc15a13d3e070e8151301f4430d214e7' }
     ],

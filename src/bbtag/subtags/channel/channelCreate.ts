@@ -52,7 +52,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
         try {
             if (options.reason === '') options.reason = undefined;
             options.reason ??= context.auditReason();
-            const channel = await context.guild.createChannel(name, type, options);
+            const channel = await context.local.message.channel.guild.createChannel(name, type, options);
             return channel.id;
         } catch (err: unknown) {
             if (!(err instanceof eris.DiscordRESTError))
@@ -83,14 +83,14 @@ const bigintish = z.string()
     .regex(/^\d+$/)
     .transform(BigInt);
 
-const mapOptions = zodStringToJson.pipe(z.object({
+const mapOptions = zodStringToJson.pipe(z.strictObject({
     bitrate: numberish.optional(),
     nsfw: booleanish.optional(),
     parentID: z.string().optional(),
     rateLimitPerUser: numberish.optional(),
     topic: z.string().optional(),
     userLimit: numberish.optional(),
-    permissionOverwrites: z.object({
+    permissionOverwrites: z.strictObject({
         allow: bigintish.optional().default(0n),
         deny: bigintish.optional().default(0n),
         id: z.string(),

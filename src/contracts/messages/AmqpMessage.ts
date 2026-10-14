@@ -4,9 +4,9 @@ import { cleanType } from '../util.js';
 import { BufferEncoding } from './BufferEncoding.js';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const AmqpMessage = cleanType(z.object({
-    content: z.instanceof(Uint8Array<ArrayBufferLike>),
-    properties: z.object({
+export const AmqpMessage = cleanType(z.strictObject({
+    content: z.instanceof(Uint8Array<ArrayBuffer>),
+    properties: z.strictObject({
         contentType: z.string().optional().catch(undefined),
         contentEncoding: z.union([
             z.undefined(),

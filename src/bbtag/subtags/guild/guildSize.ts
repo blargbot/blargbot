@@ -25,7 +25,7 @@ export class GuildSizeSubtag extends CompiledSubtag {
     }
 
     public async getMemberCount(context: BBTagContext): Promise<number> {
-        await context.util.ensureMemberCache(context.guild);
-        return context.guild.members.size;
+        await context.util.ensureMemberCache(context.local.message.channel.guild);
+        return context.local.message.channel.guild.members.size;
     }
 }

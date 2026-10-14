@@ -51,6 +51,6 @@ export class WarnSubtag extends CompiledSubtag {
         if (count === undefined)
             throw new NotANumberError(countStr);
 
-        return await context.util.warn(member, context.user, count, reason !== '' ? reason : 'Tag Warning');
+        return await context.util.warn(member, context.local.message.author, count, reason !== '' ? reason : 'Tag Warning');
     }
 }

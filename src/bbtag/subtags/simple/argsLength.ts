@@ -25,6 +25,6 @@ export class ArgsLengthSubtag extends CompiledSubtag {
     }
 
     public getArgsLength(context: BBTagContext): number {
-        return context.input.length;
+        return context.local.input.array.length;
     }
 }

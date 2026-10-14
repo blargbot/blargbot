@@ -75,10 +75,10 @@ export class Rule34Command extends GlobalCommand {
     }
 }
 
-const r34Mapping = z.object({
-    posts: z.object({
-        tag: z.array(z.object({
-            '$': z.object({
+const r34Mapping = z.strictObject({
+    posts: z.strictObject({
+        tag: z.array(z.strictObject({
+            '$': z.strictObject({
                 author: z.string().optional(),
                 file_url: z.string().optional(),
                 date: z.iso.date().optional(),

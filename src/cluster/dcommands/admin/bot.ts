@@ -161,7 +161,7 @@ function pickOrNull<Source extends object, Key extends keyof Source>(source: Sou
 }
 
 function selectKeys<T extends object>(values: { [P in keyof T]-?: boolean }): Array<keyof T> {
-    return Object.entries(values).filter(e => e[1]).map(e => e[0]);
+    return Object.entries(values).filter(e => e[1]).map(e => e[0] as keyof T);
 }
 
 const userKeys = selectKeys<StoredUser>({

@@ -38,7 +38,7 @@ export async function consumeRestProxyMessages(options: RestProxyOptions): Promi
     );
 }
 
-const discordenoErrorCause = z.object({
+const discordenoErrorCause = z.strictObject({
     ok: z.boolean(),
     status: z.number(),
     statusText: z.string().optional(),

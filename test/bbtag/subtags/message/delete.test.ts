@@ -9,13 +9,14 @@ import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new DeleteSubtag(),
     argCountBounds: { min: 0, max: 2 },
+    names: ['delete'],
     cases: [
         {
             code: '{delete}',
             expected: '',
             setup(ctx) {
                 ctx.isStaff = false;
-                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id, undefined)).thenResolve();
+                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id, undefined)).resolves();
             }
         },
         {
@@ -26,8 +27,8 @@ await runSubtagTests({
                 const error = new Error();
 
                 ctx.isStaff = false;
-                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id, undefined)).thenReject(error);
-                ctx.logger.setup(m => m.warn('Failed to delete message', error)).thenReturn();
+                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id, undefined)).rejects(error);
+                ctx.logger.setup(m => m.warn('Failed to delete message', error)).returns();
             }
         },
         {
@@ -37,7 +38,7 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.message.id = '1234567890123456';
                 ctx.isStaff = false;
-                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id, undefined)).thenResolve();
+                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id, undefined)).resolves();
             }
         },
         {
@@ -59,7 +60,7 @@ await runSubtagTests({
                 ctx.isStaff = false;
                 ctx.ownedMessages.push('1234567890123456');
 
-                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, '1234567890123456', undefined)).thenResolve();
+                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, '1234567890123456', undefined)).resolves();
             },
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -67,7 +68,7 @@ await runSubtagTests({
                     id: '1234567890123456'
                 }, ctx.users.command));
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, false)).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, message.id, false)).resolves(message);
             }
         },
         {
@@ -77,7 +78,7 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.isStaff = true;
 
-                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, '1234567890123456', undefined)).thenResolve();
+                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, '1234567890123456', undefined)).resolves();
             },
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -85,7 +86,7 @@ await runSubtagTests({
                     id: '1234567890123456'
                 }, ctx.users.command));
 
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, false)).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, message.id, false)).resolves(message);
             }
         },
         {
@@ -109,7 +110,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id = '9876543212345678';
             },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '1234567890123456', false)).thenResolve(undefined);
+                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '1234567890123456', false)).resolves(undefined);
             },
             errors: [
                 { start: 0, end: 25, error: new MessageNotFoundError('9876543212345678', '1234567890123456').withDisplay('') }
@@ -123,7 +124,7 @@ await runSubtagTests({
                 ctx.message.id = '1234567890123456';
                 ctx.message.channel_id = ctx.channels.command.id = '987654322123456142';
                 ctx.isStaff = false;
-                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id, undefined)).thenResolve();
+                ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id, undefined)).resolves();
             }
         },
         {
@@ -148,7 +149,7 @@ await runSubtagTests({
 
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.guild.channels.get('987654322123456142') as eris.KnownGuildChannel;
+                const channel = bbctx.local.message.channel.guild.channels.get('987654322123456142') as eris.KnownGuildChannel;
                 assert.notEqual(channel, undefined);
 
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -156,9 +157,9 @@ await runSubtagTests({
                     id: '1234567890123456'
                 }, ctx.users.command));
 
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '987654322123456142')).thenResolve([channel]);
-                ctx.util.setup(m => m.getMessage(channel, message.id, false)).thenResolve(message);
-                ctx.discord.setup(m => m.deleteMessage(channel.id, '1234567890123456', undefined)).thenResolve();
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '987654322123456142')).resolves([channel]);
+                ctx.util.setup(m => m.getMessage(channel, message.id, false)).resolves(message);
+                ctx.discord.setup(m => m.deleteMessage(channel.id, '1234567890123456', undefined)).resolves();
             }
         },
         {
@@ -169,7 +170,7 @@ await runSubtagTests({
                 ctx.isStaff = true;
             },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '987654322123456142')).thenResolve([]);
+                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '987654322123456142')).resolves([]);
             },
             errors: [
                 { start: 0, end: 44, error: new ChannelNotFoundError('987654322123456142') }

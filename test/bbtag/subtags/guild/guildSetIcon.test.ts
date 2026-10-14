@@ -1,15 +1,22 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { GuildSetIconSubtag, SemiSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
+import { Mock } from '@blargbot/test-util';
 import { asUint8Array } from '@blargbot/util';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const fetch = new Mock<typeof globalThis.fetch>({ callable: true });
+
 await runSubtagTests({
-    subtag: new GuildSetIconSubtag(),
+    subtag: new GuildSetIconSubtag({
+        fetch: fetch.instance
+    }),
     argCountBounds: { min: 1, max: 1 },
+    names: ['guildSetIcon'],
     setup(ctx) {
+        ctx.addMock(fetch);
+        fetch.reset();
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageGuild.toString();
     },
     cases: [
@@ -18,9 +25,9 @@ await runSubtagTests({
             subtags: [new SemiSubtag()],
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.discord.setup(m => m.editGuild(ctx.guild.id, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.editGuild(ctx.guild.id, $({
                     icon: 'data:image/png;base64,abcdef'
-                }), 'Command User#0000')).thenResolve(bbctx.guild);
+                }), 'Command User#0000')).resolves(bbctx.local.message.channel.guild);
             }
         },
         {
@@ -28,15 +35,15 @@ await runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png'))
-                    .thenResolve(response.instance);
-                response.setup(m => m.headers).thenReturn(new Headers({
+                fetch.setup(m => m('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png'))
+                    .resolves(response.instance);
+                response.setup(m => m.headers).returns(new Headers({
                     'Content-Type': 'image/png'
                 }));
-                response.setup(m => m.bytes()).thenResolve(asUint8Array(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64')));
-                ctx.discord.setup(m => m.editGuild(ctx.guild.id, argument.isDeepEqual({
+                response.setup(m => m.bytes()).resolves(asUint8Array(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64')));
+                ctx.discord.setup((m, $) => m.editGuild(ctx.guild.id, $({
                     icon: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf'
-                }), 'Command User#0000')).thenResolve(bbctx.guild);
+                }), 'Command User#0000')).resolves(bbctx.local.message.channel.guild);
             }
         },
         {
@@ -44,13 +51,13 @@ await runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://cdn.discordapp.com/icons/194232473931087872/e88c2e966c6ca78f2268fa8aed4621ab.png?size=0'))
-                    .thenResolve(response.instance);
-                response.setup(m => m.headers).thenReturn(new Headers({}));
-                response.setup(m => m.bytes()).thenResolve(new Uint8Array(0));
-                ctx.discord.setup(m => m.editGuild(ctx.guild.id, argument.isDeepEqual({
+                fetch.setup(m => m('https://cdn.discordapp.com/icons/194232473931087872/e88c2e966c6ca78f2268fa8aed4621ab.png?size=0'))
+                    .resolves(response.instance);
+                response.setup(m => m.headers).returns(new Headers({}));
+                response.setup(m => m.bytes()).resolves(new Uint8Array(0));
+                ctx.discord.setup((m, $) => m.editGuild(ctx.guild.id, $({
                     icon: 'data:;base64,'
-                }), 'Command User#0000')).thenResolve(bbctx.guild);
+                }), 'Command User#0000')).resolves(bbctx.local.message.channel.guild);
             }
         },
         {
@@ -81,9 +88,9 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(0, 'This is an error');
-                ctx.discord.setup(m => m.editGuild(ctx.guild.id, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.editGuild(ctx.guild.id, $({
                     icon: 'data:image/png;base64,abcdef'
-                }), 'Command User#0000')).thenReject(error);
+                }), 'Command User#0000')).rejects(error);
             }
         },
         {
@@ -95,9 +102,9 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(0, 'This is an error\nAnd this is line 2');
-                ctx.discord.setup(m => m.editGuild(ctx.guild.id, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.editGuild(ctx.guild.id, $({
                     icon: 'data:image/png;base64,abcdef'
-                }), 'Command User#0000')).thenReject(error);
+                }), 'Command User#0000')).rejects(error);
             }
         }
     ]

@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ReactionSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['reaction'],
     cases: [
         {
             code: '{reaction}',
@@ -18,7 +19,7 @@ await runSubtagTests({
             code: '{reaction}',
             expected: '🤔',
             postSetup(bbctx) {
-                bbctx.scopes.local.reaction = '🤔';
+                bbctx.local.reaction = '🤔';
             }
         }
     ]

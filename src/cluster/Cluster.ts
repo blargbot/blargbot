@@ -1,13 +1,14 @@
 import { inspect } from 'node:util';
 
-import { BBTagEngine, subtags } from '@blargbot/bbtag';
+import { BBTagEngine, getLock, subtags } from '@blargbot/bbtag';
 import type { ClusterOptions } from '@blargbot/cluster';
 import type { Configuration } from '@blargbot/config';
-import { getImageChannel, type ImageChannel } from '@blargbot/contracts';
+import type { ImageChannel } from '@blargbot/contracts';
+import { getImageChannel } from '@blargbot/contracts';
 import type { EvalResult } from '@blargbot/core';
 import { BaseClient, BaseService, ModuleLoader } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
-import { ResetValue } from '@blargbot/util';
+import { ResetValue, sleep } from '@blargbot/util';
 import { GatewayIntentBits } from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 
@@ -117,8 +118,19 @@ export class Cluster extends BaseClient {
             discord: this.discord,
             logger: this.logger,
             util: new ClusterBBTagUtilities(this),
-            subtags: Object.values(subtags).map(subtag => new subtag()),
-            fetch: this.fetch
+            subtags: Object.values(subtags).map(subtag => new subtag({
+                defaultPrefix: this.config.discord.defaultPrefix,
+                fetch: this.fetch,
+                getLock,
+                sleep,
+                getTag: name => this.database.tags.get(name),
+                getCustomCommand: (guildId, name) => this.database.guilds.getCommand(guildId, name),
+                getWarnings: (guildId, userId) => this.database.guilds.getWarnings(guildId, userId),
+                getUserTimezone: userId => this.database.users.getProp(userId, 'timezone'),
+                getPrefix: guildId => this.database.guilds.getSetting(guildId, 'prefix'),
+                canPingEveryone: async guildId => await this.database.guilds.getSetting(guildId, 'disableeveryone') !== true
+            })),
+            sleep
         });
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));
         this.rolemes = new RolemeManager(this);

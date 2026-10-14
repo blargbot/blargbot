@@ -5,20 +5,24 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new CommandNameSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['commandName'],
     cases: [
         {
             code: '{commandname}',
             expected: 'My cool command',
             setup(ctx) {
-                ctx.options.tagName = 'My cool command';
+                ctx.input.tagName = 'My cool command';
             }
         },
         {
             code: '{commandname}',
             expected: 'My cool command',
             setup(ctx) {
-                ctx.options.rootTagName = 'My cool command';
-                ctx.options.tagName = 'WRONG';
+                ctx.input.tagName = 'My cool command';
+            },
+            postSetup(bbctx) {
+                bbctx.usingScope();
+                bbctx.local.tagName = 'WRONG';
             }
         }
     ]

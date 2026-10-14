@@ -12,6 +12,7 @@ import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 await runSubtagTests({
     subtag: new LastMessageIdSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['lastMessageId'],
     cases: [
         ...createGetChannelPropTestCases({
             quiet: false,

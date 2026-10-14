@@ -37,7 +37,7 @@ export class SortSubtag extends CompiledSubtag {
         if (arr.n === undefined)
             return arr.v;
 
-        await context.variables.set(arr.n, arr.v);
+        await context.root.variables.set(arr.n, arr.v);
         return undefined;
     }
 }

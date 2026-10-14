@@ -23,7 +23,7 @@ export class ChannelPositionSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'number',
-                    execute: (ctx) => this.#getChanelPosition(ctx.channel)
+                    execute: (ctx) => this.#getChanelPosition(ctx.local.message.channel)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -42,7 +42,7 @@ export class ChannelPositionSubtag extends CompiledSubtag {
         channelStr: string,
         quiet: boolean
     ): Promise<number> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)

@@ -33,15 +33,15 @@ export class ForEachSubtag extends CompiledSubtag {
         const array = await bbtag.tagArray.deserializeOrGetIterable(context, source) ?? [];
         try {
             for (const item of array) {
-                await context.limit.check(context, 'foreach:loops');
-                await context.variables.set(varName, item);
+                await context.root.limit.check(context, 'foreach:loops');
+                await context.root.variables.set(varName, item);
                 yield await code.execute();
 
-                if (context.data.state !== BBTagRuntimeState.RUNNING)
+                if (context.state !== BBTagRuntimeState.RUNNING)
                     break;
             }
         } finally {
-            context.variables.reset([varName]);
+            context.root.variables.reset([varName]);
         }
     }
 }

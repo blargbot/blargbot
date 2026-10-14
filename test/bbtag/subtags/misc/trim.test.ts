@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new TrimSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['trim'],
     cases: [
         { code: '{trim;abc}', expected: 'abc' },
         { code: '{trim;   def   }', expected: 'def' },

@@ -18,7 +18,7 @@ export class UserNameSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'string',
-                    execute: (ctx) => this.getUserName(ctx, ctx.user.id, true)
+                    execute: (ctx) => this.getUserName(ctx, ctx.local.message.author.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -37,7 +37,7 @@ export class UserNameSubtag extends CompiledSubtag {
         userId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user === undefined) {

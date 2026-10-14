@@ -1,6 +1,5 @@
 import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag';
 import { RoleNotFoundError } from '@blargbot/bbtag';
-import { argument } from '@blargbot/test-util/mock.js';
 import type { APIRole } from 'discord-api-types/v9';
 import * as eris from 'eris';
 
@@ -33,9 +32,9 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
             { start: 0, end: options.generateCode('unknown role').length, error: notFound('unknown role') }
         ],
         setup(ctx) {
-            ctx.util.setup(m => m.findRoles(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
-                .verifiable(1)
-                .thenResolve([]);
+            ctx.util.setup((m, $) => m.findRoles($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown role'))
+                .mustHappen(1)
+                .resolves([]);
         }
     };
 
@@ -47,9 +46,9 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
                 { start: 0, end: options.generateCode('unknown role', '').length, error: notFound('unknown role') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findRoles(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.util.setup((m, $) => m.findRoles($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown role'))
+                    .mustHappen(1)
+                    .resolves([]);
             }
         };
         yield {
@@ -59,9 +58,9 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
                 { start: 0, end: options.generateCode('unknown role', 'q').length, error: notFound('unknown role').withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findRoles(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown role'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.util.setup((m, $) => m.findRoles($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown role'))
+                    .mustHappen(1)
+                    .resolves([]);
             }
         };
     }
@@ -96,12 +95,12 @@ function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase
             testCase.setup?.(ctx.roles[roleKey], ctx);
         },
         postSetup(bbctx, ctx) {
-            const role = bbctx.guild.roles.get(ctx.roles[roleKey].id);
+            const role = bbctx.local.message.channel.guild.roles.get(ctx.roles[roleKey].id);
             if (role === undefined)
                 throw new Error('Cannot find the role under test');
             if (args[0] !== undefined && args[0] !== '') {
                 ctx.util.setup(m => m.findRoles(role.guild, args[0]))
-                    .thenResolve([role]);
+                    .resolves([role]);
             }
 
             testCase.postSetup?.(role, bbctx, ctx);
@@ -109,7 +108,7 @@ function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase
         assert(bbctx, result, ctx) {
             if (testCase.assert === undefined)
                 return;
-            const role = bbctx.guild.roles.get(ctx.roles[roleKey].id);
+            const role = bbctx.local.message.channel.guild.roles.get(ctx.roles[roleKey].id);
             if (role === undefined)
                 throw new Error('Cannot find the role under test');
             testCase.assert(result, role, bbctx, ctx);

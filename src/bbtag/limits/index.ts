@@ -13,8 +13,8 @@ export * from './RuntimeLimit.js';
 export { rules };
 
 export const limits = {
-    customCommandLimit: CustomCommandLimit,
-    everythingAutoResponseLimit: EverythingAutoResponseLimit,
-    generalAutoResponseLimit: GeneralAutoResponseLimit,
-    tagLimit: TagLimit
+    CustomCommandLimit,
+    EverythingAutoResponseLimit,
+    GeneralAutoResponseLimit,
+    TagLimit
 };

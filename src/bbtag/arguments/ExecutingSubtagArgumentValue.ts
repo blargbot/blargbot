@@ -1,6 +1,6 @@
 import type { BBTagContext } from '../BBTagContext.js';
 import { ArgumentLengthError } from '../errors/index.js';
-import type { Statement, SubtagCall } from '../language/index.js';
+import type { BBTagExpression, SubtagCall } from '../language/index.js';
 import type { SubtagSignatureValueParameter } from '../types.js';
 import { BBTagRuntimeState } from '../types.js';
 import type { SubtagArgument } from './SubtagArgument.js';
@@ -22,7 +22,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
         public readonly parameter: SubtagSignatureValueParameter,
         context: BBTagContext,
         public readonly call: SubtagCall,
-        public readonly code: Statement
+        public readonly code: BBTagExpression
     ) {
         this.#context = context;
     }
@@ -38,7 +38,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
     async #executeInner(): Promise<string> {
         const result = await this.#context.eval(this.code);
         if (result.length > this.parameter.maxLength) {
-            this.#context.data.state = BBTagRuntimeState.ABORT;
+            this.#context.state = BBTagRuntimeState.ABORT;
             throw new ArgumentLengthError(this.call.args.indexOf(this.code), this.parameter.maxLength, result.length);
         }
         return this.#value = result.length === 0 ? this.parameter.defaultValue : result;

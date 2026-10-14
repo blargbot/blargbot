@@ -6,6 +6,7 @@ import { createGetUserPropTestCases } from './_getUserPropTest.js';
 await runSubtagTests({
     subtag: new UserCreatedAtSubtag(),
     argCountBounds: { min: 0, max: 3 },
+    names: ['userCreatedAt'],
     cases: [
         {
             code: '{usercreatedat}',

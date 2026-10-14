@@ -25,7 +25,7 @@ export class ParamsLengthSubtag extends CompiledSubtag {
     }
 
     public getParamsLength(context: BBTagContext): number {
-        const params = context.scopes.local.paramsarray;
+        const params = context.local.paramsarray;
         if (params === undefined)
             throw new BBTagRuntimeError('{paramslength} can only be used inside {function}');
         return params.length;

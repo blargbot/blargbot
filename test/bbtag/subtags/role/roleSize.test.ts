@@ -6,6 +6,7 @@ import { createGetRolePropTestCases } from './_getRolePropTest.js';
 await runSubtagTests({
     subtag: new RoleSizeSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['roleSize', 'inRole'],
     cases: [
         ...createGetRolePropTestCases({
             quiet: false,
@@ -19,7 +20,7 @@ await runSubtagTests({
                         role.id = '92348672342308424';
                     },
                     postSetup(_, bbctx, ctx) {
-                        ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
+                        ctx.util.setup(m => m.ensureMemberCache(bbctx.local.message.channel.guild)).resolves(undefined);
                     }
                 },
                 {
@@ -30,7 +31,7 @@ await runSubtagTests({
                         ctx.members.other.roles.push(role.id);
                     },
                     postSetup(_, bbctx, ctx) {
-                        ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
+                        ctx.util.setup(m => m.ensureMemberCache(bbctx.local.message.channel.guild)).resolves(undefined);
                     }
                 },
                 {
@@ -43,7 +44,7 @@ await runSubtagTests({
                         ctx.members.bot.roles.push(role.id);
                     },
                     postSetup(_, bbctx, ctx) {
-                        ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
+                        ctx.util.setup(m => m.ensureMemberCache(bbctx.local.message.channel.guild)).resolves(undefined);
                     }
                 }
             ]

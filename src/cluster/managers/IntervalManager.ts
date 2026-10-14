@@ -1,4 +1,5 @@
 import type { ExecutionResult } from '@blargbot/bbtag';
+import { limits } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/core';
 import type { GuildTriggerTag } from '@blargbot/domain';
@@ -88,13 +89,17 @@ export class IntervalManager {
                     content: '',
                     id: snowflake.create().toString()
                 },
-                limit: 'customCommandLimit',
-                inputRaw: '',
+                tagName: '_interval',
+                input: '',
+                flagDefinitions: [],
+                silent: true,
                 isCC: true,
-                rootTagName: '_interval',
-                authorId: interval.author ?? undefined,
-                authorizerId: interval.authorizer ?? undefined,
-                silent: true
+                tagVars: false,
+                limit: new limits.CustomCommandLimit(channel.guild),
+                author: interval.author ?? undefined,
+                authorizer: interval.authorizer ?? undefined,
+                cooldown: 0,
+                prefix: undefined
             });
             this.#cluster.logger.log('Interval on guild', member.guild.id, 'executed in', result.duration.total);
             return result;

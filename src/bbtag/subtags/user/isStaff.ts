@@ -34,7 +34,7 @@ export class IsStaffSubtag extends CompiledSubtag {
     }
 
     public async isStaff(context: BBTagContext, userStr: string, quiet: boolean): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const member = await context.queryMember(userStr, { noLookup: quiet });
 
         if (member === undefined) {

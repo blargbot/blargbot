@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new GuildMembersSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['guildMembers'],
     cases: [
         {
             code: '{guildmembers}',
@@ -17,7 +18,7 @@ await runSubtagTests({
                 ctx.users.bot.id = '23746392746789426394';
             },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
+                ctx.util.setup(m => m.ensureMemberCache(bbctx.local.message.channel.guild)).resolves(undefined);
             }
         }
     ]

@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new GuildCreatedAtSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['guildCreatedAt'],
     setup(ctx) {
         ctx.guild.id = '417411399422312468';
         ctx.roles.everyone.id = ctx.guild.id;

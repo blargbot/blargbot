@@ -1,11 +1,11 @@
-import type { Statement } from '../language/index.js';
+import type { BBTagExpression } from '../language/index.js';
 import type { SubtagSignatureValueParameter } from '../types.js';
 import type { SubtagArgument } from './SubtagArgument.js';
 
 export class DefaultSubtagArgumentValue implements SubtagArgument {
     public readonly isCached = true;
     public get value(): string { return this.parameter.defaultValue; }
-    public get code(): Statement {
+    public get code(): BBTagExpression {
         return {
             values: [this.parameter.defaultValue],
             start: { index: 0, line: 0, column: 0 },

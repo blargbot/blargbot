@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new JsonCleanSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['jsonClean', 'jClean'],
     cases: [
         {
             code: '{jsonclean;{j;{"test":"[]"}}}',
@@ -31,7 +32,7 @@ await runSubtagTests({
             code: '{jsonclean;arr1}',
             expected: '[{"x":{}}]',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['{"x":"{}"}']);
             }
         },
@@ -39,7 +40,7 @@ await runSubtagTests({
             code: '{jsonclean;obj1}',
             expected: '{"a":{"x":{}}}',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'obj1' }, { a: '{"x":"{}"}' });
             }
         },
@@ -47,7 +48,7 @@ await runSubtagTests({
             code: '{jsonclean;var1}',
             expected: '{"a":{"x":{}}}',
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, '{"a":"{\\"x\\":\\"{}\\"}"}');
             }
         },

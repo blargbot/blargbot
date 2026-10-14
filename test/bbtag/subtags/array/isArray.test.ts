@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new IsArraySubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['isArray'],
     cases: [
         { code: '{isarray;[1,2,3]}', expected: 'true' },
         { code: '{isarray;a}', expected: 'false' },
@@ -17,7 +18,7 @@ await runSubtagTests({
             expected: 'true',
             subtags: [new GetSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
+                ctx.input.tagName = 'testTag';
                 ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
             }
         }

@@ -1,4 +1,4 @@
-import { guard, metrics, Timer } from '@blargbot/core';
+import { guard, metrics } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { BBTagContext } from './BBTagContext.js';
@@ -32,15 +32,14 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
     }
 
     public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
-        const timer = new Timer().start();
+        const start = performance.now();
         try {
             yield* this.executeCore(context, subtagName, subtag);
         } finally {
-            timer.end();
-            metrics.subtagLatency.labels(this.name).observe(timer.elapsed);
+            const elapsed = performance.now() - start;
+            metrics.subtagLatency.labels(this.name).observe(elapsed);
             metrics.subtagCounter.labels(this.name).inc();
-            const debugPerf = context.data.subtags[this.name] ??= [];
-            debugPerf.push(timer.elapsed);
+            context.subtagInvocations.getOrInsert(this.name, []).push(elapsed);
         }
     }
 

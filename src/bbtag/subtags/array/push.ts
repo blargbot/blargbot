@@ -34,7 +34,7 @@ export class PushSubtag extends CompiledSubtag {
         if (varName === undefined)
             return array;
 
-        await context.variables.set(varName, array);
+        await context.root.variables.set(varName, array);
         return undefined;
     }
 }

@@ -21,7 +21,7 @@ export class SlowModeSubtag extends CompiledSubtag {
                     exampleCode: tag.clearCurrent.exampleCode,
                     exampleOut: tag.clearCurrent.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx) => this.setSlowmode(ctx, ctx.channel.id, '0')
+                    execute: (ctx) => this.setSlowmode(ctx, ctx.local.message.channel.id, '0')
                 },
                 {
                     parameters: ['channel|time'],
@@ -63,7 +63,7 @@ export class SlowModeSubtag extends CompiledSubtag {
         if (lookupChannel !== undefined)
             channel = lookupChannel;
         else {
-            channel = context.channel;
+            channel = context.local.message.channel;
             time = parse.int(channelStr);
         }
 

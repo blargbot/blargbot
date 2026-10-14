@@ -26,7 +26,7 @@ export class RoleSizeSubtag extends CompiledSubtag {
     }
 
     public async getRoleSize(context: BBTagContext, roleStr: string/*, quiet: boolean*/): Promise<number> {
-        /* quiet ||= context.scopes.local.quiet ?? false */
+        /* quiet ||= context.local.quiet ?? false */
         /* const role = await context.queryRole(roleStr, {
             quiet
         }) */
@@ -34,7 +34,7 @@ export class RoleSizeSubtag extends CompiledSubtag {
         if (role === undefined)
             throw new RoleNotFoundError(roleStr);
 
-        await context.util.ensureMemberCache(context.guild);
-        return context.guild.members.filter(m => m.roles.includes(role.id)).length;
+        await context.util.ensureMemberCache(context.local.message.channel.guild);
+        return context.local.message.channel.guild.members.filter(m => m.roles.includes(role.id)).length;
     }
 }

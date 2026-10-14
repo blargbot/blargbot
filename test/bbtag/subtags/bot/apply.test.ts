@@ -6,6 +6,7 @@ import { EchoArgsSubtag, MarkerError, runSubtagTests, TestDataSubtag } from '../
 await runSubtagTests({
     subtag: new ApplySubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['apply'],
     cases: [
         {
             code: '{apply;eval}',

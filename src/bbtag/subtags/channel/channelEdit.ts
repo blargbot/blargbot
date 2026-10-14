@@ -70,7 +70,7 @@ const booleanish = z.union([
 
 const defaultAutoArchiveDurationMapping = z.enum({ a: 60, b: 1440, c: 4320, d: 10080 });
 
-const mapChannelOptions = zodStringToJson.pipe(z.object({
+const mapChannelOptions = zodStringToJson.pipe(z.strictObject({
     bitrate: numberish.optional(),
     name: z.string().optional(),
     nsfw: booleanish.optional(),
@@ -81,7 +81,7 @@ const mapChannelOptions = zodStringToJson.pipe(z.object({
     defaultAutoArchiveDuration: numberish.pipe(defaultAutoArchiveDurationMapping).optional(),
     locked: booleanish.optional()
 }));
-const mapThreadOptions = zodStringToJson.pipe(z.object({
+const mapThreadOptions = zodStringToJson.pipe(z.strictObject({
     archived: booleanish.optional(),
     autoArchiveDuration: numberish.pipe(defaultAutoArchiveDurationMapping).optional(),
     locked: booleanish.optional(),

@@ -25,6 +25,6 @@ export class FlagsArraySubtag extends CompiledSubtag {
     }
 
     public flagKeys(context: BBTagContext): string[] {
-        return Object.keys(context.flaggedInput);
+        return Object.keys(context.local.input.flags);
     }
 }

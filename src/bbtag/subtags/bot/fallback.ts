@@ -32,6 +32,6 @@ export class FallbackSubtag extends CompiledSubtag {
     }
 
     public setFallback(context: BBTagContext, value: string | undefined): void {
-        context.scopes.local.fallback = value;
+        context.local.fallback = value;
     }
 }

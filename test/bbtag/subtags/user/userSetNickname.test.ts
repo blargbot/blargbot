@@ -1,47 +1,49 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
 import { UserSetNickSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
-import * as eris from 'eris';
+import type * as eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 await runSubtagTests({
     subtag: new UserSetNickSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['userSetNickname', 'setNickname', 'setNick', 'userSetNick'],
     cases: [
         {
             code: '{usersetnick;abc}',
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000'))
-                    .verifiable(1)
-                    .thenResolve();
+                ctx.discord.setup((m, $) => m.editGuildMember(ctx.guild.id, ctx.users.command.id, $({ nick: 'abc' }), 'Command User#0000'))
+                    .mustHappen(1)
+                    .resolves(null!);
             }
         },
         {
             code: '{usersetnick;abc;other user}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                member.setup(m => m.edit(argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000'))
-                    .verifiable(1)
-                    .thenResolve();
+                const member = ctx.createMock<eris.Member>();
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
+                member.setup((m, $) => m.edit($({ nick: 'abc' }), 'Command User#0000'))
+                    .mustHappen(1)
+                    .resolves();
+                member.setupSet(m => m.nick = 'abc').returns(true).mustHappen(1);
             }
         },
         {
             code: '{usersetnick;abc;blargbot}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'blargbot'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                member.setup(m => m.edit(argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000'))
-                    .verifiable(1)
-                    .thenResolve();
+                const member = ctx.createMock<eris.Member>();
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'blargbot'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
+                member.setup((m, $) => m.edit($({ nick: 'abc' }), 'Command User#0000'))
+                    .mustHappen(1)
+                    .resolves();
+                member.setupSet(m => m.nick = 'abc').returns(true).mustHappen(1);
             }
         },
         {
@@ -52,9 +54,9 @@ await runSubtagTests({
                 { start: 0, end: 33, error: new UserNotFoundError('unknown user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'unknown user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'unknown user'))
+                    .mustHappen(1)
+                    .resolves([]);
             }
         }
     ]

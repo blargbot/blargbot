@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new IndexOfSubtag(),
     argCountBounds: { min: 2, max: 3 },
+    names: ['indexOf'],
     cases: [
         { code: '{indexof;This is some text;s}', expected: '3' },
         { code: '{indexof;This is some text;s;3}', expected: '3' },
@@ -19,7 +20,7 @@ await runSubtagTests({
         {
             code: '{indexof;This is some text;s;a}',
             expected: '6',
-            setup(ctx) { ctx.rootScope.fallback = '4'; }
+            postSetup(ctx) { ctx.root.fallback = '4'; }
         },
         {
             code: '{indexof;This is some text;s;a}',
@@ -31,7 +32,7 @@ await runSubtagTests({
         {
             code: '{indexof;This is some text;s;a}',
             expected: 'b',
-            setup(ctx) { ctx.rootScope.fallback = 'b'; },
+            postSetup(ctx) { ctx.root.fallback = 'b'; },
             errors: [
                 { start: 0, end: 31, error: new NotANumberError('a') }
             ]

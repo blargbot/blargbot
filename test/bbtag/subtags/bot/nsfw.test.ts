@@ -7,26 +7,27 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new NsfwSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['nsfw'],
     cases: [
         {
             code: '{nsfw}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.data.nsfw, '❌ This contains NSFW content! Go to a NSFW channel. ❌');
+                assert.equal(ctx.root.output.nsfw, '❌ This contains NSFW content! Go to a NSFW channel. ❌');
             }
         },
         {
             code: '{nsfw;}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.data.nsfw, '❌ This contains NSFW content! Go to a NSFW channel. ❌');
+                assert.equal(ctx.root.output.nsfw, '❌ This contains NSFW content! Go to a NSFW channel. ❌');
             }
         },
         {
             code: '{nsfw;Buddy you need a bonk}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.data.nsfw, 'Buddy you need a bonk');
+                assert.equal(ctx.root.output.nsfw, 'Buddy you need a bonk');
             }
         }
     ]

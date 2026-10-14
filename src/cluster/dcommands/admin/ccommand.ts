@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 
-import { bbtag } from '@blargbot/bbtag';
+import { bbtag, limits } from '@blargbot/bbtag';
 import type { Cluster, CommandContext, CommandResult, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster';
 import { CommandType, guard, GuildCommand, parse } from '@blargbot/cluster';
 import type { Configuration } from '@blargbot/config';
@@ -167,12 +167,17 @@ export class CustomCommandCommand extends GuildCommand {
     ): Promise<CommandResult> {
         const result = await context.bbtag.execute(content, {
             message: context.message,
-            inputRaw: input,
+            tagName: 'test',
+            input: input,
+            flagDefinitions: [],
+            silent: false,
             isCC: true,
-            limit: 'customCommandLimit',
-            rootTagName: 'test',
-            authorId: context.author.id,
-            prefix: context.prefix
+            tagVars: false,
+            limit: new limits.CustomCommandLimit(context.message.channel.guild),
+            author: context.author.id,
+            authorizer: undefined,
+            prefix: context.prefix,
+            cooldown: 0
         });
 
         if (!debug)
@@ -204,14 +209,16 @@ export class CustomCommandCommand extends GuildCommand {
 
         const result = await context.bbtag.execute(match.content, {
             message: context.message,
-            inputRaw: input ?? '',
+            tagName: match.name,
+            input: input ?? '',
+            flagDefinitions: match.flags ?? [],
+            cooldown: match.cooldown ?? 0,
+            silent: false,
             isCC: true,
-            limit: 'customCommandLimit',
-            rootTagName: match.name,
-            authorId: match.author ?? undefined,
-            authorizerId: match.authorizer ?? undefined,
-            flags: match.flags,
-            cooldown: match.cooldown,
+            tagVars: false,
+            limit: new limits.CustomCommandLimit(context.message.channel.guild),
+            author: match.author ?? undefined,
+            authorizer: match.authorizer ?? undefined,
             prefix: context.prefix
         });
 
@@ -758,15 +765,15 @@ async function requestSafe(context: CommandContext, url: string): Promise<unknow
     }
 }
 
-const mapSignedGuildShrinkwrap = z.object({
+const mapSignedGuildShrinkwrap = z.strictObject({
     signature: z.string().optional(),
-    payload: z.object({
+    payload: z.strictObject({
         cc: z.record(
             z.string(),
-            z.object({
+            z.strictObject({
                 content: z.string(),
                 cooldown: z.number().optional(),
-                flags: z.object({
+                flags: z.strictObject({
                     description: z.string(),
                     word: z.string(),
                     flag: z.enum(guard.isFlagChar.accept)

@@ -33,7 +33,7 @@ export class RandomStringSubtag extends CompiledSubtag {
         countStr: string
     ): string {
         const chars = charsStr.split('');
-        const count = parse.int(countStr) ?? parse.int(context.scopes.local.fallback ?? '');
+        const count = parse.int(countStr) ?? parse.int(context.local.fallback ?? '');
         if (count === undefined)
             throw new NotANumberError(countStr);
 

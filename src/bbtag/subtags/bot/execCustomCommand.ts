@@ -1,16 +1,23 @@
 import { humanize, parse } from '@blargbot/core';
+import type { GuildCommandTag } from '@blargbot/domain';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { toBBTagInput } from '../../toBBTagInput.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.execCustomCommand;
 
+export interface GetCustomCommandThunk {
+    (guildId: string, name: string): Awaitable<GuildCommandTag | undefined>;
+}
+
 export class ExecCustomCommandSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getCustomCommand: GetCustomCommandThunk;
+    public constructor({ getCustomCommand }: { getCustomCommand: GetCustomCommandThunk; }) {
         super({
             name: 'execCustomCommand',
             aliases: ['execCC'],
@@ -26,13 +33,22 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getCustomCommand = getCustomCommand;
+    }
+
+    async #cacheTag(context: BBTagContext, name: string): Promise<GuildCommandTag | undefined> {
+        const result = await this.#getCustomCommand(context.local.message.channel.guild.id, name);
+        if (result !== undefined)
+            context.root.ccCache.set(name, result);
+        return result;
     }
 
     public async execCustomCommand(context: BBTagContext, name: string, args: string[]): Promise<string> {
         const tagName = name.toLowerCase();
-        const ccommand = await context.getTag('cc', tagName, (key) => context.database.guilds.getCommand(context.guild.id, key));
+        const ccommand = context.root.ccCache.get(tagName)
+            ?? await this.#cacheTag(context, tagName);
 
-        if (ccommand === null)
+        if (ccommand === undefined)
             throw new BBTagRuntimeError(`CCommand not found: ${tagName}`);
         if ('alias' in ccommand)
             throw new BBTagRuntimeError(`Cannot execcc imported tag: ${tagName}`);
@@ -41,15 +57,13 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
         if (args.length > 1)
             input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(x => parse.string(x)));
 
-        return await context.withScope(true, () => context.withChild({
-            tagName,
-            cooldown: ccommand.cooldown ?? 0,
-            inputRaw: input
-        }, async context => {
-            const result = await context.engine.execute(ccommand.content, context);
-            if (context.data.state === BBTagRuntimeState.RETURN)
-                context.data.state = BBTagRuntimeState.RUNNING;
-            return result.content;
-        }));
+        using scope = context.usingScope();
+        scope.tagName = tagName;
+        scope.cooldown = ccommand.cooldown ?? 0;
+        scope.input = toBBTagInput(input, context.root.flagDefinitions);
+        const result = await context.engine.execute(ccommand.content, context);
+        if (context.state === BBTagRuntimeState.RETURN)
+            context.state = BBTagRuntimeState.RUNNING;
+        return result.content;
     }
 }

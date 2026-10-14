@@ -8,6 +8,7 @@ import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 await runSubtagTests({
     subtag: new ReactionRemoveAllSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['reactionRemoveAll', 'reactRemoveAll', 'removeReactAll'],
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
@@ -30,7 +31,7 @@ await runSubtagTests({
                     setup(channel, message, ctx) {
                         ctx.isStaff = true;
                         ctx.roles.bot.permissions = eris.Constants.Permissions.manageMessages.toString();
-                        ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).thenResolve(undefined);
+                        ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).resolves(undefined);
                     }
                 },
                 {
@@ -39,10 +40,10 @@ await runSubtagTests({
                     setup(channel, message, ctx) {
                         ctx.isStaff = false;
                         ctx.roles.bot.permissions = eris.Constants.Permissions.manageMessages.toString();
-                        ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).thenResolve(undefined);
+                        ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).resolves(undefined);
                     },
                     postSetup(_, message, bbctx) {
-                        bbctx.data.ownedMsgs.push(message.id);
+                        bbctx.root.ownedMessageIds.add(message.id);
                     }
                 },
                 {

@@ -148,6 +148,6 @@ export class CensorsRoute extends BaseRoute<['/guilds/:guildId/censors']> {
 }
 
 const mapCensorId = z.compile(z.string().regex(/^\d+$/).transform(Number));
-const mapTag = z.compile(z.object({
+const mapTag = z.compile(z.strictObject({
     content: z.string()
 }));

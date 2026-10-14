@@ -25,7 +25,7 @@ export class ReactionSubtag extends CompiledSubtag {
     }
 
     public getReaction(context: BBTagContext): string {
-        const val = context.scopes.local.reaction;
+        const val = context.local.reaction;
         if (val === undefined)
             throw new BBTagRuntimeError('{reaction} can only be used inside {waitreaction}');
         return val;

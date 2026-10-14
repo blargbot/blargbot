@@ -35,6 +35,7 @@ const messageTypes: { [P in Extract<keyof typeof MessageType, string>]: typeof M
 await runSubtagTests({
     subtag: new MessageTypeSubtag(),
     argCountBounds: { min: 0, max: 2 },
+    names: ['messageType'],
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,

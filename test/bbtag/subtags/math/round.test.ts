@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RoundSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['round'],
     cases: [
         { code: '{round;5}', expected: '5' },
         { code: '{round;9.2}', expected: '9' },

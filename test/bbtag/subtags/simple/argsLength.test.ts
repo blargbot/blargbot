@@ -5,21 +5,22 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ArgsLengthSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['argsLength'],
     cases: [
         {
             code: '{argslength}',
             expected: '0',
-            setup(ctx) { ctx.options.inputRaw = ''; }
+            setup(ctx) { ctx.input.input = ''; }
         },
         {
             code: '{argslength}',
             expected: '4',
-            setup(ctx) { ctx.options.inputRaw = 'this is a test'; }
+            setup(ctx) { ctx.input.input = 'this is a test'; }
         },
         {
             code: '{argslength}',
             expected: '3',
-            setup(ctx) { ctx.options.inputRaw = 'this "is a" test'; }
+            setup(ctx) { ctx.input.input = 'this "is a" test'; }
         }
     ]
 });

@@ -48,7 +48,7 @@ export class JsonSortSubtag extends CompiledSubtag {
         if (obj.variable === undefined)
             return obj.object;
 
-        await context.variables.set(obj.variable, obj.object);
+        await context.root.variables.set(obj.variable, obj.object);
         return undefined;
     }
 }

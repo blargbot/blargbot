@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ThrowSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['throw'],
     cases: [
         {
             code: '{throw}',

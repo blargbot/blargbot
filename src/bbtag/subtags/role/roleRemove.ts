@@ -22,7 +22,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [role]) => this.removeRole(ctx, role.value, ctx.user.id, false)
+                    execute: (ctx, [role]) => this.removeRole(ctx, role.value, ctx.local.message.author.id, false)
                 },
                 {
                     parameters: ['role', 'user', 'quiet?'],
@@ -46,7 +46,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot remove roles');
 
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const member = await context.queryMember(userStr, { noLookup: quiet });
 
         if (member === undefined) {
@@ -55,7 +55,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
         }
 
         const roleStrs = bbtag.tagArray.deserialize(roleStr)?.v.filter(guard.isTypeOf('string', 'number')) ?? [roleStr];
-        const roles = roleStrs.map(role => context.guild.roles.get(role)).filter((r): r is Exclude<typeof r, undefined> => r !== undefined);
+        const roles = roleStrs.map(role => context.local.message.channel.guild.roles.get(role)).filter((r): r is Exclude<typeof r, undefined> => r !== undefined);
 
         if (roles.length === 0)
             throw new RoleNotFoundError(roleStr);

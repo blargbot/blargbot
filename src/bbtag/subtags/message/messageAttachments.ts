@@ -19,7 +19,7 @@ export class MessageAttachmentsSubtag extends CompiledSubtag {
                     exampleCode: tag.trigger.exampleCode,
                     exampleOut: tag.trigger.exampleOut,
                     returns: 'string[]',
-                    execute: (ctx) => this.getMessageAttachments(ctx, ctx.channel.id, ctx.message.id, false)
+                    execute: (ctx) => this.getMessageAttachments(ctx, ctx.local.message.channel.id, ctx.local.message.id, false)
                 },
                 {
                     parameters: ['messageid'],
@@ -27,7 +27,7 @@ export class MessageAttachmentsSubtag extends CompiledSubtag {
                     exampleCode: tag.inCurrent.exampleCode,
                     exampleOut: tag.inCurrent.exampleOut,
                     returns: 'string[]',
-                    execute: (ctx, [messageId]) => this.getMessageAttachments(ctx, ctx.channel.id, messageId.value, false)
+                    execute: (ctx, [messageId]) => this.getMessageAttachments(ctx, ctx.local.message.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
@@ -47,7 +47,7 @@ export class MessageAttachmentsSubtag extends CompiledSubtag {
         messageStr: string,
         quiet: boolean
     ): Promise<string[]> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)

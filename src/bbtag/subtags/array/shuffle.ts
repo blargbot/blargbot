@@ -36,7 +36,9 @@ export class ShuffleSubtag extends CompiledSubtag {
     }
 
     public shuffleInput(context: BBTagContext): void {
-        random.ishuffle(context.input);
+        const array = [...context.local.input.array];
+        random.ishuffle(array);
+        Object.assign(context.local.input, { array });
     }
 
     public async shuffle(context: BBTagContext, array: string): Promise<JArray | undefined> {
@@ -48,7 +50,7 @@ export class ShuffleSubtag extends CompiledSubtag {
         if (arr.n === undefined)
             return arr.v;
 
-        await context.variables.set(arr.n, arr.v);
+        await context.root.variables.set(arr.n, arr.v);
         return undefined;
     }
 }

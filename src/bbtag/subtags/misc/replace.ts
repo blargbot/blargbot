@@ -36,7 +36,7 @@ export class ReplaceSubtag extends CompiledSubtag {
     }
 
     public setOutputReplacement(context: BBTagContext, phrase: string, replacement: string): void {
-        context.data.replace = {
+        context.root.output.replace = {
             regex: phrase,
             with: replacement
         };

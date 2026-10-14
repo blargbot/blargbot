@@ -6,8 +6,13 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.userTimeZone;
 
+export interface GetUserTimezoneThunk {
+    (userId: string): Awaitable<string | undefined>;
+}
+
 export class UserTimezoneSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getUserTimezone: GetUserTimezoneThunk;
+    public constructor({ getUserTimezone }: { getUserTimezone: GetUserTimezoneThunk; }) {
         super({
             name: 'userTimeZone',
             category: SubtagType.USER,
@@ -30,6 +35,7 @@ export class UserTimezoneSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getUserTimezone = getUserTimezone;
     }
 
     public async getUserTimezone(
@@ -37,7 +43,7 @@ export class UserTimezoneSubtag extends CompiledSubtag {
         userStr: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const user = await context.queryUser(userStr, { noLookup: quiet });
 
         if (user === undefined) {
@@ -45,7 +51,6 @@ export class UserTimezoneSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const userTimezone = await context.database.users.getProp(user.id, 'timezone');
-        return userTimezone ?? 'UTC';
+        return await this.#getUserTimezone(user.id) ?? 'UTC';
     }
 }

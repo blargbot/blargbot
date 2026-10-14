@@ -34,7 +34,7 @@ export class PopSubtag extends CompiledSubtag {
 
         const result = array.pop();
         if (varName !== undefined)
-            await context.variables.set(varName, array);
+            await context.root.variables.set(varName, array);
 
         return result;
     }

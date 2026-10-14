@@ -26,7 +26,7 @@ export class ReactionUserSubtag extends CompiledSubtag {
     }
 
     public getReaction(context: BBTagContext): string {
-        const val = context.scopes.local.reactUser;
+        const val = context.local.reactUser;
         if (val === undefined)
             throw new BBTagRuntimeError('{reactuser} can only be used inside {waitreaction}');
         return val;

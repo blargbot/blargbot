@@ -6,6 +6,7 @@ import { createGetUserPropTestCases } from './_getUserPropTest.js';
 await runSubtagTests({
     subtag: new UserJoinedAtSubtag(),
     argCountBounds: { min: 0, max: 3 },
+    names: ['userJoinedAt'],
     cases: [
         {
             code: '{userjoinedat}',

@@ -29,7 +29,7 @@ export class SliceSubtag extends CompiledSubtag {
 
     public async slice(context: BBTagContext, array: string, startStr: string, endStr: string): Promise<JArray> {
         const arr = await bbtag.tagArray.deserializeOrGetArray(context, array);
-        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? ''));
+        const fallback = new Lazy(() => parse.int(context.local.fallback ?? ''));
 
         if (arr === undefined)
             throw new NotAnArrayError(array);

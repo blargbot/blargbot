@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ReactionUserSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['reactionUser', 'reactUser'],
     cases: [
         {
             code: '{reactuser}',
@@ -18,7 +19,7 @@ await runSubtagTests({
             code: '{reactuser}',
             expected: '237462498437649',
             postSetup(bbctx) {
-                bbctx.scopes.local.reactUser = '237462498437649';
+                bbctx.local.reactUser = '237462498437649';
             }
         }
     ]

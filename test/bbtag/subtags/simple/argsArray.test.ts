@@ -5,21 +5,22 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ArgsArraySubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['argsArray'],
     cases: [
         {
             code: '{argsarray}',
             expected: '[]',
-            setup(ctx) { ctx.options.inputRaw = ''; }
+            setup(ctx) { ctx.input.input = ''; }
         },
         {
             code: '{argsarray}',
             expected: '["this","is","a","test"]',
-            setup(ctx) { ctx.options.inputRaw = 'this is a test'; }
+            setup(ctx) { ctx.input.input = 'this is a test'; }
         },
         {
             code: '{argsarray}',
             expected: '["this","is a","test"]',
-            setup(ctx) { ctx.options.inputRaw = 'this "is a" test'; }
+            setup(ctx) { ctx.input.input = 'this "is a" test'; }
         }
     ]
 });

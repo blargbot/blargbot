@@ -34,6 +34,6 @@ export class SuppressLookupSubtag extends CompiledSubtag {
                 throw new NotABooleanError(value);
         }
 
-        context.scopes.local.noLookupErrors = suppress;
+        context.local.noLookupErrors = suppress;
     }
 }

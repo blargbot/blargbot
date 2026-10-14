@@ -30,7 +30,7 @@ export class RolePermissionsSubtag extends CompiledSubtag {
         roleId: string,
         quiet: boolean
     ): Promise<bigint> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const role = await context.queryRole(roleId, { noLookup: quiet });
 
         if (role === undefined) {

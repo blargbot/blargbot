@@ -33,7 +33,7 @@ export class ChannelIsCategorySubtag extends CompiledSubtag {
         channelStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
             throw new ChannelNotFoundError(channelStr)

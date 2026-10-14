@@ -5,6 +5,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new VoidSubtag(),
     argCountBounds: { min: 0, max: Infinity },
+    names: ['void', 'null'],
     cases: [
         { code: '{void}', expected: '' },
         { code: '{void;}', expected: '' },

@@ -1,6 +1,6 @@
-import type { Statement, SubtagCall } from '../language/index.js';
+import type { BBTagExpression, SubtagCall } from '../language/index.js';
 
-export function stringify(bbtag: Statement | SubtagCall): string {
+export function stringify(bbtag: BBTagExpression | SubtagCall): string {
     if ('values' in bbtag) {
         return bbtag.values.map(val => typeof val === 'string' ? val : stringify(val)).join('');
     }

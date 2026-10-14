@@ -58,23 +58,28 @@ export class DMSubtag extends CompiledSubtag {
         const messageAsEmbeds = embedStr === undefined ? parse.embed(messageStr, false) : undefined;
         const embeds = messageAsEmbeds ?? parse.embed(embedStr);
         const content = messageAsEmbeds === undefined ? messageStr : undefined;
+        const payload = context.root.output.nsfw !== undefined
+            ? { content: context.root.output.nsfw }
+            : { content, embeds };
+        if (payload.content === undefined)
+            delete payload.content;
+        if (payload.embeds === undefined)
+            delete payload.embeds;
 
         try {
             let cache = this.#dmCache[member.id];
             const channel = await member.user.getDMChannel();
             if (cache === undefined ||
                 cache.count > 5 ||
-                cache.user !== context.user.id ||
-                cache.guild !== context.guild.id) {
+                cache.user !== context.local.message.author.id ||
+                cache.guild !== context.local.message.channel.guild.id) {
                 // Ew we're gonna send a message first? It was voted...
                 // TODO: Maybe change to a footer embed on every DM? I dont think its possible to disable embeds in DMs
-                await context.util.send(channel, { content: `The following message was sent from **__${context.guild.name}__** (${context.guild.id}), and was sent by **__${context.user.username}#${context.user.discriminator}__** (${context.user.id}):` });
-                cache = this.#dmCache[member.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
+                await context.util.send(channel, { content: `The following message was sent from **__${context.local.message.channel.guild.name}__** (${context.local.message.channel.guild.id}), and was sent by **__${context.local.message.author.username}#${context.local.message.author.discriminator}__** (${context.local.message.author.id}):` });
+                cache = this.#dmCache[member.id] = { user: context.local.message.author.id, guild: context.local.message.channel.guild.id, count: 1 };
             }
 
-            await (context.data.nsfw === undefined
-                ? context.util.send(channel, { content, embeds })
-                : context.util.send(channel, { content: context.data.nsfw }));
+            await context.util.send(channel, payload);
             cache.count++;
         } catch (e: unknown) {
             context.logger.error('DM failed', e);

@@ -25,6 +25,6 @@ export class CommandNameSubtag extends CompiledSubtag {
     }
 
     public getTagName(context: BBTagContext): string {
-        return context.rootTagName;
+        return context.root.tagName;
     }
 }

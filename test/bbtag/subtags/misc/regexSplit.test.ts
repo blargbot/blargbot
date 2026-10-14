@@ -6,6 +6,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RegexSplitSubtag(),
     argCountBounds: { min: 2, max: { count: 2, noEval: [1] } },
+    names: ['regexSplit'],
     cases: [
         { code: '{regexsplit;a1b2c3d4e5c6;/[bc]\\d/g}', expected: '["a1","","d4e5",""]' },
         { code: '{regexsplit;ffff;/[a-z]\\d/g}', expected: '["ffff"]' },

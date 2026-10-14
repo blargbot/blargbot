@@ -1,42 +1,52 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { SleepSubtag } from '@blargbot/bbtag/subtags';
+import { Mock } from '@blargbot/test-util';
+import type { sleep as defaultSleep } from '@blargbot/util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const sleep = new Mock<typeof defaultSleep>({ callable: true });
+
 await runSubtagTests({
-    subtag: new SleepSubtag(),
+    subtag: new SleepSubtag({
+        sleep: sleep.instance
+    }),
     argCountBounds: { min: 1, max: 1 },
+    names: ['sleep'],
+    setup(ctx) {
+        ctx.addMock(sleep);
+    },
     cases: [
         {
             code: '{sleep;100ms}',
             expected: '',
             retries: 5,
-            setup(ctx) {
-                ctx.sleep.setup(m => m.sleep(100)).thenResolve();
+            setup() {
+                sleep.setup(m => m(100)).resolves();
             }
         },
         {
             code: '{sleep;50ms}',
             expected: '',
             retries: 5,
-            setup(ctx) {
-                ctx.sleep.setup(m => m.sleep(50)).thenResolve();
+            setup() {
+                sleep.setup(m => m(50)).resolves();
             }
         },
         {
             code: '{sleep;1s}',
             expected: '',
             retries: 5,
-            setup(ctx) {
-                ctx.sleep.setup(m => m.sleep(1000)).thenResolve();
+            setup() {
+                sleep.setup(m => m(1000)).resolves();
             }
         },
         {
             code: '{sleep;1d}',
             expected: '',
             retries: 5,
-            setup(ctx) {
-                ctx.sleep.setup(m => m.sleep(300_000)).thenResolve();
+            setup() {
+                sleep.setup(m => m(300_000)).resolves();
             }
         },
         {

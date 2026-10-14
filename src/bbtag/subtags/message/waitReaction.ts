@@ -3,7 +3,7 @@ import { clamp, discord, Emote, guard, parse } from '@blargbot/core';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
-import type { Statement } from '../../language/index.js';
+import type { BBTagExpression } from '../../language/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
@@ -46,12 +46,12 @@ export class WaitReactionSubtag extends CompiledSubtag {
         messageStr: string,
         userIDStr: string,
         reactions: string,
-        condition: Statement,
+        condition: BBTagExpression,
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string, userId: string, emoji: string]> {
         const messages = bbtag.tagArray.flattenArray([messageStr]).map(i => parse.string(i));
         const users = await this.bulkLookup(userIDStr, i => context.queryUser(i, { noErrors: true, noLookup: true }), UserNotFoundError)
-            ?? [context.user];
+            ?? [context.local.message.author];
 
         // parse reactions
         let parsedReactions: Emote[] | undefined;
@@ -78,11 +78,11 @@ export class WaitReactionSubtag extends CompiledSubtag {
             if (!userSet.has(user.id) || !checkReaction(reaction) || !guard.isGuildMessage(message))
                 return false;
 
-            const resultStr = await context.withScope(scope => {
-                scope.reaction = reaction.toString();
-                scope.reactUser = user.id;
-                return context.withChild({ message }, context => context.eval(condition));
-            });
+            using scope = context.usingScope();
+            scope.reaction = reaction.toString();
+            scope.reactUser = user.id;
+            scope.message = message;
+            const resultStr = await context.eval(condition);
             const result = parse.boolean(resultStr.trim());
             if (result === undefined)
                 throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);

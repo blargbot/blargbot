@@ -8,26 +8,27 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new SuppressLookupSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['suppressLookup'],
     cases: [
         {
             code: '{suppresslookup}',
             expected: '',
             assert(bbctx) {
-                assert.equal(bbctx.scopes.root.noLookupErrors, true);
+                assert.equal(bbctx.root.noLookupErrors, true);
             }
         },
         {
             code: '{suppresslookup;true}',
             expected: '',
             assert(bbctx) {
-                assert.equal(bbctx.scopes.root.noLookupErrors, true);
+                assert.equal(bbctx.root.noLookupErrors, true);
             }
         },
         {
             code: '{suppresslookup;false}',
             expected: '',
             assert(bbctx) {
-                assert.equal(bbctx.scopes.root.noLookupErrors, false);
+                assert.equal(bbctx.root.noLookupErrors, false);
             }
         },
         {
@@ -37,7 +38,7 @@ await runSubtagTests({
                 { start: 0, end: 20, error: new NotABooleanError('abc') }
             ],
             assert(bbctx) {
-                assert.equal(bbctx.scopes.root.noLookupErrors, undefined);
+                assert.equal(bbctx.root.noLookupErrors, undefined);
             }
         }
     ]

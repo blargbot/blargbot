@@ -1,15 +1,22 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { EmojiCreateSubtag, SemiSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
+import { Mock } from '@blargbot/test-util';
 import { asUint8Array } from '@blargbot/util';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const fetch = new Mock<typeof globalThis.fetch>({ callable: true });
+
 await runSubtagTests({
-    subtag: new EmojiCreateSubtag(),
+    subtag: new EmojiCreateSubtag({
+        fetch: fetch.instance
+    }),
     argCountBounds: { min: 2, max: 3 },
+    names: ['emojiCreate'],
     setup(ctx) {
+        ctx.addMock(fetch);
+        fetch.reset();
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageEmojisAndStickers.toString();
     },
     cases: [
@@ -18,11 +25,11 @@ await runSubtagTests({
             subtags: [new SemiSubtag()],
             expected: '23946249762743426',
             setup(ctx) {
-                ctx.discord.setup(m => m.createGuildEmoji(ctx.guild.id, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.createGuildEmoji(ctx.guild.id, $({
                     image: 'data:image/png;base64,abcdef',
                     name: 'My cool emoji',
                     roles: []
-                }), 'Command User#0000')).thenResolve({
+                }), 'Command User#0000')).resolves({
                     animated: false,
                     available: true,
                     id: '23946249762743426',
@@ -38,17 +45,17 @@ await runSubtagTests({
             expected: '23946249762743426',
             setup(ctx) {
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png'))
-                    .thenResolve(response.instance);
-                response.setup(m => m.headers).thenReturn(new Headers({
+                fetch.setup(m => m('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png'))
+                    .resolves(response.instance);
+                response.setup(m => m.headers).returns(new Headers({
                     'Content-Type': 'image/png'
                 }));
-                response.setup(m => m.bytes()).thenResolve(asUint8Array(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64')));
-                ctx.discord.setup(m => m.createGuildEmoji(ctx.guild.id, argument.isDeepEqual({
+                response.setup(m => m.bytes()).resolves(asUint8Array(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf', 'base64')));
+                ctx.discord.setup((m, $) => m.createGuildEmoji(ctx.guild.id, $({
                     image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf',
                     name: 'My cool emoji',
                     roles: []
-                }), 'Command User#0000')).thenResolve({
+                }), 'Command User#0000')).resolves({
                     animated: false,
                     available: true,
                     id: '23946249762743426',
@@ -64,15 +71,15 @@ await runSubtagTests({
             expected: '23946249762743426',
             setup(ctx) {
                 const response = ctx.createFetchResponse();
-                ctx.dependencies.setup(m => m.fetch('https://cdn.discordapp.com/icons/194232473931087872/e88c2e966c6ca78f2268fa8aed4621ab.png?size=0'))
-                    .thenResolve(response.instance);
-                response.setup(m => m.headers).thenReturn(new Headers({}));
-                response.setup(m => m.bytes()).thenResolve(new Uint8Array(0));
-                ctx.discord.setup(m => m.createGuildEmoji(ctx.guild.id, argument.isDeepEqual({
+                fetch.setup(m => m('https://cdn.discordapp.com/icons/194232473931087872/e88c2e966c6ca78f2268fa8aed4621ab.png?size=0'))
+                    .resolves(response.instance);
+                response.setup(m => m.headers).returns(new Headers({}));
+                response.setup(m => m.bytes()).resolves(new Uint8Array(0));
+                ctx.discord.setup((m, $) => m.createGuildEmoji(ctx.guild.id, $({
                     image: 'data:;base64,',
                     name: 'My cool emoji',
                     roles: []
-                }), 'Command User#0000')).thenResolve({
+                }), 'Command User#0000')).resolves({
                     animated: false,
                     available: true,
                     id: '23946249762743426',
@@ -90,11 +97,11 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.roles.other.id = '9128735617428916';
 
-                ctx.discord.setup(m => m.createGuildEmoji(ctx.guild.id, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.createGuildEmoji(ctx.guild.id, $({
                     image: 'data:image/png;base64,abcdef',
                     name: 'My cool emoji',
                     roles: ['9128735617428916']
-                }), 'Command User#0000')).thenResolve({
+                }), 'Command User#0000')).resolves({
                     animated: false,
                     available: true,
                     id: '23946249762743426',
@@ -105,13 +112,13 @@ await runSubtagTests({
                 });
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(ctx.roles.other.id);
+                const role = bbctx.local.message.channel.guild.roles.get(ctx.roles.other.id);
                 if (role === undefined)
                     throw new Error('Failed to find role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '9128735617428916')).thenResolve([role]);
-                ctx.util.setup(m => m.findRoles(bbctx.guild, 'abc')).thenResolve([]);
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '')).thenResolve([]);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '9128735617428916')).resolves([role]);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, 'abc')).resolves([]);
+                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '')).resolves([]);
             }
         },
         {
@@ -150,11 +157,11 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(0, 'This is an error');
-                ctx.discord.setup(m => m.createGuildEmoji(ctx.guild.id, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.createGuildEmoji(ctx.guild.id, $({
                     image: 'data:image/png;base64,abcdef',
                     name: 'My cool emoji',
                     roles: []
-                }), 'Command User#0000')).thenReject(error);
+                }), 'Command User#0000')).rejects(error);
             }
         },
         {
@@ -166,11 +173,11 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(0, 'This is an error\nAnd this is line 2');
-                ctx.discord.setup(m => m.createGuildEmoji(ctx.guild.id, argument.isDeepEqual({
+                ctx.discord.setup((m, $) => m.createGuildEmoji(ctx.guild.id, $({
                     image: 'data:image/png;base64,abcdef',
                     name: 'My cool emoji',
                     roles: []
-                }), 'Command User#0000')).thenReject(error);
+                }), 'Command User#0000')).rejects(error);
             }
         }
     ]

@@ -3,7 +3,7 @@ import z from 'zod';
 import { amqpJsonCodec } from '../util.js';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const GatewayMessageRequest = amqpJsonCodec(z.object({
+export const GatewayMessageRequest = amqpJsonCodec(z.strictObject({
     shardId: z.number(),
     totalShards: z.number(),
     groupId: z.string(),

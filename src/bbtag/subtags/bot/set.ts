@@ -1,10 +1,12 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
-import { tagVariableScopeProviders } from '../../tagVariableScopeProviders.js';
+import { createTagVariableScopeProvider } from '../../tagVariableScopeProvider.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.set;
+
+const tagVariableScopeProviders = createTagVariableScopeProvider().entries;
 
 export class SetSubtag extends CompiledSubtag {
     public constructor() {
@@ -18,7 +20,7 @@ export class SetSubtag extends CompiledSubtag {
                     exampleCode: tag.clear.exampleCode,
                     exampleOut: tag.clear.exampleOut,
                     returns: 'nothing',
-                    execute: async (ctx, [name]) => await ctx.variables.set(name.value, undefined)
+                    execute: async (ctx, [name]) => await ctx.root.variables.set(name.value, undefined)
                 },
                 {
                     parameters: ['name', 'value'],
@@ -47,9 +49,9 @@ export class SetSubtag extends CompiledSubtag {
     ): Promise<void> {
         const deserializedArray = bbtag.tagArray.deserialize(value);
         if (deserializedArray !== undefined) {
-            await context.variables.set(variableName, deserializedArray.v);
+            await context.root.variables.set(variableName, deserializedArray.v);
         } else {
-            await context.variables.set(variableName, value);
+            await context.root.variables.set(variableName, value);
         }
     }
 
@@ -58,6 +60,6 @@ export class SetSubtag extends CompiledSubtag {
         variableName: string,
         values: string[]
     ): Promise<void> {
-        await context.variables.set(variableName, values);
+        await context.root.variables.set(variableName, values);
     }
 }

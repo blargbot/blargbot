@@ -6,19 +6,18 @@ import path from 'node:path';
 import { describe, it } from 'node:test';
 import { inspect } from 'node:util';
 
-import type { BBTagContextOptions, BBTagRuntimeScope, BBTagUtilities, InjectionContext, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
-import { BaseRuntimeLimit, bbtag, BBTagContext, BBTagEngine, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag';
+import type { BaseRuntimeLimit, BBTagRuntimeInput, BBTagUtilities, InjectionContext, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
+import { bbtag, BBTagContext, BBTagEngine, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag';
 import { pluralise as p, repeat, snowflake } from '@blargbot/core';
-import { Database } from '@blargbot/database';
-import type { GuildCommandTag, GuildStore, StoredTag, TagStore, TagVariableScope, TagVariableStore, UserStore } from '@blargbot/domain';
+import type { Database } from '@blargbot/database';
+import type { GuildStore, TagStore, TagVariableScope, TagVariableStore, UserStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
-import { argument, Mock } from '@blargbot/test-util/mock.js';
-import { sleep } from '@blargbot/util';
+import type { Mockable, MockCtorArgs } from '@blargbot/test-util';
+import { Mock } from '@blargbot/test-util';
 import type { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIUser, Snowflake } from 'discord-api-types/v9';
 import { ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types/v9';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
-import { anything } from 'ts-mockito';
 
 type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${number}` | `${number}:${number}` | `${number}`;
 type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[keyof T];
@@ -64,6 +63,7 @@ export class MarkerError extends BBTagRuntimeError {
 }
 
 export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends Pick<TestCase, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
+    readonly names: Iterable<string>;
     readonly cases: TestCase[];
     readonly subtag: T;
     readonly runOtherTests?: (subtag: T) => Promise<void>;
@@ -71,38 +71,28 @@ export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends
 }
 
 type ArgCountBound = number | { count: number; noEval: number[]; };
-class SleepProxy {
-    public sleep(ms: number): Promise<void> {
-        return sleep(ms);
-    }
-}
 /* eslint-disable @typescript-eslint/naming-convention */
 export class SubtagTestContext {
-    readonly #allMocks: Array<Mock<unknown>> = [];
+    readonly #allMocks: Mock[] = [];
     #isCreated = false;
     public readonly dependencies = this.createMock<InjectionContext>();
     public readonly util = this.createMock<BBTagUtilities>();
-    public readonly shard = this.createMock(eris.Shard);
-    public readonly shards = this.createMock(eris.ShardManager);
-    public readonly discord = this.createMock(eris.Client);
-    public readonly logger = this.createMock<Logger>(undefined, false);
-    public readonly database = this.createMock(Database);
+    public readonly shard = this.createMock<eris.Shard>();
+    public readonly shards = this.createMock<eris.ShardManager>();
+    public readonly discord = this.createMock<eris.Client>();
+    public readonly logger = this.createMock<Logger>();
+    public readonly database = this.createMock<Database>();
     public readonly tagVariablesTable = this.createMock<TagVariableStore>();
     public readonly tagsTable = this.createMock<TagStore>();
     public readonly guildTable = this.createMock<GuildStore>();
     public readonly userTable = this.createMock<UserStore>();
-    public readonly limit = this.createMock(BaseRuntimeLimit);
+    public readonly limit = this.createMock<BaseRuntimeLimit>();
     public readonly discordOptions: eris.ClientOptions;
     public isStaff = false;
     public readonly ownedMessages: string[] = [];
-    public readonly sleep = this.createMock(SleepProxy);
 
-    public readonly ccommands: Record<string, GuildCommandTag>;
-    public readonly tags: Record<string, StoredTag>;
     public readonly tagVariables: MapByValue<{ scope: TagVariableScope; name: string; }, JToken>;
-    public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false, isTag: true };
-
-    public readonly options: Mutable<Partial<BBTagContextOptions>>;
+    public readonly input: Mutable<Omit<BBTagRuntimeInput, 'message'>>;
 
     public readonly roles = {
         everyone: SubtagTestContext.createApiRole({ id: snowflake.create().toString() }),
@@ -159,67 +149,80 @@ export class SubtagTestContext {
     public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<Subtag>) {
         this.discordOptions = { intents: [] };
         this.tagVariables = new MapByValue();
-        this.tags = {};
-        this.ccommands = {};
-        this.options = { tagName: `testTag_${snowflake.create()}` };
+        this.input = {
+            tagName: `testTag_${snowflake.create()}`,
+            silent: false,
+            isCC: false,
+            flagDefinitions: [],
+            limit: this.limit.instance,
+            authorizer: '',
+            author: undefined,
+            cooldown: 0,
+            input: '',
+            prefix: undefined,
+            tagVars: true
+        };
 
-        const args = new Array(100).fill(argument.any().value) as unknown[];
-        for (let i = 0; i < args.length; i++) {
-            this.logger.setup(m => m.error(...args.slice(0, i)), false).thenCall((...args: unknown[]) => {
-                throw args.find(x => x instanceof Error) ?? new Error(`Unexpected logger error: ${inspect(args)}`);
+        for (let i = 0; i < 100; i++) {
+            this.logger.setup((m, $) => m.bbtag(...Array.from({ length: i }, () => $.anything))).returns();
+            this.logger.setup((m, $) => m.log(...Array.from({ length: i }, () => $.anything))).returns();
+            this.logger.setup((m, $) => m.error(...Array.from({ length: i }, () => $.anything))).invokes(i => {
+                throw i.arguments.find(x => x instanceof Error) ?? new Error(`Unexpected logger error: ${inspect(i.arguments)}`);
             });
         }
 
-        this.dependencies.setup(m => m.discord, false).thenReturn(this.discord.instance);
-        this.dependencies.setup(m => m.database, false).thenReturn(this.database.instance);
-        this.dependencies.setup(m => m.logger, false).thenReturn(this.logger.instance);
-        this.dependencies.setup(m => m.util, false).thenReturn(this.util.instance);
-        this.dependencies.setup(c => c.subtags, false).thenReturn(subtags);
+        this.dependencies.setup(m => m.discord).returns(this.discord.instance, { isFallback: true });
+        this.dependencies.setup(m => m.database).returns(this.database.instance, { isFallback: true });
+        this.dependencies.setup(m => m.logger).returns(this.logger.instance, { isFallback: true });
+        this.dependencies.setup(m => m.util).returns(this.util.instance, { isFallback: true });
+        this.dependencies.setup(c => c.subtags).returns(subtags, { isFallback: true });
 
-        this.discord.setup(m => m.emit('warn', anything()), false).thenReturn(false);
+        this.discord.setup((m, $) => m.emit('warn', $.anything)).returns(false, { isFallback: true });
 
-        this.database.setup(m => m.tagVariables, false).thenReturn(this.tagVariablesTable.instance);
-        this.database.setup(m => m.guilds, false).thenReturn(this.guildTable.instance);
-        this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
-        this.database.setup(m => m.tags, false).thenReturn(this.tagsTable.instance);
+        this.database.setup(m => m.tagVariables).returns(this.tagVariablesTable.instance, { isFallback: true });
+        this.database.setup(m => m.guilds).returns(this.guildTable.instance, { isFallback: true });
+        this.database.setup(m => m.users).returns(this.userTable.instance, { isFallback: true });
+        this.database.setup(m => m.tags).returns(this.tagsTable.instance, { isFallback: true });
 
-        this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, anything() as never), false)
-            .thenCall((...[name, scope]: Parameters<TagVariableStore['get']>) => this.tagVariables.get({ scope, name }));
+        this.tagVariablesTable.setup((m, $) => m.get($.string, $.anything))
+            .invokesAsync(
+                i => this.tagVariables.get({ scope: i.arguments[1] as TagVariableScope, name: i.arguments[0] as string }),
+                { isFallback: true }
+            );
         if (this.testCase.setupSaveVariables !== false) {
-            this.tagVariablesTable.setup(m => m.upsert(anything() as never, anything() as never), false)
-                .thenCall((...[values, scope]: Parameters<TagVariableStore['upsert']>) => {
-                    for (const [name, value] of Object.entries(values)) {
+            this.tagVariablesTable.setup((m, $) => m.upsert($.anything, $.anything))
+                .invokesAsync(i => {
+                    const scope = i.arguments[1] as TagVariableScope;
+                    for (const [name, value] of Object.entries(i.arguments[0] as JObject)) {
                         if (value !== undefined)
                             this.tagVariables.set({ scope, name }, value);
                         else
                             this.tagVariables.delete({ scope, name });
                     }
-                });
+                }, { isFallback: true });
         }
 
-        this.tagsTable.setup(m => m.get(argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<TagStore['get']>) => this.tags[args[0]]);
-        this.guildTable.setup(m => m.getCommand(this.guild.id, argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<GuildStore['getCommand']>) => this.ccommands[args[1]]);
+        this.discord.setup(m => m.shards).returns(this.shards.instance, { isFallback: true });
+        this.discord.setup(m => m.guildShardMap).returns({}, { isFallback: true });
+        this.discord.setup(m => m.channelGuildMap).returns({}, { isFallback: true });
+        this.discord.setup(m => m.options).returns(this.discordOptions, { isFallback: true });
+        this.discord.setup((m, $) => m._formatImage($.anything)).invokes(i => eris.Client.prototype._formatImage.call(this.discord.instance, i.arguments[0] as never), { isFallback: true });
+        this.discord.setup((m, $) => m._formatAllowedMentions($.anything)).invokes(i => eris.Client.prototype._formatImage.call(this.discord.instance, i.arguments[0] as never), { isFallback: true });
 
-        this.discord.setup(m => m.shards, false).thenReturn(this.shards.instance);
-        this.discord.setup(m => m.guildShardMap, false).thenReturn({});
-        this.discord.setup(m => m.channelGuildMap, false).thenReturn({});
-        this.discord.setup(m => m.options, false).thenReturn(this.discordOptions);
-        this.discord.setup(m => m._formatImage(anything() as never), false).thenCall((str: never) => eris.Client.prototype._formatImage.call(this.discord.instance, str));
-        this.discord.setup(m => m._formatAllowedMentions(anything() as never), false).thenCall((str: never) => eris.Client.prototype._formatImage.call(this.discord.instance, str));
+        this.shards.setup(m => m.get(0)).returns(this.shard.instance, { isFallback: true });
+        this.shard.setup(m => m.client).returns(this.discord.instance, { isFallback: true });
 
-        this.shards.setup(m => m.get(0), false).thenReturn(this.shard.instance);
-        this.shard.setup(m => m.client, false).thenReturn(this.discord.instance);
-
-        this.discord.setup(m => m.guilds, false).thenReturn(new eris.Collection(eris.Guild));
-        this.discord.setup(m => m.users, false).thenReturn(new eris.Collection(eris.User));
+        this.discord.setup(m => m.guilds).returns(new eris.Collection(eris.Guild), { isFallback: true });
+        this.discord.setup(m => m.users).returns(new eris.Collection(eris.User), { isFallback: true });
 
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    public createMock<T>(clazz?: (new (...args: never[]) => T) | Function & { prototype: T; }, strict = true): Mock<T> {
-        const mock = new Mock<T>(clazz, strict);
+    public addMock(mock: Mock): void {
+        this.#allMocks.push(mock);
+    }
+
+    public createMock<T extends Mockable>(...args: MockCtorArgs<T>): Mock<T> {
+        const mock = new Mock<T>(...args);
         this.#allMocks.push(mock);
         return mock;
     }
@@ -248,16 +251,16 @@ export class SubtagTestContext {
         const engine = new BBTagEngine(this.dependencies.instance);
 
         const bot = new eris.ExtendedUser(<eris.BaseData><unknown>this.users.bot, this.discord.instance);
-        this.discord.setup(m => m.user, false).thenReturn(bot);
+        this.discord.setup(m => m.user).returns(bot, { isFallback: true });
 
         const guild = this.createGuild(this.guild, Object.values(this.channels), Object.values(this.members));
         this.discord.instance.guilds.add(guild);
 
-        const authorizerId = this.options.authorizerId ?? this.options.authorId ?? this.users.authorizer.id;
-        this.util.setup(m => m.isUserStaff(argument.isInstanceof(eris.Member).and(m => m.id === authorizerId && m.guild === guild).value), false).thenResolve(this.isStaff);
+        const authorizerId = this.input.authorizer === '' ? this.input.author ?? this.users.authorizer.id : this.input.authorizer;
+        this.util.setup((m, $) => m.isUserStaff($.allOf($.instanceOf(eris.Member), $.looksLikeLoose({ id: authorizerId, guild: guild })))).resolves(this.isStaff, { isFallback: true });
 
         for (const channel of guild.channels.values())
-            this.discord.setup(m => m.getChannel(channel.id), false).thenReturn(channel);
+            this.discord.setup(m => m.getChannel(channel.id)).returns(channel, { isFallback: true });
 
         const textableChannelTypes = new Set([ChannelType.GuildText, ChannelType.DM, ChannelType.GroupDM, ChannelType.GuildAnnouncement, ChannelType.AnnouncementThread, ChannelType.PrivateThread, ChannelType.PublicThread]);
         const channel = guild.channels.find(c => textableChannelTypes.has(c.type));
@@ -265,28 +268,26 @@ export class SubtagTestContext {
             throw new Error('No text channels were added');
 
         const message = this.createMessage<eris.KnownGuildTextableChannel>(this.message);
-        this.util.setup(m => m.getMessage(channel, message.id), false).thenResolve(message);
+        this.util.setup(m => m.getMessage(channel, message.id)).resolves(message, { isFallback: true });
 
-        const context = new BBTagContext(engine, {
-            authorId: message.author.id,
-            authorizerId: authorizerId,
-            inputRaw: '',
-            isCC: false,
-            limit: this.limit.instance,
-            message: message,
-            ...this.options
+        const context = engine.createContext({
+            ...this.input,
+            authorizer: authorizerId,
+            author: this.input.author ?? message.author.id,
+            message
         });
 
-        context.data.ownedMsgs.push(...this.ownedMessages);
-        Object.assign(context.scopes.root, this.rootScope);
-        Object.defineProperty(context, 'sleep', { get: () => (ms: number) => this.sleep.instance.sleep(ms) });
+        this.ownedMessages.forEach(v => context.root.ownedMessageIds.add(v));
 
         return context;
     }
 
     public createRESTError(code: number, message = 'Test REST error'): eris.DiscordRESTError {
-        const request = this.createMock(ClientRequest);
-        const apiMessage = this.createMock(IncomingMessage);
+        const request = this.createMock<ClientRequest>();
+        const apiMessage = this.createMock<IncomingMessage>();
+
+        apiMessage.setup(Reflect.getPrototypeOf).returns(IncomingMessage.prototype);
+        request.setup(Reflect.getPrototypeOf).returns(ClientRequest.prototype);
 
         const x = { stack: '' };
         Error.captureStackTrace(x);
@@ -294,13 +295,16 @@ export class SubtagTestContext {
     }
 
     public createHTTPError(code: number, message: string, method: string, path: string): eris.DiscordHTTPError {
-        const request = this.createMock(ClientRequest);
-        const apiMessage = this.createMock(IncomingMessage);
+        const request = this.createMock<ClientRequest>();
+        const apiMessage = this.createMock<IncomingMessage>();
 
-        apiMessage.setup(m => m.statusCode).thenReturn(code);
-        apiMessage.setup(m => m.statusMessage).thenReturn(message);
-        request.setup(m => m.method).thenReturn(method);
-        request.setup(m => m.path).thenReturn(path);
+        apiMessage.setup(Reflect.getPrototypeOf).returns(IncomingMessage.prototype);
+        request.setup(Reflect.getPrototypeOf).returns(ClientRequest.prototype);
+
+        apiMessage.setup(m => m.statusCode).returns(code);
+        apiMessage.setup(m => m.statusMessage).returns(message);
+        request.setup(m => m.method).returns(method);
+        request.setup(m => m.path).returns(path);
 
         const x = { stack: '' };
         Error.captureStackTrace(x);
@@ -315,7 +319,9 @@ export class SubtagTestContext {
     }
 
     public createFetchResponse(): Mock<Response> {
-        return this.createMock(Response);
+        const mock = this.createMock<Response>();
+        mock.setup(Reflect.getPrototypeOf).returns(Response.prototype);
+        return mock;
     }
 
     public static createApiMessage(settings: RequireIds<APIMessage>, author: APIUser): APIMessage {
@@ -454,7 +460,10 @@ export class SubtagTestContext {
 export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): Promise<void>
 export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): Promise<void>
 export async function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): Promise<void> {
-    const suite = new SubtagTestSuite(data.subtag);
+    const error = { stack: '' };
+    Error.captureStackTrace(error, runSubtagTests);
+    const stack = `Via SubtagTestSuite\n${error.stack.split('\n').slice(1).join('\n')}`;
+    const suite = new SubtagTestSuite(data.subtag, data.names);
     if (data.setup !== undefined)
         suite.setup(data.setup);
     if (data.postSetup !== undefined)
@@ -473,7 +482,7 @@ export async function runSubtagTests<T extends Subtag, TestCase extends SubtagTe
         suite.addTestCases(tooManyArgumentsTestCases(data.subtag.name, max.count, max.noEval));
 
     const runOtherTests = data.runOtherTests;
-    await suite.run(runOtherTests === undefined ? undefined : () => runOtherTests(data.subtag));
+    await suite.run(stack, runOtherTests === undefined ? undefined : () => runOtherTests(data.subtag));
 
     // Output a bbtag file that can be run on the live blargbot instance to find any errors
     if (inspector.url() !== undefined) {
@@ -630,9 +639,11 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
     readonly #config: TestSuiteConfig<TestCase> = { setup: [], assert: [], teardown: [], postSetup: [] };
     readonly #testCases: TestCase[] = [];
     readonly #subtag: Subtag;
+    readonly #names: Iterable<string>;
 
-    public constructor(subtag: Subtag) {
+    public constructor(subtag: Subtag, names: Iterable<string>) {
         this.#subtag = subtag;
+        this.#names = names;
     }
 
     public setup(setup: TestSuiteConfig<TestCase>['setup'][number]): this {
@@ -666,10 +677,24 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
         return this;
     }
 
-    public async run(otherTests?: () => Promise<void>): Promise<void> {
+    public async run(stack: string, otherTests?: () => Promise<void>): Promise<void> {
         await describe(`{${this.#subtag.name}}`, async () => {
             const subtag = this.#subtag;
             const config = this.#config;
+            await it(`Should have [${Iterator.from(this.#names).map(x => JSON.stringify(x)).toArray().join(',')}] as names`, () => {
+                try {
+                    const expectedNames = new Set(this.#names);
+                    assert(expectedNames.size > 0);
+                    const subtagNames = new Set(subtag.aliases);
+                    subtagNames.add(subtag.name);
+                    assert.deepEqual(subtagNames, expectedNames);
+                } catch (error) {
+                    if (error instanceof Error)
+                        error.stack += `\n${stack}`;
+                    throw error;
+                }
+            });
+
             for (const testCase of this.#testCases) {
                 const retries = Math.max(testCase.retries ?? 0, 0);
                 const timeout = testCase.timeout === undefined ? undefined : (retries + 1) * testCase.timeout;
@@ -682,7 +707,13 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
                             /* NO-OP */
                         }
                     }
-                    await runTestCase(subtag, testCase, config);
+                    try {
+                        await runTestCase(subtag, testCase, config);
+                    } catch (error) {
+                        if (error instanceof Error)
+                            error.stack += `\n${stack}`;
+                        throw error;
+                    }
                 });
             }
 
@@ -732,7 +763,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(subtag: Subtag, test
     try {
         // arrange
         for (const s of subtags)
-            test.limit.setup(m => m.check(argument.isInstanceof(BBTagContext).value, s.name), s === subtag).thenResolve(undefined);
+            test.limit.setup((m, $) => m.check($.instanceOf(BBTagContext), s.name)).resolves(undefined, { isFallback: s !== subtag });
         for (const setup of config.setup)
             await setup.call(actualTestCase, test);
         await actualTestCase.setup?.(test);
@@ -756,7 +787,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(subtag: Subtag, test
         }
 
         if (actualTestCase.setupSaveVariables !== false)
-            await context.variables.persist();
+            await context.root.variables.persist();
 
         // assert
         switch (typeof expected) {
@@ -918,6 +949,12 @@ class MapByValue<Key, Value> implements Map<Key, Value> {
     }
     public get(key: Key): Value | undefined {
         return this.#inner.get(this.#fromKey(key));
+    }
+    public getOrInsert(key: Key, defaultValue: Value): Value {
+        return this.#inner.getOrInsert(this.#fromKey(key), defaultValue);
+    }
+    public getOrInsertComputed(key: Key, callback: (key: Key) => Value): Value {
+        return this.#inner.getOrInsertComputed(this.#fromKey(key), () => callback(key));
     }
     public has(key: Key): boolean {
         return this.#inner.has(this.#fromKey(key));

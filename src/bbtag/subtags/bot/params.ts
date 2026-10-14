@@ -43,14 +43,14 @@ export class ParamsSubtag extends CompiledSubtag {
     }
 
     public getAllParams(context: BBTagContext): string {
-        const params = context.scopes.local.paramsarray;
+        const params = context.local.paramsarray;
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
         return params.join(' ');
     }
 
     public getParam(context: BBTagContext, index: string): string {
-        const params = context.scopes.local.paramsarray;
+        const params = context.local.paramsarray;
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
@@ -69,7 +69,7 @@ export class ParamsSubtag extends CompiledSubtag {
         start: string,
         end: string
     ): string {
-        const params = context.scopes.local.paramsarray;
+        const params = context.local.paramsarray;
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
 

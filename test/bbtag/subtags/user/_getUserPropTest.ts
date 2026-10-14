@@ -1,6 +1,5 @@
 import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag';
 import { UserNotFoundError } from '@blargbot/bbtag';
-import { argument } from '@blargbot/test-util/mock.js';
 import type { APIGuildMember } from 'discord-api-types/v9';
 import * as eris from 'eris';
 
@@ -31,10 +30,10 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
             { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
         ],
         setup(ctx) {
-            ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
-            ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
-                .verifiable(1)
-                .thenResolve([]);
+            ctx.util.setup(m => m.getUser('unknown user')).resolves(undefined, { isFallback: true });
+            ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown user'))
+                .mustHappen(1)
+                .resolves([]);
         }
     };
     if (options.quiet !== false) {
@@ -45,10 +44,10 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
                 { start: 0, end: options.generateCode('unknown user', '').length, error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.util.setup(m => m.getUser('unknown user')).resolves(undefined, { isFallback: true });
+                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown user'))
+                    .mustHappen(1)
+                    .resolves([]);
             }
         };
         yield {
@@ -58,10 +57,10 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
                 { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.getUser('unknown user'), false).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(eris.Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.util.setup(m => m.getUser('unknown user')).resolves(undefined, { isFallback: true });
+                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown user'))
+                    .mustHappen(1)
+                    .resolves([]);
             }
         };
     }
@@ -94,13 +93,13 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
             testCase.setup?.(ctx.members[memberKey], ctx);
         },
         postSetup(bbctx, ctx) {
-            const member = bbctx.guild.members.get(ctx.members[memberKey].user.id);
+            const member = bbctx.local.message.channel.guild.members.get(ctx.members[memberKey].user.id);
             if (member === undefined)
                 throw new Error('Cannot find the member under test');
             if (args[0] !== undefined && args[0] !== '') {
-                ctx.util.setup(m => m.getUser(args[0] as string), false).thenResolve(undefined);
+                ctx.util.setup(m => m.getUser(args[0] as string)).resolves(undefined, { isFallback: true });
                 ctx.util.setup(m => m.findMembers(member.guild, args[0]))
-                    .thenResolve([member]);
+                    .resolves([member]);
             }
 
             testCase.postSetup?.(member, bbctx, ctx);
@@ -108,7 +107,7 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
         assert(bbctx, result, ctx) {
             if (testCase.assert === undefined)
                 return;
-            const member = bbctx.guild.members.get(ctx.members[memberKey].user.id);
+            const member = bbctx.local.message.channel.guild.members.get(ctx.members[memberKey].user.id);
             if (member === undefined)
                 throw new Error('Cannot find the member under test');
             testCase.assert(result, member, bbctx, ctx);

@@ -8,6 +8,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new ReverseSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['reverse'],
     cases: [
         { code: '{reverse;abcdefg}', expected: 'gfedcba' },
         { code: '{reverse;[10,20,30,40,50,60]}', expected: '[60,50,40,30,20,10]' },

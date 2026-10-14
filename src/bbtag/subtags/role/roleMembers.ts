@@ -29,7 +29,7 @@ export class RoleMembersSubtag extends CompiledSubtag {
         roleId: string,
         quiet: boolean
     ): Promise<string[]> {
-        quiet ||= context.scopes.local.quiet ?? false;
+        quiet ||= context.local.quiet ?? false;
         const role = await context.queryRole(roleId, { noLookup: quiet });
 
         if (role === undefined) {
@@ -37,8 +37,8 @@ export class RoleMembersSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        await context.util.ensureMemberCache(context.guild);
-        const membersInRole = context.guild.members.filter(m => m.roles.includes(role.id));
+        await context.util.ensureMemberCache(context.local.message.channel.guild);
+        const membersInRole = context.local.message.channel.guild.members.filter(m => m.roles.includes(role.id));
         return membersInRole.map(m => m.user.id);
     }
 }

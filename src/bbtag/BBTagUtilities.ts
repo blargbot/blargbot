@@ -2,6 +2,7 @@ import type { Configuration } from '@blargbot/config';
 import type { ChoiceQueryResult, Emote, EntityPickQueryOptions } from '@blargbot/core';
 import type { Database } from '@blargbot/database';
 import type { Logger } from '@blargbot/logger';
+import type { sleep } from '@blargbot/util';
 import type * as eris from 'eris';
 import type moment from 'moment-timezone';
 
@@ -16,7 +17,7 @@ export interface InjectionContext {
     readonly subtags: Iterable<Subtag>;
     readonly config: Configuration;
     readonly util: BBTagUtilities;
-    readonly fetch: typeof fetch;
+    readonly sleep: typeof sleep;
 }
 
 export interface BBTagSendContent extends Omit<eris.AdvancedMessageContent, 'embed' | 'messageReferenceID'> {

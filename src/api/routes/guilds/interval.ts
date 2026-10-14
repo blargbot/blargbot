@@ -58,6 +58,6 @@ export class IntervalRoute extends BaseRoute<['/guilds/:guildId/interval']> {
     }
 }
 
-const mapTag = z.compile(z.object({
+const mapTag = z.compile(z.strictObject({
     content: z.string()
 }));

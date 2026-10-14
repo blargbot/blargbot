@@ -7,13 +7,14 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new GuildBansSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['guildBans'],
     cases: [
         {
             code: '{guildbans}',
             expected: '["23946327849364832","32967423897649864"]',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.getBannedUsers(bbctx.guild))
-                    .thenResolve([
+                ctx.util.setup(m => m.getBannedUsers(bbctx.local.message.channel.guild))
+                    .resolves([
                         '23946327849364832',
                         '32967423897649864'
                     ]);
@@ -27,8 +28,8 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const error = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
-                ctx.util.setup(m => m.getBannedUsers(bbctx.guild))
-                    .thenReject(error);
+                ctx.util.setup(m => m.getBannedUsers(bbctx.local.message.channel.guild))
+                    .rejects(error);
             }
         }
     ]

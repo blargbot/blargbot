@@ -6,6 +6,7 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new RoundUpSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['roundUp', 'ceil'],
     cases: [
         { code: '{roundup;5}', expected: '5' },
         { code: '{roundup;9.2}', expected: '10' },

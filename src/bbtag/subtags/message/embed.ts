@@ -26,7 +26,7 @@ export class EmbedSubtag extends CompiledSubtag {
     }
 
     public setEmbed(context: BBTagContext, embedStr: string[]): void {
-        context.data.embeds = embedStr.flatMap(e => parse.embed(e) ?? []);
+        context.root.output.embeds = embedStr.flatMap(e => parse.embed(e) ?? []);
 
     }
 }

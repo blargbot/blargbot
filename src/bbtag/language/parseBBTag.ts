@@ -1,17 +1,17 @@
 import { BBTagRuntimeError } from '../errors/index.js';
 import type { SourceMarker } from './SourceMarker.js';
-import type { Statement } from './Statement.js';
+import type { BBTagExpression } from './Statement.js';
 import type { SubtagCall } from './SubtagCall.js';
 
 type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
     : T extends SubtagCall ? MutableSubtagCall
-    : T extends Statement ? MutableStatement
+    : T extends BBTagExpression ? MutableStatement
     : T;
 
 type MutableSubtagCall = { -readonly [P in keyof SubtagCall]: ToMutable<SubtagCall[P]> }
-type MutableStatement = { -readonly [P in keyof Statement]: ToMutable<Statement[P]> };
+type MutableStatement = { -readonly [P in keyof BBTagExpression]: ToMutable<BBTagExpression[P]> };
 
-export function parseBBTag(source: string, throwOnError = false): Statement {
+export function parseBBTag(source: string, throwOnError = false): BBTagExpression {
     const result = createStatement(source);
     const subtags: MutableSubtagCall[] = [];
     let statement = result;

@@ -60,7 +60,7 @@ export class BanSubtag extends CompiledSubtag {
         noPerms: boolean
     ): Promise<boolean | number> {
         const user = await context.queryUser(userStr, {
-            noLookup: true, noErrors: context.scopes.local.noLookupErrors ?? false
+            noLookup: true, noErrors: context.local.noLookupErrors ?? false
         });
 
         if (user === undefined)
@@ -78,8 +78,8 @@ export class BanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Ban';
 
-        const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
-        const response = await context.util.ban(context.guild, user, context.user, authorizer, daysToDelete, reason, duration);
+        const authorizer = noPerms ? context.authorizer?.user ?? context.local.message.author : context.local.message.author;
+        const response = await context.util.ban(context.local.message.channel.guild, user, context.local.message.author, authorizer, daysToDelete, reason, duration);
         if (response === 'success' || response === 'alreadyBanned')
             return duration.asMilliseconds() < Infinity ? duration.asMilliseconds() : true;
         throw new BBTagRuntimeError(errorMap[response]);

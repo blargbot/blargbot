@@ -7,26 +7,27 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 await runSubtagTests({
     subtag: new EveryoneMentionSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['everyone', 'everyoneMention'],
     cases: [
         {
             code: '{everyonemention}',
             expected: '@everyone',
             assert(ctx) {
-                assert.equal(ctx.data.allowedMentions.everybody, true);
+                assert.equal(ctx.root.allowedMentions.everybody, true);
             }
         },
         {
             code: '{everyonemention;true}',
             expected: '@everyone',
             assert(ctx) {
-                assert.equal(ctx.data.allowedMentions.everybody, true);
+                assert.equal(ctx.root.allowedMentions.everybody, true);
             }
         },
         {
             code: '{everyonemention;false}',
             expected: '@everyone',
             assert(ctx) {
-                assert.equal(ctx.data.allowedMentions.everybody, false);
+                assert.equal(ctx.root.allowedMentions.everybody, false);
             }
         }
     ]

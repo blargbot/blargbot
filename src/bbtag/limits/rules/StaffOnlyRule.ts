@@ -5,7 +5,7 @@ import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 export const staffOnlyRule: RuntimeLimitRule = Object.seal({
     async check(context) {
         if (!await context.isStaff)
-            throw new StaffOnlyError(context.authorizerId ?? context.guild.id);
+            throw new StaffOnlyError(context.root.authorizer);
     },
     displayText() {
         return templates.limits.rules.staffOnly.default;

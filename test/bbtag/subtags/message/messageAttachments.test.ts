@@ -6,6 +6,7 @@ import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 await runSubtagTests({
     subtag: new MessageAttachmentsSubtag(),
     argCountBounds: { min: 0, max: 3 },
+    names: ['messageAttachments', 'attachments'],
     cases: [
         ...createGetMessagePropTestCases({
             quiet: '[]',

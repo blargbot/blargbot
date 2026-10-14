@@ -1,19 +1,19 @@
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag';
 import { TimeoutSubtag } from '@blargbot/bbtag/subtags';
-import { argument } from '@blargbot/test-util/mock.js';
-import * as eris from 'eris';
+import type { ArgumentMatchers } from '@blargbot/test-util';
+import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-function isDuration(ms: number): moment.Duration {
-    return argument.is(moment.isDuration).and(x =>
-        x.asMilliseconds() === ms).value;
+function isDuration<T>($: ArgumentMatchers<T>, ms: number): moment.Duration {
+    return $.satisfies(v => moment.isDuration(v) && v.asMilliseconds() === ms);
 }
 
 await runSubtagTests({
     subtag: new TimeoutSubtag(),
     argCountBounds: { min: 2, max: 4 },
+    names: ['timeout'],
     cases: [
         {
             code: '{timeout;other user;abc}',
@@ -29,39 +29,39 @@ await runSubtagTests({
                 { start: 0, end: 16, error: new UserNotFoundError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'abc'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'abc'))
+                    .mustHappen(1)
+                    .resolves([]);
             }
         },
         {
             code: '{timeout;other user;1s}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
+                const member = ctx.createMock<eris.Member>();
 
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
             code: '{timeout;other user;29d}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
+                const member = ctx.createMock<eris.Member>();
 
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(2505600000), 'Tag Timeout'))
-                    .verifiable(1)
-                    .thenResolve('success');
+                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 2505600000), 'Tag Timeout'))
+                    .mustHappen(1)
+                    .resolves('success');
             }
         },
         {
@@ -78,18 +78,18 @@ await runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                user.setup(u => u.username).thenReturn('other user');
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                user.setup(u => u.username).returns('other user');
+                member.setup(m => m.user).returns(user.instance);
 
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(x => x.clearTimeout(member.instance, bbctx.user, bbctx.user, 'Tag Timeout'))
-                    .verifiable(1)
-                    .thenResolve('notTimedOut');
+                ctx.util.setup(m => m.clearTimeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, 'Tag Timeout'))
+                    .mustHappen(1)
+                    .resolves('notTimedOut');
             }
         },
         {
@@ -99,18 +99,18 @@ await runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User is already timed out', 'other user is already timed out!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                user.setup(u => u.username).thenReturn('other user');
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                user.setup(u => u.username).returns('other user');
+                member.setup(m => m.user).returns(user.instance);
 
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
-                    .verifiable(1)
-                    .thenResolve('alreadyTimedOut');
+                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                    .mustHappen(1)
+                    .resolves('alreadyTimedOut');
             }
         },
         {
@@ -120,15 +120,15 @@ await runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
+                const member = ctx.createMock<eris.Member>();
 
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
-                    .verifiable(1)
-                    .thenResolve('noPerms');
+                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                    .mustHappen(1)
+                    .resolves('noPerms');
             }
         },
         {
@@ -138,18 +138,18 @@ await runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                user.setup(u => u.username).thenReturn('other user');
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                user.setup(u => u.username).returns('other user');
+                member.setup(m => m.user).returns(user.instance);
 
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
-                    .verifiable(1)
-                    .thenResolve('memberTooHigh');
+                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                    .mustHappen(1)
+                    .resolves('memberTooHigh');
             }
         },
         {
@@ -159,15 +159,15 @@ await runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
+                const member = ctx.createMock<eris.Member>();
 
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
-                    .verifiable(1)
-                    .thenResolve('moderatorNoPerms');
+                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                    .mustHappen(1)
+                    .resolves('moderatorNoPerms');
             }
         },
         {
@@ -177,18 +177,18 @@ await runSubtagTests({
                 { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock(eris.Member);
-                const user = ctx.createMock(eris.User);
-                user.setup(u => u.username).thenReturn('other user');
-                member.setup(m => m.user).thenReturn(user.instance);
+                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>();
+                user.setup(u => u.username).returns('other user');
+                member.setup(m => m.user).returns(user.instance);
 
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                    .mustHappen(1)
+                    .resolves([member.instance]);
 
-                ctx.util.setup(x => x.timeout(member.instance, bbctx.user, bbctx.user, isDuration(1000), 'Tag Timeout'))
-                    .verifiable(1)
-                    .thenResolve('moderatorTooLow');
+                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                    .mustHappen(1)
+                    .resolves('moderatorTooLow');
             }
         }
     ]

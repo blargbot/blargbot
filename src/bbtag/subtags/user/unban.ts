@@ -38,7 +38,7 @@ export class UnbanSubtag extends CompiledSubtag {
         reason: string,
         noPerms: boolean
     ): Promise<boolean> {
-        const user = await context.queryUser(userStr, { noErrors: context.scopes.local.noLookupErrors });
+        const user = await context.queryUser(userStr, { noErrors: context.local.noLookupErrors });
 
         if (user === undefined)
             throw new UserNotFoundError(userStr);
@@ -46,8 +46,8 @@ export class UnbanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Unban';
 
-        const authorizer = noPerms ? context.authorizer?.user ?? context.user : context.user;
-        const result = await context.util.unban(context.guild, user, context.user, authorizer, reason);
+        const authorizer = noPerms ? context.authorizer?.user ?? context.local.message.author : context.local.message.author;
+        const result = await context.util.unban(context.local.message.channel.guild, user, context.local.message.author, authorizer, reason);
 
         switch (result) {
             case 'success': return true;

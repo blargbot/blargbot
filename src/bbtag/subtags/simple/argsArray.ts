@@ -24,7 +24,7 @@ export class ArgsArraySubtag extends CompiledSubtag {
         });
     }
 
-    public getInput(context: BBTagContext): string[] {
-        return context.input;
+    public getInput(context: BBTagContext): readonly string[] {
+        return context.local.input.array;
     }
 }
