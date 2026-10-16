@@ -5,8 +5,17 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.dump;
 
+export interface DumpOptions {
+    readonly content: string;
+    readonly channelId: string;
+}
+export interface DumpThunk {
+    (options: DumpOptions): Promise<URL>;
+}
+
 export class DumpSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #generateDumpLink: DumpThunk;
+    public constructor({ generateDumpLink }: { generateDumpLink: DumpThunk; }) {
         super({
             name: 'dump',
             category: SubtagType.BOT,
@@ -21,10 +30,11 @@ export class DumpSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#generateDumpLink = generateDumpLink;
     }
 
     public async createDump(context: BBTagContext, text: string): Promise<string> {
-        const id = await context.util.generateDumpPage({ content: text }, context.local.message.channel);
-        return context.util.websiteLink(`dumps/${id}`);
+        const url = await this.#generateDumpLink({ content: text, channelId: context.local.message.channel.id });
+        return url.toString();
     }
 }

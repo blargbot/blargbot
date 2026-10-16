@@ -1,18 +1,152 @@
-import type { AwaitReactionsResponse, BBTagContext, BBTagSendContent, BBTagUtilities } from '@blargbot/bbtag';
-import type { ChoiceQueryResult, Emote, EntityPickQueryOptions, SendContent } from '@blargbot/core';
+import type { BBTagSendContent, BBTagUtilities, ReactionEvent, RwLock, SerializedBBTagContext, subtags } from '@blargbot/bbtag';
+import { getLock } from '@blargbot/bbtag';
+import type { DumpOptions, ExecuteWebhookPayload, ExecuteWebhookResult, SendPayload, SendResult } from '@blargbot/bbtag/subtags';
+import { type ChoiceQueryResult, type Emote, type EntityPickQueryOptions, type SendContent, snowflake } from '@blargbot/core';
+import type { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
-import type * as eris from 'eris';
-import moment from 'moment-timezone';
+import type { Logger } from '@blargbot/logger';
+import { raceAsyncIterable, sleep, usingTimeout } from '@blargbot/util';
+import * as eris from 'eris';
+import type moment from 'moment-timezone';
 
+import { bindAll } from './bindAll.js';
 import type { Cluster } from './Cluster.js';
 import { guard } from './utils/index.js';
 
-export class ClusterBBTagUtilities implements BBTagUtilities {
-    public get defaultPrefix(): string {
-        return this.cluster.config.discord.defaultPrefix;
+type SubtagConstructorArgs = typeof subtags[keyof typeof subtags] extends new (arg: infer R) => unknown ? R : never;
+@bindAll
+export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
+    readonly #cluster: Cluster;
+
+    public constructor(cluster: Cluster) {
+        this.#cluster = cluster;
     }
 
+    public get defaultPrefix(): string {
+        return this.#cluster.config.discord.defaultPrefix;
+    };
+    public get logger(): Logger {
+        return this.#cluster.logger;
+    }
+    public async fetch(input: string | URL | Request, init?: RequestInit): Promise<Response> {
+        return await this.#cluster.fetch(input, init);
+    }
+    public getLock(scope: TagVariableScope | undefined, name: string): RwLock {
+        return getLock(scope, name);
+    }
+    public async sleep(delay: number, signal?: AbortSignal): Promise<void> {
+        return await sleep(delay, signal);
+    }
+    public canRequestDomain(domain: string): Promise<boolean> {
+        return Promise.resolve(this.#cluster.domains.isWhitelisted(domain));
+    }
+    public async getTag(name: string): Promise<StoredTag | undefined> {
+        return await this.#cluster.database.tags.get(name);
+    }
+    public async getCustomCommand(guildId: string, name: string): Promise<GuildCommandTag | undefined> {
+        return await this.#cluster.database.guilds.getCommand(guildId, name);
+    }
+    public async getWarnings(guildId: string, userId: string): Promise<number | undefined> {
+        return await this.#cluster.database.guilds.getWarnings(guildId, userId);
+    }
+    public async getUserTimezone(userId: string): Promise<string | undefined> {
+        return await this.#cluster.database.users.getProp(userId, 'timezone');
+    }
+    public async getPrefix(guildId: string): Promise<readonly string[] | undefined> {
+        return await this.#cluster.database.guilds.getSetting(guildId, 'prefix');
+    }
+    public async canPingEveryone(guildId: string): Promise<boolean> {
+        return await this.#cluster.database.guilds.getSetting(guildId, 'disableeveryone') !== true;
+    }
+    public async generateDumpLink(options: DumpOptions): Promise<URL> {
+        const id = await this.#cluster.util.generateDumpPage({ content: options.content }, snowflake.parse(options.channelId));
+        return new URL(this.#cluster.util.websiteLink(`dumps/${id}`));
+    }
+    public async executeWebhook(webhookId: string, webhookToken: string, payload: ExecuteWebhookPayload): Promise<ExecuteWebhookResult> {
+        try {
+            await this.#cluster.discord.executeWebhook(webhookId, webhookToken, payload);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async send(channelId: string, payload: SendPayload): Promise<SendResult> {
+        try {
+            const channel = this.#cluster.discord.getChannel(channelId);
+            if (channel === undefined)
+                return { success: false, reason: 'Channel not found.' };
+            if (!guard.isTextableChannel(channel))
+                return { success: false, reason: 'Channel cannot receive messages.' };
+            const message = await this.#cluster.util.send(channel, util.literal({
+                content: payload.content,
+                embeds: payload.embeds,
+                file: payload.files,
+                allowedMentions: payload.allowedMentions !== undefined ? {
+                    everyone: payload.allowedMentions.everyone,
+                    roles: [...payload.allowedMentions.roles],
+                    users: [...payload.allowedMentions.users]
+                } : undefined
+            }));
+            if (message === undefined)
+                return { success: false };
+            return { success: true, id: message.id };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async addReactions(channelId: string, messageId: string, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
+        const channel = this.#cluster.discord.getChannel(channelId);
+        if (channel === undefined || !guard.isTextableChannel(channel))
+            return { success: [], failed: [...reactions] };
+        let message;
+        try {
+            message = channel.messages.get(messageId) ?? await channel.getMessage(messageId);
+        } catch {
+            return { success: [], failed: [...reactions] };
+        }
+
+        return await this.#cluster.util.addReactions(message, reactions);
+    }
+    public async schedule(context: SerializedBBTagContext, code: string, timestamp: Temporal.Instant): Promise<void> {
+        const channel = context.msg.channel.id;
+        const guild = this.#cluster.discord.channelGuildMap[channel];
+        await this.#cluster.timeouts.insert('tag', {
+            version: 4,
+            source: guild,
+            channel: channel,
+            endtime: timestamp.epochMilliseconds,
+            context: JSON.stringify(context),
+            content: code
+        });
+    }
+    public async* streamReactions(messageIds: Iterable<string>, timeoutMs: number): AsyncIterable<ReactionEvent> {
+        const abort = new AbortController();
+        using _onTimeout = usingTimeout(() => abort.abort(), timeoutMs);
+        const partitions = Iterator.from(messageIds).map(x => this.#cluster.awaiter.reactions.getPartition(x));
+        yield* raceAsyncIterable(partitions, abort.signal);
+    }
+    public async* streamMessages(channelIds: Iterable<string>, timeoutMs: number): AsyncIterable<eris.KnownMessage> {
+        const abort = new AbortController();
+        using _onTimeout = usingTimeout(() => abort.abort(), timeoutMs);
+        const partitions = Iterator.from(channelIds).map(x => this.#cluster.awaiter.messages.getPartition(x));
+        yield* raceAsyncIterable(partitions, abort.signal);
+    }
+
+    #handleError(error: unknown): { success: false; reason?: string; } {
+        if (error instanceof eris.DiscordHTTPError || error instanceof eris.DiscordRESTError)
+            return { success: false, reason: error.message };
+
+        if (!(error instanceof Error)) {
+            const e = error = new Error(String(error));
+            Error.captureStackTrace(e, this.#handleError);
+        }
+        this.#cluster.logger.error(error);
+        return { success: false };
+    }
+}
+
+export class ClusterBBTagUtilities implements BBTagUtilities {
     public constructor(public readonly cluster: Cluster) {
     }
 
@@ -66,22 +200,10 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
             : await this.cluster.util.getMessage(...args);
     }
 
-    public addReactions(context: eris.Message<eris.TextableChannel>, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
-        return this.cluster.util.addReactions(context, reactions);
-    }
-
     public async getBannedUsers(guild: eris.Guild): Promise<string[]> {
         await this.cluster.util.ensureGuildBans(guild);
         const bans = this.cluster.util.getGuildBans(guild);
         return [...bans];
-    }
-
-    public async generateDumpPage(payload: eris.AdvancedMessageContent, channel: eris.KnownChannel): Promise<string> {
-        return (await this.cluster.util.generateDumpPage(payload, channel)).toString();
-    }
-
-    public websiteLink(path?: string): string {
-        return this.cluster.util.websiteLink(path);
     }
 
     public timeout(member: eris.Member, moderator: eris.User, authorizer: eris.User, duration: moment.Duration, reason?: string): Promise<'noPerms' | 'success' | 'alreadyTimedOut' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
@@ -94,10 +216,6 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
 
     public addModLog(guild: eris.Guild, action: string, user: eris.User, moderator?: eris.User, reason?: string, color?: number): Promise<void> {
         return this.cluster.moderation.modLog.logCustom(guild, util.literal(action), user, moderator, util.literal(reason), color);
-    }
-
-    public canRequestDomain(domain: string): boolean {
-        return this.cluster.domains.isWhitelisted(domain);
     }
 
     public isUserStaff(member: eris.Member): Promise<boolean> {
@@ -151,26 +269,6 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
     public kick(member: eris.Member, moderator: eris.User, authorizer: eris.User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
         return this.cluster.moderation.bans.kick(member, moderator, authorizer, util.literal(reason));
     }
-
-    public awaitReaction(messages: string[], filter: (reaction: AwaitReactionsResponse) => Awaitable<boolean>, timeoutMs: number): Promise<AwaitReactionsResponse | undefined> {
-        return this.cluster.awaiter.reactions.getAwaiter(messages, filter, timeoutMs).wait();
-    }
-
-    public awaitMessage(channels: string[], filter: (message: eris.KnownMessage) => Awaitable<boolean>, timeoutMs: number): Promise<eris.KnownMessage | undefined> {
-        return this.cluster.awaiter.messages.getAwaiter(channels, filter, timeoutMs).wait();
-    }
-
-    public async setTimeout(context: BBTagContext, content: string, timeout: moment.Duration): Promise<void> {
-        await this.cluster.timeouts.insert('tag', {
-            version: 4,
-            source: context.local.message.channel.guild.id,
-            channel: context.local.message.channel.id,
-            endtime: moment().add(timeout).valueOf(),
-            context: JSON.stringify(context.engine.serialize(context)),
-            content: content
-        });
-    }
-
 }
 
 function isIndex0String<T extends unknown[]>(value: T): value is Extract<T, { ['0']: string; }> {

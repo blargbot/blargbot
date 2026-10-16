@@ -1,20 +1,28 @@
 import type { Logger } from '@blargbot/logger';
-import { Semaphore } from '@blargbot/util';
+import type { PartitionedPushIterable } from '@blargbot/util';
+import { createPartitionedPushIterable, Semaphore } from '@blargbot/util';
 
 import { Awaiter } from './Awaiter.js';
 
 export abstract class AwaiterFactoryBase<T> {
     readonly #awaiters: Record<string, Array<Awaiter<T>> | undefined>;
     readonly #poolLocks: Record<string, Semaphore>;
+    readonly #pushIterable: PartitionedPushIterable<T, string>;
 
     protected constructor(protected readonly logger: Logger) {
         this.#awaiters = {};
         this.#poolLocks = {};
+        this.#pushIterable = createPartitionedPushIterable(v => this.getPoolId(v));
     }
 
     protected abstract getPoolId(item: T): string;
 
+    public getPartition(partition: string): AsyncIterable<T, void, void> {
+        return this.#pushIterable.getPartition(partition);
+    }
+
     public async tryConsume(item: T): Promise<boolean> {
+        this.#pushIterable.push(item);
         const poolId = this.getPoolId(item);
         const awaiters = this.#awaiters[poolId];
         if (awaiters === undefined)

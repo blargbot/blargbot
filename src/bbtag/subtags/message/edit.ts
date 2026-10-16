@@ -1,4 +1,5 @@
 import { guard, parse } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
 import type * as eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -10,7 +11,8 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.edit;
 
 export class EditSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #logger: Logger;
+    public constructor({ logger }: { logger: Logger; }) {
         super({
             name: 'edit',
             category: SubtagType.MESSAGE,
@@ -75,6 +77,7 @@ export class EditSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#logger = logger;
     }
 
     public async edit(
@@ -105,7 +108,7 @@ export class EditSubtag extends CompiledSubtag {
         const message = await context.getMessage(channel, messageStr);
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageStr);
-        if (message.author.id !== context.discord.user.id)
+        if (message.author.id !== context.root.botId)
             throw new BBTagRuntimeError('I must be the message author');
 
         content = content ?? message.content;
@@ -123,7 +126,7 @@ export class EditSubtag extends CompiledSubtag {
                 embeds
             });
         } catch (err: unknown) {
-            context.logger.error('Failed to edit message', err);
+            this.#logger.error('Failed to edit message', err);
         }
     }
 }

@@ -3,16 +3,17 @@ import type { Database } from '@blargbot/database';
 import { TagVariableType } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import * as eris from 'eris';
-import moment from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext.js';
 import type { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';
 import { VariableCache } from './Caching.js';
-import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors/index.js';
+import { DiscordPermissions } from './enums.js';
+import { BBTagRuntimeError, InternalServerError, TagCooldownError } from './errors/index.js';
 import type { BBTagExpression, SubtagCall } from './language/index.js';
 import { BaseRuntimeLimit } from './limits/BaseRuntimeLimit.js';
 import { memoize } from './memoize.js';
 import type { Subtag } from './Subtag.js';
+import { OutputSubtag } from './subtags/index.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
 import { createTagVariableScopeProvider } from './tagVariableScopeProvider.js';
 import { templates } from './text.js';
@@ -53,7 +54,14 @@ export class BBTagEngine {
     }
 
     public createContext(options: BBTagRuntimeInput): BBTagContext {
+        const authorizerId = options.authorizer ?? options.author ?? options.message.channel.guild.id;
+        const authorizer = options.message.channel.guild.members.get(authorizerId);
+        const authorizerPermissions = authorizer?.permissions ?? (options.message.channel.guild.id === authorizerId
+            ? new eris.Permission(8n)
+            : new eris.Permission(0n)
+        );
         const context = new BBTagContext(this, {
+            botId: this.discord.user.id,
             recursion: {
                 depth: 0
             },
@@ -105,8 +113,12 @@ export class BBTagEngine {
                 this.logger
             ),
             limit: options.limit,
-            author: options.author,
-            authorizer: options.authorizer ?? options.author ?? options.message.channel.guild.id,
+            authorId: options.author,
+            authorizerId,
+            authorizer,
+            authorizerPermissions: authorizerPermissions.has('administrator')
+                ? new DiscordPermissions(~0n)
+                : new DiscordPermissions(authorizerPermissions.allow),
             prefix: options.prefix,
             isCC: options.isCC,
             silent: options.silent,
@@ -118,7 +130,7 @@ export class BBTagEngine {
                 role: new Map(),
                 channel: new Map()
             },
-            ownedMessageIds: new Set(),
+            ownedMessageIds: new Set([options.message.id]),
             tagCache: new Map(),
             ccCache: new Map(),
             allowedMentions: {
@@ -142,36 +154,37 @@ export class BBTagEngine {
         return context;
     }
 
-    public async execute(source: string, options: BBTagRuntimeInput | BBTagContext): Promise<ExecutionResult> {
-        const { isCC, tagName } = options instanceof BBTagContext ? options.root : options;
+    public async execute(source: string, options: BBTagRuntimeInput): Promise<ExecutionResult> {
+        const { isCC, tagName } = options;
         this.logger.bbtag(`Start running ${isCC ? 'CC' : 'tag'} ${tagName}`);
         const timer = new Timer().start();
-        const bbtag = bbtagUtil.parse(source, options instanceof BBTagContext);
+        const bbtag = bbtagUtil.parse(source);
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
-        const context = options instanceof BBTagContext ? options : this.createContext(options);
+        const context = this.createContext(options);
         this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
         let content: string;
-        const cooldownEnd = this.cooldowns.get(context);
-        if (cooldownEnd.isAfter(moment())) {
-            const remaining = moment.duration(cooldownEnd.diff(moment()));
-            if (context.root.recursion.depth === 0)
-                await context.sendOutput(`This ${context.root.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again <t:${moment().add(remaining).unix()}:R>.`);
-            content = context.addError(new TagCooldownError(context.local.tagName, context.root.isCC, remaining));
-        } else if (context.root.recursion.depth > 200) {
-            context.state = BBTagRuntimeState.ABORT;
-            content = context.addError(new SubtagStackOverflowError(context.root.recursion.depth));
+        const cooldown = this.cooldowns.check({
+            guildId: context.root.message.channel.guild.id,
+            userId: context.root.message.author.id,
+            tagName: context.local.tagName,
+            isCC: context.root.isCC,
+            cooldownMs: context.local.cooldown
+        });
+        if (cooldown !== false) {
+            const unixTimestamp = Temporal.Instant.fromEpochMilliseconds(0).add(cooldown).epochMilliseconds;
+            await OutputSubtag.sendOutput(context, `This ${context.root.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again <t:${unixTimestamp}:R>.`);
+            content = context.addError(new TagCooldownError(context.local.tagName, context.root.isCC, cooldown));
         } else {
-            this.cooldowns.set(context);
             context.execTimer.start();
-            content = await this.#evalOnStack(bbtag, context);
+            content = await context.eval(bbtag);
+            if (context.root.output.replace !== undefined)
+                content = content.replace(context.root.output.replace.regex, context.root.output.replace.with);
             context.execTimer.end();
             this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
-            if (context.root.recursion.depth === 0) {
-                await context.root.variables.persist();
-                this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
-                await context.sendOutput(content);
-                this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
-            }
+            await context.root.variables.persist();
+            this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
+            await OutputSubtag.sendOutput(context, content);
+            this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
         }
 
         return {
@@ -196,8 +209,8 @@ export class BBTagEngine {
                 }, {})
             },
             loadedSources: [
-                ...context.root.tagCache.keys(),
-                ...context.root.ccCache.keys()
+                ...context.root.tagCache.keys().map(k => `tag_${k}`),
+                ...context.root.ccCache.keys().map(k => `cc_${k}`)
             ]
         };
     }
@@ -249,8 +262,8 @@ export class BBTagEngine {
             tagName: local.tagName,
             rootTagName: root.variables.scopes.tagName,
             tagVars: root.variables.scopes.isTag,
-            author: root.author,
-            authorizer: root.authorizer,
+            author: root.authorId,
+            authorizer: root.authorizerId,
             limit: root.limit.serialize(),
             tempVars: context.root.variables.list
                 .filter(v => v.key.startsWith('~'))
@@ -286,7 +299,6 @@ export class BBTagEngine {
             tagVars: obj.tagVars,
             cooldown: 0
         });
-        result.root.recursion.depth = obj.data.stackSize;
         result.root.queryCache.count = obj.data.query.count;
         Object.entries(obj.data.query.channel).forEach(x => result.root.queryCache.channel.set(...x));
         Object.entries(obj.data.query.role).forEach(x => result.root.queryCache.role.set(...x));
@@ -365,16 +377,8 @@ export class BBTagEngine {
         }, guild, this.dependencies.discord);
     }
 
-    async #evalOnStack(bbtag: BBTagExpression, context: BBTagContext): Promise<string> {
-        using _stack = context.usingStack();
-        const result = await joinResults(this.#evalStatement(bbtag, context));
-        if (context.root.output.replace !== undefined)
-            return result.replace(context.root.output.replace.regex, context.root.output.replace.with);
-        return result;
-    }
-
     async #evalStatementScoped(bbtag: BBTagExpression, context: BBTagContext): Promise<string> {
-        using _scope = context.usingScope();
+        using _scope = context.enterScope();
         return await joinResults(this.#evalStatement(bbtag, context));
     }
 

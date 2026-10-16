@@ -34,7 +34,7 @@ export class RoleSizeSubtag extends CompiledSubtag {
         if (role === undefined)
             throw new RoleNotFoundError(roleStr);
 
-        await context.util.ensureMemberCache(context.local.message.channel.guild);
+        await context.engine.util.ensureMemberCache(context.local.message.channel.guild);
         return context.local.message.channel.guild.members.filter(m => m.roles.includes(role.id)).length;
     }
 }

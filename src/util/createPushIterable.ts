@@ -1,33 +1,41 @@
 export interface PushIterable<Yield, Return = void> {
     readonly next: (value: Yield) => void;
-    readonly done: (value: Return) => void;
+    readonly return: (value: Return) => void;
     readonly throw: (error: unknown) => void;
-    readonly items: AsyncGenerator<Yield, void, Return>;
+    readonly items: AsyncGenerator<Yield, Return, void>;
 }
 
-export function createPushIterable<T>(): PushIterable<T> {
+export function createPushIterable<Yield, Return = void>(): PushIterable<Yield, Return> {
     const enum STATE {
         RUNNING,
         COMPLETE,
-        FAULTED
+        FAULTED,
+        BREAK
     }
 
-    let queue: T[] = [];
+    const queue: Yield[] = [];
     let pending: PromiseWithResolvers<void> | undefined;
     let state = STATE.RUNNING;
     let toThrow: unknown;
+    let result: undefined | Return;
 
-    async function* getIterator(): AsyncGenerator<T, void, void> {
-        while (true) {
-            yield* queue;
-            queue = [];
-            if (state !== STATE.RUNNING) {
-                if (state === STATE.FAULTED)
-                    throw toThrow;
-                return;
+    async function* getIterator(): AsyncGenerator<Yield, Return, void> {
+        try {
+            while (true) {
+                const batch = [...queue];
+                queue.length = 0;
+                yield* batch;
+                if (state !== STATE.RUNNING) {
+                    if (state === STATE.FAULTED)
+                        throw toThrow;
+                    return result!;
+                }
+                pending ??= Promise.withResolvers();
+                await pending.promise;
             }
-            pending ??= Promise.withResolvers();
-            await pending.promise;
+        } finally {
+            if (state === STATE.RUNNING)
+                state = STATE.BREAK;
         }
     }
 
@@ -41,17 +49,18 @@ export function createPushIterable<T>(): PushIterable<T> {
             pending?.resolve();
             pending = undefined;
         },
-        done() {
+        return(value) {
             if (state !== STATE.RUNNING)
                 return;
 
             state = STATE.COMPLETE;
+            result = value;
             pending?.resolve();
             pending = undefined;
         },
         throw(error) {
             if (state !== STATE.RUNNING)
-                throw error;
+                return;
 
             state = STATE.FAULTED;
             toThrow = error;

@@ -1,4 +1,5 @@
 import { parse } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -9,7 +10,8 @@ import { bbtag, SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.userSetRoles;
 
 export class UserSetRolesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #logger: Logger;
+    public constructor({ logger }: { logger: Logger; }) {
         super({
             name: 'userSetRoles',
             aliases: ['setRoles'],
@@ -34,6 +36,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#logger = logger;
     }
 
     public async userSetRole(
@@ -85,7 +88,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
             member.roles = parsedRoles;
             return true;
         } catch (err: unknown) {
-            context.logger.error(err);
+            this.#logger.error(err);
             return false;
         }
 

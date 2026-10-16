@@ -27,7 +27,7 @@ await runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -40,7 +40,7 @@ await runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'false',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);

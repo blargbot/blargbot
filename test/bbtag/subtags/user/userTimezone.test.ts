@@ -5,7 +5,7 @@ import { Mock } from '@blargbot/test-util';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-const getUserTimezone = new Mock<GetUserTimezoneThunk>({ callable: true });
+const getUserTimezone = new Mock<GetUserTimezoneThunk>({ id: 'getUserTimezone', callable: true });
 
 await runSubtagTests({
     subtag: new UserTimezoneSubtag({

@@ -1,5 +1,6 @@
 import type { SerializedBBTagContext } from '@blargbot/bbtag';
-import { rules } from '@blargbot/bbtag';
+import { bbtag, rules } from '@blargbot/bbtag';
+import { OutputSubtag } from '@blargbot/bbtag/subtags';
 import type { Cluster } from '@blargbot/cluster';
 import { TimeoutEventService } from '@blargbot/cluster';
 import type { StoredEvent } from '@blargbot/domain';
@@ -14,8 +15,9 @@ export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
 
         const context = await this.cluster.bbtag.deserialize(JSON.parse(event.context) as unknown as SerializedBBTagContext);
         context.root.limit.addRules(['timer', 'output'], rules.disabledRule);
-        context.root.recursion.depth = 0;
-
-        await context.engine.execute(event.content, context);
+        const expr = bbtag.parse(event.content);
+        const result = await context.eval(expr);
+        await context.root.variables.persist();
+        await OutputSubtag.sendOutput(context, result);
     }
 }

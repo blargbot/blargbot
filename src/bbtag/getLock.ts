@@ -4,10 +4,10 @@ import ReadWriteLock from 'rwlock';
 
 import { memoize } from './memoize.js';
 
-const locks: Record<string, RwLockImpl | undefined> = {};
+const locks: Record<string, RwLock | undefined> = {};
 
 export function getLock(scope: TagVariableScope | undefined, name: string): RwLock {
-    return locks[getLockId(scope, name)] ??= new RwLockImpl();
+    return locks[getLockId(scope, name)] ??= new RwLock();
 }
 
 function getLockId(scope: TagVariableScope | undefined, name: string): string {
@@ -26,8 +26,10 @@ export interface RwLock {
     enterWrite(): Promise<AsyncDisposable>;
     enterRead(): Promise<AsyncDisposable>;
 }
+type IRwLock = RwLock;
 
-class RwLockImpl implements RwLock {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const RwLock = class RwLock implements IRwLock {
     readonly #core = new ReadWriteLock();
 
     public async enterWrite(): Promise<AsyncDisposable> {
@@ -42,4 +44,4 @@ class RwLockImpl implements RwLock {
         const release = await new Promise<() => void>(res => this.#core[type](res));
         return { [Symbol.asyncDispose]: memoize(() => Promise.try(release)) };
     }
-}
+};

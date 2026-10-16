@@ -2,14 +2,24 @@ import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
 import { DeleteSubtag } from '@blargbot/bbtag/subtags';
+import type { Logger } from '@blargbot/logger';
+import { Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
+const logger = new Mock<Logger>({ id: 'logger' });
+
 await runSubtagTests({
-    subtag: new DeleteSubtag(),
+    subtag: new DeleteSubtag({
+        logger: logger.instance
+    }),
     argCountBounds: { min: 0, max: 2 },
     names: ['delete'],
+    setup(ctx) {
+        ctx.addMock(logger);
+        logger.reset();
+    },
     cases: [
         {
             code: '{delete}',
@@ -28,7 +38,7 @@ await runSubtagTests({
 
                 ctx.isStaff = false;
                 ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id, undefined)).rejects(error);
-                ctx.logger.setup(m => m.warn('Failed to delete message', error)).returns();
+                logger.setup(m => m.warn('Failed to delete message', error)).returns();
             }
         },
         {

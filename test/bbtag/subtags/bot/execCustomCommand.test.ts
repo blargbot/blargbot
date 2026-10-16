@@ -7,7 +7,7 @@ import { Mock } from '@blargbot/test-util';
 
 import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-const getCustomCommand = new Mock<GetCustomCommandThunk>({ callable: true });
+const getCustomCommand = new Mock<GetCustomCommandThunk>({ id: 'getCustomCommand', callable: true });
 
 await runSubtagTests({
     subtag: new ExecCustomCommandSubtag({

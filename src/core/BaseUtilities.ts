@@ -149,8 +149,8 @@ export class BaseUtilities {
         }
 
         if (!guard.checkEmbedSize(content.embeds)) {
-            const id = await this.generateDumpPage(content, channel);
-            const output = this.websiteLink(`/dumps/${id}`);
+            const id = await this.generateDumpPage(content, snowflake.parse(channel.id));
+            const output = this.websiteLink(`dumps/${id}`);
             content.content = `Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n\nTo see what I would have said, please visit ${output}`;
             if (content.embeds !== undefined)
                 delete content.embeds;
@@ -345,13 +345,13 @@ export class BaseUtilities {
         return tag;
     }
 
-    public async generateDumpPage(payload: eris.AdvancedMessageContent, channel: eris.Channel): Promise<Snowflake> {
+    public async generateDumpPage(payload: eris.AdvancedMessageContent, channel: Snowflake): Promise<Snowflake> {
         const id = snowflake.create();
         await this.database.dumps.add({
             id: id,
             content: payload.content ?? undefined,
             embeds: payload.embeds,
-            channelid: snowflake.parse(channel.id),
+            channelid: channel,
             expiry: 604800
         });
         return id;

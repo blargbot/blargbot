@@ -78,8 +78,8 @@ export class BanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Ban';
 
-        const authorizer = noPerms ? context.authorizer?.user ?? context.local.message.author : context.local.message.author;
-        const response = await context.util.ban(context.local.message.channel.guild, user, context.local.message.author, authorizer, daysToDelete, reason, duration);
+        const authorizer = noPerms ? context.root.authorizer?.user ?? context.local.message.author : context.local.message.author;
+        const response = await context.engine.util.ban(context.local.message.channel.guild, user, context.local.message.author, authorizer, daysToDelete, reason, duration);
         if (response === 'success' || response === 'alreadyBanned')
             return duration.asMilliseconds() < Infinity ? duration.asMilliseconds() : true;
         throw new BBTagRuntimeError(errorMap[response]);

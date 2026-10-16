@@ -4,6 +4,7 @@ import type { IFormattable } from '@blargbot/formatting';
 import type * as eris from 'eris';
 
 import type { VariableCache } from './Caching.js';
+import type { DiscordPermissions } from './enums.js';
 import type { BBTagRuntimeError } from './errors/index.js';
 import type { BBTagExpression, SourceMarker, SubtagCall } from './language/index.js';
 import type { RuntimeLimit } from './limits/index.js';
@@ -36,6 +37,7 @@ export interface BBTagRuntimeScope {
     cooldown: number;
 }
 export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
+    readonly botId: string;
     readonly recursion: { depth: number; };
     readonly output: {
         nsfw?: string;
@@ -47,8 +49,10 @@ export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
     };
     readonly variables: VariableCache;
     readonly limit: RuntimeLimit;
-    readonly author: string | undefined;
-    readonly authorizer: string;
+    readonly authorId: string | undefined;
+    readonly authorizerId: string;
+    readonly authorizer: eris.Member | undefined;
+    readonly authorizerPermissions: DiscordPermissions;
     readonly prefix: string | undefined;
     readonly isCC: boolean;
     readonly silent: boolean;
@@ -301,7 +305,7 @@ export interface SubtagProperties<Id extends SubtagType = SubtagType> {
     readonly hidden?: boolean;
 }
 
-export interface AwaitReactionsResponse {
+export interface ReactionEvent {
     readonly message: eris.KnownMessage;
     readonly reaction: Emote;
     readonly user: eris.User;

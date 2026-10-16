@@ -39,7 +39,7 @@ await runSubtagTests({
             code: '{warn;other user}',
             expected: '5',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -62,7 +62,7 @@ await runSubtagTests({
             code: '{warn;other user;9}',
             expected: '9',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -85,7 +85,7 @@ await runSubtagTests({
             code: '{warn;other user;6;My custom reason}',
             expected: '22',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);

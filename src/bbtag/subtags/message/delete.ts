@@ -1,4 +1,5 @@
 import { guard } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
 import * as eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -10,7 +11,8 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.delete;
 
 export class DeleteSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #logger: Logger;
+    public constructor({ logger }: { logger: Logger; }) {
         super({
             name: 'delete',
             description: tag.description,
@@ -42,6 +44,7 @@ export class DeleteSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#logger = logger;
     }
 
     public async deleteMessage(
@@ -49,7 +52,7 @@ export class DeleteSubtag extends CompiledSubtag {
         channelStr: string,
         messageId: string
     ): Promise<void> {
-        if (!(context.ownsMessage(messageId) || await context.isStaff))
+        if (!(context.root.ownedMessageIds.has(messageId) || await context.isStaff))
             throw new BBTagRuntimeError('Author must be staff to delete unrelated messages');
 
         const channel = await context.queryChannel(channelStr);
@@ -68,7 +71,7 @@ export class DeleteSubtag extends CompiledSubtag {
         } catch (e: unknown) {
             if (e instanceof eris.DiscordRESTError && e.code === eris.ApiError.UNKNOWN_MESSAGE)
                 return;
-            context.logger.warn('Failed to delete message', e);
+            this.#logger.warn('Failed to delete message', e);
             // NOOP
         }
         //TODO return something like true/false

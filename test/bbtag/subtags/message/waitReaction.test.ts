@@ -1,22 +1,26 @@
-import assert from 'node:assert/strict';
-
-import type { AwaitReactionsResponse, BBTagUtilities } from '@blargbot/bbtag';
+import type { ReactionEvent } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag';
+import type { StreamReactionsThunk } from '@blargbot/bbtag/subtags';
 import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, WaitReactionSubtag } from '@blargbot/bbtag/subtags';
 import { Emote } from '@blargbot/core';
-import type { ArgumentMatchers, Callback, Mockable } from '@blargbot/test-util';
+import { Mock } from '@blargbot/test-util';
 import * as eris from 'eris';
 
 import type { SubtagTestContext } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitReaction']>[1], undefined>;
-const anyCondition = <T>($: ArgumentMatchers<T>): AwaitCondition => $.satisfies(v => typeof v === 'function');
+const streamReactions = new Mock<StreamReactionsThunk>({ id: 'streamReactions', callable: true });
 
 await runSubtagTests({
-    subtag: new WaitReactionSubtag(),
+    subtag: new WaitReactionSubtag({
+        streamReactions: streamReactions.instance
+    }),
     argCountBounds: { min: 1, max: { count: 5, noEval: [3] } },
     names: ['waitReaction', 'waitReact'],
+    setup(ctx) {
+        ctx.addMock(streamReactions);
+        streamReactions.reset();
+    },
     cases: [
         {
             code: '{waitreaction;328974628744623874}',
@@ -26,8 +30,8 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '23642834762378964232');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(undefined, [rejectedReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction]);
             }
         },
         {
@@ -41,8 +45,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
             }
         },
         {
@@ -56,8 +60,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
             }
         },
         {
@@ -71,8 +75,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '34897465835684954375', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874', '34897465835684954375', '9328479238794834798487']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874', '34897465835684954375', '9328479238794834798487']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
             }
         },
         {
@@ -85,11 +89,11 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -106,11 +110,11 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -127,25 +131,25 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member1 = ctx.createMock<eris.Member>();
-                const user1 = ctx.createMock<eris.User>();
+                const member1 = ctx.createMock<eris.Member>({ id: 'member1' });
+                const user1 = ctx.createMock<eris.User>({ id: 'user1' });
                 member1.setup(m => m.user).returns(user1.instance);
                 user1.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member1.instance]);
 
-                const member2 = ctx.createMock<eris.Member>();
-                const user2 = ctx.createMock<eris.User>();
+                const member2 = ctx.createMock<eris.Member>({ id: 'member2' });
+                const user2 = ctx.createMock<eris.User>({ id: 'user2' });
                 member2.setup(m => m.user).returns(user2.instance);
                 user2.setup(m => m.id).returns('9234874534905735485');
                 ctx.util.setup(m => m.getUser('9234874534905735485')).resolves(undefined);
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '9234874534905735485')).resolves([member2.instance]);
 
-                const member3 = ctx.createMock<eris.Member>();
-                const user3 = ctx.createMock<eris.User>();
+                const member3 = ctx.createMock<eris.Member>({ id: 'member3' });
+                const user3 = ctx.createMock<eris.User>({ id: 'user3' });
                 member3.setup(m => m.user).returns(user3.instance);
                 user3.setup(m => m.id).returns('39857623874642873');
                 ctx.util.setup(m => m.getUser('39857623874642873')).resolves(undefined);
@@ -163,11 +167,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '❌', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -185,11 +189,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -207,11 +211,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -229,11 +233,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -251,11 +255,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -273,11 +277,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -295,11 +299,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -316,11 +320,11 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -343,11 +347,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '238746283794634234', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -370,11 +374,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -395,11 +399,11 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -422,11 +426,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -446,11 +450,11 @@ await runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const rejectedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 60000))
-                    .invokes(createFakeAwaiterFactory(undefined, [rejectedReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -473,11 +477,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 10000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 10000))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -500,11 +504,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 0))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 0))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -527,11 +531,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup((m, $) => m.awaitReaction($(['328974628744623874']), anyCondition($), 300000))
-                    .invokes(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                streamReactions.setup((m, $) => m($(['328974628744623874']), 300000))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
@@ -541,19 +545,6 @@ await runSubtagTests({
     ]
 });
 
-function createFakeAwaiterFactory<T extends Mockable>(result: AwaitReactionsResponse | undefined, expectedFails: AwaitReactionsResponse[] = []): Callback<T, Promise<AwaitReactionsResponse | undefined>> {
-    return async i => {
-        const condition = i.arguments[1] as AwaitCondition;
-        for (const value of expectedFails)
-            assert.equal(await condition(value), false);
-        if (result === undefined)
-            return undefined;
-        if (await condition(result))
-            return result;
-        return undefined;
-    };
-}
-
 function createFilterableReaction(
     ctx: SubtagTestContext,
     guild: eris.Guild,
@@ -561,11 +552,11 @@ function createFilterableReaction(
     messageId: string,
     channelId = ctx.channels.command.id,
     userId = ctx.users.command.id
-): AwaitReactionsResponse {
-    const message = ctx.createMock<eris.KnownMessage>();
+): ReactionEvent {
+    const message = ctx.createMock<eris.KnownMessage>({ id: 'message' });
     message.setup(Reflect.getPrototypeOf).returns(eris.Message);
-    const channel = ctx.createMock<eris.TextChannel>();
-    const reactor = ctx.createMock<eris.User>();
+    const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
+    const reactor = ctx.createMock<eris.User>({ id: 'reactor' });
     message.setup(m => m.channel).returns(channel.instance);
     message.setup(m => m.id).returns(messageId, { isFallback: true });
     channel.setup(m => m.guild).returns(guild);
@@ -584,10 +575,10 @@ function createRejectedReaction(
     ctx: SubtagTestContext,
     emote: string,
     userId = ctx.users.command.id
-): AwaitReactionsResponse {
-    const message = ctx.createMock<eris.KnownMessage>();
+): ReactionEvent {
+    const message = ctx.createMock<eris.KnownMessage>({ id: 'message' });
     message.setup(Reflect.getPrototypeOf).returns(eris.Message);
-    const reactor = ctx.createMock<eris.User>();
+    const reactor = ctx.createMock<eris.User>({ id: 'reactor' });
     reactor.setup(m => m.id).returns(userId);
 
     return {

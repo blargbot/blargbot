@@ -13,8 +13,8 @@ await runSubtagTests({
             code: '{modlog;poke;023634983746234834}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const user = ctx.createMock<eris.User>();
-                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>({ id: 'user' });
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 member.setup(m => m.user).returns(user.instance);
 
                 ctx.util.setup(m => m.getUser('023634983746234834')).resolves(undefined);
@@ -26,12 +26,12 @@ await runSubtagTests({
             code: '{modlog;poke;023634983746234834;2365432687945234625}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const user1 = ctx.createMock<eris.User>();
-                const member1 = ctx.createMock<eris.Member>();
+                const user1 = ctx.createMock<eris.User>({ id: 'user1' });
+                const member1 = ctx.createMock<eris.Member>({ id: 'member1' });
                 member1.setup(m => m.user).returns(user1.instance);
 
-                const user2 = ctx.createMock<eris.User>();
-                const member2 = ctx.createMock<eris.Member>();
+                const user2 = ctx.createMock<eris.User>({ id: 'user2' });
+                const member2 = ctx.createMock<eris.Member>({ id: 'member2' });
                 member2.setup(m => m.user).returns(user2.instance);
 
                 ctx.util.setup(m => m.getUser('023634983746234834')).resolves(undefined);
@@ -45,12 +45,12 @@ await runSubtagTests({
             code: '{modlog;poke;023634983746234834;2365432687945234625;power abuse is fun}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const user1 = ctx.createMock<eris.User>();
-                const member1 = ctx.createMock<eris.Member>();
+                const user1 = ctx.createMock<eris.User>({ id: 'user1' });
+                const member1 = ctx.createMock<eris.Member>({ id: 'member1' });
                 member1.setup(m => m.user).returns(user1.instance);
 
-                const user2 = ctx.createMock<eris.User>();
-                const member2 = ctx.createMock<eris.Member>();
+                const user2 = ctx.createMock<eris.User>({ id: 'user2' });
+                const member2 = ctx.createMock<eris.Member>({ id: 'member2' });
                 member2.setup(m => m.user).returns(user2.instance);
 
                 ctx.util.setup(m => m.getUser('023634983746234834')).resolves(undefined);
@@ -64,12 +64,12 @@ await runSubtagTests({
             code: '{modlog;poke;023634983746234834;2365432687945234625;power abuse is fun;red}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const user1 = ctx.createMock<eris.User>();
-                const member1 = ctx.createMock<eris.Member>();
+                const user1 = ctx.createMock<eris.User>({ id: 'user1' });
+                const member1 = ctx.createMock<eris.Member>({ id: 'member1' });
                 member1.setup(m => m.user).returns(user1.instance);
 
-                const user2 = ctx.createMock<eris.User>();
-                const member2 = ctx.createMock<eris.Member>();
+                const user2 = ctx.createMock<eris.User>({ id: 'user2' });
+                const member2 = ctx.createMock<eris.Member>({ id: 'member2' });
                 member2.setup(m => m.user).returns(user2.instance);
 
                 ctx.util.setup(m => m.getUser('023634983746234834')).resolves(undefined);
@@ -83,8 +83,8 @@ await runSubtagTests({
             code: '{modlog;poke;023634983746234834;;;}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const user = ctx.createMock<eris.User>();
-                const member = ctx.createMock<eris.Member>();
+                const user = ctx.createMock<eris.User>({ id: 'user' });
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 member.setup(m => m.user).returns(user.instance);
 
                 ctx.util.setup(m => m.getUser('023634983746234834')).resolves(undefined);

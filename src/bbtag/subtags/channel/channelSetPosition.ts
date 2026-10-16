@@ -34,7 +34,7 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO No channel found error
 
-        if (!context.hasPermission(channel, 'manageChannels'))
+        if (!context.hasPermission('MANAGE_CHANNELS', channel))
             throw new BBTagRuntimeError('Author cannot move this channel');
 
         const pos = parse.int(posStr);

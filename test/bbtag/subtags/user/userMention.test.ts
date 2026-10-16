@@ -84,8 +84,8 @@ await runSubtagTests({
                 ctx.users.other.id = '098765434512212678';
             },
             postSetup(bbctx, ctx) {
-                const otherMember = ctx.createMock<eris.Member>();
-                const otherUser = ctx.createMock<eris.User>();
+                const otherMember = ctx.createMock<eris.Member>({ id: 'otherMember' });
+                const otherUser = ctx.createMock<eris.User>({ id: 'otherUser' });
                 otherMember.setup(m => m.user).returns(otherUser.instance, { isFallback: true });
                 otherUser.setup(m => m.id).returns('098765434512212678');
                 otherUser.setup(m => m.mention).returns('<@098765434512212678>');

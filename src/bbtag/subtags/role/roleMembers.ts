@@ -37,7 +37,7 @@ export class RoleMembersSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        await context.util.ensureMemberCache(context.local.message.channel.guild);
+        await context.engine.util.ensureMemberCache(context.local.message.channel.guild);
         const membersInRole = context.local.message.channel.guild.members.filter(m => m.roles.includes(role.id));
         return membersInRole.map(m => m.user.id);
     }

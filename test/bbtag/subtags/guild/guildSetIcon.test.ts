@@ -6,7 +6,7 @@ import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const fetch = new Mock<typeof globalThis.fetch>({ callable: true });
+const fetch = new Mock<typeof globalThis.fetch>({ id: 'fetch', callable: true });
 
 await runSubtagTests({
     subtag: new GuildSetIconSubtag({
@@ -34,7 +34,7 @@ await runSubtagTests({
             code: '{guildseticon;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const response = ctx.createFetchResponse();
+                const response = ctx.createMock<Response>({ id: 'response' });
                 fetch.setup(m => m('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png'))
                     .resolves(response.instance);
                 response.setup(m => m.headers).returns(new Headers({
@@ -50,7 +50,7 @@ await runSubtagTests({
             code: '{guildseticon;https://cdn.discordapp.com/icons/194232473931087872/e88c2e966c6ca78f2268fa8aed4621ab.png?size=0}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const response = ctx.createFetchResponse();
+                const response = ctx.createMock<Response>({ id: 'response' });
                 fetch.setup(m => m('https://cdn.discordapp.com/icons/194232473931087872/e88c2e966c6ca78f2268fa8aed4621ab.png?size=0'))
                     .resolves(response.instance);
                 response.setup(m => m.headers).returns(new Headers({}));

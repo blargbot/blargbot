@@ -1,12 +1,11 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
 import { EmojiCreateSubtag, SemiSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 import { asUint8Array } from '@blargbot/util';
-import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const fetch = new Mock<typeof globalThis.fetch>({ callable: true });
+const fetch = new Mock<typeof globalThis.fetch>({ id: 'fetch', callable: true });
 
 await runSubtagTests({
     subtag: new EmojiCreateSubtag({
@@ -17,7 +16,7 @@ await runSubtagTests({
     setup(ctx) {
         ctx.addMock(fetch);
         fetch.reset();
-        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageEmojisAndStickers.toString();
+        ctx.roles.authorizer.permissions = DiscordPermissions.CREATE_GUILD_EXPRESSIONS.toString();
     },
     cases: [
         {
@@ -44,7 +43,7 @@ await runSubtagTests({
             code: '{emojicreate;My cool emoji;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png}',
             expected: '23946249762743426',
             setup(ctx) {
-                const response = ctx.createFetchResponse();
+                const response = ctx.createMock<Response>({ id: 'response' });
                 fetch.setup(m => m('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png'))
                     .resolves(response.instance);
                 response.setup(m => m.headers).returns(new Headers({
@@ -70,7 +69,7 @@ await runSubtagTests({
             code: '{emojicreate;My cool emoji;https://cdn.discordapp.com/icons/194232473931087872/e88c2e966c6ca78f2268fa8aed4621ab.png?size=0}',
             expected: '23946249762743426',
             setup(ctx) {
-                const response = ctx.createFetchResponse();
+                const response = ctx.createMock<Response>({ id: 'response' });
                 fetch.setup(m => m('https://cdn.discordapp.com/icons/194232473931087872/e88c2e966c6ca78f2268fa8aed4621ab.png?size=0'))
                     .resolves(response.instance);
                 response.setup(m => m.headers).returns(new Headers({}));

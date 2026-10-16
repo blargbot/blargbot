@@ -1,13 +1,23 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
 import { UserSetNickSubtag } from '@blargbot/bbtag/subtags';
+import type { Logger } from '@blargbot/logger';
+import { Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
+const logger = new Mock<Logger>({ id: 'logger' });
+
 await runSubtagTests({
-    subtag: new UserSetNickSubtag(),
+    subtag: new UserSetNickSubtag({
+        logger: logger.instance
+    }),
     argCountBounds: { min: 1, max: 2 },
     names: ['userSetNickname', 'setNickname', 'setNick', 'userSetNick'],
+    setup(ctx) {
+        ctx.addMock(logger);
+        logger.reset();
+    },
     cases: [
         {
             code: '{usersetnick;abc}',
@@ -22,7 +32,7 @@ await runSubtagTests({
             code: '{usersetnick;abc;other user}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -36,7 +46,7 @@ await runSubtagTests({
             code: '{usersetnick;abc;blargbot}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'blargbot'))
                     .mustHappen(1)
                     .resolves([member.instance]);

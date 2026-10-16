@@ -44,6 +44,6 @@ export class ModLogSubtag extends CompiledSubtag {
         //TODO no user found for this?
         const mod = await context.queryUser(modStr) ?? context.local.message.author;
 
-        await context.util.addModLog(context.local.message.channel.guild, action, user, mod, reason, color);
+        await context.engine.util.addModLog(context.local.message.channel.guild, action, user, mod, reason, color);
     }
 }

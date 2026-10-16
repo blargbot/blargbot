@@ -49,7 +49,7 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        const permissions = channel.permissionsOf(context.discord.user.id);
+        const permissions = channel.permissionsOf(context.root.botId);
         if (!permissions.has('manageMessages'))
             throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
 
@@ -57,7 +57,7 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
-        if (!context.ownsMessage(message.id) && !await context.isStaff)
+        if (!context.root.ownedMessageIds.has(message.id) && !await context.isStaff)
             throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
 
         const user = await context.queryUser(userStr, { noErrors: true, noLookup: true });

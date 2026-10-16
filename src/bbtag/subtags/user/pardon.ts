@@ -49,6 +49,6 @@ export class PardonSubtag extends CompiledSubtag {
         if (count === undefined)
             throw new NotANumberError(countStr);
 
-        return await context.util.pardon(member, context.local.message.author, count, reason === '' ? 'Tag Pardon' : reason);
+        return await context.engine.util.pardon(member, context.local.message.author, count, reason === '' ? 'Tag Pardon' : reason);
     }
 }

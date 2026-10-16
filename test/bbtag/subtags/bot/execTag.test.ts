@@ -7,7 +7,7 @@ import { Mock } from '@blargbot/test-util';
 
 import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-const getTag = new Mock<GetTagThunk>({ callable: true });
+const getTag = new Mock<GetTagThunk>({ id: 'getTag', callable: true });
 
 await runSubtagTests({
     subtag: new ExecTagSubtag({

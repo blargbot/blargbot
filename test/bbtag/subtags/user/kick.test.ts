@@ -25,7 +25,7 @@ await runSubtagTests({
             code: '{kick;other user}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -42,7 +42,7 @@ await runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -59,8 +59,8 @@ await runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.username).returns('other user');
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
@@ -79,7 +79,7 @@ await runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -96,8 +96,8 @@ await runSubtagTests({
                 { start: 0, end: 17, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.username).returns('other user');
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
@@ -113,7 +113,7 @@ await runSubtagTests({
             code: '{kick;other user;My reason here}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -127,7 +127,7 @@ await runSubtagTests({
             code: '{kick;other user;My reason here;x}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const authorizer = bbctx.local.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
@@ -144,7 +144,7 @@ await runSubtagTests({
             code: '{kick;other user;My reason here;}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);

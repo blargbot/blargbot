@@ -46,8 +46,8 @@ export class UnbanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Unban';
 
-        const authorizer = noPerms ? context.authorizer?.user ?? context.local.message.author : context.local.message.author;
-        const result = await context.util.unban(context.local.message.channel.guild, user, context.local.message.author, authorizer, reason);
+        const authorizer = noPerms ? context.root.authorizer?.user ?? context.local.message.author : context.local.message.author;
+        const result = await context.engine.util.unban(context.local.message.channel.guild, user, context.local.message.author, authorizer, reason);
 
         switch (result) {
             case 'success': return true;

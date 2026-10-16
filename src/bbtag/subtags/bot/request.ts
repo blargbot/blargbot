@@ -2,7 +2,6 @@ import { parse, zodStringToJson } from '@blargbot/core';
 import { BufferWriterStream } from '@blargbot/util';
 import z from 'zod';
 
-import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
@@ -12,9 +11,17 @@ const tag = templates.subtags.request;
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
+export interface CanRequestDomainThunk {
+    (domain: string): Promise<boolean>;
+}
+
 export class RequestSubtag extends CompiledSubtag {
     readonly #fetch: typeof globalThis.fetch;
-    public constructor({ fetch }: { fetch: typeof globalThis.fetch; }) {
+    readonly #canRequestDomain: CanRequestDomainThunk;
+    public constructor({ fetch, canRequestDomain }: {
+        fetch: typeof globalThis.fetch;
+        canRequestDomain: CanRequestDomainThunk;
+    }) {
         super({
             name: 'request',
             category: SubtagType.BOT,
@@ -26,15 +33,15 @@ export class RequestSubtag extends CompiledSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'json',
-                    execute: (ctx, [url, options, data]) => this.requestUrl(ctx, url.value, options.value, data.value)
+                    execute: (_, [url, options, data]) => this.requestUrl(url.value, options.value, data.value)
                 }
             ]
         });
         this.#fetch = fetch;
+        this.#canRequestDomain = canRequestDomain;
     }
 
     public async requestUrl(
-        context: BBTagContext,
         url: string,
         optionsStr: string,
         dataStr: string
@@ -43,8 +50,9 @@ export class RequestSubtag extends CompiledSubtag {
         if (domainMatch === null)
             throw new BBTagRuntimeError(`A domain could not be extracted from url: ${url}`);
 
+        let requireOk = true;
         const domain = domainMatch[1];
-        if (!context.util.canRequestDomain(domain))
+        if (!await this.#canRequestDomain(domain))
             throw new BBTagRuntimeError(`Domain is not whitelisted: ${domain}`);
 
         const request = {
@@ -59,6 +67,7 @@ export class RequestSubtag extends CompiledSubtag {
                 throw new BBTagRuntimeError('', `Invalid request options "${optionsStr}"`);
             request.method = mappedOptions.data.method;
             request.headers = mappedOptions.data.headers;
+            requireOk = mappedOptions.data.requireOk;
         }
 
         let data;
@@ -81,12 +90,7 @@ export class RequestSubtag extends CompiledSubtag {
 
         try {
             const response = await this.#fetch(url + (query !== undefined ? `?${query}` : ''), request);
-            /*
-                I personally absolutely hate how blarg decides to error if a status code is not consider 'ok'
-                A lot of APIs actually have meaningful errors, coupled with a 'not-ok' status and it's ass that blarg doesn't return it.
-                TODO change this to return always regardless of statusCode OR add a parameter like [rawResponse] for getting the response object always without breaking bbtag.
-            */
-            if (!(response.status >= 200 && response.status < 400))
+            if (requireOk && !(response.status >= 200 && response.status < 400))
                 throw new BBTagRuntimeError(`${response.status} ${response.statusText}`);
 
             const result = {
@@ -127,5 +131,6 @@ const mapOptions = zodStringToJson.pipe(z.strictObject({
     headers: z.union([
         zodStringToJson.pipe(z.record(z.string(), z.json().transform(v => parse.string(v)))),
         z.record(z.string(), z.json().transform(v => parse.string(v)))
-    ]).optional().default(() => ({}))
+    ]).optional().default(() => ({})),
+    requireOk: z.boolean().optional().default(true)
 }));

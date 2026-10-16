@@ -18,7 +18,7 @@ await runSubtagTests({
             code: '{channelcreate;My new channel}',
             expected: '28376128632132',
             setup(ctx) {
-                const channel = ctx.createMock<eris.TextChannel>();
+                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('28376128632132');
 
                 ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $({
@@ -45,7 +45,7 @@ await runSubtagTests({
                 code: `{channelcreate;My new channel;${type}}`,
                 expected: '28376128632132',
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<eris.Channel>();
+                    const channel = ctx.createMock<eris.Channel>({ id: 'channel' });
                     channel.setup(Reflect.getPrototypeOf).returns(instance.prototype);
                     channel.setup(m => m.id).returns('28376128632132');
 
@@ -66,7 +66,7 @@ await runSubtagTests({
                 expected: '28376128632132',
                 subtags: [new EscapeBBTagSubtag()],
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<eris.Channel>();
+                    const channel = ctx.createMock<eris.Channel>({ id: 'channel' });
                     channel.setup(Reflect.getPrototypeOf).returns(instance.prototype);
                     channel.setup(m => m.id).returns('28376128632132');
 
@@ -109,7 +109,7 @@ await runSubtagTests({
                 expected: '28376128632132',
                 subtags: [new EscapeBBTagSubtag()],
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<eris.Channel>();
+                    const channel = ctx.createMock<eris.Channel>({ id: 'channel' });
                     channel.setup(Reflect.getPrototypeOf).returns(instance.prototype);
                     channel.setup(m => m.id).returns('28376128632132');
 
@@ -165,7 +165,7 @@ await runSubtagTests({
                 expected: '28376128632132',
                 subtags: [new EscapeBBTagSubtag()],
                 setup(ctx: SubtagTestContext) {
-                    const channel = ctx.createMock<eris.Channel>();
+                    const channel = ctx.createMock<eris.Channel>({ id: 'channel' });
                     channel.setup(Reflect.getPrototypeOf).returns(instance.prototype);
                     channel.setup(m => m.id).returns('28376128632132');
 
@@ -207,7 +207,7 @@ await runSubtagTests({
             expected: '28376128632132',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx: SubtagTestContext) {
-                const channel = ctx.createMock<eris.TextChannel>();
+                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('28376128632132');
 
                 ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $({
@@ -269,7 +269,7 @@ await runSubtagTests({
             code: '{channelcreate;My new channel}',
             expected: '28376128632132',
             setup(ctx) {
-                const channel = ctx.createMock<eris.TextChannel>();
+                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('28376128632132');
 
                 ctx.discord.setup((m, $) => m.createChannel(ctx.guild.id, 'My new channel', ChannelType.GuildText, $({

@@ -27,7 +27,7 @@ export class EmojiDeleteSubtag extends CompiledSubtag {
     }
 
     public async deleteEmoji(context: BBTagContext, emojiId: string): Promise<void> {
-        if (!context.hasPermission('manageEmojisAndStickers'))
+        if (!context.hasPermission('MANAGE_GUILD_EXPRESSIONS'))
             throw new BBTagRuntimeError('Author cannot delete emojis');
 
         try {

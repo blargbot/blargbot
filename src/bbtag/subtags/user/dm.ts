@@ -3,15 +3,17 @@ import { parse } from '@blargbot/core';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
+import { RwLock } from '../../getLock.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { SendThunk } from '../message/send.js';
 
 const tag = templates.subtags.dm;
 
 export class DMSubtag extends CompiledSubtag {
-    readonly #dmCache: DMCache = {};
-
-    public constructor() {
+    readonly #dmCache = new Map<string, DMCacheEntry>();
+    readonly #send: SendThunk;
+    public constructor({ send }: { send: SendThunk; }) {
         super({
             name: 'dm',
             category: SubtagType.USER,
@@ -43,6 +45,7 @@ export class DMSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#send = send;
     }
 
     public async sendDm(
@@ -56,42 +59,36 @@ export class DMSubtag extends CompiledSubtag {
             throw new UserNotFoundError(userStr);
 
         const messageAsEmbeds = embedStr === undefined ? parse.embed(messageStr, false) : undefined;
-        const embeds = messageAsEmbeds ?? parse.embed(embedStr);
-        const content = messageAsEmbeds === undefined ? messageStr : undefined;
-        const payload = context.root.output.nsfw !== undefined
-            ? { content: context.root.output.nsfw }
-            : { content, embeds };
-        if (payload.content === undefined)
-            delete payload.content;
-        if (payload.embeds === undefined)
-            delete payload.embeds;
-
-        try {
-            let cache = this.#dmCache[member.id];
-            const channel = await member.user.getDMChannel();
-            if (cache === undefined ||
-                cache.count > 5 ||
-                cache.user !== context.local.message.author.id ||
-                cache.guild !== context.local.message.channel.guild.id) {
-                // Ew we're gonna send a message first? It was voted...
-                // TODO: Maybe change to a footer embed on every DM? I dont think its possible to disable embeds in DMs
-                await context.util.send(channel, { content: `The following message was sent from **__${context.local.message.channel.guild.name}__** (${context.local.message.channel.guild.id}), and was sent by **__${context.local.message.author.username}#${context.local.message.author.discriminator}__** (${context.local.message.author.id}):` });
-                cache = this.#dmCache[member.id] = { user: context.local.message.author.id, guild: context.local.message.channel.guild.id, count: 1 };
-            }
-
-            await context.util.send(channel, payload);
-            cache.count++;
-        } catch (e: unknown) {
-            context.logger.error('DM failed', e);
-            throw new BBTagRuntimeError('Could not send DM');
+        let embeds = messageAsEmbeds ?? parse.embed(embedStr);
+        let content = messageAsEmbeds === undefined ? messageStr : undefined;
+        if (context.root.output.nsfw !== undefined) {
+            content = context.root.output.nsfw;
+            embeds = undefined;
         }
+        const guild = context.local.message.channel.guild;
+        const user = context.local.message.author;
+        const cache = this.#dmCache.getOrInsertComputed(member.id, () => ({ count: 0, lock: new RwLock() }));
+        const channel = await member.user.getDMChannel();
+        await using _handle = await cache.lock.enterWrite();
+        if (cache.count === 0 || cache.count >= 5 || cache.sender !== user.id || cache.guild !== guild.id) {
+            // Ew we're gonna send a message first? It was voted...
+            // TODO: Maybe change to a footer embed on every DM? I dont think its possible to disable embeds in DMs
+            await this.#send(channel.id, { content: `The following message was sent from **__${guild.name}__** (${guild.id}), and was sent by **__${user.username}#${user.discriminator}__** (${user.id}):` });
+            cache.sender = user.id;
+            cache.guild = guild.id;
+            cache.count = 0;
+        }
+
+        const result = await this.#send(channel.id, { content, embeds });
+        if (!result.success)
+            throw new BBTagRuntimeError('Could not send DM');
+        cache.count++;
     }
 }
 
-interface DMCache {
-    [index: string]: {
-        guild: string;
-        count: number;
-        user: string;
-    } | undefined;
+interface DMCacheEntry {
+    count: number;
+    guild?: string;
+    sender?: string;
+    readonly lock: RwLock;
 }

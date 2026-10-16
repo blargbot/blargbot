@@ -44,4 +44,8 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
     }
 
     protected abstract executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined>;
+
+    public toString(): string {
+        return this.signatures.length === 0 ? `{${this.name}}` : `{${this.name};...}`;
+    }
 }

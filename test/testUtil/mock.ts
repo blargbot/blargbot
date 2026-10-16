@@ -46,6 +46,7 @@ export interface SetupMock<T extends Mockable, Result> extends Disposable {
     resolves(value: Result extends PromiseLike<infer V> ? Awaitable<V> : never, options?: InterceptOptions): SetupMock<T, Result>;
     throws(error: unknown, options?: InterceptOptions): SetupMock<T, Result>;
     rejects(error: Result extends PromiseLike<unknown> ? unknown : never, options?: InterceptOptions): SetupMock<T, Result>;
+    yieldsAsync(value: Result extends AsyncIterable<infer V> ? Awaitable<Iterable<V>> : never, options?: InterceptOptions): SetupMock<T, Result>;
 
     addAssertion(assertion: Assertion<T>): SetupMock<T, Result>;
     mustNotHappen(): SetupMock<T, Result>;
@@ -621,7 +622,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
     }
 
     #isSetUp(kind: 'get' | 'method' | 'newNested', name: PropertyKey): boolean {
-        return (this.#interceptors[kind].get(name)?.length ?? 0) > 0;
+        return (this.#interceptors[kind].get(name)?.filter(x => !x.isFallback).length ?? 0) > 0;
     }
 
     static readonly #setupMockImpl = class SetupMockImpl<T extends Mockable, Result> implements SetupMock<T, Result> {
@@ -723,6 +724,12 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         public rejects(error: Result extends PromiseLike<unknown> ? unknown : never, options?: InterceptOptions): SetupMock<T, Result> {
             // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
             return this.invokes(() => Promise.reject(error) as Result, options);
+        }
+
+        public yieldsAsync(value: Result extends AsyncIterable<infer V> ? Iterable<V> : never, options?: InterceptOptions): SetupMock<T, Result> {
+            return this.invokes(async function* () {
+                yield* await Promise.resolve(value);
+            } as () => Result, options);
         }
 
         public addAssertion(assertion: Assertion<T>): SetupMock<T, Result> {
@@ -1829,21 +1836,20 @@ function argToString(value: unknown): string {
             const mock = Mock.fromInstance(value);
             if (mock !== undefined)
                 return mock.toString();
-
+            if (value instanceof Array)
+                return `[${value.map(argToString).join(',')}]`;
+            let content;
             // eslint-disable-next-line @typescript-eslint/unbound-method
             if (value.toString !== Object.prototype.toString && Mock.fromInstance(value.toString) === undefined)
                 // eslint-disable-next-line @typescript-eslint/no-base-to-string
-                return value.toString();
-            let content;
-            if (Symbol.iterator in value && typeof value[Symbol.iterator] === 'function')
-                content = `[${[...value as Iterable<unknown>].map(v => argToString(v)).join(',')}]`;
+                content = value.toString();
+            else if (Symbol.iterator in value && typeof value[Symbol.iterator] === 'function')
+                content = `${[...value as Iterable<unknown>].map(v => argToString(v)).join(',')}`;
             else
-                content = `{${Object.entries(value).map(([k, v]) => `${keyToProp(k, false)}:${argToString(v)}`).join(',')}}`;
-            if (value instanceof Array)
-                return `[${value.map(argToString).join(',')}]`;
+                content = `${Object.entries(value).map(([k, v]) => `${keyToProp(k, false)}:${argToString(v)}`).join(',')}`;
             const prototype = Object.getPrototypeOf(value) as object | null;
             if (prototype === null || prototype === Object.prototype)
-                return content;
+                return `{${content}}`;
             const prototypeMock = Mock.fromInstance(prototype);
             if (prototypeMock !== undefined)
                 return `${prototypeMock.toString()}(${content})`;
@@ -2004,13 +2010,16 @@ function isMatch(expression: Expression, invocation: Invocation, mockInstance: u
     }
 }
 
+const prunedErrors = new WeakSet<MockError>();
 function rewriteMockErrorStack<T extends (...args: never) => unknown>(fn: T): T {
     const result = function (...args) {
         try {
             return fn(...args);
         } catch (error) {
-            if (error instanceof MockError)
+            if (error instanceof MockError && !prunedErrors.has(error)) {
+                prunedErrors.add(error);
                 Error.captureStackTrace(error, result);
+            }
             throw error;
         }
     } as T;

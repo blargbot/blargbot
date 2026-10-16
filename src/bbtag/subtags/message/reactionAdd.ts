@@ -5,11 +5,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { AddReactionsThunk } from './output.js';
 
 const tag = templates.subtags.reactionAdd;
 
 export class ReactionAddSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #addReactions: AddReactionsThunk;
+    public constructor({ addReactions }: { addReactions: AddReactionsThunk; }) {
         super({
             name: 'reactionAdd',
             category: SubtagType.MESSAGE,
@@ -41,6 +43,7 @@ export class ReactionAddSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#addReactions = addReactions;
     }
 
     public async addReactions(
@@ -57,7 +60,7 @@ export class ReactionAddSubtag extends CompiledSubtag {
         if (message === undefined && messageId !== undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
-        const permissions = channel.permissionsOf(context.discord.user.id);
+        const permissions = channel.permissionsOf(context.root.botId);
         if (!permissions.has('addReactions'))
             throw new BBTagRuntimeError('I dont have permission to Add Reactions');
 
@@ -66,9 +69,9 @@ export class ReactionAddSubtag extends CompiledSubtag {
 
         if (message !== undefined) {
             // Perform add of each reaction
-            const errors = await context.util.addReactions(message, reactions);
-            if (errors.failed.length > 0)
-                throw new BBTagRuntimeError(`I cannot add '${errors.failed.toString()}' as reactions`);
+            const result = await this.#addReactions(channel.id, message.id, reactions);
+            if (result.failed.length > 0)
+                throw new BBTagRuntimeError(`I cannot add '${result.failed.toString()}' as reactions`);
 
         } else {
             // Defer reactions to output message

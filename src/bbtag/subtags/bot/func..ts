@@ -24,8 +24,8 @@ export class FunctionInvokeSubtag extends CompiledSubtag {
         if (func === undefined)
             throw new UnknownSubtagError(`func.${functionName}`);
 
-        using _stack = context.usingStack();
-        using scope = context.usingScope();
+        using _stack = context.enterRecursion();
+        using scope = context.enterScope();
         scope.paramsarray = args;
         return await context.eval(func);
     }

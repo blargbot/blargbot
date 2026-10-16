@@ -27,7 +27,7 @@ export class RandomUserSubtag extends CompiledSubtag {
     }
 
     public async randomUser(context: BBTagContext): Promise<string> {
-        await context.util.ensureMemberCache(context.local.message.channel.guild);
+        await context.engine.util.ensureMemberCache(context.local.message.channel.guild);
         return random.pick(context.local.message.channel.guild.members.values()).id;
     }
 }

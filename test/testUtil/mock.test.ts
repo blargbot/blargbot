@@ -9,7 +9,7 @@ import { Mock, MockError } from './mock.js';
 await describe('Mock', async () => {
     await describe('function mocks', async () => {
         await it('mocks a direct invocation', () => {
-            const sut = new Mock<(id: string) => string>({ callable: true });
+            const sut = new Mock<(id: string) => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m('123')).returns('success!');
 
@@ -18,7 +18,7 @@ await describe('Mock', async () => {
         });
 
         await it('ignores this for direct invocations', () => {
-            const sut = new Mock<(id: string) => string>({ callable: true });
+            const sut = new Mock<(id: string) => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m('123')).returns('success!');
 
@@ -27,7 +27,7 @@ await describe('Mock', async () => {
         });
 
         await it('can match this through call', () => {
-            const sut = new Mock<(id: string) => string>({ callable: true });
+            const sut = new Mock<(id: string) => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m.call(undefined, '123')).returns('success!');
 
@@ -39,7 +39,7 @@ await describe('Mock', async () => {
         });
 
         await it('can match this through apply', () => {
-            const sut = new Mock<(id: string) => string>({ callable: true });
+            const sut = new Mock<(id: string) => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m.apply(undefined, ['123'])).returns('success!');
 
@@ -51,7 +51,7 @@ await describe('Mock', async () => {
         });
 
         await it('rejects a non-array-like argument to apply', () => {
-            const sut = new Mock<(id: string) => string>({ callable: true });
+            const sut = new Mock<(id: string) => string>({ id: 'sut', callable: true });
 
             assert.throws(
                 () => sut.setup(m => m.apply(undefined, 123 as never)),
@@ -61,7 +61,7 @@ await describe('Mock', async () => {
 
         await it('supports constructors', () => {
             type Constructor = new (id: string) => { id: string; };
-            const sut = new Mock<Constructor>({ callable: true });
+            const sut = new Mock<Constructor>({ id: 'sut', callable: true });
             const result = { id: '123' };
 
             sut.setup(x => new x('123')).returns(result);
@@ -71,7 +71,7 @@ await describe('Mock', async () => {
 
         await it('can match a derived constructor target', () => {
             type Constructor = new (id: string) => { id: string; };
-            const sut = new Mock<Constructor>({ callable: true });
+            const sut = new Mock<Constructor>({ id: 'sut', callable: true });
             const result = { id: '123' };
 
             sut.setup(x => new x('123')).returns(result);
@@ -93,7 +93,7 @@ await describe('Mock', async () => {
         }
 
         await it('mocks a nested constructor', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
             const expected: SomeObject = { id: 'abc' };
 
             sut.setup(x => new x.InnerClass('abc')).returns(expected);
@@ -102,7 +102,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches arguments passed to a nested constructor', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
 
             const abc: SomeObject = { id: 'abc' };
             const def: SomeObject = { id: 'def' };
@@ -115,7 +115,7 @@ await describe('Mock', async () => {
         });
 
         await it('throws when a nested constructor invocation has no matching setup', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
 
             sut.setup(x => new x.InnerClass('abc')).returns({ id: 'abc' });
 
@@ -126,7 +126,7 @@ await describe('Mock', async () => {
         });
 
         await it('records nested constructor invocations', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
             const expected: SomeObject = { id: 'abc' };
 
             sut.setup(x => new x.InnerClass('abc')).returns(expected);
@@ -139,7 +139,7 @@ await describe('Mock', async () => {
         });
 
         await it('verifies nested constructor invocations', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
             const expected: SomeObject = { id: 'abc' };
 
             sut.setup(x => new x.InnerClass('abc')).returns(expected);
@@ -150,7 +150,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports argument matchers for nested constructors', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
             const expected: SomeObject = { id: 'abc' };
 
             sut.setup((x, $) => new x.InnerClass($.string)).returns(expected);
@@ -171,7 +171,7 @@ await describe('Mock', async () => {
                 OtherClass: new (value: number) => SomeObject;
             }
 
-            const sut = new Mock<ExtendedType>();
+            const sut = new Mock<ExtendedType>({ id: 'sut' });
 
             const first: SomeObject = { id: 'first' };
             const second: SomeObject = { id: 'second' };
@@ -184,7 +184,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports a nested constructor used through a local reference', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
             const expected: SomeObject = { id: 'abc' };
 
             sut.setup(x => new x.InnerClass('abc')).returns(expected);
@@ -195,7 +195,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports repeated nested constructor invocations', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
 
             const first: SomeObject = { id: 'first' };
             const second: SomeObject = { id: 'second' };
@@ -209,7 +209,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports a fallback setup for a nested constructor', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
 
             const expected: SomeObject = { id: 'fallback' };
 
@@ -234,8 +234,8 @@ await describe('Mock', async () => {
         });
 
         await it('does not allow a constructor to then be configured as a getter', () => {
-            const sut = new Mock<SomeType>();
-            const cls = new Mock<SomeType['InnerClass']>({ callable: true });
+            const sut = new Mock<SomeType>({ id: 'sut' });
+            const cls = new Mock<SomeType['InnerClass']>({ id: 'cls', callable: true });
 
             sut.setup(x => new x.InnerClass('abc')).returns({ id: 'abc' });
             assert.throws(
@@ -245,8 +245,8 @@ await describe('Mock', async () => {
         });
 
         await it('does not allow a getter to then be configured as a constructor', () => {
-            const sut = new Mock<SomeType>();
-            const cls = new Mock<SomeType['InnerClass']>({ callable: true });
+            const sut = new Mock<SomeType>({ id: 'sut' });
+            const cls = new Mock<SomeType['InnerClass']>({ id: 'cls', callable: true });
 
             sut.setup(m => m.InnerClass).returns(cls.instance);
             assert.throws(
@@ -256,8 +256,8 @@ await describe('Mock', async () => {
         });
 
         await it('does not allow a method to then be configured as a getter', () => {
-            const sut = new Mock<SomeType>();
-            const cls = new Mock<SomeType['InnerClass']>({ callable: true });
+            const sut = new Mock<SomeType>({ id: 'sut' });
+            const cls = new Mock<SomeType['InnerClass']>({ id: 'cls', callable: true });
 
             sut.setup(x => x.InnerClass('abc')).returns({ id: 'abc' });
             assert.throws(
@@ -267,8 +267,8 @@ await describe('Mock', async () => {
         });
 
         await it('does not allow a getter to then be configured as a method', () => {
-            const sut = new Mock<SomeType>();
-            const cls = new Mock<SomeType['InnerClass']>({ callable: true });
+            const sut = new Mock<SomeType>({ id: 'sut' });
+            const cls = new Mock<SomeType['InnerClass']>({ id: 'cls', callable: true });
 
             sut.setup(m => m.InnerClass).returns(cls.instance);
             assert.throws(
@@ -278,7 +278,7 @@ await describe('Mock', async () => {
         });
 
         await it('allows a method to then be configured as a constructor', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
             const constructed = { id: 'constructed' };
             const invoked = { id: 'invoked' };
 
@@ -290,7 +290,7 @@ await describe('Mock', async () => {
         });
 
         await it('allows a constructor to then be configured as a method', () => {
-            const sut = new Mock<SomeType>();
+            const sut = new Mock<SomeType>({ id: 'sut' });
             const constructed = { id: 'constructed' };
             const invoked = { id: 'invoked' };
 
@@ -309,7 +309,7 @@ await describe('Mock', async () => {
         };
 
         await it('mocks a direct method call', () => {
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(m => m.echo('123')).returns('success!');
 
@@ -318,7 +318,7 @@ await describe('Mock', async () => {
         });
 
         await it('does not require a particular this for direct method calls', () => {
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(m => m.echo('123')).returns('success!');
 
@@ -330,7 +330,7 @@ await describe('Mock', async () => {
         });
 
         await it('can match this for a method through call', () => {
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
             const receiver = {};
 
             sut.setup(m => m.echo.call(receiver, '123')).returns('success!');
@@ -343,7 +343,7 @@ await describe('Mock', async () => {
         });
 
         await it('can match this for a method through apply', () => {
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
             const receiver = {};
 
             sut.setup(m => m.echo.apply(receiver, ['123'])).returns('success!');
@@ -356,7 +356,7 @@ await describe('Mock', async () => {
         });
 
         await it('rejects directly mocking method.call', () => {
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             assert.throws(
                 () => sut.setup(m => m.echo.call as never),
@@ -365,7 +365,7 @@ await describe('Mock', async () => {
         });
 
         await it('rejects directly mocking method.apply', () => {
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             assert.throws(
                 () => sut.setup(m => m.echo.apply as never),
@@ -374,7 +374,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports methods with multiple arguments', () => {
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(m => m.add(2, 3)).returns(5);
 
@@ -383,7 +383,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports matching this through the this matcher', () => {
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup((x, $) => x.echo.call($.this, '123'))
                 .returns('success!');
@@ -397,7 +397,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports the this matcher for derived objects', () => {
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
             const derived = Object.create(sut.instance);
 
             sut.setup((x, $) => x.echo.call($.this, '123'))
@@ -409,7 +409,7 @@ await describe('Mock', async () => {
 
     await describe('return and callback helpers', async () => {
         await it('returns a constant value', () => {
-            const sut = new Mock<(value: string) => number>({ callable: true });
+            const sut = new Mock<(value: string) => number>({ id: 'sut', callable: true });
 
             sut.setup(m => m('value')).returns(42);
 
@@ -417,7 +417,7 @@ await describe('Mock', async () => {
         });
 
         await it('invokes a callback with the invocation and mock', () => {
-            const sut = new Mock<(value: string) => string>({ callable: true });
+            const sut = new Mock<(value: string) => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m('value')).invokes((invocation, mock) => {
                 assert.equal(invocation.kind, 'call');
@@ -431,7 +431,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports async callbacks', async () => {
-            const sut = new Mock<(value: string) => Promise<string>>({ callable: true });
+            const sut = new Mock<(value: string) => Promise<string>>({ id: 'sut', callable: true });
 
             sut.setup(m => m('value')).invokesAsync(async invocation => {
                 return await Promise.resolve(`${String(invocation.arguments[0])}!`);
@@ -441,7 +441,7 @@ await describe('Mock', async () => {
         });
 
         await it('resolves a value', async () => {
-            const sut = new Mock<() => Promise<string>>({ callable: true });
+            const sut = new Mock<() => Promise<string>>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).resolves('success');
 
@@ -449,7 +449,7 @@ await describe('Mock', async () => {
         });
 
         await it('throws an error', () => {
-            const sut = new Mock<() => string>({ callable: true });
+            const sut = new Mock<() => string>({ id: 'sut', callable: true });
             const error = new Error('failure');
 
             sut.setup(m => m()).throws(error);
@@ -458,7 +458,7 @@ await describe('Mock', async () => {
         });
 
         await it('rejects with an error', async () => {
-            const sut = new Mock<() => Promise<string>>({ callable: true });
+            const sut = new Mock<() => Promise<string>>({ id: 'sut', callable: true });
             const error = new Error('failure');
 
             sut.setup(m => m()).rejects(error);
@@ -469,7 +469,7 @@ await describe('Mock', async () => {
 
     await describe('argument matchers', async () => {
         await it('matches anything', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.anything)).returns('matched');
 
@@ -479,7 +479,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches unknown', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.unknown)).returns('matched');
 
@@ -487,7 +487,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches undefined and null strictly', () => {
-            const sut = new Mock<(value: string | null | undefined) => string>({ callable: true });
+            const sut = new Mock<(value: string | null | undefined) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.undefined)).returns('undefined');
             sut.setup((x, $) => x($.null)).returns('null');
@@ -497,7 +497,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches numbers', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.number)).returns('number');
 
@@ -508,7 +508,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches integers', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.integer)).returns('integer');
 
@@ -518,7 +518,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches positive numbers', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.positive)).returns('positive');
 
@@ -528,7 +528,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches negative numbers', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.negative)).returns('negative');
 
@@ -538,7 +538,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches strings', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.string)).returns('string');
 
@@ -547,7 +547,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches symbols', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.symbol)).returns('symbol');
 
@@ -556,7 +556,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches booleans', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.boolean)).returns('boolean');
 
@@ -566,7 +566,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches bigints', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.bigint)).returns('bigint');
 
@@ -575,7 +575,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches a strict value', () => {
-            const sut = new Mock<(value: object) => string>({ callable: true });
+            const sut = new Mock<(value: object) => string>({ id: 'sut', callable: true });
             const value = {};
 
             sut.setup((x, $) => x($.strict(value))).returns('matched');
@@ -585,7 +585,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches with satisfies', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.satisfies(
                 value => typeof value === 'string' && value.length > 3
@@ -596,7 +596,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches with asserts', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.asserts(value => {
                 assert(typeof value === 'string');
@@ -608,7 +608,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches one of several values', () => {
-            const sut = new Mock<(value: number) => string>({ callable: true });
+            const sut = new Mock<(value: number) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.oneOf(1, 2, 3))).returns('matched');
 
@@ -619,7 +619,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches instances of a constructor', () => {
-            const sut = new Mock<(value: object) => string>({ callable: true });
+            const sut = new Mock<(value: object) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.instanceOf(Date))).returns('date');
 
@@ -628,7 +628,7 @@ await describe('Mock', async () => {
         });
 
         await it('matches object shapes with looksLike', () => {
-            const sut = new Mock<(value: { id: number; name: string; }) => string>({ callable: true });
+            const sut = new Mock<(value: { id: number; name: string; }) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.looksLike({
                 id: 1,
@@ -647,7 +647,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports combining matchers in a single setup', () => {
-            const sut = new Mock<(id: number, name: string) => string>({ callable: true });
+            const sut = new Mock<(id: number, name: string) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.positive, $.string)).returns('matched');
 
@@ -662,7 +662,7 @@ await describe('Mock', async () => {
                 name: string;
             };
 
-            const sut = new Mock<(value: Value) => string>({ callable: true });
+            const sut = new Mock<(value: Value) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.looksLike({
                 id: $.positive,
@@ -685,7 +685,7 @@ await describe('Mock', async () => {
                 values: number[];
             };
 
-            const sut = new Mock<(value: Value) => string>({ callable: true });
+            const sut = new Mock<(value: Value) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.looksLike({
                 values: [$.positive, $.positive]
@@ -708,7 +708,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports matchers as options in oneOf', () => {
-            const sut = new Mock<(value: unknown) => string>({ callable: true });
+            const sut = new Mock<(value: unknown) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.oneOf($.string, 123)))
                 .returns('matched');
@@ -721,7 +721,7 @@ await describe('Mock', async () => {
 
     await describe('setup precedence', async () => {
         await it('prefers a more specific setup', () => {
-            const sut = new Mock<(value: number) => string>({ callable: true });
+            const sut = new Mock<(value: number) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.number)).returns('number');
             sut.setup(m => m(1)).returns('one');
@@ -731,7 +731,7 @@ await describe('Mock', async () => {
         });
 
         await it('uses a fallback setup when no more specific setup matches', () => {
-            const sut = new Mock<(value: number) => string>({ callable: true });
+            const sut = new Mock<(value: number) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.number))
                 .returns('fallback', { isFallback: true });
@@ -743,7 +743,7 @@ await describe('Mock', async () => {
         });
 
         await it('does not let a fallback setup replace an uninvoked specific setup', () => {
-            const sut = new Mock<(value: number) => string>({ callable: true });
+            const sut = new Mock<(value: number) => string>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.number))
                 .returns('number', { isFallback: true });
@@ -754,7 +754,7 @@ await describe('Mock', async () => {
         });
 
         await it('never uses a fallback if a non-fallback has been configured', () => {
-            const sut = new Mock<(value: number) => string>({ callable: true });
+            const sut = new Mock<(value: number) => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m(1)).returns('one');
             sut.setup((x, $) => x($.number))
@@ -765,7 +765,7 @@ await describe('Mock', async () => {
         });
 
         await it('repeats the most recent setup when called more times than setups', () => {
-            const sut = new Mock<(value: number) => string>({ callable: true });
+            const sut = new Mock<(value: number) => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m(1)).returns('first');
             sut.setup(m => m(1)).returns('second');
@@ -780,7 +780,7 @@ await describe('Mock', async () => {
                 value: () => string;
             };
 
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(m => m.value()).returns('method');
 
@@ -794,7 +794,7 @@ await describe('Mock', async () => {
     await describe('properties', async () => {
         await it('mocks a property getter', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(m => m.value).returns('hello');
 
@@ -803,7 +803,7 @@ await describe('Mock', async () => {
 
         await it('mocks a property setter with setupSet', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
             let value = '';
 
             sut.setupSet((x, $) => x.value = $.string).invokes(invocation => {
@@ -818,7 +818,7 @@ await describe('Mock', async () => {
 
         await it('setupSet can match a specific value', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setupSet(x => x.value = 'expected').returns(true);
 
@@ -832,7 +832,7 @@ await describe('Mock', async () => {
 
         await it('setupSet can return false', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setupSet((x, $) => x.value = $.string).returns(false);
 
@@ -841,7 +841,7 @@ await describe('Mock', async () => {
 
         await it('rejects setupSet for a non-set expression', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             assert.throws(
                 () => sut.setupSet(x => x.value as never),
@@ -851,7 +851,7 @@ await describe('Mock', async () => {
 
         await it('supports setupProperty', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             using _ = sut.setupProperty('value', 'initial');
 
@@ -864,7 +864,7 @@ await describe('Mock', async () => {
 
         await it('setupProperty tracks successive assignments', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             using _ = sut.setupProperty('value', 'initial');
 
@@ -877,7 +877,7 @@ await describe('Mock', async () => {
 
         await it('disposing setupProperty removes its getter and setter', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             const setup = sut.setupProperty('value', 'initial');
 
@@ -896,7 +896,7 @@ await describe('Mock', async () => {
 
         await it('rejects using assignment directly in setup', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             assert.throws(
                 () => sut.setup(m => m.value = 'hello'),
@@ -906,7 +906,7 @@ await describe('Mock', async () => {
 
         await it('supports Reflect.set in setup', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(x => Reflect.set(x, 'value', 'hello')).returns(true);
 
@@ -915,7 +915,7 @@ await describe('Mock', async () => {
 
         await it('mocks the delete operator', () => {
             type Shape = { value?: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(x => delete x.value).returns(true);
 
@@ -924,7 +924,7 @@ await describe('Mock', async () => {
 
         await it('mocks the in operator', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(x => 'value' in x).returns(true);
 
@@ -934,7 +934,7 @@ await describe('Mock', async () => {
 
     await describe('reflection operations', async () => {
         await it('mocks getPrototypeOf', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
             const prototype = {};
 
             sut.setup(x => Reflect.getPrototypeOf(x)).returns(prototype);
@@ -943,7 +943,7 @@ await describe('Mock', async () => {
         });
 
         await it('mocks setPrototypeOf', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
             const prototype = {};
 
             sut.setup(x => Reflect.setPrototypeOf(x, prototype)).returns(true);
@@ -952,7 +952,7 @@ await describe('Mock', async () => {
         });
 
         await it('mocks ownKeys', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             sut.setup(x => Reflect.ownKeys(x)).returns(['one', 'two']);
 
@@ -963,7 +963,7 @@ await describe('Mock', async () => {
         });
 
         await it('mocks a property descriptor', () => {
-            const sut = new Mock<{ value: string; }>();
+            const sut = new Mock<{ value: string; }>({ id: 'sut' });
 
             sut.setup(x => Reflect.getOwnPropertyDescriptor(x, 'value'))
                 .returns({
@@ -985,7 +985,7 @@ await describe('Mock', async () => {
         });
 
         await it('cannot intercept, but can verify isExtensible', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             sut.setup(x => Reflect.isExtensible(x))
                 .returns(true)
@@ -1000,7 +1000,7 @@ await describe('Mock', async () => {
         });
 
         await it('can allow an uninterceptable isExtensible setup', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             sut.setup(x => Reflect.isExtensible(x))
                 .returns(false, {
@@ -1014,7 +1014,7 @@ await describe('Mock', async () => {
         });
 
         await it('cannot intercept, but can verify preventExtensions', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             sut.setup(x => Reflect.preventExtensions(x))
                 .returns(true)
@@ -1029,7 +1029,7 @@ await describe('Mock', async () => {
         });
 
         await it('can allow an uninterceptable preventExtensions setup', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             sut.setup(x => Reflect.preventExtensions(x))
                 .returns(false, {
@@ -1040,7 +1040,7 @@ await describe('Mock', async () => {
         });
 
         await it('can allow an uninterceptable isExtensible setup', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             sut.setup(x => Reflect.isExtensible(x))
                 .returns(false, {
@@ -1051,7 +1051,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports defineProperty through Reflect', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             sut.setup(x => Reflect.defineProperty(x, 'value', {
                 configurable: true,
@@ -1072,7 +1072,7 @@ await describe('Mock', async () => {
 
         await it('supports a non-configurable property definition', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(x => Reflect.defineProperty(x, 'value', {
                 configurable: false,
@@ -1093,7 +1093,7 @@ await describe('Mock', async () => {
 
         await it('falls back to the real property descriptor after it becomes non-configurable', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(m => Reflect.defineProperty(m, 'value', {
                 configurable: false,
@@ -1126,7 +1126,7 @@ await describe('Mock', async () => {
 
         await it('writes to a writable non-configurable property', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(m => Reflect.defineProperty(m, 'value', {
                 configurable: false,
@@ -1151,7 +1151,7 @@ await describe('Mock', async () => {
 
         await it('does not delete a non-configurable property', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(m => Reflect.defineProperty(m, 'value', {
                 configurable: false,
@@ -1174,7 +1174,7 @@ await describe('Mock', async () => {
 
         await it('uses the real own keys after preventExtensions', () => {
             type Shape = { value: string; };
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             sut.setup(m => Reflect.defineProperty(m, 'value', {
                 configurable: false,
@@ -1197,7 +1197,7 @@ await describe('Mock', async () => {
         });
 
         await it('uses the real prototype after preventExtensions', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
             const prototype = {};
 
             sut.setup(m => Reflect.setPrototypeOf(m, prototype)).returns(true);
@@ -1210,7 +1210,7 @@ await describe('Mock', async () => {
         });
 
         await it('rejects an Reflect.setPrototypeOf setup', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             assert.throws(
                 () => sut.setup(x => Object.setPrototypeOf(x, null) as object),
@@ -1219,7 +1219,7 @@ await describe('Mock', async () => {
         });
 
         await it('accepts a Reflect.setPrototypeOf setup', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
             const prototype = {};
 
             sut.setup(x => Reflect.setPrototypeOf(x, prototype)).returns(true);
@@ -1228,7 +1228,7 @@ await describe('Mock', async () => {
         });
 
         await it('rejects an Reflect.defineProperty setup', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             assert.throws(
                 () => sut.setup(x => Object.defineProperty(x, 'value', {
@@ -1240,7 +1240,7 @@ await describe('Mock', async () => {
         });
 
         await it('rejects an Reflect.preventExtensions setup', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             assert.throws(
                 () => sut.setup(x => Object.preventExtensions(x)),
@@ -1251,7 +1251,7 @@ await describe('Mock', async () => {
 
     await describe('verification', async () => {
         await it('exposes recorded invocations', () => {
-            const sut = new Mock<(value: string) => string>({ callable: true });
+            const sut = new Mock<(value: string) => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m('hello')).returns('result');
             sut.instance('hello');
@@ -1262,7 +1262,7 @@ await describe('Mock', async () => {
         });
 
         await it('returns a copy of the invocation list', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined);
             sut.instance();
@@ -1275,7 +1275,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports mustHaveHappened', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined);
             sut.instance();
@@ -1284,7 +1284,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports mustHaveHappened with an exact count', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined);
 
@@ -1295,7 +1295,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports mustHaveHappened with a range', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined);
 
@@ -1306,7 +1306,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports mustHaveHappened with a set of counts', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined);
 
@@ -1317,7 +1317,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports mustNotHaveHappened', () => {
-            const sut = new Mock<(v: string) => void>({ callable: true });
+            const sut = new Mock<(v: string) => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m('called')).returns(undefined);
 
@@ -1325,7 +1325,7 @@ await describe('Mock', async () => {
         });
 
         await it('fails verification when the expected call did not happen', () => {
-            const sut = new Mock<(value: string) => void>({ callable: true });
+            const sut = new Mock<(value: string) => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m('called')).returns(undefined);
 
@@ -1336,7 +1336,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports custom verification assertions', () => {
-            const sut = new Mock<(value: string) => void>({ callable: true });
+            const sut = new Mock<(value: string) => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m('hello')).returns(undefined);
             sut.instance('hello');
@@ -1348,7 +1348,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports setup-level mustHappen', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined).mustHappen();
 
@@ -1358,7 +1358,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports setup-level mustHappen with an exact count', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined).mustHappen(2);
 
@@ -1369,7 +1369,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports setup-level mustHappen with a range', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined).mustHappen(1, 2);
 
@@ -1379,7 +1379,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports setup-level mustHappen with a set of counts', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined).mustHappen([1, 2]);
 
@@ -1389,7 +1389,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports setup-level mustNotHappen', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined).mustNotHappen();
 
@@ -1397,7 +1397,7 @@ await describe('Mock', async () => {
         });
 
         await it('can register an assertion with addAssertion', () => {
-            const sut = new Mock<(value: string) => void>({ callable: true });
+            const sut = new Mock<(value: string) => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m('hello'))
                 .returns(undefined)
@@ -1411,7 +1411,7 @@ await describe('Mock', async () => {
         });
 
         await it('can dispose an assertion', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             const assertion = sut.setup(m => m())
                 .returns(undefined)
@@ -1423,7 +1423,7 @@ await describe('Mock', async () => {
         });
 
         await it('throws the verifier error when one verifier fails', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m())
                 .returns(undefined)
@@ -1436,7 +1436,7 @@ await describe('Mock', async () => {
         });
 
         await it('aggregates multiple verifier failures', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m())
                 .returns(undefined)
@@ -1453,7 +1453,7 @@ await describe('Mock', async () => {
         });
 
         await it('verification does not consume a setup', () => {
-            const sut = new Mock<(value: number) => string>({ callable: true });
+            const sut = new Mock<(value: number) => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m(1)).returns('result');
 
@@ -1465,7 +1465,7 @@ await describe('Mock', async () => {
         });
 
         await it('supports matcher-based verification', () => {
-            const sut = new Mock<(value: number) => void>({ callable: true });
+            const sut = new Mock<(value: number) => void>({ id: 'sut', callable: true });
 
             sut.setup((x, $) => x($.positive)).returns(undefined);
 
@@ -1479,7 +1479,7 @@ await describe('Mock', async () => {
 
     await describe('lifecycle', async () => {
         await it('clearInvocations removes recorded invocations', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined);
             sut.instance();
@@ -1492,7 +1492,7 @@ await describe('Mock', async () => {
         });
 
         await it('clearInvocations resets invocation state used by setup matching', () => {
-            const sut = new Mock<(value: number) => string>({ callable: true });
+            const sut = new Mock<(value: number) => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m(1)).returns('v1');
             sut.setup(m => m(1)).returns('v2');
@@ -1506,7 +1506,7 @@ await describe('Mock', async () => {
         });
 
         await it('clearSetups removes all setups', () => {
-            const sut = new Mock<() => string>({ callable: true });
+            const sut = new Mock<() => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns('value');
 
@@ -1518,7 +1518,7 @@ await describe('Mock', async () => {
         });
 
         await it('clearVerifiers removes registered verifiers', () => {
-            const sut = new Mock<() => void>({ callable: true });
+            const sut = new Mock<() => void>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns(undefined).mustHappen();
 
@@ -1528,7 +1528,7 @@ await describe('Mock', async () => {
         });
 
         await it('reset clears setups, invocations and verifiers', () => {
-            const sut = new Mock<() => string>({ callable: true });
+            const sut = new Mock<() => string>({ id: 'sut', callable: true });
 
             sut.setup(m => m()).returns('value').mustHappen();
 
@@ -1544,7 +1544,7 @@ await describe('Mock', async () => {
         });
 
         await it('disposes an individual setup', () => {
-            const sut = new Mock<() => string>({ callable: true });
+            const sut = new Mock<() => string>({ id: 'sut', callable: true });
 
             const setup = sut.setup(m => m()).returns('value');
 
@@ -1556,7 +1556,7 @@ await describe('Mock', async () => {
         });
 
         await it('disposing a setup twice is harmless', () => {
-            const sut = new Mock<() => string>({ callable: true });
+            const sut = new Mock<() => string>({ id: 'sut', callable: true });
 
             const setup = sut.setup(m => m()).returns('value');
 
@@ -1635,6 +1635,33 @@ await describe('Mock', async () => {
                     'No setup has been configured for $mock()'
             );
         });
+        await it('reports an unsupported invocation inclluding the mock id', () => {
+            const sut = new Mock<() => void>({ id: 'success', callable: true });
+            const execute = sut.instance;
+            const wrapper = { execute };
+
+            assert.throws(
+                () => execute(),
+                error =>
+                    error instanceof MockError
+                    && error.message ===
+                    'No setup has been configured for $mock<success>()'
+            );
+            assert.throws(
+                () => wrapper.execute(),
+                error =>
+                    error instanceof MockError
+                    && error.message ===
+                    'No setup has been configured for $mock<success>.apply({execute:$mock<success>}, [])'
+            );
+            assert.throws(
+                () => sut.instance(),
+                error =>
+                    error instanceof MockError
+                    && error.message ===
+                    'No setup has been configured for $mock<success>()'
+            );
+        });
 
         await it('rejects deep member setups', () => {
             type Shape = {
@@ -1643,7 +1670,7 @@ await describe('Mock', async () => {
                 };
             };
 
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
 
             assert.throws(
                 () => sut.setup(m => m.foo.bar),
@@ -1652,7 +1679,7 @@ await describe('Mock', async () => {
         });
 
         await it('rejects multiple expressions in one setup', () => {
-            const sut = new Mock<(a: string) => string>({ callable: true });
+            const sut = new Mock<(a: string) => string>({ id: 'sut', callable: true });
 
             assert.throws(
                 () => sut.setup(x => {
@@ -1664,7 +1691,7 @@ await describe('Mock', async () => {
         });
 
         await it('rejects an action with no mockable operation', () => {
-            const sut = new Mock<object>();
+            const sut = new Mock<object>({ id: 'sut' });
 
             assert.throws(
                 () => sut.setup(() => undefined),
@@ -1673,7 +1700,7 @@ await describe('Mock', async () => {
         });
 
         await it('does not allow argument matchers to be interacted with', () => {
-            const sut = new Mock<(value: unknown) => void>({ callable: true });
+            const sut = new Mock<(value: unknown) => void>({ id: 'sut', callable: true });
 
             assert.throws(
                 () => sut.setup((x, $) => {
@@ -1693,7 +1720,7 @@ await describe('Mock', async () => {
                 value?: string;
             };
 
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
             const derived = Object.create(sut.instance);
 
             derived.value = 'derived';
@@ -1707,7 +1734,7 @@ await describe('Mock', async () => {
                 method(value: string): string;
             };
 
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
             const derived = Object.create(sut.instance);
 
             sut.setup(m => m.method('hello')).returns('world');
@@ -1720,7 +1747,7 @@ await describe('Mock', async () => {
                 value?: string;
             };
 
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
             const derived = Object.create(sut.instance);
 
             sut.setupSet((x, $) => x.value = $.string).returns(true);
@@ -1737,7 +1764,7 @@ await describe('Mock', async () => {
                 method(value: string): string;
             };
 
-            const sut = new Mock<Shape>();
+            const sut = new Mock<Shape>({ id: 'sut' });
             const derived = Object.create(sut.instance);
 
             sut.setup((x, $) => x.method.call($.this, 'hello'))

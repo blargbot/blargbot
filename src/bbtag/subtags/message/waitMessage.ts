@@ -1,4 +1,5 @@
 import { clamp, guard, parse } from '@blargbot/core';
+import type eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -11,8 +12,13 @@ const tag = templates.subtags.waitMessage;
 
 const defaultCondition = bbtag.parse('true');
 
+export interface StreamMessagesThunk {
+    (channelIds: Iterable<string>, timeoutMs: number): AsyncIterable<eris.KnownMessage>;
+}
+
 export class WaitMessageSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #streamMessages: StreamMessagesThunk;
+    public constructor({ streamMessages }: { streamMessages: StreamMessagesThunk; }) {
         super({
             name: 'waitMessage',
             category: SubtagType.MESSAGE,
@@ -36,6 +42,7 @@ export class WaitMessageSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#streamMessages = streamMessages;
     }
 
     public async awaitMessage(
@@ -59,23 +66,20 @@ export class WaitMessageSubtag extends CompiledSubtag {
             condition = defaultCondition;
 
         const userSet = new Set(users.map(u => u.id));
-        const result = await context.util.awaitMessage(channels.map(c => c.id), async message => {
+        for await (const message of this.#streamMessages(channels.map(c => c.id), timeout * 1000)) {
             if (!userSet.has(message.author.id) || !guard.isGuildMessage(message))
-                return false;
-
-            using scope = context.usingScope();
+                continue;
+            using scope = context.enterScope();
             scope.message = message;
             const resultStr = await context.eval(condition);
-            const result = parse.boolean(resultStr.trim());
-            if (result === undefined)
-                throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);
-            return result;
-        }, timeout * 1000);
+            switch (parse.boolean(resultStr.trim())) {
+                case undefined:
+                    throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);
+                case true:
+                    return [message.channel.id, message.id];
+            }
+        }
 
-        if (result === undefined)
-            throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
-
-        return [result.channel.id, result.id];
-
+        throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
     }
 }

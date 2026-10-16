@@ -1,5 +1,5 @@
 import type { Cluster } from '@blargbot/cluster';
-import { DiscordEventService, Emote  } from '@blargbot/core';
+import { DiscordEventService, Emote } from '@blargbot/core';
 import * as eris from 'eris';
 
 export class DiscordMessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
@@ -14,7 +14,7 @@ export class DiscordMessageReactionAddHandler extends DiscordEventService<'messa
                 return;
 
             await this.cluster.autoresponses.handleWhitelistApproval(_message, emoji, _user);
-            await this.cluster.awaiter.reactions.tryConsume({ message: _message, user: _user, reaction: Emote.create(emoji) });
+            this.cluster.awaiter.reactions.push({ message: _message, user: _user, reaction: Emote.create(emoji) });
         });
     }
 

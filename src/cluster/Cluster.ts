@@ -1,6 +1,6 @@
 import { inspect } from 'node:util';
 
-import { BBTagEngine, getLock, subtags } from '@blargbot/bbtag';
+import { BBTagEngine, subtags } from '@blargbot/bbtag';
 import type { ClusterOptions } from '@blargbot/cluster';
 import type { Configuration } from '@blargbot/config';
 import type { ImageChannel } from '@blargbot/contracts';
@@ -12,7 +12,7 @@ import { ResetValue, sleep } from '@blargbot/util';
 import { GatewayIntentBits } from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 
-import { ClusterBBTagUtilities } from './ClusterBBTagUtilities.js';
+import { ClusterBBTagUtilities, ClusterSubtagConstructorArgs } from './ClusterBBTagUtilities.js';
 import { ClusterUtilities } from './ClusterUtilities.js';
 import type { ClusterWorker } from './ClusterWorker.js';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
@@ -112,24 +112,13 @@ export class Cluster extends BaseClient {
         this.botStaff = new BotStaffManager(this);
         this.moderation = new ModerationManager(this);
         this.greetings = new GreetingManager(this);
+        const subtagArgs = new ClusterSubtagConstructorArgs(this);
         this.bbtag = new BBTagEngine({
-            config: this.config,
             database: this.database,
             discord: this.discord,
             logger: this.logger,
             util: new ClusterBBTagUtilities(this),
-            subtags: Object.values(subtags).map(subtag => new subtag({
-                defaultPrefix: this.config.discord.defaultPrefix,
-                fetch: this.fetch,
-                getLock,
-                sleep,
-                getTag: name => this.database.tags.get(name),
-                getCustomCommand: (guildId, name) => this.database.guilds.getCommand(guildId, name),
-                getWarnings: (guildId, userId) => this.database.guilds.getWarnings(guildId, userId),
-                getUserTimezone: userId => this.database.users.getProp(userId, 'timezone'),
-                getPrefix: guildId => this.database.guilds.getSetting(guildId, 'prefix'),
-                canPingEveryone: async guildId => await this.database.guilds.getSetting(guildId, 'disableeveryone') !== true
-            })),
+            subtags: Object.values(subtags).map(subtag => new subtag(subtagArgs)),
             sleep
         });
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));

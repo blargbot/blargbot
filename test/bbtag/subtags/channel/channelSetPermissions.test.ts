@@ -158,7 +158,7 @@ await runSubtagTests({
                 { start: 0, end: 72, error: new BBTagRuntimeError('Cannot set permissions for a thread channel') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = ctx.createMock<eris.PublicThreadChannel>();
+                const channel = ctx.createMock<eris.PublicThreadChannel>({ id: 'channel' });
                 channel.setup(m => m.type).returns(eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD);
 
                 ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel.instance]);

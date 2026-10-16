@@ -5,14 +5,20 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import type { BBTagExpression } from '../../language/index.js';
 import { templates } from '../../text.js';
+import type { ReactionEvent } from '../../types.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.waitReaction;
 
 const defaultCondition = bbtag.parse('true');
 
+export interface StreamReactionsThunk {
+    (messageIds: Iterable<string>, timeoutMs: number): AsyncIterable<ReactionEvent>;
+}
+
 export class WaitReactionSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #streamReactions: StreamReactionsThunk;
+    public constructor({ streamReactions }: { streamReactions: StreamReactionsThunk; }) {
         super({
             name: 'waitReaction',
             category: SubtagType.MESSAGE,
@@ -39,6 +45,7 @@ export class WaitReactionSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#streamReactions = streamReactions;
     }
 
     public async awaitReaction(
@@ -74,24 +81,23 @@ export class WaitReactionSubtag extends CompiledSubtag {
         const userSet = new Set(users.map(u => u.id));
         const reactionSet = new Set(parsedReactions?.map(r => r.toString()));
         const checkReaction = reactionSet.size === 0 ? () => true : (emoji: Emote) => reactionSet.has(emoji.toString());
-        const result = await context.util.awaitReaction(messages, async ({ user, reaction, message }) => {
+        for await (const { user, reaction, message } of this.#streamReactions(messages, timeout * 1000)) {
             if (!userSet.has(user.id) || !checkReaction(reaction) || !guard.isGuildMessage(message))
-                return false;
+                continue;
 
-            using scope = context.usingScope();
+            using scope = context.enterScope();
             scope.reaction = reaction.toString();
             scope.reactUser = user.id;
             scope.message = message;
             const resultStr = await context.eval(condition);
-            const result = parse.boolean(resultStr.trim());
-            if (result === undefined)
-                throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);
-            return result;
-        }, timeout * 1000);
+            switch (parse.boolean(resultStr.trim())) {
+                case undefined:
+                    throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);
+                case true:
+                    return [message.channel.id, message.id, user.id, discord.emojiString(reaction)];
+            }
+        }
 
-        if (result === undefined)
-            throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
-
-        return [result.message.channel.id, result.message.id, result.user.id, discord.emojiString(result.reaction)];
+        throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
     }
 }

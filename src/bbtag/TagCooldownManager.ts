@@ -1,27 +1,31 @@
-import moment from 'moment-timezone';
+import { TagCooldownError } from './errors/TagCooldownError.js';
 
-import type { BBTagContext } from './BBTagContext.js';
-
+const never = Temporal.Instant.fromEpochMilliseconds(0);
+export interface CooldownScope {
+    readonly guildId: string;
+    readonly userId: string;
+    readonly tagName: string;
+    readonly isCC: boolean;
+    readonly cooldownMs: number;
+}
 export class TagCooldownManager {
-    readonly #cooldowns: Record<string, moment.Moment | undefined>;
+    readonly #cooldowns = new Map<string, Temporal.Instant>();
 
-    public constructor() {
-        this.#cooldowns = {};
+    public check(scope: CooldownScope): Temporal.Duration | false {
+        const key = `${scope.guildId}:${scope.isCC}:${scope.userId}:${scope.tagName}`;
+        const start = this.#cooldowns.getOrInsert(key, never);
+        const end = start.add({ milliseconds: scope.cooldownMs });
+        const now = Temporal.Now.instant();
+        const diff = now.until(end);
+        if (diff.sign > 0)
+            return diff;
+        this.#cooldowns.set(key, now);
+        return false;
     }
 
-    public get(context: BBTagContext): moment.Moment {
-        const key = this.#getKey(context);
-        const value = this.#cooldowns[key];
-        if (value !== undefined)
-            return value.clone().add(context.local.cooldown);
-        return this.#cooldowns[key] = moment();
-    }
-
-    public set(context: BBTagContext): moment.Moment {
-        return this.#cooldowns[this.#getKey(context)] = moment();
-    }
-
-    #getKey(context: BBTagContext): string {
-        return `${context.local.message.channel.guild.id}:${context.root.isCC}:${context.local.message.author.id}:${context.local.tagName}`;
+    public assert(scope: CooldownScope): void {
+        const diff = this.check(scope);
+        if (diff !== false)
+            throw new TagCooldownError(scope.tagName, scope.isCC, diff);
     }
 }

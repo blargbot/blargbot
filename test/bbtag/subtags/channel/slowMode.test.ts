@@ -17,7 +17,7 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.discord.setup((m, $) => m.editChannel(ctx.channels.command.id, $({ rateLimitPerUser: 0 }), 'Command User#0000'))
-                    .resolves(ctx.createMock<eris.TextChannel>().instance);
+                    .resolves(ctx.createMock<eris.TextChannel>({ id: 'channel' }).instance);
             }
         },
         {
@@ -26,7 +26,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1234')).resolves([]);
                 ctx.discord.setup((m, $) => m.editChannel(ctx.channels.command.id, $({ rateLimitPerUser: 1234 }), 'Command User#0000'))
-                    .resolves(ctx.createMock<eris.TextChannel>().instance);
+                    .resolves(ctx.createMock<eris.TextChannel>({ id: 'channel' }).instance);
             }
         },
         {

@@ -19,9 +19,9 @@ await describe('AirtableSuggesterStore', async () => {
     await describe('#get', async () => {
         await it('should return a suggester when it exists', async () => {
             // arrange
-            const airtable = new Mock<AirtableBase>({ callable: true });
-            const suggestorsTable = new Mock<Table<Fields>>();
-            const record = new Mock<Record<Fields>>();
+            const airtable = new Mock<AirtableBase>({ id: 'airtable', callable: true });
+            const suggestorsTable = new Mock<Table<Fields>>({ id: 'suggestorsTable' });
+            const record = new Mock<Record<Fields>>({ id: 'record' });
             const logger = new Mock<Logger>({ loose: true });
             const store = new AirtableSuggesterStore(airtable.instance, logger.instance);
             const userId = randomUUID();
@@ -42,8 +42,8 @@ await describe('AirtableSuggesterStore', async () => {
         });
         await it('should return undefined when it doesnt exists', async () => {
             // arrange
-            const airtable = new Mock<AirtableBase>({ callable: true });
-            const suggestorsTable = new Mock<Table<Fields>>();
+            const airtable = new Mock<AirtableBase>({ id: 'airtable', callable: true });
+            const suggestorsTable = new Mock<Table<Fields>>({ id: 'suggestorsTable' });
             const logger = new Mock<Logger>({ loose: true });
             const store = new AirtableSuggesterStore(airtable.instance, logger.instance);
             const userId = randomUUID();
@@ -61,10 +61,10 @@ await describe('AirtableSuggesterStore', async () => {
     await describe('#upsert', async () => {
         await it('Should create the user if it doesnt exist', async () => {
             // arrange
-            const airtable = new Mock<AirtableBase>({ callable: true });
-            const suggestorsTable = new Mock<Table<Fields>>();
-            const record = new Mock<Record<Fields>>();
-            const query = new Mock<Query<Fields>>();
+            const airtable = new Mock<AirtableBase>({ id: 'airtable', callable: true });
+            const suggestorsTable = new Mock<Table<Fields>>({ id: 'suggestorsTable' });
+            const record = new Mock<Record<Fields>>({ id: 'record' });
+            const query = new Mock<Query<Fields>>({ id: 'query' });
             const logger = new Mock<Logger>({ loose: true });
             const store = new AirtableSuggesterStore(airtable.instance, logger.instance);
             const userId = randomUUID();
@@ -88,9 +88,9 @@ await describe('AirtableSuggesterStore', async () => {
         });
         await it('Should return undefined if the create fails', async () => {
             // arrange
-            const airtable = new Mock<AirtableBase>({ callable: true });
-            const suggestorsTable = new Mock<Table<Fields>>();
-            const query = new Mock<Query<Fields>>();
+            const airtable = new Mock<AirtableBase>({ id: 'airtable', callable: true });
+            const suggestorsTable = new Mock<Table<Fields>>({ id: 'suggestorsTable' });
+            const query = new Mock<Query<Fields>>({ id: 'query' });
             const logger = new Mock<Logger>({ loose: true });
             const store = new AirtableSuggesterStore(airtable.instance, logger.instance);
             const userId = randomUUID();
@@ -112,10 +112,10 @@ await describe('AirtableSuggesterStore', async () => {
         });
         await it('Should update the user if it does exist', async () => {
             // arrange
-            const airtable = new Mock<AirtableBase>({ callable: true });
-            const suggestorsTable = new Mock<Table<Fields>>();
-            const record = new Mock<Record<Fields>>();
-            const query = new Mock<Query<Fields>>();
+            const airtable = new Mock<AirtableBase>({ id: 'airtable', callable: true });
+            const suggestorsTable = new Mock<Table<Fields>>({ id: 'suggestorsTable' });
+            const record = new Mock<Record<Fields>>({ id: 'record' });
+            const query = new Mock<Query<Fields>>({ id: 'query' });
             const logger = new Mock<Logger>({ loose: true });
             const store = new AirtableSuggesterStore(airtable.instance, logger.instance);
             const userId = randomUUID();

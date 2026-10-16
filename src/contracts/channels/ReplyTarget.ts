@@ -66,7 +66,7 @@ export class ReplyTarget implements AsyncDisposable {
             throw new Error('Correlationid is already in use.');
         const stream = createPushIterable<AmqpConsumeMessage>();
         this.#streams.set(correlationId, stream);
-        using _onAbort = whenAborted(signal, () => stream.done());
+        using _onAbort = whenAborted(signal, () => stream.return());
         try {
             yield* stream.items;
         } finally {

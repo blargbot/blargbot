@@ -1,4 +1,5 @@
 import { guard } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -9,7 +10,8 @@ import { bbtag, SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.roleAdd;
 
 export class RoleAddSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #logger: Logger;
+    public constructor({ logger }: { logger: Logger; }) {
         super({
             name: 'roleAdd',
             category: SubtagType.ROLE,
@@ -34,6 +36,7 @@ export class RoleAddSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#logger = logger;
     }
 
     public async addRole(
@@ -72,7 +75,7 @@ export class RoleAddSubtag extends CompiledSubtag {
             member.roles = newRoleList;
             return true;
         } catch (err: unknown) {
-            context.logger.error(err);
+            this.#logger.error(err);
             return false;
         }
     }

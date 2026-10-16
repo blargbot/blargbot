@@ -42,7 +42,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         imageStr: string,
         rolesStr: string
     ): Promise<string> {
-        if (!context.hasPermission('manageEmojisAndStickers'))
+        if (!context.hasPermission('CREATE_GUILD_EXPRESSIONS'))
             throw new BBTagRuntimeError('Author cannot create emojis');
 
         const options: EmojiCreateOptions = {

@@ -43,7 +43,7 @@ export class UserAvatarSubtag extends CompiledSubtag {
         if (member !== undefined)
             return member.avatarURL;
 
-        const user = await context.util.getUser(userId);
+        const user = await context.engine.util.getUser(userId);
         if (user !== undefined)
             return user.avatarURL;
 

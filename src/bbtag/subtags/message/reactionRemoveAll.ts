@@ -34,11 +34,11 @@ export class ReactionRemoveAllSubtag extends CompiledSubtag {
         if (message === undefined)
             throw new MessageNotFoundError(channel.id, messageId);
 
-        const permissions = channel.permissionsOf(context.discord.user.id);
+        const permissions = channel.permissionsOf(context.root.botId);
         if (!permissions.has('manageMessages'))
             throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
 
-        if (!(await context.isStaff || context.ownsMessage(message.id)))
+        if (!(context.root.ownedMessageIds.has(message.id) || await context.isStaff))
             throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
 
         await message.removeReactions();

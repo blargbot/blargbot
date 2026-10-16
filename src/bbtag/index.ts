@@ -20,4 +20,5 @@ export * from './compilation/index.js';
 export * from './text.js';
 export * from './errors/index.js';
 export * from './limits/index.js';
+export * from './enums.js';
 export const subtags = { ...s };

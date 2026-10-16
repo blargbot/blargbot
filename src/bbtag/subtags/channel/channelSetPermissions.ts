@@ -52,10 +52,10 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
         if (guard.isThreadChannel(channel))
             throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
-        if (!context.hasPermission(channel, 'manageChannels'))
+        if (!context.hasPermission('MANAGE_CHANNELS', channel))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
-        if (!context.hasPermission(channel, allow | deny))
+        if (!context.hasPermission(allow | deny, channel))
             throw new BBTagRuntimeError('Author missing requested permissions');
 
         const type = this.#getOverwriteType(typeStr);

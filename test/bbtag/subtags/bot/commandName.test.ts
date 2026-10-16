@@ -21,7 +21,7 @@ await runSubtagTests({
                 ctx.input.tagName = 'My cool command';
             },
             postSetup(bbctx) {
-                bbctx.usingScope();
+                bbctx.enterScope();
                 bbctx.local.tagName = 'WRONG';
             }
         }

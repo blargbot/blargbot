@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError } from '@blargbot/bbtag';
+import type { AddReactionsThunk } from '@blargbot/bbtag/subtags';
 import { ReactionAddSubtag } from '@blargbot/bbtag/subtags';
 import { Emote } from '@blargbot/core';
+import { Mock } from '@blargbot/test-util';
 import * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
@@ -10,12 +12,17 @@ import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 const unicodeEmote = Emote.parse('🤔');
 const guildEmote = Emote.parse('<:notlikecat:280110565161041921>');
+const addReactions = new Mock<AddReactionsThunk>({ id: 'addReactions', callable: true });
 
 await runSubtagTests({
-    subtag: new ReactionAddSubtag(),
+    subtag: new ReactionAddSubtag({
+        addReactions: addReactions.instance
+    }),
     argCountBounds: { min: 1, max: Infinity },
     names: ['reactionAdd', 'addReact', 'reactAdd'],
     setup(ctx) {
+        ctx.addMock(addReactions);
+        addReactions.reset();
         ctx.roles.bot.permissions = eris.Constants.Permissions.addReactions.toString();
     },
     cases: [
@@ -35,8 +42,8 @@ await runSubtagTests({
             cases: [
                 {
                     expected: '',
-                    postSetup(_, message, __, ctx) {
-                        ctx.util.setup((m, $) => m.addReactions(message, $([unicodeEmote]))).resolves({ success: [unicodeEmote], failed: [] });
+                    postSetup(_, message) {
+                        addReactions.setup((m, $) => m(message.channel.id, message.id, $([unicodeEmote]))).resolves({ success: [unicodeEmote], failed: [] });
                     }
                 },
                 {
@@ -67,8 +74,8 @@ await runSubtagTests({
             cases: [
                 {
                     expected: '',
-                    postSetup(_, message, __, ctx) {
-                        ctx.util.setup((m, $) => m.addReactions(message, $([unicodeEmote, guildEmote]))).resolves({ success: [unicodeEmote, guildEmote], failed: [] });
+                    postSetup(_, message) {
+                        addReactions.setup((m, $) => m(message.channel.id, message.id, $([unicodeEmote, guildEmote]))).resolves({ success: [unicodeEmote, guildEmote], failed: [] });
                     }
                 }
             ]
@@ -92,8 +99,8 @@ await runSubtagTests({
             cases: [
                 {
                     expected: '',
-                    postSetup(_, message, __, ctx) {
-                        ctx.util.setup((m, $) => m.addReactions(message, $([unicodeEmote, guildEmote]))).resolves({ success: [unicodeEmote, guildEmote], failed: [] });
+                    postSetup(_, message) {
+                        addReactions.setup((m, $) => m(message.channel.id, message.id, $([unicodeEmote, guildEmote]))).resolves({ success: [unicodeEmote, guildEmote], failed: [] });
                     }
                 }
             ]
@@ -122,7 +129,7 @@ await runSubtagTests({
                 }, ctx.users.command));
 
                 ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, message.id, false)).resolves(message);
-                ctx.util.setup((m, $) => m.addReactions(message, $([unicodeEmote]))).resolves({ success: [], failed: [unicodeEmote] });
+                addReactions.setup((m, $) => m(message.channel.id, message.id, $([unicodeEmote]))).resolves({ success: [], failed: [unicodeEmote] });
             },
             errors: [
                 { start: 0, end: 33, error: new BBTagRuntimeError('I cannot add \'🤔\' as reactions') }

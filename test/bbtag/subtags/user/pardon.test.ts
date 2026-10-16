@@ -40,7 +40,7 @@ await runSubtagTests({
             code: '{pardon;other user}',
             expected: '7',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -63,7 +63,7 @@ await runSubtagTests({
             code: '{pardon;other user;9}',
             expected: '0',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -77,7 +77,7 @@ await runSubtagTests({
             code: '{pardon;other user;8;Because I felt like it}',
             expected: '6',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
@@ -106,7 +106,7 @@ await runSubtagTests({
                 { start: 0, end: 23, error: new NotANumberError('abc') }
             ],
             setup(ctx) {
-                const member = ctx.createMock<eris.Member>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);

@@ -46,8 +46,8 @@ export class KickSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Kick';
 
-        const authorizer = noPerms ? context.authorizer?.user ?? context.local.message.author : context.local.message.author;
-        const response = await context.util.kick(member, context.local.message.author, authorizer, reason);
+        const authorizer = noPerms ? context.root.authorizer?.user ?? context.local.message.author : context.local.message.author;
+        const response = await context.engine.util.kick(member, context.local.message.author, authorizer, reason);
 
         switch (response) {
             case 'success': //Successful

@@ -4,7 +4,7 @@ import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const getPrefix = new Mock<GetPrefixThunk>({ callable: true });
+const getPrefix = new Mock<GetPrefixThunk>({ id: 'getPrefix', callable: true });
 
 await runSubtagTests({
     subtag: new PrefixSubtag({

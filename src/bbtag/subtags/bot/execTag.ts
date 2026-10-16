@@ -55,13 +55,22 @@ export class ExecTagSubtag extends CompiledSubtag {
         if (args.length > 1)
             input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(x => parse.string(x)));
 
-        using scope = context.usingScope();
+        using scope = context.enterScope();
         scope.tagName = tagName;
         scope.cooldown = tag.cooldown ?? 0;
         scope.input = toBBTagInput(input, context.root.flagDefinitions);
-        const result = await context.engine.execute(tag.content, context);
+        const expr = bbtag.parse(tag.content, { throw: true });
+        context.engine.cooldowns.assert({
+            guildId: context.root.message.channel.guild.id,
+            userId: context.root.message.author.id,
+            tagName: context.local.tagName,
+            isCC: context.root.isCC,
+            cooldownMs: context.local.cooldown
+        });
+        using _recurse = context.enterRecursion();
+        const result = await context.eval(expr);
         if (context.state === BBTagRuntimeState.RETURN)
             context.state = BBTagRuntimeState.RUNNING;
-        return result.content;
+        return result;
     }
 }

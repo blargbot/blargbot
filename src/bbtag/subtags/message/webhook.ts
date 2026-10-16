@@ -1,7 +1,6 @@
 import { parse } from '@blargbot/core';
-import * as eris from 'eris';
+import type * as eris from 'eris';
 
-import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
@@ -9,8 +8,24 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.webhook;
 
+export interface ExecuteWebhookPayload {
+    readonly username: string | undefined;
+    readonly avatarURL: string | undefined;
+    readonly content: string | undefined;
+    readonly embeds: eris.EmbedOptions[] | undefined;
+    readonly file: eris.FileContent[] | undefined;
+
+}
+export type ExecuteWebhookResult =
+    | { success: true; }
+    | { success: false; reason?: string; }
+export interface ExecuteWebhookThunk {
+    (webhookId: string, webhookToken: string, payload: ExecuteWebhookPayload): Promise<ExecuteWebhookResult>;
+}
+
 export class WebhookSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #executeWebhook: ExecuteWebhookThunk;
+    public constructor({ executeWebhook }: { executeWebhook: ExecuteWebhookThunk; }) {
         super({
             name: 'webhook',
             category: SubtagType.MESSAGE,
@@ -22,7 +37,7 @@ export class WebhookSubtag extends CompiledSubtag {
                     exampleCode: tag.empty.exampleCode,
                     exampleOut: tag.empty.exampleOut, //TODO remove this
                     returns: 'error',
-                    execute: (ctx, [id, token]) => this.executeWebhook(ctx, id.value, token.value)
+                    execute: (_, [id, token]) => this.executeWebhook(id.value, token.value)
                 },
                 {
                     parameters: ['id', 'token', 'content', 'embed?'],
@@ -30,7 +45,7 @@ export class WebhookSubtag extends CompiledSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx, [id, token, content, embed]) => this.executeWebhook(ctx, id.value, token.value, content.value, embed.value)
+                    execute: (_, [id, token, content, embed]) => this.executeWebhook(id.value, token.value, content.value, embed.value)
                 },
                 {
                     parameters: ['id', 'token', 'content', 'embed', 'username', 'avatarURL?'],
@@ -38,7 +53,7 @@ export class WebhookSubtag extends CompiledSubtag {
                     exampleCode: tag.withUser.exampleCode,
                     exampleOut: tag.withUser.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx, [id, token, content, embed, username, avatarURL]) => this.executeWebhook(ctx, id.value, token.value, content.value, embed.value, username.value, avatarURL.value)
+                    execute: (_, [id, token, content, embed, username, avatarURL]) => this.executeWebhook(id.value, token.value, content.value, embed.value, username.value, avatarURL.value)
                 },
                 {
                     parameters: ['id', 'token', 'content', 'embed', 'username', 'avatarURL', 'file', 'filename?:file.txt'],
@@ -46,37 +61,35 @@ export class WebhookSubtag extends CompiledSubtag {
                     exampleCode: tag.withFile.exampleCode,
                     exampleOut: tag.withFile.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx, [id, token, content, embed, username, avatarURL, file, filename]) => this.executeWebhook(ctx, id.value, token.value, content.value, embed.value, username.value, avatarURL.value, file.value, filename.value)
+                    execute: (_, [id, token, content, embed, username, avatarURL, file, filename]) => this.executeWebhook(id.value, token.value, content.value, embed.value, username.value, avatarURL.value, file.value, filename.value)
                 }
             ]
         });
+        this.#executeWebhook = executeWebhook;
     }
 
-    public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string): Promise<never>;
-    public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void>;
-    public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void> {
+    public async executeWebhook(webhookID: string, webhookToken: string): Promise<never>;
+    public async executeWebhook(webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void>;
+    public async executeWebhook(webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void> {
         if (username === '') username = undefined;
         if (avatar === '') avatar = undefined;
-        try { //TODO Return the webhook message ID on success
-            await context.discord.executeWebhook(webhookID, webhookToken, {
-                username: username,
-                avatarURL: avatar,
-                content: content,
-                embeds: parse.embed(embedStr),
-                file: fileStr === undefined ? undefined : [
-                    {
-                        name: fileName ?? 'file.txt',
-                        file: fileStr.startsWith('buffer')
-                            ? Buffer.from(fileStr.slice(7), 'base64')
-                            : Buffer.from(fileStr)
-                    }
-                ]
-            });
-        } catch (err: unknown) {
-            if (err instanceof eris.DiscordHTTPError || err instanceof eris.DiscordRESTError)
-                throw new BBTagRuntimeError(`Error executing webhook: ${err.message}`);
-            context.logger.error('Error executing webhook', err);
-            throw new BBTagRuntimeError('Error executing webhook: UNKNOWN');
-        }
+        const result = await this.#executeWebhook(webhookID, webhookToken, {
+            username: username,
+            avatarURL: avatar,
+            content: content,
+            embeds: parse.embed(embedStr),
+            file: fileStr === undefined ? undefined : [
+                {
+                    name: fileName ?? 'file.txt',
+                    file: fileStr.startsWith('buffer:')
+                        ? Buffer.from(fileStr.slice(7), 'base64')
+                        : Buffer.from(fileStr)
+                }
+            ]
+        });
+        if (result.success)
+            //TODO Return the webhook message ID on success
+            return;
+        throw new BBTagRuntimeError(`Error executing webhook: ${result.reason ?? 'UNKNOWN'}`);
     }
 }

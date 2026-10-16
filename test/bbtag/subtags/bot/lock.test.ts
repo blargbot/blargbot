@@ -14,8 +14,8 @@ const guildId = '23904768237436873424';
 const authorId = '823764823946284623234';
 const tagName = 'testTag';
 const invalidModeMessage = 'Mode must be \'read\' or \'write\'';
-const getLock = new Mock<typeof defaultGetLock>({ callable: true, id: 'getLock' });
-const lock = new Mock<RwLock>({ id: 'rwLock' });
+const getLock = new Mock<typeof defaultGetLock>({ id: 'getLock', callable: true });
+const lock = new Mock<RwLock>({ id: 'lock' });
 const lockHandle = new Mock<AsyncDisposable>({ id: 'lockHandle' });
 
 await runSubtagTests({
@@ -52,8 +52,8 @@ await runSubtagTests({
                 { start: 18, end: 42, error: new BBTagRuntimeError('Lock cannot be nested') }
             ],
             setup(ctx) {
-                const lock = ctx.createMock<RwLock>();
-                const release = ctx.createMock<AsyncDisposable>();
+                const lock = ctx.createMock<RwLock>({ id: 'lock' });
+                const release = ctx.createMock<AsyncDisposable>({ id: 'release' });
                 getLock.setup((m, $) => m($({ type: TagVariableType.LOCAL_TAG, name: ctx.input.tagName }), 'outer'))
                     .returns(lock.instance)
                     .mustHappen(1);

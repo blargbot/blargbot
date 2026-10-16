@@ -28,8 +28,8 @@ await runSubtagTests({
             code: '{unban;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
@@ -50,8 +50,8 @@ await runSubtagTests({
                 { start: 0, end: 18, error: new BBTagRuntimeError('Bot has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
@@ -69,8 +69,8 @@ await runSubtagTests({
             code: '{unban;other user}',
             expected: 'false',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
@@ -91,8 +91,8 @@ await runSubtagTests({
                 { start: 0, end: 18, error: new BBTagRuntimeError('User has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
@@ -110,8 +110,8 @@ await runSubtagTests({
             code: '{unban;other user;My reason here}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
@@ -129,8 +129,8 @@ await runSubtagTests({
             code: '{unban;other user;My reason here;x}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 const authorizer = bbctx.local.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
@@ -151,8 +151,8 @@ await runSubtagTests({
             code: '{unban;other user;My reason here;}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>();
-                const user = ctx.createMock<eris.User>();
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)

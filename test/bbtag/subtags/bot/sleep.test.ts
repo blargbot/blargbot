@@ -5,7 +5,7 @@ import type { sleep as defaultSleep } from '@blargbot/util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const sleep = new Mock<typeof defaultSleep>({ callable: true });
+const sleep = new Mock<typeof defaultSleep>({ id: 'sleep', callable: true });
 
 await runSubtagTests({
     subtag: new SleepSubtag({

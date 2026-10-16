@@ -1,21 +1,17 @@
-import type { Configuration } from '@blargbot/config';
-import type { ChoiceQueryResult, Emote, EntityPickQueryOptions } from '@blargbot/core';
+import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core';
 import type { Database } from '@blargbot/database';
 import type { Logger } from '@blargbot/logger';
 import type { sleep } from '@blargbot/util';
 import type * as eris from 'eris';
 import type moment from 'moment-timezone';
 
-import type { BBTagContext } from './BBTagContext.js';
 import type { Subtag } from './Subtag.js';
-import type { AwaitReactionsResponse } from './types.js';
 
 export interface InjectionContext {
     readonly discord: eris.Client;
     readonly logger: Logger;
     readonly database: Database;
     readonly subtags: Iterable<Subtag>;
-    readonly config: Configuration;
     readonly util: BBTagUtilities;
     readonly sleep: typeof sleep;
 }
@@ -26,8 +22,6 @@ export interface BBTagSendContent extends Omit<eris.AdvancedMessageContent, 'emb
 }
 
 export interface BBTagUtilities {
-    defaultPrefix: string;
-
     isUserStaff(member: eris.Member): Promise<boolean>;
 
     send<T extends eris.TextableChannel>(channel: T, payload: BBTagSendContent, author?: eris.User): Promise<eris.Message<T> | undefined>;
@@ -60,14 +54,4 @@ export interface BBTagUtilities {
     clearTimeout(member: eris.Member, moderator: eris.User, authorizer: eris.User, reason?: string): Promise<'success' | 'notTimedOut' | 'noPerms' | 'moderatorNoPerms'>;
     kick(member: eris.Member, moderator: eris.User, authorizer: eris.User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'>;
     addModLog(guild: eris.Guild, action: string, user: eris.User, moderator?: eris.User, reason?: string, color?: number): Promise<void>;
-
-    addReactions(context: eris.Message, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }>;
-    awaitReaction(messages: string[], filter: (reaction: AwaitReactionsResponse) => Awaitable<boolean>, timeoutMs: number): Promise<AwaitReactionsResponse | undefined>;
-    awaitMessage(channels: string[], filter: (message: eris.KnownMessage) => Awaitable<boolean>, timeoutMs: number): Promise<eris.KnownMessage | undefined>;
-
-    setTimeout(context: BBTagContext, content: string, timeout: moment.Duration): Promise<void>;
-
-    canRequestDomain(domain: string): boolean;
-    generateDumpPage(payload: eris.AdvancedMessageContent, channel: eris.KnownChannel): Promise<string>;
-    websiteLink(path?: string): string;
 }

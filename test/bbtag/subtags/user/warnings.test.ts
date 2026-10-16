@@ -5,7 +5,7 @@ import { Mock } from '@blargbot/test-util';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-const getWarnings = new Mock<GetWarnings>({ callable: true });
+const getWarnings = new Mock<GetWarnings>({ id: 'getWarnings', callable: true });
 
 await runSubtagTests({
     subtag: new WarningsSubtag({

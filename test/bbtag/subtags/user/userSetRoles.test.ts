@@ -1,15 +1,23 @@
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag';
 import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags';
+import type { Logger } from '@blargbot/logger';
+import { Mock } from '@blargbot/test-util';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
+const logger = new Mock<Logger>({ id: 'logger' });
+
 await runSubtagTests({
-    subtag: new UserSetRolesSubtag(),
+    subtag: new UserSetRolesSubtag({
+        logger: logger.instance
+    }),
     argCountBounds: { min: 0, max: 3 },
     names: ['userSetRoles', 'setRoles'],
     setup(ctx) {
+        ctx.addMock(logger);
+        logger.reset();
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
         ctx.members.authorizer.roles.push(ctx.roles.top.id);
     },

@@ -2,14 +2,24 @@ import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
 import { EditSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
+import type { Logger } from '@blargbot/logger';
+import { Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
+const logger = new Mock<Logger>({ id: 'logger' });
+
 await runSubtagTests({
-    subtag: new EditSubtag(),
+    subtag: new EditSubtag({
+        logger: logger.instance
+    }),
     argCountBounds: { min: 2, max: 4 },
     names: ['edit'],
+    setup(ctx) {
+        ctx.addMock(logger);
+        logger.reset();
+    },
     cases: [
         {
             title: 'When the message cannot be found',

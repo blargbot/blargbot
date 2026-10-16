@@ -1,4 +1,4 @@
-import { guard, Timer } from '@blargbot/core';
+import { guard } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 
 import type { TagVariableScopeEntry, TagVariableScopeProvider } from './tagVariableScopeProvider.js';
@@ -19,12 +19,14 @@ interface ValueSource {
 }
 
 export class VariableCache {
-    readonly #cache: Record<string, CacheEntry | undefined>;
+    readonly #cache = new Map<string, CacheEntry>();
 
     public get list(): VariableReference[] {
-        return Object.values(this.#cache)
+        return this.#cache
+            .values()
             .filter(guard.hasValue)
-            .map(v => v.reference);
+            .map(v => v.reference)
+            .toArray();
     }
 
     public constructor(
@@ -32,13 +34,12 @@ export class VariableCache {
         public readonly hooks: VariableCacheHooks,
         public readonly logger: Logger
     ) {
-        this.#cache = {};
     }
 
-    #getCached(variables?: string[]): CacheEntry[] {
+    #getCached(variables?: string[]): Iterable<CacheEntry> {
         if (variables === undefined)
-            return Object.values(this.#cache).filter(guard.hasValue);
-        return variables.map(k => this.#cache[k]).filter(guard.hasValue);
+            return this.#cache.values().filter(guard.hasValue);
+        return variables.map(k => this.#cache.get(k)).filter(guard.hasValue);
     }
 
     async #getEntry(variable: string): Promise<CacheEntry> {
@@ -46,7 +47,7 @@ export class VariableCache {
         if (forced)
             variable = variable.slice(1);
 
-        const entry = this.#cache[variable];
+        let entry = this.#cache.get(variable);
         if (!forced && entry !== undefined)
             return entry;
 
@@ -56,12 +57,13 @@ export class VariableCache {
 
         const varName = variable.substring(scope.prefix.length);
         try {
-            const value = await scope.get(varName);
-            return this.#cache[variable] = new CacheEntry(scope, varName, value, this.logger);
+            entry = new CacheEntry(scope, varName, await scope.get(varName));
         } catch (err: unknown) {
             this.logger.error(err, { tagName: this.scopes.tagName, tagVariables: this.scopes.isTag });
             throw err;
         }
+        this.#cache.set(variable, entry);
+        return entry;
     }
 
     public async get(variable: string): Promise<VariableReference> {
@@ -101,12 +103,12 @@ export class VariableCache {
         }
 
         for (const [scope, pool] of pools) {
-            const timer = new Timer().start();
+            const start = performance.now();
             const objectCount = Object.keys(pool).length;
             this.logger.bbtag('Committing', objectCount, 'objects to the', scope.prefix, 'pool.');
             await scope.upsert(pool);
-            timer.end();
-            this.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', scope.prefix, 'pool in', timer.elapsed, 'ms.');
+            const elapsed = performance.now() - start;
+            this.logger[elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', scope.prefix, 'pool in', elapsed, 'ms.');
             this.hooks.chunkCommitted?.(objectCount);
         }
     }
@@ -122,8 +124,7 @@ class CacheEntry {
     public constructor(
         public readonly scope: TagVariableScopeEntry,
         public readonly key: string,
-        value: JToken | undefined,
-        public readonly logger: Logger
+        value: JToken | undefined
     ) {
         this.#initialValue = CacheEntry.#captureValue(value);
         this.value = this.#initialValue.get();

@@ -35,7 +35,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
         typeKey: string,
         optionsJson: string
     ): Promise<string> {
-        if (!context.hasPermission('manageChannels'))
+        if (!context.hasPermission('MANAGE_CHANNELS'))
             throw new BBTagRuntimeError('Author cannot create channels');
 
         const mapped = mapOptions.safeParse(optionsJson);

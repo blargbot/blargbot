@@ -42,6 +42,6 @@ export class IsStaffSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return await context.util.isUserStaff(member);
+        return await context.engine.util.isUserStaff(member);
     }
 }

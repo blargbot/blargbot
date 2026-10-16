@@ -50,7 +50,7 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
         const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.local.noLookupErrors });
         const perms = parse.bigInt(permsStr) ?? 0n;
 
-        const mappedPerms = perms & context.permission.allow;
+        const mappedPerms = context.root.authorizerPermissions.and(perms);
 
         if (role === undefined)
             throw new BBTagRuntimeError('Role not found');
@@ -59,7 +59,7 @@ export class RoleSetPermissionsSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Role above author');
 
         try {
-            await role.edit({ permissions: mappedPerms }, context.auditReason());
+            await role.edit({ permissions: mappedPerms.raw }, context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof eris.DiscordRESTError))
                 throw err;
