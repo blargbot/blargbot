@@ -6,8 +6,14 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.isStaff;
 
+export interface IsUserStaffThunk {
+    (guildId: string, userId: string): Promise<boolean>;
+}
+
 export class IsStaffSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #isUserStaff: IsUserStaffThunk;
+    readonly #cache = new WeakMap<BBTagContext, Map<string, Promise<boolean>>>();
+    public constructor({ isUserStaff }: { isUserStaff: IsUserStaffThunk; }) {
         super({
             name: 'isStaff',
             aliases: ['isMod'],
@@ -19,7 +25,7 @@ export class IsStaffSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    execute: ctx => ctx.isStaff
+                    execute: ctx => this.isStaff(ctx)
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -27,13 +33,25 @@ export class IsStaffSubtag extends CompiledSubtag {
                     exampleCode: tag.user.exampleCode,
                     exampleOut: tag.user.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [user, quiet]) => this.isStaff(ctx, user.value, quiet.value !== '')
+                    execute: (ctx, [user, quiet]) => this.isStaffLookup(ctx, user.value, quiet.value !== '')
                 }
             ]
         });
+        this.#isUserStaff = isUserStaff;
     }
 
-    public async isStaff(context: BBTagContext, userStr: string, quiet: boolean): Promise<boolean> {
+    public static async isStaff(context: BBTagContext, userId?: string): Promise<boolean> {
+        return await context.engine.getSubtag(IsStaffSubtag)?.isStaff(context, userId) ?? false;
+    }
+
+    public async isStaff(context: BBTagContext, userId?: string): Promise<boolean> {
+        userId ??= context.root.authorizer?.id;
+        return userId !== undefined
+            && await this.#cache.getOrInsertComputed(context, () => new Map())
+                .getOrInsertComputed(userId, id => this.#isUserStaff(context.root.guildId, id));
+    }
+
+    public async isStaffLookup(context: BBTagContext, userStr: string, quiet: boolean): Promise<boolean> {
         quiet ||= context.local.quiet ?? false;
         const member = await context.queryMember(userStr, { noLookup: quiet });
 
@@ -42,6 +60,6 @@ export class IsStaffSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return await context.engine.util.isUserStaff(member);
+        return await this.isStaff(context, member.id);
     }
 }

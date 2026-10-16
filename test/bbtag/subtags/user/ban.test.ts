@@ -1,6 +1,8 @@
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
+import type { BanUserThunk } from '@blargbot/bbtag/subtags';
 import { BanSubtag } from '@blargbot/bbtag/subtags';
-import type { ArgumentMatchers } from '@blargbot/test-util';
+import { snowflake } from '@blargbot/core';
+import { type ArgumentMatchers, Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -10,22 +12,29 @@ function isDuration<T>($: ArgumentMatchers<T>, ms: number): moment.Duration {
     return $.satisfies(v => moment.isDuration(v) && v.asMilliseconds() === ms);
 }
 
+const banUser = new Mock<BanUserThunk>({ id: 'banUser', callable: true });
+
 await runSubtagTests({
-    subtag: new BanSubtag(),
+    subtag: new BanSubtag({
+        banUser: banUser.instance
+    }),
     argCountBounds: { min: 1, max: 5 },
     names: ['ban'],
+    setup(ctx) {
+        ctx.adoptMock(banUser);
+    },
     cases: [
         {
             code: '{ban;abc}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 9, error: new UserNotFoundError('abc') }
+                { error: new UserNotFoundError('abc') }
             ],
             postSetup(bbctx, ctx) {
                 ctx.util.setup(m => m.getUser('abc'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'abc'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'abc'))
                     .mustHappen(1)
                     .resolves([]);
             }
@@ -36,17 +45,27 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 1,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -55,105 +74,155 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 1,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('alreadyBanned');
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions') }
+                { error: new BBTagRuntimeError('Bot has no permissions') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 1,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('memberTooHigh');
+                    .resolves({ success: false, reason: 'bot' });
             }
         },
         {
             code: '{ban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
+                { error: new BBTagRuntimeError('User has no permissions') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 1,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('moderatorNoPerms');
+                    .resolves({ success: false, reason: 'authorizer' });
             }
         },
         {
             code: '{ban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
+                { error: new BBTagRuntimeError('User has no permissions') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 1,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('moderatorTooLow');
+                    .resolves({ success: false, reason: 'authorizer' });
             }
         },
         {
             code: '{ban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions') }
+                { error: new BBTagRuntimeError('Bot has no permissions') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 1,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('noPerms');
+                    .resolves({ success: false, reason: 'bot' });
             }
         },
         {
@@ -162,17 +231,27 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 5, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 5,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -181,24 +260,34 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, -1, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: -1,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user;abc}',
             expected: 'false',
             errors: [
-                { start: 0, end: 20, error: new NotANumberError('abc').withDisplay('false') }
+                { error: new NotANumberError('abc').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
@@ -207,7 +296,7 @@ await runSubtagTests({
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
@@ -219,17 +308,27 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'My custom reason', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 1,
+                    reason: 'My custom reason',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -238,17 +337,27 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 7, 'My custom reason', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 7,
+                    reason: 'My custom reason',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -257,17 +366,27 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 1, 'Tag Ban', isDuration($, 432000000)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 1,
+                    reason: 'Tag Ban',
+                    unbanAfter: isDuration($, 432000000)
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -276,17 +395,27 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, bbctx.local.message.author, 7, 'My custom reason', isDuration($, 7200000)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    daysToDelete: 7,
+                    reason: 'My custom reason',
+                    unbanAfter: isDuration($, 7200000)
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -295,20 +424,30 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
-                const authorizer = bbctx.local.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
+                const authorizer = bbctx.root.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, authorizer, 1, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: authorizer.id,
+                    daysToDelete: 1,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -317,20 +456,30 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
-                const authorizer = bbctx.local.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
+                const authorizer = bbctx.root.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, authorizer, 1, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: authorizer.id,
+                    daysToDelete: 1,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -339,20 +488,30 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
-                const authorizer = bbctx.local.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
+                const authorizer = bbctx.root.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, authorizer, 1, 'Tag Ban', isDuration($, Infinity)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: authorizer.id,
+                    daysToDelete: 1,
+                    reason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -361,20 +520,30 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
+                const userId = snowflake.create().toString();
+                user.setup(m => m.id).returns(userId);
                 member.setup(m => m.user).returns(user.instance);
-                const authorizer = bbctx.local.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
+                const authorizer = bbctx.root.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
                 ctx.util.setup(m => m.getUser('other user'))
                     .mustHappen(1)
                     .resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.ban(bbctx.local.message.channel.guild, user.instance, bbctx.local.message.author, authorizer, 4, 'My custom reason', isDuration($, 7230000)))
+                banUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: authorizer.id,
+                    daysToDelete: 4,
+                    reason: 'My custom reason',
+                    unbanAfter: isDuration($, 7230000)
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         }
     ]

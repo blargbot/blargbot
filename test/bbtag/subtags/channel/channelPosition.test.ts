@@ -30,7 +30,7 @@ await runSubtagTests({
             code: '{channelpos}',
             expected: '`Threads dont have a position`',
             errors: [
-                { start: 0, end: 12, error: new BBTagRuntimeError('Threads dont have a position', '<#23948762874624372942> is a thread and doesnt have a position') }
+                { error: new BBTagRuntimeError('Threads dont have a position', '<#23948762874624372942> is a thread and doesnt have a position') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '23948762874624372942';

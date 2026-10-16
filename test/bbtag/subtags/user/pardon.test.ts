@@ -1,19 +1,29 @@
 import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
+import type { PardonThunk } from '@blargbot/bbtag/subtags';
 import { PardonSubtag } from '@blargbot/bbtag/subtags';
+import { snowflake } from '@blargbot/core';
+import { Mock } from '@blargbot/test-util';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const pardon = new Mock<PardonThunk>({ id: 'pardon', callable: true });
+
 await runSubtagTests({
-    subtag: new PardonSubtag(),
+    subtag: new PardonSubtag({
+        pardon: pardon.instance
+    }),
     argCountBounds: { min: 0, max: 3 },
     names: ['pardon'],
+    setup(ctx) {
+        ctx.adoptMock(pardon);
+    },
     cases: [
         {
             code: '{pardon}',
             expected: '0',
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.pardon(bbctx.local.message.member, bbctx.local.message.author, 1, 'Tag Pardon'))
+            setup(ctx) {
+                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(0);
             }
@@ -21,8 +31,8 @@ await runSubtagTests({
         {
             code: '{pardon}',
             expected: '5',
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.pardon(bbctx.local.message.member, bbctx.local.message.author, 1, 'Tag Pardon'))
+            setup(ctx) {
+                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(5);
             }
@@ -30,8 +40,8 @@ await runSubtagTests({
         {
             code: '{pardon;}',
             expected: '3',
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.pardon(bbctx.local.message.member, bbctx.local.message.author, 1, 'Tag Pardon'))
+            setup(ctx) {
+                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(3);
             }
@@ -41,11 +51,13 @@ await runSubtagTests({
             expected: '7',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                const memberId = snowflake.create().toString();
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
+                member.setup(m => m.id).returns(memberId);
 
-                ctx.util.setup(m => m.pardon(member.instance, bbctx.local.message.author, 1, 'Tag Pardon'))
+                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: memberId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(7);
             }
@@ -53,8 +65,8 @@ await runSubtagTests({
         {
             code: '{pardon;;6}',
             expected: '26',
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.pardon(bbctx.local.message.member, bbctx.local.message.author, 6, 'Tag Pardon'))
+            setup(ctx) {
+                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 6, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(26);
             }
@@ -64,25 +76,38 @@ await runSubtagTests({
             expected: '0',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                const memberId = snowflake.create().toString();
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
+                member.setup(m => m.id).returns(memberId);
 
-                ctx.util.setup(m => m.pardon(member.instance, bbctx.local.message.author, 9, 'Tag Pardon'))
+                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: memberId, moderatorId: ctx.users.command.id, count: 9, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(0);
             }
         },
         {
-            code: '{pardon;other user;8;Because I felt like it}',
+            code: '{pardon;;;My custom reason}',
+            expected: '16',
+            setup(ctx) {
+                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'My custom reason' })))
+                    .mustHappen(1)
+                    .resolves(16);
+            }
+        },
+        {
+            code: '{pardon;other user;6;My custom reason}',
             expected: '6',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                const memberId = snowflake.create().toString();
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
+                member.setup(m => m.id).returns(memberId);
 
-                ctx.util.setup(m => m.pardon(member.instance, bbctx.local.message.author, 8, 'Because I felt like it'))
+                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: memberId, moderatorId: ctx.users.command.id, count: 6, reason: 'My custom reason' })))
                     .mustHappen(1)
                     .resolves(6);
             }
@@ -91,7 +116,7 @@ await runSubtagTests({
             code: '{pardon;unknown user}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 21, error: new UserNotFoundError('unknown user') }
+                { error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
                 ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown user'))
@@ -103,7 +128,7 @@ await runSubtagTests({
             code: '{pardon;other user;abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 23, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ],
             setup(ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });

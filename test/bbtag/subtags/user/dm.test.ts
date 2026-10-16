@@ -16,8 +16,7 @@ await runSubtagTests({
     argCountBounds: { min: 2, max: 3 },
     names: ['dm'],
     setup(ctx) {
-        ctx.addMock(send);
-        send.reset();
+        ctx.adoptMock(send);
     },
     cases: [
         {
@@ -25,7 +24,7 @@ await runSubtagTests({
             expected: '`No user found`',
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 0, end: 16, error: new UserNotFoundError('aaaa') }
+                { error: new UserNotFoundError('aaaa') }
             ],
             setup(ctx) {
                 ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'aaaa'))

@@ -1,6 +1,6 @@
 import type { BBTagSendContent, BBTagUtilities, ReactionEvent, RwLock, SerializedBBTagContext, subtags } from '@blargbot/bbtag';
 import { getLock } from '@blargbot/bbtag';
-import type { DumpOptions, ExecuteWebhookPayload, ExecuteWebhookResult, SendPayload, SendResult } from '@blargbot/bbtag/subtags';
+import type { AddModLogOptions, BanUserOptions, BanUserResult, DumpOptions, ExecuteWebhookPayload, ExecuteWebhookResult, PardonOptions, SendPayload, SendResult, UnbanUserOptions, UnbanUserResult, WarnOptions } from '@blargbot/bbtag/subtags';
 import { type ChoiceQueryResult, type Emote, type EntityPickQueryOptions, type SendContent, snowflake } from '@blargbot/core';
 import type { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
@@ -8,7 +8,7 @@ import { util } from '@blargbot/formatting';
 import type { Logger } from '@blargbot/logger';
 import { raceAsyncIterable, sleep, usingTimeout } from '@blargbot/util';
 import * as eris from 'eris';
-import type moment from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import { bindAll } from './bindAll.js';
 import type { Cluster } from './Cluster.js';
@@ -19,16 +19,17 @@ type SubtagConstructorArgs = typeof subtags[keyof typeof subtags] extends new (a
 export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     readonly #cluster: Cluster;
 
-    public constructor(cluster: Cluster) {
-        this.#cluster = cluster;
-    }
-
     public get defaultPrefix(): string {
         return this.#cluster.config.discord.defaultPrefix;
     };
     public get logger(): Logger {
         return this.#cluster.logger;
     }
+
+    public constructor(cluster: Cluster) {
+        this.#cluster = cluster;
+    }
+
     public async fetch(input: string | URL | Request, init?: RequestInit): Promise<Response> {
         return await this.#cluster.fetch(input, init);
     }
@@ -47,8 +48,96 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public async getCustomCommand(guildId: string, name: string): Promise<GuildCommandTag | undefined> {
         return await this.#cluster.database.guilds.getCommand(guildId, name);
     }
+    public async isUserStaff(guildId: string, userId: string): Promise<boolean> {
+        const member = this.#cluster.discord.guilds.get(guildId)
+            ?.members.get(userId);
+        if (member === undefined)
+            return false;
+        return await this.#cluster.util.isUserStaff(member);
+    }
     public async getWarnings(guildId: string, userId: string): Promise<number | undefined> {
         return await this.#cluster.database.guilds.getWarnings(guildId, userId);
+    }
+    public async warn(options: WarnOptions): Promise<number> {
+        const { guildId, targetId, moderatorId, count, reason } = options;
+        const guild = this.#cluster.discord.guilds.get(guildId);
+        if (guild === undefined) return 0;
+        const target = guild.members.get(targetId);
+        if (target === undefined) return 0;
+        const moderator = this.#cluster.discord.users.get(moderatorId);
+        if (moderator === undefined) return 0;
+        const result = await this.#cluster.moderation.warns.warn(target, moderator, this.#cluster.discord.user, count, util.literal(reason));
+        return result.warnings;
+    }
+    public async pardon(options: PardonOptions): Promise<number> {
+        const { guildId, targetId, moderatorId, count, reason } = options;
+        const guild = this.#cluster.discord.guilds.get(guildId);
+        if (guild === undefined) return 0;
+        const target = guild.members.get(targetId);
+        if (target === undefined) return 0;
+        const moderator = this.#cluster.discord.users.get(moderatorId);
+        if (moderator === undefined) return 0;
+        const result = await this.#cluster.moderation.warns.pardon(target, moderator, count, util.literal(reason));
+        return result.warnings;
+    }
+    public async banUser(options: BanUserOptions): Promise<BanUserResult> {
+        const { guildId, targetId, moderatorId, authorizerId, daysToDelete, reason, unbanAfter = moment.duration(Infinity) } = options;
+        const guild = this.#cluster.discord.guilds.get(guildId);
+        if (guild === undefined) return { success: false, reason: 'bot' };
+        const target = await this.#cluster.util.getUser(targetId);
+        if (target === undefined) return { success: false, reason: 'bot' };
+        const moderator = await this.#cluster.util.getUser(moderatorId);
+        if (moderator === undefined) return { success: false, reason: 'authorizer' };
+        const authorizer = await this.#cluster.util.getUser(authorizerId);
+        if (authorizer === undefined) return { success: false, reason: 'authorizer' };
+        const result = await this.#cluster.moderation.bans.ban(guild, target, moderator, authorizer, daysToDelete, util.literal(reason), unbanAfter);
+        switch (result) {
+            case 'success':
+            case 'alreadyBanned':
+                return { success: true };
+            case 'memberTooHigh':
+            case 'noPerms':
+                return { success: false, reason: 'bot' };
+            case 'moderatorNoPerms':
+            case 'moderatorTooLow':
+                return { success: false, reason: 'authorizer' };
+            default:
+                return { success: false, reason: reason as never };
+        }
+    }
+    public async unbanUser(options: UnbanUserOptions): Promise<UnbanUserResult> {
+        const { guildId, targetId, moderatorId, authorizerId, reason } = options;
+        const guild = this.#cluster.discord.guilds.get(guildId);
+        if (guild === undefined) return { success: false, reason: 'bot' };
+        const target = await this.#cluster.util.getUser(targetId);
+        if (target === undefined) return { success: false, reason: 'notBanned' };
+        const moderator = await this.#cluster.util.getUser(moderatorId);
+        if (moderator === undefined) return { success: false, reason: 'authorizer' };
+        const authorizer = await this.#cluster.util.getUser(authorizerId);
+        if (authorizer === undefined) return { success: false, reason: 'authorizer' };
+        const result = await this.#cluster.moderation.bans.unban(guild, target, moderator, authorizer, util.literal(reason));
+        switch (result) {
+            case 'success':
+                return { success: true };
+            case 'notBanned':
+                return { success: false, reason: 'notBanned' };
+            case 'noPerms':
+                return { success: false, reason: 'bot' };
+            case 'moderatorNoPerms':
+                return { success: false, reason: 'authorizer' };
+            default:
+                return { success: false, reason: reason as never };
+        }
+    }
+    public async addModLog(options: AddModLogOptions): Promise<void> {
+        const { guildId, targetId, moderatorId, action, color, reason } = options;
+        const guild = this.#cluster.discord.guilds.get(guildId);
+        if (guild === undefined) return;
+        const target = this.#cluster.discord.users.get(targetId);
+        if (target === undefined) return;
+        const moderator = this.#cluster.discord.users.get(moderatorId);
+        if (moderator === undefined) return;
+        await this.#cluster.moderation.modLog.logCustom(guild, util.literal(action), target, moderator, util.literal(reason), color);
     }
     public async getUserTimezone(userId: string): Promise<string | undefined> {
         return await this.#cluster.database.users.getProp(userId, 'timezone');
@@ -58,6 +147,27 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     }
     public async canPingEveryone(guildId: string): Promise<boolean> {
         return await this.#cluster.database.guilds.getSetting(guildId, 'disableeveryone') !== true;
+    }
+    public async listRoleMembers(guildId: string, roleId: string): Promise<readonly string[]> {
+        const guild = this.#cluster.discord.guilds.get(guildId);
+        if (guild === undefined) return [];
+        await this.#cluster.util.ensureMemberCache(guild);
+        return guild.members.filter(m => m.roles.includes(roleId))
+            .map(m => m.id);
+    }
+    public async getRoleMemberCount(guildId: string, roleId: string): Promise<number> {
+        const members = await this.listRoleMembers(guildId, roleId);
+        return members.length;
+    }
+    public async listGuildMembers(guildId: string): Promise<readonly string[]> {
+        const guild = this.#cluster.discord.guilds.get(guildId);
+        if (guild === undefined) return [];
+        await this.#cluster.util.ensureMemberCache(guild);
+        return guild.members.map(m => m.id);
+    }
+    public async getGuildMemberCount(guildId: string): Promise<number> {
+        const members = await this.listGuildMembers(guildId);
+        return members.length;
     }
     public async generateDumpLink(options: DumpOptions): Promise<URL> {
         const id = await this.#cluster.util.generateDumpPage({ content: options.content }, snowflake.parse(options.channelId));
@@ -168,10 +278,6 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return await this.cluster.util.findChannels(guild, query);
     }
 
-    public async ensureMemberCache(guild: eris.Guild): Promise<void> {
-        return await this.cluster.util.ensureMemberCache(guild);
-    }
-
     public async getMember(guild: string | eris.Guild, userId: string): Promise<eris.Member | undefined> {
         return await this.cluster.util.getMember(guild, userId);
     }
@@ -214,14 +320,6 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return this.cluster.moderation.timeouts.clearTimeout(member, moderator, authorizer, util.literal(reason));
     }
 
-    public addModLog(guild: eris.Guild, action: string, user: eris.User, moderator?: eris.User, reason?: string, color?: number): Promise<void> {
-        return this.cluster.moderation.modLog.logCustom(guild, util.literal(action), user, moderator, util.literal(reason), color);
-    }
-
-    public isUserStaff(member: eris.Member): Promise<boolean> {
-        return this.cluster.util.isUserStaff(member);
-    }
-
     public queryMember(options: EntityPickQueryOptions<string, eris.Member>): Promise<ChoiceQueryResult<eris.Member>> {
         return this.cluster.util.queryMember({
             ...options,
@@ -246,24 +344,6 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
             placeholder: util.literal(options.placeholder),
             prompt: toPrompt(options.prompt)
         });
-    }
-
-    public async warn(member: eris.Member, moderator: eris.User, count: number, reason?: string): Promise<number> {
-        const result = await this.cluster.moderation.warns.warn(member, moderator, this.cluster.discord.user, count, util.literal(reason));
-        return result.warnings;
-    }
-
-    public async pardon(member: eris.Member, moderator: eris.User, count: number, reason?: string): Promise<number> {
-        const result = await this.cluster.moderation.warns.pardon(member, moderator, count, util.literal(reason));
-        return result.warnings;
-    }
-
-    public ban(guild: eris.Guild, user: eris.User, moderator: eris.User, authorizer: eris.User, deleteDays: number, reason: string, duration: moment.Duration): Promise<'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {
-        return this.cluster.moderation.bans.ban(guild, user, moderator, authorizer, deleteDays, util.literal(reason), duration);
-    }
-
-    public unban(guild: eris.Guild, user: eris.User, moderator: eris.User, authorizer: eris.User, reason?: string): Promise<'success' | 'noPerms' | 'moderatorNoPerms' | 'notBanned'> {
-        return this.cluster.moderation.bans.unban(guild, user, moderator, authorizer, util.literal(reason));
     }
 
     public kick(member: eris.Member, moderator: eris.User, authorizer: eris.User, reason?: string): Promise<'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'> {

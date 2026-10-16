@@ -76,7 +76,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         }
 
         try {
-            const emoji = await context.local.message.channel.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, context.auditReason());
+            const emoji = await context.root.message.channel.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, context.auditReason());
             return emoji.id;
         } catch (err: unknown) {
             if (!(err instanceof eris.DiscordRESTError))

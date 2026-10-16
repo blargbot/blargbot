@@ -69,7 +69,7 @@ await runSubtagTests({
             code: '{jsonsort;arrayVar;points;a}',
             expected: '`Cannot read property points at index 1, 1 total failures`',
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Cannot read property points at index 1, 1 total failures') }
+                { error: new BBTagRuntimeError('Cannot read property points at index 1, 1 total failures') }
             ],
             setupSaveVariables: false,
             setup(ctx) {
@@ -86,7 +86,7 @@ await runSubtagTests({
             code: '{jsonsort;arrayVar;abc;a}',
             expected: '`Cannot read property abc at index 0, 4 total failures`',
             errors: [
-                { start: 0, end: 25, error: new BBTagRuntimeError('Cannot read property abc at index 0, 4 total failures') }
+                { error: new BBTagRuntimeError('Cannot read property abc at index 0, 4 total failures') }
             ],
             setupSaveVariables: false,
             setup(ctx) {
@@ -103,7 +103,7 @@ await runSubtagTests({
             code: '{jsonsort;testVar;abc;a}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 24, error: new NotAnArrayError('testVar') }
+                { error: new NotAnArrayError('testVar') }
             ],
             setupSaveVariables: false,
             setup(ctx) {

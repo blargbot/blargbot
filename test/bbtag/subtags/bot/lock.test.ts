@@ -25,12 +25,9 @@ await runSubtagTests({
     argCountBounds: { min: { count: 3, noEval: [2] }, max: { count: 3, noEval: [2] } },
     names: ['lock'],
     setup(ctx) {
-        ctx.addMock(lock);
-        ctx.addMock(getLock);
-        ctx.addMock(lockHandle);
-        lock.reset();
-        getLock.reset();
-        lockHandle.reset();
+        ctx.adoptMock(lock);
+        ctx.adoptMock(getLock);
+        ctx.adoptMock(lockHandle);
     },
     cases: [
         {
@@ -38,7 +35,7 @@ await runSubtagTests({
             code: '{lock;write;myLock;{fail}}',
             expected: '`Lock cannot be nested`',
             errors: [
-                { start: 0, end: 26, error: new BBTagRuntimeError('Lock cannot be nested') }
+                { error: new BBTagRuntimeError('Lock cannot be nested') }
             ],
             postSetup(ctx) {
                 ctx.root.inLock = true;
@@ -71,7 +68,7 @@ await runSubtagTests({
             code: '{lock;bad;;{fail}}',
             expected: '`Lock cannot be nested`',
             errors: [
-                { start: 0, end: 18, error: new BBTagRuntimeError('Lock cannot be nested') }
+                { error: new BBTagRuntimeError('Lock cannot be nested') }
             ],
             postSetup(ctx) {
                 ctx.root.inLock = true;
@@ -82,7 +79,7 @@ await runSubtagTests({
             code: '{lock;bad;;{fail}}',
             expected: `\`${invalidModeMessage}\``,
             errors: [
-                { start: 0, end: 18, error: new BBTagRuntimeError(invalidModeMessage, 'bad') }
+                { error: new BBTagRuntimeError(invalidModeMessage, 'bad') }
             ],
             assert(ctx) {
                 assert(!ctx.local.inLock);
@@ -193,12 +190,11 @@ function getScopes(tagVars: boolean): Array<{ prefix: string; scope: TagVariable
 function* generateInvalidModeTestCases(): Generator<SubtagTestCase> {
     // The error detail is the lowercased mode
     for (const mode of ['', 'abc', 'readwrite', 'ABC']) {
-        const code = `{lock;${mode};myLock;{fail}}`;
         yield {
-            code,
+            code: `{lock;${mode};myLock;{fail}}`,
             expected: `\`${invalidModeMessage}\``,
             errors: [
-                { start: 0, end: code.length, error: new BBTagRuntimeError(invalidModeMessage, mode) }
+                { error: new BBTagRuntimeError(invalidModeMessage, mode) }
             ],
             assert(ctx) {
                 assert(!ctx.local.inLock);
@@ -209,12 +205,11 @@ function* generateInvalidModeTestCases(): Generator<SubtagTestCase> {
 
 function* generateEmptyKeyTestCases(): Generator<SubtagTestCase> {
     for (const mode of ['read', 'write']) {
-        const code = `{lock;${mode};;{fail}}`;
         yield {
-            code,
+            code: `{lock;${mode};;{fail}}`,
             expected: '`Key cannot be empty`',
             errors: [
-                { start: 0, end: code.length, error: new BBTagRuntimeError('Key cannot be empty') }
+                { error: new BBTagRuntimeError('Key cannot be empty') }
             ],
             assert(ctx) {
                 assert(!ctx.local.inLock);

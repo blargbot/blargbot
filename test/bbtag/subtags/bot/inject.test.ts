@@ -26,7 +26,7 @@ await runSubtagTests({
             subtags: [new LbSubtag()],
             expected: '`Unmatched \'{\' at 0`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Unmatched \'{\' at 0') }
+                { error: new BBTagRuntimeError('Unmatched \'{\' at 0') }
             ]
         },
         {
@@ -34,7 +34,7 @@ await runSubtagTests({
             subtags: [new RbSubtag()],
             expected: '`Unexpected \'}\' at 4`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Unexpected \'}\' at 4') }
+                { error: new BBTagRuntimeError('Unexpected \'}\' at 4') }
             ]
         }
     ]

@@ -23,7 +23,7 @@ await runSubtagTests({
             code: '{emojidelete;234762389364243}',
             expected: '`Author cannot delete emojis`',
             errors: [
-                { start: 0, end: 29, error: new BBTagRuntimeError('Author cannot delete emojis') }
+                { error: new BBTagRuntimeError('Author cannot delete emojis') }
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = '0';
@@ -33,7 +33,7 @@ await runSubtagTests({
             code: '{emojidelete;234762389364243}',
             expected: '`Failed to delete emoji: This is an error`',
             errors: [
-                { start: 0, end: 29, error: new BBTagRuntimeError('Failed to delete emoji: This is an error') }
+                { error: new BBTagRuntimeError('Failed to delete emoji: This is an error') }
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(0, 'This is an error');
@@ -44,7 +44,7 @@ await runSubtagTests({
             code: '{emojidelete;234762389364243}',
             expected: '`Failed to delete emoji: And this is line 2`',
             errors: [
-                { start: 0, end: 29, error: new BBTagRuntimeError('Failed to delete emoji: And this is line 2') }
+                { error: new BBTagRuntimeError('Failed to delete emoji: And this is line 2') }
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(0, 'This is an error\nAnd this is line 2');

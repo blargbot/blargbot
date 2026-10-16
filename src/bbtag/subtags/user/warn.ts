@@ -8,8 +8,21 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.warn;
 
+export interface WarnOptions {
+    readonly guildId: string;
+    readonly targetId: string;
+    readonly moderatorId: string;
+    readonly count: number;
+    readonly reason: string;
+}
+
+export interface WarnThunk {
+    (options: WarnOptions): Promise<number>;
+}
+
 export class WarnSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #warn: WarnThunk;
+    public constructor({ warn }: { warn: WarnThunk; }) {
         super({
             name: 'warn',
             category: SubtagType.USER,
@@ -33,6 +46,7 @@ export class WarnSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#warn = warn;
     }
 
     public async warnUser(
@@ -51,6 +65,12 @@ export class WarnSubtag extends CompiledSubtag {
         if (count === undefined)
             throw new NotANumberError(countStr);
 
-        return await context.engine.util.warn(member, context.local.message.author, count, reason !== '' ? reason : 'Tag Warning');
+        return await this.#warn({
+            guildId: context.root.guildId,
+            targetId: member.id,
+            moderatorId: context.root.message.author.id,
+            count,
+            reason: reason !== '' ? reason : 'Tag Warning'
+        });
     }
 }

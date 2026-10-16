@@ -41,7 +41,7 @@ await runSubtagTests({
             code: '{lastmessageid}',
             expected: '`Channel must be a textable channel`',
             errors: [
-                { start: 0, end: 15, error: new BBTagRuntimeError('Channel must be a textable channel') }
+                { error: new BBTagRuntimeError('Channel must be a textable channel') }
             ],
             setup(ctx) {
                 ctx.channels.command.type = eris.Constants.ChannelTypes.GUILD_CATEGORY;

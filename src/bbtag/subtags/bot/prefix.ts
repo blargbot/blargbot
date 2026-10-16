@@ -35,7 +35,7 @@ export class PrefixSubtag extends CompiledSubtag {
         if (context.root.prefix !== undefined)
             return context.root.prefix;
 
-        const result = await this.#getPrefix(context.local.message.channel.guild.id) ?? this.#defaultPrefix;
+        const result = await this.#getPrefix(context.root.guildId) ?? this.#defaultPrefix;
         if (Array.isArray(result))
             return result[0];
         return result;

@@ -22,12 +22,15 @@ import type { AnalysisResults, BBTagContextMessage, BBTagRuntimeInput, Execution
 import { BBTagRuntimeState } from './types.js';
 import { bbtag as bbtagUtil } from './utils/index.js';
 
+type SubtagCtor = abstract new (...args: never) => Subtag;
 export class BBTagEngine {
+    readonly #subtagsByClass: ReadonlyMap<SubtagCtor, Subtag>;
+    readonly #subtagsByName: ReadonlyMap<string, Subtag>;
+    readonly #subtagInstances: Set<Subtag>;
     public get discord(): eris.Client { return this.dependencies.discord; }
     public get logger(): Logger { return this.dependencies.logger; }
     public get database(): Database { return this.dependencies.database; }
     public get util(): BBTagUtilities { return this.dependencies.util; }
-    public readonly subtags: ReadonlyMap<string, Subtag>;
 
     public readonly cooldowns: TagCooldownManager;
 
@@ -35,9 +38,10 @@ export class BBTagEngine {
         public readonly dependencies: InjectionContext
     ) {
         this.cooldowns = new TagCooldownManager();
+        this.#subtagInstances = new Set(dependencies.subtags);
+        this.#subtagsByClass = new Map(this.#subtagInstances.values().map(v => [v.constructor as SubtagCtor, v]));
         const subtags = new Map<string, Subtag>();
-        this.subtags = subtags;
-        for (const subtag of dependencies.subtags) {
+        for (const subtag of this.#subtagInstances) {
             for (const name of BBTagEngine.#subtagNames(subtag)) {
                 const current = subtags.get(name);
                 if (current !== undefined)
@@ -45,6 +49,21 @@ export class BBTagEngine {
                 subtags.set(name, subtag);
             }
         }
+        this.#subtagsByName = subtags;
+    }
+
+    public get subtags(): readonly Subtag[] {
+        return [...this.#subtagInstances];
+    }
+
+    public getSubtag<T extends SubtagCtor>(type: T): InstanceType<T> | undefined
+    public getSubtag(type: string): Subtag | undefined
+    public getSubtag(type: SubtagCtor | string): Subtag | undefined {
+        if (typeof type !== 'string')
+            return this.#subtagsByClass.get(type);
+        type = type.toLowerCase();
+        return this.#subtagsByName.get(type)
+            ?? this.#subtagsByName.get(`${type.split('.', 1)[0]}.`);
     }
 
     static * #subtagNames(subtag: Subtag): Generator<string> {
@@ -62,6 +81,7 @@ export class BBTagEngine {
         );
         const context = new BBTagContext(this, {
             botId: this.discord.user.id,
+            guildId: options.message.channel.guild.id,
             recursion: {
                 depth: 0
             },
@@ -164,7 +184,7 @@ export class BBTagEngine {
         this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
         let content: string;
         const cooldown = this.cooldowns.check({
-            guildId: context.root.message.channel.guild.id,
+            guildId: context.root.guildId,
             userId: context.root.message.author.id,
             tagName: context.local.tagName,
             isCC: context.root.isCC,
@@ -457,7 +477,7 @@ export class BBTagEngine {
             if (call.name.values.length === 0)
                 result.warnings.push({ location: call.start, message: templates.analysis.unnamed });
             else if (guard.every(call.name.values, guard.isTypeOf('string'))) {
-                const subtag = this.subtags.get(call.name.values.join(''));
+                const subtag = this.#subtagsByName.get(call.name.values.join(''));
                 // TODO Detect unknown subtags
                 switch (typeof subtag?.deprecated) {
                     case 'boolean':

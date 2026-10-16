@@ -20,7 +20,7 @@ await runSubtagTests({
             code: '{json;{fail}}',
             expected: '`Invalid JSON provided`',
             errors: [
-                { start: 0, end: 13, error: new BBTagRuntimeError('Invalid JSON provided') }
+                { error: new BBTagRuntimeError('Invalid JSON provided') }
             ]
         }
     ]

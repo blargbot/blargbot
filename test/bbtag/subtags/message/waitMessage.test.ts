@@ -16,15 +16,14 @@ await runSubtagTests({
     argCountBounds: { min: 0, max: { count: 4, noEval: [2] } },
     names: ['waitMessage'],
     setup(ctx) {
-        ctx.addMock(streamMessages);
-        streamMessages.reset();
+        ctx.adoptMock(streamMessages);
     },
     cases: [
         {
             code: '{waitmessage}',
             expected: '`Wait timed out after 60000`',
             errors: [
-                { start: 0, end: 13, error: new BBTagRuntimeError('Wait timed out after 60000') }
+                { error: new BBTagRuntimeError('Wait timed out after 60000') }
             ],
             setup(ctx) {
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
@@ -40,7 +39,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id);
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id);
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
                 streamMessages.setup((m, $) => m($([ctx.channels.command.id]), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
@@ -54,14 +53,14 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id);
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id);
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
             }
         },
         {
@@ -72,14 +71,14 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id);
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id);
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
             }
         },
         {
@@ -90,22 +89,22 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', '987234657348965');
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', '987234657348965');
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
                 streamMessages.setup((m, $) => m($(['21938762934928374', '987234657348965', '39457643897564358']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel1 = ctx.createMock<eris.TextChannel>({ id: 'channel1' });
                 channel1.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel1.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel1.instance]);
 
                 const channel2 = ctx.createMock<eris.TextChannel>({ id: 'channel2' });
                 channel2.setup(m => m.id).returns('987234657348965');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '987234657348965')).resolves([channel2.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '987234657348965')).resolves([channel2.instance]);
 
                 const channel3 = ctx.createMock<eris.TextChannel>({ id: 'channel3' });
                 channel3.setup(m => m.id).returns('39457643897564358');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '39457643897564358')).resolves([channel3.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '39457643897564358')).resolves([channel3.instance]);
             }
         },
         {
@@ -116,21 +115,21 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
             }
         },
         {
@@ -141,21 +140,21 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
             }
         },
         {
@@ -166,35 +165,35 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '328762389764234374');
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '328762389764234374');
                 const rejectedMessage = createRejectedMessage(ctx);
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
 
                 const member1 = ctx.createMock<eris.Member>({ id: 'member1' });
                 const user1 = ctx.createMock<eris.User>({ id: 'user1' });
                 member1.setup(m => m.user).returns(user1.instance);
                 user1.setup(m => m.id).returns('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '289374634729826479828')).resolves([member1.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '289374634729826479828')).resolves([member1.instance]);
 
                 const member2 = ctx.createMock<eris.Member>({ id: 'member2' });
                 const user2 = ctx.createMock<eris.User>({ id: 'user2' });
                 member2.setup(m => m.user).returns(user2.instance);
                 user2.setup(m => m.id).returns('328762389764234374');
                 ctx.util.setup(m => m.getUser('328762389764234374')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '328762389764234374')).resolves([member2.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '328762389764234374')).resolves([member2.instance]);
 
                 const member3 = ctx.createMock<eris.Member>({ id: 'member3' });
                 const user3 = ctx.createMock<eris.User>({ id: 'user3' });
                 member3.setup(m => m.user).returns(user3.instance);
                 user3.setup(m => m.id).returns('23894767278934620893');
                 ctx.util.setup(m => m.getUser('23894767278934620893')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23894767278934620893')).resolves([member3.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23894767278934620893')).resolves([member3.instance]);
             }
         },
         {
@@ -210,22 +209,22 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
-                const filterableMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
+                const filterableMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([filterableMessage.instance, rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
             }
         },
         {
@@ -241,22 +240,22 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
-                const filterableMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
+                const filterableMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 10000))
                     .yieldsAsync([filterableMessage.instance, rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
             }
         },
         {
@@ -272,22 +271,22 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
-                const filterableMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
+                const filterableMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 0))
                     .yieldsAsync([filterableMessage.instance, rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
             }
         },
         {
@@ -303,22 +302,22 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
-                const filterableMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
+                const filterableMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 300000))
                     .yieldsAsync([filterableMessage.instance, rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
             }
         },
         {
@@ -327,29 +326,29 @@ await runSubtagTests({
             errors: [
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
-                { start: 0, end: 69, error: new BBTagRuntimeError('Wait timed out after 300000') }
+                { error: new BBTagRuntimeError('Wait timed out after 300000') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '9834653278429843564';
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
-                const filterableMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
+                const acceptedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
+                const filterableMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '5847658249242834983', ctx.channels.command.id, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 300000))
                     .yieldsAsync([filterableMessage.instance, rejectedMessage.instance, acceptedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
             }
         },
         {
@@ -357,34 +356,34 @@ await runSubtagTests({
             expected: '`Condition must return \'true\' or \'false\'`',
             errors: [
                 { start: 53, end: 59, error: new MarkerError('eval', 53) },
-                { start: 0, end: 68, error: new BBTagRuntimeError('Condition must return \'true\' or \'false\'', 'Actually returned " abc"') }
+                { error: new BBTagRuntimeError('Condition must return \'true\' or \'false\'', 'Actually returned " abc"') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '9834653278429843564';
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const rejectedMessage = createFilterableMessage(ctx, bbctx.local.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
+                const rejectedMessage = createFilterableMessage(ctx, bbctx.root.message.channel.guild, '3982746234283749322', ctx.channels.command.id, '289374634729826479828');
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 300000))
                     .yieldsAsync([rejectedMessage.instance]);
 
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
                 channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('289374634729826479828');
                 ctx.util.setup(m => m.getUser('289374634729826479828')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
             }
         },
         {
             code: '{waitmessage;21938762934928374;289374634729826479828;{fail};abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 64, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '9834653278429843564';
@@ -392,13 +391,13 @@ await runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 ctx.util.setup(m => m.getUser('289374634729826479828')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '289374634729826479828')).resolves([member.instance]);
             }
         }
     ]

@@ -20,12 +20,12 @@ await runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
                 ctx.discord.setup(m => m.deleteChannelPermission(channel.id, '12876318236836323', 'Command User#0000')).resolves(undefined);
             }
         },
@@ -36,12 +36,12 @@ await runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
                 ctx.discord.setup(m => m.deleteChannelPermission(channel.id, '12876318236836323', 'Command User#0000')).resolves(undefined);
             }
         },
@@ -52,12 +52,12 @@ await runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
                 ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 0n, OverwriteType.Member, 'Command User#0000')).resolves(undefined);
             }
         },
@@ -68,12 +68,12 @@ await runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
                 ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 0n, OverwriteType.Role, 'Command User#0000')).resolves(undefined);
             }
         },
@@ -84,12 +84,12 @@ await runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
                 ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 0n, 129837n, OverwriteType.Member, 'Command User#0000')).resolves(undefined);
             }
         },
@@ -100,12 +100,12 @@ await runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
                 ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 0n, 129837n, OverwriteType.Role, 'Command User#0000')).resolves(undefined);
             }
         },
@@ -116,12 +116,12 @@ await runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
                 ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, OverwriteType.Member, 'Command User#0000')).resolves(undefined);
             }
         },
@@ -132,12 +132,12 @@ await runSubtagTests({
                 ctx.channels.general.id = '12835768123756132';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
                 ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, OverwriteType.Role, 'Command User#0000')).resolves(undefined);
             }
         },
@@ -145,107 +145,107 @@ await runSubtagTests({
             code: '{channelsetperms;12835768123756132;role;12876318236836323;129837;832764}',
             expected: '`Channel does not exist`',
             errors: [
-                { start: 0, end: 72, error: new BBTagRuntimeError('Channel does not exist') }
+                { error: new BBTagRuntimeError('Channel does not exist') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([]);
             }
         },
         {
             code: '{channelsetperms;12835768123756132;role;12876318236836323;129837;832764}',
             expected: '`Cannot set permissions for a thread channel`',
             errors: [
-                { start: 0, end: 72, error: new BBTagRuntimeError('Cannot set permissions for a thread channel') }
+                { error: new BBTagRuntimeError('Cannot set permissions for a thread channel') }
             ],
             postSetup(bbctx, ctx) {
                 const channel = ctx.createMock<eris.PublicThreadChannel>({ id: 'channel' });
                 channel.setup(m => m.type).returns(eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD);
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel.instance]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel.instance]);
             }
         },
         {
             code: '{channelsetperms;12835768123756132;role;12876318236836323;129837;832764}',
             expected: '`Author cannot edit this channel`',
             errors: [
-                { start: 0, end: 72, error: new BBTagRuntimeError('Author cannot edit this channel') }
+                { error: new BBTagRuntimeError('Author cannot edit this channel') }
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = '0';
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
             }
         },
         {
             code: '{channelsetperms;12835768123756132;abc;12876318236836323;129837;832764}',
             expected: '`Type must be member or role`',
             errors: [
-                { start: 0, end: 71, error: new BBTagRuntimeError('Type must be member or role') }
+                { error: new BBTagRuntimeError('Type must be member or role') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
             }
         },
         {
             code: '{channelsetperms;12835768123756132;member;12876318236836323;129837;832764}',
             expected: '`Author missing requested permissions`',
             errors: [
-                { start: 0, end: 74, error: new BBTagRuntimeError('Author missing requested permissions') }
+                { error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
             }
         },
         {
             code: '{channelsetperms;12835768123756132;role;12876318236836323;129837;832764}',
             expected: '`Author missing requested permissions`',
             errors: [
-                { start: 0, end: 72, error: new BBTagRuntimeError('Author missing requested permissions') }
+                { error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
             },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
             }
         },
         {
             code: '{channelsetperms;12835768123756132;role;12876318236836323;129837;832764}',
             expected: '`Failed to edit channel: no perms`',
             errors: [
-                { start: 0, end: 72, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
+                { error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
                 const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
                 ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, OverwriteType.Role, 'Command User#0000')).rejects(err);
             }
@@ -254,15 +254,15 @@ await runSubtagTests({
             code: '{channelsetperms;12835768123756132;role;12876318236836323;129837;832764}',
             expected: '`Failed to edit channel: no perms`',
             errors: [
-                { start: 0, end: 72, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
+                { error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (channel === undefined)
                     throw new Error('Unable to get channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '12835768123756132')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12835768123756132')).resolves([channel]);
                 const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
                 ctx.discord.setup(m => m.editChannelPermission(channel.id, '12876318236836323', 129837n, 832764n, OverwriteType.Role, 'Command User#0000')).rejects(err);
             }

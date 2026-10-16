@@ -21,8 +21,7 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: Infinity },
     names: ['reactionAdd', 'addReact', 'reactAdd'],
     setup(ctx) {
-        ctx.addMock(addReactions);
-        addReactions.reset();
+        ctx.adoptMock(addReactions);
         ctx.roles.bot.permissions = eris.Constants.Permissions.addReactions.toString();
     },
     cases: [
@@ -109,7 +108,7 @@ await runSubtagTests({
             code: '{reactadd;abc;def;ghi}',
             expected: '`Invalid Emojis`',
             errors: [
-                { start: 0, end: 22, error: new BBTagRuntimeError('Invalid Emojis') }
+                { error: new BBTagRuntimeError('Invalid Emojis') }
             ]
         },
         {
@@ -132,7 +131,7 @@ await runSubtagTests({
                 addReactions.setup((m, $) => m(message.channel.id, message.id, $([unicodeEmote]))).resolves({ success: [], failed: [unicodeEmote] });
             },
             errors: [
-                { start: 0, end: 33, error: new BBTagRuntimeError('I cannot add \'🤔\' as reactions') }
+                { error: new BBTagRuntimeError('I cannot add \'🤔\' as reactions') }
             ]
         }
     ]

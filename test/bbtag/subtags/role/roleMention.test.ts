@@ -34,7 +34,7 @@ await runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.local.message.channel.guild.roles.get(ctx.roles.other.id);
+                const role = bbctx.root.message.channel.guild.roles.get(ctx.roles.other.id);
                 if (role === undefined)
                     throw new Error('Cannot find the role under test');
                 ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
@@ -51,7 +51,7 @@ await runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.local.message.channel.guild.roles.get(ctx.roles.other.id);
+                const role = bbctx.root.message.channel.guild.roles.get(ctx.roles.other.id);
                 if (role === undefined)
                     throw new Error('Cannot find the role under test');
                 ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
@@ -68,7 +68,7 @@ await runSubtagTests({
                 ctx.roles.other.id = '347865137576334534';
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.local.message.channel.guild.roles.get(ctx.roles.other.id);
+                const role = bbctx.root.message.channel.guild.roles.get(ctx.roles.other.id);
                 if (role === undefined)
                     throw new Error('Cannot find the role under test');
                 ctx.util.setup(m => m.findRoles(role.guild, 'other role'))

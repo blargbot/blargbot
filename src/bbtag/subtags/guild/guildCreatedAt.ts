@@ -26,6 +26,6 @@ export class GuildCreatedAtSubtag extends CompiledSubtag {
     }
 
     public getGuildCreatedDate(context: BBTagContext, format: string): string {
-        return moment(context.local.message.channel.guild.createdAt).utcOffset(0).format(format);
+        return moment(context.root.message.channel.guild.createdAt).utcOffset(0).format(format);
     }
 }

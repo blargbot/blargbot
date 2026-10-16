@@ -18,14 +18,14 @@ await runSubtagTests({
             code: '{randint;abc;1030}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 18, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{randint;6;def}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 15, error: new NotANumberError('def') }
+                { error: new NotANumberError('def') }
             ]
         }
     ]

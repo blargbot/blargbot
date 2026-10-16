@@ -55,9 +55,9 @@ export class RoleCreateSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Author missing requested permissions');
 
         try {
-            const role = await context.local.message.channel.guild.createRole(options, context.auditReason());
-            if (context.local.message.channel.guild.roles.get(role.id) === undefined)
-                context.local.message.channel.guild.roles.set(role.id, role);
+            const role = await context.root.message.channel.guild.createRole(options, context.auditReason());
+            if (context.root.message.channel.guild.roles.get(role.id) === undefined)
+                context.root.message.channel.guild.roles.set(role.id, role);
             return role.id;
         } catch (err: unknown) {
             if (!(err instanceof eris.DiscordRESTError))

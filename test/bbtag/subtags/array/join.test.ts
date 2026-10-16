@@ -13,7 +13,7 @@ await runSubtagTests({
             code: '{join;a;b}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 10, error: new NotAnArrayError('a') }
+                { error: new NotAnArrayError('a') }
             ]
         },
         { code: '{join;[1,2,3];x}', expected: '1x2x3' },
@@ -31,7 +31,7 @@ await runSubtagTests({
             code: '{join;var1;~}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 13, error: new NotAnArrayError('var1') }
+                { error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
                 ctx.input.tagName = 'testTag';

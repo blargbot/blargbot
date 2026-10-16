@@ -19,17 +19,17 @@ await runSubtagTests({
             code: '{timeout;other user;abc}',
             expected: '`Invalid duration`',
             errors: [
-                { start: 0, end: 24, error: new BBTagRuntimeError('Invalid duration') }
+                { error: new BBTagRuntimeError('Invalid duration') }
             ]
         },
         {
             code: '{timeout;abc;1s}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 16, error: new UserNotFoundError('abc') }
+                { error: new UserNotFoundError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'abc'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'abc'))
                     .mustHappen(1)
                     .resolves([]);
             }
@@ -40,7 +40,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
 
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
@@ -55,7 +55,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
 
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
@@ -68,14 +68,14 @@ await runSubtagTests({
             code: '{timeout;other user;-1d}',
             expected: '`Invalid duration`',
             errors: [
-                { start: 0, end: 24, error: new BBTagRuntimeError('Invalid duration') }
+                { error: new BBTagRuntimeError('Invalid duration') }
             ]
         },
         {
             code: '{timeout;other user;0s}',
             expected: '`User is not timed out`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
+                { error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
@@ -83,7 +83,7 @@ await runSubtagTests({
                 user.setup(u => u.username).returns('other user');
                 member.setup(m => m.user).returns(user.instance);
 
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
@@ -96,7 +96,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User is already timed out`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User is already timed out', 'other user is already timed out!') }
+                { error: new BBTagRuntimeError('User is already timed out', 'other user is already timed out!') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
@@ -104,7 +104,7 @@ await runSubtagTests({
                 user.setup(u => u.username).returns('other user');
                 member.setup(m => m.user).returns(user.instance);
 
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
@@ -117,12 +117,12 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) users!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) users!') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
 
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
@@ -135,7 +135,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) other user!') }
+                { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) other user!') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
@@ -143,7 +143,7 @@ await runSubtagTests({
                 user.setup(u => u.username).returns('other user');
                 member.setup(m => m.user).returns(user.instance);
 
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
@@ -156,12 +156,12 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) users!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) users!') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
 
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
@@ -174,7 +174,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) other user!') }
+                { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) other user!') }
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
@@ -182,7 +182,7 @@ await runSubtagTests({
                 user.setup(u => u.username).returns('other user');
                 member.setup(m => m.user).returns(user.instance);
 
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 

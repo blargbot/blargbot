@@ -12,4 +12,8 @@ export class BBTagRuntimeError extends Error {
         this.display = error;
         return this;
     }
+
+    public throw(): never {
+        throw this;
+    }
 }

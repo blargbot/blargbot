@@ -16,14 +16,14 @@ await runSubtagTests({
             code: '{base;10;1}',
             expected: '`Base must be between 2 and 36`',
             errors: [
-                { start: 0, end: 11, error: new BBTagRuntimeError('Base must be between 2 and 36') }
+                { error: new BBTagRuntimeError('Base must be between 2 and 36') }
             ]
         },
         {
             code: '{base;10;37}',
             expected: '`Base must be between 2 and 36`',
             errors: [
-                { start: 0, end: 12, error: new BBTagRuntimeError('Base must be between 2 and 36') }
+                { error: new BBTagRuntimeError('Base must be between 2 and 36') }
             ]
         },
         {
@@ -37,14 +37,14 @@ await runSubtagTests({
             code: '{base;10;1;16}',
             expected: '`Base must be between 2 and 36`',
             errors: [
-                { start: 0, end: 14, error: new BBTagRuntimeError('Base must be between 2 and 36') }
+                { error: new BBTagRuntimeError('Base must be between 2 and 36') }
             ]
         },
         {
             code: '{base;10;37;16}',
             expected: '`Base must be between 2 and 36`',
             errors: [
-                { start: 0, end: 15, error: new BBTagRuntimeError('Base must be between 2 and 36') }
+                { error: new BBTagRuntimeError('Base must be between 2 and 36') }
             ]
         },
         {
@@ -65,14 +65,14 @@ await runSubtagTests({
             code: '{base;10;abc;16}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 16, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{base;10;16;xyz}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 16, error: new NotANumberError('xyz') }
+                { error: new NotANumberError('xyz') }
             ]
         },
         {
@@ -93,7 +93,7 @@ await runSubtagTests({
             code: '{base;ghi;16;10}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 16, error: new NotANumberError('ghi') }
+                { error: new NotANumberError('ghi') }
             ]
         },
         {

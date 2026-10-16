@@ -1,26 +1,49 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
+import type { IsUserStaffThunk } from '@blargbot/bbtag/subtags';
 import { IsStaffSubtag } from '@blargbot/bbtag/subtags';
+import { snowflake } from '@blargbot/core';
+import { Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const isUserStaff = new Mock<IsUserStaffThunk>({ id: 'isUserStaff', callable: true });
+
 await runSubtagTests({
-    subtag: new IsStaffSubtag(),
+    subtag: new IsStaffSubtag({
+        isUserStaff: isUserStaff.instance
+    }),
     argCountBounds: { min: 0, max: 2 },
     names: ['isMod', 'isStaff'],
+    setup(ctx) {
+        ctx.adoptMock(isUserStaff);
+    },
     cases: [
         {
             code: '{isstaff}',
             expected: 'true',
             setup(ctx) {
-                ctx.isStaff = true;
+                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id))
+                    .resolves(true)
+                    .mustHappen(1);
+            }
+        },
+        {
+            code: '{isstaff},{isstaff},{isstaff}',
+            expected: 'true,true,true',
+            setup(ctx) {
+                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id))
+                    .resolves(true)
+                    .mustHappen(1);
             }
         },
         {
             code: '{isstaff}',
             expected: 'false',
             setup(ctx) {
-                ctx.isStaff = false;
+                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id))
+                    .resolves(false)
+                    .mustHappen(1);
             }
         },
         {
@@ -28,12 +51,29 @@ await runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
-                ctx.util.setup(m => m.isUserStaff(member.instance))
-                    .mustHappen(1)
-                    .resolves(true);
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
+                    .resolves([member.instance])
+                    .mustHappen(1);
+                isUserStaff.setup(m => m(ctx.guild.id, userId))
+                    .resolves(true)
+                    .mustHappen(1);
+            }
+        },
+        {
+            code: '{isstaff;other user},{isstaff;other user},{isstaff;other user}',
+            expected: 'true,true,true',
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
+                    .resolves([member.instance])
+                    .mustHappen(3);
+                isUserStaff.setup(m => m(ctx.guild.id, userId))
+                    .resolves(true)
+                    .mustHappen(1);
             }
         },
         {
@@ -41,50 +81,52 @@ await runSubtagTests({
             expected: 'false',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
-                ctx.util.setup(m => m.isUserStaff(member.instance))
-                    .mustHappen(1)
-                    .resolves(false);
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
+                    .resolves([member.instance])
+                    .mustHappen(1);
+                isUserStaff.setup(m => m(ctx.guild.id, userId))
+                    .resolves(false)
+                    .mustHappen(1);
             }
         },
         {
             code: '{isstaff;other user}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 20, error: new UserNotFoundError('other user') }
+                { error: new UserNotFoundError('other user') }
 
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
+                    .resolves([])
+                    .mustHappen(1);
             }
         },
         {
             code: '{isstaff;other user;}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 21, error: new UserNotFoundError('other user') }
+                { error: new UserNotFoundError('other user') }
 
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
+                    .resolves([])
+                    .mustHappen(1);
             }
         },
         {
             code: '{isstaff;other user;q}',
             expected: '',
             errors: [
-                { start: 0, end: 22, error: new UserNotFoundError('other user').withDisplay('') }
+                { error: new UserNotFoundError('other user').withDisplay('') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
+                    .resolves([])
+                    .mustHappen(1);
             }
         }
     ]

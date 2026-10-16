@@ -38,6 +38,7 @@ export interface BBTagRuntimeScope {
 }
 export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
     readonly botId: string;
+    readonly guildId: string;
     readonly recursion: { depth: number; };
     readonly output: {
         nsfw?: string;

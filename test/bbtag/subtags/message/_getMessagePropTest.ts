@@ -36,7 +36,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
         code: options.generateCode(undefined, '12345678998765432'),
         expected: '`No message found`',
         errors: [
-            { start: 0, end: options.generateCode(undefined, '12345678998765432').length, error: new MessageNotFoundError('0987654321123456789', '12345678998765432') }
+            { error: new MessageNotFoundError('0987654321123456789', '12345678998765432') }
         ],
         setup(ctx) {
             ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
@@ -52,10 +52,10 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
         code: options.generateCode('98765434567889121', '12345678998765432'),
         expected: '`No channel found`',
         errors: [
-            { start: 0, end: options.generateCode('98765434567889121', '12345678998765432').length, error: new ChannelNotFoundError('98765434567889121') }
+            { error: new ChannelNotFoundError('98765434567889121') }
         ],
         postSetup(bbctx, ctx) {
-            ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '98765434567889121')).resolves([]);
+            ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '98765434567889121')).resolves([]);
         }
     };
     if (options.quiet !== false) {
@@ -64,7 +64,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             code: options.generateCode('0987654321123456789', '12345678998765432', 'q'),
             expected: options.quiet ?? '`No message found`',
             errors: [
-                { start: 0, end: options.generateCode('0987654321123456789', '12345678998765432', 'q').length, error: new MessageNotFoundError('0987654321123456789', '12345678998765432').withDisplay(options.quiet) }
+                { error: new MessageNotFoundError('0987654321123456789', '12345678998765432').withDisplay(options.quiet) }
             ],
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
@@ -80,10 +80,10 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             code: options.generateCode('98765434567889121', '12345678998765432', 'q'),
             expected: options.quiet ?? '`No channel found`',
             errors: [
-                { start: 0, end: options.generateCode('98765434567889121', '12345678998765432', 'q').length, error: new ChannelNotFoundError('98765434567889121').withDisplay(options.quiet) }
+                { error: new ChannelNotFoundError('98765434567889121').withDisplay(options.quiet) }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '98765434567889121')).resolves([]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '98765434567889121')).resolves([]);
             }
         };
     }
@@ -117,7 +117,7 @@ function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTe
         code,
         expected: testCase.expected,
         retries: testCase.retries,
-        errors: testCase.error === undefined ? [] : [{ start: 0, end: code.length, error: testCase.error }],
+        errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
             const channel = ctx.channels[channelKey];
             const message = args[1] !== undefined ? SubtagTestContext.createApiMessage({
@@ -129,7 +129,7 @@ function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTe
             apiMessageMap.set(ctx, message);
         },
         postSetup(bbctx, ctx) {
-            const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels[channelKey].id);
+            const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels[channelKey].id);
             if (channel === undefined)
                 throw new Error('Cannot find the channel under test');
             const apiMessage = apiMessageMap.get(ctx);
@@ -138,7 +138,7 @@ function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTe
 
             const channelQuery = args[0];
             if (channelQuery !== undefined && channelQuery !== '')
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, channelQuery)).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, channelQuery)).resolves([channel]);
 
             const message = apiMessage === ctx.message ? bbctx.root.message as eris.Message<eris.GuildTextableChannel> : ctx.createMessage(apiMessage);
             const messageQuery = args[1];
@@ -154,7 +154,7 @@ function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTe
         assert(bbctx, result, ctx) {
             if (testCase.assert === undefined)
                 return;
-            const channel = bbctx.local.message.channel.guild.channels.get(ctx.channels[channelKey].id);
+            const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels[channelKey].id);
             if (channel === undefined)
                 throw new Error('Cannot find the channel under test');
             const message = messageMap.get(ctx);

@@ -38,14 +38,14 @@ await runSubtagTests({
             code: '{repeat;{fail};abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 19, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{repeat;{fail};-1}',
             expected: '`Can\'t be negative`',
             errors: [
-                { start: 0, end: 18, error: new BBTagRuntimeError('Can\'t be negative') }
+                { error: new BBTagRuntimeError('Can\'t be negative') }
             ]
         },
         {
@@ -69,7 +69,7 @@ await runSubtagTests({
             code: '{repeat;{increment;index},;10}',
             expected: '1,2,3,4,`Too many loops`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Too many loops') }
+                { error: new BBTagRuntimeError('Too many loops') }
             ],
             subtags: [new IncrementSubtag()],
             setup(ctx) {

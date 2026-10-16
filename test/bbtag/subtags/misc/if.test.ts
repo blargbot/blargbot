@@ -19,7 +19,7 @@ await runSubtagTests({
             expected: '`Not a boolean`',
             errors: [
                 // <then> is not executed
-                { start: 0, end: 16, error: new NotABooleanError('aaaa') }
+                { error: new NotABooleanError('aaaa') }
             ]
         },
         {
@@ -41,7 +41,7 @@ await runSubtagTests({
             errors: [
                 // <then> is not executed
                 // [else] is not executed
-                { start: 0, end: 23, error: new NotABooleanError('aaaa') }
+                { error: new NotABooleanError('aaaa') }
             ]
         },
         {
@@ -80,7 +80,7 @@ await runSubtagTests({
                 { start: 11, end: 17, error: new MarkerError('eval', 11) }, // <operator> is executed
                 { start: 20, end: 26, error: new MarkerError('eval', 20) }, // <right> is executed
                 //                                                   <then> is not executed
-                { start: 0, end: 34, error: new InvalidOperatorError('op') }
+                { error: new InvalidOperatorError('op') }
             ]
         },
         /* {if;<left>;<operator>;<right>;<then>;[else]} */
@@ -120,7 +120,7 @@ await runSubtagTests({
                 { start: 20, end: 26, error: new MarkerError('eval', 20) }, // <right> is executed
                 //                                                   <then> is not executed
                 //                                                   [else] is not executed
-                { start: 0, end: 41, error: new InvalidOperatorError('op') }
+                { error: new InvalidOperatorError('op') }
             ]
         }
     ]

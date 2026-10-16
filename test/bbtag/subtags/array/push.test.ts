@@ -15,14 +15,14 @@ await runSubtagTests({
             code: '{push;abc;def}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 14, error: new NotAnArrayError('abc') }
+                { error: new NotAnArrayError('abc') }
             ]
         },
         {
             code: '{push;var1;def}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 15, error: new NotAnArrayError('var1') }
+                { error: new NotAnArrayError('var1') }
             ],
             setup(ctx) {
                 ctx.input.tagName = 'testTag';

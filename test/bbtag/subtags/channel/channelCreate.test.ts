@@ -242,7 +242,7 @@ await runSubtagTests({
             expected: '`Author missing requested permissions`',
             subtags: [new EscapeBBTagSubtag()],
             errors: [
-                { start: 0, end: 124, error: new BBTagRuntimeError('Author missing requested permissions') }
+                { error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx: SubtagTestContext) {
                 ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
@@ -252,7 +252,7 @@ await runSubtagTests({
             code: '{channelcreate;My new channel!}',
             expected: '`Author cannot create channels`',
             errors: [
-                { start: 0, end: 31, error: new BBTagRuntimeError('Author cannot create channels') }
+                { error: new BBTagRuntimeError('Author cannot create channels') }
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = '0';
@@ -262,7 +262,7 @@ await runSubtagTests({
             code: '{channelcreate;My new channel!;;This isnt valid json!}',
             expected: '`Invalid JSON`',
             errors: [
-                { start: 0, end: 54, error: new BBTagRuntimeError('Invalid JSON') }
+                { error: new BBTagRuntimeError('Invalid JSON') }
             ]
         },
         {
@@ -288,7 +288,7 @@ await runSubtagTests({
             code: '{channelcreate;My new channel}',
             expected: '`Failed to create channel: no perms`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms', 'Test REST error') }
+                { error: new BBTagRuntimeError('Failed to create channel: no perms', 'Test REST error') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
@@ -308,7 +308,7 @@ await runSubtagTests({
             code: '{channelcreate;My new channel}',
             expected: '`Failed to create channel: no perms`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to create channel: no perms', 'Some other error message') }
+                { error: new BBTagRuntimeError('Failed to create channel: no perms', 'Some other error message') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');

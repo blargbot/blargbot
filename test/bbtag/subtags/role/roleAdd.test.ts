@@ -15,8 +15,7 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: 3 },
     names: ['roleAdd', 'addRole'],
     setup(ctx) {
-        ctx.addMock(logger);
-        logger.reset();
+        ctx.adoptMock(logger);
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
     },
     cases: [
@@ -61,7 +60,7 @@ await runSubtagTests({
             code: '{roleadd;3298746326924}',
             expected: '`Author cannot add roles`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Author cannot add roles') }
+                { error: new BBTagRuntimeError('Author cannot add roles') }
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = '0';
@@ -71,7 +70,7 @@ await runSubtagTests({
             code: '{roleadd;3298746326924}',
             expected: '`Role above author`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Role above author') }
+                { error: new BBTagRuntimeError('Role above author') }
             ],
             setup(ctx) {
                 ctx.roles.top.id = '3298746326924';
@@ -81,7 +80,7 @@ await runSubtagTests({
             code: '{roleadd;3298746326924}',
             expected: '`No role found`',
             errors: [
-                { start: 0, end: 23, error: new RoleNotFoundError('3298746326924') }
+                { error: new RoleNotFoundError('3298746326924') }
             ]
         },
         {
@@ -93,10 +92,10 @@ await runSubtagTests({
                     .resolves(null!);
             },
             postSetup(bbctx, ctx) {
-                const member = bbctx.local.message.channel.guild.members.get(ctx.users.other.id);
+                const member = bbctx.root.message.channel.guild.members.get(ctx.users.other.id);
                 if (member === undefined)
                     throw new Error('Unable to find member under test');
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .resolves([member]);
             }
         },
@@ -104,10 +103,10 @@ await runSubtagTests({
             code: '{roleadd;3298746326924;other user}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 34, error: new UserNotFoundError('other user') }
+                { error: new UserNotFoundError('other user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .resolves([]);
             }
         },
@@ -115,11 +114,11 @@ await runSubtagTests({
             code: '{roleadd;3298746326924;other user}',
             expected: 'false',
             errors: [
-                { start: 0, end: 34, error: new UserNotFoundError('other user').withDisplay('false') }
+                { error: new UserNotFoundError('other user').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
                 bbctx.root.quiet = true;
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .resolves([]);
             }
         },
@@ -127,10 +126,10 @@ await runSubtagTests({
             code: '{roleadd;3298746326924;other user;q}',
             expected: 'false',
             errors: [
-                { start: 0, end: 36, error: new UserNotFoundError('other user').withDisplay('false') }
+                { error: new UserNotFoundError('other user').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .resolves([]);
             }
         }

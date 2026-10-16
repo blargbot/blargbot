@@ -29,7 +29,7 @@ await runSubtagTests({
             code: '{channelcategory}',
             expected: '',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Channel has no parent').withDisplay('') }
+                { error: new BBTagRuntimeError('Channel has no parent').withDisplay('') }
             ]
         }
     ]

@@ -24,7 +24,7 @@ await runSubtagTests({
             code: '{slowmode;1234}',
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1234')).resolves([]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1234')).resolves([]);
                 ctx.discord.setup((m, $) => m.editChannel(ctx.channels.command.id, $({ rateLimitPerUser: 1234 }), 'Command User#0000'))
                     .resolves(ctx.createMock<eris.TextChannel>({ id: 'channel' }).instance);
             }
@@ -33,11 +33,11 @@ await runSubtagTests({
             code: '{slowmode;2342543235325252345}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.random();
+                const channel = bbctx.root.message.channel.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Failed to locate channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '2342543235325252345')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '2342543235325252345')).resolves([channel]);
                 ctx.discord.setup((m, $) => m.editChannel(channel.id, $({ rateLimitPerUser: 0 }), 'Command User#0000'))
                     .resolves(channel);
             }
@@ -46,11 +46,11 @@ await runSubtagTests({
             code: '{slowmode;2342543235325252345;37645}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.random();
+                const channel = bbctx.root.message.channel.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Failed to locate channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '2342543235325252345')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '2342543235325252345')).resolves([channel]);
                 ctx.discord.setup((m, $) => m.editChannel(channel.id, $({ rateLimitPerUser: 21600 }), 'Command User#0000'))
                     .resolves(channel);
             }
@@ -59,11 +59,11 @@ await runSubtagTests({
             code: '{slowmode;2342543235325252345;this is some random text}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = bbctx.local.message.channel.guild.channels.random();
+                const channel = bbctx.root.message.channel.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Failed to locate channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '2342543235325252345')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '2342543235325252345')).resolves([channel]);
                 ctx.discord.setup((m, $) => m.editChannel(channel.id, $({ rateLimitPerUser: 0 }), 'Command User#0000'))
                     .resolves(channel);
             }
@@ -72,15 +72,15 @@ await runSubtagTests({
             code: '{slowmode;2342543235325252345}',
             expected: '`Missing required permissions`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
+                { error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
-                const channel = bbctx.local.message.channel.guild.channels.random();
+                const channel = bbctx.root.message.channel.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Failed to locate channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '2342543235325252345')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '2342543235325252345')).resolves([channel]);
                 ctx.discord.setup((m, $) => m.editChannel(channel.id, $({ rateLimitPerUser: 0 }), 'Command User#0000')).rejects(err);
             }
         },
@@ -88,15 +88,15 @@ await runSubtagTests({
             code: '{slowmode;2342543235325252345}',
             expected: '`Missing required permissions`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Missing required permissions', 'Some other error message') }
+                { error: new BBTagRuntimeError('Missing required permissions', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
                 const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                const channel = bbctx.local.message.channel.guild.channels.random();
+                const channel = bbctx.root.message.channel.guild.channels.random();
                 if (channel === undefined)
                     throw new Error('Failed to locate channel under test');
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '2342543235325252345')).resolves([channel]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '2342543235325252345')).resolves([channel]);
                 ctx.discord.setup((m, $) => m.editChannel(channel.id, $({ rateLimitPerUser: 0 }), 'Command User#0000')).rejects(err);
             }
         }

@@ -14,8 +14,7 @@ await runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     names: ['userTimeZone'],
     setup(ctx) {
-        ctx.addMock(getUserTimezone);
-        getUserTimezone.reset();
+        ctx.adoptMock(getUserTimezone);
     },
     cases: [
         ...createGetUserPropTestCases({

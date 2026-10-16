@@ -25,8 +25,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
     }
 
     #loadTree(): Documentation {
-        const subtags = [...this.#cluster.bbtag.subtags.values()];
-        const subtagGroups = subtags
+        const subtagGroups = this.#cluster.bbtag.subtags
             .reduce((res, sub) => {
                 let subtags = res.get(sub.category);
                 if (subtags === undefined)

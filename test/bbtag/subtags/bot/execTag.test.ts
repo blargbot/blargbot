@@ -16,8 +16,7 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: Infinity },
     names: ['execTag', 'exec'],
     setup(ctx) {
-        ctx.addMock(getTag);
-        getTag.reset();
+        ctx.adoptMock(getTag);
     },
     cases: [
         {
@@ -189,7 +188,7 @@ await runSubtagTests({
             code: '{exec;abc}',
             expected: '`Tag not found: abc`',
             errors: [
-                { start: 0, end: 10, error: new BBTagRuntimeError('Tag not found: abc') }
+                { error: new BBTagRuntimeError('Tag not found: abc') }
             ],
             setup() {
                 getTag.setup(m => m('abc')).resolves(undefined).mustHappen(1);
@@ -199,7 +198,7 @@ await runSubtagTests({
             code: '{exec;otherSubtag}',
             expected: '`Terminated recursive tag after 200 execs.`',
             errors: [
-                { start: 0, end: 18, error: new SubtagStackOverflowError(200) }
+                { error: new SubtagStackOverflowError(200) }
             ],
             setup() {
                 getTag.setup(m => m('otherSubtag')).resolves({

@@ -5,8 +5,13 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildMembers;
 
+export interface ListGuildMembersThunk {
+    (guildId: string): Promise<readonly string[]>;
+}
+
 export class GuildMembersSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #listGuildMembers: ListGuildMembersThunk;
+    public constructor({ listGuildMembers }: { listGuildMembers: ListGuildMembersThunk; }) {
         super({
             name: 'guildMembers',
             category: SubtagType.GUILD,
@@ -21,10 +26,10 @@ export class GuildMembersSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#listGuildMembers = listGuildMembers;
     }
 
-    public async getMembers(context: BBTagContext): Promise<string[]> {
-        await context.engine.util.ensureMemberCache(context.local.message.channel.guild);
-        return context.local.message.channel.guild.members.map(m => m.user.id);
+    public async getMembers(context: BBTagContext): Promise<readonly string[]> {
+        return await this.#listGuildMembers(context.root.guildId);
     }
 }

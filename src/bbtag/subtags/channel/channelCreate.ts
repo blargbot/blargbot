@@ -52,7 +52,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
         try {
             if (options.reason === '') options.reason = undefined;
             options.reason ??= context.auditReason();
-            const channel = await context.local.message.channel.guild.createChannel(name, type, options);
+            const channel = await context.root.message.channel.guild.createChannel(name, type, options);
             return channel.id;
         } catch (err: unknown) {
             if (!(err instanceof eris.DiscordRESTError))

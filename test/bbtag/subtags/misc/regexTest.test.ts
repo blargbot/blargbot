@@ -15,14 +15,14 @@ await runSubtagTests({
             expected: '`Invalid Regex`',
             errors: [
                 { start: 11, end: 17, error: new MarkerError('eval', 11) },
-                { start: 0, end: 27, error: new BBTagRuntimeError('Invalid Regex') }
+                { error: new BBTagRuntimeError('Invalid Regex') }
             ]
         }, {
             code: '{regextest;{eval};{fail}}',
             expected: '`Invalid Regex`',
             errors: [
                 { start: 11, end: 17, error: new MarkerError('eval', 11) },
-                { start: 0, end: 25, error: new BBTagRuntimeError('Invalid Regex') }
+                { error: new BBTagRuntimeError('Invalid Regex') }
             ]
         },
         {
@@ -30,7 +30,7 @@ await runSubtagTests({
             expected: '`Unsafe Regex`',
             errors: [
                 { start: 11, end: 17, error: new MarkerError('eval', 11) },
-                { start: 0, end: 28, error: new BBTagRuntimeError('Unsafe Regex') }
+                { error: new BBTagRuntimeError('Unsafe Regex') }
             ]
         },
         {
@@ -45,7 +45,7 @@ await runSubtagTests({
             expected: '`Regex too long`',
             errors: [
                 { start: 11, end: 17, error: new MarkerError('eval', 11) },
-                { start: 0, end: 2020, error: new BBTagRuntimeError('Regex too long') }
+                { error: new BBTagRuntimeError('Regex too long') }
             ]
         },
         {
@@ -53,7 +53,7 @@ await runSubtagTests({
             expected: '`Invalid regular expression: /?{fail}/: Nothing to repeat`',
             errors: [
                 { start: 11, end: 17, error: new MarkerError('eval', 11) },
-                { start: 0, end: 27, error: new BBTagRuntimeError('Invalid regular expression: /?{fail}/: Nothing to repeat') }
+                { error: new BBTagRuntimeError('Invalid regular expression: /?{fail}/: Nothing to repeat') }
             ]
         }
     ]

@@ -27,7 +27,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
         code: options.generateCode('unknown user'),
         expected: '`No user found`',
         errors: [
-            { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
+            { error: new UserNotFoundError('unknown user') }
         ],
         setup(ctx) {
             ctx.util.setup(m => m.getUser('unknown user')).resolves(undefined, { isFallback: true });
@@ -41,7 +41,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
             code: options.generateCode('unknown user', ''),
             expected: '`No user found`',
             errors: [
-                { start: 0, end: options.generateCode('unknown user', '').length, error: new UserNotFoundError('unknown user') }
+                { error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
                 ctx.util.setup(m => m.getUser('unknown user')).resolves(undefined, { isFallback: true });
@@ -54,7 +54,7 @@ export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): G
             code: options.generateCode('unknown user', 'q'),
             expected: options.quiet ?? '`No user found`',
             errors: [
-                { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.quiet) }
+                { error: new UserNotFoundError('unknown user').withDisplay(options.quiet) }
             ],
             setup(ctx) {
                 ctx.util.setup(m => m.getUser('unknown user')).resolves(undefined, { isFallback: true });
@@ -88,12 +88,12 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
     return {
         code,
         expected: testCase.expected,
-        errors: testCase.error === undefined ? [] : [{ start: 0, end: code.length, error: testCase.error }],
+        errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
             testCase.setup?.(ctx.members[memberKey], ctx);
         },
         postSetup(bbctx, ctx) {
-            const member = bbctx.local.message.channel.guild.members.get(ctx.members[memberKey].user.id);
+            const member = bbctx.root.message.channel.guild.members.get(ctx.members[memberKey].user.id);
             if (member === undefined)
                 throw new Error('Cannot find the member under test');
             if (args[0] !== undefined && args[0] !== '') {
@@ -107,7 +107,7 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
         assert(bbctx, result, ctx) {
             if (testCase.assert === undefined)
                 return;
-            const member = bbctx.local.message.channel.guild.members.get(ctx.members[memberKey].user.id);
+            const member = bbctx.root.message.channel.guild.members.get(ctx.members[memberKey].user.id);
             if (member === undefined)
                 throw new Error('Cannot find the member under test');
             testCase.assert(result, member, bbctx, ctx);

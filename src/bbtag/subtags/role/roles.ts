@@ -35,7 +35,7 @@ export class RolesSubtag extends CompiledSubtag {
     }
 
     public getGuildRoles(context: BBTagContext): string[] {
-        return [...context.local.message.channel.guild.roles.values()]
+        return [...context.root.message.channel.guild.roles.values()]
             .sort((a, b) => b.position - a.position)
             .map(r => r.id);
     }

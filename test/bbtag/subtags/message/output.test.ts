@@ -23,12 +23,9 @@ await runSubtagTests({
     argCountBounds: { min: 0, max: 1 },
     names: ['output'],
     setup(ctx) {
-        ctx.addMock(canPingEveryone);
-        canPingEveryone.reset();
-        ctx.addMock(send);
-        send.reset();
-        ctx.addMock(addReactions);
-        addReactions.reset();
+        ctx.adoptMock(canPingEveryone);
+        ctx.adoptMock(send);
+        ctx.adoptMock(addReactions);
     },
     cases: [
         {
@@ -257,7 +254,7 @@ await runSubtagTests({
                 bbctx.root.output.messageId = '0987654331234567';
             },
             errors: [
-                { start: 0, end: 35, error: new BBTagRuntimeError('Cannot send multiple outputs') }
+                { error: new BBTagRuntimeError('Cannot send multiple outputs') }
             ],
             assert(bbctx) {
                 assert.equal(bbctx.root.output.messageId, '0987654331234567');

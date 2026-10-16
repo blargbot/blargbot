@@ -18,15 +18,14 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: { count: 5, noEval: [3] } },
     names: ['waitReaction', 'waitReact'],
     setup(ctx) {
-        ctx.addMock(streamReactions);
-        streamReactions.reset();
+        ctx.adoptMock(streamReactions);
     },
     cases: [
         {
             code: '{waitreaction;328974628744623874}',
             expected: '`Wait timed out after 60000`',
             errors: [
-                { start: 0, end: 33, error: new BBTagRuntimeError('Wait timed out after 60000') }
+                { error: new BBTagRuntimeError('Wait timed out after 60000') }
             ],
             setup(ctx) {
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '23642834762378964232');
@@ -43,7 +42,7 @@ await runSubtagTests({
                 ctx.users.command.id = '23642834762378964232';
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
@@ -58,7 +57,7 @@ await runSubtagTests({
                 ctx.users.command.id = '23642834762378964232';
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
@@ -73,7 +72,7 @@ await runSubtagTests({
                 ctx.users.command.id = '23642834762378964232';
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '34897465835684954375', '2384792374232398472', '23642834762378964232');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '34897465835684954375', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
                 streamReactions.setup((m, $) => m($(['328974628744623874', '34897465835684954375', '9328479238794834798487']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
@@ -87,7 +86,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
@@ -97,7 +96,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -108,7 +107,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
@@ -118,7 +117,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -129,7 +128,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
@@ -139,21 +138,21 @@ await runSubtagTests({
                 member1.setup(m => m.user).returns(user1.instance);
                 user1.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member1.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member1.instance]);
 
                 const member2 = ctx.createMock<eris.Member>({ id: 'member2' });
                 const user2 = ctx.createMock<eris.User>({ id: 'user2' });
                 member2.setup(m => m.user).returns(user2.instance);
                 user2.setup(m => m.id).returns('9234874534905735485');
                 ctx.util.setup(m => m.getUser('9234874534905735485')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '9234874534905735485')).resolves([member2.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '9234874534905735485')).resolves([member2.instance]);
 
                 const member3 = ctx.createMock<eris.Member>({ id: 'member3' });
                 const user3 = ctx.createMock<eris.User>({ id: 'user3' });
                 member3.setup(m => m.user).returns(user3.instance);
                 user3.setup(m => m.id).returns('39857623874642873');
                 ctx.util.setup(m => m.getUser('39857623874642873')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '39857623874642873')).resolves([member3.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '39857623874642873')).resolves([member3.instance]);
             }
         },
         {
@@ -164,7 +163,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '❌', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
@@ -175,7 +174,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -186,7 +185,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
@@ -197,7 +196,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -208,7 +207,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
@@ -219,7 +218,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -230,7 +229,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
@@ -241,7 +240,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -252,7 +251,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
@@ -263,7 +262,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -274,7 +273,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
@@ -285,7 +284,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -296,7 +295,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
@@ -307,7 +306,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -318,7 +317,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
@@ -328,7 +327,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -344,8 +343,8 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '238746283794634234', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '238746283794634234', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
@@ -355,7 +354,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -371,8 +370,8 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
@@ -382,7 +381,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -397,7 +396,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
@@ -407,7 +406,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -416,15 +415,15 @@ await runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 70, error: new BBTagRuntimeError('Wait timed out after 60000') }
+                { error: new BBTagRuntimeError('Wait timed out after 60000') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
@@ -434,7 +433,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -442,14 +441,14 @@ await runSubtagTests({
             expected: '`Condition must return \'true\' or \'false\'`',
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 69, error: new BBTagRuntimeError('Condition must return \'true\' or \'false\'', 'Actually returned " abc"') }
+                { error: new BBTagRuntimeError('Condition must return \'true\' or \'false\'', 'Actually returned " abc"') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const rejectedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const rejectedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction]);
 
@@ -458,7 +457,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -467,15 +466,15 @@ await runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 73, error: new BBTagRuntimeError('Wait timed out after 10000') }
+                { error: new BBTagRuntimeError('Wait timed out after 10000') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 10000))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
@@ -485,7 +484,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -494,15 +493,15 @@ await runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 73, error: new BBTagRuntimeError('Wait timed out after 0') }
+                { error: new BBTagRuntimeError('Wait timed out after 0') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 0))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
@@ -512,7 +511,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         },
         {
@@ -521,15 +520,15 @@ await runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 74, error: new BBTagRuntimeError('Wait timed out after 300000') }
+                { error: new BBTagRuntimeError('Wait timed out after 300000') }
             ],
             setup(ctx) {
                 ctx.channels.command.id = '2384792374232398472';
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.local.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
                 streamReactions.setup((m, $) => m($(['328974628744623874']), 300000))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
@@ -539,7 +538,7 @@ await runSubtagTests({
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.id).returns('23897462384627348293436');
                 ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
             }
         }
     ]

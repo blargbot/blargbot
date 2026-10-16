@@ -35,7 +35,7 @@ export class ChannelsSubtag extends CompiledSubtag {
     }
 
     public getChannels(context: BBTagContext): string[] {
-        return context.local.message.channel.guild.channels.map(c => c.id);
+        return context.root.message.channel.guild.channels.map(c => c.id);
     }
 
     public async getChannelsInCategory(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string[]> {

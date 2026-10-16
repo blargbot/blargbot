@@ -19,27 +19,25 @@ await runSubtagTests({
     argCountBounds: { min: 2, max: 5 },
     names: ['send'],
     setup(ctx) {
-        ctx.addMock(canPingEveryone);
-        canPingEveryone.reset();
-        ctx.addMock(send);
-        send.reset();
+        ctx.adoptMock(canPingEveryone);
+        ctx.adoptMock(send);
     },
     cases: [
         {
             code: '{send;1923681361978632931;abc}',
             expected: '`No channel found`',
             errors: [
-                { start: 0, end: 30, error: new ChannelNotFoundError('1923681361978632931') }
+                { error: new ChannelNotFoundError('1923681361978632931') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([]);
             }
         },
         {
             code: '{send;1923681361978632931;abc}',
             expected: '`Test error`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Test error') }
+                { error: new BBTagRuntimeError('Test error') }
             ],
             setup(ctx) {
                 ctx.input.isCC = false;
@@ -47,7 +45,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -55,7 +53,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: undefined,
@@ -75,7 +73,7 @@ await runSubtagTests({
             code: '{send;1923681361978632931;abc}',
             expected: '`Failed to send: Test error`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to send: Test error') }
+                { error: new BBTagRuntimeError('Failed to send: Test error') }
             ],
             setup(ctx) {
                 ctx.input.isCC = false;
@@ -83,7 +81,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -91,7 +89,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: undefined,
@@ -111,7 +109,7 @@ await runSubtagTests({
             code: '{send;1923681361978632931;abc}',
             expected: '`Failed to send: UNKNOWN`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Failed to send: UNKNOWN') }
+                { error: new BBTagRuntimeError('Failed to send: UNKNOWN') }
             ],
             setup(ctx) {
                 ctx.input.isCC = false;
@@ -119,7 +117,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
@@ -128,7 +126,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: undefined,
@@ -148,7 +146,7 @@ await runSubtagTests({
             code: '{send;1923681361978632931;abc}',
             expected: '`Send unsuccessful`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Send unsuccessful') }
+                { error: new BBTagRuntimeError('Send unsuccessful') }
             ],
             setup(ctx) {
                 ctx.input.isCC = false;
@@ -156,7 +154,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
 
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
@@ -165,7 +163,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: undefined,
@@ -197,7 +195,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -205,7 +203,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: undefined,
@@ -238,7 +236,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -246,7 +244,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
@@ -277,7 +275,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -285,7 +283,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: undefined,
@@ -317,7 +315,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -325,7 +323,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
@@ -358,7 +356,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -366,7 +364,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -398,7 +396,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -406,7 +404,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -439,7 +437,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -447,7 +445,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -479,7 +477,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -487,7 +485,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -520,7 +518,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -528,7 +526,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -567,7 +565,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -575,7 +573,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -615,7 +613,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -623,7 +621,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -655,7 +653,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -663,7 +661,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -696,7 +694,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -704,7 +702,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -743,7 +741,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -751,7 +749,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -790,7 +788,7 @@ await runSubtagTests({
                     channel_id: bbctx.local.message.channel.id
                 }, ctx.users.command));
 
-                const general = bbctx.local.message.channel.guild.channels.get(ctx.channels.general.id);
+                const general = bbctx.root.message.channel.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
@@ -799,7 +797,7 @@ await runSubtagTests({
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
                 userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
 
-                ctx.util.setup(m => m.findChannels(bbctx.local.message.channel.guild, '1923681361978632931')).resolves([general]);
+                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1923681361978632931')).resolves([general]);
                 send.setup((m, $) => m(general.id, $({
                     content: 'This is a nsfw message',
                     embeds: undefined,

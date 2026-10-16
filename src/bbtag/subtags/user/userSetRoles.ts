@@ -24,7 +24,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.local.message.author.id, false)
+                    execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.root.message.author.id, false)
                 },
                 {
                     parameters: ['roleArray', 'user', 'quiet?'],

@@ -127,7 +127,7 @@ await runSubtagTests({
             code: '{while;{get;index};<;10;{increment;index},}',
             expected: '1,2,3,4,`Too many loops`',
             errors: [
-                { start: 0, end: 43, error: new BBTagRuntimeError('Too many loops') }
+                { error: new BBTagRuntimeError('Too many loops') }
             ],
             subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
@@ -151,7 +151,7 @@ await runSubtagTests({
             code: '{while;abc;def;ghi;{increment;index},}',
             expected: '1,2,3,4,`Too many loops`',
             errors: [
-                { start: 0, end: 38, error: new BBTagRuntimeError('Too many loops') }
+                { error: new BBTagRuntimeError('Too many loops') }
             ],
             subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
@@ -175,7 +175,7 @@ await runSubtagTests({
             code: '{while;true;{increment;index},}',
             expected: '1,2,3,4,`Too many loops`',
             errors: [
-                { start: 0, end: 31, error: new BBTagRuntimeError('Too many loops') }
+                { error: new BBTagRuntimeError('Too many loops') }
             ],
             subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {

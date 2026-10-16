@@ -1,5 +1,5 @@
 import { parse } from '@blargbot/core';
-import moment from 'moment-timezone';
+import type moment from 'moment-timezone';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -9,15 +9,27 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.ban;
 
-const errorMap = {
-    'noPerms': 'Bot has no permissions',
-    'memberTooHigh': 'Bot has no permissions',
-    'moderatorNoPerms': 'User has no permissions',
-    'moderatorTooLow': 'User has no permissions'
-};
+export interface BanUserOptions {
+    readonly guildId: string;
+    readonly targetId: string;
+    readonly moderatorId: string;
+    readonly authorizerId: string;
+    readonly reason: string;
+    readonly daysToDelete: number;
+    readonly unbanAfter?: moment.Duration;
+}
+
+export type BanUserResult =
+    | { success: true; }
+    | { success: false; reason: 'bot' | 'authorizer'; };
+
+export interface BanUserThunk {
+    (options: BanUserOptions): Promise<BanUserResult>;
+}
 
 export class BanSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #banUser: BanUserThunk;
+    public constructor({ banUser }: { banUser: BanUserThunk; }) {
         super({
             name: 'ban',
             category: SubtagType.USER,
@@ -49,6 +61,7 @@ export class BanSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#banUser = banUser;
     }
 
     public async banMember(
@@ -70,18 +83,30 @@ export class BanSubtag extends CompiledSubtag {
             throw new NotANumberError(daysToDeleteStr)
                 .withDisplay('false');
         }
-        let duration = moment.duration(Infinity);
-
-        if (timeToUnbanStr !== '')
-            duration = parse.duration(timeToUnbanStr) ?? duration;
+        const duration = timeToUnbanStr === '' ? undefined : parse.duration(timeToUnbanStr);
 
         if (reason === '')
             reason = 'Tag Ban';
 
-        const authorizer = noPerms ? context.root.authorizer?.user ?? context.local.message.author : context.local.message.author;
-        const response = await context.engine.util.ban(context.local.message.channel.guild, user, context.local.message.author, authorizer, daysToDelete, reason, duration);
-        if (response === 'success' || response === 'alreadyBanned')
-            return duration.asMilliseconds() < Infinity ? duration.asMilliseconds() : true;
-        throw new BBTagRuntimeError(errorMap[response]);
+        const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
+        const result = await this.#banUser({
+            guildId: context.root.guildId,
+            targetId: user.id,
+            moderatorId: context.root.message.author.id,
+            authorizerId: authorizer.id,
+            daysToDelete,
+            reason,
+            unbanAfter: duration
+        });
+        if (result.success)
+            return duration?.asMilliseconds() ?? true;
+        switch (result.reason) {
+            case 'bot':
+                throw new BBTagRuntimeError('Bot has no permissions');
+            case 'authorizer':
+                throw new BBTagRuntimeError('User has no permissions');
+            default:
+                throw new BBTagRuntimeError('Ban failed');
+        }
     }
 }

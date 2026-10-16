@@ -24,7 +24,7 @@ await runSubtagTests({
             postSetup(ctx) { ctx.root.fallback = 'bbb'; },
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) },
-                { start: 0, end: 39, error: new NotANumberError('aaa') }
+                { error: new NotANumberError('aaa') }
             ]
         },
         { code: '{substring;This is some text;0;4}', expected: 'This' },
@@ -60,7 +60,7 @@ await runSubtagTests({
             postSetup(ctx) { ctx.root.fallback = 'ccc'; },
             errors: [
                 { start: 31, end: 37, error: new MarkerError('eval', 31) },
-                { start: 0, end: 41, error: new NotANumberError('aaa') }
+                { error: new NotANumberError('aaa') }
             ]
         },
         {
@@ -70,7 +70,7 @@ await runSubtagTests({
             errors: [
                 { start: 29, end: 35, error: new MarkerError('eval', 29) },
                 { start: 39, end: 45, error: new MarkerError('eval', 39) },
-                { start: 0, end: 49, error: new NotANumberError('aaa') }
+                { error: new NotANumberError('aaa') }
             ]
         }
     ]

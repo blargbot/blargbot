@@ -15,19 +15,19 @@ import type { BBTagRuntimeRootScope, BBTagRuntimeScope, FindEntityOptions, Locat
 import { BBTagRuntimeState } from './types.js';
 
 export class BBTagContext {
-    #isStaffPromise?: Promise<boolean>;
+    // #isStaffPromise?: Promise<boolean>;
     readonly #scopes: BBTagRuntimeScope[] = [];
     #local: BBTagRuntimeScope;
 
-    public readonly execTimer: Timer;
-    public readonly dbTimer: Timer;
-    public readonly errors: LocatedRuntimeError[];
-    public readonly debug: RuntimeDebugEntry[];
+    public readonly execTimer = new Timer();
+    public readonly dbTimer = new Timer();
+    public readonly errors: LocatedRuntimeError[] = [];
+    public readonly debug: RuntimeDebugEntry[] = [];
     public readonly callStack = new SubtagCallStack();
     public readonly subtagInvocations = new Map<string, number[]>();
     public readonly root: BBTagRuntimeRootScope;
 
-    public dbObjectsCommitted: number;
+    public dbObjectsCommitted = 0;
     public state: BBTagRuntimeState = BBTagRuntimeState.RUNNING;
     public subtagCount = 0;
 
@@ -35,11 +35,16 @@ export class BBTagContext {
         return this.#local;
     }
 
-    public get isStaff(): Promise<boolean> {
-        return this.#isStaffPromise ??= this.root.authorizer === undefined
-            ? Promise.resolve(false)
-            : this.engine.util.isUserStaff(this.root.authorizer);
-    }
+    // public get isStaff(): Promise<boolean> {
+    //     if (this.#isStaffPromise !== undefined)
+    //         return this.#isStaffPromise;
+
+    //     const authorizer = this.root.authorizer;
+    //     if (authorizer !== undefined)
+    //         this.#isStaffPromise = this.engine.getSubtag(IsStaffSubtag)?.isStaff(this, authorizer.id, true).catch(() => false);
+
+    //     return this.#isStaffPromise ??= Promise.resolve(false);
+    // }
 
     public constructor(
         public readonly engine: BBTagEngine,
@@ -47,11 +52,6 @@ export class BBTagContext {
     ) {
         this.root = root;
         this.#local = root;
-        this.errors = [];
-        this.debug = [];
-        this.execTimer = new Timer();
-        this.dbTimer = new Timer();
-        this.dbObjectsCommitted = 0;
     }
 
     public permissionIn(channel: eris.KnownGuildChannel): DiscordPermissions {
@@ -103,7 +103,7 @@ export class BBTagContext {
     }
 
     public roleEditPosition(channel?: eris.KnownGuildChannel): number {
-        if (this.local.message.channel.guild.ownerID === this.root.authorizer?.id)
+        if (this.root.message.channel.guild.ownerID === this.root.authorizer?.id)
             return Infinity;
 
         const permission = channel === undefined ? this.root.authorizerPermissions : this.permissionIn(channel);
@@ -113,7 +113,7 @@ export class BBTagContext {
         return discord.getMemberPosition(this.root.authorizer);
     }
 
-    public auditReason(user: eris.User = this.local.message.author): string {
+    public auditReason(user: eris.User = this.root.message.author): string {
         const reason = this.local.reason ?? '';
         const tag = `${user.username}#${user.discriminator}`;
         return reason.length > 0
@@ -126,15 +126,8 @@ export class BBTagContext {
     }
 
     public getSubtag(name: string): Subtag {
-        let result = this.engine.subtags.get(name);
-        if (result !== undefined)
-            return result;
-
-        result = this.engine.subtags.get(`${name.split('.', 1)[0]}.`);
-        if (result !== undefined)
-            return result;
-
-        throw new UnknownSubtagError(name);
+        return this.engine.getSubtag(name)
+            ?? new UnknownSubtagError(name).throw();
     }
 
     public addError(error: BBTagRuntimeError, subtag?: SubtagCall): string {
@@ -157,8 +150,8 @@ export class BBTagContext {
             return this.local.message.member;
         return await this.#queryEntity(
             query, 'user', 'User',
-            async (id) => await this.engine.util.getMember(this.local.message.channel.guild, id),
-            async (query) => await this.engine.util.findMembers(this.local.message.channel.guild, query),
+            async (id) => await this.engine.util.getMember(this.root.message.channel.guild, id),
+            async (query) => await this.engine.util.findMembers(this.root.message.channel.guild, query),
             async (options) => await this.engine.util.queryMember(options),
             options
         );
@@ -167,8 +160,8 @@ export class BBTagContext {
     public async queryRole(query: string, options: FindEntityOptions = {}): Promise<eris.Role | undefined> {
         return await this.#queryEntity(
             query, 'role', 'Role',
-            async (id) => await this.engine.util.getRole(this.local.message.channel.guild, id),
-            async (query) => await this.engine.util.findRoles(this.local.message.channel.guild, query),
+            async (id) => await this.engine.util.getRole(this.root.message.channel.guild, id),
+            async (query) => await this.engine.util.findRoles(this.root.message.channel.guild, query),
             async (options) => await this.engine.util.queryRole(options),
             options
         );
@@ -180,10 +173,10 @@ export class BBTagContext {
         return await this.#queryEntity(
             query, 'channel', 'Channel',
             async (id) => {
-                const channel = await this.engine.util.getChannel(this.local.message.channel.guild, id);
-                return channel !== undefined && guard.isGuildChannel(channel) && channel.guild.id === this.local.message.channel.guild.id ? channel : undefined;
+                const channel = await this.engine.util.getChannel(this.root.message.channel.guild, id);
+                return channel !== undefined && guard.isGuildChannel(channel) && channel.guild.id === this.root.guildId ? channel : undefined;
             },
-            async (query) => await this.engine.util.findChannels(this.local.message.channel.guild, query),
+            async (query) => await this.engine.util.findChannels(this.root.message.channel.guild, query),
             async (options) => await this.engine.util.queryChannel(options),
             options
         );
@@ -194,8 +187,8 @@ export class BBTagContext {
             return this.local.message.channel;
         return await this.#queryEntity(
             query ?? '', 'channel', 'Thread',
-            async (id) => threadsOnly(await this.engine.util.getChannel(this.local.message.channel.guild, id)),
-            async (query) => threadsOnly(await this.engine.util.findChannels(this.local.message.channel.guild, query)),
+            async (id) => threadsOnly(await this.engine.util.getChannel(this.root.message.channel.guild, id)),
+            async (query) => threadsOnly(await this.engine.util.findChannels(this.root.message.channel.guild, query)),
             async (options) => await this.engine.util.queryChannel(options),
             options
         );
@@ -237,7 +230,7 @@ export class BBTagContext {
         if (entities.length <= 1 || this.root.queryCache.count >= 5 || noLookup)
             return entities.length === 1 ? entities[0] ?? undefined : undefined;
 
-        const result = await query({ context: this.local.message.channel, actors: this.local.message.author.id, choices: entities, filter: queryString });
+        const result = await query({ context: this.local.message.channel, actors: this.root.message.author.id, choices: entities, filter: queryString });
         const noErrors = options.noErrors === true || this.local.noLookupErrors === true;
         switch (result.state) {
             case 'FAILED':

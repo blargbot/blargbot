@@ -18,21 +18,21 @@ await runSubtagTests({
             code: '{jsonget;10;0.test}',
             expected: '`Cannot read property test of undefined`',
             errors: [
-                { start: 0, end: 19, error: new BBTagRuntimeError('Cannot read property test of undefined') }
+                { error: new BBTagRuntimeError('Cannot read property test of undefined') }
             ]
         },
         {
             code: '{jsonget;"abc";0.test}',
             expected: '`Cannot read property test of undefined`',
             errors: [
-                { start: 0, end: 22, error: new BBTagRuntimeError('Cannot read property test of undefined') }
+                { error: new BBTagRuntimeError('Cannot read property test of undefined') }
             ]
         },
         {
             code: '{jsonget;true;0.test}',
             expected: '`Cannot read property test of undefined`',
             errors: [
-                { start: 0, end: 21, error: new BBTagRuntimeError('Cannot read property test of undefined') }
+                { error: new BBTagRuntimeError('Cannot read property test of undefined') }
             ]
         },
         {

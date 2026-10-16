@@ -24,6 +24,6 @@ export class GuildIconSubtag extends CompiledSubtag {
     }
 
     public getGuildIcon(context: BBTagContext): string | undefined {
-        return context.local.message.channel.guild.iconURL ?? undefined;
+        return context.root.message.channel.guild.iconURL ?? undefined;
     }
 }

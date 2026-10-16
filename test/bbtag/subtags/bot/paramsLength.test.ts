@@ -27,7 +27,7 @@ await runSubtagTests({
             code: '{paramslength}',
             expected: '`{paramslength} can only be used inside {function}`',
             errors: [
-                { start: 0, end: 14, error: new BBTagRuntimeError('{paramslength} can only be used inside {function}') }
+                { error: new BBTagRuntimeError('{paramslength} can only be used inside {function}') }
             ],
             postSetup(ctx) {
                 ctx.root.paramsarray = undefined;

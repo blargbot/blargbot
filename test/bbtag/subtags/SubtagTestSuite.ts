@@ -19,7 +19,6 @@ import { ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilt
 import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${number}` | `${number}:${number}` | `${number}`;
 type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[keyof T];
 type RequireIds<T, OtherProps extends keyof T = never> = RequiredProps<Partial<T>, IdPropertiesOf<T> | OtherProps>;
 
@@ -40,7 +39,7 @@ export interface SubtagTestCase {
         required?: boolean;
         handle: (error: unknown) => Awaitable<void>;
     };
-    readonly errors?: ReadonlyArray<{ start?: SourceMarkerResolvable; end?: SourceMarkerResolvable; error: BBTagRuntimeError; }> | ((errors: LocatedRuntimeError[]) => void);
+    readonly errors?: ReadonlyArray<{ start?: number | SourceMarker; end?: number | SourceMarker; error: BBTagRuntimeError; }> | ((errors: LocatedRuntimeError[]) => void);
     readonly subtags?: readonly Subtag[];
     readonly skip?: boolean | (() => Awaitable<boolean>);
     readonly retries?: number;
@@ -66,8 +65,13 @@ export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends
     readonly names: Iterable<string>;
     readonly cases: TestCase[];
     readonly subtag: T;
+    readonly otherSubtags?: Subtag[];
     readonly runOtherTests?: (subtag: T) => Promise<void>;
     readonly argCountBounds: { min: ArgCountBound; max: ArgCountBound; };
+}
+
+function makeId(name: string): string {
+    return `${name}<${snowflake.create()}>`;
 }
 
 type ArgCountBound = number | { count: number; noEval: number[]; };
@@ -88,26 +92,25 @@ export class SubtagTestContext {
     public readonly userTable = this.createMock<UserStore>({ id: 'userTable' });
     public readonly limit = this.createMock<BaseRuntimeLimit>({ id: 'limit' });
     public readonly discordOptions: eris.ClientOptions;
-    public isStaff = false;
     public readonly ownedMessages: string[] = [];
 
     public readonly tagVariables: MapByValue<{ scope: TagVariableScope; name: string; }, JToken>;
     public readonly input: Mutable<Omit<BBTagRuntimeInput, 'message'>>;
 
     public readonly roles = {
-        everyone: SubtagTestContext.createApiRole({ id: snowflake.create().toString() }),
-        top: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 5, name: 'Top Role' }),
-        command: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 3, name: 'Command User' }),
-        authorizer: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 4, name: 'Command Authorizer' }),
-        other: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 2, name: 'Other User' }),
-        bot: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 1, name: 'Bot' })
+        everyone: SubtagTestContext.createApiRole({ id: makeId('everyoneRole') }),
+        top: SubtagTestContext.createApiRole({ id: makeId('topRole'), position: 5, name: 'Top Role' }),
+        command: SubtagTestContext.createApiRole({ id: makeId('commandRole'), position: 3, name: 'Command User' }),
+        authorizer: SubtagTestContext.createApiRole({ id: makeId('authorizerRole'), position: 4, name: 'Command Authorizer' }),
+        other: SubtagTestContext.createApiRole({ id: makeId('otherRole'), position: 2, name: 'Other User' }),
+        bot: SubtagTestContext.createApiRole({ id: makeId('botRole'), position: 1, name: 'Bot' })
     };
 
     public readonly users = {
-        owner: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Guild owner' }),
-        command: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Command User' }),
-        authorizer: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Command Authorizer' }),
-        other: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Other user' }),
+        owner: SubtagTestContext.createApiUser({ id: makeId('ownerUser'), username: 'Guild owner' }),
+        command: SubtagTestContext.createApiUser({ id: makeId('commandUser'), username: 'Command User' }),
+        authorizer: SubtagTestContext.createApiUser({ id: makeId('authorizerUser'), username: 'Command Authorizer' }),
+        other: SubtagTestContext.createApiUser({ id: makeId('otherUser'), username: 'Other user' }),
         bot: SubtagTestContext.createApiUser({
             id: '134133271750639616',
             username: 'blargbot',
@@ -124,8 +127,8 @@ export class SubtagTestContext {
     };
 
     public readonly channels = {
-        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }),
-        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' })
+        command: SubtagTestContext.createApiChannel({ id: makeId('commandChannel'), name: 'commands' }),
+        general: SubtagTestContext.createApiChannel({ id: makeId('generalChannel'), name: 'general' })
     } as {
         command: Extract<APIChannel, { guild_id?: Snowflake; }>;
         general: Extract<APIChannel, { guild_id?: Snowflake; }>;
@@ -141,7 +144,7 @@ export class SubtagTestContext {
     );
 
     public readonly message: APIMessage = SubtagTestContext.createApiMessage({
-        id: snowflake.create().toString(),
+        id: makeId('commandMessage'),
         author: this.users.command,
         channel_id: this.channels.command.id
     }, this.users.command);
@@ -150,7 +153,7 @@ export class SubtagTestContext {
         this.discordOptions = { intents: [] };
         this.tagVariables = new MapByValue();
         this.input = {
-            tagName: `testTag_${snowflake.create()}`,
+            tagName: makeId('tagName'),
             silent: false,
             isCC: false,
             flagDefinitions: [],
@@ -219,8 +222,9 @@ export class SubtagTestContext {
 
     }
 
-    public addMock(mock: Mock): void {
+    public adoptMock(mock: Mock): void {
         this.#allMocks.push(mock);
+        mock.reset();
     }
 
     public createMock<T extends Mockable>(...args: MockCtorArgs<T>): Mock<T> {
@@ -258,9 +262,6 @@ export class SubtagTestContext {
         const guild = this.createGuild(this.guild, Object.values(this.channels), Object.values(this.members));
         this.discord.instance.guilds.add(guild);
 
-        const authorizerId = this.input.authorizer === '' ? this.input.author ?? this.users.authorizer.id : this.input.authorizer;
-        this.util.setup((m, $) => m.isUserStaff($.allOf($.instanceOf(eris.Member), $.looksLikeLoose({ id: authorizerId, guild: guild })))).resolves(this.isStaff, { isFallback: true });
-
         for (const channel of guild.channels.values())
             this.discord.setup(m => m.getChannel(channel.id)).returns(channel, { isFallback: true });
 
@@ -274,7 +275,7 @@ export class SubtagTestContext {
 
         const context = engine.createContext({
             ...this.input,
-            authorizer: authorizerId,
+            authorizer: this.input.authorizer === '' ? this.input.author ?? this.users.authorizer.id : this.input.authorizer,
             author: this.input.author ?? message.author.id,
             message
         });
@@ -459,7 +460,7 @@ export async function runSubtagTests<T extends Subtag, TestCase extends SubtagTe
     const error = { stack: '' };
     Error.captureStackTrace(error, runSubtagTests);
     const stack = `Via SubtagTestSuite\n${error.stack.split('\n').slice(1).join('\n')}`;
-    const suite = new SubtagTestSuite(data.subtag, data.names);
+    const suite = new SubtagTestSuite([data.subtag, ...data.otherSubtags ?? []], data.names);
     if (data.setup !== undefined)
         suite.setup(data.setup);
     if (data.postSetup !== undefined)
@@ -497,22 +498,15 @@ Finished!`;
     }
 }
 
-export function sourceMarker(location: SourceMarkerResolvable): SourceMarker
-export function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined
-export function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined {
-    if (typeof location === 'number')
-        return { index: location, line: 0, column: location };
+export function sourceMarker(location: number | SourceMarker, source: string): SourceMarker | undefined {
     if (typeof location === 'object')
         return location;
-    if (typeof location === 'undefined')
-        return undefined;
 
-    const segments = location.split(':');
-    const index = segments[0];
-    const line = segments[1] ?? '0';
-    const column = segments[2] ?? index;
-
-    return { index: parseInt(index), line: parseInt(line), column: parseInt(column) };
+    const slice = source.slice(0, location);
+    const lineStart = slice.lastIndexOf('\n');
+    const lastLine = lineStart === -1 ? slice : slice.slice(lineStart + 1);
+    const lineCount = slice.split('\n').length - 1;
+    return { index: location, line: lineCount, column: lastLine.length };
 }
 export class TestDataSubtag extends Subtag {
     public constructor(public readonly values: Record<string, string | undefined>) {
@@ -634,11 +628,11 @@ export class EchoArgsSubtag extends Subtag {
 export class SubtagTestSuite<TestCase extends SubtagTestCase> {
     readonly #config: TestSuiteConfig<TestCase> = { setup: [], assert: [], teardown: [], postSetup: [] };
     readonly #testCases: TestCase[] = [];
-    readonly #subtag: Subtag;
+    readonly #subtags: Subtag[];
     readonly #names: Iterable<string>;
 
-    public constructor(subtag: Subtag, names: Iterable<string>) {
-        this.#subtag = subtag;
+    public constructor(subtags: Subtag[], names: Iterable<string>) {
+        this.#subtags = subtags;
         this.#names = names;
     }
 
@@ -674,8 +668,8 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
     }
 
     public async run(stack: string, otherTests?: () => Promise<void>): Promise<void> {
-        await describe(`{${this.#subtag.name}}`, async () => {
-            const subtag = this.#subtag;
+        const subtag = this.#subtags[0];
+        await describe(`{${subtag.name}}`, async () => {
             const config = this.#config;
             await it(`Should have [${Iterator.from(this.#names).map(x => JSON.stringify(x)).toArray().join(',')}] as names`, () => {
                 try {
@@ -697,7 +691,7 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
                 await it(getTestName(testCase), { skip: await shouldSkip(testCase), timeout }, async t => {
                     for (let attempt = 0; attempt < retries; attempt++) {
                         try {
-                            await runTestCase(subtag, testCase, config, t);
+                            await runTestCase(this.#subtags, testCase, config, t);
                             return;
                         } catch {
                             t.mock.reset();
@@ -705,7 +699,7 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
                         }
                     }
                     try {
-                        await runTestCase(subtag, testCase, config, t);
+                        await runTestCase(this.#subtags, testCase, config, t);
                     } catch (error) {
                         if (error instanceof Error)
                             error.stack += `\n${stack}`;
@@ -752,8 +746,8 @@ async function shouldSkip(testCase: SubtagTestCase): Promise<boolean> {
     return typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false;
 }
 
-async function runTestCase<TestCase extends SubtagTestCase>(subtag: Subtag, testCase: TestCase, config: TestSuiteConfig<TestCase>, testCtx: TestContext): Promise<void> {
-    const subtags = [subtag, new EvalSubtag(), new FailTestSubtag(), ...testCase.subtags ?? []];
+async function runTestCase<TestCase extends SubtagTestCase>(subtags: Subtag[], testCase: TestCase, config: TestSuiteConfig<TestCase>, testCtx: TestContext): Promise<void> {
+    subtags = [...subtags, new EvalSubtag(), new FailTestSubtag(), ...testCase.subtags ?? []];
     const test = new SubtagTestContext(testCase, subtags);
     const actualTestCase = Object.create(testCase, { 'timestamp': { value: moment() } });
 
@@ -761,7 +755,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(subtag: Subtag, test
         // arrange
         const code = bbtag.parse(testCase.code);
         for (const s of subtags)
-            test.limit.setup((m, $) => m.check($.instanceOf(BBTagContext), s.name)).resolves(undefined, { isFallback: s !== subtag });
+            test.limit.setup((m, $) => m.check($.instanceOf(BBTagContext), s.name)).resolves(undefined, { isFallback: true });
         for (const setup of config.setup)
             await setup.call(actualTestCase, test, code, testCtx);
         await actualTestCase.setup?.(test, code, testCtx);
@@ -804,14 +798,14 @@ async function runTestCase<TestCase extends SubtagTestCase>(subtag: Subtag, test
             testCase.errors(context.errors);
         } else {
             const errors = context.errors.map(err => ({
-                error: err.error,
+                error: noStack(err.error),
                 start: err.subtag?.start,
                 end: err.subtag?.end
             }));
             const expected = testCase.errors?.map(err => ({
-                error: err.error,
-                start: sourceMarker(err.start),
-                end: sourceMarker(err.end)
+                error: noStack(err.error),
+                start: sourceMarker(err.start ?? 0, testCase.code),
+                end: sourceMarker(err.end ?? testCase.code.length, testCase.code)
             })) ?? [];
             assert.deepEqual(errors, expected);
         }
@@ -828,6 +822,29 @@ async function runSafe<T>(action: () => Awaitable<T>): Promise<{ success: true; 
     } catch (err: unknown) {
         return { success: false, error: err };
     }
+}
+
+function noStack(error: unknown): unknown {
+    if (!(error instanceof Error))
+        return error;
+
+    const result = Object.create(Reflect.getPrototypeOf(error)) as Error;
+    for (const property of Reflect.ownKeys(error)) {
+        const descriptor = Reflect.getOwnPropertyDescriptor(error, property);
+        if (descriptor === undefined)
+            continue;
+        if (property === 'stack')
+            descriptor.value = error.stack?.replaceAll(/(?<=\n)(?: {4}at [^\n]+(?:\n|$))+/gs, '<stack ignored>');
+        else if (property === 'cause')
+            descriptor.value = noStack(descriptor.value);
+        if ('get' in descriptor && 'value' in descriptor) {
+            descriptor.writable = 'set' in descriptor;
+            delete descriptor.get;
+            delete descriptor.set;
+        }
+        Reflect.defineProperty(result, property, descriptor);
+    }
+    return result;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
@@ -849,7 +866,7 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
             expected: '`Not enough arguments`',
             errors: [
                 ...codeParts.filter(p => !p[0]).map(p => p[1]),
-                { start: 0, end: 2 + subtagName.length + 7 * i, error: new NotEnoughArgumentsError(minArgCount, i) }
+                { error: new NotEnoughArgumentsError(minArgCount, i) }
             ]
         };
     }
@@ -896,7 +913,7 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
         expected: '`Too many arguments`',
         errors: [
             ...codeParts.filter(p => !p[0]).map(p => p[1]),
-            { start: 0, end: 9 + subtagName.length + 7 * maxArgCount, error: new TooManyArgumentsError(maxArgCount, maxArgCount + 1) }
+            { error: new TooManyArgumentsError(maxArgCount, maxArgCount + 1) }
         ]
     };
 }

@@ -59,7 +59,7 @@ await runSubtagTests({
             code: '{channeldelete;2384762844234324}',
             expected: '`Author cannot edit this channel`',
             errors: [
-                { start: 0, end: 32, error: new BBTagRuntimeError('Author cannot edit this channel') }
+                { error: new BBTagRuntimeError('Author cannot edit this channel') }
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = '0';
@@ -71,7 +71,7 @@ await runSubtagTests({
             code: '{channeldelete;2384762844234324}',
             expected: '`Failed to edit channel: no perms`',
             errors: [
-                { start: 0, end: 32, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
+                { error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
@@ -84,7 +84,7 @@ await runSubtagTests({
             code: '{channeldelete;2384762844234324}',
             expected: '`Failed to edit channel: no perms`',
             errors: [
-                { start: 0, end: 32, error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
+                { error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');

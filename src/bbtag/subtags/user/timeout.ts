@@ -53,10 +53,10 @@ export class TimeoutSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Timeout';
 
-        const authorizer = noPerms ? context.root.authorizer?.user ?? context.local.message.author : context.local.message.author;
+        const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
         const response = delay.asMilliseconds() !== 0
-            ? await context.engine.util.timeout(member, context.local.message.author, authorizer, delay, reason)
-            : await context.engine.util.clearTimeout(member, context.local.message.author, authorizer, reason);
+            ? await context.engine.util.timeout(member, context.root.message.author, authorizer, delay, reason)
+            : await context.engine.util.clearTimeout(member, context.root.message.author, authorizer, reason);
 
         switch (response) {
             case 'success':

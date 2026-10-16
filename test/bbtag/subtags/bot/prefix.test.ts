@@ -14,8 +14,7 @@ await runSubtagTests({
     argCountBounds: { min: 0, max: 0 },
     names: ['prefix'],
     setup(ctx) {
-        ctx.addMock(getPrefix);
-        getPrefix.reset();
+        ctx.adoptMock(getPrefix);
     },
     cases: [
         {

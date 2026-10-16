@@ -56,7 +56,7 @@ await runSubtagTests({
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 16, end: 22, error: new MarkerError('eval', 16) },
-                { start: 0, end: 24, error: new NotANumberError('a') }
+                { error: new NotANumberError('a') }
             ]
         },
         {
@@ -67,7 +67,7 @@ await runSubtagTests({
                 { start: 16, end: 22, error: new MarkerError('eval', 16) },
                 { start: 26, end: 32, error: new MarkerError('eval', 26) },
                 { start: 36, end: 42, error: new MarkerError('eval', 36) },
-                { start: 0, end: 45, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
@@ -78,7 +78,7 @@ await runSubtagTests({
                 { start: 16, end: 22, error: new MarkerError('eval', 16) },
                 { start: 24, end: 30, error: new MarkerError('eval', 24) },
                 { start: 34, end: 40, error: new MarkerError('eval', 34) },
-                { start: 0, end: 43, error: new BBTagRuntimeError('Filler must be 1 character') }
+                { error: new BBTagRuntimeError('Filler must be 1 character') }
             ]
         },
         {
@@ -89,7 +89,7 @@ await runSubtagTests({
                 { start: 16, end: 22, error: new MarkerError('eval', 16) },
                 { start: 24, end: 30, error: new MarkerError('eval', 24) },
                 { start: 32, end: 38, error: new MarkerError('eval', 32) },
-                { start: 0, end: 41, error: new BBTagRuntimeError('Invalid direction', 'up is invalid') }
+                { error: new BBTagRuntimeError('Invalid direction', 'up is invalid') }
             ]
         }
     ]

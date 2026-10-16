@@ -14,8 +14,7 @@ await runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     names: ['warnings'],
     setup(ctx) {
-        ctx.addMock(getWarnings);
-        getWarnings.reset();
+        ctx.adoptMock(getWarnings);
     },
     cases: [
         ...createGetUserPropTestCases({

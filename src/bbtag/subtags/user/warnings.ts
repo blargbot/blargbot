@@ -36,6 +36,6 @@ export class WarningsSubtag extends CompiledSubtag {
         if (user === undefined)
             throw new UserNotFoundError(userQuery);
 
-        return await this.#getWarnings(context.local.message.channel.guild.id, user.id) ?? 0;
+        return await this.#getWarnings(context.root.guildId, user.id) ?? 0;
     }
 }

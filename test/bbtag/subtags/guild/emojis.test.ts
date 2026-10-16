@@ -37,22 +37,22 @@ await runSubtagTests({
             code: '{emojis;329476274682462386432}',
             expected: '["<:rolerestricted:923846723894624242>"]',
             postSetup(bbctx, ctx) {
-                const role = bbctx.local.message.channel.guild.roles.get('329476274682462386432');
+                const role = bbctx.root.message.channel.guild.roles.get('329476274682462386432');
                 if (role === undefined)
                     throw new Error('Failes to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '329476274682462386432')).resolves([role]);
+                ctx.util.setup(m => m.findRoles(bbctx.root.message.channel.guild, '329476274682462386432')).resolves([role]);
             }
         },
         {
             code: '{emojis;other}',
             expected: '["<:rolerestricted:923846723894624242>"]',
             postSetup(bbctx, ctx) {
-                const role = bbctx.local.message.channel.guild.roles.get('329476274682462386432');
+                const role = bbctx.root.message.channel.guild.roles.get('329476274682462386432');
                 if (role === undefined)
                     throw new Error('Failes to locate role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, 'other')).resolves([role]);
+                ctx.util.setup(m => m.findRoles(bbctx.root.message.channel.guild, 'other')).resolves([role]);
             }
         }
     ]

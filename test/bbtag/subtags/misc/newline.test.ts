@@ -22,7 +22,7 @@ await runSubtagTests({
             code: '{newline;a}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 11, error: new NotANumberError('a') }
+                { error: new NotANumberError('a') }
             ]
         }
     ]

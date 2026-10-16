@@ -27,6 +27,6 @@ export class GuildFeaturesSubtag extends CompiledSubtag {
     public getGuildFeatures(
         context: BBTagContext
     ): string[] {
-        return context.local.message.channel.guild.features;
+        return context.root.message.channel.guild.features;
     }
 }

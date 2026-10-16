@@ -91,7 +91,7 @@ await runSubtagTests({
                 otherUser.setup(m => m.mention).returns('<@098765434512212678>');
 
                 ctx.util.setup(m => m.getUser('098765434512212678')).mustHappen(1).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, '098765434512212678')).mustHappen(1).resolves([otherMember.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '098765434512212678')).mustHappen(1).resolves([otherMember.instance]);
             },
             assert(ctx) {
                 assert.deepEqual(ctx.root.allowedMentions.users, new Set(['12345678900987236', '098765434512212678']));

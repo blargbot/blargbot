@@ -34,21 +34,21 @@ await runSubtagTests({
             code: '{params;7}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 10, error: new NotEnoughArgumentsError(8, 5) }
+                { error: new NotEnoughArgumentsError(8, 5) }
             ]
         },
         {
             code: '{params;-1}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(0, 5) }
+                { error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
             code: '{params;abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 12, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
@@ -87,49 +87,49 @@ await runSubtagTests({
             code: '{params;6;7}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 12, error: new NotEnoughArgumentsError(7, 5) }
+                { error: new NotEnoughArgumentsError(7, 5) }
             ]
         },
         {
             code: '{params;7;6}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 12, error: new NotEnoughArgumentsError(7, 5) }
+                { error: new NotEnoughArgumentsError(7, 5) }
             ]
         },
         {
             code: '{params;-1;2}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 13, error: new NotEnoughArgumentsError(0, 5) }
+                { error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
             code: '{params;2;-1}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 13, error: new NotEnoughArgumentsError(0, 5) }
+                { error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
             code: '{params;abc;4}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 14, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{params;2;def}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 14, error: new NotANumberError('def') }
+                { error: new NotANumberError('def') }
             ]
         },
         {
             code: '{params}',
             expected: '`{params} can only be used inside {function}`',
             errors: [
-                { start: 0, end: 8, error: new BBTagRuntimeError('{params} can only be used inside {function}') }
+                { error: new BBTagRuntimeError('{params} can only be used inside {function}') }
             ],
             postSetup(ctx) {
                 ctx.root.paramsarray = undefined;
@@ -139,7 +139,7 @@ await runSubtagTests({
             code: '{params;1}',
             expected: '`{params} can only be used inside {function}`',
             errors: [
-                { start: 0, end: 10, error: new BBTagRuntimeError('{params} can only be used inside {function}') }
+                { error: new BBTagRuntimeError('{params} can only be used inside {function}') }
             ],
             postSetup(ctx) {
                 ctx.root.paramsarray = undefined;
@@ -149,7 +149,7 @@ await runSubtagTests({
             code: '{params;1;2}',
             expected: '`{params} can only be used inside {function}`',
             errors: [
-                { start: 0, end: 12, error: new BBTagRuntimeError('{params} can only be used inside {function}') }
+                { error: new BBTagRuntimeError('{params} can only be used inside {function}') }
             ],
             postSetup(ctx) {
                 ctx.root.paramsarray = undefined;

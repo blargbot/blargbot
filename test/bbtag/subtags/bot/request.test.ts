@@ -18,10 +18,8 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: 3 },
     names: ['request'],
     setup(ctx) {
-        ctx.addMock(fetch);
-        fetch.reset();
-        ctx.addMock(canRequestDomain);
-        canRequestDomain.reset();
+        ctx.adoptMock(fetch);
+        ctx.adoptMock(canRequestDomain);
     },
     cases: [
         {
@@ -288,7 +286,7 @@ await runSubtagTests({
             code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png}',
             expected: '`403 Forbidden`',
             errors: [
-                { start: 0, end: 124, error: new BBTagRuntimeError('403 Forbidden') }
+                { error: new BBTagRuntimeError('403 Forbidden') }
             ],
             setup(ctx) {
                 canRequestDomain.setup(m => m('cdn.discordapp.com')).resolves(true);
@@ -307,14 +305,14 @@ await runSubtagTests({
             code: '{request;a}',
             expected: '`A domain could not be extracted from url: a`',
             errors: [
-                { start: 0, end: 11, error: new BBTagRuntimeError('A domain could not be extracted from url: a') }
+                { error: new BBTagRuntimeError('A domain could not be extracted from url: a') }
             ]
         },
         {
             code: '{request;http://test.com}',
             expected: '`Domain is not whitelisted: test.com`',
             errors: [
-                { start: 0, end: 25, error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
+                { error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
             ],
             setup() {
                 canRequestDomain.setup(m => m('test.com')).resolves(false);
@@ -324,7 +322,7 @@ await runSubtagTests({
             code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png;this isnt a valid option}',
             expected: '``',
             errors: [
-                { start: 0, end: 149, error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
+                { error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
             ],
             setup() {
                 canRequestDomain.setup(m => m('cdn.discordapp.com')).resolves(true);

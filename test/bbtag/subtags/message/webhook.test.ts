@@ -16,8 +16,7 @@ await runSubtagTests({
     argCountBounds: { min: 2, max: 8 },
     names: ['webhook'],
     setup(ctx) {
-        ctx.addMock(executeWebhook);
-        executeWebhook.reset();
+        ctx.adoptMock(executeWebhook);
     },
     cases: [
         {
@@ -25,7 +24,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '`Error executing webhook: Test error`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: Test error') }
+                { error: new BBTagRuntimeError('Error executing webhook: Test error') }
             ],
             setup() {
                 executeWebhook.setup((m, $) => m('abc', 'def', $({
@@ -42,7 +41,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '`Error executing webhook: 404 NotFound on POST /webhooks`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: 404 NotFound on POST /webhooks') }
+                { error: new BBTagRuntimeError('Error executing webhook: 404 NotFound on POST /webhooks') }
             ],
             setup() {
                 executeWebhook.setup((m, $) => m('abc', 'def', $({
@@ -59,7 +58,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '`Error executing webhook: UNKNOWN`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Error executing webhook: UNKNOWN') }
+                { error: new BBTagRuntimeError('Error executing webhook: UNKNOWN') }
             ],
             setup() {
                 executeWebhook.setup((m, $) => m('abc', 'def', $({

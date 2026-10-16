@@ -15,8 +15,7 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: 2 },
     names: ['userSetNickname', 'setNickname', 'setNick', 'userSetNick'],
     setup(ctx) {
-        ctx.addMock(logger);
-        logger.reset();
+        ctx.adoptMock(logger);
     },
     cases: [
         {
@@ -33,7 +32,7 @@ await runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'other user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
                 member.setup((m, $) => m.edit($({ nick: 'abc' }), 'Command User#0000'))
@@ -47,7 +46,7 @@ await runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'blargbot'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'blargbot'))
                     .mustHappen(1)
                     .resolves([member.instance]);
                 member.setup((m, $) => m.edit($({ nick: 'abc' }), 'Command User#0000'))
@@ -61,10 +60,10 @@ await runSubtagTests({
             expected: '`No user found`',
             errors: [
                 { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 0, end: 33, error: new UserNotFoundError('unknown user') }
+                { error: new UserNotFoundError('unknown user') }
             ],
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.local.message.channel.guild, 'unknown user'))
+                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'unknown user'))
                     .mustHappen(1)
                     .resolves([]);
             }

@@ -6,8 +6,13 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleMembers;
 
+export interface ListRoleMembersThunk {
+    (guildId: string, roleId: string): Promise<readonly string[]>;
+}
+
 export class RoleMembersSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #listRoleMembers: ListRoleMembersThunk;
+    public constructor({ listRoleMembers }: { listRoleMembers: ListRoleMembersThunk; }) {
         super({
             name: 'roleMembers',
             category: SubtagType.ROLE,
@@ -22,13 +27,14 @@ export class RoleMembersSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#listRoleMembers = listRoleMembers;
     }
 
     public async getRoleMembers(
         context: BBTagContext,
         roleId: string,
         quiet: boolean
-    ): Promise<string[]> {
+    ): Promise<readonly string[]> {
         quiet ||= context.local.quiet ?? false;
         const role = await context.queryRole(roleId, { noLookup: quiet });
 
@@ -37,8 +43,6 @@ export class RoleMembersSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        await context.engine.util.ensureMemberCache(context.local.message.channel.guild);
-        const membersInRole = context.local.message.channel.guild.members.filter(m => m.roles.includes(role.id));
-        return membersInRole.map(m => m.user.id);
+        return await this.#listRoleMembers(context.root.guildId, role.id);
     }
 }

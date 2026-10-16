@@ -1,49 +1,55 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { TimeSubtag } from '@blargbot/bbtag/subtags';
-import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const now = Temporal.Instant.from('2026-09-22T22:20:00Z');
 await runSubtagTests({
     subtag: new TimeSubtag(),
     argCountBounds: { min: 0, max: 5 },
     names: ['time'],
+    setup(_, __, test) {
+        test.mock.timers.enable({
+            apis: ['Date'],
+            now: new Date(now.epochMilliseconds)
+        });
+    },
     cases: [
-        { code: '{time}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;;;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;;;;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
+        { code: '{time}', expected: '2026-09-22T22:20:00+00:00' },
+        { code: '{time;}', expected: '2026-09-22T22:20:00+00:00' },
+        { code: '{time;;}', expected: '2026-09-22T22:20:00+00:00' },
+        { code: '{time;;;}', expected: '2026-09-22T22:20:00+00:00' },
+        { code: '{time;;;;}', expected: '2026-09-22T22:20:00+00:00' },
+        { code: '{time;;;;;}', expected: '2026-09-22T22:20:00+00:00' },
 
-        { code: '{time;;now}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;today}', expected: () => moment.tz('Etc/UTC').startOf('day').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;tomorrow}', expected: () => moment.tz('Etc/UTC').startOf('day').add(1, 'day').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
-        { code: '{time;;yesterday}', expected: () => moment.tz('Etc/UTC').startOf('day').add(-1, 'day').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
+        { code: '{time;;now}', expected: '2026-09-22T22:20:00+00:00' },
+        { code: '{time;;today}', expected: '2026-09-22T00:00:00+00:00' },
+        { code: '{time;;tomorrow}', expected: '2026-09-23T00:00:00+00:00' },
+        { code: '{time;;yesterday}', expected: '2026-09-21T00:00:00+00:00' },
 
-        { code: '{time;X}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
-        { code: '{time;X;}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
-        { code: '{time;X;;}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
-        { code: '{time;X;;;}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
-        { code: '{time;X;;;;}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
-        { code: '{time;DD/MM/YYYY}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
-        { code: '{time;DD/MM/YYYY;}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
-        { code: '{time;DD/MM/YYYY;;}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
-        { code: '{time;DD/MM/YYYY;;;}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
-        { code: '{time;DD/MM/YYYY;;;;}', expected: () => moment.tz('Etc/UTC').format('DD/MM/YYYY'), retries: 5 },
+        { code: '{time;X}', expected: '1790115600' },
+        { code: '{time;X;}', expected: '1790115600' },
+        { code: '{time;X;;}', expected: '1790115600' },
+        { code: '{time;X;;;}', expected: '1790115600' },
+        { code: '{time;X;;;;}', expected: '1790115600' },
+        { code: '{time;DD/MM/YYYY}', expected: '22/09/2026' },
+        { code: '{time;DD/MM/YYYY;}', expected: '22/09/2026' },
+        { code: '{time;DD/MM/YYYY;;}', expected: '22/09/2026' },
+        { code: '{time;DD/MM/YYYY;;;}', expected: '22/09/2026' },
+        { code: '{time;DD/MM/YYYY;;;;}', expected: '22/09/2026' },
 
-        { code: '{time;;1640995200}', expected: '`Invalid date`', errors: [{ start: 0, end: 18, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;;1640995200;}', expected: '`Invalid date`', errors: [{ start: 0, end: 19, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;;1640995200;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 20, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;;1640995200;;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 21, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;X;1640995200}', expected: '`Invalid date`', errors: [{ start: 0, end: 19, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;X;1640995200;}', expected: '`Invalid date`', errors: [{ start: 0, end: 20, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;X;1640995200;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 21, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;X;1640995200;;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 22, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;DD/MM/YYYY;1640995200}', expected: '`Invalid date`', errors: [{ start: 0, end: 28, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;DD/MM/YYYY;1640995200;}', expected: '`Invalid date`', errors: [{ start: 0, end: 29, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;DD/MM/YYYY;1640995200;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 30, error: new BBTagRuntimeError('Invalid date') }] },
-        { code: '{time;DD/MM/YYYY;1640995200;;;}', expected: '`Invalid date`', errors: [{ start: 0, end: 31, error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;;1640995200}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;;1640995200;}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;;1640995200;;}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;;1640995200;;;}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;X;1640995200}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;X;1640995200;}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;X;1640995200;;}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;X;1640995200;;;}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;DD/MM/YYYY;1640995200}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;DD/MM/YYYY;1640995200;}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;DD/MM/YYYY;1640995200;;}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
+        { code: '{time;DD/MM/YYYY;1640995200;;;}', expected: '`Invalid date`', errors: [{ error: new BBTagRuntimeError('Invalid date') }] },
 
         { code: '{time;;1640995200;X}', expected: '2022-01-01T00:00:00+00:00' },
         { code: '{time;;1640995200;X;}', expected: '2022-01-01T00:00:00+00:00' },

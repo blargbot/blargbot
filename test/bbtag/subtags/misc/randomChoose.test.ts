@@ -22,7 +22,7 @@ await runSubtagTests({
             expected: /^(\d)\n(?!\1)\d$/, // the 2 numbers picked should not be the same
             errors: [
                 { start: 12, end: 18, error: new MarkerError('eval', 12) },
-                { start: '51:1:12', end: '57:1:18', error: new MarkerError('eval', 51) }
+                { start: 51, end: 57, error: new MarkerError('eval', 51) }
             ],
             retries: 5
         },

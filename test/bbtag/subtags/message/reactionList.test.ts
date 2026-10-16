@@ -17,7 +17,7 @@ await runSubtagTests({
                 ctx.channels.command.id = ctx.message.channel_id = '342756834937659745634';
             },
             errors: [
-                { start: 0, end: 11, error: new MessageNotFoundError('342756834937659745634', '') }
+                { error: new MessageNotFoundError('342756834937659745634', '') }
             ]
         },
         ...createGetMessagePropTestCases({
@@ -146,7 +146,7 @@ await runSubtagTests({
             code: '{reactlist;92384982642323432343;def;ghi}',
             expected: '`Invalid Emojis`',
             errors: [
-                { start: 0, end: 40, error: new BBTagRuntimeError('Invalid Emojis') }
+                { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
@@ -161,7 +161,7 @@ await runSubtagTests({
             code: '{reactlist;92384982642323432343;<:fakeemote:192612896213677963>}',
             expected: '`Unknown Emoji: <:fakeemote:192612896213677963>`',
             errors: [
-                { start: 0, end: 64, error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
+                { error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
             ],
             postSetup(bbctx, ctx) {
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({

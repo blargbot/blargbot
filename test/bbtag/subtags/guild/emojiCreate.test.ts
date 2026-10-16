@@ -14,8 +14,7 @@ await runSubtagTests({
     argCountBounds: { min: 2, max: 3 },
     names: ['emojiCreate'],
     setup(ctx) {
-        ctx.addMock(fetch);
-        fetch.reset();
+        ctx.adoptMock(fetch);
         ctx.roles.authorizer.permissions = DiscordPermissions.CREATE_GUILD_EXPRESSIONS.toString();
     },
     cases: [
@@ -111,13 +110,13 @@ await runSubtagTests({
                 });
             },
             postSetup(bbctx, ctx) {
-                const role = bbctx.local.message.channel.guild.roles.get(ctx.roles.other.id);
+                const role = bbctx.root.message.channel.guild.roles.get(ctx.roles.other.id);
                 if (role === undefined)
                     throw new Error('Failed to find role under test');
 
-                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '9128735617428916')).resolves([role]);
-                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, 'abc')).resolves([]);
-                ctx.util.setup(m => m.findRoles(bbctx.local.message.channel.guild, '')).resolves([]);
+                ctx.util.setup(m => m.findRoles(bbctx.root.message.channel.guild, '9128735617428916')).resolves([role]);
+                ctx.util.setup(m => m.findRoles(bbctx.root.message.channel.guild, 'abc')).resolves([]);
+                ctx.util.setup(m => m.findRoles(bbctx.root.message.channel.guild, '')).resolves([]);
             }
         },
         {
@@ -125,7 +124,7 @@ await runSubtagTests({
             subtags: [new SemiSubtag()],
             expected: '`Author cannot create emojis`',
             errors: [
-                { start: 0, end: 61, error: new BBTagRuntimeError('Author cannot create emojis') }
+                { error: new BBTagRuntimeError('Author cannot create emojis') }
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = '0';
@@ -136,7 +135,7 @@ await runSubtagTests({
             subtags: [new SemiSubtag()],
             expected: '`Name was not provided`',
             errors: [
-                { start: 0, end: 48, error: new BBTagRuntimeError('Name was not provided') }
+                { error: new BBTagRuntimeError('Name was not provided') }
             ]
         },
         {
@@ -144,7 +143,7 @@ await runSubtagTests({
             subtags: [new SemiSubtag()],
             expected: '`Image was not a buffer or a URL`',
             errors: [
-                { start: 0, end: 34, error: new BBTagRuntimeError('Image was not a buffer or a URL') }
+                { error: new BBTagRuntimeError('Image was not a buffer or a URL') }
             ]
         },
         {
@@ -152,7 +151,7 @@ await runSubtagTests({
             subtags: [new SemiSubtag()],
             expected: '`Failed to create emoji: This is an error`',
             errors: [
-                { start: 0, end: 61, error: new BBTagRuntimeError('Failed to create emoji: This is an error') }
+                { error: new BBTagRuntimeError('Failed to create emoji: This is an error') }
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(0, 'This is an error');
@@ -168,7 +167,7 @@ await runSubtagTests({
             subtags: [new SemiSubtag()],
             expected: '`Failed to create emoji: And this is line 2`',
             errors: [
-                { start: 0, end: 61, error: new BBTagRuntimeError('Failed to create emoji: And this is line 2') }
+                { error: new BBTagRuntimeError('Failed to create emoji: And this is line 2') }
             ],
             setup(ctx) {
                 const error = ctx.createRESTError(0, 'This is an error\nAnd this is line 2');

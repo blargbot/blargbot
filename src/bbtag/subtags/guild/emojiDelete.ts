@@ -31,7 +31,7 @@ export class EmojiDeleteSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Author cannot delete emojis');
 
         try {
-            await context.local.message.channel.guild.deleteEmoji(emojiId, context.auditReason());
+            await context.root.message.channel.guild.deleteEmoji(emojiId, context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof eris.DiscordRESTError))
                 throw err;

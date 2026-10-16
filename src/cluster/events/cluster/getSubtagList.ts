@@ -12,7 +12,7 @@ export class ClusterGetSubtagListHandler extends ClusterEventService<'getSubtagL
     public async getSubtagList(): Promise<SubtagListResult> {
         const tags: SubtagListResult = {};
         const formatter = await this.cluster.util.getFormatter();
-        for (const t of this.cluster.bbtag.subtags.values()) {
+        for (const t of this.cluster.bbtag.subtags) {
             if (t.hidden)
                 continue;
             tags[t.name] = {

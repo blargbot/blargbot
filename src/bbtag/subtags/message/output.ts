@@ -55,8 +55,8 @@ export class OutputSubtag extends CompiledSubtag {
         if (replace !== undefined)
             text = text.replace(replace.regex, replace.with);
 
-        const subtag = context.engine.subtags.get('output');
-        if (!(subtag instanceof OutputSubtag))
+        const subtag = context.engine.getSubtag(OutputSubtag);
+        if (subtag === undefined)
             throw new Error('The output subtag isnt installed.');
 
         return await subtag.#sendOutput(context, text);

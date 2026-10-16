@@ -122,7 +122,7 @@ await runSubtagTests({
             code: '{filter;a;{get;arr1};true}',
             expected: '["this","`Too many loops`"]',
             errors: [
-                { start: 0, end: 26, error: new BBTagRuntimeError('Too many loops') }
+                { error: new BBTagRuntimeError('Too many loops') }
             ],
             subtags: [new GetSubtag()],
             setup(ctx) {

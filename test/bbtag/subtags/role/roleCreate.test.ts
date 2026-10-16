@@ -16,7 +16,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.local.message.channel.guild, SubtagTestContext.createApiRole({
+                const expected = ctx.createRole(bbctx.root.message.channel.guild, SubtagTestContext.createApiRole({
                     id: '982374624329846'
                 }));
 
@@ -33,7 +33,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;red}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.local.message.channel.guild, SubtagTestContext.createApiRole({
+                const expected = ctx.createRole(bbctx.root.message.channel.guild, SubtagTestContext.createApiRole({
                     id: '982374624329846'
                 }));
 
@@ -50,7 +50,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;;238764}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.local.message.channel.guild, SubtagTestContext.createApiRole({
+                const expected = ctx.createRole(bbctx.root.message.channel.guild, SubtagTestContext.createApiRole({
                     id: '982374624329846'
                 }));
 
@@ -67,7 +67,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;blue;238764}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.local.message.channel.guild, SubtagTestContext.createApiRole({
+                const expected = ctx.createRole(bbctx.root.message.channel.guild, SubtagTestContext.createApiRole({
                     id: '982374624329846'
                 }));
 
@@ -84,7 +84,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;blue;238764}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.local.message.channel.guild, SubtagTestContext.createApiRole({
+                const expected = ctx.createRole(bbctx.root.message.channel.guild, SubtagTestContext.createApiRole({
                     id: '982374624329846'
                 }));
 
@@ -101,7 +101,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;;;true}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.local.message.channel.guild, SubtagTestContext.createApiRole({
+                const expected = ctx.createRole(bbctx.root.message.channel.guild, SubtagTestContext.createApiRole({
                     id: '982374624329846'
                 }));
 
@@ -118,7 +118,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;;;false}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.local.message.channel.guild, SubtagTestContext.createApiRole({
+                const expected = ctx.createRole(bbctx.root.message.channel.guild, SubtagTestContext.createApiRole({
                     id: '982374624329846'
                 }));
 
@@ -135,7 +135,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;;;;true}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.local.message.channel.guild, SubtagTestContext.createApiRole({
+                const expected = ctx.createRole(bbctx.root.message.channel.guild, SubtagTestContext.createApiRole({
                     id: '982374624329846'
                 }));
 
@@ -152,7 +152,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;;;;false}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.local.message.channel.guild, SubtagTestContext.createApiRole({
+                const expected = ctx.createRole(bbctx.root.message.channel.guild, SubtagTestContext.createApiRole({
                     id: '982374624329846'
                 }));
 
@@ -169,7 +169,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '982374624329846',
             postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.local.message.channel.guild, SubtagTestContext.createApiRole({
+                const expected = ctx.createRole(bbctx.root.message.channel.guild, SubtagTestContext.createApiRole({
                     id: '982374624329846'
                 }));
 
@@ -186,7 +186,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '`Author cannot create roles`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Author cannot create roles') }
+                { error: new BBTagRuntimeError('Author cannot create roles') }
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = (
@@ -200,14 +200,14 @@ await runSubtagTests({
             code: '{rolecreate;My role name;red;abc;true;true}',
             expected: '`Permission not a number`',
             errors: [
-                { start: 0, end: 43, error: new BBTagRuntimeError('Permission not a number', '"abc" is not a number') }
+                { error: new BBTagRuntimeError('Permission not a number', '"abc" is not a number') }
             ]
         },
         {
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '`Author missing requested permissions`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Author missing requested permissions') }
+                { error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
                 ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
@@ -217,7 +217,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '`Failed to create role: no perms`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Test REST error') }
+                { error: new BBTagRuntimeError('Failed to create role: no perms', 'Test REST error') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
@@ -234,7 +234,7 @@ await runSubtagTests({
             code: '{rolecreate;My role name;red;3297864;true;true}',
             expected: '`Failed to create role: no perms`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Some other error message') }
+                { error: new BBTagRuntimeError('Failed to create role: no perms', 'Some other error message') }
             ],
             setup(ctx) {
                 const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');

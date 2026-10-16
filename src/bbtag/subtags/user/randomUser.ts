@@ -4,11 +4,13 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { ListGuildMembersThunk } from '../guild/guildMembers.js';
 
 const tag = templates.subtags.randomUser;
 
 export class RandomUserSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #listGuildMembers: ListGuildMembersThunk;
+    public constructor({ listGuildMembers }: { listGuildMembers: ListGuildMembersThunk; }) {
         super({
             name: 'randomUser',
             aliases: ['randUser'],
@@ -24,10 +26,11 @@ export class RandomUserSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#listGuildMembers = listGuildMembers;
     }
 
     public async randomUser(context: BBTagContext): Promise<string> {
-        await context.engine.util.ensureMemberCache(context.local.message.channel.guild);
-        return random.pick(context.local.message.channel.guild.members.values()).id;
+        const userIds = await this.#listGuildMembers(context.root.guildId);
+        return random.pick(userIds);
     }
 }

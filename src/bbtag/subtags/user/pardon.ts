@@ -8,8 +8,21 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.pardon;
 
+export interface PardonOptions {
+    readonly guildId: string;
+    readonly targetId: string;
+    readonly moderatorId: string;
+    readonly count: number;
+    readonly reason: string;
+}
+
+export interface PardonThunk {
+    (options: PardonOptions): Promise<number>;
+}
+
 export class PardonSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #pardon: PardonThunk;
+    public constructor({ pardon }: { pardon: PardonThunk; }) {
         super({
             name: 'pardon',
             category: SubtagType.USER,
@@ -33,6 +46,7 @@ export class PardonSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#pardon = pardon;
     }
 
     public async pardon(
@@ -49,6 +63,12 @@ export class PardonSubtag extends CompiledSubtag {
         if (count === undefined)
             throw new NotANumberError(countStr);
 
-        return await context.engine.util.pardon(member, context.local.message.author, count, reason === '' ? 'Tag Pardon' : reason);
+        return await this.#pardon({
+            guildId: context.root.guildId,
+            targetId: member.id,
+            moderatorId: context.root.message.author.id,
+            count,
+            reason: reason !== '' ? reason : 'Tag Pardon'
+        });
     }
 }

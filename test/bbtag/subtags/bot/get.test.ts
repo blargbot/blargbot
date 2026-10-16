@@ -41,7 +41,7 @@ await runSubtagTests({
             code: '{get;*myVariableName;abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 25, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ],
             async postSetup(ctx) {
                 await ctx.root.variables.set('*myVariableName', [1, 2, 3]);
@@ -51,7 +51,7 @@ await runSubtagTests({
             code: '{get;*myVariableName;4}',
             expected: '`Index out of range`',
             errors: [
-                { start: 0, end: 23, error: new BBTagRuntimeError('Index out of range') }
+                { error: new BBTagRuntimeError('Index out of range') }
             ],
             async postSetup(ctx) {
                 await ctx.root.variables.set('*myVariableName', [1, 2, 3]);
@@ -61,7 +61,7 @@ await runSubtagTests({
             code: '{get;*myVariableName;-1}',
             expected: '`Index out of range`',
             errors: [
-                { start: 0, end: 24, error: new BBTagRuntimeError('Index out of range') }
+                { error: new BBTagRuntimeError('Index out of range') }
             ],
             async postSetup(ctx) {
                 await ctx.root.variables.set('*myVariableName', [1, 2, 3]);

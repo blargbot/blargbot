@@ -1,14 +1,26 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
-import { ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags';
+import type { IsUserStaffThunk } from '@blargbot/bbtag/subtags';
+import { IsStaffSubtag, ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags';
+import { Mock } from '@blargbot/test-util';
 import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
+const isUserStaff = new Mock<IsUserStaffThunk>({ id: 'isUserStaff', callable: true });
+
 await runSubtagTests({
     subtag: new ReactionRemoveAllSubtag(),
     argCountBounds: { min: 1, max: 2 },
     names: ['reactionRemoveAll', 'reactRemoveAll', 'removeReactAll'],
+    otherSubtags: [
+        new IsStaffSubtag({
+            isUserStaff: isUserStaff.instance
+        })
+    ],
+    setup(ctx) {
+        ctx.adoptMock(isUserStaff);
+    },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
@@ -29,7 +41,7 @@ await runSubtagTests({
                     title: 'User is staff',
                     expected: '',
                     setup(channel, message, ctx) {
-                        ctx.isStaff = true;
+                        isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(true).mustHappen(1);
                         ctx.roles.bot.permissions = eris.Constants.Permissions.manageMessages.toString();
                         ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).resolves(undefined);
                     }
@@ -38,7 +50,6 @@ await runSubtagTests({
                     title: 'User is not staff, but the message is owned',
                     expected: '',
                     setup(channel, message, ctx) {
-                        ctx.isStaff = false;
                         ctx.roles.bot.permissions = eris.Constants.Permissions.manageMessages.toString();
                         ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).resolves(undefined);
                     },
@@ -51,7 +62,7 @@ await runSubtagTests({
                     expected: '`Author must be staff to modify unrelated messages`',
                     error: new BBTagRuntimeError('Author must be staff to modify unrelated messages'),
                     setup(_, __, ctx) {
-                        ctx.isStaff = false;
+                        isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(false).mustHappen(1);
                         ctx.roles.bot.permissions = eris.Constants.Permissions.manageMessages.toString();
                     }
                 }

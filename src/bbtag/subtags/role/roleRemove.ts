@@ -24,7 +24,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [role]) => this.removeRole(ctx, role.value, ctx.local.message.author.id, false)
+                    execute: (ctx, [role]) => this.removeRole(ctx, role.value, ctx.root.message.author.id, false)
                 },
                 {
                     parameters: ['role', 'user', 'quiet?'],
@@ -58,7 +58,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
         }
 
         const roleStrs = bbtag.tagArray.deserialize(roleStr)?.v.filter(guard.isTypeOf('string', 'number')) ?? [roleStr];
-        const roles = roleStrs.map(role => context.local.message.channel.guild.roles.get(role)).filter((r): r is Exclude<typeof r, undefined> => r !== undefined);
+        const roles = roleStrs.map(role => context.root.message.channel.guild.roles.get(role)).filter((r): r is Exclude<typeof r, undefined> => r !== undefined);
 
         if (roles.length === 0)
             throw new RoleNotFoundError(roleStr);

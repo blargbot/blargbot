@@ -29,7 +29,7 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
         code: options.generateCode('unknown role'),
         expected: `\`${notFound('unknown role').message}\``,
         errors: [
-            { start: 0, end: options.generateCode('unknown role').length, error: notFound('unknown role') }
+            { error: notFound('unknown role') }
         ],
         setup(ctx) {
             ctx.util.setup((m, $) => m.findRoles($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown role'))
@@ -43,7 +43,7 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
             code: options.generateCode('unknown role', ''),
             expected: `\`${notFound('unknown role').message}\``,
             errors: [
-                { start: 0, end: options.generateCode('unknown role', '').length, error: notFound('unknown role') }
+                { error: notFound('unknown role') }
             ],
             setup(ctx) {
                 ctx.util.setup((m, $) => m.findRoles($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown role'))
@@ -55,7 +55,7 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
             code: options.generateCode('unknown role', 'q'),
             expected: options.quiet ?? `\`${notFound('unknown role').message}\``,
             errors: [
-                { start: 0, end: options.generateCode('unknown role', 'q').length, error: notFound('unknown role').withDisplay(options.quiet) }
+                { error: notFound('unknown role').withDisplay(options.quiet) }
             ],
             setup(ctx) {
                 ctx.util.setup((m, $) => m.findRoles($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown role'))
@@ -90,12 +90,12 @@ function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase
         code,
         title: testCase.title,
         expected: testCase.expected,
-        errors: testCase.error === undefined ? [] : [{ start: 0, end: code.length, error: testCase.error }],
+        errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
             testCase.setup?.(ctx.roles[roleKey], ctx);
         },
         postSetup(bbctx, ctx) {
-            const role = bbctx.local.message.channel.guild.roles.get(ctx.roles[roleKey].id);
+            const role = bbctx.root.message.channel.guild.roles.get(ctx.roles[roleKey].id);
             if (role === undefined)
                 throw new Error('Cannot find the role under test');
             if (args[0] !== undefined && args[0] !== '') {
@@ -108,7 +108,7 @@ function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase
         assert(bbctx, result, ctx) {
             if (testCase.assert === undefined)
                 return;
-            const role = bbctx.local.message.channel.guild.roles.get(ctx.roles[roleKey].id);
+            const role = bbctx.root.message.channel.guild.roles.get(ctx.roles[roleKey].id);
             if (role === undefined)
                 throw new Error('Cannot find the role under test');
             testCase.assert(result, role, bbctx, ctx);

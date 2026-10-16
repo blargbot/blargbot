@@ -21,7 +21,7 @@ await runSubtagTests({
             expected: '`No valid input given`',
             errors: [
                 { start: 11, end: 17, error: new MarkerError('eval', 11) },
-                { start: 0, end: 18, error: new BBTagRuntimeError('No valid input given') }
+                { error: new BBTagRuntimeError('No valid input given') }
             ]
         }
     ]

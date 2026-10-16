@@ -48,14 +48,14 @@ await runSubtagTests({
             code: '{func.test}',
             expected: '`Unknown subtag func.test`',
             errors: [
-                { start: 0, end: 11, error: new UnknownSubtagError('func.test') }
+                { error: new UnknownSubtagError('func.test') }
             ]
         },
         {
             code: '{func.test}',
             expected: '`Terminated recursive tag after 200 execs.`',
             errors: [
-                { start: 0, end: 11, error: new SubtagStackOverflowError(200) }
+                { error: new SubtagStackOverflowError(200) }
             ],
             postSetup(ctx) {
                 ctx.root.recursion.depth = 200;

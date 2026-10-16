@@ -15,7 +15,7 @@ await runSubtagTests({
             code: '{slice;abc;0}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 13, error: new NotAnArrayError('abc') }
+                { error: new NotAnArrayError('abc') }
             ]
         },
         {
@@ -38,14 +38,14 @@ await runSubtagTests({
             code: '{slice;[1,2,3,4];abc;3}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 23, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{slice;[1,2,3,4];1;def}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 23, error: new NotANumberError('def') }
+                { error: new NotANumberError('def') }
             ]
         },
         {

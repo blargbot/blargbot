@@ -14,7 +14,7 @@ await runSubtagTests({
             code: '{uridecode;%E0%A4%A}',
             expected: '`URI malformed`',
             errors: [
-                { start: 0, end: 20, error: new BBTagRuntimeError('URI malformed') }
+                { error: new BBTagRuntimeError('URI malformed') }
             ]
         }
     ]

@@ -42,7 +42,7 @@ await runSubtagTests({
             expected: '`Cannot read property to of undefined`',
             subtags: [new JsonSubtag()],
             errors: [
-                { start: 0, end: 41, error: new BBTagRuntimeError('Cannot read property to of undefined') }
+                { error: new BBTagRuntimeError('Cannot read property to of undefined') }
             ]
         }
     ]

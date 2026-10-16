@@ -13,8 +13,7 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: 1 },
     names: ['dump'],
     setup(ctx) {
-        ctx.addMock(generateDumpLink);
-        generateDumpLink.reset();
+        ctx.adoptMock(generateDumpLink);
     },
     cases: [
         {

@@ -5,8 +5,13 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildSize;
 
+export interface GetGuildMemberCountThunk {
+    (guildId: string): Promise<number>;
+}
+
 export class GuildSizeSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getGuildMemberCount: GetGuildMemberCountThunk;
+    public constructor({ getGuildMemberCount }: { getGuildMemberCount: GetGuildMemberCountThunk; }) {
         super({
             name: 'guildSize',
             aliases: ['inGuild'],
@@ -22,10 +27,10 @@ export class GuildSizeSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getGuildMemberCount = getGuildMemberCount;
     }
 
     public async getMemberCount(context: BBTagContext): Promise<number> {
-        await context.engine.util.ensureMemberCache(context.local.message.channel.guild);
-        return context.local.message.channel.guild.members.size;
+        return await this.#getGuildMemberCount(context.root.guildId);
     }
 }

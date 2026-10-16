@@ -65,8 +65,8 @@ export class DMSubtag extends CompiledSubtag {
             content = context.root.output.nsfw;
             embeds = undefined;
         }
-        const guild = context.local.message.channel.guild;
-        const user = context.local.message.author;
+        const guild = context.root.message.channel.guild;
+        const user = context.root.message.author;
         const cache = this.#dmCache.getOrInsertComputed(member.id, () => ({ count: 0, lock: new RwLock() }));
         const channel = await member.user.getDMChannel();
         await using _handle = await cache.lock.enterWrite();

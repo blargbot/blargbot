@@ -14,8 +14,7 @@ await runSubtagTests({
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 2, noEval: [0] } },
     names: ['timer'],
     setup(ctx, _, test) {
-        ctx.addMock(schedule);
-        schedule.reset();
+        ctx.adoptMock(schedule);
         test.mock.timers.enable({
             apis: ['Date'],
             now: new Date(now.epochMilliseconds)
@@ -24,7 +23,6 @@ await runSubtagTests({
     cases: [
         {
             code: '{timer;abc{fail};10s}',
-            retries: 3,
             expected: '',
             setup(ctx) {
                 ctx.message.id = '1560411548978495584';
@@ -144,7 +142,7 @@ await runSubtagTests({
             code: '{timer;{fail};test}',
             expected: '`Invalid duration`',
             errors: [
-                { start: 0, end: 19, error: new BBTagRuntimeError('Invalid duration') }
+                { error: new BBTagRuntimeError('Invalid duration') }
             ]
         }
     ]

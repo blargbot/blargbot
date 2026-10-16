@@ -37,7 +37,7 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
     }
 
     async #cacheTag(context: BBTagContext, name: string): Promise<GuildCommandTag | undefined> {
-        const result = await this.#getCustomCommand(context.local.message.channel.guild.id, name);
+        const result = await this.#getCustomCommand(context.root.guildId, name);
         if (result !== undefined)
             context.root.ccCache.set(name, result);
         return result;
@@ -63,7 +63,7 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
         scope.input = toBBTagInput(input, context.root.flagDefinitions);
         const expr = bbtag.parse(ccommand.content, { throw: true });
         context.engine.cooldowns.assert({
-            guildId: context.root.message.channel.guild.id,
+            guildId: context.root.guildId,
             userId: context.root.message.author.id,
             tagName: context.local.tagName,
             isCC: context.root.isCC,

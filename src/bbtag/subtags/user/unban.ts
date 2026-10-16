@@ -6,8 +6,25 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.unban;
 
+export interface UnbanUserOptions {
+    readonly guildId: string;
+    readonly targetId: string;
+    readonly moderatorId: string;
+    readonly authorizerId: string;
+    readonly reason: string;
+}
+
+export type UnbanUserResult =
+    | { success: true; }
+    | { success: false; reason: 'bot' | 'authorizer' | 'notBanned'; };
+
+export interface UnbanUserThunk {
+    (options: UnbanUserOptions): Promise<UnbanUserResult>;
+}
+
 export class UnbanSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #unbanUser: UnbanUserThunk;
+    public constructor({ unbanUser }: { unbanUser: UnbanUserThunk; }) {
         super({
             name: 'unban',
             category: SubtagType.USER,
@@ -30,6 +47,7 @@ export class UnbanSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#unbanUser = unbanUser;
     }
 
     public async unbanUser(
@@ -46,14 +64,25 @@ export class UnbanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Unban';
 
-        const authorizer = noPerms ? context.root.authorizer?.user ?? context.local.message.author : context.local.message.author;
-        const result = await context.engine.util.unban(context.local.message.channel.guild, user, context.local.message.author, authorizer, reason);
-
-        switch (result) {
-            case 'success': return true;
-            case 'moderatorNoPerms': throw new BBTagRuntimeError('User has no permissions');
-            case 'noPerms': throw new BBTagRuntimeError('Bot has no permissions');
-            case 'notBanned': return false;
+        const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
+        const result = await this.#unbanUser({
+            guildId: context.root.guildId,
+            targetId: user.id,
+            moderatorId: context.root.message.author.id,
+            authorizerId: authorizer.id,
+            reason
+        });
+        if (result.success)
+            return true;
+        switch (result.reason) {
+            case 'notBanned':
+                return false;
+            case 'bot':
+                throw new BBTagRuntimeError('Bot has no permissions');
+            case 'authorizer':
+                throw new BBTagRuntimeError('User has no permissions');
+            default:
+                throw new BBTagRuntimeError('Unban failed');
         }
     }
 }

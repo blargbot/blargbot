@@ -15,14 +15,14 @@ await runSubtagTests({
             code: '{color;}',
             expected: '`Invalid color`',
             errors: [
-                { start: 0, end: 8, error: new BBTagRuntimeError('Invalid color', 'value was empty') }
+                { error: new BBTagRuntimeError('Invalid color', 'value was empty') }
             ]
         },
         {
             code: '{color;_myVariable}',
             expected: '`Invalid color`',
             errors: [
-                { start: 0, end: 19, error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
+                { error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
             ]
         },
         {
@@ -30,7 +30,7 @@ await runSubtagTests({
             expected: '`Invalid color`',
             setup(ctx) { ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 'abc'); },
             errors: [
-                { start: 0, end: 19, error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
+                { error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
             ]
         },
         {
@@ -64,7 +64,7 @@ await runSubtagTests({
                 { start: 7, end: 13, error: new MarkerError('eval', 7) },
                 { start: 15, end: 21, error: new MarkerError('eval', 15) },
                 { start: 22, end: 28, error: new MarkerError('eval', 22) },
-                { start: 0, end: 32, error: new BBTagRuntimeError('Invalid input method', '"cba" is not valid') }
+                { error: new BBTagRuntimeError('Invalid input method', '"cba" is not valid') }
             ]
         },
         {
@@ -74,7 +74,7 @@ await runSubtagTests({
                 { start: 7, end: 13, error: new MarkerError('eval', 7) },
                 { start: 15, end: 21, error: new MarkerError('eval', 15) },
                 { start: 25, end: 31, error: new MarkerError('eval', 25) },
-                { start: 0, end: 32, error: new BBTagRuntimeError('Invalid output method', '"abc" is not valid') }
+                { error: new BBTagRuntimeError('Invalid output method', '"abc" is not valid') }
             ]
         },
         { code: '{color;[0,0,0,0];;cmyk}', expected: 'FFFFFF' }

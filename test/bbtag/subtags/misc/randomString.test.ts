@@ -22,7 +22,7 @@ await runSubtagTests({
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 16, end: 22, error: new MarkerError('eval', 16) },
-                { start: 0, end: 24, error: new NotANumberError('a') }
+                { error: new NotANumberError('a') }
             ]
         },
         {
@@ -31,7 +31,7 @@ await runSubtagTests({
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 16, end: 22, error: new MarkerError('eval', 16) },
-                { start: 0, end: 24, error: new BBTagRuntimeError('Not enough characters') }
+                { error: new BBTagRuntimeError('Not enough characters') }
             ]
         },
         {
@@ -41,7 +41,7 @@ await runSubtagTests({
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 28, end: 34, error: new MarkerError('eval', 28) },
-                { start: 0, end: 36, error: new NotANumberError('a') }
+                { error: new NotANumberError('a') }
             ]
         }
     ]

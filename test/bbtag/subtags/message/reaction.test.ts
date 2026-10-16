@@ -12,7 +12,7 @@ await runSubtagTests({
             code: '{reaction}',
             expected: '`{reaction} can only be used inside {waitreaction}`',
             errors: [
-                { start: 0, end: 10, error: new BBTagRuntimeError('{reaction} can only be used inside {waitreaction}') }
+                { error: new BBTagRuntimeError('{reaction} can only be used inside {waitreaction}') }
             ]
         },
         {

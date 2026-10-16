@@ -16,8 +16,7 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: Infinity },
     names: ['execCustomCommand', 'execCC'],
     setup(ctx) {
-        ctx.addMock(getCustomCommand);
-        getCustomCommand.reset();
+        ctx.adoptMock(getCustomCommand);
     },
     cases: [
         {
@@ -181,7 +180,7 @@ await runSubtagTests({
             code: '{execcc;abc}',
             expected: '`CCommand not found: abc`',
             errors: [
-                { start: 0, end: 12, error: new BBTagRuntimeError('CCommand not found: abc') }
+                { error: new BBTagRuntimeError('CCommand not found: abc') }
             ],
             setup(ctx) {
                 getCustomCommand.setup(m => m(ctx.guild.id, 'abc')).resolves(undefined).mustHappen(1);
@@ -191,7 +190,7 @@ await runSubtagTests({
             code: '{execcc;othersubtag}',
             expected: '`Cannot execcc imported tag: othersubtag`',
             errors: [
-                { start: 0, end: 20, error: new BBTagRuntimeError('Cannot execcc imported tag: othersubtag') }
+                { error: new BBTagRuntimeError('Cannot execcc imported tag: othersubtag') }
             ],
             setup(ctx) {
                 getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({
@@ -207,7 +206,7 @@ await runSubtagTests({
             code: '{execcc;otherSubtag}',
             expected: '`Terminated recursive tag after 200 execs.`',
             errors: [
-                { start: 0, end: 20, error: new SubtagStackOverflowError(200) }
+                { error: new SubtagStackOverflowError(200) }
             ],
             setup(ctx) {
                 getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({

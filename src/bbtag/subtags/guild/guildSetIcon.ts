@@ -45,7 +45,7 @@ export class GuildSetIconSubtag extends CompiledSubtag {
         }
 
         try {
-            await context.local.message.channel.guild.edit({ icon: image }, context.auditReason());
+            await context.root.message.channel.guild.edit({ icon: image }, context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof eris.DiscordRESTError))
                 throw err;

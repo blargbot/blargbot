@@ -17,7 +17,7 @@ await runSubtagTests({
             code: '{roundup;abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 13, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         }
     ]

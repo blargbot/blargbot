@@ -13,7 +13,7 @@ await runSubtagTests({
             code: '{userhasrole;}',
             expected: '`No role found`',
             errors: [
-                { start: 0, end: 14, error: new RoleNotFoundError('') }
+                { error: new RoleNotFoundError('') }
             ]
         },
         ...createGetUserPropTestCases({
@@ -115,14 +115,14 @@ await runSubtagTests({
             code: '{userhasrole;aaaaaa}',
             expected: '`No role found`',
             errors: [
-                { start: 0, end: 20, error: new RoleNotFoundError('aaaaaa') }
+                { error: new RoleNotFoundError('aaaaaa') }
             ]
         },
         {
             code: '{userhasrole;aaaaaa;;q}',
             expected: 'false',
             errors: [
-                { start: 0, end: 23, error: new RoleNotFoundError('aaaaaa').withDisplay('false') }
+                { error: new RoleNotFoundError('aaaaaa').withDisplay('false') }
             ]
         }
     ]

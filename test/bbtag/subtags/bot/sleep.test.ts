@@ -14,13 +14,12 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: 1 },
     names: ['sleep'],
     setup(ctx) {
-        ctx.addMock(sleep);
+        ctx.adoptMock(sleep);
     },
     cases: [
         {
             code: '{sleep;100ms}',
             expected: '',
-            retries: 5,
             setup() {
                 sleep.setup(m => m(100)).resolves();
             }
@@ -28,7 +27,6 @@ await runSubtagTests({
         {
             code: '{sleep;50ms}',
             expected: '',
-            retries: 5,
             setup() {
                 sleep.setup(m => m(50)).resolves();
             }
@@ -36,7 +34,6 @@ await runSubtagTests({
         {
             code: '{sleep;1s}',
             expected: '',
-            retries: 5,
             setup() {
                 sleep.setup(m => m(1000)).resolves();
             }
@@ -44,7 +41,6 @@ await runSubtagTests({
         {
             code: '{sleep;1d}',
             expected: '',
-            retries: 5,
             setup() {
                 sleep.setup(m => m(300_000)).resolves();
             }
@@ -53,7 +49,7 @@ await runSubtagTests({
             code: '{sleep;abc}',
             expected: '`Invalid duration`',
             errors: [
-                { start: 0, end: 11, error: new BBTagRuntimeError('Invalid duration') }
+                { error: new BBTagRuntimeError('Invalid duration') }
             ]
         }
     ]

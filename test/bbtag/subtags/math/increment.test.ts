@@ -59,7 +59,7 @@ await runSubtagTests({
                 Object.freeze(ctx.tagVariables);
             },
             errors: [
-                { start: 0, end: 23, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
@@ -100,7 +100,7 @@ await runSubtagTests({
                 Object.freeze(ctx.tagVariables);
             },
             errors: [
-                { start: 0, end: 27, error: new NotANumberError('xyz') }
+                { error: new NotANumberError('xyz') }
             ]
         },
         {
@@ -171,7 +171,7 @@ await runSubtagTests({
                 Object.freeze(ctx.tagVariables);
             },
             errors: [
-                { start: 0, end: 28, error: new NotABooleanError('abc') }
+                { error: new NotABooleanError('abc') }
             ]
         }
     ]

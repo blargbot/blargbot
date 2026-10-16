@@ -8,8 +8,22 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.modLog;
 
+export interface AddModLogOptions {
+    readonly guildId: string;
+    readonly action: string;
+    readonly targetId: string;
+    readonly moderatorId: string;
+    readonly reason?: string;
+    readonly color?: number;
+}
+
+export interface AddModLogThunk {
+    (options: AddModLogOptions): Promise<void>;
+}
+
 export class ModLogSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #addModLog: AddModLogThunk;
+    public constructor({ addModLog }: { addModLog: AddModLogThunk; }) {
         super({
             name: 'modLog',
             category: SubtagType.BOT,
@@ -25,6 +39,7 @@ export class ModLogSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#addModLog = addModLog;
     }
 
     public async createModLog(
@@ -42,8 +57,15 @@ export class ModLogSubtag extends CompiledSubtag {
         const color = parse.color(colorStr);
 
         //TODO no user found for this?
-        const mod = await context.queryUser(modStr) ?? context.local.message.author;
+        const mod = await context.queryUser(modStr) ?? context.root.message.author;
 
-        await context.engine.util.addModLog(context.local.message.channel.guild, action, user, mod, reason, color);
+        await this.#addModLog({
+            guildId: context.root.guildId,
+            action,
+            targetId: user.id,
+            moderatorId: mod.id,
+            reason,
+            color
+        });
     }
 }

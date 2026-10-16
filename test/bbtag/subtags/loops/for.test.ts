@@ -79,7 +79,7 @@ await runSubtagTests({
             code: '{for;index;1;<;10;{set;index;abc}xyz}',
             expected: 'xyz`Not a number`',
             errors: [
-                { start: 0, end: 37, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ],
             subtags: [new SetSubtag()],
             setup(ctx) {
@@ -98,28 +98,28 @@ await runSubtagTests({
             code: '{for;index;abc;<;10;1;{fail}}',
             expected: '`Initial must be a number`',
             errors: [
-                { start: 0, end: 29, error: new AggregateBBTagError([new BBTagRuntimeError('Initial must be a number')]) }
+                { error: new AggregateBBTagError([new BBTagRuntimeError('Initial must be a number')]) }
             ]
         },
         {
             code: '{for;index;0;abc;10;1;{fail}}',
             expected: '`Invalid operator`',
             errors: [
-                { start: 0, end: 29, error: new AggregateBBTagError([new InvalidOperatorError('abc')]) }
+                { error: new AggregateBBTagError([new InvalidOperatorError('abc')]) }
             ]
         },
         {
             code: '{for;index;0;<;abc;1;{fail}}',
             expected: '`Limit must be a number`',
             errors: [
-                { start: 0, end: 28, error: new AggregateBBTagError([new BBTagRuntimeError('Limit must be a number')]) }
+                { error: new AggregateBBTagError([new BBTagRuntimeError('Limit must be a number')]) }
             ]
         },
         {
             code: '{for;index;0;<;10;abc;{fail}}',
             expected: '`Increment must be a number`',
             errors: [
-                { start: 0, end: 29, error: new AggregateBBTagError([new BBTagRuntimeError('Increment must be a number')]) }
+                { error: new AggregateBBTagError([new BBTagRuntimeError('Increment must be a number')]) }
             ]
         },
         {
@@ -127,7 +127,7 @@ await runSubtagTests({
             expected: '`Initial must be a number, Invalid operator, Limit must be a number, Increment must be a number`',
             errors: [
                 {
-                    start: 0, end: 34, error: new AggregateBBTagError([
+                    error: new AggregateBBTagError([
                         new BBTagRuntimeError('Initial must be a number'),
                         new InvalidOperatorError('def'),
                         new BBTagRuntimeError('Limit must be a number'),
@@ -140,7 +140,7 @@ await runSubtagTests({
             code: '{for;index;0;<;10;{get;index},}',
             expected: '0,1,2,3,`Too many loops`',
             errors: [
-                { start: 0, end: 31, error: new BBTagRuntimeError('Too many loops') }
+                { error: new BBTagRuntimeError('Too many loops') }
             ],
             subtags: [new GetSubtag()],
             setup(ctx) {

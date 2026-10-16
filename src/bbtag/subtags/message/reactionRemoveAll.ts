@@ -3,6 +3,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { IsStaffSubtag } from '../user/isStaff.js';
 
 const tag = templates.subtags.reactionRemoveAll;
 
@@ -38,7 +39,7 @@ export class ReactionRemoveAllSubtag extends CompiledSubtag {
         if (!permissions.has('manageMessages'))
             throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
 
-        if (!(context.root.ownedMessageIds.has(message.id) || await context.isStaff))
+        if (!(context.root.ownedMessageIds.has(message.id) || await IsStaffSubtag.isStaff(context)))
             throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
 
         await message.removeReactions();

@@ -12,7 +12,7 @@ await runSubtagTests({
             code: '{apply;eval}',
             expected: '',
             errors: [
-                { start: 0, end: 12, error: new MarkerError('eval', 0) }
+                { error: new MarkerError('eval', 0) }
             ]
         },
         {
@@ -39,7 +39,7 @@ await runSubtagTests({
             code: '{apply;unknownsubtag}',
             expected: '`No subtag found`',
             errors: [
-                { start: 0, end: 21, error: new BBTagRuntimeError('No subtag found') }
+                { error: new BBTagRuntimeError('No subtag found') }
             ]
         }
     ]
