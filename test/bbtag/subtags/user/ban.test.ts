@@ -2,15 +2,11 @@ import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot
 import type { BanUserThunk } from '@blargbot/bbtag/subtags';
 import { BanSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
-import { type ArgumentMatchers, Mock } from '@blargbot/test-util';
+import { Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
-
-function isDuration<T>($: ArgumentMatchers<T>, ms: number): moment.Duration {
-    return $.satisfies(v => moment.isDuration(v) && v.asMilliseconds() === ms);
-}
 
 const banUser = new Mock<BanUserThunk>({ id: 'banUser', callable: true });
 
@@ -383,7 +379,7 @@ await runSubtagTests({
                     authorizerId: bbctx.local.message.author.id,
                     daysToDelete: 1,
                     reason: 'Tag Ban',
-                    unbanAfter: isDuration($, 432000000)
+                    unbanAfter: moment.duration({ days: 5 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -412,7 +408,7 @@ await runSubtagTests({
                     authorizerId: bbctx.local.message.author.id,
                     daysToDelete: 7,
                     reason: 'My custom reason',
-                    unbanAfter: isDuration($, 7200000)
+                    unbanAfter: moment.duration({ hours: 2 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -540,7 +536,7 @@ await runSubtagTests({
                     authorizerId: authorizer.id,
                     daysToDelete: 4,
                     reason: 'My custom reason',
-                    unbanAfter: isDuration($, 7230000)
+                    unbanAfter: moment.duration({ hours: 2, seconds: 30 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });

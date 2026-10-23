@@ -1,11 +1,16 @@
+import type { IsChannelNsfwThunk } from '@blargbot/bbtag/subtags';
 import { ChannelIsNsfwSubtag } from '@blargbot/bbtag/subtags';
-import type { APITextChannel } from 'discord-api-types/v9';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
+const isChannelNsfw = new Mock<IsChannelNsfwThunk>({ id: 'isChannelNsfw', callable: true });
+
 await runSubtagTests({
-    subtag: new ChannelIsNsfwSubtag(),
+    subtag: new ChannelIsNsfwSubtag({
+        isChannelNsfw: isChannelNsfw.instance
+    }),
     argCountBounds: { min: 0, max: 2 },
     names: ['channelIsNsfw', 'isNsfw'],
     cases: [
@@ -18,14 +23,20 @@ await runSubtagTests({
             cases: [
                 {
                     expected: 'true',
-                    setup(channel) {
-                        (channel as APITextChannel).nsfw = true;
+                    setup(channelId, ctx) {
+                        isChannelNsfw.setup(m => m(ctx.guild.id, channelId)).resolves(true).mustHappen(1);
                     }
                 },
                 {
                     expected: 'false',
-                    setup(channel) {
-                        (channel as APITextChannel).nsfw = false;
+                    setup(channelId, ctx) {
+                        isChannelNsfw.setup(m => m(ctx.guild.id, channelId)).resolves(false).mustHappen(1);
+                    }
+                },
+                {
+                    expected: 'false',
+                    setup(channelId, ctx) {
+                        isChannelNsfw.setup(m => m(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
                     }
                 }
             ]

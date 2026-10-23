@@ -1,13 +1,22 @@
+import { ChannelType } from '@blargbot/bbtag';
+import type { GetChannelTypeThunk } from '@blargbot/bbtag/subtags';
 import { ChannelTypeSubtag } from '@blargbot/bbtag/subtags';
-import * as eris from 'eris';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
+const getChannelType = new Mock<GetChannelTypeThunk>({ id: 'getChannelType ', callable: true });
+
 await runSubtagTests({
-    subtag: new ChannelTypeSubtag(),
+    subtag: new ChannelTypeSubtag({
+        getChannelType: getChannelType.instance
+    }),
     argCountBounds: { min: 0, max: 2 },
     names: ['channelType'],
+    setup(ctx) {
+        ctx.adoptMock(getChannelType);
+    },
     cases: [
         ...createGetChannelPropTestCases({
             quiet: '',
@@ -17,18 +26,23 @@ await runSubtagTests({
             },
             cases: Object.entries({
                 ['GUILD_TEXT']: 'text',
+                ['DM']: 'dm',
                 ['GUILD_VOICE']: 'voice',
+                ['GROUP_DM']: 'group-dm',
                 ['GUILD_CATEGORY']: 'category',
-                ['GUILD_NEWS']: 'news',
-                ['GUILD_NEWS_THREAD']: 'news-thread',
-                ['GUILD_PUBLIC_THREAD']: 'public-thread',
-                ['GUILD_PRIVATE_THREAD']: 'private-thread',
-                ['GUILD_STAGE_VOICE']: 'stage-voice'
-            }).map(([key, success]) => ({
-                title: `Channel is a ${key} (${eris.Constants.ChannelTypes[key]})`,
+                ['GUILD_ANNOUNCEMENT']: 'news',
+                ['ANNOUNCEMENT_THREAD']: 'news-thread',
+                ['PRIVATE_THREAD']: 'private-thread',
+                ['PUBLIC_THREAD']: 'public-thread',
+                ['GUILD_STAGE_VOICE']: 'stage-voice',
+                ['GUILD_DIRECTORY']: 'directory',
+                ['GUILD_FORUM']: 'forum',
+                ['GUILD_MEDIA']: 'media'
+            } satisfies Record<keyof typeof ChannelType, string>).map(([key, success]) => ({
+                title: `Channel is a ${key} (${ChannelType[key]})`,
                 expected: success,
-                setup(channel) {
-                    channel.type = eris.Constants.ChannelTypes[key];
+                setup(channelId, ctx) {
+                    getChannelType.setup(m => m(ctx.guild.id, channelId)).resolves(ChannelType[key]);
                 }
             }))
 

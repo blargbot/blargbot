@@ -1,15 +1,17 @@
-import { guard } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { ChannelType } from '../../enums.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from './channelId.js';
+import type { GetChannelTypeThunk } from './channelType.js';
 
 const tag = templates.subtags.channelIsVoice;
 
 export class ChannelIsVoiceSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getChannelType: GetChannelTypeThunk;
+    public constructor({ getChannelType }: { getChannelType: GetChannelTypeThunk; }) {
         super({
             name: 'channelIsVoice',
             aliases: ['isVoice'],
@@ -21,7 +23,7 @@ export class ChannelIsVoiceSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx) => this.isVoiceChannel(ctx, ctx.local.message.channel.id, true)
+                    execute: (ctx) => this.currentChannel(ctx)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -29,23 +31,21 @@ export class ChannelIsVoiceSubtag extends CompiledSubtag {
                     exampleCode: tag.channel.exampleCode,
                     exampleOut: tag.channel.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [channel, quiet]) => this.isVoiceChannel(ctx, channel.value, quiet.value !== '')
+                    execute: (ctx, [channel, quiet]) => this.queryChannel(ctx, channel.value, quiet.value !== '')
                 }
             ]
         });
+        this.#getChannelType = getChannelType;
     }
 
-    public async isVoiceChannel(
-        context: BBTagContext,
-        channelStr: string,
-        quiet: boolean
-    ): Promise<boolean> {
-        quiet ||= context.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined) {
-            throw new ChannelNotFoundError(channelStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
-        return guard.isVoiceChannel(channel);
+    public async currentChannel(context: BBTagContext): Promise<boolean> {
+        return channelTypes.has(await this.#getChannelType(context.root.guildId, context.local.message.channel.id));
+    }
+
+    public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<boolean> {
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
+            ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
+        return channelTypes.has(await this.#getChannelType(context.root.guildId, channelId));
     }
 }
+const channelTypes = new Set([ChannelType.GUILD_VOICE, ChannelType.GUILD_STAGE_VOICE]);

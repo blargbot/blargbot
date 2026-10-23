@@ -6,8 +6,25 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.kick;
 
+export interface KickUserOptions {
+    readonly guildId: string;
+    readonly targetId: string;
+    readonly moderatorId: string;
+    readonly authorizerId: string;
+    readonly reason: string;
+}
+
+export type KickUserResult =
+    | { success: true; }
+    | { success: false; reason: 'bot' | 'authorizer'; details?: string; };
+
+export interface KickUserThunk {
+    (options: KickUserOptions): Promise<KickUserResult>;
+}
+
 export class KickSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #kickUser: KickUserThunk;
+    public constructor({ kickUser }: { kickUser: KickUserThunk; }) {
         super({
             name: 'kick',
             category: SubtagType.USER,
@@ -31,6 +48,7 @@ export class KickSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#kickUser = kickUser;
     }
 
     public async kickMember(
@@ -47,19 +65,23 @@ export class KickSubtag extends CompiledSubtag {
             reason = 'Tag Kick';
 
         const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
-        const response = await context.engine.util.kick(member, context.root.message.author, authorizer, reason);
+        const result = await this.#kickUser({
+            guildId: context.root.guildId,
+            targetId: member.id,
+            moderatorId: context.root.message.author.id,
+            authorizerId: authorizer.id,
+            reason
+        });
+        if (result.success)
+            return 'Success';
 
-        switch (response) {
-            case 'success': //Successful
-                return 'Success'; //TODO true/false response
-            case 'noPerms': //Bot doesnt have perms
-                throw new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick users!');
-            case 'memberTooHigh': //Bot cannot kick target
-                throw new BBTagRuntimeError('Bot has no permissions', `I don't have permission to kick ${member.user.username}!`);
-            case 'moderatorNoPerms': //User doesnt have perms
-                throw new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!');
-            case 'moderatorTooLow': //User cannot kick target
-                throw new BBTagRuntimeError('User has no permissions', `You don't have permission to kick ${member.user.username}!`);
+        switch (result.reason) {
+            case 'bot':
+                throw new BBTagRuntimeError('Bot has no permissions', result.details);
+            case 'authorizer':
+                throw new BBTagRuntimeError('User has no permissions', result.details);
+            default:
+                throw new BBTagRuntimeError('Kick failed', result.details);
         }
     }
 }

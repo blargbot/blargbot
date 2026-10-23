@@ -12,7 +12,7 @@ import { BBTagRuntimeError, InternalServerError, TagCooldownError } from './erro
 import type { BBTagExpression, SubtagCall } from './language/index.js';
 import { BaseRuntimeLimit } from './limits/BaseRuntimeLimit.js';
 import { memoize } from './memoize.js';
-import type { Subtag } from './Subtag.js';
+import { Subtag } from './Subtag.js';
 import { OutputSubtag } from './subtags/index.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
 import { createTagVariableScopeProvider } from './tagVariableScopeProvider.js';
@@ -39,7 +39,14 @@ export class BBTagEngine {
     ) {
         this.cooldowns = new TagCooldownManager();
         this.#subtagInstances = new Set(dependencies.subtags);
-        this.#subtagsByClass = new Map(this.#subtagInstances.values().map(v => [v.constructor as SubtagCtor, v]));
+        this.#subtagsByClass = new Map(this.#subtagInstances.values().map(v => {
+            if (!(v instanceof Subtag))
+                throw new Error(`${String(v)} is not a Subtag`);
+            const ctor = v.constructor;
+            if (!(v instanceof ctor))
+                throw new Error(`Unable to determine the class of ${String(v)}`);
+            return [ctor as SubtagCtor, v];
+        }));
         const subtags = new Map<string, Subtag>();
         for (const subtag of this.#subtagInstances) {
             for (const name of BBTagEngine.#subtagNames(subtag)) {
@@ -56,11 +63,15 @@ export class BBTagEngine {
         return [...this.#subtagInstances];
     }
 
-    public getSubtag<T extends SubtagCtor>(type: T): InstanceType<T> | undefined
+    public getSubtag<T extends SubtagCtor>(type: T): InstanceType<T>
     public getSubtag(type: string): Subtag | undefined
     public getSubtag(type: SubtagCtor | string): Subtag | undefined {
-        if (typeof type !== 'string')
-            return this.#subtagsByClass.get(type);
+        if (typeof type !== 'string') {
+            const result = this.#subtagsByClass.get(type);
+            if (result === undefined)
+                throw new Error(`The ${type.name} subtag has not been installed.`);
+            return result;
+        }
         type = type.toLowerCase();
         return this.#subtagsByName.get(type)
             ?? this.#subtagsByName.get(`${type.split('.', 1)[0]}.`);
@@ -73,8 +84,8 @@ export class BBTagEngine {
     }
 
     public createContext(options: BBTagRuntimeInput): BBTagContext {
-        const authorizerId = options.authorizer ?? options.author ?? options.message.channel.guild.id;
-        const authorizer = options.message.channel.guild.members.get(authorizerId);
+        const authorizerId = options.authorizer ?? options.author;
+        const authorizer = authorizerId === undefined ? undefined : options.message.channel.guild.members.get(authorizerId);
         const authorizerPermissions = authorizer?.permissions ?? (options.message.channel.guild.id === authorizerId
             ? new eris.Permission(8n)
             : new eris.Permission(0n)
@@ -82,6 +93,7 @@ export class BBTagEngine {
         const context = new BBTagContext(this, {
             botId: this.discord.user.id,
             guildId: options.message.channel.guild.id,
+            guildOwnerId: options.message.channel.guild.ownerID,
             recursion: {
                 depth: 0
             },
@@ -145,7 +157,7 @@ export class BBTagEngine {
             flagDefinitions: options.flagDefinitions,
             functions: new Map(),
             queryCache: {
-                count: 0,
+                failedQueries: 0,
                 user: new Map(),
                 role: new Map(),
                 channel: new Map()
@@ -270,7 +282,7 @@ export class BBTagEngine {
                 },
                 ownedMsgs: [...root.ownedMessageIds],
                 query: {
-                    count: root.queryCache.count,
+                    count: root.queryCache.failedQueries,
                     channel: Object.fromEntries(root.queryCache.channel),
                     role: Object.fromEntries(root.queryCache.role),
                     user: Object.fromEntries(root.queryCache.user)
@@ -319,7 +331,7 @@ export class BBTagEngine {
             tagVars: obj.tagVars,
             cooldown: 0
         });
-        result.root.queryCache.count = obj.data.query.count;
+        result.root.queryCache.failedQueries = obj.data.query.count;
         Object.entries(obj.data.query.channel).forEach(x => result.root.queryCache.channel.set(...x));
         Object.entries(obj.data.query.role).forEach(x => result.root.queryCache.role.set(...x));
         Object.entries(obj.data.query.user).forEach(x => result.root.queryCache.user.set(...x));

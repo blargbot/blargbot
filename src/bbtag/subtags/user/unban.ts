@@ -16,7 +16,7 @@ export interface UnbanUserOptions {
 
 export type UnbanUserResult =
     | { success: true; }
-    | { success: false; reason: 'bot' | 'authorizer' | 'notBanned'; };
+    | { success: false; reason: 'bot' | 'authorizer' | 'notBanned'; details?: string; };
 
 export interface UnbanUserThunk {
     (options: UnbanUserOptions): Promise<UnbanUserResult>;
@@ -78,11 +78,11 @@ export class UnbanSubtag extends CompiledSubtag {
             case 'notBanned':
                 return false;
             case 'bot':
-                throw new BBTagRuntimeError('Bot has no permissions');
+                throw new BBTagRuntimeError('Bot has no permissions', result.details);
             case 'authorizer':
-                throw new BBTagRuntimeError('User has no permissions');
+                throw new BBTagRuntimeError('User has no permissions', result.details);
             default:
-                throw new BBTagRuntimeError('Unban failed');
+                throw new BBTagRuntimeError('Unban failed', result.details);
         }
     }
 }

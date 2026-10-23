@@ -1,15 +1,28 @@
-import * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { GetUserPermissionsThunk } from '../types.js';
+import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.channelDelete;
 
+export type DeleteChannelResult =
+    | { success: true; }
+    | { success: false; reason?: string; }
+
+export interface DeleteChannelThunk {
+    (guildId: string, channelId: string, auditReason: string): Promise<DeleteChannelResult>;
+}
+
 export class ChannelDeleteSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getUserPermissions: GetUserPermissionsThunk;
+    readonly #deleteChannel: DeleteChannelThunk;
+    public constructor({ getUserPermissions, deleteChannel }: {
+        deleteChannel: DeleteChannelThunk;
+        getUserPermissions: GetUserPermissionsThunk;
+    }) {
         super({
             name: 'channelDelete',
             category: SubtagType.CHANNEL,
@@ -24,28 +37,24 @@ export class ChannelDeleteSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#deleteChannel = deleteChannel;
+        this.#getUserPermissions = getUserPermissions;
     }
 
     public async deleteChannel(context: BBTagContext, channelStr: string): Promise<void> {
-        const channel = await context.queryChannel(channelStr);
+        const channelId = await ChannelIdSubtag.query(context, channelStr)
+            /**
+             * TODO change this to "No channel found" for consistency
+             * when versioning is out and about
+             */
+            ?? new BBTagRuntimeError('Channel does not exist').throw();
 
-        /**
-         * TODO change this to "No channel found" for consistency
-         * * when versioning is out and about
-         */
-        if (channel === undefined)
-            throw new BBTagRuntimeError('Channel does not exist');
-
-        if (!context.hasPermission('MANAGE_CHANNELS', channel))
+        const permissions = await this.#getUserPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId, channelId);
+        if (!permissions.hasAny('MANAGE_CHANNELS', 'ADMINISTRATOR'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
-        try {
-            await channel.delete(context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof eris.DiscordRESTError))
-                throw err;
-
-            throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);
-        }
+        const result = await this.#deleteChannel(context.root.guildId, channelId, context.auditReason());
+        if (!result.success)
+            throw new BBTagRuntimeError('Failed to edit channel: no perms', result.reason);
     }
 }

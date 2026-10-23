@@ -6,15 +6,19 @@ import { transformers, util } from '@blargbot/formatting';
 import { quickMock, runFormatTreeTests } from '@blargbot/test-util';
 
 class TestSubtag extends Subtag {
+    public name = '';
+    public aliases = [];
+    public category = SubtagType.MISC;
+    public description = undefined;
+    public deprecated = false;
+    public staff = false;
+    public hidden = false;
+    public signatures = [];
     protected executeCore: Subtag['executeCore'] = () => {
         throw new Error('Method not implemented');
     };
 }
-const subtag = (): Subtag => new TestSubtag({
-    category: SubtagType.MISC,
-    name: '',
-    signatures: []
-});
+const subtag = (): Subtag => new TestSubtag();
 
 await describe('BBTag format strings', async () => {
     await runFormatTreeTests(templates, {

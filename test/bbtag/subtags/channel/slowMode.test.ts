@@ -1,71 +1,87 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
-import { SlowModeSubtag } from '@blargbot/bbtag/subtags';
-import * as eris from 'eris';
+import type { EditChannelThunk } from '@blargbot/bbtag/subtags';
+import { ChannelIdSubtag, SlowModeSubtag } from '@blargbot/bbtag/subtags';
+import { snowflake } from '@blargbot/core';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const editChannel = new Mock<EditChannelThunk>({ id: 'editChannel', callable: true });
+const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelId' });
+
 await runSubtagTests({
-    subtag: new SlowModeSubtag(),
+    subtag: new SlowModeSubtag({
+        editChannel: editChannel.instance
+    }),
+    otherSubtags: [channelIdSubtag.instance],
     argCountBounds: { min: 0, max: 2 },
     names: ['slowMode'],
     setup(ctx) {
-        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
+        ctx.adoptMock(editChannel);
+        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
     },
     cases: [
         {
             code: '{slowmode}',
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup((m, $) => m.editChannel(ctx.channels.command.id, $({ rateLimitPerUser: 0 }), 'Command User#0000'))
-                    .resolves(ctx.createMock<eris.TextChannel>({ id: 'channel' }).instance);
+            postSetup(bbctx, ctx) {
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
+                    .resolves(ctx.channels.command.id)
+                    .mustHappen(1);
+                editChannel.setup((m, $) => m(ctx.guild.id, ctx.channels.command.id, $({ rateLimitPerUser: 0, auditReason: 'Command User#0000' })))
+                    .resolves({ success: true })
+                    .mustHappen(1);
             }
         },
         {
             code: '{slowmode;1234}',
             expected: '',
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '1234')).resolves([]);
-                ctx.discord.setup((m, $) => m.editChannel(ctx.channels.command.id, $({ rateLimitPerUser: 1234 }), 'Command User#0000'))
-                    .resolves(ctx.createMock<eris.TextChannel>({ id: 'channel' }).instance);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '1234', $({ noLookup: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
+                editChannel.setup((m, $) => m(ctx.guild.id, ctx.channels.command.id, $({ rateLimitPerUser: 1234, auditReason: 'Command User#0000' })))
+                    .resolves({ success: true })
+                    .mustHappen(1);
             }
         },
         {
             code: '{slowmode;2342543235325252345}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = bbctx.root.message.channel.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Failed to locate channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '2342543235325252345')).resolves([channel]);
-                ctx.discord.setup((m, $) => m.editChannel(channel.id, $({ rateLimitPerUser: 0 }), 'Command User#0000'))
-                    .resolves(channel);
+                const channelId = snowflake.create().toString();
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                editChannel.setup((m, $) => m(ctx.guild.id, channelId, $({ rateLimitPerUser: 0, auditReason: 'Command User#0000' })))
+                    .resolves({ success: true })
+                    .mustHappen(1);
             }
         },
         {
             code: '{slowmode;2342543235325252345;37645}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = bbctx.root.message.channel.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Failed to locate channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '2342543235325252345')).resolves([channel]);
-                ctx.discord.setup((m, $) => m.editChannel(channel.id, $({ rateLimitPerUser: 21600 }), 'Command User#0000'))
-                    .resolves(channel);
+                const channelId = snowflake.create().toString();
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                editChannel.setup((m, $) => m(ctx.guild.id, channelId, $({ rateLimitPerUser: 21600, auditReason: 'Command User#0000' })))
+                    .resolves({ success: true })
+                    .mustHappen(1);
             }
         },
         {
             code: '{slowmode;2342543235325252345;this is some random text}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = bbctx.root.message.channel.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Failed to locate channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '2342543235325252345')).resolves([channel]);
-                ctx.discord.setup((m, $) => m.editChannel(channel.id, $({ rateLimitPerUser: 0 }), 'Command User#0000'))
-                    .resolves(channel);
+                const channelId = snowflake.create().toString();
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                editChannel.setup((m, $) => m(ctx.guild.id, channelId, $({ rateLimitPerUser: 0, auditReason: 'Command User#0000' })))
+                    .resolves({ success: true })
+                    .mustHappen(1);
             }
         },
         {
@@ -75,13 +91,13 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
-                const channel = bbctx.root.message.channel.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Failed to locate channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '2342543235325252345')).resolves([channel]);
-                ctx.discord.setup((m, $) => m.editChannel(channel.id, $({ rateLimitPerUser: 0 }), 'Command User#0000')).rejects(err);
+                const channelId = snowflake.create().toString();
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                editChannel.setup((m, $) => m(ctx.guild.id, channelId, $({ rateLimitPerUser: 0, auditReason: 'Command User#0000' })))
+                    .resolves({ success: false, reason: 'Test REST error' })
+                    .mustHappen(1);
             }
         },
         {
@@ -91,13 +107,13 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Missing required permissions', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                const channel = bbctx.root.message.channel.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Failed to locate channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '2342543235325252345')).resolves([channel]);
-                ctx.discord.setup((m, $) => m.editChannel(channel.id, $({ rateLimitPerUser: 0 }), 'Command User#0000')).rejects(err);
+                const channelId = snowflake.create().toString();
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                editChannel.setup((m, $) => m(ctx.guild.id, channelId, $({ rateLimitPerUser: 0, auditReason: 'Command User#0000' })))
+                    .resolves({ success: false, reason: 'Some other error message' })
+                    .mustHappen(1);
             }
         }
     ]

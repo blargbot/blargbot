@@ -54,9 +54,11 @@ export class BBTagContext {
         this.#local = root;
     }
 
-    public permissionIn(channel: eris.KnownGuildChannel): DiscordPermissions {
+    public permissionIn(channel: eris.KnownGuildChannel | string): DiscordPermissions {
         if (this.root.authorizer === undefined)
             return DiscordPermissions.NONE;
+        if (typeof channel === 'string')
+            channel = this.engine.discord.getChannel(channel) as eris.KnownGuildChannel;
         const permissions = channel.permissionsOf(this.root.authorizer);
         if (permissions.has('administrator'))
             return new DiscordPermissions(~0n);
@@ -94,7 +96,7 @@ export class BBTagContext {
         return scope;
     }
 
-    public hasPermission(permission: bigint | DiscordPermissionName, channel?: eris.KnownGuildChannel): boolean {
+    public hasPermission(permission: bigint | DiscordPermissionName, channel?: eris.KnownGuildChannel | string): boolean {
         const target = channel === undefined
             ? this.root.authorizerPermissions
             : this.permissionIn(channel);
@@ -227,7 +229,7 @@ export class BBTagContext {
 
         const noLookup = options.noLookup === true || this.local.quiet === true;
         const entities = await find(queryString);
-        if (entities.length <= 1 || this.root.queryCache.count >= 5 || noLookup)
+        if (entities.length <= 1 || this.root.queryCache.failedQueries >= 5 || noLookup)
             return entities.length === 1 ? entities[0] ?? undefined : undefined;
 
         const result = await query({ context: this.local.message.channel, actors: this.root.message.author.id, choices: entities, filter: queryString });
@@ -237,12 +239,12 @@ export class BBTagContext {
             case 'NO_OPTIONS':
                 if (!noErrors) {
                     await this.engine.util.send(this.local.message.channel, { content: `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.root.isCC ? 'custom command' : 'tag'} \`${this.root.tagName}\`.` });
-                    this.root.queryCache.count++;
+                    this.root.queryCache.failedQueries++;
                 }
                 return undefined;
             case 'TIMED_OUT':
             case 'CANCELLED':
-                this.root.queryCache.count = Infinity;
+                this.root.queryCache.failedQueries = Infinity;
                 if (!noErrors)
                     await this.engine.util.send(this.local.message.channel, { content: `${type} query canceled in ${this.root.isCC ? 'custom command' : 'tag'} \`${this.root.tagName}\`.` });
                 return undefined;

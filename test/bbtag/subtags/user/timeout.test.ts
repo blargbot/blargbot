@@ -1,19 +1,24 @@
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag';
+import type { SetUserTimeoutThunk } from '@blargbot/bbtag/subtags';
 import { TimeoutSubtag } from '@blargbot/bbtag/subtags';
-import type { ArgumentMatchers } from '@blargbot/test-util';
+import { snowflake } from '@blargbot/core';
+import { Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-function isDuration<T>($: ArgumentMatchers<T>, ms: number): moment.Duration {
-    return $.satisfies(v => moment.isDuration(v) && v.asMilliseconds() === ms);
-}
+const setUserTimeout = new Mock<SetUserTimeoutThunk>({ id: 'setUserTimeout', callable: true });
 
 await runSubtagTests({
-    subtag: new TimeoutSubtag(),
+    subtag: new TimeoutSubtag({
+        setUserTimeout: setUserTimeout.instance
+    }),
     argCountBounds: { min: 2, max: 4 },
     names: ['timeout'],
+    setup(ctx) {
+        ctx.adoptMock(setUserTimeout);
+    },
     cases: [
         {
             code: '{timeout;other user;abc}',
@@ -39,14 +44,23 @@ await runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
 
                 ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                setUserTimeout.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Timeout',
+                    duration: moment.duration({ seconds: 1 })
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -54,14 +68,23 @@ await runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
 
                 ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 2505600000), 'Tag Timeout'))
+                setUserTimeout.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Timeout',
+                    duration: moment.duration({ days: 29 })
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -79,6 +102,8 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 user.setup(u => u.username).returns('other user');
                 member.setup(m => m.user).returns(user.instance);
@@ -87,9 +112,16 @@ await runSubtagTests({
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup(m => m.clearTimeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, 'Tag Timeout'))
+                setUserTimeout.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Timeout',
+                    duration: moment.duration({ seconds: 0 })
+                })))
                     .mustHappen(1)
-                    .resolves('notTimedOut');
+                    .resolves({ success: false, reason: 'noChange', detail: 'other user is not timed out!' });
             }
         },
         {
@@ -100,6 +132,8 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 user.setup(u => u.username).returns('other user');
                 member.setup(m => m.user).returns(user.instance);
@@ -108,9 +142,16 @@ await runSubtagTests({
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                setUserTimeout.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Timeout',
+                    duration: moment.duration({ seconds: 1 })
+                })))
                     .mustHappen(1)
-                    .resolves('alreadyTimedOut');
+                    .resolves({ success: false, reason: 'noChange', detail: 'other user is already timed out!' });
             }
         },
         {
@@ -121,14 +162,23 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
 
                 ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                setUserTimeout.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Timeout',
+                    duration: moment.duration({ seconds: 1 })
+                })))
                     .mustHappen(1)
-                    .resolves('noPerms');
+                    .resolves({ success: false, reason: 'bot', detail: 'I don\'t have permission to (remove) time out (from) users!' });
             }
         },
         {
@@ -139,6 +189,8 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 user.setup(u => u.username).returns('other user');
                 member.setup(m => m.user).returns(user.instance);
@@ -147,9 +199,16 @@ await runSubtagTests({
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                setUserTimeout.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Timeout',
+                    duration: moment.duration({ seconds: 1 })
+                })))
                     .mustHappen(1)
-                    .resolves('memberTooHigh');
+                    .resolves({ success: false, reason: 'bot', detail: 'I don\'t have permission to (remove) time out (from) other user!' });
             }
         },
         {
@@ -160,14 +219,23 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
 
                 ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                setUserTimeout.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Timeout',
+                    duration: moment.duration({ seconds: 1 })
+                })))
                     .mustHappen(1)
-                    .resolves('moderatorNoPerms');
+                    .resolves({ success: false, reason: 'authorizer', detail: 'You don\'t have permission to (remove) time out (from) users!' });
             }
         },
         {
@@ -178,6 +246,8 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 user.setup(u => u.username).returns('other user');
                 member.setup(m => m.user).returns(user.instance);
@@ -186,9 +256,16 @@ await runSubtagTests({
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup((m, $) => m.timeout(member.instance, bbctx.local.message.author, bbctx.local.message.author, isDuration($, 1000), 'Tag Timeout'))
+                setUserTimeout.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Timeout',
+                    duration: moment.duration({ seconds: 1 })
+                })))
                     .mustHappen(1)
-                    .resolves('moderatorTooLow');
+                    .resolves({ success: false, reason: 'authorizer', detail: 'You don\'t have permission to (remove) time out (from) other user!' });
             }
         }
     ]

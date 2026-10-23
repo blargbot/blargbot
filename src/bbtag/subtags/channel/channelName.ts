@@ -3,11 +3,17 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.channelName;
 
+export interface GetChannelNameThunk {
+    (guildId: string, channelId: string): Promise<string | undefined>;
+}
+
 export class ChannelNameSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getChannelName: GetChannelNameThunk;
+    public constructor({ getChannelName }: { getChannelName: GetChannelNameThunk; }) {
         super({
             name: 'channelName',
             aliases: ['categoryName'],
@@ -19,7 +25,7 @@ export class ChannelNameSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'string',
-                    execute: (ctx) => this.getChannelName(ctx, ctx.local.message.channel.id, true)
+                    execute: (ctx) => this.currentChannel(ctx)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -27,23 +33,20 @@ export class ChannelNameSubtag extends CompiledSubtag {
                     exampleCode: tag.channel.exampleCode,
                     exampleOut: tag.channel.exampleOut,
                     returns: 'string',
-                    execute: (ctx, [channel, quiet]) => this.getChannelName(ctx, channel.value, quiet.value !== '')
+                    execute: (ctx, [channel, quiet]) => this.queryChannel(ctx, channel.value, quiet.value !== '')
                 }
             ]
         });
+        this.#getChannelName = getChannelName;
     }
 
-    public async getChannelName(
-        context: BBTagContext,
-        channelStr: string,
-        quiet: boolean
-    ): Promise<string> {
-        quiet ||= context.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined) {
-            throw new ChannelNotFoundError(channelStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
-        return channel.name;
+    public async currentChannel(context: BBTagContext): Promise<string> {
+        return await this.#getChannelName(context.root.guildId, context.local.message.channel.id) ?? 'unknown';
+    }
+
+    public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string> {
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
+            ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
+        return await this.#getChannelName(context.root.guildId, channelId) ?? 'unknown';
     }
 }

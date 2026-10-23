@@ -1,7 +1,7 @@
 import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag';
 import { ChannelNotFoundError } from '@blargbot/bbtag';
-import type { APIChannel } from 'discord-api-types/v9';
-import type * as eris from 'eris';
+import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
+import { Mock } from '@blargbot/test-util';
 
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
@@ -30,16 +30,21 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
     }
 
     const notFound = options.notFound ?? (c => new ChannelNotFoundError(c));
+    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
 
     yield {
         title: 'Channel not found',
         code: options.generateCode('12345678998765432'),
         expected: `\`${notFound('12345678998765432').message}\``,
+        subtags: [channelIdSubtag.instance],
         errors: [
             { error: notFound('12345678998765432') }
         ],
-        postSetup(bbctx, ctx) {
-            ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12345678998765432')).resolves([]);
+        setup(ctx) {
+            ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+        },
+        postSetup(bbctx) {
+            channelIdSubtag.setup((m, $) => m.query(bbctx, '12345678998765432', $(options.quiet === false ? undefined : { noLookup: false }))).resolves(undefined);
         }
     };
     if (options.quiet !== false) {
@@ -47,17 +52,21 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
             title: 'Channel not found but quiet',
             code: options.generateCode('12345678998765432', 'q'),
             expected: options.quiet ?? `\`${notFound('12345678998765432').message}\``,
+            subtags: [channelIdSubtag.instance],
             errors: [
                 { error: notFound('12345678998765432').withDisplay(options.quiet) }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '12345678998765432')).resolves([]);
+            setup(ctx) {
+                ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+            },
+            postSetup(bbctx) {
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '12345678998765432', $({ noLookup: true }))).resolves(undefined);
             }
         };
     }
 }
 
-interface GetChannelPropTestData {
+export interface GetChannelPropTestData {
     cases: GetChannelPropTestCase[];
     includeNoArgs?: boolean;
     quiet?: string | false;
@@ -65,51 +74,48 @@ interface GetChannelPropTestData {
     notFound?: (channelStr: string) => BBTagRuntimeError;
 }
 
-interface GetChannelPropTestCase {
+export interface GetChannelPropTestCase {
     title?: string;
     expected: SubtagTestCase['expected'];
+    channelId?: string;
     error?: BBTagRuntimeError;
     retries?: number;
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, quietStr?: string]) => string;
-    setup?: (channel: APIChannel, context: SubtagTestContext) => void;
-    postSetup?: (channel: eris.KnownGuildChannel, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, channel: eris.KnownGuildChannel, context: BBTagContext, test: SubtagTestContext) => void;
+    setup?: (channelId: string, context: SubtagTestContext) => void;
+    postSetup?: (channelId: string, context: BBTagContext, test: SubtagTestContext) => void;
+    assert?: (result: string, channelId: string, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetChannelPropTestData, testCase: GetChannelPropTestCase, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetChannelPropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
+    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
     return {
         title: testCase.title,
         code,
         expected: testCase.expected,
         retries: testCase.retries,
+        subtags: [channelIdSubtag.instance],
         errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
             const isMessageChannel = ctx.channels[channelKey].id === ctx.message.channel_id;
             const channel = ctx.channels[channelKey];
-            testCase.setup?.(channel, ctx);
+            if (testCase.channelId !== undefined)
+                channel.id = testCase.channelId;
+            testCase.setup?.(channel.id, ctx);
             if (isMessageChannel)
                 ctx.message.channel_id = channel.id;
+            ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+
         },
         postSetup(bbctx, ctx) {
-            const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels[channelKey].id);
-            if (channel === undefined)
-                throw new Error('Cannot find the channel under test');
-
-            const channelQuery = args[0];
-            if (channelQuery !== undefined && channelQuery !== '')
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, channelQuery)).resolves([channel]);
-
-            testCase.postSetup?.(channel, bbctx, ctx);
+            const [channelQuery, quietStr = ''] = args;
+            if (channelQuery !== undefined)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, channelQuery, $(data.quiet === false ? undefined : { noLookup: quietStr !== '' }))).resolves(ctx.channels[channelKey].id);
+            testCase.postSetup?.(ctx.channels[channelKey].id, bbctx, ctx);
         },
         assert(bbctx, result, ctx) {
-            if (testCase.assert === undefined)
-                return;
-            const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels[channelKey].id);
-            if (channel === undefined)
-                throw new Error('Cannot find the channel under test');
-            testCase.assert(result, channel, bbctx, ctx);
+            testCase.assert?.(result, ctx.channels[channelKey].id, bbctx, ctx);
         }
     };
 }

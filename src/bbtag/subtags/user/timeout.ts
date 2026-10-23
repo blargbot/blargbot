@@ -1,4 +1,5 @@
 import { parse } from '@blargbot/core';
+import type moment from 'moment-timezone';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -8,8 +9,26 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.timeout;
 
+export interface SetUserTimeoutOptions {
+    readonly guildId: string;
+    readonly targetId: string;
+    readonly moderatorId: string;
+    readonly authorizerId: string;
+    readonly reason: string;
+    readonly duration: moment.Duration;
+}
+
+export type SetUserTimeoutResult =
+    | { success: true; }
+    | { success: false; reason: 'bot' | 'authorizer' | 'noChange'; detail?: string; }
+
+export interface SetUserTimeoutThunk {
+    (options: SetUserTimeoutOptions): Promise<SetUserTimeoutResult>;
+}
+
 export class TimeoutSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #setUserTimeout: SetUserTimeoutThunk;
+    public constructor({ setUserTimeout }: { setUserTimeout: SetUserTimeoutThunk; }) {
         super({
             name: 'timeout',
             category: SubtagType.USER,
@@ -33,6 +52,7 @@ export class TimeoutSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#setUserTimeout = setUserTimeout;
     }
 
     public async timeoutMember(
@@ -54,25 +74,26 @@ export class TimeoutSubtag extends CompiledSubtag {
             reason = 'Tag Timeout';
 
         const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
-        const response = delay.asMilliseconds() !== 0
-            ? await context.engine.util.timeout(member, context.root.message.author, authorizer, delay, reason)
-            : await context.engine.util.clearTimeout(member, context.root.message.author, authorizer, reason);
+        const result = await this.#setUserTimeout({
+            guildId: context.root.guildId,
+            targetId: member.id,
+            moderatorId: context.root.message.author.id,
+            authorizerId: authorizer.id,
+            reason,
+            duration: delay
+        });
+        if (result.success)
+            return 'Success';
 
-        switch (response) {
-            case 'success':
-                return 'Success';
-            case 'notTimedOut':
-                throw new BBTagRuntimeError('User is not timed out', `${member.user.username} is not timed out!`);
-            case 'alreadyTimedOut':
-                throw new BBTagRuntimeError('User is already timed out', `${member.user.username} is already timed out!`);
-            case 'noPerms':
-                throw new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) users!');
-            case 'memberTooHigh':
-                throw new BBTagRuntimeError('Bot has no permissions', `I don't have permission to (remove) time out (from) ${member.user.username}!`);
-            case 'moderatorNoPerms':
-                throw new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) users!');
-            case 'moderatorTooLow':
-                throw new BBTagRuntimeError('User has no permissions', `You don't have permission to (remove) time out (from) ${member.user.username}!`);
+        switch (result.reason) {
+            case 'noChange':
+                throw new BBTagRuntimeError(delay.asMilliseconds() === 0 ? 'User is not timed out' : 'User is already timed out', result.detail);
+            case 'bot':
+                throw new BBTagRuntimeError('Bot has no permissions', result.detail);
+            case 'authorizer':
+                throw new BBTagRuntimeError('User has no permissions', result.detail);
+            default:
+                throw new BBTagRuntimeError('Timeout failed', result.detail);
         }
     }
 }

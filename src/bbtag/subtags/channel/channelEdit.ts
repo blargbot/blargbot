@@ -1,5 +1,4 @@
-import { guard, zodStringToJson } from '@blargbot/core';
-import * as eris from 'eris';
+import { zodStringToJson } from '@blargbot/core';
 import z from 'zod';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -7,11 +6,27 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { GetUserPermissionsThunk } from '../types.js';
+import { ChannelIdSubtag } from './channelId.js';
+import { ChannelIsThreadSubtag } from './channelIsThread.js';
 
 const tag = templates.subtags.channelEdit;
 
+export type EditChannelResult =
+    | { success: true; }
+    | { success: false; reason?: string; };
+export type EditChannelOptions = (z.infer<typeof mapThreadOptions> | z.infer<typeof mapChannelOptions> & { position?: number; }) & { auditReason: string; };
+export interface EditChannelThunk {
+    (guildId: string, channelId: string, options: EditChannelOptions): Promise<EditChannelResult>;
+}
+
 export class ChannelEditSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getUserPermissions: GetUserPermissionsThunk;
+    readonly #editChannel: EditChannelThunk;
+    public constructor({ getUserPermissions, editChannel }: {
+        getUserPermissions: GetUserPermissionsThunk;
+        editChannel: EditChannelThunk;
+    }) {
         super({
             name: 'channelEdit',
             category: SubtagType.CHANNEL,
@@ -26,36 +41,28 @@ export class ChannelEditSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getUserPermissions = getUserPermissions;
+        this.#editChannel = editChannel;
     }
 
-    public async channelEdit(
-        context: BBTagContext,
-        channelStr: string,
-        editJson: string
-    ): Promise<string> {
-        const channel = await context.queryChannel(channelStr);
+    public async channelEdit(context: BBTagContext, channelStr: string, editJson: string): Promise<string> {
+        const channelId = await ChannelIdSubtag.query(context, channelStr)
+            ?? new BBTagRuntimeError('Channel does not exist').throw();//TODO no channel found error
 
-        if (channel === undefined)
-            throw new BBTagRuntimeError('Channel does not exist');//TODO no channel found error
-
-        if (!context.hasPermission('MANAGE_CHANNELS', channel))
+        const authorizerPermissions = await this.#getUserPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId, channelId);
+        if (!authorizerPermissions.hasAny('MANAGE_CHANNELS', 'ADMINISTRATOR'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
-        const mapping = guard.isThreadChannel(channel) ? mapThreadOptions : mapChannelOptions;
+        const mapping = await ChannelIsThreadSubtag.check(context, channelId) ? mapThreadOptions : mapChannelOptions;
         const mapped = mapping.safeParse(editJson);
         if (!mapped.success)
             throw new BBTagRuntimeError('Invalid JSON');
 
-        const options = mapped.data;
-        try {
-            await channel.edit(options, context.auditReason());
-            return channel.id;
-        } catch (err: unknown) {
-            if (!(err instanceof eris.DiscordRESTError))
-                throw err;
+        const result = await this.#editChannel(context.root.guildId, channelId, { ...mapped.data, auditReason: context.auditReason() });
+        if (result.success)
+            return channelId;
 
-            throw new BBTagRuntimeError('Failed to edit channel: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to edit channel: no perms', result.reason);
     }
 }
 

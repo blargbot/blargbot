@@ -5,7 +5,8 @@ import type { BBTagContext } from '../BBTagContext.js';
 import type { BBTagRuntimeError } from '../errors/index.js';
 import type { SubtagCall } from '../language/index.js';
 import { Subtag } from '../Subtag.js';
-import type { SubtagOptions } from '../types.js';
+import type { SubtagOptions, SubtagSignature } from '../types.js';
+import type { SubtagType } from '../utils/index.js';
 import { bbtag } from '../utils/index.js';
 import type { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions.js';
 import { compileSignatures } from './compileSignatures.js';
@@ -17,16 +18,36 @@ export interface DefinedSubtagOptions extends Omit<SubtagOptions<IFormattable<st
 }
 
 export abstract class CompiledSubtag extends Subtag {
+    public readonly name: string;
+    public readonly aliases: readonly string[];
+    public readonly category: SubtagType;
+    public readonly description: IFormattable<string> | undefined;
+    public readonly deprecated: string | boolean;
+    public readonly staff: boolean;
+    public readonly hidden: boolean;
+    public readonly signatures: ReadonlyArray<SubtagSignature<IFormattable<string>>>;
     readonly #handler: CompositeSubtagHandler;
 
     public constructor(options: DefinedSubtagOptions) {
+        super();
         const signatures = parseDefinitions(options.definition);
-        super({ ...options, signatures: signatures.map(s => s.signature).filter(guard.hasValue) });
+
+        this.name = options.name;
+        this.category = options.category;
+        this.description = options.description;
+        this.deprecated = options.deprecated ?? false;
+        this.staff = options.staff ?? false;
+        this.hidden = options.hidden ?? false;
+        this.signatures = signatures.map(s => s.signature).filter(guard.hasValue);
+        this.aliases = [
+            ...options.aliases ?? [],
+            ...this.signatures.map(s => s.subtagName).filter(guard.hasValue)
+        ];
 
         this.#handler = compileSignatures(signatures.map(s => s.implementation).filter(guard.hasValue));
     }
 
-    protected executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
+    protected override executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
         return this.#handler.execute(context, subtagName, subtag);
     }
 
@@ -42,5 +63,4 @@ export abstract class CompiledSubtag extends Subtag {
             return element;
         }));
     }
-
 }

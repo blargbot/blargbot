@@ -1,15 +1,22 @@
-import { guard } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from './channelId.js';
+import { ChannelIsTextSubtag } from './channelIsText.js';
 
 const tag = templates.subtags.lastMessageId;
 
+export interface GetLastMessageIdThunk {
+    (guildId: string, channelId: string): Promise<string | undefined>;
+}
+
 export class LastMessageIdSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getLastMessageId: GetLastMessageIdThunk;
+    public constructor({ getLastMessageId }: {
+        getLastMessageId: GetLastMessageIdThunk;
+    }) {
         super({
             name: 'lastMessageId',
             category: SubtagType.CHANNEL,
@@ -21,7 +28,7 @@ export class LastMessageIdSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'id',
-                    execute: (ctx) => this.getLastMessageID(ctx, ctx.local.message.channel.id)
+                    execute: (ctx) => this.currentChannel(ctx)
                 },
                 {
                     parameters: ['channel'],
@@ -29,26 +36,26 @@ export class LastMessageIdSubtag extends CompiledSubtag {
                     exampleCode: tag.channel.exampleCode,
                     exampleOut: tag.channel.exampleOut,
                     returns: 'id',
-                    execute: (ctx, [channel]) => this.getLastMessageID(ctx, channel.value)
+                    execute: (ctx, [channel]) => this.queryChannel(ctx, channel.value)
                 }
             ]
         });
+        this.#getLastMessageId = getLastMessageId;
     }
 
-    public async getLastMessageID(
-        context: BBTagContext,
-        channelStr: string
-    ): Promise<string> {
-        const channel = await context.queryChannel(channelStr, {
-            noLookup: context.local.quiet,
-            noErrors: context.local.noLookupErrors
-        });
+    public async currentChannel(context: BBTagContext): Promise<string> {
+        return await this.#impl(context, context.local.message.channel.id);
+    }
 
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr);
-        if (!guard.isTextableChannel(channel))
+    public async queryChannel(context: BBTagContext, channelStr: string): Promise<string> {
+        const channelId = await ChannelIdSubtag.query(context, channelStr)
+            ?? new ChannelNotFoundError(channelStr).throw();
+        return await this.#impl(context, channelId);
+    }
+
+    async #impl(context: BBTagContext, channelId: string): Promise<string> {
+        if (!await ChannelIsTextSubtag.check(context, channelId))
             throw new BBTagRuntimeError('Channel must be a textable channel');
-
-        return channel.lastMessageID;
+        return await this.#getLastMessageId(context.root.guildId, channelId) ?? '';
     }
 }

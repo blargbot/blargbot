@@ -5,7 +5,7 @@
         "module": "nodenext",
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "target": "ESNext", // Needed to prevent lowering of `using` and `await using`
+        "target": "ES2025",
         "strictNullChecks": true,
         "sourceMap": true,
         "noImplicitReturns": true,
@@ -21,7 +21,6 @@
         "moduleResolution": "nodenext",
         "skipLibCheck": true,
         "useUnknownInCatchVariables": true,
-        "experimentalDecorators": true,
         "lib": [
             "ES2025",
             "ESNext.Temporal",

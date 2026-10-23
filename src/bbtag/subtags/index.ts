@@ -10,3 +10,4 @@ export * from './misc/index.js';
 export * from './role/index.js';
 export * from './simple/index.js';
 export * from './user/index.js';
+export * from './types.js';

@@ -1,15 +1,23 @@
-import * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { ChannelType } from '../../enums.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.channelType;
 
+export interface GetChannelTypeThunk {
+    (guildId: string, channelId: string): Promise<number | undefined>;
+}
+
 export class ChannelTypeSubtag extends CompiledSubtag {
-    public constructor() {
+    public static get typeMap(): typeof channelTypes {
+        return channelTypes;
+    }
+    readonly #getChannelType: GetChannelTypeThunk;
+    public constructor({ getChannelType }: { getChannelType: GetChannelTypeThunk; }) {
         super({
             name: 'channelType',
             category: SubtagType.CHANNEL,
@@ -21,7 +29,7 @@ export class ChannelTypeSubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'string',
-                    execute: (ctx) => this.getChannelType(ctx, ctx.local.message.channel.id, true)
+                    execute: (ctx) => this.currentChannel(ctx)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -29,34 +37,46 @@ export class ChannelTypeSubtag extends CompiledSubtag {
                     exampleCode: tag.channel.exampleCode,
                     exampleOut: tag.channel.exampleOut,
                     returns: 'string',
-                    execute: (ctx, [channel, quiet]) => this.getChannelType(ctx, channel.value, quiet.value !== '')
+                    execute: (ctx, [channel, quiet]) => this.queryChannel(ctx, channel.value, quiet.value !== '')
 
                 }
             ]
         });
+        this.#getChannelType = getChannelType;
     }
 
-    public async getChannelType(context: BBTagContext, channelStr: string, quiet: boolean): Promise<typeof channelTypes[keyof typeof channelTypes] | ''> {
-        quiet ||= context.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined) {
-            throw new ChannelNotFoundError(channelStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
-        return channelTypes[channel.type];
+    public async currentChannel(context: BBTagContext): Promise<string> {
+        return await this.#getChannelTypeStr(context, context.local.message.channel.id);
+    }
+
+    public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string> {
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
+            ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
+        return await this.#getChannelTypeStr(context, channelId);
+    }
+
+    async #getChannelTypeStr(context: BBTagContext, channelId: string): Promise<string> {
+        const channelType = await this.#getChannelType(context.root.guildId, channelId) ?? -1;
+        if (!Object.hasOwn(channelTypes, channelType))
+            return 'unknown';
+
+        return channelTypes[channelType] ?? 'unknown';
     }
 }
-
 const channelTypes = {
-    [eris.Constants.ChannelTypes.GUILD_TEXT]: 'text',
-    [eris.Constants.ChannelTypes.DM]: 'dm',
-    [eris.Constants.ChannelTypes.GUILD_VOICE]: 'voice',
-    [eris.Constants.ChannelTypes.GROUP_DM]: 'group-dm',
-    [eris.Constants.ChannelTypes.GUILD_CATEGORY]: 'category',
-    [eris.Constants.ChannelTypes.GUILD_NEWS]: 'news',
-    [eris.Constants.ChannelTypes.GUILD_STORE]: 'store',
-    [eris.Constants.ChannelTypes.GUILD_NEWS_THREAD]: 'news-thread',
-    [eris.Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: 'private-thread',
-    [eris.Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: 'public-thread',
-    [eris.Constants.ChannelTypes.GUILD_STAGE_VOICE]: 'stage-voice'
-} as const;
+    [ChannelType.GUILD_TEXT]: 'text',
+    [ChannelType.DM]: 'dm',
+    [ChannelType.GUILD_VOICE]: 'voice',
+    [ChannelType.GROUP_DM]: 'group-dm',
+    [ChannelType.GUILD_CATEGORY]: 'category',
+    [ChannelType.GUILD_ANNOUNCEMENT]: 'news',
+    [ChannelType.ANNOUNCEMENT_THREAD]: 'news-thread',
+    [ChannelType.PRIVATE_THREAD]: 'private-thread',
+    [ChannelType.PUBLIC_THREAD]: 'public-thread',
+    [ChannelType.GUILD_STAGE_VOICE]: 'stage-voice',
+    [ChannelType.GUILD_DIRECTORY]: 'directory',
+    [ChannelType.GUILD_FORUM]: 'forum',
+    [ChannelType.GUILD_MEDIA]: 'media'
+} satisfies Record<ChannelType, string> as Record<number, string>;
+Object.setPrototypeOf(channelTypes, null);
+Object.freeze(channelTypes);

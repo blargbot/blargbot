@@ -39,6 +39,7 @@ export interface BBTagRuntimeScope {
 export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
     readonly botId: string;
     readonly guildId: string;
+    readonly guildOwnerId: string;
     readonly recursion: { depth: number; };
     readonly output: {
         nsfw?: string;
@@ -51,7 +52,7 @@ export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
     readonly variables: VariableCache;
     readonly limit: RuntimeLimit;
     readonly authorId: string | undefined;
-    readonly authorizerId: string;
+    readonly authorizerId: string | undefined;
     readonly authorizer: eris.Member | undefined;
     readonly authorizerPermissions: DiscordPermissions;
     readonly prefix: string | undefined;
@@ -60,7 +61,7 @@ export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
     readonly flagDefinitions: ReadonlyArray<FlagDefinition<string>>;
     readonly functions: Map<string, BBTagExpression>;
     readonly queryCache: {
-        count: number;
+        failedQueries: number;
         readonly user: Map<string, string>;
         readonly role: Map<string, string>;
         readonly channel: Map<string, string>;
@@ -187,6 +188,11 @@ export { BBTagRuntimeState };
 export interface FindEntityOptions {
     noLookup?: boolean;
     noErrors?: boolean;
+}
+
+export interface QueryEntityOptions {
+    readonly noLookup?: boolean;
+    readonly noErrors?: boolean;
 }
 
 export interface ExecutionResult {

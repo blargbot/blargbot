@@ -28,19 +28,19 @@
     },
     "scripts": {
         "filecount": "cloc ./ --exclude-dir=node_modules --exclude-ext=js,msj,cjs",
-        "start": "node --enable-source-maps index.js",
-        "test": "node --enable-source-maps index.test.js",
+        "start": "node --js-decorators --enable-source-maps index.js",
+        "test": "node --js-decorators --enable-source-maps index.test.js",
         "check": "yarn run rebuild && yarn run lint && yarn run test",
         "ci": "yarn run rebuild && yarn run lint && yarn run test --coverage",
         "build": "tsc --build",
         "watch": "tsc --watch",
         "rebuild": "tsc --build --clean",
         "lint": "eslint --ext .ts,.mts,.cts ./",
-        "start:image-worker": "yarn workspace @blargbot/image node --enable-source-maps ./start.js",
-        "start:discord-rest": "yarn workspace @blargbot/discord-rest-service node --enable-source-maps ./start.js",
-        "start:gateway-worker": "yarn workspace @blargbot/discord-gateway-worker node --enable-source-maps ./start.js",
-        "start:gateway-orchestrator": "yarn workspace @blargbot/discord-gateway-orchestrator node --enable-source-maps ./start.js",
-        "start:gateway-relay": "yarn workspace @blargbot/discord-gateway-relay node --enable-source-maps ./start.js"
+        "start:image-worker": "yarn workspace @blargbot/image node --js-decorators --enable-source-maps ./start.js",
+        "start:discord-rest": "yarn workspace @blargbot/discord-rest-service node --js-decorators --enable-source-maps ./start.js",
+        "start:gateway-worker": "yarn workspace @blargbot/discord-gateway-worker node --js-decorators --enable-source-maps ./start.js",
+        "start:gateway-orchestrator": "yarn workspace @blargbot/discord-gateway-orchestrator node --js-decorators --enable-source-maps ./start.js",
+        "start:gateway-relay": "yarn workspace @blargbot/discord-gateway-relay node --js-decorators --enable-source-maps ./start.js"
     },
     "repository": {
         "type": "git",

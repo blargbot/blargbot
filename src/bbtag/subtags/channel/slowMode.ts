@@ -1,16 +1,18 @@
 import { parse } from '@blargbot/core';
-import * as eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { EditChannelThunk } from './channelEdit.js';
+import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.slowMode;
 
 export class SlowModeSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #editChannel: EditChannelThunk;
+    public constructor({ editChannel }: { editChannel: EditChannelThunk; }) {
         super({
             name: 'slowMode',
             category: SubtagType.CHANNEL,
@@ -50,6 +52,7 @@ export class SlowModeSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#editChannel = editChannel;
     }
 
     public async setSlowmode(
@@ -58,25 +61,25 @@ export class SlowModeSubtag extends CompiledSubtag {
         timeStr: string
     ): Promise<void> {
         let time = parse.int(timeStr);
-        let channel;
-        const lookupChannel = await context.queryChannel(channelStr, { noLookup: true });//TODO yikes
+        let channelId;
+        const lookupChannel = await ChannelIdSubtag.query(context, channelStr, { noLookup: true });//TODO yikes
         if (lookupChannel !== undefined)
-            channel = lookupChannel;
+            channelId = lookupChannel;
         else {
-            channel = context.local.message.channel;
+            channelId = context.local.message.channel.id;
             time = parse.int(channelStr);
         }
 
         time ??= 0;
         time = Math.min(time, 21600);
 
-        try {
-            await channel.edit({ rateLimitPerUser: time }, context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof eris.DiscordRESTError))
-                throw err;
+        const result = await this.#editChannel(context.root.guildId, channelId, {
+            rateLimitPerUser: time,
+            auditReason: context.auditReason()
+        });
+        if (result.success)
+            return;
 
-            throw new BBTagRuntimeError('Missing required permissions', err.message);
-        }
+        throw new BBTagRuntimeError('Missing required permissions', result.reason);
     }
 }

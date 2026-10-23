@@ -21,7 +21,7 @@ export interface BanUserOptions {
 
 export type BanUserResult =
     | { success: true; }
-    | { success: false; reason: 'bot' | 'authorizer'; };
+    | { success: false; reason: 'bot' | 'authorizer'; details?: string; };
 
 export interface BanUserThunk {
     (options: BanUserOptions): Promise<BanUserResult>;
@@ -102,11 +102,11 @@ export class BanSubtag extends CompiledSubtag {
             return duration?.asMilliseconds() ?? true;
         switch (result.reason) {
             case 'bot':
-                throw new BBTagRuntimeError('Bot has no permissions');
+                throw new BBTagRuntimeError('Bot has no permissions', result.details);
             case 'authorizer':
-                throw new BBTagRuntimeError('User has no permissions');
+                throw new BBTagRuntimeError('User has no permissions', result.details);
             default:
-                throw new BBTagRuntimeError('Ban failed');
+                throw new BBTagRuntimeError('Ban failed', result.details);
         }
     }
 }

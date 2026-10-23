@@ -1,13 +1,23 @@
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag';
+import type { KickUserThunk } from '@blargbot/bbtag/subtags';
 import { KickSubtag } from '@blargbot/bbtag/subtags';
+import { snowflake } from '@blargbot/core';
+import { Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const kickUser = new Mock<KickUserThunk>({ id: 'kickUser', callable: true });
+
 await runSubtagTests({
-    subtag: new KickSubtag(),
+    subtag: new KickSubtag({
+        kickUser: kickUser.instance
+    }),
     argCountBounds: { min: 1, max: 3 },
     names: ['kick'],
+    setup(ctx) {
+        ctx.adoptMock(kickUser);
+    },
     cases: [
         {
             code: '{kick;abc}',
@@ -26,13 +36,21 @@ await runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup(m => m.kick(member.instance, bbctx.local.message.author, bbctx.local.message.author, 'Tag Kick'))
+                kickUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Kick'
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -43,13 +61,21 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup(m => m.kick(member.instance, bbctx.local.message.author, bbctx.local.message.author, 'Tag Kick'))
+                kickUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Kick'
+                })))
                     .mustHappen(1)
-                    .resolves('noPerms');
+                    .resolves({ success: false, reason: 'bot', details: 'I don\'t have permission to kick users!' });
             }
         },
         {
@@ -60,6 +86,8 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 const user = ctx.createMock<eris.User>({ id: 'user' });
                 member.setup(m => m.user).returns(user.instance);
                 user.setup(m => m.username).returns('other user');
@@ -67,9 +95,15 @@ await runSubtagTests({
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup(m => m.kick(member.instance, bbctx.local.message.author, bbctx.local.message.author, 'Tag Kick'))
+                kickUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Kick'
+                })))
                     .mustHappen(1)
-                    .resolves('memberTooHigh');
+                    .resolves({ success: false, reason: 'bot', details: 'I don\'t have permission to kick other user!' });
             }
         },
         {
@@ -80,13 +114,21 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup(m => m.kick(member.instance, bbctx.local.message.author, bbctx.local.message.author, 'Tag Kick'))
+                kickUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Kick'
+                })))
                     .mustHappen(1)
-                    .resolves('moderatorNoPerms');
+                    .resolves({ success: false, reason: 'authorizer', details: 'You don\'t have permission to kick users!' });
             }
         },
         {
@@ -97,16 +139,21 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.username).returns('other user');
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup(m => m.kick(member.instance, bbctx.local.message.author, bbctx.local.message.author, 'Tag Kick'))
+                kickUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'Tag Kick'
+                })))
                     .mustHappen(1)
-                    .resolves('moderatorTooLow');
+                    .resolves({ success: false, reason: 'authorizer', details: 'You don\'t have permission to kick other user!' });
             }
         },
         {
@@ -114,13 +161,21 @@ await runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup(m => m.kick(member.instance, bbctx.local.message.author, bbctx.local.message.author, 'My reason here'))
+                kickUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'My reason here'
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -128,6 +183,8 @@ await runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 const authorizer = bbctx.root.message.channel.guild.members.get(ctx.users.authorizer.id)?.user;
                 if (authorizer === undefined)
                     throw new Error('Authorizer missing');
@@ -135,9 +192,15 @@ await runSubtagTests({
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup(m => m.kick(member.instance, bbctx.local.message.author, authorizer, 'My reason here'))
+                kickUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: authorizer.id,
+                    reason: 'My reason here'
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         },
         {
@@ -145,13 +208,21 @@ await runSubtagTests({
             expected: 'Success',
             postSetup(bbctx, ctx) {
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
+                const userId = snowflake.create().toString();
+                member.setup(m => m.id).returns(userId);
                 ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
                     .mustHappen(1)
                     .resolves([member.instance]);
 
-                ctx.util.setup(m => m.kick(member.instance, bbctx.local.message.author, bbctx.local.message.author, 'My reason here'))
+                kickUser.setup((m, $) => m($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    moderatorId: bbctx.local.message.author.id,
+                    authorizerId: bbctx.local.message.author.id,
+                    reason: 'My reason here'
+                })))
                     .mustHappen(1)
-                    .resolves('success');
+                    .resolves({ success: true });
             }
         }
     ]

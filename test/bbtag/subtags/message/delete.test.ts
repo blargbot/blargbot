@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
-import type { IsUserStaffThunk } from '@blargbot/bbtag/subtags';
 import { DeleteSubtag, IsStaffSubtag } from '@blargbot/bbtag/subtags';
 import type { Logger } from '@blargbot/logger';
 import { Mock } from '@blargbot/test-util';
@@ -10,7 +9,7 @@ import type * as eris from 'eris';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 const logger = new Mock<Logger>({ id: 'logger' });
-const isUserStaff = new Mock<IsUserStaffThunk>({ id: 'isUserStaff', callable: true });
+const isStaffSubtag = new Mock<IsStaffSubtag>({ id: 'IsStaffSubtag' });
 
 await runSubtagTests({
     subtag: new DeleteSubtag({
@@ -18,14 +17,10 @@ await runSubtagTests({
     }),
     argCountBounds: { min: 0, max: 2 },
     names: ['delete'],
-    otherSubtags: [
-        new IsStaffSubtag({
-            isUserStaff: isUserStaff.instance
-        })
-    ],
+    otherSubtags: [isStaffSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(logger);
-        ctx.adoptMock(isUserStaff);
+        ctx.adoptSubtagMock(isStaffSubtag, { type: IsStaffSubtag });
     },
     cases: [
         {
@@ -61,8 +56,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Author must be staff to delete unrelated messages') }
             ],
-            setup(ctx) {
-                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(false).mustHappen(1);
+            postSetup(bbctx) {
+                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(false).mustHappen(1);
             }
         },
         {
@@ -86,10 +81,10 @@ await runSubtagTests({
             code: '{delete;1234567890123456}',
             expected: '',
             setup(ctx) {
-                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(true).mustHappen(1);
                 ctx.discord.setup(m => m.deleteMessage(ctx.channels.command.id, '1234567890123456', undefined)).resolves();
             },
             postSetup(bbctx, ctx) {
+                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(true).mustHappen(1);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     channel_id: ctx.channels.command.id,
                     id: '1234567890123456'
@@ -105,8 +100,10 @@ await runSubtagTests({
                 { error: new MessageNotFoundError('9876543212345678', '').withDisplay('') }
             ],
             setup(ctx) {
-                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(true).mustHappen(1);
                 ctx.message.channel_id = ctx.channels.command.id = '9876543212345678';
+            },
+            postSetup(bbctx) {
+                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(true).mustHappen(1);
             }
         },
         {
@@ -117,10 +114,10 @@ await runSubtagTests({
                 { error: new MessageNotFoundError('9876543212345678', '1234567890123456').withDisplay('') }
             ],
             setup(ctx) {
-                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(true).mustHappen(1);
                 ctx.message.channel_id = ctx.channels.command.id = '9876543212345678';
             },
             postSetup(bbctx, ctx) {
+                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(true).mustHappen(1);
                 ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '1234567890123456', false)).resolves(undefined);
             }
         },
@@ -141,8 +138,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Author must be staff to delete unrelated messages') }
             ],
-            setup(ctx) {
-                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(false).mustHappen(1);
+            postSetup(bbctx) {
+                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(false).mustHappen(1);
             }
         },
         {
@@ -175,10 +172,8 @@ await runSubtagTests({
             errors: [
                 { error: new ChannelNotFoundError('987654322123456142') }
             ],
-            setup(ctx) {
-                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(true).mustHappen(1);
-            },
             postSetup(bbctx, ctx) {
+                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(true).mustHappen(1);
                 ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '987654322123456142')).resolves([]);
             }
         }

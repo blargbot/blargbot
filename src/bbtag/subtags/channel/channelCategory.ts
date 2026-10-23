@@ -2,12 +2,18 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
-import { SubtagType } from '../../utils/index.js';
+import { SubtagType } from '../../utils/subtagType.js';
+import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.channelCategory;
 
+export interface GetChannelCategoryThunk {
+    (guildId: string, channelId: string): Promise<string | undefined>;
+}
+
 export class ChannelCategorySubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getChannelCategory: GetChannelCategoryThunk;
+    public constructor({ getChannelCategory }: { getChannelCategory: GetChannelCategoryThunk; }) {
         super({
             name: 'channelCategory',
             aliases: ['category'],
@@ -19,7 +25,7 @@ export class ChannelCategorySubtag extends CompiledSubtag {
                     exampleCode: tag.current.exampleCode,
                     exampleOut: tag.current.exampleOut,
                     returns: 'id',
-                    execute: (ctx) => this.getCategory(ctx, ctx.local.message.channel.id, true)
+                    execute: (ctx) => this.currentChannelCategory(ctx)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -31,23 +37,18 @@ export class ChannelCategorySubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getChannelCategory = getChannelCategory;
     }
 
-    public async getCategory(
-        context: BBTagContext,
-        channelStr: string,
-        quiet: boolean
-    ): Promise<string> {
-        quiet ||= context.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr)
-                .withDisplay(quiet ? '' : undefined);
+    public async currentChannelCategory(context: BBTagContext): Promise<string> {
+        return await this.#getChannelCategory(context.root.guildId, context.local.message.channel.id)
+            ?? new BBTagRuntimeError('Channel has no parent').withDisplay('').throw();
+    }
 
-        if (typeof channel.parentID !== 'string')
-            throw new BBTagRuntimeError('Channel has no parent')
-                .withDisplay('');
-
-        return channel.parentID;
+    public async getCategory(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string> {
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
+            ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
+        return await this.#getChannelCategory(context.root.guildId, channelId)
+            ?? new BBTagRuntimeError('Channel has no parent').withDisplay('').throw();
     }
 }

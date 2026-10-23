@@ -1,27 +1,40 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag';
-import { ChannelSetPositionSubtag } from '@blargbot/bbtag/subtags';
-import * as eris from 'eris';
+import { BBTagRuntimeError, DiscordPermissions, NotANumberError } from '@blargbot/bbtag';
+import type { EditChannelThunk, GetUserPermissionsThunk } from '@blargbot/bbtag/subtags';
+import { ChannelIdSubtag, ChannelSetPositionSubtag } from '@blargbot/bbtag/subtags';
+import { snowflake } from '@blargbot/core';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const editChannel = new Mock<EditChannelThunk>({ id: 'editChannel', callable: true });
+const getUserPermissions = new Mock<GetUserPermissionsThunk>({ id: 'getUserPermissions', callable: true });
+const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+
 await runSubtagTests({
-    subtag: new ChannelSetPositionSubtag(),
+    subtag: new ChannelSetPositionSubtag({
+        editChannel: editChannel.instance,
+        getUserPermissions: getUserPermissions.instance
+    }),
+    otherSubtags: [channelIdSubtag.instance],
     argCountBounds: { min: 2, max: 2 },
     names: ['channelSetPosition', 'channelSetPos'],
     setup(ctx) {
-        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
+        ctx.adoptMock(editChannel);
+        ctx.adoptMock(getUserPermissions);
+        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
     },
     cases: [
         {
             code: '{channelsetpos;239874692346327846;123}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channel = bbctx.root.message.channel.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Could not find channel under test');
-
-                ctx.discord.setup(m => m.editChannelPosition(channel.id, 123, undefined)).resolves(undefined);
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '239874692346327846')).resolves([channel]);
+                const channelId = snowflake.create().toString();
+                channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
+                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                editChannel.setup((m, $) => m(ctx.guild.id, channelId, $({
+                    position: 123,
+                    auditReason: 'Command User#0000'
+                }))).resolves({ success: true }).mustHappen(1);
             }
         },
         {
@@ -31,11 +44,9 @@ await runSubtagTests({
                 { error: new NotANumberError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                const channel = bbctx.root.message.channel.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Could not find channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '239874692346327846')).resolves([channel]);
+                const channelId = snowflake.create().toString();
+                channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
+                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
             }
         },
         {
@@ -44,8 +55,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Channel does not exist') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '239874692346327846')).resolves([]);
+            postSetup(bbctx) {
+                channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(undefined).mustHappen(1);
             }
         },
         {
@@ -54,15 +65,10 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Author cannot move this channel') }
             ],
-            setup(ctx) {
-                ctx.roles.authorizer.permissions = '0';
-            },
             postSetup(bbctx, ctx) {
-                const channel = bbctx.root.message.channel.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Could not find channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '239874692346327846')).resolves([channel]);
+                const channelId = snowflake.create().toString();
+                channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
+                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.NONE).mustHappen(1);
             }
         },
         {
@@ -72,13 +78,13 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Failed to move channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
-                const channel = bbctx.root.message.channel.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Could not find channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '239874692346327846')).resolves([channel]);
-                ctx.discord.setup(m => m.editChannelPosition(channel.id, 123, undefined)).rejects(err);
+                const channelId = snowflake.create().toString();
+                channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
+                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                editChannel.setup((m, $) => m(ctx.guild.id, channelId, $({
+                    position: 123,
+                    auditReason: 'Command User#0000'
+                }))).resolves({ success: false, reason: 'Test REST error' }).mustHappen(1);
             }
         },
         {
@@ -88,13 +94,13 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Failed to move channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                const channel = bbctx.root.message.channel.guild.channels.random();
-                if (channel === undefined)
-                    throw new Error('Could not find channel under test');
-
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '239874692346327846')).resolves([channel]);
-                ctx.discord.setup(m => m.editChannelPosition(channel.id, 123, undefined)).rejects(err);
+                const channelId = snowflake.create().toString();
+                channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
+                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                editChannel.setup((m, $) => m(ctx.guild.id, channelId, $({
+                    position: 123,
+                    auditReason: 'Command User#0000'
+                }))).resolves({ success: false, reason: 'Some other error message' }).mustHappen(1);
             }
         }
     ]

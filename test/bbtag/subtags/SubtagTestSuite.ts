@@ -21,6 +21,9 @@ import moment from 'moment-timezone';
 
 type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[keyof T];
 type RequireIds<T, OtherProps extends keyof T = never> = RequiredProps<Partial<T>, IdPropertiesOf<T> | OtherProps>;
+type AnyConstructor<T> = (abstract new (...args: never) => T) & {
+    readonly prototype: T;
+}
 
 type RuntimeSubtagTestCase<T> = Readonly<T> & {
     readonly timestamp: moment.Moment;
@@ -227,6 +230,14 @@ export class SubtagTestContext {
         mock.reset();
     }
 
+    public adoptSubtagMock<T extends Subtag>(mock: Mock<T>, options: { name?: string; aliases?: string[]; type: AnyConstructor<T>; }): void {
+        this.adoptMock(mock);
+        mock.setup(m => m.name).returns(options.name ?? `test-subtag-${snowflake.create()}`);
+        mock.setup(m => m.aliases).returns(options.aliases ?? []);
+        mock.setup(Reflect.getPrototypeOf).returns(options.type.prototype);
+        mock.setup(m => m.constructor).returns(options.type);
+    }
+
     public createMock<T extends Mockable>(...args: MockCtorArgs<T>): Mock<T> {
         const mock = new Mock<T>(...args);
         this.#allMocks.push(mock);
@@ -279,6 +290,7 @@ export class SubtagTestContext {
             author: this.input.author ?? message.author.id,
             message
         });
+        context.toString = () => '<TestBBTagContext>';
 
         this.ownedMessages.forEach(v => context.root.ownedMessageIds.add(v));
 
@@ -508,13 +520,21 @@ export function sourceMarker(location: number | SourceMarker, source: string): S
     const lineCount = slice.split('\n').length - 1;
     return { index: location, line: lineCount, column: lastLine.length };
 }
-export class TestDataSubtag extends Subtag {
+
+abstract class TestSubtagBase extends Subtag {
+    public category = SubtagType.SIMPLE;
+    public hidden = true;
+    public signatures = [];
+    public aliases = [];
+    public description = undefined;
+    public deprecated = false;
+    public staff = false;
+}
+
+export class TestDataSubtag extends TestSubtagBase {
+    public name = 'testdata';
     public constructor(public readonly values: Record<string, string | undefined>) {
-        super({
-            name: 'testdata',
-            category: SubtagType.SIMPLE,
-            signatures: []
-        });
+        super();
     }
 
     protected async * executeCore(_: unknown, __: unknown, subtag: SubtagCall): AsyncIterable<string> {
@@ -530,32 +550,20 @@ export class TestDataSubtag extends Subtag {
     }
 }
 
-export class EvalSubtag extends Subtag {
-    public constructor() {
-        super({
-            name: 'eval',
-            category: SubtagType.SIMPLE,
-            hidden: true,
-            signatures: []
-        });
-    }
+export class EvalSubtag extends TestSubtagBase {
+    public name = 'eval';
 
     protected executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new MarkerError('eval', subtag.start.index);
     }
 }
 
-export class AssertSubtag extends Subtag {
+export class AssertSubtag extends TestSubtagBase {
     readonly #assertion: (context: BBTagContext, subtagName: string, subtag: SubtagCall) => Awaitable<string>;
+    public name = 'assert';
 
     public constructor(assertion: (...args: Parameters<Subtag['executeCore']>) => Awaitable<string>) {
-        super({
-            name: 'assert',
-            category: SubtagType.SIMPLE,
-            hidden: true,
-            signatures: []
-        });
-
+        super();
         this.#assertion = assertion;
     }
 
@@ -564,32 +572,21 @@ export class AssertSubtag extends Subtag {
     }
 }
 
-export class FailTestSubtag extends Subtag {
-    public constructor() {
-        super({
-            name: 'fail',
-            category: SubtagType.SIMPLE,
-            signatures: [],
-            hidden: true
-        });
-    }
+export class FailTestSubtag extends TestSubtagBase {
+    public name = 'fail';
 
     public executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new RangeError(`Subtag ${subtag.source} was evaluated when it wasnt supposed to!`);
     }
 }
 
-export class LimitedTestSubtag extends Subtag {
+export class LimitedTestSubtag extends TestSubtagBase {
     readonly #counts = new WeakMap<BBTagContext, number>();
     readonly #limit: number;
+    public name = 'limit';
 
     public constructor(limit = 1) {
-        super({
-            name: 'limit',
-            category: SubtagType.SIMPLE,
-            hidden: true,
-            signatures: []
-        });
+        super();
         this.#limit = limit;
     }
 
@@ -603,16 +600,8 @@ export class LimitedTestSubtag extends Subtag {
     }
 }
 
-export class EchoArgsSubtag extends Subtag {
-    public constructor() {
-        super({
-            name: 'echoargs',
-            category: SubtagType.SIMPLE,
-            hidden: true,
-            signatures: []
-        });
-    }
-
+export class EchoArgsSubtag extends TestSubtagBase {
+    public name = 'echoargs';
     protected async * executeCore(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
         await Promise.resolve();
         yield '[';
@@ -754,11 +743,11 @@ async function runTestCase<TestCase extends SubtagTestCase>(subtags: Subtag[], t
     try {
         // arrange
         const code = bbtag.parse(testCase.code);
-        for (const s of subtags)
-            test.limit.setup((m, $) => m.check($.instanceOf(BBTagContext), s.name)).resolves(undefined, { isFallback: true });
         for (const setup of config.setup)
             await setup.call(actualTestCase, test, code, testCtx);
         await actualTestCase.setup?.(test, code, testCtx);
+        for (const s of subtags)
+            test.limit.setup((m, $) => m.check($.instanceOf(BBTagContext), s.name)).resolves(undefined, { isFallback: true });
         const context = test.createContext();
         for (const postSetup of config.postSetup)
             await postSetup.call(actualTestCase, context, test);

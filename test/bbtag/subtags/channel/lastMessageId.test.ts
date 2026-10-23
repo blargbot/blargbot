@@ -1,18 +1,25 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
-import { LastMessageIdSubtag } from '@blargbot/bbtag/subtags';
-import type { APITextChannel } from 'discord-api-types/v9';
-import * as eris from 'eris';
+import type { GetLastMessageIdThunk } from '@blargbot/bbtag/subtags';
+import { ChannelIsTextSubtag, LastMessageIdSubtag } from '@blargbot/bbtag/subtags';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-// /workspaces/blargbot/.yarn/cache/discord-api-types-npm-0.37.20-e3242ea9fb-5595f44f66.zip/node_modules/discord-api-types/payloads/v9/channel.d.ts
-// \workspaces\blargbot\.yarn\cache\discord-api-types-npm-0.37.20-e3242ea9fb-5595f44f66.zip\node_modules\discord-api-types\payloads\v9\channel.d.ts
+const getLastMessageId = new Mock<GetLastMessageIdThunk>({ id: 'getLastMessageId', callable: true });
+const channelIsTextSubtag = new Mock<ChannelIsTextSubtag>({ id: 'channelIsTextSubtag' });
 
 await runSubtagTests({
-    subtag: new LastMessageIdSubtag(),
+    subtag: new LastMessageIdSubtag({
+        getLastMessageId: getLastMessageId.instance
+    }),
+    otherSubtags: [channelIsTextSubtag.instance],
     argCountBounds: { min: 0, max: 1 },
     names: ['lastMessageId'],
+    setup(ctx) {
+        ctx.adoptMock(getLastMessageId);
+        ctx.adoptSubtagMock(channelIsTextSubtag, { type: ChannelIsTextSubtag });
+    },
     cases: [
         ...createGetChannelPropTestCases({
             quiet: false,
@@ -24,28 +31,28 @@ await runSubtagTests({
                 {
                     title: 'When a message has been sent',
                     expected: '2349786234946724',
-                    setup(channel) {
-                        (channel as APITextChannel).last_message_id = '2349786234946724';
+                    postSetup(channelId, bbctx, ctx) {
+                        channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                        getLastMessageId.setup(m => m(ctx.guild.id, channelId)).resolves('2349786234946724').mustHappen(1);
                     }
                 },
                 {
                     title: 'When no message has been sent',
                     expected: '',
-                    setup(channel) {
-                        (channel as APITextChannel).last_message_id = null;
+                    postSetup(channelId, bbctx, ctx) {
+                        channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                        getLastMessageId.setup(m => m(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
+                    }
+                },
+                {
+                    title: 'When the channel is not textable',
+                    expected: '`Channel must be a textable channel`',
+                    error: new BBTagRuntimeError('Channel must be a textable channel'),
+                    postSetup(channelId, bbctx) {
+                        channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(false).mustHappen(1);
                     }
                 }
             ]
-        }),
-        {
-            code: '{lastmessageid}',
-            expected: '`Channel must be a textable channel`',
-            errors: [
-                { error: new BBTagRuntimeError('Channel must be a textable channel') }
-            ],
-            setup(ctx) {
-                ctx.channels.command.type = eris.Constants.ChannelTypes.GUILD_CATEGORY;
-            }
-        }
+        })
     ]
 });

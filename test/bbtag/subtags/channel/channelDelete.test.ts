@@ -1,17 +1,24 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
+import type { DeleteChannelThunk, GetUserPermissionsThunk } from '@blargbot/bbtag/subtags';
 import { ChannelDeleteSubtag } from '@blargbot/bbtag/subtags';
-import { OverwriteType } from 'discord-api-types/v9';
-import * as eris from 'eris';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
+const deleteChannel = new Mock<DeleteChannelThunk>({ id: 'deleteChannel', callable: true });
+const getUserPermissions = new Mock<GetUserPermissionsThunk>({ id: 'getUserPermissions', callable: true });
+
 await runSubtagTests({
-    subtag: new ChannelDeleteSubtag(),
+    subtag: new ChannelDeleteSubtag({
+        deleteChannel: deleteChannel.instance,
+        getUserPermissions: getUserPermissions.instance
+    }),
     argCountBounds: { min: 1, max: 1 },
     names: ['channelDelete'],
     setup(ctx) {
-        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageChannels.toString();
+        ctx.adoptMock(deleteChannel);
+        ctx.adoptMock(getUserPermissions);
     },
     cases: [
         ...createGetChannelPropTestCases({
@@ -23,75 +30,39 @@ await runSubtagTests({
             notFound: () => new BBTagRuntimeError('Channel does not exist'),
             cases: [
                 {
+                    title: 'Authorizer is admin',
                     expected: '',
-                    setup(channel, ctx) {
-                        ctx.discord.setup(m => m.deleteChannel(channel.id, 'Command User#0000')).resolves(undefined);
+                    setup(channelId, ctx) {
+                        getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                        deleteChannel.setup(m => m(ctx.guild.id, channelId, 'Command User#0000')).resolves({ success: true }).mustHappen(1);
+                    }
+                },
+                {
+                    title: 'Authorizer has MANAGE_CHANNELS only',
+                    expected: '',
+                    setup(channelId, ctx) {
+                        getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                        deleteChannel.setup(m => m(ctx.guild.id, channelId, 'Command User#0000')).resolves({ success: true }).mustHappen(1);
+                    }
+                },
+                {
+                    title: 'Authorizer has no permissions',
+                    expected: '`Author cannot edit this channel`',
+                    error: new BBTagRuntimeError('Author cannot edit this channel'),
+                    setup(channelId, ctx) {
+                        getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.NONE).mustHappen(1);
+                    }
+                },
+                {
+                    title: 'Authorizer has MANAGE_CHANNELS only',
+                    expected: '`Failed to edit channel: no perms`',
+                    error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error'),
+                    setup(channelId, ctx) {
+                        getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                        deleteChannel.setup(m => m(ctx.guild.id, channelId, 'Command User#0000')).resolves({ success: false, reason: 'Test REST error' }).mustHappen(1);
                     }
                 }
             ]
-        }),
-        {
-            title: 'Authorizer is admin',
-            code: '{channeldelete;2384762844234324}',
-            expected: '',
-            setup(ctx) {
-                ctx.roles.authorizer.permissions = eris.Constants.Permissions.administrator.toString();
-                ctx.channels.command.id = '2384762844234324';
-                ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).resolves(undefined);
-            }
-        },
-        {
-            title: 'Authorizer has perms for specific channel',
-            code: '{channeldelete;2384762844234324}',
-            expected: '',
-            setup(ctx) {
-                ctx.roles.authorizer.permissions = '0';
-                ctx.channels.command.permission_overwrites = [
-                    { id: ctx.roles.authorizer.id, type: OverwriteType.Role, allow: eris.Constants.Permissions.manageChannels.toString(), deny: '0' }
-                ];
-                ctx.channels.command.id = '2384762844234324';
-                ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).resolves(undefined);
-            }
-        },
-        {
-            code: '{channeldelete;2384762844234324}',
-            expected: '`Author cannot edit this channel`',
-            errors: [
-                { error: new BBTagRuntimeError('Author cannot edit this channel') }
-            ],
-            setup(ctx) {
-                ctx.roles.authorizer.permissions = '0';
-                ctx.channels.command.id = '2384762844234324';
-                ctx.message.channel_id = ctx.channels.command.id;
-            }
-        },
-        {
-            code: '{channeldelete;2384762844234324}',
-            expected: '`Failed to edit channel: no perms`',
-            errors: [
-                { error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error') }
-            ],
-            setup(ctx) {
-                const err = ctx.createRESTError(eris.ApiError.MISSING_PERMISSIONS);
-                ctx.channels.command.id = '2384762844234324';
-                ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).rejects(err);
-            }
-        },
-        {
-            code: '{channeldelete;2384762844234324}',
-            expected: '`Failed to edit channel: no perms`',
-            errors: [
-                { error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Some other error message') }
-            ],
-            setup(ctx) {
-                const err = ctx.createRESTError(eris.ApiError.NOT_AUTHORIZED, 'Some other error message');
-                ctx.channels.command.id = '2384762844234324';
-                ctx.message.channel_id = ctx.channels.command.id;
-                ctx.discord.setup(m => m.deleteChannel('2384762844234324', 'Command User#0000')).rejects(err);
-            }
-        }
+        })
     ]
 });

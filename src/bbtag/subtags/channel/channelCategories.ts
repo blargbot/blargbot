@@ -1,5 +1,3 @@
-import { guard } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
@@ -7,8 +5,13 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelCategories;
 
+export interface GetCategoryChannelsThunk {
+    (guildId: string): Promise<readonly string[]>;
+}
+
 export class ChannelCategoriesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getCategoryChannels: GetCategoryChannelsThunk;
+    public constructor({ getCategoryChannels }: { getCategoryChannels: GetCategoryChannelsThunk; }) {
         super({
             name: 'channelCategories',
             category: SubtagType.CHANNEL,
@@ -24,9 +27,10 @@ export class ChannelCategoriesSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getCategoryChannels = getCategoryChannels;
     }
 
-    public getChannelCategories(context: BBTagContext): string[] {
-        return context.root.message.channel.guild.channels.filter(guard.isCategoryChannel).map(c => c.id);
+    public async getChannelCategories(context: BBTagContext): Promise<readonly string[]> {
+        return await this.#getCategoryChannels(context.root.guildId);
     }
 }
