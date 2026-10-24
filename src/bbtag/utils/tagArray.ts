@@ -2,8 +2,8 @@ import { parse, zodStringToJson } from '@blargbot/core';
 import { Iterable } from '@blargbot/util';
 import z from 'zod';
 
-import type { BBTagContext } from '../BBTagContext.js';
 import type { BBTagArray } from '../types.js';
+import type { Variables } from '../Variables.js';
 
 export const tagArray = Object.freeze({
     serialize(array: JArray | BBTagArray, varName?: string): string {
@@ -53,23 +53,23 @@ export const tagArray = Object.freeze({
         }
         return result;
     },
-    async deserializeOrGetArray(context: BBTagContext, value: string): Promise<BBTagArray | undefined> {
+    async deserializeOrGetArray(variables: Variables, value: string): Promise<BBTagArray | undefined> {
         const obj = this.deserialize(value);
         if (obj !== undefined)
             return obj;
 
-        const arr = await context.root.variables.get(value);
+        const arr = await variables.get(value);
         if (Array.isArray(arr.value))
             return { v: arr.value, n: value };
 
         return undefined;
     },
-    async deserializeOrGetIterable(context: BBTagContext, value: string): Promise<Iterable<JToken> | undefined> {
+    async deserializeOrGetIterable(variables: Variables, value: string): Promise<Iterable<JToken> | undefined> {
         const obj = this.deserialize(value);
         if (obj !== undefined)
             return obj.v;
 
-        const arr = await context.root.variables.get(value);
+        const arr = await variables.get(value);
         if (Array.isArray(arr.value) || typeof arr.value === 'string')
             return arr.value;
 

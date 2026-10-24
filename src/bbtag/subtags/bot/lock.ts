@@ -5,12 +5,14 @@ import { BBTagRuntimeError } from '../../errors/index.js';
 import type { getLock as $getLock } from '../../getLock.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.lock;
 
 export class LockSubtag extends CompiledSubtag {
     readonly #getLock: typeof $getLock;
-    public constructor({ getLock }: { getLock: typeof $getLock; }) {
+    readonly #variables: VariablesProvider;
+    public constructor({ getLock, variables }: { getLock: typeof $getLock; variables: VariablesProvider; }) {
         super({
             name: 'lock',
             category: SubtagType.BOT,
@@ -26,6 +28,7 @@ export class LockSubtag extends CompiledSubtag {
             ]
         });
         this.#getLock = getLock;
+        this.#variables = variables;
     }
 
     public async lock(
@@ -47,7 +50,7 @@ export class LockSubtag extends CompiledSubtag {
         if (key.length === 0)
             throw new BBTagRuntimeError('Key cannot be empty');
 
-        const provider = context.root.variables.scopes.entries.find((s) => key.startsWith(s.prefix));
+        const provider = this.#variables.forContext(context).scopes.find((s) => key.startsWith(s.prefix));
         if (provider === undefined)
             throw new Error('Missing default variable scope!');
 

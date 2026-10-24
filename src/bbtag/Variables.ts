@@ -1,7 +1,7 @@
 import { guard } from '@blargbot/core';
-import type { Logger } from '@blargbot/logger';
 
-import type { TagVariableScopeEntry, TagVariableScopeProvider } from './tagVariableScopeProvider.js';
+import type { BBTagContext } from './BBTagContext.js';
+import type { TagVariableScopeDetails, TagVariableScopeEntry, TagVariableScopeFactory, TagVariableScopeKind, TagVariableScopeProvider } from './tagVariableScopeProvider.js';
 
 export interface VariableReference {
     readonly key: string;
@@ -9,8 +9,9 @@ export interface VariableReference {
 }
 
 export interface VariableCacheHooks {
-    readonly commitStarted?: () => Disposable;
-    readonly chunkCommitted?: (size: number) => void;
+    readonly commitStarted?: (context: BBTagContext) => Disposable;
+    readonly commitBatch?: (context: BBTagContext, size: number, scope: TagVariableScopeEntry) => Disposable;
+    readonly getFailed?: (context: BBTagContext, error: unknown, varName: string, scope: TagVariableScopeEntry) => void;
 }
 
 interface ValueSource {
@@ -18,8 +19,39 @@ interface ValueSource {
     get(): JToken | undefined;
 }
 
-export class VariableCache {
+export class VariablesProvider {
+    readonly #registry = new WeakMap<BBTagContext, Variables>();
+    readonly #scopes: TagVariableScopeFactory;
+    readonly #hooks: VariableCacheHooks;
+
+    public get kinds(): readonly TagVariableScopeKind[] {
+        return this.#scopes.kinds;
+    }
+
+    public constructor(
+        scopes: TagVariableScopeFactory,
+        hooks: VariableCacheHooks
+    ) {
+        this.#scopes = scopes;
+        this.#hooks = hooks;
+    }
+
+    readonly #createCache = (context: BBTagContext): Variables => new Variables(this.#scopes.createScopeProvider(context), this.#hooks, context);
+    public forContext(context: BBTagContext): Variables {
+        return this.#registry.getOrInsertComputed(context, this.#createCache);
+    }
+
+}
+
+export class Variables {
     readonly #cache = new Map<string, CacheEntry>();
+    readonly #scopes: TagVariableScopeProvider;
+    readonly #hooks: VariableCacheHooks;
+    readonly #context: BBTagContext;
+
+    public get scopes(): readonly TagVariableScopeDetails[] {
+        return this.#scopes.entries.map(({ description, name, scope, prefix }) => ({ description, name, scope, prefix }));
+    }
 
     public get list(): VariableReference[] {
         return this.#cache
@@ -30,10 +62,13 @@ export class VariableCache {
     }
 
     public constructor(
-        public readonly scopes: TagVariableScopeProvider,
-        public readonly hooks: VariableCacheHooks,
-        public readonly logger: Logger
+        scopes: TagVariableScopeProvider,
+        hooks: VariableCacheHooks,
+        context: BBTagContext
     ) {
+        this.#scopes = scopes;
+        this.#hooks = hooks;
+        this.#context = context;
     }
 
     #getCached(variables?: string[]): Iterable<CacheEntry> {
@@ -51,7 +86,7 @@ export class VariableCache {
         if (!forced && entry !== undefined)
             return entry;
 
-        const scope = this.scopes.find(variable);
+        const scope = this.#scopes.find(variable);
         if (scope === undefined)
             throw new Error('Missing default variable scope!');
 
@@ -59,7 +94,7 @@ export class VariableCache {
         try {
             entry = new CacheEntry(scope, varName, await scope.get(varName));
         } catch (err: unknown) {
-            this.logger.error(err, { tagName: this.scopes.tagName, tagVariables: this.scopes.isTag });
+            this.#hooks.getFailed?.(this.#context, err, varName, scope);
             throw err;
         }
         this.#cache.set(variable, entry);
@@ -88,7 +123,7 @@ export class VariableCache {
     }
 
     public async persist(variables?: string[]): Promise<void> {
-        using _ = this.hooks.commitStarted?.();
+        using _ = this.#hooks.commitStarted?.(this.#context);
         const pools = new Map<TagVariableScopeEntry, Record<string, JToken | undefined>>();
         for (const entry of this.#getCached(variables)) {
             if (!entry.changed)
@@ -103,13 +138,9 @@ export class VariableCache {
         }
 
         for (const [scope, pool] of pools) {
-            const start = performance.now();
             const objectCount = Object.keys(pool).length;
-            this.logger.bbtag('Committing', objectCount, 'objects to the', scope.prefix, 'pool.');
+            using _hook = this.#hooks.commitBatch?.(this.#context, objectCount, scope);
             await scope.upsert(pool);
-            const elapsed = performance.now() - start;
-            this.logger[elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', scope.prefix, 'pool in', elapsed, 'ms.');
-            this.hooks.chunkCommitted?.(objectCount);
         }
     }
 }

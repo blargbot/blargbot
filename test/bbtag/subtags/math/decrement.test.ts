@@ -1,175 +1,168 @@
-import assert from 'node:assert/strict';
-
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { NotABooleanError, NotANumberError } from '@blargbot/bbtag';
 import { DecrementSubtag } from '@blargbot/bbtag/subtags';
-import { TagVariableType } from '@blargbot/domain';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new DecrementSubtag(),
+    subtag: new DecrementSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 1, max: 3 },
     names: ['decrement'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         {
+            title: 'Current = 18',
             code: '{decrement;_myVariable}',
             expected: '17',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 17);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 18 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 17)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = 18.1',
             code: '{decrement;_myVariable}',
             expected: '17',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18.1);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 17);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 18.1 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 17)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = 18.9999',
             code: '{decrement;_myVariable}',
             expected: '17',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 18.9999);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 17);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 18.9999 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 17)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = \'18\'',
             code: '{decrement;_myVariable}',
             expected: '17',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, '18');
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 17);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: '18' }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 17)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = \'abc\'',
             code: '{decrement;_myVariable}',
             expected: '`Not a number`',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 'abc');
-                Object.freeze(ctx.tagVariables);
-            },
             errors: [
                 { error: new NotANumberError('abc') }
-            ]
-        },
-        {
-            code: '{decrement;_myVariable;3}',
-            expected: '19',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 19);
+            ],
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 'abc' }).mustHappen(1);
             }
         },
         {
+            title: 'Current = 22',
             code: '{decrement;_myVariable;3}',
             expected: '19',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22.1);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 19);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 22 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 19)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = 22.1',
+            code: '{decrement;_myVariable;3}',
+            expected: '19',
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 22.1 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 19)).resolves().mustHappen(1);
+            }
+        },
+        {
+            title: 'Current = 22',
             code: '{decrement;_myVariable;3.6}',
             expected: '19',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 19);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 22 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 19)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = <not set>',
             code: '{decrement;_myVariable;xyz}',
             expected: '`Not a number`',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
-                Object.freeze(ctx.tagVariables);
-            },
             errors: [
                 { error: new NotANumberError('xyz') }
             ]
         },
         {
+            title: 'Current = 16',
             code: '{decrement;_myVariable;9;true}',
             expected: '7',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 7);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 16 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 7)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = 16.1',
             code: '{decrement;_myVariable;9;true}',
             expected: '7',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16.1);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 7);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 16.1 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 7)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = 16',
             code: '{decrement;_myVariable;9.6;true}',
             expected: '7',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 7);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 16 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 7)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = 16',
             code: '{decrement;_myVariable;9;false}',
             expected: '7',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 7);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 16 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 7)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = 16.1',
             code: '{decrement;_myVariable;9;false}',
             expected: '7.100000000000001',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16.1);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 7.100000000000001);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 16.1 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 7.100000000000001)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = 16',
             code: '{decrement;_myVariable;9.6;false}',
             expected: '6.4',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 16);
-            },
-            assert(_, __, ctx) {
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }), 6.4);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 16 }).mustHappen(1);
+                variables.setup(m => m.set('_myVariable', 6.4)).resolves().mustHappen(1);
             }
         },
         {
+            title: 'Current = <not set>',
             code: '{decrement;_myVariable;;abc}',
             expected: '`Not a boolean`',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 22);
-                Object.freeze(ctx.tagVariables);
-            },
             errors: [
                 { error: new NotABooleanError('abc') }
             ]

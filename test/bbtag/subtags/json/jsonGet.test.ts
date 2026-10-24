@@ -1,14 +1,28 @@
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { JsonGetSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
-import { TagVariableType } from '@blargbot/domain';
+import { Mock } from '@blargbot/test-util';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new JsonGetSubtag(),
+    subtag: new JsonGetSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 1, max: 2 },
     names: ['jsonGet', 'jGet'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         ...generateTestCases({ array: [{ test: { abc: 123 } }] }, 'array.0.test', '{"abc":123}'),
         ...generateTestCases({ array: JSON.stringify([{ test: { abc: 123 } }]) }, 'array.0.test', '{"abc":123}'),
@@ -19,21 +33,30 @@ await runSubtagTests({
             expected: '`Cannot read property test of undefined`',
             errors: [
                 { error: new BBTagRuntimeError('Cannot read property test of undefined') }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('10')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{jsonget;"abc";0.test}',
             expected: '`Cannot read property test of undefined`',
             errors: [
                 { error: new BBTagRuntimeError('Cannot read property test of undefined') }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('"abc"')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{jsonget;true;0.test}',
             expected: '`Cannot read property test of undefined`',
             errors: [
                 { error: new BBTagRuntimeError('Cannot read property test of undefined') }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('true')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{jsonget;;someProp}',
@@ -51,17 +74,15 @@ function* generateTestCases(source: JToken, path: string, expected: string): Ite
     yield {
         code: `{jsonget;myJsonVar;${path}}`,
         expected: expected,
-        setup(ctx) {
-            ctx.input.tagName = 'testTag';
-            ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myJsonVar' }, source);
+        setup() {
+            variables.setup(m => m.get('myJsonVar')).resolves({ key: 'foo', value: source }).mustHappen(1);
         }
     };
     yield {
         code: '{jsonget;myJsonVar}',
         expected: typeof source === 'string' ? source : JSON.stringify(source),
-        setup(ctx) {
-            ctx.input.tagName = 'testTag';
-            ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myJsonVar' }, source);
+        setup() {
+            variables.setup(m => m.get('myJsonVar')).resolves({ key: 'foo', value: source }).mustHappen(1);
         }
     };
 }

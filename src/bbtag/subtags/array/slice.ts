@@ -6,11 +6,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.slice;
 
 export class SliceSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'slice',
             category: SubtagType.ARRAY,
@@ -25,10 +27,12 @@ export class SliceSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async slice(context: BBTagContext, array: string, startStr: string, endStr: string): Promise<JArray> {
-        const arr = await bbtag.tagArray.deserializeOrGetArray(context, array);
+        const variables = this.#variables.forContext(context);
+        const arr = await bbtag.tagArray.deserializeOrGetArray(variables, array);
         const fallback = new Lazy(() => parse.int(context.local.fallback ?? ''));
 
         if (arr === undefined)

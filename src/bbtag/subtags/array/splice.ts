@@ -6,11 +6,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.splice;
 
 export class SpliceSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'splice',
             category: SubtagType.ARRAY,
@@ -34,6 +36,7 @@ export class SpliceSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async spliceArray(
@@ -43,7 +46,8 @@ export class SpliceSubtag extends CompiledSubtag {
         countStr: string,
         replaceItems: string[]
     ): Promise<JArray> {
-        const arr = await bbtag.tagArray.deserializeOrGetArray(context, arrStr);
+        const variables = this.#variables.forContext(context);
+        const arr = await bbtag.tagArray.deserializeOrGetArray(variables, arrStr);
         const fallback = new Lazy(() => parse.int(context.local.fallback ?? ''));
 
         if (arr === undefined)
@@ -60,7 +64,7 @@ export class SpliceSubtag extends CompiledSubtag {
         const insert = bbtag.tagArray.flattenArray(replaceItems);
         const result = arr.v.splice(start, delCount, ...insert);
         if (arr.n !== undefined)
-            await context.root.variables.set(arr.n, arr.v);
+            await variables.set(arr.n, arr.v);
 
         return result;
     }

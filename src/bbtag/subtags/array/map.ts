@@ -4,11 +4,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.map;
 
 export class MapSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'map',
             category: SubtagType.ARRAY,
@@ -23,21 +25,23 @@ export class MapSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async * map(context: BBTagContext, varName: string, arrayStr: string, code: SubtagArgument): AsyncIterable<string> {
-        const array = await bbtag.tagArray.deserializeOrGetIterable(context, arrayStr) ?? [];
+        const variables = this.#variables.forContext(context);
+        const array = await bbtag.tagArray.deserializeOrGetIterable(variables, arrayStr) ?? [];
         try {
             for (const item of array) {
                 await context.root.limit.check(context, 'map:loops');
-                await context.root.variables.set(varName, item);
+                await variables.set(varName, item);
                 yield await code.execute();
 
                 if (context.state !== BBTagRuntimeState.RUNNING)
                     break;
             }
         } finally {
-            context.root.variables.reset([varName]);
+            variables.reset([varName]);
         }
     }
 }

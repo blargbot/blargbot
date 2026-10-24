@@ -1,15 +1,14 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
-import { createTagVariableScopeProvider } from '../../tagVariableScopeProvider.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.set;
 
-const tagVariableScopeProviders = createTagVariableScopeProvider().entries;
-
 export class SetSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'set',
             category: SubtagType.BOT,
@@ -20,11 +19,11 @@ export class SetSubtag extends CompiledSubtag {
                     exampleCode: tag.clear.exampleCode,
                     exampleOut: tag.clear.exampleOut,
                     returns: 'nothing',
-                    execute: async (ctx, [name]) => await ctx.root.variables.set(name.value, undefined)
+                    execute: async (ctx, [name]) => await variables.forContext(ctx).set(name.value, undefined)
                 },
                 {
                     parameters: ['name', 'value'],
-                    description: tag.value.description({ scopes: tagVariableScopeProviders }),
+                    description: tag.value.description({ scopes: variables.kinds }),
                     exampleCode: tag.value.exampleCode,
                     exampleOut: tag.value.exampleOut,
                     returns: 'nothing',
@@ -40,6 +39,7 @@ export class SetSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async set(
@@ -49,9 +49,9 @@ export class SetSubtag extends CompiledSubtag {
     ): Promise<void> {
         const deserializedArray = bbtag.tagArray.deserialize(value);
         if (deserializedArray !== undefined) {
-            await context.root.variables.set(variableName, deserializedArray.v);
+            await this.#variables.forContext(context).set(variableName, deserializedArray.v);
         } else {
-            await context.root.variables.set(variableName, value);
+            await this.#variables.forContext(context).set(variableName, value);
         }
     }
 
@@ -60,6 +60,6 @@ export class SetSubtag extends CompiledSubtag {
         variableName: string,
         values: string[]
     ): Promise<void> {
-        await context.root.variables.set(variableName, values);
+        await this.#variables.forContext(context).set(variableName, values);
     }
 }

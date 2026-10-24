@@ -3,11 +3,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.join;
 
 export class JoinSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'join',
             category: SubtagType.ARRAY,
@@ -22,10 +24,12 @@ export class JoinSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async join(context: BBTagContext, arrayStr: string, separator: string): Promise<string> {
-        const { v: array } = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
+        const variables = this.#variables.forContext(context);
+        const { v: array } = await bbtag.tagArray.deserializeOrGetArray(variables, arrayStr) ?? {};
 
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);

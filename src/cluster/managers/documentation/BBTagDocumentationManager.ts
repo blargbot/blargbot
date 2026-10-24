@@ -1,5 +1,5 @@
 import type { Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType } from '@blargbot/bbtag';
-import { bbtag, createTagVariableScopeProvider, limits, tagTypeDetails } from '@blargbot/bbtag';
+import { bbtag, limits, tagTypeDetails } from '@blargbot/bbtag';
 import type { SendContent } from '@blargbot/core';
 import { guard } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
@@ -10,8 +10,6 @@ import type { Documentation, DocumentationPage, DocumentationPaged } from './Doc
 import { DocumentationTreeManager } from './DocumentationTreeManager.js';
 
 const doc = templates.documentation.bbtag;
-
-const tagVariableScopeProviders = createTagVariableScopeProvider().entries;
 
 export class BBTagDocumentationManager extends DocumentationTreeManager {
     readonly #cluster: Cluster;
@@ -87,11 +85,11 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                     type: 'paged',
                     tags: ['variables'],
                     embed: {
-                        description: doc.variables.description({ scopeCount: tagVariableScopeProviders.length })
+                        description: doc.variables.description({ scopeCount: this.#cluster.bbtagVariables.kinds.length })
                     },
                     selectText: doc.variables.prompt,
                     pages: [
-                        ...tagVariableScopeProviders.map(scope => {
+                        ...this.#cluster.bbtagVariables.kinds.map(scope => {
                             return {
                                 name: doc.variables.pages.variableType.name({ name: scope.name, prefix: scope.prefix }),
                                 value: scope.description

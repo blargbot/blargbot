@@ -1,18 +1,17 @@
 import type { TagVariableScope } from '@blargbot/domain';
 import { TagVariableType } from '@blargbot/domain';
+import { memoize } from '@blargbot/util';
 import ReadWriteLock from 'rwlock';
-
-import { memoize } from './memoize.js';
 
 const locks: Record<string, RwLock | undefined> = {};
 
-export function getLock(scope: TagVariableScope | undefined, name: string): RwLock {
+export function getLock(scope: TagVariableScope, name: string): RwLock {
     return locks[getLockId(scope, name)] ??= new RwLock();
 }
 
-function getLockId(scope: TagVariableScope | undefined, name: string): string {
-    switch (scope?.type) {
-        case undefined: return `TEMP_${name}`;
+function getLockId(scope: TagVariableScope, name: string): string {
+    switch (scope.type) {
+        case TagVariableType.TEMP: return `${scope.type}_${scope.id}_${name}`;
         case TagVariableType.AUTHOR: return `${scope.type}_${scope.authorId}_${name}`;
         case TagVariableType.GLOBAL: return `${scope.type}_${name}`;
         case TagVariableType.GUILD_CC: return `${scope.type}_${scope.guildId}_${name}`;

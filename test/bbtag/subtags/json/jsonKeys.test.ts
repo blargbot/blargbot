@@ -1,12 +1,27 @@
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { JsonKeysSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new JsonKeysSubtag(),
+    subtag: new JsonKeysSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 1, max: 2 },
     names: ['jsonKeys', 'jKeys'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{jsonkeys;{j;{"abc":1,"def":2,"ghi":3}}}',

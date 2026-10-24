@@ -1,3 +1,4 @@
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
 import { EmojiCreateSubtag, SemiSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
@@ -6,16 +7,23 @@ import { asUint8Array } from '@blargbot/util';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const fetch = new Mock<typeof globalThis.fetch>({ id: 'fetch', callable: true });
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
 
 await runSubtagTests({
     subtag: new EmojiCreateSubtag({
-        fetch: fetch.instance
+        fetch: fetch.instance,
+        variables: variablesProvider.instance
     }),
     argCountBounds: { min: 2, max: 3 },
     names: ['emojiCreate'],
     setup(ctx) {
         ctx.adoptMock(fetch);
         ctx.roles.authorizer.permissions = DiscordPermissions.CREATE_GUILD_EXPRESSIONS.toString();
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
     },
     cases: [
         {
@@ -36,6 +44,7 @@ await runSubtagTests({
                     roles: [],
                     require_colons: true
                 });
+                variables.setup(m => m.get('')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
             }
         },
         {
@@ -62,6 +71,7 @@ await runSubtagTests({
                     roles: [],
                     require_colons: true
                 });
+                variables.setup(m => m.get('')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
             }
         },
         {
@@ -86,6 +96,7 @@ await runSubtagTests({
                     roles: [],
                     require_colons: true
                 });
+                variables.setup(m => m.get('')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
             }
         },
         {

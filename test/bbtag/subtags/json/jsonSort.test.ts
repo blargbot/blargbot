@@ -1,15 +1,27 @@
-import assert from 'node:assert/strict';
-
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag';
 import { JsonSortSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
-import { TagVariableType } from '@blargbot/domain';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new JsonSortSubtag(),
+    subtag: new JsonSortSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 2, max: 3 },
     names: ['jsonSort', 'jSort'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{jsonsort;{j;[{"points": 10, "name": "Blargbot"},{"points": 3, "name": "UNO"},{"points": 6, "name": "Stupid cat"},{"points": 12, "name": "Winner"}]};points}',
@@ -24,45 +36,43 @@ await runSubtagTests({
         {
             code: '{jsonsort;arrayVar;points}',
             expected: '',
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
-                    { points: 10, name: 'Blargbot' },
+            setup() {
+                variables.setup(m => m.get('arrayVar')).resolves({
+                    key: 'foo',
+                    value: [
+                        { points: 10, name: 'Blargbot' },
+                        { points: 3, name: 'UNO' },
+                        { points: 6, name: 'Stupid cat' },
+                        { points: 12, name: 'Winner' }
+                    ]
+                });
+                variables.setup((m, $) => m.set('arrayVar', $([
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
-                    { points: 12, name: 'Winner' }
-                ]);
-            },
-            async assert(bbctx) {
-                assert.deepEqual((await bbctx.root.variables.get('arrayVar')).value, [
-                    { points: 3, name: 'UNO' },
-                    { points: 6, name: 'Stupid cat' },
                     { points: 10, name: 'Blargbot' },
                     { points: 12, name: 'Winner' }
-                ]);
+                ]))).resolves().mustHappen(1);
             }
         },
         {
             code: '{jsonsort;arrayVar;points;a}',
             expected: '',
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
-                    { points: 10, name: 'Blargbot' },
-                    { points: 3, name: 'UNO' },
-                    { points: 6, name: 'Stupid cat' },
-                    { points: 12, name: 'Winner' }
-                ]);
-            },
-            async assert(bbctx) {
-                assert.deepEqual((await bbctx.root.variables.get('arrayVar')).value, [
+            setup() {
+                variables.setup(m => m.get('arrayVar')).resolves({
+                    key: 'foo',
+                    value: [
+                        { points: 10, name: 'Blargbot' },
+                        { points: 3, name: 'UNO' },
+                        { points: 6, name: 'Stupid cat' },
+                        { points: 12, name: 'Winner' }
+                    ]
+                });
+                variables.setup((m, $) => m.set('arrayVar', $([
                     { points: 12, name: 'Winner' },
                     { points: 10, name: 'Blargbot' },
                     { points: 6, name: 'Stupid cat' },
                     { points: 3, name: 'UNO' }
-                ]);
+                ]))).resolves().mustHappen(1);
             }
         },
         {
@@ -71,15 +81,16 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Cannot read property points at index 1, 1 total failures') }
             ],
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
-                    { points: 10, name: 'Blargbot' },
-                    { test: 3, name: 'UNO' },
-                    { points: 6, name: 'Stupid cat' },
-                    { points: 12, name: 'Winner' }
-                ]);
+            setup() {
+                variables.setup(m => m.get('arrayVar')).resolves({
+                    key: 'foo',
+                    value: [
+                        { points: 10, name: 'Blargbot' },
+                        { test: 3, name: 'UNO' },
+                        { points: 6, name: 'Stupid cat' },
+                        { points: 12, name: 'Winner' }
+                    ]
+                });
             }
         },
         {
@@ -88,15 +99,16 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Cannot read property abc at index 0, 4 total failures') }
             ],
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
-                    { points: 10, name: 'Blargbot' },
-                    { points: 3, name: 'UNO' },
-                    { points: 6, name: 'Stupid cat' },
-                    { points: 12, name: 'Winner' }
-                ]);
+            setup() {
+                variables.setup(m => m.get('arrayVar')).resolves({
+                    key: 'foo',
+                    value: [
+                        { points: 10, name: 'Blargbot' },
+                        { points: 3, name: 'UNO' },
+                        { points: 6, name: 'Stupid cat' },
+                        { points: 12, name: 'Winner' }
+                    ]
+                });
             }
         },
         {
@@ -105,10 +117,11 @@ await runSubtagTests({
             errors: [
                 { error: new NotAnArrayError('testVar') }
             ],
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'testVar' }, 'xyz');
+            setup() {
+                variables.setup(m => m.get('testVar')).resolves({
+                    key: 'foo',
+                    value: 'xyz'
+                });
             }
         }
     ]

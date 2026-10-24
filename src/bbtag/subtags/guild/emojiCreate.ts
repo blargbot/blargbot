@@ -7,6 +7,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.emojiCreate;
 
@@ -18,7 +19,8 @@ interface EmojiCreateOptions {
 
 export class EmojiCreateSubtag extends CompiledSubtag {
     readonly #fetch: typeof globalThis.fetch;
-    public constructor({ fetch }: { fetch: typeof globalThis.fetch; }) {
+    readonly #variables: VariablesProvider;
+    public constructor({ fetch, variables }: { fetch: typeof globalThis.fetch; variables: VariablesProvider; }) {
         super({
             name: 'emojiCreate',
             category: SubtagType.GUILD,
@@ -34,6 +36,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
             ]
         });
         this.#fetch = fetch;
+        this.#variables = variables;
     }
 
     public async createEmoji(
@@ -63,8 +66,9 @@ export class EmojiCreateSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
 
+        const variables = this.#variables.forContext(context);
         //TODO would be nice to be able to provide one role without using an array like {emojicreate;name;image;role} and not {emojicreate;name;image;["role"]}
-        const roleArray = await bbtag.tagArray.deserializeOrGetArray(context, rolesStr);
+        const roleArray = await bbtag.tagArray.deserializeOrGetArray(variables, rolesStr);
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
                 // eslint-disable-next-line @typescript-eslint/no-base-to-string

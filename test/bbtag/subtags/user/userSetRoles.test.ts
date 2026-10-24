@@ -1,3 +1,4 @@
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag';
 import { UserSetRolesSubtag } from '@blargbot/bbtag/subtags';
 import type { Logger } from '@blargbot/logger';
@@ -8,17 +9,26 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 const logger = new Mock<Logger>({ id: 'logger' });
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
 
 await runSubtagTests({
     subtag: new UserSetRolesSubtag({
-        logger: logger.instance
+        logger: logger.instance,
+        variables: variablesProvider.instance
     }),
     argCountBounds: { min: 0, max: 3 },
     names: ['userSetRoles', 'setRoles'],
     setup(ctx) {
         ctx.adoptMock(logger);
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
         ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
         ctx.members.authorizer.roles.push(ctx.roles.top.id);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
     },
     cases: [
         {
@@ -85,14 +95,20 @@ await runSubtagTests({
             expected: '`Not an array`',
             errors: [
                 { error: new NotAnArrayError('abc') }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('abc')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{usersetroles;abc;;q}',
             expected: 'false',
             errors: [
                 { error: new NotAnArrayError('abc').withDisplay('false') }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('abc')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{usersetroles;["unknown role"]}',

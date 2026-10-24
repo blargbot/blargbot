@@ -1,3 +1,4 @@
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import type { ScheduleThunk } from '@blargbot/bbtag/subtags';
 import { TimerSubtag } from '@blargbot/bbtag/subtags';
@@ -6,7 +7,10 @@ import { Mock } from '@blargbot/test-util';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const schedule = new Mock<ScheduleThunk>({ id: 'schedule', callable: true });
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+const variables = new Mock<Variables>({ id: 'variables' });
 const now = Temporal.Instant.from('2026-09-22T22:20:00Z');
+
 await runSubtagTests({
     subtag: new TimerSubtag({
         schedule: schedule.instance
@@ -15,10 +19,16 @@ await runSubtagTests({
     names: ['timer'],
     setup(ctx, _, test) {
         ctx.adoptMock(schedule);
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
         test.mock.timers.enable({
             apis: ['Date'],
             now: new Date(now.epochMilliseconds)
         });
+        ctx.dependencies.setup(m => m.variables).returns(variablesProvider.instance);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
     },
     cases: [
         {
@@ -38,6 +48,7 @@ await runSubtagTests({
                 ctx.input.author = '1560411548978495579';
                 ctx.input.authorizer = '1560411548978495580';
                 ctx.limit.setup(m => m.serialize()).returns({ type: 'mock', rules: {} }).mustHappen(1);
+                variables.setup(m => m.list).returns([]).mustHappen(1);
                 const target = now.add({ seconds: 10 });
                 schedule.setup((m, $) => m($({
                     msg: {

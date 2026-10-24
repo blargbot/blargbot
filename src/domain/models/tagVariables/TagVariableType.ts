@@ -1,4 +1,5 @@
 export enum TagVariableType {
+    TEMP = 'TEMP',
     AUTHOR = 'AUTHOR',
     GLOBAL = 'GLOBAL',
     GUILD_CC = 'GUILD_CC',

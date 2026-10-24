@@ -1,15 +1,29 @@
 import assert from 'node:assert/strict';
 
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { NotAnArrayError } from '@blargbot/bbtag';
 import { GetSubtag, ShuffleSubtag } from '@blargbot/bbtag/subtags';
-import { TagVariableType } from '@blargbot/domain';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new ShuffleSubtag(),
+    subtag: new ShuffleSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 0, max: 1 },
     names: ['shuffle'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{shuffle}',
@@ -37,11 +51,7 @@ await runSubtagTests({
             expected: '`Not an array`',
             errors: [
                 { error: new NotAnArrayError('var1') }
-            ],
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
-            }
+            ]
         },
         {
             code: '{shuffle;[1,2,3,4,5,6]}',
@@ -58,21 +68,10 @@ await runSubtagTests({
         {
             code: '{shuffle;{get;arr1}}',
             expected: '',
-            subtags: [new GetSubtag()],
-            retries: 1,
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4, 5, 6]);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), [1, 2, 3, 4, 5, 6]);
-                const result = (await bbctx.root.variables.get('arr1')).value;
-                assert.notDeepEqual(result, [1, 2, 3, 4, 5, 6]);
-                assert(Array.isArray(result), `${JSON.stringify(result)} should have been an array.`);
-                assert.equal(result.length, 6);
-                for (const value of [1, 2, 3, 4, 5, 6])
-                    assert(result.includes(value), `${JSON.stringify(result)} is missing ${value}`);
+            subtags: [new GetSubtag({ variables: variablesProvider.instance })],
+            setup() {
+                variables.setup(m => m.get('arr1')).resolves({ key: 'foo', value: [1, 2, 3, 4, 5, 6] }).mustHappen(1);
+                variables.setup((m, $) => m.set('foo', $.setEqual([1, 2, 3, 4, 5, 6]))).resolves().mustHappen(1);
             }
         }
     ]

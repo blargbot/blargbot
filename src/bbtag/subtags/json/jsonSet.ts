@@ -2,11 +2,13 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.jsonSet;
 
 export class JsonSetSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'jsonSet',
             category: SubtagType.JSON,
@@ -38,6 +40,7 @@ export class JsonSetSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async setValue(
@@ -47,12 +50,13 @@ export class JsonSetSubtag extends CompiledSubtag {
         value: string | undefined,
         create: boolean
     ): Promise<JToken | undefined> {
-        const target = await bbtag.json.resolveObj(context, input);
+        const variables = this.#variables.forContext(context);
+        const target = await bbtag.json.resolveObj(variables, input);
 
         bbtag.json.set(target.object, path, value, create);
 
         if (target.variable !== undefined) {
-            await context.root.variables.set(target.variable, target.object);
+            await variables.set(target.variable, target.object);
             return undefined;
         }
 

@@ -2,11 +2,13 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.jsonKeys;
 
 export class JsonKeysSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'jsonKeys',
             category: SubtagType.JSON,
@@ -22,10 +24,12 @@ export class JsonKeysSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async getJsonKeys(context: BBTagContext, objStr: string, path: string): Promise<string[]> {
-        const obj = (await bbtag.json.resolveObj(context, objStr)).object;
+        const variables = this.#variables.forContext(context);
+        const obj = (await bbtag.json.resolveObj(variables, objStr)).object;
 
         if (path !== '')
             return Object.keys(bbtag.json.get(obj, path) ?? {});

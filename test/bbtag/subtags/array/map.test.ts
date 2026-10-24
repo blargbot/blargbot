@@ -1,87 +1,94 @@
-import assert from 'node:assert/strict';
-
-import { BBTagRuntimeError, BBTagRuntimeState } from '@blargbot/bbtag';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
+import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { GetSubtag, IfSubtag, MapSubtag, ReturnSubtag } from '@blargbot/bbtag/subtags';
-import { TagVariableType } from '@blargbot/domain';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new MapSubtag(),
+    subtag: new MapSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: { count: 3, noEval: [2] }, max: { count: 3, noEval: [2] } },
     names: ['map'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{map;a;b;c{fail}}',
-            expected: '[]'
+            expected: '[]',
+            setup() {
+                variables.setup(m => m.get('b')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+                setupVariable('a', undefined, 0, []);
+            }
         },
         {
             code: '{map;a;arr1;<{get;a}>}',
             expected: '["<this>","<is>","<arr1>"]',
-            subtags: [new GetSubtag()],
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }, 'initial');
+            subtags: [new GetSubtag({ variables: variablesProvider.instance })],
+            setup() {
+                variables.setup(m => m.get('arr1')).resolves({ key: 'foo', value: ['this', 'is', 'arr1'] }).mustHappen(1);
+                setupVariable('a', 'initial', 3, ['this', 'is', 'arr1']);
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'map:loops')).mustHappen(3).resolves(undefined);
             },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.root.variables.get('a')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }), 'initial');
+            assert() {
+                assertVariable('a', ['this', 'is', 'arr1']);
             }
         },
         {
             code: '{map;a;{get;arr1};<{get;a}>}',
             expected: '["<this>","<is>","<arr1>"]',
-            subtags: [new GetSubtag()],
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }, 'initial');
+            subtags: [new GetSubtag({ variables: variablesProvider.instance })],
+            setup() {
+                variables.setup(m => m.get('arr1')).resolves({ key: 'foo', value: ['this', 'is', 'arr1'] }).mustHappen(1);
+                setupVariable('a', 'initial', 3, ['this', 'is', 'arr1']);
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'map:loops')).mustHappen(3).resolves(undefined);
             },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.root.variables.get('a')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }), 'initial');
+            assert() {
+                assertVariable('a', ['this', 'is', 'arr1']);
             }
         },
         {
             code: '{map;a;var1;<{get;a}>}',
             expected: '["<t>","<h>","<i>","<s>","< >","<i>","<s>","< >","<v>","<a>","<r>","<1>"]',
-            subtags: [new GetSubtag()],
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }, 'initial');
+            subtags: [new GetSubtag({ variables: variablesProvider.instance })],
+            setup() {
+                variables.setup(m => m.get('var1')).resolves({ key: 'foo', value: 'this is var1' }).mustHappen(1);
+                setupVariable('a', 'initial', 12, 'this is var1');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'map:loops')).mustHappen(12).resolves(undefined);
             },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.root.variables.get('a')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }), 'initial');
+            assert() {
+                assertVariable('a', 'this is var1');
             }
         },
         {
             code: '{map;a;var1;<{get;a}>{if;{get;a};==;s;{return}}}',
             expected: '["<t>","<h>","<i>","<s>"]',
-            subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag()],
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'var1' }, 'this is var1');
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }, 'initial');
+            subtags: [new GetSubtag({ variables: variablesProvider.instance }), new IfSubtag(), new ReturnSubtag()],
+            setup() {
+                variables.setup(m => m.get('var1')).resolves({ key: 'foo', value: 'this is var1' }).mustHappen(1);
+                setupVariable('a', 'initial', 8, 'this');
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'map:loops')).mustHappen(4).resolves(undefined);
             },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.root.variables.get('a')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }), 'initial');
-                assert.equal(bbctx.state, BBTagRuntimeState.ABORT);
+            assert() {
+                assertVariable('a', 'this');
             }
         },
         {
@@ -90,11 +97,10 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [new GetSubtag()],
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }, 'initial');
+            subtags: [new GetSubtag({ variables: variablesProvider.instance })],
+            setup() {
+                variables.setup(m => m.get('arr1')).resolves({ key: 'foo', value: ['this', 'is', 'arr1'] }).mustHappen(1);
+                setupVariable('a', 'initial', 1, ['this']);
             },
             postSetup(bbctx, ctx) {
                 let i = 0;
@@ -104,10 +110,34 @@ await runSubtagTests({
                     return undefined;
                 });
             },
-            async assert(bbctx, _, ctx) {
-                assert.equal((await bbctx.root.variables.get('a')).value, 'initial');
-                assert.equal(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'a' }), 'initial');
+            assert() {
+                assertVariable('a', ['this']);
             }
         }
     ]
 });
+
+function assertVariable(name: string, values: Iterable<JToken | undefined>): void {
+    Mock.verifySequence(
+        ...Iterator.from(values)
+            .map(v => variables.expression((m, $) => m.set(name, $(v)))),
+        variables.expression((m, $) => m.reset($([name])))
+    );
+}
+
+function setupVariable(name: string, initial: JToken | undefined, readCount: number, setTo: Iterable<JToken | undefined>): void {
+    let current = initial;
+    variables.setup(m => m.get(name)).resolves({
+        key: 'foo',
+        get value() {
+            return current;
+        }
+    }).mustHappen(readCount);
+    const setCounts = Iterator.from(setTo).reduce((m, v) => {
+        m.set(v, (m.get(v) ?? 0) + 1);
+        return m;
+    }, new Map<JToken | undefined, number>());
+    for (const [value, count] of setCounts)
+        variables.setup(m => m.set(name, value)).invokesAsync(() => void (current = value)).mustHappen(count);
+    variables.setup((m, $) => m.reset($([name]))).returns().mustHappen(1);
+}

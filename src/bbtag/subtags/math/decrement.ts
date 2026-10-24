@@ -5,11 +5,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.decrement;
 
 export class DecrementSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'decrement',
             category: SubtagType.MATH,
@@ -32,6 +34,7 @@ export class DecrementSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async decrement(context: BBTagContext, varName: string, amountStr: string, floorStr: string): Promise<number> {
@@ -43,7 +46,8 @@ export class DecrementSubtag extends CompiledSubtag {
         if (floor === undefined)
             throw new NotABooleanError(floorStr);
 
-        const valueRaw = await context.root.variables.get(varName);
+        const variables = this.#variables.forContext(context);
+        const valueRaw = await variables.get(varName);
         let value: number | undefined;
         switch (typeof valueRaw.value) {
             case 'string':
@@ -62,7 +66,7 @@ export class DecrementSubtag extends CompiledSubtag {
         }
 
         value -= amount;
-        await context.root.variables.set(varName, value);
+        await variables.set(varName, value);
 
         return value;
     }

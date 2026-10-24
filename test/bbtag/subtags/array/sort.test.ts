@@ -1,14 +1,26 @@
-import assert from 'node:assert/strict';
-
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { GetSubtag, SortSubtag } from '@blargbot/bbtag/subtags';
-import { TagVariableType } from '@blargbot/domain';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new SortSubtag(),
+    subtag: new SortSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 1, max: 2 },
     names: ['sort'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{sort;[2,3,0,8,7,4,8,9,2,4,3]}',
@@ -46,43 +58,28 @@ await runSubtagTests({
         {
             code: '{sort;{get;arr1}}',
             expected: '',
-            subtags: [new GetSubtag()],
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), ['this', 'is', 'arr1']);
-                assert.deepEqual((await bbctx.root.variables.get('arr1')).value, ['arr1', 'is', 'this']);
+            subtags: [new GetSubtag({ variables: variablesProvider.instance })],
+            setup() {
+                variables.setup(m => m.get('arr1')).resolves({ key: 'foo', value: ['this', 'is', 'arr1'] }).mustHappen(1);
+                variables.setup((m, $) => m.set('foo', $(['arr1', 'is', 'this']))).resolves().mustHappen(1);
             }
         },
         {
             code: '{sort;arr1}',
             expected: '',
-            subtags: [new GetSubtag()],
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), ['this', 'is', 'arr1']);
-                assert.deepEqual((await bbctx.root.variables.get('arr1')).value, ['arr1', 'is', 'this']);
+            subtags: [new GetSubtag({ variables: variablesProvider.instance })],
+            setup() {
+                variables.setup(m => m.get('arr1')).resolves({ key: 'foo', value: ['this', 'is', 'arr1'] }).mustHappen(1);
+                variables.setup((m, $) => m.set('arr1', $(['arr1', 'is', 'this']))).resolves().mustHappen(1);
             }
         },
         {
             code: '{sort;!arr1}',
             expected: '',
-            subtags: [new GetSubtag()],
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, ['this', 'is', 'arr1']);
-                ctx.tagVariablesTable.setup((m, $) => m.upsert($({ arr1: ['arr1', 'is', 'this'] }), $({ type: TagVariableType.LOCAL_TAG, name: 'testTag' }))).resolves(undefined);
-            },
-            async assert(bbctx) {
-                assert.deepEqual((await bbctx.root.variables.get('arr1')).value, ['arr1', 'is', 'this']);
+            subtags: [new GetSubtag({ variables: variablesProvider.instance })],
+            setup() {
+                variables.setup(m => m.get('!arr1')).resolves({ key: 'foo', value: ['this', 'is', 'arr1'] }).mustHappen(1);
+                variables.setup((m, $) => m.set('!arr1', $(['arr1', 'is', 'this']))).resolves().mustHappen(1);
             }
         }
     ]

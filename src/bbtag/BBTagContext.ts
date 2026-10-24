@@ -1,5 +1,6 @@
 import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core';
 import { discord, guard, Timer } from '@blargbot/core';
+import { memoize } from '@blargbot/util';
 import * as eris from 'eris';
 
 import type { BBTagEngine } from './BBTagEngine.js';
@@ -8,7 +9,6 @@ import { DiscordPermissions } from './enums.js';
 import type { BBTagRuntimeError } from './errors/index.js';
 import { SubtagStackOverflowError, UnknownSubtagError } from './errors/index.js';
 import type { BBTagExpression, SubtagCall } from './language/index.js';
-import { memoize } from './memoize.js';
 import type { Subtag } from './Subtag.js';
 import { SubtagCallStack } from './SubtagCallStack.js';
 import type { BBTagRuntimeRootScope, BBTagRuntimeScope, FindEntityOptions, LocatedRuntimeError, RuntimeDebugEntry } from './types.js';

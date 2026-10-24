@@ -19,6 +19,13 @@ export type Callable =
     | ((this: never, ...args: never) => unknown)
     | (abstract new (...args: never) => unknown);
 export type Mockable = object | Callable;
+export type Expression<T extends Mockable, Result> = (target: T, $: ArgumentMatchers<T>) => Result;
+export interface BoundExpression<out T extends Mockable, Result> {
+    readonly invocations: Iterable<Invocation>;
+    readonly setup: SetupMock<T, Result>;
+    readonly verify: VerifyMock<T>;
+    toString(): string;
+}
 
 export interface InterceptOptions {
     /**
@@ -103,8 +110,8 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         getDescriptor: new Map<PropertyKey, Array<Interceptor<T, PropertyDescriptor>>>(),
         isExtensible: [] as Array<Interceptor<T, boolean>>,
         preventExtensions: [] as Array<Interceptor<T, boolean>>
-    } satisfies Record<Expression['kind'], unknown>;
-    readonly #verifiers: Array<Verifier<T>> = [];
+    } satisfies Record<ExpressionData['kind'], unknown>;
+    readonly #verifiers: Array<Verifier<T, unknown>> = [];
     readonly #isCallable: boolean;
     readonly #children = new Map<unknown, { readonly mock: Mock; setup(): void; }>();
 
@@ -112,12 +119,17 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         return this.#instance;
     }
 
-    public get invocations(): readonly Invocation[] {
+    public get invocations(): Invocation[] {
         return [...this.#invocations];
     }
 
     public get id(): string | null {
         return this.#id;
+    }
+
+    public findInvocations<Result>(expression: Expression<T, Result>): Invocation[] {
+        const data = parseExpression(expression, this.#isCallable, true);
+        return this.#invocations.filter(i => isMatch(data, i, this.#instance));
     }
 
     public static isMocked<T extends Mockable>(value: T): boolean;
@@ -271,8 +283,8 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         return (this.#interceptors.method.get(name)?.length ?? 0) > 0
             || (this.#interceptors.newNested.get(name)?.length ?? 0) > 0;
     }
-    #interceptorsFor<Result>(expression: Expression): Array<Interceptor<T, Result>>
-    #interceptorsFor(expression: Expression): Array<Interceptor<T, unknown>> {
+    #interceptorsFor<Result>(expression: ExpressionData): Array<Interceptor<T, Result>>
+    #interceptorsFor(expression: ExpressionData): Array<Interceptor<T, unknown>> {
         switch (expression.kind) {
             case 'call':
             case 'new':
@@ -328,7 +340,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
     }
 
     #handleInteraction<T>(kind: Invocation['kind'], $this: unknown, name: PropertyKey, args: readonly unknown[], canIntercept: boolean): T {
-        const invocation: Invocation = { kind, name, this: $this, arguments: args, canIntercept };
+        const invocation = createInvocation({ kind, name, this: $this, arguments: args, canIntercept });
         const interceptor = this.#findInterceptor(invocation);
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
@@ -394,7 +406,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
 
     #invokeCallMethod(kind: 'method' | 'call', name: PropertyKey, args: readonly unknown[]): unknown {
         const [thisArg, ...argsArray] = args;
-        const invocation: Invocation = { kind, name, this: thisArg, arguments: Array.from(argsArray), canIntercept: true };
+        const invocation = createInvocation({ kind, name, this: thisArg, arguments: Array.from(argsArray), canIntercept: true });
         const interceptor = this.#findInterceptor(invocation);
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
@@ -408,7 +420,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         const [thisArg, argsArray] = args;
         if (!isArrayLike(argsArray))
             throw new MockError('Apply expects the second argument to be array like.');
-        const invocation: Invocation = { kind, name, this: thisArg, arguments: Array.from(argsArray), canIntercept: true };
+        const invocation = createInvocation({ kind, name, this: thisArg, arguments: Array.from(argsArray), canIntercept: true });
         const interceptor = this.#findInterceptor(invocation);
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
@@ -427,7 +439,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
                     return this.#invokeApplyMethod('call', '[[Call]]', args);
             }
         }
-        const invocation: Invocation = { kind: 'method', name: get.name, this: thisArg, arguments: args, canIntercept: true };
+        const invocation = createInvocation({ kind: 'method', name: get.name, this: thisArg, arguments: args, canIntercept: true });
         const interceptor = this.#findInterceptor(invocation);
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
@@ -439,7 +451,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
     }
 
     #invokeGetConstruct(get: Invocation, newTarget: unknown, args: readonly unknown[]): object {
-        const invocation: Invocation = { kind: 'newNested', name: get.name, this: newTarget, arguments: args, canIntercept: true };
+        const invocation = createInvocation({ kind: 'newNested', name: get.name, this: newTarget, arguments: args, canIntercept: true });
         const interceptor = this.#findInterceptor(invocation);
         if (interceptor !== undefined) {
             this.#invocations.push(invocation);
@@ -478,7 +490,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
     }
 
     public reset(): void {
-        this.clearSetups();
+        this.clearInterceptors();
         this.clearInvocations();
         this.clearVerifiers();
     }
@@ -503,7 +515,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
             entry.mock.clearVerifiers();
     }
 
-    public clearSetups(): void {
+    public clearInterceptors(): void {
         for (const value of Object.values(this.#interceptors)) {
             const groups = value instanceof Map ? value.values() : [value];
             for (const group of groups) {
@@ -512,14 +524,14 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         }
         for (const entry of this.#children.values()) {
             entry.setup();
-            entry.mock.clearSetups();
+            entry.mock.clearInterceptors();
         }
     }
 
     public verifyAll(): void {
         const errors = [];
         for (const verifier of this.#verifiers) {
-            const invocations = this.#invocations.filter(i => isMatch(verifier.expression, i, this.#instance));
+            const invocations = this.findInvocations(verifier.expression);
             try {
                 verifier.assertion(invocations, this);
             } catch (error) {
@@ -543,12 +555,12 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
             throw errors[0];
     }
 
-    public verify(action: (instance: T, matcher: ArgumentMatchers<T>) => unknown): VerifyMock<T> {
-        const expression = toExpression(action, this.#isCallable, true);
-        return this.#verify(expression);
+    public verify<Result>(expression: Expression<T, Result>): VerifyMock<T> {
+        const data = parseExpression(expression, this.#isCallable, true);
+        return this.#verify(data);
     }
 
-    #verify(expression: Expression): VerifyMock<T> {
+    #verify(expression: ExpressionData): VerifyMock<T> {
         const result: VerifyMock<T> = {
             satisfies: (assertion) => {
                 const invocations = this.#invocations.filter(i => isMatch(expression, i, this.#instance));
@@ -562,6 +574,49 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
             }
         };
         return result;
+    }
+
+    public expression<Result>(expression: Expression<T, Result>): BoundExpression<T, Result> {
+        const setup = (): SetupMock<T, Result> => this.#setup(parseExpression(expression, this.#isCallable, false));
+        const verify = (): VerifyMock<T> => this.#verify(parseExpression(expression, this.#isCallable, true));
+        const invocations = (): Invocation[] => this.findInvocations(expression);
+        return {
+            toString: () => debugExpression(parseExpression(expression, this.#isCallable, true), this),
+            get invocations() {
+                return invocations();
+            },
+            get setup() {
+                return setup();
+            },
+            get verify() {
+                return verify();
+            }
+        };
+    }
+
+    public static verifySequence(...args: ReadonlyArray<BoundExpression<Mockable, unknown>>): void {
+        if (args.length === 0)
+            assert.fail('Cannot verify an empty sequence');
+
+        let order = -1;
+        let previous: BoundExpression<Mockable, unknown> = null!;
+        for (const bound of args) {
+            let empty = true;
+            let matched = false;
+            for (const invocation of bound.invocations) {
+                empty = false;
+                if (invocation.order > order) {
+                    matched = true;
+                    order = invocation.order;
+                    break;
+                }
+            }
+            if (empty)
+                assert.fail(`Expected ${bound.toString()} to have been called but it has not.`);
+            if (!matched)
+                assert.fail(`Expexted ${bound.toString()} to have been called after ${previous.toString()} but it has not.`);
+            previous = bound;
+        }
     }
 
     #getChild<T extends Mockable>(key: unknown, createMock: () => Mock<T>, setup: (mock: Mock<T>) => void): Mock<T> {
@@ -594,16 +649,16 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         }));
     }
 
-    public setup<Result>(action: (instance: T, matchers: ArgumentMatchers<T>) => Result): SetupMock<T, Result> {
-        const expression = toExpression(action, this.#isCallable, false);
-        return this.#setup(expression);
+    public setup<Result>(expression: Expression<T, Result>): SetupMock<T, Result> {
+        const details = parseExpression(expression, this.#isCallable, false);
+        return this.#setup(details);
     }
 
-    public setupSet<Result>(action: (instance: T, matchers: ArgumentMatchers<T>) => Result): SetupMock<T, boolean> {
-        const expression = toExpression(action, this.#isCallable, true);
-        if (expression.kind !== 'set')
+    public setupSet<Result>(expression: Expression<T, Result>): SetupMock<T, boolean> {
+        const details = parseExpression(expression, this.#isCallable, true);
+        if (details.kind !== 'set')
             throw new MockError('Only expressions of the form `x => x.something = value` are supported with setupSet');
-        return this.#setup(expression);
+        return this.#setup(details);
     }
 
     public setupProperty<Property extends keyof T>(property: Property, initialValue: T[Property]): Disposable {
@@ -627,10 +682,10 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
 
     static readonly #setupMockImpl = class SetupMockImpl<T extends Mockable, Result> implements SetupMock<T, Result> {
         readonly #mock: Mock<T>;
-        readonly #expression: Expression;
+        readonly #expression: ExpressionData;
         readonly #disposeActions: ReadonlyArray<() => void>;
 
-        public constructor(mock: Mock<T>, expression: Expression, disposeActions: ReadonlyArray<() => void>) {
+        public constructor(mock: Mock<T>, expression: ExpressionData, disposeActions: ReadonlyArray<() => void>) {
             this.#mock = mock;
             this.#expression = expression;
             this.#disposeActions = disposeActions;
@@ -733,7 +788,7 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         }
 
         public addAssertion(assertion: Assertion<T>): SetupMock<T, Result> {
-            const verifier = { expression: this.#expression, assertion };
+            const verifier = { expression: toExpression(this.#expression), assertion };
             this.#mock.#verifiers.push(verifier);
             return new SetupMockImpl(this.#mock, this.#expression, [
                 () => {
@@ -758,24 +813,24 @@ export const Mock = class Mock<T extends Mockable = Mockable> {
         }
     };
 
-    #setup<Result>(expression: Expression): SetupMock<T, Result> {
+    #setup<Result>(expression: ExpressionData): SetupMock<T, Result> {
         return new Mock.#setupMockImpl(this, expression, []);
     }
 };
 
-function mustNotHaveHappened<T extends Mockable>(mock: Mock<T>, expression: Expression): Assertion<T> {
+function mustNotHaveHappened<T extends Mockable>(mock: Mock<T>, expression: ExpressionData): Assertion<T> {
     return i => {
         if (i.length !== 0) {
-            assert.fail(`Expected ${debugMatchers(expression, mock)} to not be called but it has been ${i.length} time(s).`);
+            assert.fail(`Expected ${debugExpression(expression, mock)} to not be called but it has been ${i.length} time(s).`);
         }
     };
 }
 
-function mustHaveHappened<T extends Mockable>(mock: Mock<T>, expression: Expression, ...args: [number | Iterable<number>] | [number, number] | []): Assertion<T> {
+function mustHaveHappened<T extends Mockable>(mock: Mock<T>, expression: ExpressionData, ...args: [number | Iterable<number>] | [number, number] | []): Assertion<T> {
     if (args.length === 0) {
         return i => {
             if (i.length === 0) {
-                assert.fail(`Expected ${debugMatchers(expression, mock)} to have been called but it has not.`);
+                assert.fail(`Expected ${debugExpression(expression, mock)} to have been called but it has not.`);
             }
         };
     }
@@ -783,7 +838,7 @@ function mustHaveHappened<T extends Mockable>(mock: Mock<T>, expression: Express
         const [min, max] = args;
         return i => {
             if (min > i.length || i.length > max) {
-                assert.fail(`Expected ${debugMatchers(expression, mock)} to have been called between ${min} and ${max} time(s) (inclusive), but found ${i.length}.`);
+                assert.fail(`Expected ${debugExpression(expression, mock)} to have been called between ${min} and ${max} time(s) (inclusive), but found ${i.length}.`);
             }
         };
     }
@@ -791,26 +846,26 @@ function mustHaveHappened<T extends Mockable>(mock: Mock<T>, expression: Express
     if (typeof v0 === 'number') {
         return i => {
             if (i.length !== v0) {
-                assert.fail(`Expected ${debugMatchers(expression, mock)} to have been called ${v0} time(s), but found ${i.length}.`);
+                assert.fail(`Expected ${debugExpression(expression, mock)} to have been called ${v0} time(s), but found ${i.length}.`);
             }
         };
     }
     const options = [...v0];
     return i => {
         if (!options.includes(i.length)) {
-            assert.fail(`Expected ${debugMatchers(expression, mock)} to have been called one of [${options.join(',')}] time(s), but found ${i.length}.`);
+            assert.fail(`Expected ${debugExpression(expression, mock)} to have been called one of [${options.join(',')}] time(s), but found ${i.length}.`);
         }
     };
 }
 
 interface Interceptor<T extends Mockable, Result> {
-    readonly expression: Expression;
+    readonly expression: ExpressionData;
     readonly callback: Callback<T, Result>;
     readonly isFallback: boolean;
     invoked: boolean;
 }
-interface Verifier<T extends Mockable> {
-    readonly expression: Expression;
+interface Verifier<in T extends Mockable, out Result> {
+    readonly expression: Expression<T, Result>;
     readonly assertion: Assertion<T>;
 }
 
@@ -1296,18 +1351,49 @@ export interface ArgumentMatchers<out T = never> {
     readonly setEqual: <R>(items: R extends Iterable<infer Item> ? Iterable<Item> : never) => R;
 }
 
-function toExpression<T extends Mockable>(
-    action: (value: T, matchers: ArgumentMatchers<T>) => unknown,
+export function toExpression<T extends Mockable>(data: ExpressionData): Expression<T, unknown> {
+    switch (data.kind) {
+        case 'call': return m => Reflect.apply(m as never, data.thisArg, data.parameters.map(PublicArgumentMatcher.disguise));
+        case 'new': return m => Reflect.construct(m as never, data.parameters.map(PublicArgumentMatcher.disguise));
+        case 'get': return m => Reflect.get(m, data.name);
+        case 'set': return m => Reflect.set(m, data.name, PublicArgumentMatcher.disguise(data.value));
+        case 'delete': return m => Reflect.deleteProperty(m, data.name);
+        case 'has': return m => Reflect.has(m, data.name);
+        case 'method': return m => Reflect.apply(Reflect.get(m, data.name) as never, data.thisArg, data.parameters.map(PublicArgumentMatcher.disguise));
+        case 'newNested': return m => Reflect.construct(Reflect.get(m, data.name) as never, data.parameters.map(PublicArgumentMatcher.disguise));
+        case 'getPrototype': return m => Reflect.getPrototypeOf(m);
+        case 'setPrototype': return m => Reflect.setPrototypeOf(m, PublicArgumentMatcher.disguise(data.value));
+        case 'defineProperty': {
+            const descriptor: PropertyDescriptor = {};
+            for (const key of ['get', 'set', 'value'] as const) {
+                if (key in data)
+                    descriptor[key] = data[key] === undefined ? undefined : PublicArgumentMatcher.disguise<never>(data[key]);
+            }
+            for (const key of ['configurable', 'enumerable', 'writable'] as const) {
+                if (key in data)
+                    descriptor[key] = data[key];
+            }
+            return m => Reflect.defineProperty(m, data.name, descriptor);
+        }
+        case 'ownKeys': return m => Reflect.ownKeys(m);
+        case 'getDescriptor': return m => Reflect.getOwnPropertyDescriptor(m, data.name);
+        case 'isExtensible': return m => Reflect.isExtensible(m);
+        case 'preventExtensions': return m => Reflect.preventExtensions(m);
+    }
+}
+
+function parseExpression<T extends Mockable, Result>(
+    expression: Expression<T, Result>,
     isCallable: boolean,
     allowDirectSet: boolean
-): Expression {
-    let expression: Expression | undefined;
+): ExpressionData {
+    let data: Mutable<ExpressionData> | undefined;
     let checkResult: (value: unknown) => boolean = () => {
         throw new MockError('No mockable calls were made.');
     };
 
     const ensureEmpty = (): void => {
-        if (expression !== undefined)
+        if (data !== undefined)
             throw new MockError('Cannot mock multiple expressions in one go.');
     };
 
@@ -1324,34 +1410,34 @@ function toExpression<T extends Mockable>(
         // OK: $mock => $mock.call(thisArg, ...)    = call if $mock is a function, method otherwise
         // OK: $mock => $mock.apply(thisArg, [...]) = call if $mock is a function, method otherwise
         apply(_, __, args) {
-            if (expression?.kind !== 'get')
+            if (data?.kind !== 'get')
                 return deepMemberError();
             if (typeof target === 'function') {
-                if (expression.name === 'call') {
+                if (data.name === 'call') {
                     // mocking x => x.call(thisArg, arg1, arg2, arg3, ...)
                     const [thisArg, ...argArray] = args as unknown[];
-                    expression = {
+                    data = {
                         kind: 'call',
                         thisArg: ArgumentMatcher.from(thisArg, proxy),
                         parameters: argArray.map(x => ArgumentMatcher.from(x, proxy)),
                         specificity: 0
                     };
-                    setCallSpecificity(expression);
+                    setCallSpecificity(data);
                     checkResult = v => v === deadEnd;
                     return deadEnd;
                 }
-                if (expression.name === 'apply') {
+                if (data.name === 'apply') {
                     // mocking x => x.apply(thisArg, [arg1, arg2, arg3, ...])
                     const [thisArg, argArray] = args as unknown[];
                     if (!isArrayLike(argArray))
                         throw new MockError('Apply expects an argument array');
-                    expression = {
+                    data = {
                         kind: 'call',
                         thisArg: ArgumentMatcher.from(thisArg, proxy),
                         parameters: Array.from(argArray, x => ArgumentMatcher.from(x, proxy)),
                         specificity: 0
                     };
-                    setCallSpecificity(expression);
+                    setCallSpecificity(data);
                     checkResult = v => v === deadEnd;
                     return deadEnd;
                 }
@@ -1362,32 +1448,32 @@ function toExpression<T extends Mockable>(
             // $mock => $mock.call(...) when $mock is not a function
             // $mock => $mock.apply(...) when $mock is not a function
             // We dont care about the thisArg here, you should mock via .call or .apply if you do care
-            expression = {
+            data = {
                 kind: 'method',
-                name: expression.name,
+                name: data.name,
                 thisArg: anyArgumentMatcher,
                 parameters: args.map(x => ArgumentMatcher.from(x, proxy)),
                 specificity: 0
             };
-            setCallSpecificity(expression);
+            setCallSpecificity(data);
             checkResult = v => v === deadEnd;
             return deadEnd;
         },
 
         // OK:  $mock => new $mock.foo(...)              = newNested
         construct(_, args, newTarget) {
-            if (expression?.kind !== 'get')
+            if (data?.kind !== 'get')
                 return deepMemberError();
             if (newTarget !== getResult)
                 throw new MockError('Cannot mock derived classes.');
 
-            expression = {
+            data = {
                 kind: 'newNested',
-                name: expression.name,
+                name: data.name,
                 parameters: args.map(x => ArgumentMatcher.from(x, proxy)),
                 specificity: 0
             };
-            setNewSpecificity(expression);
+            setNewSpecificity(data);
             checkResult = v => v === deadEnd;
             return deadEnd;
         },
@@ -1398,10 +1484,10 @@ function toExpression<T extends Mockable>(
         // OK:  $mock => $mock.foo.call(thisArg, ...)    = method
         // OK:  $mock => $mock.foo.apply(thisArg, [...]) = method
         get(_, p) {
-            if (expression?.kind !== 'get')
+            if (data?.kind !== 'get')
                 return deepMemberError();
 
-            const methodName = expression.name;
+            const methodName = data.name;
             switch (p) {
                 case 'call': {
                     checkResult = () => {
@@ -1423,18 +1509,18 @@ function toExpression<T extends Mockable>(
     const getMethodCall = makeOpaqueProxy(function () { }, {
         fallback: deepMemberError,
         apply(_, __, args) {
-            if (expression?.kind !== 'get')
+            if (data?.kind !== 'get')
                 return deepMemberError();
             // mocking x => x.method.call(thisArg, arg1, arg2, arg3, ...)
             const [thisArg, ...argArray] = args as unknown[];
-            expression = {
+            data = {
                 kind: 'method',
-                name: expression.name,
+                name: data.name,
                 thisArg: ArgumentMatcher.from(thisArg, proxy),
                 parameters: argArray.map(x => ArgumentMatcher.from(x, proxy)),
                 specificity: 0
             };
-            setCallSpecificity(expression);
+            setCallSpecificity(data);
             checkResult = v => v === deadEnd;
             return deadEnd;
         }
@@ -1442,21 +1528,21 @@ function toExpression<T extends Mockable>(
     const getMethodApply = makeOpaqueProxy(function () { }, {
         fallback: deepMemberError,
         apply(_, __, args) {
-            if (expression?.kind !== 'get')
+            if (data?.kind !== 'get')
                 return deepMemberError();
 
             // mocking x => x.method.apply(thisArg, [arg1, arg2, arg3, ...])
             const [thisArg, argArray] = args as unknown[];
             if (!isArrayLike(argArray))
                 throw new MockError('Apply expects an argument array');
-            expression = {
+            data = {
                 kind: 'method',
-                name: expression.name,
+                name: data.name,
                 thisArg: ArgumentMatcher.from(thisArg, proxy),
                 parameters: Array.from(argArray, x => ArgumentMatcher.from(x, proxy)),
                 specificity: 0
             };
-            setCallSpecificity(expression);
+            setCallSpecificity(data);
             checkResult = v => v === deadEnd;
             return deadEnd;
         }
@@ -1465,13 +1551,13 @@ function toExpression<T extends Mockable>(
     const proxy = new Proxy<T>(target, {
         apply(_, __, argArray) {
             ensureEmpty();
-            expression = {
+            data = {
                 kind: 'call',
                 thisArg: anyArgumentMatcher,
                 parameters: argArray.map(x => ArgumentMatcher.from(x, proxy)),
                 specificity: 0
             };
-            setCallSpecificity(expression);
+            setCallSpecificity(data);
             checkResult = v => v === deadEnd;
             return deadEnd;
         },
@@ -1479,25 +1565,25 @@ function toExpression<T extends Mockable>(
             ensureEmpty();
             if (newTarget !== proxy)
                 throw new MockError('Cannot mock derived classes.');
-            expression = {
+            data = {
                 kind: 'new',
                 parameters: argArray.map(x => ArgumentMatcher.from(x, proxy)),
                 specificity: 0
             };
-            setNewSpecificity(expression);
+            setNewSpecificity(data);
             checkResult = v => v === deadEnd;
             return deadEnd;
         },
         get(_, name) {
             ensureEmpty();
-            expression = { kind: 'get', name, specificity: 0 };
+            data = { kind: 'get', name, specificity: 0 };
             checkResult = v => v === getResult;
             return getResult;
         },
         set(_, name, value) {
             ensureEmpty();
             const matcher = ArgumentMatcher.from(value, proxy);
-            expression = { kind: 'set', name, value: matcher, specificity: matcher.specificity };
+            data = { kind: 'set', name, value: matcher, specificity: matcher.specificity };
             checkResult = v => {
                 if (v === true)
                     return true;
@@ -1512,26 +1598,26 @@ function toExpression<T extends Mockable>(
         },
         deleteProperty(_, name) {
             ensureEmpty();
-            expression = { kind: 'delete', name, specificity: 0 };
+            data = { kind: 'delete', name, specificity: 0 };
             checkResult = v => v === true;
             return true;
         },
         has(_, name) {
             ensureEmpty();
-            expression = { kind: 'has', name, specificity: 0 };
+            data = { kind: 'has', name, specificity: 0 };
             checkResult = v => v === true;
             return true;
         },
         getPrototypeOf() {
             ensureEmpty();
-            expression = { kind: 'getPrototype', specificity: 0 };
+            data = { kind: 'getPrototype', specificity: 0 };
             checkResult = v => v === deadEnd;
             return deadEnd;
         },
         setPrototypeOf(_, value) {
             ensureEmpty();
             const matcher = ArgumentMatcher.from(value, proxy);
-            expression = { kind: 'setPrototype', value: matcher, specificity: matcher.specificity };
+            data = { kind: 'setPrototype', value: matcher, specificity: matcher.specificity };
             checkResult = v => {
                 if (v === true)
                     return true;
@@ -1543,7 +1629,7 @@ function toExpression<T extends Mockable>(
         },
         defineProperty(_, name, descriptor) {
             ensureEmpty();
-            expression = {
+            data = {
                 kind: 'defineProperty',
                 name,
                 specificity: 0
@@ -1554,11 +1640,11 @@ function toExpression<T extends Mockable>(
                     case 'get':
                     case 'set':
                         // eslint-disable-next-line @typescript-eslint/unbound-method
-                        expression[key] = ArgumentMatcher.from(descriptor[key], proxy);
-                        expression.specificity += expression[key].specificity;
+                        data[key] = ArgumentMatcher.from(descriptor[key], proxy);
+                        data.specificity += data[key].specificity;
                         break;
                     default:
-                        expression[key] = descriptor[key];
+                        data[key] = descriptor[key];
                         break;
                 }
             }
@@ -1575,16 +1661,16 @@ function toExpression<T extends Mockable>(
         },
         ownKeys() {
             ensureEmpty();
-            expression = { kind: 'ownKeys', specificity: 0 };
+            data = { kind: 'ownKeys', specificity: 0 };
             checkResult = v => Array.isArray(v) && ownKeysResult.length === v.length && ownKeysResult.every((x, i) => v[i] === x);
             return ownKeysResult;
         },
         getOwnPropertyDescriptor(_, name) {
-            if (expression?.kind === 'ownKeys' && ownKeysResult.includes(name))
+            if (data?.kind === 'ownKeys' && ownKeysResult.includes(name))
                 throw new MockError('Cannot mock Object.keys, use Reflect.ownKeys instead.');
 
             ensureEmpty();
-            expression = { kind: 'getDescriptor', name, specificity: 0 };
+            data = { kind: 'getDescriptor', name, specificity: 0 };
             checkResult = v => typeof v === 'object'
                 && v !== null
                 && v !== deadEnd
@@ -1606,13 +1692,13 @@ function toExpression<T extends Mockable>(
         },
         isExtensible() {
             ensureEmpty();
-            expression = { kind: 'isExtensible', specificity: 0 };
+            data = { kind: 'isExtensible', specificity: 0 };
             checkResult = v => v === true;
             return true;
         },
         preventExtensions() {
             ensureEmpty();
-            expression = { kind: 'preventExtensions', specificity: 0 };
+            data = { kind: 'preventExtensions', specificity: 0 };
             const actual = Reflect.preventExtensions(target);
             checkResult = v => {
                 if (v === actual)
@@ -1625,12 +1711,12 @@ function toExpression<T extends Mockable>(
         }
     });
 
-    const response = action(proxy, publicArgumentMatchers);
+    const response = expression(proxy, publicArgumentMatchers);
 
-    if (expression === undefined || !checkResult(response))
+    if (data === undefined || !checkResult(response))
         throw new MockError('Expression is not mockable');
 
-    return expression;
+    return Object.freeze(data);
 }
 
 class PublicArgumentMatcher extends class Stamper {
@@ -1640,7 +1726,7 @@ class PublicArgumentMatcher extends class Stamper {
 } {
     readonly #impl: ArgumentMatcher;
 
-    public static disguise<T>(impl: ArgumentMatcher): T {
+    public static disguise<T>(this: void, impl: ArgumentMatcher): T {
         const result = makeOpaqueProxy(function () { }, {
             fallback() {
                 throw new MockError('Cannot interact with an argument matcher. They are opaque sentinel values and should only be used inside mock setups.');
@@ -1694,29 +1780,39 @@ const publicArgumentMatchers: ArgumentMatchers<never> = Object.freeze(Object.ass
     } satisfies { [P in keyof ArgumentMatchers<never>]: ArgumentMatchers<never>[P]; }
 ));
 
-type Expression =
-    | { specificity: number; kind: 'call'; thisArg: ArgumentMatcher; parameters: readonly ArgumentMatcher[]; }
-    | { specificity: number; kind: 'new'; parameters: readonly ArgumentMatcher[]; }
-    | { specificity: number; kind: 'get'; name: PropertyKey; }
-    | { specificity: number; kind: 'set'; name: PropertyKey; value: ArgumentMatcher; }
-    | { specificity: number; kind: 'delete'; name: PropertyKey; }
-    | { specificity: number; kind: 'has'; name: PropertyKey; }
-    | { specificity: number; kind: 'method'; name: PropertyKey; thisArg: ArgumentMatcher; parameters: readonly ArgumentMatcher[]; }
-    | { specificity: number; kind: 'newNested'; name: PropertyKey; parameters: readonly ArgumentMatcher[]; }
-    | { specificity: number; kind: 'getPrototype'; }
-    | { specificity: number; kind: 'setPrototype'; value: ArgumentMatcher; }
-    | { specificity: number; kind: 'defineProperty'; name: PropertyKey; value?: ArgumentMatcher; get?: ArgumentMatcher; set?: ArgumentMatcher; } & Omit<PropertyDescriptor, 'value' | 'get' | 'set'>
-    | { specificity: number; kind: 'ownKeys'; }
-    | { specificity: number; kind: 'getDescriptor'; name: PropertyKey; }
-    | { specificity: number; kind: 'isExtensible'; }
-    | { specificity: number; kind: 'preventExtensions'; };
+type Clean<T> = { [P in keyof T]: T[P] } & {};
+type ExpressionData = Clean<Readonly<{ specificity: number; } & (
+    | { kind: 'call'; thisArg: ArgumentMatcher; parameters: readonly ArgumentMatcher[]; }
+    | { kind: 'new'; parameters: readonly ArgumentMatcher[]; }
+    | { kind: 'get'; name: PropertyKey; }
+    | { kind: 'set'; name: PropertyKey; value: ArgumentMatcher; }
+    | { kind: 'delete'; name: PropertyKey; }
+    | { kind: 'has'; name: PropertyKey; }
+    | { kind: 'method'; name: PropertyKey; thisArg: ArgumentMatcher; parameters: readonly ArgumentMatcher[]; }
+    | { kind: 'newNested'; name: PropertyKey; parameters: readonly ArgumentMatcher[]; }
+    | { kind: 'getPrototype'; }
+    | { kind: 'setPrototype'; value: ArgumentMatcher; }
+    | { kind: 'defineProperty'; name: PropertyKey; value?: ArgumentMatcher; get?: ArgumentMatcher; set?: ArgumentMatcher; } & Omit<PropertyDescriptor, 'value' | 'get' | 'set'>
+    | { kind: 'ownKeys'; }
+    | { kind: 'getDescriptor'; name: PropertyKey; }
+    | { kind: 'isExtensible'; }
+    | { kind: 'preventExtensions'; }
+)>>;
 
-interface Invocation {
-    readonly kind: Expression['kind'];
+export interface Invocation {
+    readonly kind: ExpressionData['kind'];
     readonly this: unknown;
     readonly arguments: readonly unknown[];
     readonly name: PropertyKey;
     readonly canIntercept: boolean;
+    readonly order: number;
+}
+let invocationId = 0;
+function createInvocation(options: Omit<Invocation, 'order'>): Invocation {
+    return {
+        ...options,
+        order: invocationId++
+    };
 }
 
 function isArrayLike(value: unknown): value is ArrayLike<unknown> {
@@ -1740,7 +1836,7 @@ function keyToSource(key: PropertyKey): string {
     return JSON.stringify(key);
 }
 
-function debugMatchers(expr: Expression, mock: Mock): string {
+function debugExpression(expr: ExpressionData, mock: Mock): string {
     const $mock = mock.toString();
     switch (expr.kind) {
         case 'call': {
@@ -1933,7 +2029,7 @@ function debugInvocation(invocation: Invocation, mock: Mock): string {
     }
 }
 
-function isMatch(expression: Expression, invocation: Invocation, mockInstance: unknown): boolean {
+function isMatch(expression: ExpressionData, invocation: Invocation, mockInstance: unknown): boolean {
     if (expression.kind !== invocation.kind)
         return false;
 
@@ -2048,11 +2144,11 @@ function makeOpaqueProxy<T extends Mockable>(target: T, traps: ProxyHandler<T> &
     } satisfies Required<ProxyHandler<T>>);
 }
 
-function setCallSpecificity(expr: Extract<Expression, { kind: 'call' | 'method'; }>): void {
+function setCallSpecificity(expr: Extract<Mutable<ExpressionData>, { kind: 'call' | 'method'; }>): void {
     expr.specificity += expr.thisArg.specificity;
     expr.specificity = expr.parameters.reduce((p, c) => p + c.specificity, expr.specificity);
 }
-function setNewSpecificity(expr: Extract<Expression, { kind: 'new' | 'newNested'; }>): void {
+function setNewSpecificity(expr: Extract<Mutable<ExpressionData>, { kind: 'new' | 'newNested'; }>): void {
     expr.specificity = expr.parameters.reduce((p, c) => p + c.specificity, expr.specificity);
 }
 

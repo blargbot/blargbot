@@ -3,11 +3,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.pop;
 
 export class PopSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'pop',
             category: SubtagType.ARRAY,
@@ -22,10 +24,12 @@ export class PopSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async pop(context: BBTagContext, arrayStr: string): Promise<JToken | undefined> {
-        const { n: varName, v: array } = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
+        const variables = this.#variables.forContext(context);
+        const { n: varName, v: array } = await bbtag.tagArray.deserializeOrGetArray(variables, arrayStr) ?? {};
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);
 
@@ -34,7 +38,7 @@ export class PopSubtag extends CompiledSubtag {
 
         const result = array.pop();
         if (varName !== undefined)
-            await context.root.variables.set(varName, array);
+            await variables.set(varName, array);
 
         return result;
     }

@@ -1,15 +1,29 @@
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import type { ColorFormat } from '@blargbot/bbtag/subtags';
 import { ColorSubtag } from '@blargbot/bbtag/subtags';
-import { TagVariableType } from '@blargbot/domain';
+import { Mock } from '@blargbot/test-util';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new ColorSubtag(),
+    subtag: new ColorSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 1, max: 3 },
     names: ['color'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{color;}',
@@ -23,21 +37,26 @@ await runSubtagTests({
             expected: '`Invalid color`',
             errors: [
                 { error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{color;_myVariable}',
             expected: '`Invalid color`',
-            setup(ctx) { ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 'abc'); },
             errors: [
                 { error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 'abc' }).mustHappen(1);
+            }
         },
         {
             code: '{color;_myVariable}',
             expected: '204080',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, [32, 64, 128]);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: [32, 64, 128] }).mustHappen(1);
             }
         },
         ...generateTestCases('FFFFFF', '', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
@@ -65,7 +84,10 @@ await runSubtagTests({
                 { start: 15, end: 21, error: new MarkerError('eval', 15) },
                 { start: 22, end: 28, error: new MarkerError('eval', 22) },
                 { error: new BBTagRuntimeError('Invalid input method', '"cba" is not valid') }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('0')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{color;{eval}0;{eval}abc;{eval}}',
@@ -75,7 +97,10 @@ await runSubtagTests({
                 { start: 15, end: 21, error: new MarkerError('eval', 15) },
                 { start: 25, end: 31, error: new MarkerError('eval', 25) },
                 { error: new BBTagRuntimeError('Invalid output method', '"abc" is not valid') }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('0')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         { code: '{color;[0,0,0,0];;cmyk}', expected: 'FFFFFF' }
     ]
@@ -85,5 +110,10 @@ function generateTestCases(input: string, format: string, results: Record<ColorF
     const cases = Object.entries(results).map(([output, expected]) => ({ code: `{color;${input};${output};${format}}`, expected }));
     if (format === '')
         cases.push(...Object.entries(results).map(([output, expected]) => ({ code: `{color;${input};${output}}`, expected })));
-    return cases;
+    return cases.map(x => ({
+        ...x,
+        setup() {
+            variables.setup(m => m.get(input)).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+        }
+    }));
 }

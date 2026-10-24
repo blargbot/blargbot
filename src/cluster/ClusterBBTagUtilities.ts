@@ -1,4 +1,4 @@
-import type { BBTagSendContent, BBTagUtilities, ReactionEvent, RwLock, SerializedBBTagContext, subtags } from '@blargbot/bbtag';
+import type { BBTagSendContent, BBTagUtilities, ReactionEvent, RwLock, SerializedBBTagContext, subtags, VariablesProvider } from '@blargbot/bbtag';
 import { ChannelType, DiscordPermissions, getLock } from '@blargbot/bbtag';
 import type * as Subtags from '@blargbot/bbtag/subtags';
 import { type ChoiceQueryResult, type Emote, type EntityPickQueryOptions, type SendContent, snowflake } from '@blargbot/core';
@@ -26,6 +26,9 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public get logger(): Logger {
         return this.#cluster.logger;
     }
+    public get variables(): VariablesProvider {
+        return this.#cluster.bbtagVariables;
+    }
 
     public constructor(cluster: Cluster) {
         this.#cluster = cluster;
@@ -34,7 +37,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public async fetch(input: string | URL | Request, init?: RequestInit): Promise<Response> {
         return await this.#cluster.fetch(input, init);
     }
-    public getLock(scope: TagVariableScope | undefined, name: string): RwLock {
+    public getLock(scope: TagVariableScope, name: string): RwLock {
         return getLock(scope, name);
     }
     public async sleep(delay: number, signal?: AbortSignal): Promise<void> {

@@ -6,11 +6,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.filter;
 
 export class FilterSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'filter',
             category: SubtagType.LOOPS,
@@ -25,14 +27,16 @@ export class FilterSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async * filter(context: BBTagContext, varName: string, source: string, code: SubtagArgument): AsyncIterable<JToken> {
-        const array = await bbtag.tagArray.deserializeOrGetIterable(context, source) ?? [];
+        const variables = this.#variables.forContext(context);
+        const array = await bbtag.tagArray.deserializeOrGetIterable(variables, source) ?? [];
         try {
             for (const item of array) {
                 await context.root.limit.check(context, 'filter:loops');
-                await context.root.variables.set(varName, item);
+                await variables.set(varName, item);
                 if (parse.boolean((await code.execute()).trim()) === true)
                     yield item;
 
@@ -40,7 +44,7 @@ export class FilterSubtag extends CompiledSubtag {
                     break;
             }
         } finally {
-            context.root.variables.reset([varName]);
+            variables.reset([varName]);
         }
     }
 }

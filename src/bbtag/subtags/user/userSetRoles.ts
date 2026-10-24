@@ -6,12 +6,14 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.userSetRoles;
 
 export class UserSetRolesSubtag extends CompiledSubtag {
+    readonly #variables: VariablesProvider;
     readonly #logger: Logger;
-    public constructor({ logger }: { logger: Logger; }) {
+    public constructor({ variables, logger }: { variables: VariablesProvider; logger: Logger; }) {
         super({
             name: 'userSetRoles',
             aliases: ['setRoles'],
@@ -36,6 +38,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
         this.#logger = logger;
     }
 
@@ -63,7 +66,8 @@ export class UserSetRolesSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        const roleArr = await bbtag.tagArray.deserializeOrGetArray(context, rolesStr !== '' ? rolesStr : '[]');
+        const variables = this.#variables.forContext(context);
+        const roleArr = await bbtag.tagArray.deserializeOrGetArray(variables, rolesStr !== '' ? rolesStr : '[]');
         if (roleArr === undefined) {
             throw new NotAnArrayError(rolesStr)
                 .withDisplay(quiet ? 'false' : undefined);

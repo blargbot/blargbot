@@ -5,6 +5,7 @@ import type { sleep } from '@blargbot/util';
 import type * as eris from 'eris';
 
 import type { Subtag } from './Subtag.js';
+import type { VariablesProvider } from './Variables.js';
 
 export interface InjectionContext {
     readonly discord: eris.Client;
@@ -12,6 +13,7 @@ export interface InjectionContext {
     readonly database: Database;
     readonly subtags: Iterable<Subtag>;
     readonly util: BBTagUtilities;
+    readonly variables: VariablesProvider;
     readonly sleep: typeof sleep;
 }
 

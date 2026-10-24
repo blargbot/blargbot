@@ -1,20 +1,49 @@
 import assert from 'node:assert/strict';
 
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { RandomChooseSubtag } from '@blargbot/bbtag/subtags';
+import { Mock } from '@blargbot/test-util';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new RandomChooseSubtag(),
+    subtag: new RandomChooseSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 1, max: Infinity },
     names: ['randomChoose', 'randChoose'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{randchoose;{eval}5}',
             expected: '5',
             errors: [
                 { start: 12, end: 18, error: new MarkerError('eval', 12) }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('5')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
+        },
+        {
+            code: '{randchoose;{eval}~var}',
+            expected: /^[0-9]$/,
+            errors: [
+                { start: 12, end: 18, error: new MarkerError('eval', 12) }
+            ],
+            retries: 5,
+            setup() {
+                variables.setup(m => m.get('~var')).resolves({ key: 'foo', value: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }).mustHappen(1);
+            }
         },
         {
             code: `{randchoose;{eval}[1,2,3,4,5,6,7,8,9]}

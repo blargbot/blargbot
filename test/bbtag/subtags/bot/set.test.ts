@@ -1,71 +1,34 @@
-import assert from 'node:assert/strict';
-
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { SetSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
-import type { TagVariableScope } from '@blargbot/domain';
-import { TagVariableType } from '@blargbot/domain';
+import { Mock } from '@blargbot/test-util';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new SetSubtag(),
+    subtag: new SetSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 1, max: Infinity },
     names: ['set'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         ...createTestCases([
-            // {
-            //     prefix: '~',
-            //     varName: 'varName'
-            // },
-            {
-                prefix: '',
-                db: { name: 'testTag', type: TagVariableType.LOCAL_TAG },
-                varName: 'varName',
-                setup(ctx) {
-                    ctx.input.tagName = 'testTag';
-                }
-            },
-            {
-                prefix: '',
-                db: { guildId: '234983689742643223984', name: 'testTag', type: TagVariableType.LOCAL_CC },
-                varName: 'varName',
-                setup(ctx) {
-                    ctx.input.tagName = 'testTag';
-                    ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
-                    ctx.input.tagVars = false;
-                }
-            },
-            {
-                prefix: '@',
-                db: { authorId: '23987462839463642947', type: TagVariableType.AUTHOR },
-                varName: 'varName',
-                setup(ctx) {
-                    ctx.users.command.id = '23987462839463642947';
-                }
-            },
-            {
-                prefix: '*',
-                db: { type: TagVariableType.GLOBAL },
-                varName: 'varName'
-            },
-            {
-                prefix: '_',
-                db: { guildId: '234983689742643223984', type: TagVariableType.GUILD_CC },
-                varName: 'varName',
-                setup(ctx) {
-                    ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
-                    ctx.input.tagVars = false;
-                }
-            },
-            {
-                prefix: '_',
-                db: { guildId: '234983689742643223984', type: TagVariableType.GUILD_TAG },
-                varName: 'varName',
-                setup(ctx) {
-                    ctx.guild.id = ctx.roles.everyone.id = '234983689742643223984';
-                }
-            }
+            '~varName',
+            'varName',
+            '@varName',
+            '*varName',
+            '_varName'
         ], [
             { args: [], value: undefined },
             { args: ['a'], value: 'a' },
@@ -78,52 +41,23 @@ await runSubtagTests({
     ]
 });
 
-function* createTestCases(setups: Array<{ varName: string; prefix: string; db?: TagVariableScope; setup?: SubtagTestCase['setup']; }>, cases: Array<{ args: string[]; value: JToken | undefined; }>): Generator<SubtagTestCase> {
-    for (const { varName, prefix, db, setup } of setups) {
+function* createTestCases(names: string[], cases: Array<{ args: string[]; value: JToken | undefined; }>): Generator<SubtagTestCase> {
+    for (const name of names) {
         for (const { args, value } of cases) {
             yield {
                 title: 'When the value isnt forced',
-                code: `{set;${prefix}${[varName, ...args].join(';')}}`,
+                code: `{set;${[name, ...args].join(';')}}`,
                 expected: '',
-                setupSaveVariables: false,
-                setup,
-                async assert(bbctx) {
-                    assert.deepEqual((await bbctx.root.variables.get(`${prefix}${varName}`)).value, value);
+                setup() {
+                    variables.setup((m, $) => m.set(name, $(value))).resolves().mustHappen(1);
                 }
             };
             yield {
-                title: 'When the value has changed',
-                code: `{set;!${prefix}${[varName, ...args].join(';')}}`,
+                title: 'When the value is forced',
+                code: `{set;!${[name, ...args].join(';')}}`,
                 expected: '',
-                setupSaveVariables: false,
-                async setup(ctx, ...args) {
-                    if (db !== undefined) {
-                        ctx.tagVariablesTable.setup((m, $) => m.upsert($({ [varName]: value }), $(db)))
-                            .resolves(undefined);
-                        ctx.tagVariables.set({ scope: db, name: varName }, snowflake.create().toString());
-                    }
-                    await setup?.call(this, ctx, ...args);
-                },
-                async assert(bbctx) {
-                    assert.deepEqual((await bbctx.root.variables.get(`${prefix}${varName}`)).value, value);
-                }
-            };
-            yield {
-                title: 'When the value hasnt changed',
-                code: `{set;!${prefix}${[varName, ...args].join(';')}}`,
-                expected: '',
-                setupSaveVariables: false,
-                async setup(ctx, ...args) {
-                    if (db !== undefined) {
-                        if (value === undefined)
-                            ctx.tagVariables.delete({ scope: db, name: varName });
-                        else
-                            ctx.tagVariables.set({ scope: db, name: varName }, JSON.parse(JSON.stringify(value)));
-                    }
-                    await setup?.call(this, ctx, ...args);
-                },
-                async assert(bbctx) {
-                    assert.deepEqual((await bbctx.root.variables.get(`${prefix}${varName}`)).value, value);
+                setup() {
+                    variables.setup((m, $) => m.set(`!${name}`, $(value))).resolves().mustHappen(1);
                 }
             };
         }

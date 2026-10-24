@@ -10,7 +10,7 @@ import type { BaseRuntimeLimit, BBTagExpression, BBTagRuntimeInput, BBTagUtiliti
 import { bbtag, BBTagContext, BBTagEngine, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag';
 import { pluralise as p, repeat, snowflake } from '@blargbot/core';
 import type { Database } from '@blargbot/database';
-import type { GuildStore, TagStore, TagVariableScope, TagVariableStore, UserStore } from '@blargbot/domain';
+import type { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import type { Mockable, MockCtorArgs } from '@blargbot/test-util';
 import { Mock } from '@blargbot/test-util';
@@ -25,19 +25,15 @@ type AnyConstructor<T> = (abstract new (...args: never) => T) & {
     readonly prototype: T;
 }
 
-type RuntimeSubtagTestCase<T> = Readonly<T> & {
-    readonly timestamp: moment.Moment;
-}
-
 export interface SubtagTestCase {
     readonly title?: string;
     readonly code: string;
     readonly subtagName?: string;
     readonly expected?: string | RegExp | (() => string | RegExp);
-    readonly setup?: (this: RuntimeSubtagTestCase<this>, context: SubtagTestContext, bbtag: BBTagExpression, nodeTest: TestContext) => Awaitable<void>;
-    readonly postSetup?: (this: RuntimeSubtagTestCase<this>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>;
-    readonly assert?: (this: RuntimeSubtagTestCase<this>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>;
-    readonly teardown?: (this: RuntimeSubtagTestCase<this>, context: SubtagTestContext) => Awaitable<void>;
+    readonly setup?: (context: SubtagTestContext, bbtag: BBTagExpression, nodeTest: TestContext) => Awaitable<void>;
+    readonly postSetup?: (context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>;
+    readonly assert?: (context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>;
+    readonly teardown?: (context: SubtagTestContext) => Awaitable<void>;
     readonly expectError?: {
         required?: boolean;
         handle: (error: unknown) => Awaitable<void>;
@@ -47,14 +43,13 @@ export interface SubtagTestCase {
     readonly skip?: boolean | (() => Awaitable<boolean>);
     readonly retries?: number;
     readonly timeout?: number;
-    readonly setupSaveVariables?: boolean;
 }
 
-interface TestSuiteConfig<T extends SubtagTestCase> {
-    readonly setup: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext, bbtag: BBTagExpression, nodeTest: TestContext) => Awaitable<void>>;
-    readonly assert: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>>;
-    readonly teardown: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
-    readonly postSetup: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>>;
+interface TestSuiteConfig {
+    readonly setup: Array<(context: SubtagTestContext, bbtag: BBTagExpression, nodeTest: TestContext) => Awaitable<void>>;
+    readonly assert: Array<(context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>>;
+    readonly teardown: Array<(context: SubtagTestContext) => Awaitable<void>>;
+    readonly postSetup: Array<(context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>>;
 }
 
 export class MarkerError extends BBTagRuntimeError {
@@ -64,9 +59,9 @@ export class MarkerError extends BBTagRuntimeError {
     }
 }
 
-export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends Pick<TestCase, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
+export interface SubtagTestSuiteData<T extends Subtag = Subtag> extends Pick<SubtagTestCase, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
     readonly names: Iterable<string>;
-    readonly cases: TestCase[];
+    readonly cases: SubtagTestCase[];
     readonly subtag: T;
     readonly otherSubtags?: Subtag[];
     readonly runOtherTests?: (subtag: T) => Promise<void>;
@@ -97,7 +92,6 @@ export class SubtagTestContext {
     public readonly discordOptions: eris.ClientOptions;
     public readonly ownedMessages: string[] = [];
 
-    public readonly tagVariables: MapByValue<{ scope: TagVariableScope; name: string; }, JToken>;
     public readonly input: Mutable<Omit<BBTagRuntimeInput, 'message'>>;
 
     public readonly roles = {
@@ -154,7 +148,6 @@ export class SubtagTestContext {
 
     public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<Subtag>) {
         this.discordOptions = { intents: [] };
-        this.tagVariables = new MapByValue();
         this.input = {
             tagName: makeId('tagName'),
             silent: false,
@@ -174,6 +167,9 @@ export class SubtagTestContext {
         this.dependencies.setup(m => m.logger).returns(this.#logger.instance, { isFallback: true });
         this.dependencies.setup(m => m.util).returns(this.util.instance, { isFallback: true });
         this.dependencies.setup(c => c.subtags).returns(subtags, { isFallback: true });
+        this.dependencies.setup(m => m.sleep).returns(() => {
+            throw new Error('Sleep called, this typically means a runaway subtag.');
+        }, { isFallback: true });
 
         for (const level of ['error', 'warn'] as const) {
             this.#logger.setup(m => m[level]).returns((...args) => {
@@ -191,24 +187,6 @@ export class SubtagTestContext {
         this.database.setup(m => m.guilds).returns(this.guildTable.instance, { isFallback: true });
         this.database.setup(m => m.users).returns(this.userTable.instance, { isFallback: true });
         this.database.setup(m => m.tags).returns(this.tagsTable.instance, { isFallback: true });
-
-        this.tagVariablesTable.setup((m, $) => m.get($.string, $.anything))
-            .invokesAsync(
-                i => this.tagVariables.get({ scope: i.arguments[1] as TagVariableScope, name: i.arguments[0] as string }),
-                { isFallback: true }
-            );
-        if (this.testCase.setupSaveVariables !== false) {
-            this.tagVariablesTable.setup((m, $) => m.upsert($.anything, $.anything))
-                .invokesAsync(i => {
-                    const scope = i.arguments[1] as TagVariableScope;
-                    for (const [name, value] of Object.entries(i.arguments[0] as JObject)) {
-                        if (value !== undefined)
-                            this.tagVariables.set({ scope, name }, value);
-                        else
-                            this.tagVariables.delete({ scope, name });
-                    }
-                }, { isFallback: true });
-        }
 
         this.discord.setup(m => m.shards).returns(this.shards.instance, { isFallback: true });
         this.discord.setup(m => m.guildShardMap).returns({}, { isFallback: true });
@@ -466,9 +444,7 @@ export class SubtagTestContext {
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): Promise<void>
-export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): Promise<void>
-export async function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): Promise<void> {
+export async function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): Promise<void> {
     const error = { stack: '' };
     Error.captureStackTrace(error, runSubtagTests);
     const stack = `Via SubtagTestSuite\n${error.stack.split('\n').slice(1).join('\n')}`;
@@ -614,9 +590,9 @@ export class EchoArgsSubtag extends TestSubtagBase {
     }
 }
 
-export class SubtagTestSuite<TestCase extends SubtagTestCase> {
-    readonly #config: TestSuiteConfig<TestCase> = { setup: [], assert: [], teardown: [], postSetup: [] };
-    readonly #testCases: TestCase[] = [];
+export class SubtagTestSuite {
+    readonly #config: TestSuiteConfig = { setup: [], assert: [], teardown: [], postSetup: [] };
+    readonly #testCases: SubtagTestCase[] = [];
     readonly #subtags: Subtag[];
     readonly #names: Iterable<string>;
 
@@ -625,32 +601,32 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
         this.#names = names;
     }
 
-    public setup(setup: TestSuiteConfig<TestCase>['setup'][number]): this {
+    public setup(setup: TestSuiteConfig['setup'][number]): this {
         this.#config.setup.push(setup);
         return this;
     }
 
-    public postSetup(setup: TestSuiteConfig<TestCase>['postSetup'][number]): this {
+    public postSetup(setup: TestSuiteConfig['postSetup'][number]): this {
         this.#config.postSetup.push(setup);
         return this;
     }
 
-    public assert(assert: TestSuiteConfig<TestCase>['assert'][number]): this {
+    public assert(assert: TestSuiteConfig['assert'][number]): this {
         this.#config.assert.push(assert);
         return this;
 
     }
 
-    public teardown(teardown: TestSuiteConfig<TestCase>['teardown'][number]): this {
+    public teardown(teardown: TestSuiteConfig['teardown'][number]): this {
         this.#config.teardown.push(teardown);
         return this;
     }
 
-    public addTestCase(...testCases: TestCase[]): this {
+    public addTestCase(...testCases: SubtagTestCase[]): this {
         return this.addTestCases(testCases);
     }
 
-    public addTestCases(testCases: Iterable<TestCase>): this {
+    public addTestCases(testCases: Iterable<SubtagTestCase>): this {
         for (const testCase of testCases)
             this.#testCases.push(testCase);
         return this;
@@ -735,7 +711,7 @@ async function shouldSkip(testCase: SubtagTestCase): Promise<boolean> {
     return typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false;
 }
 
-async function runTestCase<TestCase extends SubtagTestCase>(subtags: Subtag[], testCase: TestCase, config: TestSuiteConfig<TestCase>, testCtx: TestContext): Promise<void> {
+async function runTestCase<TestCase extends SubtagTestCase>(subtags: Subtag[], testCase: TestCase, config: TestSuiteConfig, testCtx: TestContext): Promise<void> {
     subtags = [...subtags, new EvalSubtag(), new FailTestSubtag(), ...testCase.subtags ?? []];
     const test = new SubtagTestContext(testCase, subtags);
     const actualTestCase = Object.create(testCase, { 'timestamp': { value: moment() } });
@@ -744,7 +720,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(subtags: Subtag[], t
         // arrange
         const code = bbtag.parse(testCase.code);
         for (const setup of config.setup)
-            await setup.call(actualTestCase, test, code, testCtx);
+            await setup(test, code, testCtx);
         await actualTestCase.setup?.(test, code, testCtx);
         for (const s of subtags)
             test.limit.setup((m, $) => m.check($.instanceOf(BBTagContext), s.name)).resolves(undefined, { isFallback: true });
@@ -765,9 +741,6 @@ async function runTestCase<TestCase extends SubtagTestCase>(subtags: Subtag[], t
         } else if (actualTestCase.expectError?.required === true) {
             throw new Error('Expected an error to be thrown!');
         }
-
-        if (actualTestCase.setupSaveVariables !== false)
-            await context.root.variables.persist();
 
         // assert
         switch (typeof expected) {
@@ -905,81 +878,4 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
             { error: new TooManyArgumentsError(maxArgCount, maxArgCount + 1) }
         ]
     };
-}
-
-class MapByValue<Key, Value> implements Map<Key, Value> {
-    readonly #inner: Map<unknown, Value>;
-
-    public readonly [Symbol.toStringTag] = '';
-    public get size(): number {
-        return this.#inner.size;
-    }
-
-    public constructor(args?: Iterable<[Key, Value]>) {
-        this.#inner = new Map();
-        if (args !== undefined)
-            for (const entry of args)
-                this.set(...entry);
-    }
-
-    #fromKey(key: Key): unknown {
-        switch (typeof key) {
-            case 'object': return key === null
-                ? null
-                : JSON.stringify(Object.entries(key).sort((a, b) => a[0] < b[0] ? 1 : -1).map(x => [x[0], this.#fromKey(x[1])]));
-            case 'string':
-                return JSON.stringify(key);
-            default:
-                return key;
-        }
-    }
-
-    #toKey(key: unknown): Key {
-        return typeof key === 'string'
-            ? JSON.parse(key) as Key
-            : key as Key;
-    }
-
-    public clear(): void {
-        this.#inner.clear();
-    }
-    public delete(key: Key): boolean {
-        return this.#inner.delete(this.#fromKey(key));
-    }
-    public forEach(callbackfn: (value: Value, key: Key, map: Map<Key, Value>) => void, thisArg?: unknown): void {
-        for (const entry of this)
-            callbackfn.call(thisArg, entry[1], entry[0], this);
-    }
-    public get(key: Key): Value | undefined {
-        return this.#inner.get(this.#fromKey(key));
-    }
-    public getOrInsert(key: Key, defaultValue: Value): Value {
-        return this.#inner.getOrInsert(this.#fromKey(key), defaultValue);
-    }
-    public getOrInsertComputed(key: Key, callback: (key: Key) => Value): Value {
-        return this.#inner.getOrInsertComputed(this.#fromKey(key), () => callback(key));
-    }
-    public has(key: Key): boolean {
-        return this.#inner.has(this.#fromKey(key));
-    }
-    public set(key: Key, value: Value): this {
-        this.#inner.set(this.#fromKey(key), value);
-        return this;
-    }
-    public * entries(): Generator<[Key, Value]> {
-        for (const entry of this.#inner)
-            yield [this.#toKey(entry[0]), entry[1]];
-    }
-    public * keys(): Generator<Key> {
-        for (const key of this.#inner.keys())
-            yield this.#toKey(key);
-    }
-    public * values(): Generator<Value> {
-        for (const value of this.#inner.values())
-            yield value;
-    }
-    public [Symbol.iterator](): Generator<[Key, Value]> {
-        return this.entries();
-    }
-
 }

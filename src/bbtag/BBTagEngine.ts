@@ -1,21 +1,17 @@
 import { guard, Timer } from '@blargbot/core';
 import type { Database } from '@blargbot/database';
-import { TagVariableType } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import * as eris from 'eris';
 
 import { BBTagContext } from './BBTagContext.js';
 import type { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';
-import { VariableCache } from './Caching.js';
 import { DiscordPermissions } from './enums.js';
 import { BBTagRuntimeError, InternalServerError, TagCooldownError } from './errors/index.js';
 import type { BBTagExpression, SubtagCall } from './language/index.js';
 import { BaseRuntimeLimit } from './limits/BaseRuntimeLimit.js';
-import { memoize } from './memoize.js';
 import { Subtag } from './Subtag.js';
 import { OutputSubtag } from './subtags/index.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
-import { createTagVariableScopeProvider } from './tagVariableScopeProvider.js';
 import { templates } from './text.js';
 import { toBBTagInput } from './toBBTagInput.js';
 import type { AnalysisResults, BBTagContextMessage, BBTagRuntimeInput, ExecutionResult, SerializedBBTagContext } from './types.js';
@@ -105,45 +101,6 @@ export class BBTagEngine {
                 replace: undefined,
                 reactions: []
             },
-            variables: new VariableCache(
-                createTagVariableScopeProvider(
-                    {
-                        get: (scope, name) => this.database.tagVariables.get(name, scope),
-                        upsert: (scope, entries) => this.database.tagVariables.upsert(entries, scope)
-                    },
-                    {
-                        global: { type: TagVariableType.GLOBAL },
-                        local: !options.tagVars
-                            ? { type: TagVariableType.LOCAL_CC, guildId: options.message.channel.guild.id, name: options.tagName }
-                            : { type: TagVariableType.LOCAL_TAG, name: options.tagName },
-                        author: options.author !== undefined
-                            ? { type: TagVariableType.AUTHOR, authorId: options.author }
-                            : undefined,
-                        guild: !options.tagVars
-                            ? { type: TagVariableType.GUILD_CC, guildId: options.message.channel.guild.id }
-                            : { type: TagVariableType.GUILD_TAG, guildId: options.message.channel.guild.id }
-                    }
-                ),
-                {
-                    chunkCommitted(size) {
-                        context.dbObjectsCommitted += size;
-                    },
-                    commitStarted() {
-                        const execRunning = context.execTimer.running;
-                        if (execRunning)
-                            context.execTimer.end();
-                        context.dbTimer.resume();
-                        return {
-                            [Symbol.dispose]: memoize(() => {
-                                context.dbTimer.end();
-                                if (execRunning)
-                                    context.execTimer.resume();
-                            })
-                        };
-                    }
-                },
-                this.logger
-            ),
             limit: options.limit,
             authorId: options.author,
             authorizerId,
@@ -153,6 +110,7 @@ export class BBTagEngine {
                 : new DiscordPermissions(authorizerPermissions.allow),
             prefix: options.prefix,
             isCC: options.isCC,
+            tagVars: options.tagVars,
             silent: options.silent,
             flagDefinitions: options.flagDefinitions,
             functions: new Map(),
@@ -213,7 +171,7 @@ export class BBTagEngine {
                 content = content.replace(context.root.output.replace.regex, context.root.output.replace.with);
             context.execTimer.end();
             this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
-            await context.root.variables.persist();
+            await this.dependencies.variables.forContext(context).persist();
             this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
             await OutputSubtag.sendOutput(context, content);
             this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
@@ -234,7 +192,7 @@ export class BBTagEngine {
             },
             database: {
                 committed: context.dbObjectsCommitted,
-                values: context.root.variables.list.reduce<JObject>((v, c) => {
+                values: this.dependencies.variables.forContext(context).list.reduce<JObject>((v, c) => {
                     if (c.value !== undefined)
                         v[c.key] = c.value;
                     return v;
@@ -292,12 +250,12 @@ export class BBTagEngine {
             prefix: root.prefix,
             flags: root.flagDefinitions,
             tagName: local.tagName,
-            rootTagName: root.variables.scopes.tagName,
-            tagVars: root.variables.scopes.isTag,
+            rootTagName: root.tagName,
+            tagVars: root.tagVars,
             author: root.authorId,
             authorizer: root.authorizerId,
             limit: root.limit.serialize(),
-            tempVars: context.root.variables.list
+            tempVars: this.dependencies.variables.forContext(context).list
                 .filter(v => v.key.startsWith('~'))
                 .reduce<Record<string, JToken>>((p, v) => {
                     if (v.value !== undefined)
@@ -349,7 +307,8 @@ export class BBTagEngine {
         result.local.reaction = obj.scope.reaction;
         result.local.reactUser = obj.scope.reactUser;
         Object.entries(obj.scope.functions).forEach(x => result.root.functions.set(...x));
-        await Promise.all(Object.entries(obj.tempVars).map(x => result.root.variables.set(...x)));
+        const variables = this.dependencies.variables.forContext(result);
+        await Promise.all(Object.entries(obj.tempVars).map(x => variables.set(...x)));
         return result;
     }
 

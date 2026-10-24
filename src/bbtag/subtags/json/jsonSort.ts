@@ -5,11 +5,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.jsonSort;
 
 export class JsonSortSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'jsonSort',
             category: SubtagType.JSON,
@@ -25,11 +27,13 @@ export class JsonSortSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async jsonSort(context: BBTagContext, arrStr: string, pathStr: string, descStr: string): Promise<JArray | undefined> {
+        const variables = this.#variables.forContext(context);
         const descending = parse.boolean(descStr) ?? descStr !== '';
-        const obj = await bbtag.json.resolveObj(context, arrStr);
+        const obj = await bbtag.json.resolveObj(variables, arrStr);
         if (!Array.isArray(obj.object))
             throw new NotAnArrayError(arrStr);
 
@@ -48,7 +52,7 @@ export class JsonSortSubtag extends CompiledSubtag {
         if (obj.variable === undefined)
             return obj.object;
 
-        await context.root.variables.set(obj.variable, obj.object);
+        await variables.set(obj.variable, obj.object);
         return undefined;
     }
 }

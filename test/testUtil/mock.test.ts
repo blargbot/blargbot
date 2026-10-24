@@ -1512,7 +1512,7 @@ await describe('Mock', async () => {
 
             assert.equal(sut.instance(), 'value');
 
-            sut.clearSetups();
+            sut.clearInterceptors();
 
             assert.throws(() => sut.instance(), MockError);
         });

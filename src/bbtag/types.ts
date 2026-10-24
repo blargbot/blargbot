@@ -3,7 +3,6 @@ import type { FlagDefinition, FlagResult, GuildCommandTag, StoredTag } from '@bl
 import type { IFormattable } from '@blargbot/formatting';
 import type * as eris from 'eris';
 
-import type { VariableCache } from './Caching.js';
 import type { DiscordPermissions } from './enums.js';
 import type { BBTagRuntimeError } from './errors/index.js';
 import type { BBTagExpression, SourceMarker, SubtagCall } from './language/index.js';
@@ -49,7 +48,6 @@ export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
         replace?: { regex: RegExp | string; with: string; };
         readonly reactions: string[];
     };
-    readonly variables: VariableCache;
     readonly limit: RuntimeLimit;
     readonly authorId: string | undefined;
     readonly authorizerId: string | undefined;
@@ -57,6 +55,7 @@ export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
     readonly authorizerPermissions: DiscordPermissions;
     readonly prefix: string | undefined;
     readonly isCC: boolean;
+    readonly tagVars: boolean;
     readonly silent: boolean;
     readonly flagDefinitions: ReadonlyArray<FlagDefinition<string>>;
     readonly functions: Map<string, BBTagExpression>;

@@ -3,23 +3,22 @@ import { parse } from '@blargbot/core';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
-import { createTagVariableScopeProvider } from '../../tagVariableScopeProvider.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.get;
 
-const tagVariableScopeProviders = createTagVariableScopeProvider().entries;
-
 export class GetSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'get',
             category: SubtagType.BOT,
             definition: [
                 {
                     parameters: ['name'],
-                    description: tag.value.description({ scopes: tagVariableScopeProviders }),
+                    description: tag.value.description({ scopes: variables.kinds }),
                     exampleCode: tag.value.exampleCode,
                     exampleOut: tag.value.exampleOut,
                     returns: 'json|nothing',
@@ -35,10 +34,11 @@ export class GetSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
 
     public async get(context: BBTagContext, variableName: string): Promise<JToken | undefined> {
-        const result = await context.root.variables.get(variableName);
+        const result = await this.#variables.forContext(context).get(variableName);
         if (!Array.isArray(result.value))
             return result.value;
 
@@ -46,7 +46,7 @@ export class GetSubtag extends CompiledSubtag {
     }
 
     public async getArray(context: BBTagContext, variableName: string, indexStr: string): Promise<JToken | undefined> {
-        const result = await context.root.variables.get(variableName);
+        const result = await this.#variables.forContext(context).get(variableName);
         if (!Array.isArray(result.value))
             return result.value;
 

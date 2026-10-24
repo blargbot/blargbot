@@ -1,7 +1,7 @@
 import { parse } from '@blargbot/core';
 
-import type { BBTagContext } from '../BBTagContext.js';
 import { BBTagRuntimeError } from '../errors/index.js';
+import type { Variables } from '../Variables.js';
 import { tagArray } from './tagArray.js';
 
 export interface JsonResolveResult {
@@ -10,12 +10,12 @@ export interface JsonResolveResult {
 }
 
 export const json = Object.freeze({
-    async resolveObj(context: BBTagContext, input: string): Promise<JsonResolveResult> {
+    async resolveObj(variables: Variables, input: string): Promise<JsonResolveResult> {
         let obj = this.parse(input);
         if (typeof obj === 'object' && obj !== null)
             return { variable: undefined, object: obj };
 
-        const variable = await context.root.variables.get(input);
+        const variable = await variables.get(input);
         if (typeof variable.value === 'object' && variable.value !== null)
             return { variable: input, object: variable.value };
 

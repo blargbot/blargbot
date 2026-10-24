@@ -12,6 +12,7 @@ export * from './deepClone.js';
 export * from './disposable.js';
 export * from './Iterable.js';
 export * from './Lazy.js';
+export * from './memoize.js';
 export * from './raceAsyncIterables.js';
 export * from './raceSignal.js';
 export * from './random.js';

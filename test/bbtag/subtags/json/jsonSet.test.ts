@@ -1,15 +1,27 @@
-import assert from 'node:assert/strict';
-
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { JsonSetSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
-import { TagVariableType } from '@blargbot/domain';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new JsonSetSubtag(),
+    subtag: new JsonSetSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 2, max: 4 },
     names: ['jsonSet', 'jSet'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{jsonset;{j;{"test": 123, "other": 456}};test}',
@@ -24,29 +36,33 @@ await runSubtagTests({
         {
             code: '{jsonset;null;myProp;123}',
             expected: '',
-            async assert(bbctx) {
-                assert.deepEqual((await bbctx.root.variables.get('null')).value, { myProp: '123' });
+            setup() {
+                variables.setup(m => m.get('null')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+                variables.setup((m, $) => m.set('null', $({ myProp: '123' }))).resolves().mustHappen(1);
             }
         },
         {
             code: '{jsonset;"abc";myProp;123}',
             expected: '',
-            async assert(bbctx) {
-                assert.deepEqual((await bbctx.root.variables.get('"abc"')).value, { myProp: '123' });
+            setup() {
+                variables.setup(m => m.get('"abc"')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+                variables.setup((m, $) => m.set('"abc"', $({ myProp: '123' }))).resolves().mustHappen(1);
             }
         },
         {
             code: '{jsonset;true;myProp;123}',
             expected: '',
-            async assert(bbctx) {
-                assert.deepEqual((await bbctx.root.variables.get('true')).value, { myProp: '123' });
+            setup() {
+                variables.setup(m => m.get('true')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+                variables.setup((m, $) => m.set('true', $({ myProp: '123' }))).resolves().mustHappen(1);
             }
         },
         {
             code: '{jsonset;123;myProp;123}',
             expected: '',
-            async assert(bbctx) {
-                assert.deepEqual((await bbctx.root.variables.get('123')).value, { myProp: '123' });
+            setup() {
+                variables.setup(m => m.get('123')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+                variables.setup((m, $) => m.set('123', $({ myProp: '123' }))).resolves().mustHappen(1);
             }
         },
         {
@@ -76,13 +92,9 @@ await runSubtagTests({
         {
             code: '{jsonset;jsonVar;other.myProp;10;true}',
             expected: '',
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'jsonVar' }, { test: 123, other: JSON.stringify({ myProp: 123 }) });
-            },
-            async assert(bbctx) {
-                assert.deepEqual((await bbctx.root.variables.get('jsonVar')).value, { test: 123, other: { myProp: '10' } });
+            setup() {
+                variables.setup(m => m.get('jsonVar')).resolves({ key: 'foo', value: { test: 123, other: JSON.stringify({ myProp: 123 }) } }).mustHappen(1);
+                variables.setup((m, $) => m.set('jsonVar', $({ test: 123, other: { myProp: '10' } }))).resolves().mustHappen(1);
             }
         }
     ]

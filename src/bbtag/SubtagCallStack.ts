@@ -1,5 +1,6 @@
+import { memoize } from '@blargbot/util';
+
 import type { SubtagCall } from './language/index.js';
-import { memoize } from './memoize.js';
 
 export class SubtagCallStack {
     readonly #callCounts: Record<string, number | undefined>;

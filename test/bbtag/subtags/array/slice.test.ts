@@ -1,22 +1,37 @@
-import assert from 'node:assert/strict';
-
+import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { NotAnArrayError, NotANumberError } from '@blargbot/bbtag';
 import { SliceSubtag } from '@blargbot/bbtag/subtags';
-import { TagVariableType } from '@blargbot/domain';
+import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
 await runSubtagTests({
-    subtag: new SliceSubtag(),
+    subtag: new SliceSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 2, max: 3 },
     names: ['slice'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+    },
+    postSetup(bbctx) {
+        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{slice;abc;0}',
             expected: '`Not an array`',
             errors: [
                 { error: new NotAnArrayError('abc') }
-            ]
+            ],
+            setup() {
+                variables.setup(m => m.get('abc')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{slice;[1,2,3,4];0}',
@@ -51,25 +66,15 @@ await runSubtagTests({
         {
             code: '{slice;arr1;1}',
             expected: '[2,3,4]',
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), [1, 2, 3, 4]);
-                assert.deepEqual((await bbctx.root.variables.get('arr1')).value, [1, 2, 3, 4]);
+            setup() {
+                variables.setup(m => m.get('arr1')).resolves({ key: 'foo', value: [1, 2, 3, 4] }).mustHappen(1);
             }
         },
         {
             code: '{slice;arr1;1;3}',
             expected: '[2,3]',
-            setup(ctx) {
-                ctx.input.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }, [1, 2, 3, 4]);
-            },
-            async assert(bbctx, _, ctx) {
-                assert.deepEqual(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arr1' }), [1, 2, 3, 4]);
-                assert.deepEqual((await bbctx.root.variables.get('arr1')).value, [1, 2, 3, 4]);
+            setup() {
+                variables.setup(m => m.get('arr1')).resolves({ key: 'foo', value: [1, 2, 3, 4] }).mustHappen(1);
             }
         }
     ]

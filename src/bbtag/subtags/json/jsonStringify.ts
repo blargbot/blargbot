@@ -5,11 +5,13 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { VariablesProvider } from '../../Variables.js';
 
 const tag = templates.subtags.jsonStringify;
 
 export class JsonStringifySubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #variables: VariablesProvider;
+    public constructor({ variables }: { variables: VariablesProvider; }) {
         super({
             name: 'jsonStringify',
             category: SubtagType.JSON,
@@ -25,13 +27,15 @@ export class JsonStringifySubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#variables = variables;
     }
     public async jsonStringify(context: BBTagContext, input: string, indentStr: string): Promise<string> {
         const indent = parse.int(indentStr);
         if (indent === undefined)
             throw new NotANumberError(indentStr);
 
-        const obj = (await bbtag.json.resolveObj(context, input)).object;
+        const variables = this.#variables.forContext(context);
+        const obj = (await bbtag.json.resolveObj(variables, input)).object;
         return JSON.stringify(obj, null, indent);
     }
 }
