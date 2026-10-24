@@ -35,17 +35,6 @@ export class BBTagContext {
         return this.#local;
     }
 
-    // public get isStaff(): Promise<boolean> {
-    //     if (this.#isStaffPromise !== undefined)
-    //         return this.#isStaffPromise;
-
-    //     const authorizer = this.root.authorizer;
-    //     if (authorizer !== undefined)
-    //         this.#isStaffPromise = this.engine.getSubtag(IsStaffSubtag)?.isStaff(this, authorizer.id, true).catch(() => false);
-
-    //     return this.#isStaffPromise ??= Promise.resolve(false);
-    // }
-
     public constructor(
         public readonly engine: BBTagEngine,
         root: BBTagRuntimeRootScope
@@ -184,18 +173,6 @@ export class BBTagContext {
         );
     }
 
-    public async queryThread(query: string | undefined, options: FindEntityOptions = {}): Promise<eris.KnownThreadChannel | undefined> {
-        if (guard.isThreadChannel(this.local.message.channel) && (query === '' || query === undefined || query === this.local.message.channel.id))
-            return this.local.message.channel;
-        return await this.#queryEntity(
-            query ?? '', 'channel', 'Thread',
-            async (id) => threadsOnly(await this.engine.util.getChannel(this.root.message.channel.guild, id)),
-            async (query) => threadsOnly(await this.engine.util.findChannels(this.root.message.channel.guild, query)),
-            async (options) => await this.engine.util.queryChannel(options),
-            options
-        );
-    }
-
     public async getMessage(channel: eris.KnownChannel, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined>
     public async getMessage<T extends eris.KnownTextableChannel>(channel: T, messageId: string, force?: boolean): Promise<eris.Message<T> | undefined>
     public async getMessage(channel: eris.KnownChannel, messageId: string, force = false): Promise<eris.KnownMessage | undefined> {
@@ -255,14 +232,4 @@ export class BBTagContext {
                 return result;
         }
     }
-}
-
-function threadsOnly(channel: eris.KnownChannel | undefined): eris.KnownThreadChannel | undefined
-function threadsOnly(channel: eris.KnownChannel[]): eris.KnownThreadChannel[]
-function threadsOnly(channel: eris.KnownChannel | eris.KnownChannel[] | undefined): eris.KnownThreadChannel | eris.KnownThreadChannel[] | undefined {
-    if (Array.isArray(channel))
-        return channel.filter(guard.isThreadChannel);
-    if (channel === undefined || guard.isThreadChannel(channel))
-        return channel;
-    return undefined;
 }
