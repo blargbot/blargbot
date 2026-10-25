@@ -5,6 +5,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { ApiResult } from '../types.js';
 
 const tag = templates.subtags.webhook;
 
@@ -16,11 +17,8 @@ export interface ExecuteWebhookPayload {
     readonly file: eris.FileContent[] | undefined;
 
 }
-export type ExecuteWebhookResult =
-    | { success: true; }
-    | { success: false; reason?: string; }
 export interface ExecuteWebhookThunk {
-    (webhookId: string, webhookToken: string, payload: ExecuteWebhookPayload): Promise<ExecuteWebhookResult>;
+    (webhookId: string, webhookToken: string, payload: ExecuteWebhookPayload): Promise<ApiResult>;
 }
 
 export class WebhookSubtag extends CompiledSubtag {

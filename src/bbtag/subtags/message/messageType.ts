@@ -3,11 +3,17 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageType;
 
+export interface GetMessageTypeThunk {
+    (channelId: string, messageId: string): Promise<number | undefined>;
+}
+
 export class MessageTypeSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getMessageType: GetMessageTypeThunk;
+    public constructor({ getMessageType }: { getMessageType: GetMessageTypeThunk; }) {
         super({
             name: 'messageType',
             category: SubtagType.MESSAGE,
@@ -31,15 +37,14 @@ export class MessageTypeSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getMessageType = getMessageType;
     }
 
     public async getCurrentMessageType(
         context: BBTagContext
     ): Promise<number> {
-        const msg = await context.getMessage(context.local.message.channel, context.local.message.id);
-        if (msg === undefined)
-            throw new MessageNotFoundError(context.local.message.channel.id, context.local.message.id);
-        return msg.type;
+        return await this.#getMessageType(context.local.message.channel.id, context.local.message.id)
+            ?? new MessageNotFoundError(context.local.message.channel.id, context.local.message.id).throw();
     }
 
     public async getMessageType(
@@ -47,14 +52,13 @@ export class MessageTypeSubtag extends CompiledSubtag {
         channelStr: string,
         messageId: string
     ): Promise<number> {
-        const channel = await context.queryChannel(channelStr);
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr);
+        if (messageId === '')
+            messageId = context.local.message.id;
 
-        const message = await context.getMessage(channel, messageId);
-        if (message === undefined)
-            throw new MessageNotFoundError(channel.id, messageId);
+        const channelId = await ChannelIdSubtag.query(context, channelStr)
+            ?? new ChannelNotFoundError(channelStr).throw();
 
-        return message.type;
+        return await this.#getMessageType(channelId, messageId)
+            ?? new MessageNotFoundError(channelId, messageId).throw();
     }
 }

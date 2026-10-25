@@ -122,7 +122,7 @@ await runSubtagTests({
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'bot' });
+                    .resolves({ success: false, cause: 'bot' });
             }
         },
         {
@@ -154,7 +154,7 @@ await runSubtagTests({
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'authorizer' });
+                    .resolves({ success: false, cause: 'authorizer' });
             }
         },
         {
@@ -186,7 +186,7 @@ await runSubtagTests({
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'authorizer' });
+                    .resolves({ success: false, cause: 'authorizer' });
             }
         },
         {
@@ -218,7 +218,7 @@ await runSubtagTests({
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'bot' });
+                    .resolves({ success: false, cause: 'bot' });
             }
         },
         {

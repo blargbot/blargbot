@@ -6,18 +6,15 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { GetUserPermissionsThunk } from '../types.js';
+import type { ApiResult, GetUserPermissionsThunk } from '../types.js';
 import { ChannelIdSubtag } from './channelId.js';
 import { ChannelIsThreadSubtag } from './channelIsThread.js';
 
 const tag = templates.subtags.channelEdit;
 
-export type EditChannelResult =
-    | { success: true; }
-    | { success: false; reason?: string; };
 export type EditChannelOptions = (z.infer<typeof mapThreadOptions> | z.infer<typeof mapChannelOptions> & { position?: number; }) & { auditReason: string; };
 export interface EditChannelThunk {
-    (guildId: string, channelId: string, options: EditChannelOptions): Promise<EditChannelResult>;
+    (guildId: string, channelId: string, options: EditChannelOptions): Promise<ApiResult>;
 }
 
 export class ChannelEditSubtag extends CompiledSubtag {

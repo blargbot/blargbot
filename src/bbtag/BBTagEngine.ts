@@ -1,5 +1,4 @@
 import { guard, Timer } from '@blargbot/core';
-import type { Database } from '@blargbot/database';
 import type { Logger } from '@blargbot/logger';
 import * as eris from 'eris';
 
@@ -25,7 +24,6 @@ export class BBTagEngine {
     readonly #subtagInstances: Set<Subtag>;
     public get discord(): eris.Client { return this.dependencies.discord; }
     public get logger(): Logger { return this.dependencies.logger; }
-    public get database(): Database { return this.dependencies.database; }
     public get util(): BBTagUtilities { return this.dependencies.util; }
 
     public readonly cooldowns: TagCooldownManager;

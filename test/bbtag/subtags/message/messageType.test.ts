@@ -1,55 +1,38 @@
+import { MessageType } from '@blargbot/bbtag';
+import type { GetMessageTypeThunk } from '@blargbot/bbtag/subtags';
 import { MessageTypeSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
-import { MessageType } from 'discord-api-types/v9';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import type { GetMessagePropTestCase } from './_getMessagePropTest.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const messageTypes: { [P in Extract<keyof typeof MessageType, string>]: typeof MessageType[P] } = {
-    ['Default']: MessageType.Default,
-    ['RecipientAdd']: MessageType.RecipientAdd,
-    ['RecipientRemove']: MessageType.RecipientRemove,
-    ['Call']: MessageType.Call,
-    ['ChannelNameChange']: MessageType.ChannelNameChange,
-    ['ChannelIconChange']: MessageType.ChannelIconChange,
-    ['ChannelPinnedMessage']: MessageType.ChannelPinnedMessage,
-    ['ChannelFollowAdd']: MessageType.ChannelFollowAdd,
-    ['GuildDiscoveryDisqualified']: MessageType.GuildDiscoveryDisqualified,
-    ['GuildDiscoveryRequalified']: MessageType.GuildDiscoveryRequalified,
-    ['GuildDiscoveryGracePeriodInitialWarning']: MessageType.GuildDiscoveryGracePeriodInitialWarning,
-    ['GuildDiscoveryGracePeriodFinalWarning']: MessageType.GuildDiscoveryGracePeriodFinalWarning,
-    ['ThreadCreated']: MessageType.ThreadCreated,
-    ['Reply']: MessageType.Reply,
-    ['ChatInputCommand']: MessageType.ChatInputCommand,
-    ['ThreadStarterMessage']: MessageType.ThreadStarterMessage,
-    ['GuildInviteReminder']: MessageType.GuildInviteReminder,
-    ['ContextMenuCommand']: MessageType.ContextMenuCommand,
-    ['UserJoin']: MessageType.UserJoin,
-    ['GuildBoost']: MessageType.GuildBoost,
-    ['GuildBoostTier1']: MessageType.GuildBoostTier1,
-    ['GuildBoostTier2']: MessageType.GuildBoostTier2,
-    ['GuildBoostTier3']: MessageType.GuildBoostTier3,
-    ['AutoModerationAction']: MessageType.AutoModerationAction
-};
+const getMessageType = new Mock<GetMessageTypeThunk>({ id: 'getMessageType', callable: true });
 
 await runSubtagTests({
-    subtag: new MessageTypeSubtag(),
+    subtag: new MessageTypeSubtag({
+        getMessageType: getMessageType.instance
+    }),
     argCountBounds: { min: 0, max: 2 },
     names: ['messageType'],
+    setup(ctx) {
+        ctx.adoptMock(getMessageType);
+    },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
             includeNoArgs: true,
+            getProp: (c, i) => getMessageType.setup(m => m(c, i)),
+            notExists: Promise.resolve(undefined),
+            queryOptions: () => undefined,
             generateCode(...args) {
                 return `{${['messagetype', ...args].filter(a => a !== undefined).join(';')}}`;
             },
-            cases: Object.entries(messageTypes).map(([key, value]) => ({
+            cases: Object.entries(MessageType).map<GetMessagePropTestCase<Promise<number | undefined>>>(([key, value]) => ({
                 title: `When the message is of type ${key}`,
                 expected: value.toString(),
-                setup(_, message) {
-                    message.type = value;
-                    message.mentions.push(SubtagTestContext.createApiUser({ id: snowflake.create().toString() }));
-                    Object.defineProperty(message, 'call', { value: {} });
+                setup(getProp) {
+                    getProp.resolves(value).mustHappen(1);
                 }
             }))
         })

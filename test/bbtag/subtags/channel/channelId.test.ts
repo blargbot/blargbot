@@ -224,7 +224,7 @@ await runSubtagTests({
                     userId: ctx.users.command.id,
                     searchText: 'General',
                     source: 'custom command `MyCoolTag`'
-                }))).resolves({ success: false, reason: 'notFound' }).mustHappen(1);
+                }))).resolves({ success: false, cause: 'notFound' }).mustHappen(1);
             },
             assert(ctx) {
                 assert.equal(ctx.root.queryCache.failedQueries, 1);
@@ -246,7 +246,7 @@ await runSubtagTests({
                     userId: ctx.users.command.id,
                     searchText: 'General',
                     source: 'custom command `MyCoolTag`'
-                }))).resolves({ success: false, reason: 'aborted' }).mustHappen(1);
+                }))).resolves({ success: false, cause: 'aborted' }).mustHappen(1);
             },
             assert(ctx) {
                 assert.equal(ctx.root.queryCache.failedQueries, Infinity);

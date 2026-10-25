@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import type { AddReactionsThunk, CanPingEveryoneThunk, SendThunk } from '@blargbot/bbtag/subtags';
-import { OutputSubtag } from '@blargbot/bbtag/subtags';
+import { ChannelIsNsfwSubtag, OutputSubtag } from '@blargbot/bbtag/subtags';
 import { Emote } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
@@ -13,6 +13,7 @@ const emotes = [Emote.parse('<a:test:120272372032032937>'), Emote.parse('<:alsoa
 const canPingEveryone = new Mock<CanPingEveryoneThunk>({ id: 'canPingEveryone', callable: true });
 const send = new Mock<SendThunk>({ id: 'send', callable: true });
 const addReactions = new Mock<AddReactionsThunk>({ id: 'addReactions', callable: true });
+const channelIsNsfwSubtag = new Mock<ChannelIsNsfwSubtag>({ id: 'channelIsNsfwSubtag' });
 
 await runSubtagTests({
     subtag: new OutputSubtag({
@@ -22,10 +23,12 @@ await runSubtagTests({
     }),
     argCountBounds: { min: 0, max: 1 },
     names: ['output'],
+    otherSubtags: [channelIsNsfwSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(canPingEveryone);
         ctx.adoptMock(send);
         ctx.adoptMock(addReactions);
+        ctx.adoptSubtagMock(channelIsNsfwSubtag, { type: ChannelIsNsfwSubtag });
     },
     cases: [
         {
@@ -261,7 +264,7 @@ await runSubtagTests({
             }
         },
         {
-            title: 'NSFW',
+            title: 'NSFW & channel not nsfw',
             code: '{output;This is my message content}',
             expected: '0987654331234567',
             setup(ctx) {
@@ -286,6 +289,7 @@ await runSubtagTests({
                 bbctx.root.output.nsfw = 'This is the nsfw message.';
 
                 const channel = bbctx.root.message.channel;
+                channelIsNsfwSubtag.setup(m => m.check(bbctx, channel.id)).resolves(false).mustHappen(1);
                 addReactions.setup((m, $) => m(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
                 send.setup((m, $) => m(channel.id, $({
                     content: 'This is the nsfw message.',
@@ -295,6 +299,49 @@ await runSubtagTests({
                         everyone: false,
                         roles: new Set(roleMentions),
                         users: new Set(userMentions)
+                    }
+                }))).resolves({ success: true, id: message.id });
+            },
+            assert(bbctx) {
+                assert.equal(bbctx.root.output.messageId, '0987654331234567');
+            }
+        },
+        {
+            title: 'NSFW & channel is nsfw',
+            code: '{output;This is my message content}',
+            expected: '0987654331234567',
+            setup(ctx) {
+                ctx.input.isCC = false;
+            },
+            postSetup(bbctx, ctx) {
+                const embeds = [{ title: 'abc' }];
+                const files = [{ file: 'test content', name: 'test.txt' }];
+                const roleMentions = ['56789043764325674', '345678238285862342'];
+                const userMentions = ['23946265743358573', '234926342423437987'];
+                const message = ctx.createMessage<eris.KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
+                    id: '0987654331234567',
+                    channel_id: bbctx.local.message.channel.id
+                }, ctx.users.command));
+
+                bbctx.root.output.embeds = embeds;
+                bbctx.root.output.files = files;
+                bbctx.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                bbctx.root.output.reactions.push(...emotes.map(m => m.toString()));
+                bbctx.root.output.nsfw = 'This is the nsfw message.';
+
+                const channel = bbctx.root.message.channel;
+                channelIsNsfwSubtag.setup(m => m.check(bbctx, channel.id)).resolves(true).mustHappen(1);
+                addReactions.setup((m, $) => m(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
+                send.setup((m, $) => m(channel.id, $({
+                    content: 'This is my message content',
+                    embeds: embeds,
+                    files: files,
+                    allowedMentions: {
+                        everyone: false,
+                        roles: new Set(),
+                        users: new Set()
                     }
                 }))).resolves({ success: true, id: message.id });
             },

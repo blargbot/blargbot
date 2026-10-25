@@ -1,19 +1,26 @@
-import { guard } from '@blargbot/core';
-import type { Logger } from '@blargbot/logger';
-import * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
+import { ChannelIsTextSubtag } from '../channel/channelIsText.js';
+import type { ApiResult } from '../types.js';
 import { IsStaffSubtag } from '../user/isStaff.js';
 
 const tag = templates.subtags.delete;
 
+export type DeleteMessageResult = ApiResult<null, { cause: 'notFound' | 'failed'; }>;
+
+export interface DeleteMessageThunk {
+    (channelId: string, messageId: string): Promise<DeleteMessageResult>;
+}
+
 export class DeleteSubtag extends CompiledSubtag {
-    readonly #logger: Logger;
-    public constructor({ logger }: { logger: Logger; }) {
+    readonly #deleteMessage: DeleteMessageThunk;
+    public constructor({ deleteMessage }: {
+        deleteMessage: DeleteMessageThunk;
+    }) {
         super({
             name: 'delete',
             description: tag.description,
@@ -45,7 +52,7 @@ export class DeleteSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#logger = logger;
+        this.#deleteMessage = deleteMessage;
     }
 
     public async deleteMessage(
@@ -56,25 +63,22 @@ export class DeleteSubtag extends CompiledSubtag {
         if (!(context.root.ownedMessageIds.has(messageId) || await IsStaffSubtag.isStaff(context)))
             throw new BBTagRuntimeError('Author must be staff to delete unrelated messages');
 
-        const channel = await context.queryChannel(channelStr);
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr);
+        const channelId = await ChannelIdSubtag.query(context, channelStr)
+            ?? new ChannelNotFoundError(channelStr).throw();
 
-        if (messageId.length === 0 || !guard.isTextableChannel(channel))
-            throw new MessageNotFoundError(channel.id, messageId).withDisplay('');
+        if (messageId.length === 0 || !await ChannelIsTextSubtag.check(context, channelId))
+            throw new MessageNotFoundError(channelId, messageId).withDisplay('');
 
-        const msg = await context.getMessage(channel, messageId);
-        if (msg === undefined)
-            throw new MessageNotFoundError(channel.id, messageId).withDisplay('');
-
-        try {
-            await msg.delete();
-        } catch (e: unknown) {
-            if (e instanceof eris.DiscordRESTError && e.code === eris.ApiError.UNKNOWN_MESSAGE)
-                return;
-            this.#logger.warn('Failed to delete message', e);
-            // NOOP
-        }
+        const result = await this.#deleteMessage(channelId, messageId);
         //TODO return something like true/false
+        if (result.success)
+            return;
+
+        switch (result.cause) {
+            case 'notFound':
+                throw new MessageNotFoundError(channelId, messageId).withDisplay('');
+            case 'failed':
+                throw new BBTagRuntimeError('Delete failed', result.reason).withDisplay('');
+        }
     }
 }

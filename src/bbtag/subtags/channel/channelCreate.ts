@@ -1,14 +1,13 @@
 import { guard, zodStringToJson } from '@blargbot/core';
-import * as eris from 'eris';
 import z from 'zod';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
-import { ChannelType } from '../../enums.js';
+import { ChannelType, PermissionOverwriteType } from '../../enums.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { GetUserPermissionsThunk } from '../types.js';
+import type { ApiResult, GetUserPermissionsThunk } from '../types.js';
 import type { ChannelTypeSubtag } from './channelType.js';
 
 const tag = templates.subtags.channelCreate;
@@ -17,9 +16,7 @@ export interface CreateChannelOptions extends z.infer<typeof mapOptions> {
     type: typeof channelTypes[keyof typeof channelTypes];
     name: string;
 };
-export type CreateChannelResult =
-    | { success: true; channelId: string; }
-    | { success: false; reason?: string; }
+export type CreateChannelResult = ApiResult<{ channelId: string; }>
 export interface CreateChannelThunk {
     (guildId: string, options: CreateChannelOptions): Promise<CreateChannelResult>;
 }
@@ -63,7 +60,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Invalid JSON');
         const options = mapped.data;
 
-        const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : eris.Constants.ChannelTypes.GUILD_TEXT;
+        const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : ChannelType.GUILD_TEXT;
 
         if (!authorizerPermissions.has('ADMINISTRATOR')) {
             for (const permission of options.permissionOverwrites ?? [])
@@ -130,8 +127,7 @@ const mapOptions = zodStringToJson.pipe(z.strictObject({
         deny: bigintish.optional().default(0n),
         id: z.string(),
         type: z.enum(['role', 'member'])
-            .transform(v => v === 'member' ? 'user' : v)
-            .transform(v => eris.Constants.PermissionOverwriteTypes[v.toUpperCase()])
+            .transform(v => PermissionOverwriteType[v.toUpperCase()])
     }).array().optional(),
     reason: z.string().optional()
 }));

@@ -7,6 +7,7 @@ import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundE
 import type { BBTagExpression } from '../../language/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.waitMessage;
 
@@ -52,10 +53,10 @@ export class WaitMessageSubtag extends CompiledSubtag {
         condition: BBTagExpression,
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string]> {
-        const channels = await this.bulkLookup(channelStr, i => context.queryChannel(i, { noLookup: true }), ChannelNotFoundError)
-            ?? [context.local.message.channel];
+        const channels = await this.#bulkLookup(channelStr, i => ChannelIdSubtag.query(context, i, { noLookup: true }), ChannelNotFoundError)
+            ?? [context.local.message.channel.id];
 
-        const users = await this.bulkLookup(userStr, i => context.queryUser(i, { noLookup: true }), UserNotFoundError)
+        const users = await this.#bulkLookup(userStr, i => context.queryUser(i, { noLookup: true }), UserNotFoundError)
             ?? [context.local.message.author];
 
         const timeout = clamp(parse.float(timeoutStr) ?? NaN, 0, 300);
@@ -66,7 +67,7 @@ export class WaitMessageSubtag extends CompiledSubtag {
             condition = defaultCondition;
 
         const userSet = new Set(users.map(u => u.id));
-        for await (const message of this.#streamMessages(channels.map(c => c.id), timeout * 1000)) {
+        for await (const message of this.#streamMessages(channels, timeout * 1000)) {
             if (!userSet.has(message.author.id) || !guard.isGuildMessage(message))
                 continue;
             using scope = context.enterScope();
@@ -81,5 +82,20 @@ export class WaitMessageSubtag extends CompiledSubtag {
         }
 
         throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
+    }
+
+    async #bulkLookup<T>(source: string, lookup: (value: string) => Awaitable<T | undefined>, error: new (term: string) => BBTagRuntimeError): Promise<T[] | undefined> {
+        if (source === '')
+            return undefined;
+
+        const flatSource = bbtag.tagArray.flattenArray([source])
+            .map(i => parse.string(i))
+            .map(async input => {
+                const element = await lookup(input);
+                if (element === undefined)
+                    throw new error(input);
+                return element;
+            });
+        return await Promise.all(flatSource);
     }
 }

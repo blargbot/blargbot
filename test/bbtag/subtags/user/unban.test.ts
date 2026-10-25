@@ -88,7 +88,7 @@ await runSubtagTests({
                     reason: 'Tag Unban'
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'bot' });
+                    .resolves({ success: false, cause: 'bot' });
             }
         },
         {
@@ -115,7 +115,7 @@ await runSubtagTests({
                     reason: 'Tag Unban'
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'notBanned' });
+                    .resolves({ success: false, cause: 'notBanned' });
             }
         },
         {
@@ -145,7 +145,7 @@ await runSubtagTests({
                     reason: 'Tag Unban'
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'authorizer' });
+                    .resolves({ success: false, cause: 'authorizer' });
             }
         },
         {

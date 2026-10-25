@@ -6,11 +6,17 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageTime;
 
+export interface GetMessageTimestampThunk {
+    (channelId: string, messageId: string): Promise<Temporal.Instant | undefined>;
+}
+
 export class MessageTimeSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getMessageTimestamp: GetMessageTimestampThunk;
+    public constructor({ getMessageTimestamp }: { getMessageTimestamp: GetMessageTimestampThunk; }) {
         super({
             name: 'messageTime',
             category: SubtagType.MESSAGE,
@@ -64,21 +70,24 @@ export class MessageTimeSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getMessageTimestamp = getMessageTimestamp;
     }
 
     public async getMessageTime(
         context: BBTagContext,
         channelStr: string,
-        messageStr: string,
+        messageId: string,
         format: string
     ): Promise<string> {
-        const channel = await context.queryChannel(channelStr, { noLookup: true }); //TODO lookup
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr);
+        if (messageId === '')
+            messageId = context.local.message.id;
 
-        const message = await context.getMessage(channel, messageStr);
-        if (message === undefined)
-            throw new MessageNotFoundError(channel.id, messageStr);
-        return moment(message.timestamp).format(format);
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: true }) //TODO lookup
+            ?? new ChannelNotFoundError(channelStr).throw();
+
+        const timestamp = await this.#getMessageTimestamp(channelId, messageId)
+            ?? new MessageNotFoundError(channelId, messageId).throw();
+
+        return moment(timestamp.epochMilliseconds).format(format);
     }
 }

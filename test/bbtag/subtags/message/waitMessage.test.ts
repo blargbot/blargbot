@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag';
 import type { StreamMessagesThunk } from '@blargbot/bbtag/subtags';
-import { MessageIdSubtag, OperatorSubtag, WaitMessageSubtag } from '@blargbot/bbtag/subtags';
+import { ChannelIdSubtag, MessageIdSubtag, OperatorSubtag, WaitMessageSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 import * as eris from 'eris';
 
@@ -8,6 +8,7 @@ import type { SubtagTestContext } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const streamMessages = new Mock<StreamMessagesThunk>({ id: 'streamMessages', callable: true });
+const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
 
 await runSubtagTests({
     subtag: new WaitMessageSubtag({
@@ -15,8 +16,10 @@ await runSubtagTests({
     }),
     argCountBounds: { min: 0, max: { count: 4, noEval: [2] } },
     names: ['waitMessage'],
+    otherSubtags: [channelIdSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(streamMessages);
+        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
     },
     cases: [
         {
@@ -58,9 +61,9 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true })))
+                    .resolves('21938762934928374')
+                    .mustHappen(1);
             }
         },
         {
@@ -76,9 +79,9 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true })))
+                    .resolves('21938762934928374')
+                    .mustHappen(1);
             }
         },
         {
@@ -94,17 +97,9 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374', '987234657348965', '39457643897564358']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel1 = ctx.createMock<eris.TextChannel>({ id: 'channel1' });
-                channel1.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel1.instance]);
-
-                const channel2 = ctx.createMock<eris.TextChannel>({ id: 'channel2' });
-                channel2.setup(m => m.id).returns('987234657348965');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '987234657348965')).resolves([channel2.instance]);
-
-                const channel3 = ctx.createMock<eris.TextChannel>({ id: 'channel3' });
-                channel3.setup(m => m.id).returns('39457643897564358');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '39457643897564358')).resolves([channel3.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '987234657348965', $({ noLookup: true }))).resolves('987234657348965').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '39457643897564358', $({ noLookup: true }))).resolves('39457643897564358').mustHappen(1);
             }
         },
         {
@@ -120,9 +115,7 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
@@ -145,9 +138,7 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
@@ -170,9 +161,7 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
 
                 const member1 = ctx.createMock<eris.Member>({ id: 'member1' });
                 const user1 = ctx.createMock<eris.User>({ id: 'user1' });
@@ -215,9 +204,7 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 60000))
                     .yieldsAsync([filterableMessage.instance, rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
@@ -246,9 +233,7 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 10000))
                     .yieldsAsync([filterableMessage.instance, rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
@@ -277,9 +262,7 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 0))
                     .yieldsAsync([filterableMessage.instance, rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
@@ -308,9 +291,7 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 300000))
                     .yieldsAsync([filterableMessage.instance, rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
@@ -339,9 +320,7 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 300000))
                     .yieldsAsync([filterableMessage.instance, rejectedMessage.instance, acceptedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
@@ -367,9 +346,7 @@ await runSubtagTests({
                 streamMessages.setup((m, $) => m($(['21938762934928374']), 300000))
                     .yieldsAsync([rejectedMessage.instance]);
 
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                channel.setup(m => m.id).returns('21938762934928374');
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });
@@ -390,8 +367,7 @@ await runSubtagTests({
                 ctx.message.channel_id = ctx.channels.command.id;
             },
             postSetup(bbctx, ctx) {
-                const channel = ctx.createMock<eris.TextChannel>({ id: 'channel' });
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '21938762934928374')).resolves([channel.instance]);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
 
                 const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const user = ctx.createMock<eris.User>({ id: 'user' });

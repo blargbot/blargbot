@@ -1,16 +1,29 @@
 import { Emote, snowflake } from '@blargbot/core';
-import * as eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.reactionList;
 
+export interface ListMessageReactionsThunk {
+    (channelId: string, messageId: string): Promise<readonly Emote[] | undefined>;
+}
+
+export interface ListMessageReactionUsersThunk {
+    (channelId: string, messageId: string, reaction: Emote): Promise<readonly string[] | undefined>;
+}
+
 export class ReactionListSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #listMessageReactions: ListMessageReactionsThunk;
+    readonly #listMessageReactionUsers: ListMessageReactionUsersThunk;
+    public constructor({ listMessageReactions, listMessageReactionUsers }: {
+        listMessageReactions: ListMessageReactionsThunk;
+        listMessageReactionUsers: ListMessageReactionUsersThunk;
+    }) {
         super({
             name: 'reactionList',
             category: SubtagType.MESSAGE,
@@ -45,6 +58,8 @@ export class ReactionListSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#listMessageReactions = listMessageReactions;
+        this.#listMessageReactionUsers = listMessageReactionUsers;
     }
 
     public async getReactionsOrReactors(
@@ -53,16 +68,14 @@ export class ReactionListSubtag extends CompiledSubtag {
         messageId: string,
         reactions: Emote[] | undefined
     ): Promise<Iterable<string>> {
-        const channel = await context.queryChannel(channelStr, { noErrors: true, noLookup: true });
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr);
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noErrors: true, noLookup: true })
+            ?? new ChannelNotFoundError(channelStr).throw();
 
-        const message = await context.getMessage(channel, messageId, true);
-        if (message === undefined)
-            throw new MessageNotFoundError(channel.id, messageId);
+        const messageReactions = await this.#listMessageReactions(channelId, messageId)
+            ?? new MessageNotFoundError(channelId, messageId).throw();
 
         if (reactions === undefined)
-            return Object.keys(message.reactions);
+            return messageReactions.map(x => x.toApi());
 
         if (reactions.length === 0)
             throw new BBTagRuntimeError('Invalid Emojis');
@@ -71,19 +84,22 @@ export class ReactionListSubtag extends CompiledSubtag {
         const users: string[] = [];
         const errors = [];
         for (const emote of reactions) {
-            try {
-                const reactionUsers = await message.getReaction(emote.toApi());
-                users.push(...reactionUsers.map(u => u.id));
-            } catch (err: unknown) {
-                if (!(err instanceof eris.DiscordRESTError) || err.code !== eris.ApiError.UNKNOWN_EMOJI)
-                    throw err;
+            const reactionUsers = await this.#listMessageReactionUsers(channelId, messageId, emote);
+            if (reactionUsers === undefined)
                 errors.push(emote);
-            }
+            else
+                users.push(...reactionUsers);
         }
 
         if (errors.length > 0)
             throw new BBTagRuntimeError(`Unknown Emoji: ${errors.join(', ')}`);
         return [...new Set(users)];
+    }
+
+    public async getReactions(context: BBTagContext, messageId: string): Promise<string[]> {
+        const emotes = await this.#listMessageReactions(context.local.message.channel.id, messageId)
+            ?? new MessageNotFoundError(context.local.message.channel.id, messageId).throw();
+        return emotes.map(x => x.toApi());
     }
 
     #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
@@ -98,12 +114,5 @@ export class ReactionListSubtag extends CompiledSubtag {
             return [channel, message, undefined];
 
         return [channel, message, args.flatMap(x => Emote.findAll(x))];
-    }
-
-    public async getReactions(context: BBTagContext, messageId: string): Promise<string[]> {
-        const msg = await context.getMessage(context.local.message.channel, messageId, true);
-        if (msg === undefined)
-            throw new MessageNotFoundError(context.local.message.channel.id, messageId);
-        return Object.keys(msg.reactions);
     }
 }

@@ -9,7 +9,6 @@ import { describe, it } from 'node:test';
 import type { BaseRuntimeLimit, BBTagExpression, BBTagRuntimeInput, BBTagUtilities, InjectionContext, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
 import { bbtag, BBTagContext, BBTagEngine, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag';
 import { pluralise as p, repeat, snowflake } from '@blargbot/core';
-import type { Database } from '@blargbot/database';
 import type { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import type { Mockable, MockCtorArgs } from '@blargbot/test-util';
@@ -83,7 +82,6 @@ export class SubtagTestContext {
     public readonly shards = this.createMock<eris.ShardManager>({ id: 'shards' });
     public readonly discord = this.createMock<eris.Client>({ id: 'discord' });
     readonly #logger = this.createMock<Logger>({ id: 'logger' });
-    public readonly database = this.createMock<Database>({ id: 'database' });
     public readonly tagVariablesTable = this.createMock<TagVariableStore>({ id: 'tagVariablesTable' });
     public readonly tagsTable = this.createMock<TagStore>({ id: 'tagsTable' });
     public readonly guildTable = this.createMock<GuildStore>({ id: 'guildTable' });
@@ -163,7 +161,6 @@ export class SubtagTestContext {
         };
 
         this.dependencies.setup(m => m.discord).returns(this.discord.instance, { isFallback: true });
-        this.dependencies.setup(m => m.database).returns(this.database.instance, { isFallback: true });
         this.dependencies.setup(m => m.logger).returns(this.#logger.instance, { isFallback: true });
         this.dependencies.setup(m => m.util).returns(this.util.instance, { isFallback: true });
         this.dependencies.setup(c => c.subtags).returns(subtags, { isFallback: true });
@@ -182,11 +179,6 @@ export class SubtagTestContext {
             .returns(undefined, { isFallback: true });
 
         this.discord.setup((m, $) => m.emit('warn', $.anything)).returns(false, { isFallback: true });
-
-        this.database.setup(m => m.tagVariables).returns(this.tagVariablesTable.instance, { isFallback: true });
-        this.database.setup(m => m.guilds).returns(this.guildTable.instance, { isFallback: true });
-        this.database.setup(m => m.users).returns(this.userTable.instance, { isFallback: true });
-        this.database.setup(m => m.tags).returns(this.tagsTable.instance, { isFallback: true });
 
         this.discord.setup(m => m.shards).returns(this.shards.instance, { isFallback: true });
         this.discord.setup(m => m.guildShardMap).returns({}, { isFallback: true });
@@ -260,7 +252,7 @@ export class SubtagTestContext {
             throw new Error('No text channels were added');
 
         const message = this.createMessage<eris.KnownGuildTextableChannel>(this.message);
-        this.util.setup(m => m.getMessage(channel, message.id)).resolves(message, { isFallback: true });
+        this.util.setup(m => m.getMessage(channel.id, message.id)).resolves(message, { isFallback: true });
 
         const context = engine.createContext({
             ...this.input,

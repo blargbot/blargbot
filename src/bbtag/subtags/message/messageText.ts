@@ -3,11 +3,17 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageText;
 
+export interface GetMessageContentThunk {
+    (channelId: string, messageId: string): Promise<string | undefined>;
+}
+
 export class MessageTextSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getMessageContent: GetMessageContentThunk;
+    public constructor({ getMessageContent }: { getMessageContent: GetMessageContentThunk; }) {
         super({
             name: 'messageText',
             category: SubtagType.MESSAGE,
@@ -39,28 +45,24 @@ export class MessageTextSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getMessageContent = getMessageContent;
     }
 
     public async getMessageText(
         context: BBTagContext,
         channelStr: string,
-        messageStr: string,
+        messageId: string,
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined) {
-            throw new ChannelNotFoundError(channelStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
+        if (messageId === '')
+            messageId = context.local.message.id;
 
-        const message = await context.getMessage(channel, messageStr);
-        if (message === undefined) {
-            throw new MessageNotFoundError(channel.id, messageStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
+            ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
 
-        return message.content;
+        return await this.#getMessageContent(channelId, messageId)
+            ?? new MessageNotFoundError(channelId, messageId).withDisplay(quiet ? '' : undefined).throw();
 
     }
 }

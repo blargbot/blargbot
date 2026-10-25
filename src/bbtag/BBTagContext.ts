@@ -1,7 +1,7 @@
 import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core';
-import { discord, guard, Timer } from '@blargbot/core';
+import { discord, Timer } from '@blargbot/core';
 import { memoize } from '@blargbot/util';
-import * as eris from 'eris';
+import type * as eris from 'eris';
 
 import type { BBTagEngine } from './BBTagEngine.js';
 import type { DiscordPermissionName } from './enums.js';
@@ -156,39 +156,6 @@ export class BBTagContext {
             async (options) => await this.engine.util.queryRole(options),
             options
         );
-    }
-
-    public async queryChannel(query: string | undefined, options: FindEntityOptions = {}): Promise<eris.KnownGuildChannel | undefined> {
-        if (query === '' || query === undefined || query === this.local.message.channel.id)
-            return this.local.message.channel;
-        return await this.#queryEntity(
-            query, 'channel', 'Channel',
-            async (id) => {
-                const channel = await this.engine.util.getChannel(this.root.message.channel.guild, id);
-                return channel !== undefined && guard.isGuildChannel(channel) && channel.guild.id === this.root.guildId ? channel : undefined;
-            },
-            async (query) => await this.engine.util.findChannels(this.root.message.channel.guild, query),
-            async (options) => await this.engine.util.queryChannel(options),
-            options
-        );
-    }
-
-    public async getMessage(channel: eris.KnownChannel, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined>
-    public async getMessage<T extends eris.KnownTextableChannel>(channel: T, messageId: string, force?: boolean): Promise<eris.Message<T> | undefined>
-    public async getMessage(channel: eris.KnownChannel, messageId: string, force = false): Promise<eris.KnownMessage | undefined> {
-        if (!force) {
-            for (const scope of [this.root, ...this.#scopes].reverse()) {
-                if (Reflect.has(scope, 'message')) {
-                    const message = scope.message;
-                    if (message.channel.id !== channel.id)
-                        continue;
-                    if ((messageId === '' || messageId === message.id) && message instanceof eris.Message)
-                        return message;
-                }
-            }
-        }
-
-        return await this.engine.util.getMessage(channel, messageId, force);
     }
 
     async #queryEntity<T extends { id: string; }>(

@@ -5,13 +5,27 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { AddReactionsThunk } from './output.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
+import type { CheckMessageExistsThunk, GetUserPermissionsThunk } from '../types.js';
 
 const tag = templates.subtags.reactionAdd;
 
+export interface AddReactionsThunk {
+    (channelId: string, messageId: string, reactions: Iterable<Emote>): Promise<{
+        success: Emote[];
+        failed: Emote[];
+    }>;
+}
+
 export class ReactionAddSubtag extends CompiledSubtag {
     readonly #addReactions: AddReactionsThunk;
-    public constructor({ addReactions }: { addReactions: AddReactionsThunk; }) {
+    readonly #checkMessageExists: CheckMessageExistsThunk;
+    readonly #getUserPermissions: GetUserPermissionsThunk;
+    public constructor({ addReactions, checkMessageExists, getUserPermissions }: {
+        addReactions: AddReactionsThunk;
+        checkMessageExists: CheckMessageExistsThunk;
+        getUserPermissions: GetUserPermissionsThunk;
+    }) {
         super({
             name: 'reactionAdd',
             category: SubtagType.MESSAGE,
@@ -44,6 +58,8 @@ export class ReactionAddSubtag extends CompiledSubtag {
             ]
         });
         this.#addReactions = addReactions;
+        this.#checkMessageExists = checkMessageExists;
+        this.#getUserPermissions = getUserPermissions;
     }
 
     public async addReactions(
@@ -52,24 +68,25 @@ export class ReactionAddSubtag extends CompiledSubtag {
         messageId: string | undefined,
         reactions: Emote[]
     ): Promise<void> {
-        const channel = await context.queryChannel(channelStr, { noErrors: true, noLookup: true });
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr);
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noErrors: true, noLookup: true })
+            ?? new ChannelNotFoundError(channelStr).throw();
 
-        const message = messageId === undefined ? undefined : await context.getMessage(channel, messageId);
-        if (message === undefined && messageId !== undefined)
-            throw new MessageNotFoundError(channel.id, messageId);
+        if (messageId === '')
+            messageId = context.local.message.id;
 
-        const permissions = channel.permissionsOf(context.root.botId);
-        if (!permissions.has('addReactions'))
+        if (messageId !== undefined && !await this.#checkMessageExists(channelId, messageId))
+            throw new MessageNotFoundError(channelId, messageId);
+
+        const permissions = await this.#getUserPermissions(context.root.guildId, context.root.botId, channelId);
+        if (!permissions.hasAny('ADMINISTRATOR', 'ADD_REACTIONS'))
             throw new BBTagRuntimeError('I dont have permission to Add Reactions');
 
         if (reactions.length === 0)
             throw new BBTagRuntimeError('Invalid Emojis');
 
-        if (message !== undefined) {
+        if (messageId !== undefined) {
             // Perform add of each reaction
-            const result = await this.#addReactions(channel.id, message.id, reactions);
+            const result = await this.#addReactions(channelId, messageId, reactions);
             if (result.failed.length > 0)
                 throw new BBTagRuntimeError(`I cannot add '${result.failed.toString()}' as reactions`);
 

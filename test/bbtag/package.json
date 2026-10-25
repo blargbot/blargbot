@@ -7,12 +7,12 @@
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
-        "@blargbot/database": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/test-util": "workspace:^",
         "@blargbot/util": "workspace:^",
+        "brainfuck-node": "^1.0.2",
         "eris": "^0.17.1",
         "moment-timezone": "^0.5.39"
     },

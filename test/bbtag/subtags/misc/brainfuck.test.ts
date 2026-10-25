@@ -1,10 +1,17 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { BrainfuckSubtag } from '@blargbot/bbtag/subtags';
+import { default as Brainfuck } from 'brainfuck-node';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
+const bf = new Brainfuck();
+
 await runSubtagTests({
-    subtag: new BrainfuckSubtag(),
+    subtag: new BrainfuckSubtag({
+        brainfuck(code, input) {
+            return Promise.resolve(bf.execute(code, input).output);
+        }
+    }),
     argCountBounds: { min: 1, max: 2 },
     names: ['brainfuck'],
     cases: [

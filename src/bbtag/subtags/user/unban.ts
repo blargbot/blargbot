@@ -3,6 +3,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { ApiResult } from '../types.js';
 
 const tag = templates.subtags.unban;
 
@@ -14,9 +15,7 @@ export interface UnbanUserOptions {
     readonly reason: string;
 }
 
-export type UnbanUserResult =
-    | { success: true; }
-    | { success: false; reason: 'bot' | 'authorizer' | 'notBanned'; details?: string; };
+export type UnbanUserResult = ApiResult<null, { cause: 'bot' | 'authorizer' | 'notBanned'; }>
 
 export interface UnbanUserThunk {
     (options: UnbanUserOptions): Promise<UnbanUserResult>;
@@ -74,15 +73,15 @@ export class UnbanSubtag extends CompiledSubtag {
         });
         if (result.success)
             return true;
-        switch (result.reason) {
+        switch (result.cause) {
             case 'notBanned':
                 return false;
             case 'bot':
-                throw new BBTagRuntimeError('Bot has no permissions', result.details);
+                throw new BBTagRuntimeError('Bot has no permissions', result.reason);
             case 'authorizer':
-                throw new BBTagRuntimeError('User has no permissions', result.details);
+                throw new BBTagRuntimeError('User has no permissions', result.reason);
             default:
-                throw new BBTagRuntimeError('Unban failed', result.details);
+                throw new BBTagRuntimeError('Unban failed', result.reason);
         }
     }
 }

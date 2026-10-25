@@ -5,11 +5,17 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageEmbeds;
 
+export interface GetMessageEmbedsThunk {
+    (channelId: string, messageId: string): Promise<readonly eris.Embed[] | undefined>;
+}
+
 export class MessageEmbedsSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getMessageEmbeds: GetMessageEmbedsThunk;
+    public constructor({ getMessageEmbeds }: { getMessageEmbeds: GetMessageEmbedsThunk; }) {
         super({
             name: 'messageEmbeds',
             category: SubtagType.MESSAGE,
@@ -40,28 +46,24 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getMessageEmbeds = getMessageEmbeds;
     }
 
     public async getMessageEmbeds(
         context: BBTagContextJs.BBTagContext,
         channelStr: string,
-        messageStr: string,
+        messageId: string,
         quiet: boolean
-    ): Promise<eris.Embed[]> {
+    ): Promise<readonly eris.Embed[]> {
         quiet ||= context.local.quiet ?? false;
-        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined) {
-            throw new ChannelNotFoundError(channelStr)
-                .withDisplay(quiet ? '[]' : undefined);
-        }
+        if (messageId === '')
+            messageId = context.local.message.id;
 
-        const message = await context.getMessage(channel, messageStr);
-        if (message === undefined) {
-            throw new MessageNotFoundError(channel.id, messageStr)
-                .withDisplay(quiet ? '[]' : undefined);
-        }
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
+            ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '[]' : undefined).throw();
 
-        return message.embeds;
+        return await this.#getMessageEmbeds(channelId, messageId)
+            ?? new MessageNotFoundError(channelId, messageId).withDisplay(quiet ? '[]' : undefined).throw();
 
     }
 }

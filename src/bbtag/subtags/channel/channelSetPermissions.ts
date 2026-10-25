@@ -7,7 +7,7 @@ import { PermissionOverwriteType } from '../../enums.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { GetUserPermissionsThunk } from '../types.js';
+import type { ApiResult, GetUserPermissionsThunk } from '../types.js';
 import { ChannelIdSubtag } from './channelId.js';
 import { ChannelIsThreadSubtag } from './channelIsThread.js';
 
@@ -23,12 +23,9 @@ interface SetPermissionOverrideOptionsBase {
 export type SetPermissionOverrideOptions =
     | SetPermissionOverrideOptionsBase & { allow: bigint; deny: bigint; }
     | SetPermissionOverrideOptionsBase
-export type SetPermissionOverrideResult =
-    | { success: true; }
-    | { success: false; reason?: string; }
 
 export interface SetPermissionOverrideThunk {
-    (options: SetPermissionOverrideOptions): Promise<SetPermissionOverrideResult>;
+    (options: SetPermissionOverrideOptions): Promise<ApiResult>;
 }
 
 export class ChannelSetPermissionsSubtag extends CompiledSubtag {

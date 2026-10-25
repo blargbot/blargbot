@@ -6,6 +6,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { ApiResult } from '../types.js';
 
 const tag = templates.subtags.ban;
 
@@ -19,9 +20,7 @@ export interface BanUserOptions {
     readonly unbanAfter?: moment.Duration;
 }
 
-export type BanUserResult =
-    | { success: true; }
-    | { success: false; reason: 'bot' | 'authorizer'; details?: string; };
+export type BanUserResult = ApiResult<null, { cause: 'bot' | 'authorizer'; }>;
 
 export interface BanUserThunk {
     (options: BanUserOptions): Promise<BanUserResult>;
@@ -100,13 +99,13 @@ export class BanSubtag extends CompiledSubtag {
         });
         if (result.success)
             return duration?.asMilliseconds() ?? true;
-        switch (result.reason) {
+        switch (result.cause) {
             case 'bot':
-                throw new BBTagRuntimeError('Bot has no permissions', result.details);
+                throw new BBTagRuntimeError('Bot has no permissions', result.reason);
             case 'authorizer':
-                throw new BBTagRuntimeError('User has no permissions', result.details);
+                throw new BBTagRuntimeError('User has no permissions', result.reason);
             default:
-                throw new BBTagRuntimeError('Ban failed', result.details);
+                throw new BBTagRuntimeError('Ban failed', result.reason);
         }
     }
 }

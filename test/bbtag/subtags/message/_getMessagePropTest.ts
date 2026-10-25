@@ -1,166 +1,187 @@
-import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag';
+import type { BBTagContext, BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
-import { snowflake } from '@blargbot/core';
-import type { APIChannel, APIMessage } from 'discord-api-types/v9';
-import type * as eris from 'eris';
+import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
+import type { Mockable, SetupMock } from '@blargbot/test-util';
+import { Mock } from '@blargbot/test-util';
 
-import type { SubtagTestCase } from '../SubtagTestSuite.js';
-import { SubtagTestContext } from '../SubtagTestSuite.js';
+import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
-export function createGetMessagePropTestCases(options: GetMessagePropTestData): SubtagTestCase[] {
+export function createGetMessagePropTestCases<Result>(options: GetMessagePropTestData<Result>): SubtagTestCase[] {
     return [...createGetMessagePropTestCasesIter(options)];
 }
 
-function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Generator<SubtagTestCase, void, undefined> {
+function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestData<Result>): Generator<SubtagTestCase, void, undefined> {
     if (options.includeNoArgs === true)
         yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', []));
 
     yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [undefined, '123456789123456789']));
+    if (options.emptyIsCurrentMessage !== false)
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [undefined, '']));
     yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '123456789123456789']));
-    if (options.quiet !== false) {
+    if (options.emptyIsCurrentMessage !== false)
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '']));
+    if (typeof options.quiet !== 'boolean') {
         yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '123456789123456789', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '', '']));
         yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '123456789123456789', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '', 'q']));
     }
     yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', '123456789123456789']));
-    if (options.quiet !== false) {
+    if (typeof options.quiet !== 'boolean') {
         yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', '123456789123456789', '']));
         yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', '123456789123456789', 'q']));
     }
     yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'general', [c.queryString ?? 'general', '123456789123456789']));
-    if (options.quiet !== false) {
+    if (typeof options.quiet !== 'boolean') {
         yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'general', [c.queryString ?? 'general', '123456789123456789', '']));
         yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'general', [c.queryString ?? 'general', '123456789123456789', 'q']));
     }
+
+    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+
     yield {
         title: 'Message not found',
         code: options.generateCode(undefined, '12345678998765432'),
         expected: '`No message found`',
+        subtags: [channelIdSubtag.instance],
         errors: [
-            { error: new MessageNotFoundError('0987654321123456789', '12345678998765432') }
+            { error: new MessageNotFoundError('98765434567889121', '12345678998765432') }
         ],
         setup(ctx) {
-            ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
+            ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+            ctx.message.channel_id = ctx.channels.command.id = '98765434567889121';
         },
         postSetup(bbctx, ctx) {
-            ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432')).resolves(undefined, { isFallback: true });
-            ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432', false)).resolves(undefined, { isFallback: true });
-            ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432', true)).resolves(undefined, { isFallback: true });
+            const queryOpt = options.queryOptions(false);
+            channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
+                .resolves(ctx.channels.command.id);
+            channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
+                .resolves('98765434567889121');
+            options.getProp('98765434567889121', '12345678998765432').returns(options.notExists);
         }
     };
     yield {
         title: 'Channel not found',
         code: options.generateCode('98765434567889121', '12345678998765432'),
         expected: '`No channel found`',
+        subtags: [channelIdSubtag.instance],
         errors: [
             { error: new ChannelNotFoundError('98765434567889121') }
         ],
+        setup(ctx) {
+            ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+            ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
+        },
         postSetup(bbctx, ctx) {
-            ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '98765434567889121')).resolves([]);
+            const queryOpt = options.queryOptions(false);
+            channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
+                .resolves(ctx.channels.command.id);
+            channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
+                .resolves(undefined);
         }
     };
-    if (options.quiet !== false) {
+    if (typeof options.quiet !== 'boolean') {
         yield {
             title: 'Message not found but quiet',
-            code: options.generateCode('0987654321123456789', '12345678998765432', 'q'),
+            code: options.generateCode('98765434567889121', '12345678998765432', 'q'),
             expected: options.quiet ?? '`No message found`',
+            subtags: [channelIdSubtag.instance],
             errors: [
-                { error: new MessageNotFoundError('0987654321123456789', '12345678998765432').withDisplay(options.quiet) }
+                { error: new MessageNotFoundError('98765434567889121', '12345678998765432').withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
+                ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+                ctx.message.channel_id = ctx.channels.command.id = '98765434567889121';
             },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432')).resolves(undefined, { isFallback: true });
-                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432', false)).resolves(undefined, { isFallback: true });
-                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '12345678998765432', true)).resolves(undefined, { isFallback: true });
+                const queryOpt = options.queryOptions(true);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
+                    .resolves(ctx.channels.command.id);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
+                    .resolves('98765434567889121');
+                options.getProp('98765434567889121', '12345678998765432').returns(options.notExists);
             }
         };
         yield {
             title: 'Channel not found but quiet',
             code: options.generateCode('98765434567889121', '12345678998765432', 'q'),
             expected: options.quiet ?? '`No channel found`',
+            subtags: [channelIdSubtag.instance],
             errors: [
                 { error: new ChannelNotFoundError('98765434567889121').withDisplay(options.quiet) }
             ],
+            setup(ctx) {
+                ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+                ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
+            },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, '98765434567889121')).resolves([]);
+                const queryOpt = options.queryOptions(true);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
+                    .resolves(ctx.channels.command.id);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
+                    .resolves(undefined);
             }
         };
     }
 }
 
-interface GetMessagePropTestData {
-    cases: GetMessagePropTestCase[];
+interface GetMessagePropTestData<Result> {
+    cases: Array<GetMessagePropTestCase<Result>>;
     includeNoArgs?: boolean;
     quiet?: string | false;
+    emptyIsCurrentMessage?: boolean;
     generateCode: (...args: [channelStr?: string, messageId?: string, quietStr?: string]) => string;
+    getProp: (channelId: string, messageId: string) => SetupMock<Mockable, Result>;
+    notExists: NoInfer<Result>;
+    queryOptions: (quiet: boolean) => QueryEntityOptions | undefined;
 }
 
-interface GetMessagePropTestCase {
+export interface GetMessagePropTestCase<Result> {
     title?: string;
     expected: SubtagTestCase['expected'];
     error?: BBTagRuntimeError;
     retries?: number;
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, messageId?: string, quietStr?: string]) => string;
-    setup?: (channel: APIChannel, message: APIMessage, context: SubtagTestContext) => void;
-    postSetup?: (channel: eris.KnownGuildChannel, message: eris.Message<eris.KnownTextableChannel>, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, channel: eris.KnownGuildChannel, message: eris.Message<eris.KnownTextableChannel>, context: BBTagContext, test: SubtagTestContext) => void;
+    setup?: (prop: SetupMock<Mockable, Result>, channelId: string, messageId: string, context: SubtagTestContext) => void;
+    postSetup?: (context: BBTagContext, channelId: string, messageId: string, test: SubtagTestContext) => void;
+    assert?: (context: BBTagContext, channelId: string, messageId: string, test: SubtagTestContext) => void;
 }
 
-function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTestCase, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetMessagePropTestData['generateCode']>): SubtagTestCase {
+function createTestCase<Result>(data: GetMessagePropTestData<Result>, testCase: GetMessagePropTestCase<Result>, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetMessagePropTestData<Result>['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
-    const apiMessageMap = new WeakMap<SubtagTestContext, APIMessage>();
-    const messageMap = new WeakMap<SubtagTestContext, eris.Message<eris.KnownTextableChannel>>();
+    const apiMessageMap = new WeakMap<SubtagTestContext, string>();
+    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
     return {
         title: testCase.title,
         code,
         expected: testCase.expected,
         retries: testCase.retries,
+        subtags: [channelIdSubtag.instance],
         errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
+            ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
             const channel = ctx.channels[channelKey];
-            const message = args[1] !== undefined ? SubtagTestContext.createApiMessage({
-                id: snowflake.create().toString(),
-                channel_id: channel.id
-            }, ctx.users.other) : ctx.message;
-            testCase.setup?.(channel, message, ctx);
-            message.channel_id = channel.id;
-            apiMessageMap.set(ctx, message);
+            const messageId = (args[1] ?? '') !== '' ? args[1]! : ctx.message.id;
+            testCase.setup?.(data.getProp(channel.id, messageId), channel.id, messageId, ctx);
+            apiMessageMap.set(ctx, messageId);
         },
         postSetup(bbctx, ctx) {
             const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels[channelKey].id);
             if (channel === undefined)
                 throw new Error('Cannot find the channel under test');
-            const apiMessage = apiMessageMap.get(ctx);
-            if (apiMessage === undefined)
+            const messageId = apiMessageMap.get(ctx);
+            if (messageId === undefined)
                 throw new Error('Cannot find the message under test');
+            const channelQuery = args[0] ?? channel.id;
+            const quietStr = args[2] ?? '';
+            const queryOpt = data.queryOptions(quietStr !== '');
+            channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
+                .resolves(ctx.channels.command.id);
+            channelIdSubtag.setup((m, $) => m.query(bbctx, channelQuery, $(queryOpt)))
+                .resolves(channel.id);
 
-            const channelQuery = args[0];
-            if (channelQuery !== undefined && channelQuery !== '')
-                ctx.util.setup(m => m.findChannels(bbctx.root.message.channel.guild, channelQuery)).resolves([channel]);
-
-            const message = apiMessage === ctx.message ? bbctx.root.message as eris.Message<eris.GuildTextableChannel> : ctx.createMessage(apiMessage);
-            const messageQuery = args[1];
-            if (messageQuery !== undefined && messageQuery !== '') {
-                ctx.util.setup(m => m.getMessage(channel, messageQuery)).resolves(message, { isFallback: true });
-                ctx.util.setup(m => m.getMessage(channel, messageQuery, false)).resolves(message, { isFallback: true });
-                ctx.util.setup(m => m.getMessage(channel, messageQuery, true)).resolves(message, { isFallback: true });
-            }
-
-            messageMap.set(ctx, message);
-            testCase.postSetup?.(channel, message, bbctx, ctx);
-        },
-        assert(bbctx, result, ctx) {
-            if (testCase.assert === undefined)
-                return;
-            const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels[channelKey].id);
-            if (channel === undefined)
-                throw new Error('Cannot find the channel under test');
-            const message = messageMap.get(ctx);
-            if (message === undefined)
-                throw new Error('Cannot find the message under test');
-            testCase.assert(result, channel, message, bbctx, ctx);
+            testCase.postSetup?.(bbctx, channel.id, messageId, ctx);
         }
     };
 }

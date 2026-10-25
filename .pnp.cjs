@@ -242,19 +242,14 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/bbtag", "workspace:src/bbtag"],\
           ["@blargbot/config", "workspace:src/config"],\
           ["@blargbot/core", "workspace:src/core"],\
-          ["@blargbot/database", "workspace:src/database"],\
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
-          ["@blargbot/test-util", "workspace:test/testUtil"],\
           ["@blargbot/util", "workspace:src/util"],\
-          ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
           ["@types/color", "npm:3.0.3"],\
           ["@types/eris", "workspace:definitions/eris"],\
           ["@types/rwlock", "npm:5.0.3"],\
-          ["brainfuck-node", "npm:1.0.2"],\
           ["color", "npm:5.0.3"],\
-          ["discord-api-types", "npm:0.37.20"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
           ["html-entities", "npm:2.3.3"],\
           ["moment-timezone", "npm:0.6.4"],\
@@ -272,13 +267,13 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/bbtag-tests", "workspace:test/bbtag"],\
           ["@blargbot/config", "workspace:src/config"],\
           ["@blargbot/core", "workspace:src/core"],\
-          ["@blargbot/database", "workspace:src/database"],\
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/test-util", "workspace:test/testUtil"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/eris", "workspace:definitions/eris"],\
+          ["brainfuck-node", "npm:1.0.2"],\
           ["discord-api-types", "npm:0.37.20"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
           ["moment-timezone", "npm:0.5.48"]\

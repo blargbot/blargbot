@@ -40,13 +40,21 @@ export class ChannelIsNsfwSubtag extends CompiledSubtag {
         this.#isChannelNsfw = isChannelNsfw;
     }
 
+    public static async check(context: BBTagContext, channelId: string): Promise<boolean> {
+        return await context.engine.getSubtag(ChannelIsNsfwSubtag).check(context, channelId);
+    }
+
+    public async check(context: BBTagContext, channelId: string): Promise<boolean> {
+        return await this.#isChannelNsfw(context.root.guildId, channelId) ?? false;
+    }
+
     public async currentChannel(context: BBTagContext): Promise<boolean> {
-        return await this.#isChannelNsfw(context.root.guildId, context.local.message.channel.id) ?? false;
+        return await this.check(context, context.local.message.channel.id);
     }
 
     public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<boolean> {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
-        return await this.#isChannelNsfw(context.root.guildId, channelId) ?? false;
+        return await this.check(context, channelId);
     }
 }

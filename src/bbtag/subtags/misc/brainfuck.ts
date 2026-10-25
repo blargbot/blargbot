@@ -1,5 +1,3 @@
-import { default as Brainfuck } from 'brainfuck-node';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
@@ -7,9 +5,13 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.brainfuck;
 
+export interface BrainfuckThunk {
+    (code: string, input: string): Promise<string>;
+}
+
 export class BrainfuckSubtag extends CompiledSubtag {
-    readonly #bfClient: Brainfuck;
-    public constructor() {
+    readonly #brainfuck: BrainfuckThunk;
+    public constructor({ brainfuck }: { brainfuck: BrainfuckThunk; }) {
         super({
             name: 'brainfuck',
             category: SubtagType.MISC,
@@ -24,12 +26,12 @@ export class BrainfuckSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#bfClient = new Brainfuck();
+        this.#brainfuck = brainfuck;
     }
 
-    public runBrainfuck(code: string, input: string): string {
+    public async runBrainfuck(code: string, input: string): Promise<string> {
         try {
-            return this.#bfClient.execute(code, input).output;
+            return await this.#brainfuck(code, input);
         } catch (e: unknown) {
             if (e instanceof Error)
                 throw new BBTagRuntimeError(e.message);

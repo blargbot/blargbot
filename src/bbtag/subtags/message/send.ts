@@ -1,4 +1,4 @@
-import { guard, parse } from '@blargbot/core';
+import { parse } from '@blargbot/core';
 import type * as eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -6,6 +6,10 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
+import { ChannelIsNsfwSubtag } from '../channel/channelIsNsfw.js';
+import { ChannelIsTextSubtag } from '../channel/channelIsText.js';
+import type { ApiResult } from '../types.js';
 
 const tag = templates.subtags.send;
 
@@ -19,9 +23,7 @@ export interface SendPayload {
         readonly roles: ReadonlySet<string>;
     };
 }
-export type SendResult =
-    | { success: true; id: string; }
-    | { success: false; reason?: string; }
+export type SendResult = ApiResult<{ id: string; }>;
 
 export interface CanPingEveryoneThunk {
     (guildId: string): Promise<boolean>;
@@ -73,13 +75,14 @@ export class SendSubtag extends CompiledSubtag {
         this.#send = send;
     }
 
-    public async send(context: BBTagContext, channelId: string, message?: string, embeds?: eris.EmbedOptions[], files?: eris.FileContent[]): Promise<string> {
-        const channel = await context.queryChannel(channelId, { noLookup: true });
-        if (channel === undefined || !guard.isTextableChannel(channel))
+    public async send(context: BBTagContext, channelStr: string, message?: string, embeds?: eris.EmbedOptions[], files?: eris.FileContent[]): Promise<string> {
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: true })
+            ?? new ChannelNotFoundError(channelStr).throw();
+        if (!await ChannelIsTextSubtag.check(context, channelId))
             throw new ChannelNotFoundError(channelId);
 
         const nsfw = context.root.output.nsfw;
-        if (!channel.nsfw && nsfw !== undefined) {
+        if (nsfw !== undefined && !await ChannelIsNsfwSubtag.check(context, channelId)) {
             message = nsfw;
             embeds = undefined;
             files = undefined;
@@ -90,13 +93,13 @@ export class SendSubtag extends CompiledSubtag {
             }
         }
 
-        const sent = await this.#send(channel.id, {
+        const sent = await this.#send(channelId, {
             content: message,
             embeds: embeds,
             allowedMentions: {
                 everyone: context.root.allowedMentions.everybody
                     && context.root.isCC
-                    && await this.#canPingEveryone(channel.guild.id),
+                    && await this.#canPingEveryone(context.root.guildId),
                 roles: context.root.isCC ? context.root.allowedMentions.roles : new Set(),
                 users: context.root.isCC ? context.root.allowedMentions.users : new Set()
             },

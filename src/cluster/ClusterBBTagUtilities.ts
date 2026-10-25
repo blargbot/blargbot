@@ -1,12 +1,13 @@
 import type { BBTagSendContent, BBTagUtilities, ReactionEvent, RwLock, SerializedBBTagContext, subtags, VariablesProvider } from '@blargbot/bbtag';
 import { ChannelType, DiscordPermissions, getLock } from '@blargbot/bbtag';
 import type * as Subtags from '@blargbot/bbtag/subtags';
-import { type ChoiceQueryResult, type Emote, type EntityPickQueryOptions, type SendContent, snowflake } from '@blargbot/core';
+import { type ChoiceQueryResult, Emote, type EntityPickQueryOptions, type SendContent, snowflake } from '@blargbot/core';
 import type { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import type { Logger } from '@blargbot/logger';
 import { raceAsyncIterable, sleep, usingTimeout } from '@blargbot/util';
+import Brainfuck from 'brainfuck-node';
 import * as eris from 'eris';
 import moment from 'moment-timezone';
 
@@ -19,6 +20,7 @@ type SubtagConstructorArgs = typeof subtags[keyof typeof subtags] extends new (a
 @bindAll
 export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     readonly #cluster: Cluster;
+    readonly #bfClient: Brainfuck;
 
     public get defaultPrefix(): string {
         return this.#cluster.config.discord.defaultPrefix;
@@ -32,8 +34,12 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
 
     public constructor(cluster: Cluster) {
         this.#cluster = cluster;
+        this.#bfClient = new Brainfuck();
     }
 
+    public brainfuck(code: string, input: string): Promise<string> {
+        return Promise.resolve(this.#bfClient.execute(code, input).output);
+    }
     public async fetch(input: string | URL | Request, init?: RequestInit): Promise<Response> {
         return await this.#cluster.fetch(input, init);
     }
@@ -112,13 +118,13 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public async banUser(options: Subtags.BanUserOptions): Promise<Subtags.BanUserResult> {
         const { guildId, targetId, moderatorId, authorizerId, daysToDelete, reason, unbanAfter = moment.duration(Infinity) } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
-        if (guild === undefined) return { success: false, reason: 'bot' };
+        if (guild === undefined) return { success: false, cause: 'bot' };
         const target = await this.#cluster.util.getUser(targetId);
-        if (target === undefined) return { success: false, reason: 'bot' };
+        if (target === undefined) return { success: false, cause: 'bot' };
         const moderator = await this.#cluster.util.getUser(moderatorId);
-        if (moderator === undefined) return { success: false, reason: 'authorizer' };
+        if (moderator === undefined) return { success: false, cause: 'authorizer' };
         const authorizer = await this.#cluster.util.getUser(authorizerId);
-        if (authorizer === undefined) return { success: false, reason: 'authorizer' };
+        if (authorizer === undefined) return { success: false, cause: 'authorizer' };
         const result = await this.#cluster.moderation.bans.ban(guild, target, moderator, authorizer, daysToDelete, util.literal(reason), unbanAfter);
         switch (result) {
             case 'success':
@@ -126,70 +132,72 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
                 return { success: true };
             case 'memberTooHigh':
             case 'noPerms':
-                return { success: false, reason: 'bot' };
+                return { success: false, cause: 'bot' };
             case 'moderatorNoPerms':
             case 'moderatorTooLow':
-                return { success: false, reason: 'authorizer' };
+                return { success: false, cause: 'authorizer' };
             default:
-                return { success: false, reason: reason as never };
+                return { success: false, cause: result };
         }
     }
     public async unbanUser(options: Subtags.UnbanUserOptions): Promise<Subtags.UnbanUserResult> {
         const { guildId, targetId, moderatorId, authorizerId, reason } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
-        if (guild === undefined) return { success: false, reason: 'bot' };
+        if (guild === undefined) return { success: false, cause: 'bot' };
         const target = await this.#cluster.util.getUser(targetId);
-        if (target === undefined) return { success: false, reason: 'notBanned' };
+        if (target === undefined) return { success: false, cause: 'notBanned' };
         const moderator = await this.#cluster.util.getUser(moderatorId);
-        if (moderator === undefined) return { success: false, reason: 'authorizer' };
+        if (moderator === undefined) return { success: false, cause: 'authorizer' };
         const authorizer = await this.#cluster.util.getUser(authorizerId);
-        if (authorizer === undefined) return { success: false, reason: 'authorizer' };
+        if (authorizer === undefined) return { success: false, cause: 'authorizer' };
         const result = await this.#cluster.moderation.bans.unban(guild, target, moderator, authorizer, util.literal(reason));
         switch (result) {
             case 'success':
                 return { success: true };
             case 'notBanned':
-                return { success: false, reason: 'notBanned' };
+                return { success: false, cause: 'notBanned' };
             case 'noPerms':
-                return { success: false, reason: 'bot' };
+                return { success: false, cause: 'bot' };
             case 'moderatorNoPerms':
-                return { success: false, reason: 'authorizer' };
+                return { success: false, cause: 'authorizer' };
             default:
-                return { success: false, reason: reason as never };
+                return { success: false, cause: result };
         }
     }
     public async kickUser(options: Subtags.KickUserOptions): Promise<Subtags.KickUserResult> {
         const { guildId, targetId, moderatorId, authorizerId, reason } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
-        if (guild === undefined) return { success: false, reason: 'bot' };
+        if (guild === undefined) return { success: false, cause: 'bot' };
         const target = guild.members.get(targetId);
-        if (target === undefined) return { success: false, reason: 'bot' };
+        if (target === undefined) return { success: false, cause: 'bot' };
         const moderator = await this.#cluster.util.getUser(moderatorId);
-        if (moderator === undefined) return { success: false, reason: 'authorizer' };
+        if (moderator === undefined) return { success: false, cause: 'authorizer' };
         const authorizer = await this.#cluster.util.getUser(authorizerId);
-        if (authorizer === undefined) return { success: false, reason: 'authorizer' };
+        if (authorizer === undefined) return { success: false, cause: 'authorizer' };
         const result = await this.#cluster.moderation.bans.kick(target, moderator, authorizer, util.literal(reason));
         switch (result) {
             case 'success':
                 return { success: true };
             case 'noPerms':
-                return { success: false, reason: 'bot' };
+            case 'memberTooHigh':
+                return { success: false, cause: 'bot' };
             case 'moderatorNoPerms':
-                return { success: false, reason: 'authorizer' };
+            case 'moderatorTooLow':
+                return { success: false, cause: 'authorizer' };
             default:
-                return { success: false, reason: reason as never };
+                return { success: false, cause: result };
         }
     }
     public async setUserTimeout(options: Subtags.SetUserTimeoutOptions): Promise<Subtags.SetUserTimeoutResult> {
         const { guildId, targetId, moderatorId, authorizerId, reason, duration } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
-        if (guild === undefined) return { success: false, reason: 'bot' };
+        if (guild === undefined) return { success: false, cause: 'bot' };
         const target = guild.members.get(targetId);
-        if (target === undefined) return { success: false, reason: 'bot' };
+        if (target === undefined) return { success: false, cause: 'bot' };
         const moderator = await this.#cluster.util.getUser(moderatorId);
-        if (moderator === undefined) return { success: false, reason: 'authorizer' };
+        if (moderator === undefined) return { success: false, cause: 'authorizer' };
         const authorizer = await this.#cluster.util.getUser(authorizerId);
-        if (authorizer === undefined) return { success: false, reason: 'authorizer' };
+        if (authorizer === undefined) return { success: false, cause: 'authorizer' };
         const result = duration.asMilliseconds() === 0
             ? await this.#cluster.moderation.timeouts.clearTimeout(target, moderator, authorizer, util.literal(reason))
             : await this.#cluster.moderation.timeouts.timeout(target, moderator, authorizer, duration, util.literal(reason));
@@ -198,15 +206,15 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
                 return { success: true };
             case 'alreadyTimedOut':
             case 'notTimedOut':
-                return { success: false, reason: 'noChange' };
+                return { success: false, cause: 'noChange' };
             case 'noPerms':
             case 'memberTooHigh':
-                return { success: false, reason: 'bot' };
+                return { success: false, cause: 'bot' };
             case 'moderatorNoPerms':
             case 'moderatorTooLow':
-                return { success: false, reason: 'authorizer' };
+                return { success: false, cause: 'authorizer' };
             default:
-                return { success: false, reason: reason as never };
+                return { success: false, cause: result };
         }
     }
     public async addModLog(options: Subtags.AddModLogOptions): Promise<void> {
@@ -253,7 +261,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         const id = await this.#cluster.util.generateDumpPage({ content: options.content }, snowflake.parse(options.channelId));
         return new URL(this.#cluster.util.websiteLink(`dumps/${id}`));
     }
-    public async executeWebhook(webhookId: string, webhookToken: string, payload: Subtags.ExecuteWebhookPayload): Promise<Subtags.ExecuteWebhookResult> {
+    public async executeWebhook(webhookId: string, webhookToken: string, payload: Subtags.ExecuteWebhookPayload): Promise<Subtags.ApiResult> {
         try {
             await this.#cluster.discord.executeWebhook(webhookId, webhookToken, payload);
             return { success: true };
@@ -352,7 +360,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public async getLastMessageId(guildId: string, channelId: string): Promise<string | undefined> {
         return await this.#getChannelProp(guildId, channelId, 'lastMessageID');
     }
-    public async deleteChannel(guildId: string, channelId: string, auditReason: string): Promise<Subtags.DeleteChannelResult> {
+    public async deleteChannel(guildId: string, channelId: string, auditReason: string): Promise<Subtags.ApiResult> {
         try {
             const channel = await this.#getChannel(guildId, channelId);
             if (channel === undefined)
@@ -374,7 +382,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
             return this.#handleError(error);
         }
     }
-    public async editChannel(guildId: string, channelId: string, options: Subtags.EditChannelOptions): Promise<Subtags.EditChannelResult> {
+    public async editChannel(guildId: string, channelId: string, options: Subtags.EditChannelOptions): Promise<Subtags.ApiResult> {
         try {
             const channel = await this.#getChannel(guildId, channelId);
             if (channel === undefined)
@@ -385,7 +393,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
             return this.#handleError(error);
         }
     }
-    public async setPermissionOverride(options: Subtags.SetPermissionOverrideOptions): Promise<Subtags.SetPermissionOverrideResult> {
+    public async setPermissionOverride(options: Subtags.SetPermissionOverrideOptions): Promise<Subtags.ApiResult> {
         try {
             const channel = await this.#getChannel(options.guildId, options.channelId);
             if (channel === undefined)
@@ -430,14 +438,14 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
             return { success: true, channelId: candidates[0].id };
         const channel = await this.#cluster.util.getChannel(options.channelId);
         if (channel === undefined || !guard.isTextableChannel(channel))
-            return { success: false, reason: 'aborted' };
+            return { success: false, cause: 'aborted' };
         if (candidates.length === 0) {
             if (options.source !== undefined) {
                 await this.#cluster.util.send(channel, util.literal({
                     content: `No channel matching \`${options.searchText}\` found in ${options.source}.`
                 }));
             }
-            return { success: false, reason: 'notFound' };
+            return { success: false, cause: 'notFound' };
         }
 
         const result = await this.#cluster.util.queryChannel({
@@ -451,13 +459,115 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
                 return { success: true, channelId: result.value.id };
             case 'CANCELLED':
             case 'TIMED_OUT':
-                return { success: false, reason: 'aborted' };
+                return { success: false, cause: 'aborted' };
             case 'FAILED':
             case 'NO_OPTIONS':
-                return { success: false, reason: 'notFound' };
+                return { success: false, cause: 'notFound' };
             default:
-                return { success: false, reason: 'aborted' };
+                return { success: false, cause: result };
         }
+    }
+    public async checkMessageExists(channelId: string, messageId: string): Promise<boolean> {
+        return await this.#cluster.util.getMessage(channelId, messageId) !== undefined;
+    }
+    public async deleteMessage(channelId: string, messageId: string): Promise<Subtags.DeleteMessageResult> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        if (message === undefined)
+            return { success: false, cause: 'notFound' };
+        try {
+            await message.delete();
+            return { success: true };
+        } catch (error) {
+            const { reason } = this.#handleError(error);
+            return { success: false, cause: 'failed', reason };
+        }
+    }
+    public async editMessage(options: Subtags.EditMessageOptions): Promise<Subtags.EditMessageResult> {
+        const { channelId, messageId, ...data } = options;
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        if (message === undefined)
+            return { success: false, cause: 'failed', reason: 'Message doesnt exist.' };
+        const { content = message.content, embeds = message.embeds } = options;
+        if (content === '' && embeds.length === 0 && message.attachments.length === 0 && (message.components?.length ?? 0) === 0)
+            return { success: false, cause: 'messageEmpty', reason: 'Message is empty.' };
+
+        try {
+            await message.edit(data);
+            return { success: true };
+        } catch (error) {
+            const { reason } = this.#handleError(error);
+            return { success: false, cause: 'failed', reason };
+        }
+    }
+    public async getMessageAttachmentUrls(channelId: string, messageId: string): Promise<readonly URL[] | undefined> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        return message?.attachments.map(a => new URL(a.url));
+    }
+    public async getMessageAuthor(channelId: string, messageId: string): Promise<string | undefined> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        return message?.author.id;
+    }
+    public async getMessageEmbeds(channelId: string, messageId: string): Promise<readonly eris.Embed[] | undefined> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        return message?.embeds;
+    }
+    public async getMessageContent(channelId: string, messageId: string): Promise<string | undefined> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        return message?.content;
+    }
+    public async getMessageReplyTarget(channelId: string, messageId: string): Promise<string | null | undefined> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        if (message === undefined)
+            return undefined;
+        return message.referencedMessage?.id ?? null;
+    }
+    public async getMessageTimestamp(channelId: string, messageId: string): Promise<Temporal.Instant | undefined> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        if (message === undefined)
+            return undefined;
+        return Temporal.Instant.fromEpochMilliseconds(message.timestamp);
+    }
+    public async getMessageEditTime(channelId: string, messageId: string): Promise<Temporal.Instant | null | undefined> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        if (message === undefined)
+            return undefined;
+        const timestamp = message.editedTimestamp ?? undefined;
+        if (timestamp === undefined)
+            return null;
+        return Temporal.Instant.fromEpochMilliseconds(timestamp);
+    }
+    public async getMessageType(channelId: string, messageId: string): Promise<number | undefined> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        return message?.type;
+    }
+    public async listMessageReactions(channelId: string, messageId: string): Promise<readonly Emote[] | undefined> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId, true);
+        if (message === undefined)
+            return undefined;
+        return Object.keys(message.reactions).map(v => Emote.parse(v));
+    }
+    public async listMessageReactionUsers(channelId: string, messageId: string, emote: Emote): Promise<readonly string[] | undefined> {
+        try {
+            const message = await this.#cluster.util.getMessage(channelId, messageId);
+            const users = await message?.getReaction(emote.toApi());
+            return users?.map(x => x.id);
+        } catch (error) {
+            this.#handleError(error);
+            return [];
+        }
+    }
+    public async removeMessageReactionUser(channelId: string, messageId: string, emote: Emote, userId: string): Promise<Subtags.ApiResult> {
+        try {
+            const message = await this.#cluster.util.getMessage(channelId, messageId);
+            await message?.removeReaction(emote.toApi(), userId);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async removeMessageReactions(channelId: string, messageId: string): Promise<void> {
+        const message = await this.#cluster.util.getMessage(channelId, messageId);
+        await message?.removeReactions();
     }
     #handleError(error: unknown): { success: false; reason?: string; } {
         if (error instanceof eris.DiscordHTTPError || error instanceof eris.DiscordRESTError)
@@ -480,17 +590,8 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
             ? await this.cluster.util.send(channel, util.literal({ content: payload.nsfw, allowedMentions: payload.allowedMentions }))
             : await this.cluster.util.send(channel, util.literal(payload), author);
     }
-
-    public async getChannel(channelId: string): Promise<eris.KnownChannel | undefined>;
-    public async getChannel(guild: string | eris.Guild, channelId: string): Promise<eris.KnownGuildChannel | undefined>;
-    public async getChannel(...args: [string] | [string | eris.Guild, string]): Promise<eris.KnownChannel | undefined> {
-        return args.length === 1
-            ? await this.cluster.util.getChannel(...args)
-            : await this.cluster.util.getChannel(...args);
-    }
-
-    public async findChannels(guild: string | eris.Guild, query?: string): Promise<eris.KnownGuildChannel[]> {
-        return await this.cluster.util.findChannels(guild, query);
+    public async getChannel(channelId: string): Promise<eris.KnownChannel | undefined> {
+        return await this.cluster.util.getChannel(channelId);
     }
 
     public async getMember(guild: string | eris.Guild, userId: string): Promise<eris.Member | undefined> {
@@ -513,12 +614,8 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return await this.cluster.util.findRoles(guild, query);
     }
 
-    public async getMessage(channel: string, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined>;
-    public async getMessage(channel: eris.KnownChannel, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined>;
-    public async getMessage(...args: [eris.KnownChannel, string, boolean?] | [string, string, boolean?]): Promise<eris.KnownMessage | undefined> {
-        return isIndex0String(args)
-            ? await this.cluster.util.getMessage(...args)
-            : await this.cluster.util.getMessage(...args);
+    public async getMessage(channel: string, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined> {
+        return await this.cluster.util.getMessage(channel, messageId, force);
     }
 
     public queryMember(options: EntityPickQueryOptions<string, eris.Member>): Promise<ChoiceQueryResult<eris.Member>> {
@@ -546,10 +643,6 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
             prompt: toPrompt(options.prompt)
         });
     }
-}
-
-function isIndex0String<T extends unknown[]>(value: T): value is Extract<T, { ['0']: string; }> {
-    return typeof value[0] === 'string';
 }
 
 function toPrompt(value: string | Omit<SendContent<string>, 'components'> | undefined): IFormattable<string> | Omit<SendContent<IFormattable<string>>, 'components'> | undefined {

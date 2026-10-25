@@ -1,55 +1,66 @@
 import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag';
-import { ReactionListSubtag } from '@blargbot/bbtag/subtags';
-import * as eris from 'eris';
+import type { ListMessageReactionsThunk, ListMessageReactionUsersThunk } from '@blargbot/bbtag/subtags';
+import { ChannelIdSubtag, ReactionListSubtag } from '@blargbot/bbtag/subtags';
+import { Emote } from '@blargbot/core';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
+const listMessageReactions = new Mock<ListMessageReactionsThunk>({ id: 'listMessageReactions', callable: true });
+const listMessageReactionUsers = new Mock<ListMessageReactionUsersThunk>({ id: 'listMessageReactionUsers', callable: true });
+const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+
 await runSubtagTests({
-    subtag: new ReactionListSubtag(),
+    subtag: new ReactionListSubtag({
+        listMessageReactions: listMessageReactions.instance,
+        listMessageReactionUsers: listMessageReactionUsers.instance
+    }),
     argCountBounds: { min: 0, max: Infinity },
     names: ['reactionList', 'listReact', 'reactList'],
+    otherSubtags: [channelIdSubtag.instance],
+    setup(ctx) {
+        ctx.adoptMock(listMessageReactions);
+        ctx.adoptMock(listMessageReactionUsers);
+        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+    },
     cases: [
         {
             code: '{reactlist}',
             expected: '`No message found`',
-            setup(ctx) {
-                ctx.channels.command.id = ctx.message.channel_id = '342756834937659745634';
-            },
+            subtags: [channelIdSubtag.instance],
             errors: [
                 { error: new MessageNotFoundError('342756834937659745634', '') }
-            ]
+            ],
+            setup(ctx) {
+                ctx.channels.command.id = ctx.message.channel_id = '342756834937659745634';
+            }
         },
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getProp: (c, i) => listMessageReactions.setup(m => m(c, i)),
+            notExists: Promise.resolve(undefined),
+            queryOptions: () => ({ noErrors: true, noLookup: true }),
+            emptyIsCurrentMessage: false,
             generateCode(...args) {
                 return `{${['reactlist', ...args].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
-                    expected: '[]'
+                    expected: '[]',
+                    setup(getProp) {
+                        getProp.resolves([]).mustHappen(1);
+                    }
                 },
                 {
                     expected: '["🤔","notlikecat:280110565161041921","blobdance:636729199574515732"]',
-                    setup(_, message) {
-                        message.reactions = [
-                            {
-                                emoji: { id: null, name: '🤔' },
-                                count: 1,
-                                me: false
-                            },
-                            {
-                                emoji: { id: '280110565161041921', name: 'notlikecat' },
-                                count: 1,
-                                me: false
-                            },
-                            {
-                                emoji: { id: '636729199574515732', name: 'blobdance', animated: true },
-                                count: 1,
-                                me: false
-                            }
-                        ];
+                    setup(getProp) {
+                        getProp.resolves([
+                            new Emote('🤔'),
+                            new Emote('notlikecat', '280110565161041921', false),
+                            new Emote('blobdance', '636729199574515732', true)
+                        ]).mustHappen(1);
                     }
                 }
             ]
@@ -57,27 +68,50 @@ await runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getProp: (c, i) => listMessageReactions.setup(m => m(c, i)),
+            notExists: Promise.resolve(undefined),
+            queryOptions: () => ({ noErrors: true, noLookup: true }),
+            emptyIsCurrentMessage: false,
             generateCode(...args) {
                 return `{${['reactlist', ...args, '🤔'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '[]',
-                    setup(channel, message, ctx) {
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).resolves([]);
+                    setup(getProp, channelId, messageId) {
+                        const emoteUsers = [
+                            {
+                                emote: new Emote('🤔'),
+                                userIds: []
+                            }
+                        ];
+                        getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
+                        for (const { emote, userIds } of emoteUsers) {
+                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                                .resolves(userIds)
+                                .mustHappen(1);
+                        }
                     }
                 },
                 {
                     expected: '["23098764238493489238","32847623493687578962","29874394027843984987"]',
-                    setup(channel, message, ctx) {
-                        ctx.users.bot.id = '23098764238493489238';
-                        ctx.users.other.id = '32847623493687578962';
-                        ctx.users.command.id = '29874394027843984987';
-                        const bot = ctx.createUser(ctx.users.bot);
-                        const other = ctx.createUser(ctx.users.other);
-                        const command = ctx.createUser(ctx.users.command);
-
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).resolves([bot, other, command]);
+                    setup(getProp, channelId, messageId) {
+                        const emoteUsers = [
+                            {
+                                emote: new Emote('🤔'),
+                                userIds: [
+                                    '23098764238493489238',
+                                    '32847623493687578962',
+                                    '29874394027843984987'
+                                ]
+                            }
+                        ];
+                        getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
+                        for (const { emote, userIds } of emoteUsers) {
+                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                                .resolves(userIds)
+                                .mustHappen(1);
+                        }
                     }
                 }
             ]
@@ -85,29 +119,54 @@ await runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getProp: (c, i) => listMessageReactions.setup(m => m(c, i)),
+            notExists: Promise.resolve(undefined),
+            queryOptions: () => ({ noErrors: true, noLookup: true }),
+            emptyIsCurrentMessage: false,
             generateCode(...args) {
                 return `{${['reactlist', ...args, '🤔<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '[]',
-                    setup(channel, message, ctx) {
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).resolves([]);
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, 'notlikecat:280110565161041921', undefined, undefined, undefined)).resolves([]);
+                    setup(getProp, channelId, messageId) {
+                        const emoteUsers = [
+                            {
+                                emote: new Emote('🤔'),
+                                userIds: []
+                            },
+                            {
+                                emote: new Emote('notlikecat', '280110565161041921'),
+                                userIds: []
+                            }
+                        ];
+                        getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
+                        for (const { emote, userIds } of emoteUsers) {
+                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                                .resolves(userIds)
+                                .mustHappen(1);
+                        }
                     }
                 },
                 {
                     expected: '["23098764238493489238","32847623493687578962","29874394027843984987"]',
-                    setup(channel, message, ctx) {
-                        ctx.users.bot.id = '23098764238493489238';
-                        ctx.users.other.id = '32847623493687578962';
-                        ctx.users.command.id = '29874394027843984987';
-                        const bot = ctx.createUser(ctx.users.bot);
-                        const other = ctx.createUser(ctx.users.other);
-                        const command = ctx.createUser(ctx.users.command);
-
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).resolves([bot, other]);
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, 'notlikecat:280110565161041921', undefined, undefined, undefined)).resolves([other, command]);
+                    setup(getProp, channelId, messageId) {
+                        const emoteUsers = [
+                            {
+                                emote: new Emote('🤔'),
+                                userIds: ['23098764238493489238', '32847623493687578962']
+                            },
+                            {
+                                emote: new Emote('notlikecat', '280110565161041921'),
+                                userIds: ['23098764238493489238', '29874394027843984987']
+                            }
+                        ];
+                        getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
+                        for (const { emote, userIds } of emoteUsers) {
+                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                                .resolves(userIds)
+                                .mustHappen(1);
+                        }
                     }
                 }
             ]
@@ -115,29 +174,54 @@ await runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getProp: (c, i) => listMessageReactions.setup(m => m(c, i)),
+            notExists: Promise.resolve(undefined),
+            queryOptions: () => ({ noErrors: true, noLookup: true }),
+            emptyIsCurrentMessage: false,
             generateCode(...args) {
                 return `{${['reactlist', ...args, '🤔', '<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '[]',
-                    setup(channel, message, ctx) {
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).resolves([]);
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, 'notlikecat:280110565161041921', undefined, undefined, undefined)).resolves([]);
+                    setup(getProp, channelId, messageId) {
+                        const emoteUsers = [
+                            {
+                                emote: new Emote('🤔'),
+                                userIds: []
+                            },
+                            {
+                                emote: new Emote('notlikecat', '280110565161041921'),
+                                userIds: []
+                            }
+                        ];
+                        getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
+                        for (const { emote, userIds } of emoteUsers) {
+                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                                .resolves(userIds)
+                                .mustHappen(1);
+                        }
                     }
                 },
                 {
                     expected: '["23098764238493489238","32847623493687578962","29874394027843984987"]',
-                    setup(channel, message, ctx) {
-                        ctx.users.bot.id = '23098764238493489238';
-                        ctx.users.other.id = '32847623493687578962';
-                        ctx.users.command.id = '29874394027843984987';
-                        const bot = ctx.createUser(ctx.users.bot);
-                        const other = ctx.createUser(ctx.users.other);
-                        const command = ctx.createUser(ctx.users.command);
-
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, '🤔', undefined, undefined, undefined)).resolves([bot, other]);
-                        ctx.discord.setup(m => m.getMessageReaction(channel.id, message.id, 'notlikecat:280110565161041921', undefined, undefined, undefined)).resolves([other, command]);
+                    setup(getProp, channelId, messageId) {
+                        const emoteUsers = [
+                            {
+                                emote: new Emote('🤔'),
+                                userIds: ['23098764238493489238', '32847623493687578962']
+                            },
+                            {
+                                emote: new Emote('notlikecat', '280110565161041921'),
+                                userIds: ['23098764238493489238', '29874394027843984987']
+                            }
+                        ];
+                        getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
+                        for (const { emote, userIds } of emoteUsers) {
+                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                                .resolves(userIds)
+                                .mustHappen(1);
+                        }
                     }
                 }
             ]
@@ -145,16 +229,17 @@ await runSubtagTests({
         {
             code: '{reactlist;92384982642323432343;def;ghi}',
             expected: '`Invalid Emojis`',
+            subtags: [channelIdSubtag.instance],
             errors: [
                 { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
             postSetup(bbctx, ctx) {
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '92384982642323432343',
-                    channel_id: bbctx.local.message.channel.id
-                }, ctx.users.command));
-
-                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '92384982642323432343', true)).resolves(message);
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channels.command.id)
+                    .mustHappen(1);
+                listMessageReactions.setup(m => m(ctx.channels.command.id, '92384982642323432343'))
+                    .resolves([])
+                    .mustHappen(1);
             }
         },
         {
@@ -164,14 +249,15 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
             ],
             postSetup(bbctx, ctx) {
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '92384982642323432343',
-                    channel_id: bbctx.local.message.channel.id
-                }, ctx.users.command));
-
-                ctx.util.setup(m => m.getMessage(bbctx.local.message.channel, '92384982642323432343', true)).resolves(message);
-                ctx.discord.setup(m => m.getMessageReaction(ctx.channels.command.id, message.id, 'fakeemote:192612896213677963', undefined, undefined, undefined))
-                    .rejects(ctx.createRESTError(eris.ApiError.UNKNOWN_EMOJI));
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channels.command.id)
+                    .mustHappen(1);
+                listMessageReactions.setup(m => m(ctx.channels.command.id, '92384982642323432343'))
+                    .resolves([])
+                    .mustHappen(1);
+                listMessageReactionUsers.setup((m, $) => m(ctx.channels.command.id, '92384982642323432343', $(new Emote('fakeemote', '192612896213677963'))))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         }
     ]

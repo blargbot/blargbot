@@ -5,16 +5,11 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIsNsfwSubtag } from '../channel/channelIsNsfw.js';
+import type { AddReactionsThunk } from './reactionAdd.js';
 import type { CanPingEveryoneThunk, SendThunk } from './send.js';
 
 const tag = templates.subtags.output;
-
-export interface AddReactionsThunk {
-    (channelId: string, messageId: string, reactions: Iterable<Emote>): Promise<{
-        success: Emote[];
-        failed: Emote[];
-    }>;
-}
 
 export class OutputSubtag extends CompiledSubtag {
     readonly #canPingEveryone: CanPingEveryoneThunk;
@@ -61,16 +56,16 @@ export class OutputSubtag extends CompiledSubtag {
     async #sendOutput(context: BBTagContext, content: string): Promise<string | undefined> {
         if (context.root.silent || context.root.output.messageId !== undefined)
             return context.root.output.messageId;
+        const channel = context.root.message.channel;
 
         const nsfw = context.root.output.nsfw;
         let { embeds, files } = context.root.output;
-        if (nsfw !== undefined) {
+        if (nsfw !== undefined && !await ChannelIsNsfwSubtag.check(context, channel.id)) {
             content = nsfw;
             embeds = undefined;
             files = undefined;
         }
 
-        const channel = context.root.message.channel;
         const response = await this.#send(channel.id, {
             content,
             embeds,

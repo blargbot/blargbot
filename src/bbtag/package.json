@@ -10,12 +10,10 @@
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
-        "@blargbot/database": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/util": "workspace:^",
-        "brainfuck-node": "^1.0.2",
         "color": "^5.0.3",
         "eris": "^0.17.1",
         "html-entities": "^2.3.3",
@@ -24,11 +22,8 @@
         "zod": "^4.6.5"
     },
     "devDependencies": {
-        "@blargbot/test-util": "workspace:^",
-        "@types/brainfuck-node": "workspace:^",
         "@types/color": "^3.0.3",
         "@types/eris": "workspace:^",
-        "@types/rwlock": "^5.0.3",
-        "discord-api-types": "^0.37.20"
+        "@types/rwlock": "^5.0.3"
     }
 }

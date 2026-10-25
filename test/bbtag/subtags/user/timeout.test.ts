@@ -121,7 +121,7 @@ await runSubtagTests({
                     duration: moment.duration({ seconds: 0 })
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'noChange', detail: 'other user is not timed out!' });
+                    .resolves({ success: false, cause: 'noChange', reason: 'other user is not timed out!' });
             }
         },
         {
@@ -151,7 +151,7 @@ await runSubtagTests({
                     duration: moment.duration({ seconds: 1 })
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'noChange', detail: 'other user is already timed out!' });
+                    .resolves({ success: false, cause: 'noChange', reason: 'other user is already timed out!' });
             }
         },
         {
@@ -178,7 +178,7 @@ await runSubtagTests({
                     duration: moment.duration({ seconds: 1 })
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'bot', detail: 'I don\'t have permission to (remove) time out (from) users!' });
+                    .resolves({ success: false, cause: 'bot', reason: 'I don\'t have permission to (remove) time out (from) users!' });
             }
         },
         {
@@ -208,7 +208,7 @@ await runSubtagTests({
                     duration: moment.duration({ seconds: 1 })
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'bot', detail: 'I don\'t have permission to (remove) time out (from) other user!' });
+                    .resolves({ success: false, cause: 'bot', reason: 'I don\'t have permission to (remove) time out (from) other user!' });
             }
         },
         {
@@ -235,7 +235,7 @@ await runSubtagTests({
                     duration: moment.duration({ seconds: 1 })
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'authorizer', detail: 'You don\'t have permission to (remove) time out (from) users!' });
+                    .resolves({ success: false, cause: 'authorizer', reason: 'You don\'t have permission to (remove) time out (from) users!' });
             }
         },
         {
@@ -265,7 +265,7 @@ await runSubtagTests({
                     duration: moment.duration({ seconds: 1 })
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'authorizer', detail: 'You don\'t have permission to (remove) time out (from) other user!' });
+                    .resolves({ success: false, cause: 'authorizer', reason: 'You don\'t have permission to (remove) time out (from) other user!' });
             }
         }
     ]

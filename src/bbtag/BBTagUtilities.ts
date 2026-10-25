@@ -1,5 +1,4 @@
 import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core';
-import type { Database } from '@blargbot/database';
 import type { Logger } from '@blargbot/logger';
 import type { sleep } from '@blargbot/util';
 import type * as eris from 'eris';
@@ -10,7 +9,6 @@ import type { VariablesProvider } from './Variables.js';
 export interface InjectionContext {
     readonly discord: eris.Client;
     readonly logger: Logger;
-    readonly database: Database;
     readonly subtags: Iterable<Subtag>;
     readonly util: BBTagUtilities;
     readonly variables: VariablesProvider;
@@ -26,9 +24,7 @@ export interface BBTagUtilities {
     send<T extends eris.TextableChannel>(channel: T, payload: BBTagSendContent, author?: eris.User): Promise<eris.Message<T> | undefined>;
 
     getChannel(channelId: string): Promise<eris.KnownChannel | undefined>;
-    getChannel(guild: string | eris.Guild, channelId: string): Promise<eris.KnownGuildChannel | undefined>;
-    findChannels(guild: string | eris.Guild, query?: string): Promise<eris.KnownGuildChannel[]>;
-    queryChannel<T extends eris.KnownChannel>(options: EntityPickQueryOptions<string, T>): Promise<ChoiceQueryResult<T>>;
+    getMessage(channel: string, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined>;
 
     getUser(userId: string): Promise<eris.User | undefined>;
     getMember(guild: string | eris.Guild, userId: string): Promise<eris.Member | undefined>;
@@ -39,6 +35,4 @@ export interface BBTagUtilities {
     findRoles(guild: string | eris.Guild, query?: string): Promise<eris.Role[]>;
     queryRole(options: EntityPickQueryOptions<string, eris.Role>): Promise<ChoiceQueryResult<eris.Role>>;
 
-    getMessage(channel: string, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined>;
-    getMessage(channel: eris.KnownChannel, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined>;
 }

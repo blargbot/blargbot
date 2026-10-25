@@ -6,6 +6,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { ApiResult } from '../types.js';
 
 const tag = templates.subtags.timeout;
 
@@ -18,9 +19,7 @@ export interface SetUserTimeoutOptions {
     readonly duration: moment.Duration;
 }
 
-export type SetUserTimeoutResult =
-    | { success: true; }
-    | { success: false; reason: 'bot' | 'authorizer' | 'noChange'; detail?: string; }
+export type SetUserTimeoutResult = ApiResult<null, { cause: 'bot' | 'authorizer' | 'noChange'; }>
 
 export interface SetUserTimeoutThunk {
     (options: SetUserTimeoutOptions): Promise<SetUserTimeoutResult>;
@@ -85,15 +84,15 @@ export class TimeoutSubtag extends CompiledSubtag {
         if (result.success)
             return 'Success';
 
-        switch (result.reason) {
+        switch (result.cause) {
             case 'noChange':
-                throw new BBTagRuntimeError(delay.asMilliseconds() === 0 ? 'User is not timed out' : 'User is already timed out', result.detail);
+                throw new BBTagRuntimeError(delay.asMilliseconds() === 0 ? 'User is not timed out' : 'User is already timed out', result.reason);
             case 'bot':
-                throw new BBTagRuntimeError('Bot has no permissions', result.detail);
+                throw new BBTagRuntimeError('Bot has no permissions', result.reason);
             case 'authorizer':
-                throw new BBTagRuntimeError('User has no permissions', result.detail);
+                throw new BBTagRuntimeError('User has no permissions', result.reason);
             default:
-                throw new BBTagRuntimeError('Timeout failed', result.detail);
+                throw new BBTagRuntimeError('Timeout failed', result.reason);
         }
     }
 }

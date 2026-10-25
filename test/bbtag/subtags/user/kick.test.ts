@@ -75,7 +75,7 @@ await runSubtagTests({
                     reason: 'Tag Kick'
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'bot', details: 'I don\'t have permission to kick users!' });
+                    .resolves({ success: false, cause: 'bot', reason: 'I don\'t have permission to kick users!' });
             }
         },
         {
@@ -103,7 +103,7 @@ await runSubtagTests({
                     reason: 'Tag Kick'
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'bot', details: 'I don\'t have permission to kick other user!' });
+                    .resolves({ success: false, cause: 'bot', reason: 'I don\'t have permission to kick other user!' });
             }
         },
         {
@@ -128,7 +128,7 @@ await runSubtagTests({
                     reason: 'Tag Kick'
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'authorizer', details: 'You don\'t have permission to kick users!' });
+                    .resolves({ success: false, cause: 'authorizer', reason: 'You don\'t have permission to kick users!' });
             }
         },
         {
@@ -153,7 +153,7 @@ await runSubtagTests({
                     reason: 'Tag Kick'
                 })))
                     .mustHappen(1)
-                    .resolves({ success: false, reason: 'authorizer', details: 'You don\'t have permission to kick other user!' });
+                    .resolves({ success: false, cause: 'authorizer', reason: 'You don\'t have permission to kick other user!' });
             }
         },
         {

@@ -1,5 +1,4 @@
 import { guard, parse } from '@blargbot/core';
-import type { Logger } from '@blargbot/logger';
 import type * as eris from 'eris';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -7,12 +6,33 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
+import type { ApiResult } from '../types.js';
+import { IsStaffSubtag } from '../user/isStaff.js';
+import type { GetMessageAuthorThunk } from './messageSender.js';
 
 const tag = templates.subtags.edit;
 
+export interface EditMessageOptions {
+    channelId: string;
+    messageId: string;
+    content?: string;
+    embeds?: eris.EmbedOptions[];
+}
+
+export type EditMessageResult = ApiResult<null, { cause: 'messageEmpty' | 'failed'; }>
+
+export interface EditMessageThunk {
+    (options: EditMessageOptions): Promise<EditMessageResult>;
+}
+
 export class EditSubtag extends CompiledSubtag {
-    readonly #logger: Logger;
-    public constructor({ logger }: { logger: Logger; }) {
+    readonly #editMessage: EditMessageThunk;
+    readonly #getMessageAuthor: GetMessageAuthorThunk;
+    public constructor({ editMessage, getMessageAuthor }: {
+        editMessage: EditMessageThunk;
+        getMessageAuthor: GetMessageAuthorThunk;
+    }) {
         super({
             name: 'edit',
             category: SubtagType.MESSAGE,
@@ -57,13 +77,13 @@ export class EditSubtag extends CompiledSubtag {
                     parameters: ['messageId|channelId', 'messageId|text', '(text|embed)|(embed)'],
                     returns: 'nothing',
                     execute: async (ctx, [chanOrMessage, messageOrText, content]) => {
-                        const channel = await ctx.queryChannel(chanOrMessage.value, { noLookup: true });
-                        if (channel === undefined)
-                            //{edit;msg;text;embed}
-                            return await this.edit(ctx, ctx.local.message.channel.id, chanOrMessage.value, messageOrText.value, content.value);
+                        const channelId = await ChannelIdSubtag.query(ctx, chanOrMessage.value, { noLookup: true });
+                        if (channelId !== undefined)
+                            //{edit;channel;msg;text|embed}
+                            return await this.#editAssertedChannel(ctx, channelId, messageOrText.value, content.value);
 
-                        //{edit;channel;msg;text|embed}
-                        return await this.edit(ctx, channel.id, messageOrText.value, content.value);
+                        //{edit;msg;text;embed}
+                        return await this.edit(ctx, ctx.local.message.channel.id, chanOrMessage.value, messageOrText.value, content.value);
 
                     }
                 },
@@ -77,19 +97,44 @@ export class EditSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#logger = logger;
+        this.#editMessage = editMessage;
+        this.#getMessageAuthor = getMessageAuthor;
     }
 
     public async edit(
         context: BBTagContext,
         channelStr: string,
-        messageStr: string,
+        messageId: string,
         contentStr: string,
         embedStr?: string
     ): Promise<void> {
-        const channel = await context.queryChannel(channelStr, { noLookup: true });
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr);
+        if (!(context.root.ownedMessageIds.has(messageId) || await IsStaffSubtag.isStaff(context)))
+            throw new BBTagRuntimeError('Author must be staff to delete unrelated messages');
+
+        const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: true })
+            ?? new ChannelNotFoundError(channelStr).throw();
+
+        await this.#edit(context, channelId, messageId, contentStr, embedStr);
+    }
+
+    async #editAssertedChannel(
+        context: BBTagContext,
+        channelId: string,
+        messageId: string,
+        contentStr: string,
+        embedStr?: string): Promise<void> {
+        if (!(context.root.ownedMessageIds.has(messageId) || await IsStaffSubtag.isStaff(context)))
+            throw new BBTagRuntimeError('Author must be staff to delete unrelated messages');
+        await this.#edit(context, channelId, messageId, contentStr, embedStr);
+    }
+
+    async #edit(
+        context: BBTagContext,
+        channelId: string,
+        messageId: string,
+        contentStr: string,
+        embedStr?: string
+    ): Promise<void> {
 
         let content: string | undefined;
         let embeds: eris.EmbedOptions[] | undefined;
@@ -105,28 +150,28 @@ export class EditSubtag extends CompiledSubtag {
             }
         }
 
-        const message = await context.getMessage(channel, messageStr);
-        if (message === undefined)
-            throw new MessageNotFoundError(channel.id, messageStr);
-        if (message.author.id !== context.root.botId)
+        const authorId = await this.#getMessageAuthor(channelId, messageId)
+            ?? new MessageNotFoundError(channelId, messageId).throw();
+        if (authorId !== context.root.botId)
             throw new BBTagRuntimeError('I must be the message author');
-
-        content = content ?? message.content;
-        embeds = embeds ?? message.embeds;
 
         if (contentStr === '_delete') content = '';
         if (embedStr === '_delete') embeds = [];
 
-        if (content.trim() === '' && embeds.length === 0)
-            throw new BBTagRuntimeError('Message cannot be empty');
+        const result = await this.#editMessage({
+            channelId,
+            messageId,
+            content,
+            embeds
+        });
+        if (result.success)
+            return;
 
-        try {
-            await message.edit({
-                content,
-                embeds
-            });
-        } catch (err: unknown) {
-            this.#logger.error('Failed to edit message', err);
+        switch (result.cause) {
+            case 'messageEmpty':
+                throw new BBTagRuntimeError('Message cannot be empty');
+            case 'failed':
+                throw new BBTagRuntimeError('Edit failed', result.reason).withDisplay('');
         }
     }
 }

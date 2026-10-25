@@ -57,7 +57,7 @@ export class WaitReactionSubtag extends CompiledSubtag {
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string, userId: string, emoji: string]> {
         const messages = bbtag.tagArray.flattenArray([messageStr]).map(i => parse.string(i));
-        const users = await this.bulkLookup(userIDStr, i => context.queryUser(i, { noErrors: true, noLookup: true }), UserNotFoundError)
+        const users = await this.#bulkLookup(userIDStr, i => context.queryUser(i, { noErrors: true, noLookup: true }), UserNotFoundError)
             ?? [context.local.message.author];
 
         // parse reactions
@@ -99,5 +99,20 @@ export class WaitReactionSubtag extends CompiledSubtag {
         }
 
         throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
+    }
+
+    async #bulkLookup<T>(source: string, lookup: (value: string) => Awaitable<T | undefined>, error: new (term: string) => BBTagRuntimeError): Promise<T[] | undefined> {
+        if (source === '')
+            return undefined;
+
+        const flatSource = bbtag.tagArray.flattenArray([source])
+            .map(i => parse.string(i))
+            .map(async input => {
+                const element = await lookup(input);
+                if (element === undefined)
+                    throw new error(input);
+                return element;
+            });
+        return await Promise.all(flatSource);
     }
 }

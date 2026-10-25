@@ -1,5 +1,4 @@
 import { Emote } from '@blargbot/core';
-import * as eris from 'eris';
 
 import type { SubtagArgumentArray } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -7,12 +6,28 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ChannelIdSubtag } from '../channel/channelId.js';
+import type { ApiResult, CheckMessageExistsThunk, GetUserPermissionsThunk } from '../types.js';
 import { IsStaffSubtag } from '../user/isStaff.js';
+import type { ListMessageReactionsThunk } from './reactionList.js';
 
 const tag = templates.subtags.reactionRemove;
 
+export interface RemoveMessageReactionUserThunk {
+    (channelId: string, messageId: string, reaction: Emote, userId: string): Promise<ApiResult>;
+}
+
 export class ReactionRemoveSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #getUserPermissions: GetUserPermissionsThunk;
+    readonly #checkMessageExists: CheckMessageExistsThunk;
+    readonly #listMessageReactions: ListMessageReactionsThunk;
+    readonly #removeMessageReactionUser: RemoveMessageReactionUserThunk;
+    public constructor({ getUserPermissions, checkMessageExists, listMessageReactions, removeMessageReactionUser }: {
+        getUserPermissions: GetUserPermissionsThunk;
+        checkMessageExists: CheckMessageExistsThunk;
+        listMessageReactions: ListMessageReactionsThunk;
+        removeMessageReactionUser: RemoveMessageReactionUserThunk;
+    }) {
         super({
             name: 'reactionRemove',
             category: SubtagType.MESSAGE,
@@ -21,7 +36,7 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
                 {
                     parameters: ['arguments+'],
                     returns: 'nothing',
-                    execute: async (ctx, args) => await this.removeReactions(ctx, ...await this.#bindArguments(ctx, args))
+                    execute: async (ctx, args) => await this.#removeReactions(ctx, ...await this.#bindArguments(ctx, args))
                 },
                 {
                     parameters: ['channel?', 'messageId'],
@@ -37,57 +52,39 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#getUserPermissions = getUserPermissions;
+        this.#checkMessageExists = checkMessageExists;
+        this.#listMessageReactions = listMessageReactions;
+        this.#removeMessageReactionUser = removeMessageReactionUser;
     }
 
-    public async removeReactions(
+    async #removeReactions(
         context: BBTagContext,
-        channelStr: string,
+        channelId: string,
         messageId: string,
-        userStr: string,
-        reactions: Emote[] | undefined
+        userId: string,
+        reactions: readonly Emote[] | undefined
     ): Promise<void> {
-        const channel = await context.queryChannel(channelStr, { noErrors: true, noLookup: true });
-        if (channel === undefined)
-            throw new ChannelNotFoundError(channelStr);
-
-        const permissions = channel.permissionsOf(context.root.botId);
-        if (!permissions.has('manageMessages'))
+        const permissions = await this.#getUserPermissions(context.root.guildId, context.root.botId, channelId);
+        if (!permissions.hasAny('ADMINISTRATOR', 'MANAGE_MESSAGES'))
             throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
 
-        const message = await context.getMessage(channel, messageId, true);
-        if (message === undefined)
-            throw new MessageNotFoundError(channel.id, messageId);
+        if (!await this.#checkMessageExists(channelId, messageId))
+            throw new MessageNotFoundError(channelId, messageId);
 
-        if (!context.root.ownedMessageIds.has(message.id) && !await IsStaffSubtag.isStaff(context))
+        if (!context.root.ownedMessageIds.has(messageId) && !await IsStaffSubtag.isStaff(context))
             throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
-
-        const user = await context.queryUser(userStr, { noErrors: true, noLookup: true });
-        if (user === undefined)
-            throw new UserNotFoundError(userStr);
 
         if (reactions?.length === 0)
             throw new BBTagRuntimeError('Invalid Emojis');
-        reactions ??= Object.keys(message.reactions).map(Emote.parse);
+        reactions ??= await this.#listMessageReactions(channelId, messageId) ?? [];
 
         const errored = [];
         for (const reaction of reactions) {
-            try {
-                await context.root.limit.check(context, 'reactremove:requests');
-                await message.removeReaction(reaction.toApi(), user.id);
-            } catch (err: unknown) {
-                if (!(err instanceof eris.DiscordRESTError))
-                    throw err;
-
-                switch (err.code) {
-                    case eris.ApiError.UNKNOWN_EMOJI:
-                        errored.push(reaction);
-                        break;
-                    case eris.ApiError.MISSING_PERMISSIONS:
-                        throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
-                    default:
-                        throw err;
-                }
-            }
+            await context.root.limit.check(context, 'reactremove:requests');
+            const result = await this.#removeMessageReactionUser(channelId, messageId, reaction, userId);
+            if (!result.success)
+                errored.push(reaction);
         }
 
         if (errored.length > 0)
@@ -95,35 +92,39 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
     }
 
     async #bindArguments(context: BBTagContext, rawArgs: SubtagArgumentArray): Promise<[channel: string, message: string, user: string, reactions: Emote[] | undefined]> {
-        const args = [...rawArgs];
+        const args = rawArgs.map(x => x.value);
         if (args.length === 1)
-            return [context.local.message.channel.id, args[0].value, context.local.message.author.id, undefined];
+            args.unshift(context.local.message.channel.id);
 
-        const channel = await context.queryChannel(args[0].value, { noLookup: true, noErrors: true });
-        const channelId = channel?.id ?? context.local.message.channel.id;
-        if (channel !== undefined)
+        let channelId = await ChannelIdSubtag.query(context, args[0], { noLookup: true, noErrors: true });
+        if (channelId !== undefined)
             args.shift();
+        else if (args[0] !== context.local.message.channel.id) {
+            channelId = await ChannelIdSubtag.query(context, context.local.message.channel.id, { noLookup: true, noErrors: true })
+                ?? new ChannelNotFoundError(args[0]).throw();
+        } else
+            throw new ChannelNotFoundError(context.local.message.channel.id);
 
-        const message = args.splice(0, 1)[0].value;
+        const message = args.splice(0, 1)[0];
         if (args.length === 0)
-            // {reactremove;<messageId>}
-            // {reactremove;<channel>;<messageId>}
-            return [channelId, message, context.local.message.author.id, undefined];
+            args.unshift(context.local.message.author.id);
 
-        const user = await context.queryUser(args[0].value, { noLookup: true, noErrors: true });
-        const userId = user?.id ?? context.local.message.author.id;
+        let user = await context.queryUser(args[0], { noLookup: true, noErrors: true });
         if (user !== undefined)
             args.shift();
+        else if (args[0] !== context.local.message.author.id) {
+            user = await context.queryUser(context.local.message.author.id, { noLookup: true, noErrors: true })
+                ?? new UserNotFoundError(args[0]).throw();
+        } else
+            throw new UserNotFoundError(context.local.message.author.id);
 
         if (args.length === 0)
-            // {reactremove;<messageId>;<user>}
-            // {reactremove;<channel>;<messageId>;<user>}
-            return [channelId, message, userId, undefined];
+            return [channelId, message, user.id, undefined];
 
         // {reactremove;<messageId>;<...reactions>}
         // {reactremove;<channel>;<messageId>;<...reactions>}
         // {reactremove;<messageId>;<user>;<...reactions>}
         // {reactremove;<channel>;<messageId>;<user>;<...reactions>}
-        return [channelId, message, userId, args.flatMap(x => Emote.findAll(x.value))];
+        return [channelId, message, user.id, args.flatMap(x => Emote.findAll(x))];
     }
 }

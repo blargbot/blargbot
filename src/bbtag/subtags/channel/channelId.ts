@@ -6,12 +6,11 @@ import { ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import type { QueryEntityOptions } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
+import type { ApiResult } from '../types.js';
 
 const tag = templates.subtags.channelId;
 
-export type QueryChannelResult =
-    | { success: true; channelId: string; }
-    | { success: false; reason: 'notFound' | 'aborted'; };
+export type QueryChannelResult = ApiResult<{ channelId: string; }, { cause: 'notFound' | 'aborted'; }>;
 
 export interface QueryChannelOptions {
     readonly guildId: string;
@@ -113,7 +112,7 @@ export class ChannelIdSubtag extends CompiledSubtag {
             return result.channelId;
         }
 
-        switch (result.reason) {
+        switch (result.cause) {
             case 'aborted':
                 context.root.queryCache.failedQueries = Infinity;
                 break;
