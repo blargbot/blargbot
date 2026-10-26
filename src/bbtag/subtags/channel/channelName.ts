@@ -7,13 +7,14 @@ import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.channelName;
 
-export interface GetChannelNameThunk {
-    (guildId: string, channelId: string): Promise<string | undefined>;
+export interface GetChannelNameFeature {
+    getChannelName(guildId: string, channelId: string): Promise<string | undefined>;
 }
 
+type Features = GetChannelNameFeature;
 export class ChannelNameSubtag extends CompiledSubtag {
-    readonly #getChannelName: GetChannelNameThunk;
-    public constructor({ getChannelName }: { getChannelName: GetChannelNameThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelName',
             aliases: ['categoryName'],
@@ -37,16 +38,16 @@ export class ChannelNameSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getChannelName = getChannelName;
+        this.#features = features;
     }
 
     public async currentChannel(context: BBTagContext): Promise<string> {
-        return await this.#getChannelName(context.root.guildId, context.local.message.channel.id) ?? 'unknown';
+        return await this.#features.getChannelName(context.root.guildId, context.local.message.channel.id) ?? 'unknown';
     }
 
     public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string> {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
-        return await this.#getChannelName(context.root.guildId, channelId) ?? 'unknown';
+        return await this.#features.getChannelName(context.root.guildId, channelId) ?? 'unknown';
     }
 }

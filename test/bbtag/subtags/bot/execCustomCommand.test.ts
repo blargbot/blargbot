@@ -1,22 +1,20 @@
 import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError, BBTagRuntimeState, SubtagStackOverflowError } from '@blargbot/bbtag';
-import type { GetCustomCommandThunk } from '@blargbot/bbtag/subtags';
+import type { GetCustomCommandFeature } from '@blargbot/bbtag/subtags';
 import { ExecCustomCommandSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-const getCustomCommand = new Mock<GetCustomCommandThunk>({ id: 'getCustomCommand', callable: true });
+const features = new Mock<GetCustomCommandFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new ExecCustomCommandSubtag({
-        getCustomCommand: getCustomCommand.instance
-    }),
+    subtag: new ExecCustomCommandSubtag(features.instance),
     argCountBounds: { min: 1, max: Infinity },
     names: ['execCustomCommand', 'execCC'],
     setup(ctx) {
-        ctx.adoptMock(getCustomCommand);
+        ctx.adoptMock(features);
     },
     cases: [
         {
@@ -40,7 +38,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({
+                features.setup(m => m.getCustomCommand(ctx.guild.id, 'othersubtag')).resolves({
                     id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
@@ -80,7 +78,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({
+                features.setup(m => m.getCustomCommand(ctx.guild.id, 'othersubtag')).resolves({
                     id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}'
@@ -118,7 +116,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({
+                features.setup(m => m.getCustomCommand(ctx.guild.id, 'othersubtag')).resolves({
                     id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
@@ -157,7 +155,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({
+                features.setup(m => m.getCustomCommand(ctx.guild.id, 'othersubtag')).resolves({
                     id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
@@ -183,7 +181,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('CCommand not found: abc') }
             ],
             setup(ctx) {
-                getCustomCommand.setup(m => m(ctx.guild.id, 'abc')).resolves(undefined).mustHappen(1);
+                features.setup(m => m.getCustomCommand(ctx.guild.id, 'abc')).resolves(undefined).mustHappen(1);
             }
         },
         {
@@ -193,7 +191,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Cannot execcc imported tag: othersubtag') }
             ],
             setup(ctx) {
-                getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({
+                features.setup(m => m.getCustomCommand(ctx.guild.id, 'othersubtag')).resolves({
                     id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
@@ -209,7 +207,7 @@ await runSubtagTests({
                 { error: new SubtagStackOverflowError(200) }
             ],
             setup(ctx) {
-                getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({
+                features.setup(m => m.getCustomCommand(ctx.guild.id, 'othersubtag')).resolves({
                     id: '0',
                     author: '212097368371683623',
                     content: '{fail}',
@@ -246,7 +244,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({
+                features.setup(m => m.getCustomCommand(ctx.guild.id, 'othersubtag')).resolves({
                     id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
@@ -289,7 +287,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({
+                features.setup(m => m.getCustomCommand(ctx.guild.id, 'othersubtag')).resolves({
                     id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',
@@ -332,7 +330,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getCustomCommand.setup(m => m(ctx.guild.id, 'othersubtag')).resolves({
+                features.setup(m => m.getCustomCommand(ctx.guild.id, 'othersubtag')).resolves({
                     id: '0',
                     author: '212097368371683623',
                     content: '{assert}{eval}',

@@ -7,13 +7,14 @@ import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageReply;
 
-export interface GetMessageReplyTargetThunk {
-    (channelId: string, messageId: string): Promise<string | null | undefined>;
+export interface GetMessageReplyTargetFeature {
+    getMessageReplyTarget(channelId: string, messageId: string): Promise<string | null | undefined>;
 }
 
+type Features = GetMessageReplyTargetFeature
 export class MessageReplySubtag extends CompiledSubtag {
-    readonly #getMessageReplyTarget: GetMessageReplyTargetThunk;
-    public constructor({ getMessageReplyTarget }: { getMessageReplyTarget: GetMessageReplyTargetThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'messageReply',
             category: SubtagType.MESSAGE,
@@ -44,7 +45,7 @@ export class MessageReplySubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getMessageReplyTarget = getMessageReplyTarget;
+        this.#features = features;
     }
 
     public async getMessageReplyId(context: BBTagContext, channelStr: string, messageId: string, quiet: boolean): Promise<string> {
@@ -55,7 +56,7 @@ export class MessageReplySubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
 
-        const replyId = await this.#getMessageReplyTarget(channelId, messageId);
+        const replyId = await this.#features.getMessageReplyTarget(channelId, messageId);
         if (replyId === undefined) {
             throw new MessageNotFoundError(channelId, messageId)
                 .withDisplay(quiet ? '' : undefined);

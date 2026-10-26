@@ -1,33 +1,28 @@
 import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { CanRequestDomainThunk } from '@blargbot/bbtag/subtags';
+import type { CanRequestDomainFeature, HttpFetchFeature } from '@blargbot/bbtag/subtags';
 import { EscapeBBTagSubtag, RequestSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const fetch = new Mock<typeof globalThis.fetch>({ id: 'fetch', callable: true });
-const canRequestDomain = new Mock<CanRequestDomainThunk>({ id: 'canRequestDomain', callable: true });
+const features = new Mock<HttpFetchFeature & CanRequestDomainFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new RequestSubtag({
-        fetch: fetch.instance,
-        canRequestDomain: canRequestDomain.instance
-    }),
+    subtag: new RequestSubtag(features.instance),
     argCountBounds: { min: 1, max: 3 },
     names: ['request'],
     setup(ctx) {
-        ctx.adoptMock(fetch);
-        ctx.adoptMock(canRequestDomain);
+        ctx.adoptMock(features);
     },
     cases: [
         {
             code: '{request;https://httpbin.org/status/200}',
             setup(ctx) {
-                canRequestDomain.setup(m => m('httpbin.org')).resolves(true);
+                features.setup(m => m.canRequestDomain('httpbin.org')).resolves(true);
                 const response = ctx.createMock<Response>({ id: 'response' });
-                fetch.setup((m, $) => m('https://httpbin.org/status/200', $({
+                features.setup((m, $) => m.fetch('https://httpbin.org/status/200', $({
                     method: 'GET',
                     headers: {},
                     body: undefined
@@ -58,9 +53,9 @@ await runSubtagTests({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post"}}}',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
-                canRequestDomain.setup(m => m('httpbin.org')).resolves(true);
+                features.setup(m => m.canRequestDomain('httpbin.org')).resolves(true);
                 const response = ctx.createMock<Response>({ id: 'response' });
-                fetch.setup((m, $) => m('https://httpbin.org/post', $({
+                features.setup((m, $) => m.fetch('https://httpbin.org/post', $({
                     method: 'POST',
                     headers: {},
                     body: ''
@@ -95,9 +90,9 @@ await runSubtagTests({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
-                canRequestDomain.setup(m => m('httpbin.org')).resolves(true);
+                features.setup(m => m.canRequestDomain('httpbin.org')).resolves(true);
                 const response = ctx.createMock<Response>({ id: 'response' });
-                fetch.setup((m, $) => m('https://httpbin.org/post', $({
+                features.setup((m, $) => m.fetch('https://httpbin.org/post', $({
                     method: 'POST',
                     headers: {
                         'x-test': 'true',
@@ -135,9 +130,9 @@ await runSubtagTests({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true}}};{escapebbtag;This isnt json}}',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
-                canRequestDomain.setup(m => m('httpbin.org')).resolves(true);
+                features.setup(m => m.canRequestDomain('httpbin.org')).resolves(true);
                 const response = ctx.createMock<Response>({ id: 'response' });
-                fetch.setup((m, $) => m('https://httpbin.org/post', $({
+                features.setup((m, $) => m.fetch('https://httpbin.org/post', $({
                     method: 'POST',
                     headers: {
                         'x-test': 'true'
@@ -174,9 +169,9 @@ await runSubtagTests({
             code: '{request;https://httpbin.org/post;{escapebbtag;{"method":"post","headers":{"x-test":true,"content-type":"text/plain"}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
-                canRequestDomain.setup(m => m('httpbin.org')).resolves(true);
+                features.setup(m => m.canRequestDomain('httpbin.org')).resolves(true);
                 const response = ctx.createMock<Response>({ id: 'response' });
-                fetch.setup((m, $) => m('https://httpbin.org/post', $({
+                features.setup((m, $) => m.fetch('https://httpbin.org/post', $({
                     method: 'POST',
                     headers: {
                         'x-test': 'true',
@@ -214,9 +209,9 @@ await runSubtagTests({
             code: '{request;https://httpbin.org/get;{escapebbtag;{"method":"get","headers":{"x-test":true}}};{escapebbtag;{"age":123}}}',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx) {
-                canRequestDomain.setup(m => m('httpbin.org')).resolves(true);
+                features.setup(m => m.canRequestDomain('httpbin.org')).resolves(true);
                 const response = ctx.createMock<Response>({ id: 'response' });
-                fetch.setup((m, $) => m('https://httpbin.org/get?age=123', $({
+                features.setup((m, $) => m.fetch('https://httpbin.org/get?age=123', $({
                     method: 'GET',
                     headers: {
                         'x-test': 'true'
@@ -252,9 +247,9 @@ await runSubtagTests({
         {
             code: '{request;https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png}',
             setup(ctx) {
-                canRequestDomain.setup(m => m('cdn.discordapp.com')).resolves(true);
+                features.setup(m => m.canRequestDomain('cdn.discordapp.com')).resolves(true);
                 const response = ctx.createMock<Response>({ id: 'response' });
-                fetch.setup((m, $) => m('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png', $({
+                features.setup((m, $) => m.fetch('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab1.png', $({
                     method: 'GET',
                     headers: {},
                     body: undefined
@@ -289,9 +284,9 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('403 Forbidden') }
             ],
             setup(ctx) {
-                canRequestDomain.setup(m => m('cdn.discordapp.com')).resolves(true);
+                features.setup(m => m.canRequestDomain('cdn.discordapp.com')).resolves(true);
                 const response = ctx.createMock<Response>({ id: 'response' });
-                fetch.setup((m, $) => m('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png', $({
+                features.setup((m, $) => m.fetch('https://cdn.discordapp.com/attachments/604763099727134750/940689576853385247/e88c2e966c6ca78f2268fa8aed4621ab2.png', $({
                     method: 'GET',
                     headers: {},
                     body: undefined
@@ -315,7 +310,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Domain is not whitelisted: test.com') }
             ],
             setup() {
-                canRequestDomain.setup(m => m('test.com')).resolves(false);
+                features.setup(m => m.canRequestDomain('test.com')).resolves(false);
             }
         },
         {
@@ -325,7 +320,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('', 'Invalid request options "this isnt a valid option"') }
             ],
             setup() {
-                canRequestDomain.setup(m => m('cdn.discordapp.com')).resolves(true);
+                features.setup(m => m.canRequestDomain('cdn.discordapp.com')).resolves(true);
             }
         }
     ]

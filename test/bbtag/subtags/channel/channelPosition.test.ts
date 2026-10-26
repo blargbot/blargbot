@@ -1,21 +1,19 @@
 import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag';
-import type { GetChannelPositionThunk } from '@blargbot/bbtag/subtags';
+import type { GetChannelPositionFeature } from '@blargbot/bbtag/subtags';
 import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-const getChannelPosition = new Mock<GetChannelPositionThunk>({ id: 'getChannelPosition', callable: true });
+const features = new Mock<GetChannelPositionFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new ChannelPositionSubtag({
-        getChannelPosition: getChannelPosition.instance
-    }),
+    subtag: new ChannelPositionSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
     names: ['channelPosition', 'channelPos', 'categoryPos', 'categoryPosition'],
     setup(ctx) {
-        ctx.adoptMock(getChannelPosition);
+        ctx.adoptMock(features);
     },
     cases: [
         ...createGetChannelPropTestCases({
@@ -28,7 +26,7 @@ await runSubtagTests({
                 {
                     expected: '324',
                     setup(channelId, ctx) {
-                        getChannelPosition.setup(m => m(ctx.guild.id, channelId)).resolves(324).mustHappen(1);;
+                        features.setup(m => m.getChannelPosition(ctx.guild.id, channelId)).resolves(324).mustHappen(1);;
                     }
                 },
                 {
@@ -36,7 +34,7 @@ await runSubtagTests({
                     channelId: '23948762874624372942',
                     error: new BBTagRuntimeError('Threads dont have a position', '<#23948762874624372942> is a thread and doesnt have a position'),
                     setup(channelId, ctx) {
-                        getChannelPosition.setup(m => m(ctx.guild.id, channelId)).resolves('thread').mustHappen(1);;
+                        features.setup(m => m.getChannelPosition(ctx.guild.id, channelId)).resolves('thread').mustHappen(1);;
                     }
                 }
             ]
@@ -50,7 +48,7 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.channels.command.id = '23948762874624372942';
                 ctx.message.channel_id = ctx.channels.command.id;
-                getChannelPosition.setup(m => m(ctx.guild.id, '23948762874624372942')).resolves(undefined).mustHappen(1);
+                features.setup(m => m.getChannelPosition(ctx.guild.id, '23948762874624372942')).resolves(undefined).mustHappen(1);
             }
         }
     ]

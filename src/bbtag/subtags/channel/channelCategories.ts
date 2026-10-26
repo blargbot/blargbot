@@ -5,13 +5,14 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.channelCategories;
 
-export interface GetCategoryChannelsThunk {
-    (guildId: string): Promise<readonly string[]>;
+export interface GetCategoryChannelsFeature {
+    getCategoryChannels(guildId: string): Promise<readonly string[]>;
 }
 
+type Features = GetCategoryChannelsFeature;
 export class ChannelCategoriesSubtag extends CompiledSubtag {
-    readonly #getCategoryChannels: GetCategoryChannelsThunk;
-    public constructor({ getCategoryChannels }: { getCategoryChannels: GetCategoryChannelsThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelCategories',
             category: SubtagType.CHANNEL,
@@ -27,10 +28,10 @@ export class ChannelCategoriesSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getCategoryChannels = getCategoryChannels;
+        this.#features = features;
     }
 
     public async getChannelCategories(context: BBTagContext): Promise<readonly string[]> {
-        return await this.#getCategoryChannels(context.root.guildId);
+        return await this.#features.getCategoryChannels(context.root.guildId);
     }
 }

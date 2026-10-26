@@ -25,21 +25,18 @@ export interface SendPayload {
 }
 export type SendResult = ApiResult<{ id: string; }>;
 
-export interface CanPingEveryoneThunk {
-    (guildId: string): Promise<boolean>;
+export interface CanPingEveryoneFeature {
+    canPingEveryone(guildId: string): Promise<boolean>;
 }
 
-export interface SendThunk {
-    (channelId: string, payload: SendPayload): Promise<SendResult>;
+export interface SendFeature {
+    sendMessage(channelId: string, payload: SendPayload): Promise<SendResult>;
 }
 
+type Features = CanPingEveryoneFeature & SendFeature
 export class SendSubtag extends CompiledSubtag {
-    readonly #canPingEveryone: CanPingEveryoneThunk;
-    readonly #send: SendThunk;
-    public constructor({ canPingEveryone, send }: {
-        canPingEveryone: CanPingEveryoneThunk;
-        send: SendThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'send',
             category: SubtagType.MESSAGE,
@@ -71,8 +68,7 @@ export class SendSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#canPingEveryone = canPingEveryone;
-        this.#send = send;
+        this.#features = features;
     }
 
     public async send(context: BBTagContext, channelStr: string, message?: string, embeds?: eris.EmbedOptions[], files?: eris.FileContent[]): Promise<string> {
@@ -93,13 +89,13 @@ export class SendSubtag extends CompiledSubtag {
             }
         }
 
-        const sent = await this.#send(channelId, {
+        const sent = await this.#features.sendMessage(channelId, {
             content: message,
             embeds: embeds,
             allowedMentions: {
                 everyone: context.root.allowedMentions.everybody
                     && context.root.isCC
-                    && await this.#canPingEveryone(context.root.guildId),
+                    && await this.#features.canPingEveryone(context.root.guildId),
                 roles: context.root.isCC ? context.root.allowedMentions.roles : new Set(),
                 users: context.root.isCC ? context.root.allowedMentions.users : new Set()
             },

@@ -4,13 +4,14 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { ListGuildMembersThunk } from '../guild/guildMembers.js';
+import type { ListGuildMembersFeature } from '../guild/guildMembers.js';
 
 const tag = templates.subtags.randomUser;
 
+type Features = ListGuildMembersFeature;
 export class RandomUserSubtag extends CompiledSubtag {
-    readonly #listGuildMembers: ListGuildMembersThunk;
-    public constructor({ listGuildMembers }: { listGuildMembers: ListGuildMembersThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'randomUser',
             aliases: ['randUser'],
@@ -26,11 +27,11 @@ export class RandomUserSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#listGuildMembers = listGuildMembers;
+        this.#features = features;
     }
 
     public async randomUser(context: BBTagContext): Promise<string> {
-        const userIds = await this.#listGuildMembers(context.root.guildId);
+        const userIds = await this.#features.listGuildMembers(context.root.guildId);
         return random.pick(userIds);
     }
 }

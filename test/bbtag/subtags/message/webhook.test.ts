@@ -1,22 +1,20 @@
 import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { ExecuteWebhookThunk } from '@blargbot/bbtag/subtags';
+import type { ExecuteWebhookFeature } from '@blargbot/bbtag/subtags';
 import { EscapeBBTagSubtag, WebhookSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const executeWebhook = new Mock<ExecuteWebhookThunk>({ id: 'executeWebhook', callable: true });
+const features = new Mock<ExecuteWebhookFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new WebhookSubtag({
-        executeWebhook: executeWebhook.instance
-    }),
+    subtag: new WebhookSubtag(features.instance),
     argCountBounds: { min: 2, max: 8 },
     names: ['webhook'],
     setup(ctx) {
-        ctx.adoptMock(executeWebhook);
+        ctx.adoptMock(features);
     },
     cases: [
         {
@@ -27,7 +25,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Error executing webhook: Test error') }
             ],
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: undefined,
                     avatarURL: undefined,
                     content: undefined,
@@ -44,7 +42,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Error executing webhook: 404 NotFound on POST /webhooks') }
             ],
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: undefined,
                     avatarURL: undefined,
                     content: undefined,
@@ -61,7 +59,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Error executing webhook: UNKNOWN') }
             ],
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: undefined,
                     avatarURL: undefined,
                     content: undefined,
@@ -75,7 +73,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: undefined,
                     avatarURL: undefined,
                     content: undefined,
@@ -89,7 +87,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: undefined,
                     avatarURL: undefined,
                     content: 'ghi',
@@ -103,7 +101,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: undefined,
                     avatarURL: undefined,
                     content: 'ghi',
@@ -117,7 +115,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: undefined,
                     avatarURL: undefined,
                     content: 'ghi',
@@ -131,7 +129,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: 'jkl',
                     avatarURL: undefined,
                     content: 'ghi',
@@ -145,7 +143,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: 'jkl',
                     avatarURL: 'mno',
                     content: 'ghi',
@@ -159,7 +157,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: 'jkl',
                     avatarURL: 'mno',
                     content: 'ghi',
@@ -180,7 +178,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: 'jkl',
                     avatarURL: 'mno',
                     content: 'ghi',
@@ -201,7 +199,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: 'jkl',
                     avatarURL: 'mno',
                     content: 'ghi',
@@ -222,7 +220,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup() {
-                executeWebhook.setup((m, $) => m('abc', 'def', $({
+                features.setup((m, $) => m.executeWebhook('abc', 'def', $({
                     username: 'jkl',
                     avatarURL: 'mno',
                     content: 'ghi',

@@ -7,13 +7,14 @@ import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageText;
 
-export interface GetMessageContentThunk {
-    (channelId: string, messageId: string): Promise<string | undefined>;
+export interface GetMessageContentFeature {
+    getMessageContent(channelId: string, messageId: string): Promise<string | undefined>;
 }
 
+type Features = GetMessageContentFeature
 export class MessageTextSubtag extends CompiledSubtag {
-    readonly #getMessageContent: GetMessageContentThunk;
-    public constructor({ getMessageContent }: { getMessageContent: GetMessageContentThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'messageText',
             category: SubtagType.MESSAGE,
@@ -45,7 +46,7 @@ export class MessageTextSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getMessageContent = getMessageContent;
+        this.#features = features;
     }
 
     public async getMessageText(
@@ -61,7 +62,7 @@ export class MessageTextSubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
 
-        return await this.#getMessageContent(channelId, messageId)
+        return await this.#features.getMessageContent(channelId, messageId)
             ?? new MessageNotFoundError(channelId, messageId).withDisplay(quiet ? '' : undefined).throw();
 
     }

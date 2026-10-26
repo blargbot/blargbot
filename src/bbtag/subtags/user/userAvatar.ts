@@ -3,11 +3,18 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userAvatar;
 
+export interface GetUserAvatarUrlFeature {
+    getUserAvatarUrl(userId: string): Promise<URL | undefined>;
+}
+
+type Features = GetUserAvatarUrlFeature;
 export class UserAvatarSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userAvatar',
             category: SubtagType.USER,
@@ -31,23 +38,21 @@ export class UserAvatarSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async getUserAvatarUrl(
         context: BBTagContext,
-        userId: string,
+        userStr: string,
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userId, { noLookup: quiet });
-        if (member !== undefined)
-            return member.avatarURL;
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet, global: true })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        const user = await context.engine.util.getUser(userId);
-        if (user !== undefined)
-            return user.avatarURL;
+        const url = await this.#features.getUserAvatarUrl(userId)
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        throw new UserNotFoundError(userId)
-            .withDisplay(quiet ? '' : undefined);
+        return url.toString();
     }
 }

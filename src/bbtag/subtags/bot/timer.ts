@@ -10,13 +10,14 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.timer;
 
-export interface ScheduleThunk {
-    (context: SerializedBBTagContext, code: string, timestamp: Temporal.Instant): Promise<void>;
+export interface ScheduleFeature {
+    scheduleBBTag(context: SerializedBBTagContext, code: string, timestamp: Temporal.Instant): Promise<void>;
 }
 
+type Features = ScheduleFeature;
 export class TimerSubtag extends CompiledSubtag {
-    readonly #schedule: ScheduleThunk;
-    public constructor({ schedule }: { schedule: ScheduleThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'timer',
             category: SubtagType.BOT,
@@ -31,7 +32,7 @@ export class TimerSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#schedule = schedule;
+        this.#features = features;
     }
 
     public async queueTimer(context: BBTagContext, code: string, durationStr: string): Promise<void> {
@@ -41,6 +42,6 @@ export class TimerSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Invalid duration');
 
         const dueTime = Temporal.Instant.fromEpochMilliseconds(moment().add(duration).valueOf());
-        await this.#schedule(context.engine.serialize(context), code, dueTime);
+        await this.#features.scheduleBBTag(context.engine.serialize(context), code, dueTime);
     }
 }

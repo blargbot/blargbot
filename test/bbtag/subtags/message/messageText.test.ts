@@ -1,26 +1,24 @@
-import type { GetMessageContentThunk } from '@blargbot/bbtag/subtags';
+import type { GetMessageContentFeature } from '@blargbot/bbtag/subtags';
 import { MessageTextSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const getMessageContent = new Mock<GetMessageContentThunk>({ id: 'getMessageContent', callable: true });
+const features = new Mock<GetMessageContentFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new MessageTextSubtag({
-        getMessageContent: getMessageContent.instance
-    }),
+    subtag: new MessageTextSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
     names: ['messageText', 'text'],
     setup(ctx) {
-        ctx.adoptMock(getMessageContent);
+        ctx.adoptMock(features);
     },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: '',
             includeNoArgs: true,
-            getProp: (c, i) => getMessageContent.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.getMessageContent(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {

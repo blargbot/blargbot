@@ -7,16 +7,17 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.color;
 
 export type ColorFormat = keyof typeof colorConverters;
 type Color = ColorInstance;
 
+type Features = VariablesFeature;
 export class ColorSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'color',
             category: SubtagType.MISC,
@@ -40,7 +41,7 @@ export class ColorSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async parseColor(
@@ -52,7 +53,7 @@ export class ColorSubtag extends CompiledSubtag {
         if (colorStr === '')
             throw new BBTagRuntimeError('Invalid color', 'value was empty');
 
-        const variables = this.#variables.forContext(context);
+        const variables = this.#features.variables.forContext(context);
         const arr = await bbtag.tagArray.deserializeOrGetArray(variables, colorStr);
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
         const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;

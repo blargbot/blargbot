@@ -28,8 +28,6 @@ export interface BBTagUtilities {
 
     getUser(userId: string): Promise<eris.User | undefined>;
     getMember(guild: string | eris.Guild, userId: string): Promise<eris.Member | undefined>;
-    findMembers(guild: string | eris.Guild, query?: string): Promise<eris.Member[]>;
-    queryMember(options: EntityPickQueryOptions<string, eris.Member>): Promise<ChoiceQueryResult<eris.Member>>;
 
     getRole(guild: string | eris.Guild, roleId: string): Promise<eris.Role | undefined>;
     findRoles(guild: string | eris.Guild, query?: string): Promise<eris.Role[]>;

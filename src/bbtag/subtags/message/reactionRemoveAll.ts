@@ -4,24 +4,19 @@ import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '.
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 import { ChannelIdSubtag } from '../channel/channelId.js';
-import type { CheckMessageExistsThunk, GetUserPermissionsThunk } from '../types.js';
+import type { CheckMessageExistsFeature, GetMemberPermissionsFeature } from '../types.js';
 import { IsStaffSubtag } from '../user/isStaff.js';
 
 const tag = templates.subtags.reactionRemoveAll;
 
-export interface RemoveMessageReactionsThunk {
-    (channelId: string, messageId: string): Promise<void>;
+export interface RemoveMessageReactionsFeature {
+    removeMessageReactions(channelId: string, messageId: string): Promise<void>;
 }
 
+type Features = RemoveMessageReactionsFeature & CheckMessageExistsFeature & GetMemberPermissionsFeature
 export class ReactionRemoveAllSubtag extends CompiledSubtag {
-    readonly #checkMessageExists: CheckMessageExistsThunk;
-    readonly #getUserPermissions: GetUserPermissionsThunk;
-    readonly #removeMessageReactions: RemoveMessageReactionsThunk;
-    public constructor({ checkMessageExists, getUserPermissions, removeMessageReactions }: {
-        checkMessageExists: CheckMessageExistsThunk;
-        getUserPermissions: GetUserPermissionsThunk;
-        removeMessageReactions: RemoveMessageReactionsThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'reactionRemoveAll',
             category: SubtagType.MESSAGE,
@@ -37,26 +32,24 @@ export class ReactionRemoveAllSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#checkMessageExists = checkMessageExists;
-        this.#getUserPermissions = getUserPermissions;
-        this.#removeMessageReactions = removeMessageReactions;
+        this.#features = features;
     }
 
     public async removeAllReactions(context: BBTagContext, channelStr: string, messageId: string): Promise<void> {
         const channelId = await ChannelIdSubtag.query(context, channelStr)
             ?? new ChannelNotFoundError(channelStr).throw();
 
-        if (!await this.#checkMessageExists(channelId, messageId))
+        if (!await this.#features.checkMessageExists(channelId, messageId))
             throw new MessageNotFoundError(channelId, messageId);
 
-        const permissions = await this.#getUserPermissions(context.root.guildId, context.root.botId, channelId);
+        const permissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.botId, channelId);
         if (!permissions.hasAny('ADMINISTRATOR', 'MANAGE_MESSAGES'))
             throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
 
         if (!(context.root.ownedMessageIds.has(messageId) || await IsStaffSubtag.isStaff(context)))
             throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
 
-        await this.#removeMessageReactions(channelId, messageId);
+        await this.#features.removeMessageReactions(channelId, messageId);
         //TODO meaningful output please
     }
 }

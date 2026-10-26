@@ -8,13 +8,14 @@ import { templates } from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import type { OrdinalOperator } from '../../utils/index.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.for;
 
+type Features = VariablesFeature;
 export class ForSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'for',
             category: SubtagType.LOOPS,
@@ -29,7 +30,7 @@ export class ForSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async * for(
@@ -53,7 +54,7 @@ export class ForSubtag extends CompiledSubtag {
         if (errors.length > 0)
             throw new AggregateBBTagError(errors);
 
-        const variables = this.#variables.forContext(context);
+        const variables = this.#features.variables.forContext(context);
         try {
             for (let i = initial; bbtag.operate(operator as OrdinalOperator, i.toString(), limit.toString()); i += increment) {
                 await context.root.limit.check(context, 'for:loops');

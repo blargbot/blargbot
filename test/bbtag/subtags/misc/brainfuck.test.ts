@@ -8,7 +8,7 @@ const bf = new Brainfuck();
 
 await runSubtagTests({
     subtag: new BrainfuckSubtag({
-        brainfuck(code, input) {
+        executeBrainfuck(code, input) {
             return Promise.resolve(bf.execute(code, input).output);
         }
     }),

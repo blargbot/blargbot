@@ -1,30 +1,25 @@
 import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag';
-import type { CanPingEveryoneThunk, SendThunk } from '@blargbot/bbtag/subtags';
+import type { CanPingEveryoneFeature, SendFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, ChannelIsNsfwSubtag, ChannelIsTextSubtag, EscapeBBTagSubtag, SendSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 import type * as eris from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
-const canPingEveryone = new Mock<CanPingEveryoneThunk>({ id: 'canPingEveryone', callable: true });
-const send = new Mock<SendThunk>({ id: 'send', callable: true });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+const features = new Mock<CanPingEveryoneFeature & SendFeature>({ id: 'features' });
+const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
 const channelIsTextSubtag = new Mock<ChannelIsTextSubtag>({ id: 'channelIsTextSubtag' });
 const channelIsNsfwSubtag = new Mock<ChannelIsNsfwSubtag>({ id: 'channelIsNsfwSubtag' });
 
 await runSubtagTests({
-    subtag: new SendSubtag({
-        canPingEveryone: canPingEveryone.instance,
-        send: send.instance
-    }),
+    subtag: new SendSubtag(features.instance),
     argCountBounds: { min: 2, max: 5 },
     names: ['send'],
     otherSubtags: [channelIdSubtag.instance, channelIsTextSubtag.instance, channelIsNsfwSubtag.instance],
     setup(ctx) {
-        ctx.adoptMock(canPingEveryone);
-        ctx.adoptMock(send);
+        ctx.adoptMock(features);
         ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
         ctx.adoptSubtagMock(channelIsTextSubtag, { type: ChannelIsTextSubtag });
         ctx.adoptSubtagMock(channelIsNsfwSubtag, { type: ChannelIsNsfwSubtag });
@@ -59,7 +54,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -97,7 +92,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -135,7 +130,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -156,7 +151,7 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.input.isCC = true;
-                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
+                features.setup(m => m.canPingEveryone(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -172,7 +167,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -194,7 +189,7 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.input.isCC = true;
-                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
+                features.setup(m => m.canPingEveryone(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -210,7 +205,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -246,7 +241,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: undefined,
                     files: undefined,
@@ -283,7 +278,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -305,7 +300,7 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.input.isCC = true;
-                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
+                features.setup(m => m.canPingEveryone(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -321,7 +316,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -358,7 +353,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: undefined,
@@ -380,7 +375,7 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.input.isCC = true;
-                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
+                features.setup(m => m.canPingEveryone(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -396,7 +391,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'my file content', name: 'file.txt' }],
@@ -433,7 +428,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'my file content', name: 'file.txt' }],
@@ -455,7 +450,7 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.input.isCC = true;
-                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
+                features.setup(m => m.canPingEveryone(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -471,7 +466,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -515,7 +510,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -544,7 +539,7 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.input.isCC = true;
-                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
+                features.setup(m => m.canPingEveryone(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -560,7 +555,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'my file content', name: 'test.zip' }],
@@ -597,7 +592,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{ file: 'my file content', name: 'test.zip' }],
@@ -619,7 +614,7 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.input.isCC = true;
-                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
+                features.setup(m => m.canPingEveryone(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
@@ -635,7 +630,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -679,7 +674,7 @@ await runSubtagTests({
 
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{
@@ -725,7 +720,7 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
                 channelIsNsfwSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(false).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'This is a nsfw message',
                     embeds: undefined,
                     files: undefined,
@@ -764,7 +759,7 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(ctx.channels.general.id).mustHappen(1);
                 channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
                 channelIsNsfwSubtag.setup(m => m.check(bbctx, ctx.channels.general.id)).resolves(true).mustHappen(1);
-                send.setup((m, $) => m(ctx.channels.general.id, $({
+                features.setup((m, $) => m.sendMessage(ctx.channels.general.id, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
                     files: [{

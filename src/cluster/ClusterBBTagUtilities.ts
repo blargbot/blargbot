@@ -36,8 +36,124 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         this.#cluster = cluster;
         this.#bfClient = new Brainfuck();
     }
+    public async getMemberTimeout(guildId: string, userId: string): Promise<Temporal.Instant | null | undefined> {
+        const member = await this.#cluster.util.getMember(guildId, userId);
+        if (member === undefined)
+            return undefined;
+        const timeout = member.communicationDisabledUntil;
+        return timeout !== null ? Temporal.Instant.fromEpochMilliseconds(timeout) : null;
+    }
+    public async addMemberRoles(options: Subtags.AddMemberRolesOptions): Promise<Subtags.ApiResult> {
+        try {
+            const member = await this.#cluster.util.getMember(options.guildId, options.targetId);
+            if (member === undefined) return { success: false, reason: 'Member not found.' };
+            const roles = new Set([...options.roleIds, ...member.roles]);
+            if (roles.size === member.roles.length)
+                return { success: false, reason: 'No roles added' };
+            await member.edit({ roles: [...roles] }, options.auditReason);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async listMemberRoles(guildId: string, userId: string): Promise<readonly string[] | undefined> {
+        const member = await this.#cluster.util.getMember(guildId, userId);
+        return member?.roles;
+    }
+    public async listGuildRoles(guildId: string): Promise<readonly string[]> {
+        const guild = await this.#cluster.util.getGuild(guildId);
+        return guild?.roles.map(r => r.id) ?? [];
+    }
+    public async removeMemberRoles(options: Subtags.RemoveMemberRolesOptions): Promise<Subtags.ApiResult> {
+        try {
+            const member = await this.#cluster.util.getMember(options.guildId, options.targetId);
+            if (member === undefined) return { success: false, reason: 'Member not found.' };
+            const roles = new Set(member.roles).difference(new Set(options.roleIds));
+            if (roles.size === member.roles.length)
+                return { success: false, reason: 'No roles removed' };
+            await member.edit({ roles: [...roles] }, options.auditReason);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async getMemberBoostTimestamp(guildId: string, userId: string): Promise<Temporal.Instant | null | undefined> {
+        const member = await this.#cluster.util.getMember(guildId, userId);
+        return this.#toTimestamp(member, 'premiumSince');
+    }
+    public async getMemberActivityName(guildId: string, userId: string): Promise<string | null | undefined> {
+        const member = await this.#cluster.util.getMember(guildId, userId);
+        if (member === undefined)
+            return undefined;
+        return member.activities?.[0]?.name ?? null;
+    }
+    public async getMemberActivityType(guildId: string, userId: string): Promise<number | null | undefined> {
+        const member = await this.#cluster.util.getMember(guildId, userId);
+        if (member === undefined)
+            return undefined;
+        return member.activities?.[0]?.type ?? null;
+    }
+    public async getUserAvatarUrl(userId: string): Promise<URL | undefined> {
+        const user = await this.#cluster.util.getUser(userId);
+        if (user === undefined)
+            return undefined;
+        return new URL(user.avatarURL);
+    }
+    public async getUserCreatedTimestamp(userId: string): Promise<Temporal.Instant | undefined> {
+        const user = await this.#cluster.util.getUser(userId);
+        return this.#toTimestamp(user, 'createdAt');
+    }
+    public async checkUserIsBot(userId: string): Promise<boolean | undefined> {
+        const user = await this.#cluster.util.getUser(userId);
+        return user?.bot;
+    }
+    public async getMemberJoinTimestamp(guildId: string, userId: string): Promise<Temporal.Instant | undefined> {
+        const member = await this.#cluster.util.getMember(guildId, userId);
+        return this.#toTimestamp(member, 'joinedAt') ?? undefined;
+    }
+    public async getUserName(userId: string): Promise<string | undefined> {
+        const user = await this.#cluster.util.getUser(userId);
+        return user?.username;
+    }
+    public async getMemberNickname(guildId: string, userId: string): Promise<string | null | undefined> {
+        const member = await this.#cluster.util.getMember(guildId, userId);
+        return member?.nick;
+    }
+    public async getUserNickname(userId: string): Promise<string | null | undefined> {
+        const user = await this.#cluster.util.getUser(userId);
+        return user === undefined ? undefined : null;
+    }
+    public async setMemberNickname(options: Subtags.SetMemberNicknameOptions): Promise<Subtags.ApiResult> {
+        try {
+            const member = await this.#cluster.util.getMember(options.guildId, options.targetId);
+            if (member === undefined) return { success: false, reason: 'Member not found.' };
+            await member.edit({ nick: options.nickname }, options.auditReason);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async setMemberRoles(options: Subtags.SetMemberRolesOptions): Promise<Subtags.ApiResult> {
+        try {
+            const member = await this.#cluster.util.getMember(options.guildId, options.targetId);
+            if (member === undefined) return { success: false, reason: 'Member not found.' };
+            const roles = new Set(options.roleIds);
+            if (roles.symmetricDifference(new Set(member.roles)).size === 0)
+                return { success: false, reason: 'No roles changed' };
+            await member.edit({ roles: [...roles] });
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async getMemberStatus(guildId: string, userId: string): Promise<string | undefined> {
+        const member = await this.#cluster.util.getMember(guildId, userId);
+        if (member === undefined)
+            return undefined;
+        return member.status ?? 'offline';
+    }
 
-    public brainfuck(code: string, input: string): Promise<string> {
+    public executeBrainfuck(code: string, input: string): Promise<string> {
         return Promise.resolve(this.#bfClient.execute(code, input).output);
     }
     public async fetch(input: string | URL | Request, init?: RequestInit): Promise<Response> {
@@ -58,6 +174,23 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public async getCustomCommand(guildId: string, name: string): Promise<GuildCommandTag | undefined> {
         return await this.#cluster.database.guilds.getCommand(guildId, name);
     }
+    public async checkUserExists(userId: string): Promise<boolean> {
+        return await this.#cluster.util.getUser(userId) !== undefined;
+    }
+    public async checkMemberExists(guildId: string, userId: string): Promise<boolean> {
+        return await this.#cluster.util.getMember(guildId, userId) !== undefined;
+    }
+    public async findMember(guildId: string, searchText: string): Promise<string | undefined> {
+        const candidates = await this.#cluster.util.findMembers(guildId, searchText);
+        return candidates.length === 1 ? candidates[0].id : undefined;
+    }
+    public async queryMember(options: Subtags.QueryEntityRequest): Promise<Subtags.QueryEntityResponse> {
+        return await this.#queryEntity('Member', 'user', options);
+    }
+    public async getDmChannelId(userId: string): Promise<string | undefined> {
+        const user = await this.#cluster.util.getUser(userId);
+        return (await user?.getDMChannel())?.id;
+    }
     public async isUserStaff(guildId: string, userId: string): Promise<boolean> {
         const guild = await this.#cluster.util.getGuild(guildId);
         const member = guild?.members.get(userId);
@@ -65,7 +198,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
             return false;
         return await this.#cluster.util.isUserStaff(member);
     }
-    public async getUserPermissions(guildId: string, userId: string, channelId?: string): Promise<DiscordPermissions> {
+    public async getMemberPermissions(guildId: string, userId: string, channelId?: string): Promise<DiscordPermissions> {
         const result = await this.#getUserPermissions(guildId, userId, channelId);
         return result.has('ADMINISTRATOR')
             ? new DiscordPermissions(~0n)
@@ -82,7 +215,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public async getWarnings(guildId: string, userId: string): Promise<number | undefined> {
         return await this.#cluster.database.guilds.getWarnings(guildId, userId);
     }
-    public async warn(options: Subtags.WarnOptions): Promise<number> {
+    public async warnUser(options: Subtags.WarnOptions): Promise<number> {
         const { guildId, targetId, moderatorId, count, reason } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
         if (guild === undefined) return 0;
@@ -93,7 +226,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         const result = await this.#cluster.moderation.warns.warn(target, moderator, this.#cluster.discord.user, count, util.literal(reason));
         return result.warnings;
     }
-    public async pardon(options: Subtags.PardonOptions): Promise<number> {
+    public async pardonUser(options: Subtags.PardonOptions): Promise<number> {
         const { guildId, targetId, moderatorId, count, reason } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
         if (guild === undefined) return 0;
@@ -164,7 +297,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
                 return { success: false, cause: result };
         }
     }
-    public async kickUser(options: Subtags.KickUserOptions): Promise<Subtags.KickUserResult> {
+    public async kickMember(options: Subtags.KickUserOptions): Promise<Subtags.KickUserResult> {
         const { guildId, targetId, moderatorId, authorizerId, reason } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
         if (guild === undefined) return { success: false, cause: 'bot' };
@@ -188,7 +321,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
                 return { success: false, cause: result };
         }
     }
-    public async setUserTimeout(options: Subtags.SetUserTimeoutOptions): Promise<Subtags.SetUserTimeoutResult> {
+    public async setMemberTimeout(options: Subtags.SetUserTimeoutOptions): Promise<Subtags.SetUserTimeoutResult> {
         const { guildId, targetId, moderatorId, authorizerId, reason, duration } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
         if (guild === undefined) return { success: false, cause: 'bot' };
@@ -269,7 +402,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
             return this.#handleError(error);
         }
     }
-    public async send(channelId: string, payload: Subtags.SendPayload): Promise<Subtags.SendResult> {
+    public async sendMessage(channelId: string, payload: Subtags.SendPayload): Promise<Subtags.SendResult> {
         try {
             const channel = this.#cluster.discord.getChannel(channelId);
             if (channel === undefined)
@@ -293,7 +426,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
             return this.#handleError(error);
         }
     }
-    public async addReactions(channelId: string, messageId: string, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
+    public async addMessageReactions(channelId: string, messageId: string, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
         const channel = this.#cluster.discord.getChannel(channelId);
         if (channel === undefined || !guard.isTextableChannel(channel))
             return { success: [], failed: [...reactions] };
@@ -306,7 +439,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
 
         return await this.#cluster.util.addReactions(message, reactions);
     }
-    public async schedule(context: SerializedBBTagContext, code: string, timestamp: Temporal.Instant): Promise<void> {
+    public async scheduleBBTag(context: SerializedBBTagContext, code: string, timestamp: Temporal.Instant): Promise<void> {
         const channel = context.msg.channel.id;
         const guild = this.#cluster.discord.channelGuildMap[channel];
         await this.#cluster.timeouts.insert('tag', {
@@ -432,40 +565,8 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         const candidates = await this.#cluster.util.findChannels(guildId, searchText);
         return candidates.length === 1 ? candidates[0].id : undefined;
     }
-    public async queryChannel(options: Subtags.QueryChannelOptions): Promise<Subtags.QueryChannelResult> {
-        const candidates = await this.#cluster.util.findChannels(options.guildId, options.searchText);
-        if (candidates.length === 1)
-            return { success: true, channelId: candidates[0].id };
-        const channel = await this.#cluster.util.getChannel(options.channelId);
-        if (channel === undefined || !guard.isTextableChannel(channel))
-            return { success: false, cause: 'aborted' };
-        if (candidates.length === 0) {
-            if (options.source !== undefined) {
-                await this.#cluster.util.send(channel, util.literal({
-                    content: `No channel matching \`${options.searchText}\` found in ${options.source}.`
-                }));
-            }
-            return { success: false, cause: 'notFound' };
-        }
-
-        const result = await this.#cluster.util.queryChannel({
-            context: channel,
-            actors: [options.userId],
-            choices: candidates,
-            filter: options.searchText
-        });
-        switch (result.state) {
-            case 'SUCCESS':
-                return { success: true, channelId: result.value.id };
-            case 'CANCELLED':
-            case 'TIMED_OUT':
-                return { success: false, cause: 'aborted' };
-            case 'FAILED':
-            case 'NO_OPTIONS':
-                return { success: false, cause: 'notFound' };
-            default:
-                return { success: false, cause: result };
-        }
+    public async queryChannel(options: Subtags.QueryEntityRequest): Promise<Subtags.QueryEntityResponse> {
+        return await this.#queryEntity('Channel', 'channel', options);
     }
     public async checkMessageExists(channelId: string, messageId: string): Promise<boolean> {
         return await this.#cluster.util.getMessage(channelId, messageId) !== undefined;
@@ -523,18 +624,11 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     }
     public async getMessageTimestamp(channelId: string, messageId: string): Promise<Temporal.Instant | undefined> {
         const message = await this.#cluster.util.getMessage(channelId, messageId);
-        if (message === undefined)
-            return undefined;
-        return Temporal.Instant.fromEpochMilliseconds(message.timestamp);
+        return this.#toTimestamp(message, 'timestamp');
     }
-    public async getMessageEditTime(channelId: string, messageId: string): Promise<Temporal.Instant | null | undefined> {
+    public async getMessageEditTimestamp(channelId: string, messageId: string): Promise<Temporal.Instant | null | undefined> {
         const message = await this.#cluster.util.getMessage(channelId, messageId);
-        if (message === undefined)
-            return undefined;
-        const timestamp = message.editedTimestamp ?? undefined;
-        if (timestamp === undefined)
-            return null;
-        return Temporal.Instant.fromEpochMilliseconds(timestamp);
+        return this.#toTimestamp(message, 'editedTimestamp');
     }
     public async getMessageType(channelId: string, messageId: string): Promise<number | undefined> {
         const message = await this.#cluster.util.getMessage(channelId, messageId);
@@ -569,6 +663,48 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         const message = await this.#cluster.util.getMessage(channelId, messageId);
         await message?.removeReactions();
     }
+
+    async #queryEntity<Kind extends 'Channel' | 'Role' | 'Member'>(kind: Kind, kindName: string, options: Subtags.QueryEntityRequest): Promise<Subtags.QueryEntityResponse> {
+        type Entity = {
+            ['Channel']: eris.KnownGuildChannel;
+            ['Role']: eris.Role;
+            ['Member']: eris.Member;
+        }[Kind];
+        type ChooseFn = (options: EntityPickQueryOptions<IFormattable<string>, Entity>) => Promise<ChoiceQueryResult<Entity>>;
+        const candidates = await this.#cluster.util[`find${kind}s`](options.guildId, options.searchText) as Entity[];
+        if (candidates.length === 1)
+            return { success: true, id: candidates[0].id };
+        const channel = await this.#cluster.util.getChannel(options.channelId);
+        if (channel === undefined || !guard.isTextableChannel(channel))
+            return { success: false, cause: 'aborted' };
+        if (candidates.length === 0) {
+            if (options.source !== undefined) {
+                await this.#cluster.util.send(channel, util.literal({
+                    content: `No ${kindName} matching \`${options.searchText}\` found in ${options.source}.`
+                }));
+            }
+            return { success: false, cause: 'notFound' };
+        }
+
+        const result = await (this.#cluster.util[`query${kind}`] as ChooseFn)({
+            context: channel,
+            actors: [options.userId],
+            choices: candidates,
+            filter: options.searchText
+        });
+        switch (result.state) {
+            case 'SUCCESS':
+                return { success: true, id: result.value.id };
+            case 'CANCELLED':
+            case 'TIMED_OUT':
+                return { success: false, cause: 'aborted' };
+            case 'FAILED':
+            case 'NO_OPTIONS':
+                return { success: false, cause: 'notFound' };
+            default:
+                return { success: false, cause: result };
+        }
+    }
     #handleError(error: unknown): { success: false; reason?: string; } {
         if (error instanceof eris.DiscordHTTPError || error instanceof eris.DiscordRESTError)
             return { success: false, reason: error.message };
@@ -579,6 +715,18 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         }
         this.#cluster.logger.error(error);
         return { success: false };
+    }
+    #toTimestamp<Prop extends PropertyKey>(target: { readonly [P in Prop]: number }, prop: Prop): Temporal.Instant
+    #toTimestamp<Prop extends PropertyKey>(target: { readonly [P in Prop]: number | null }, prop: Prop): Temporal.Instant | null
+    #toTimestamp<Prop extends PropertyKey>(target: { readonly [P in Prop]?: number } | undefined, prop: Prop): Temporal.Instant | undefined
+    #toTimestamp<Prop extends PropertyKey>(target: { readonly [P in Prop]?: number | null } | undefined, prop: Prop): Temporal.Instant | undefined | null
+    #toTimestamp<Prop extends PropertyKey>(target: { readonly [P in Prop]?: number | null } | undefined, prop: Prop): Temporal.Instant | undefined | null {
+        const value = target?.[prop];
+        switch (value) {
+            case undefined: return undefined;
+            case null: return null;
+            default: return Temporal.Instant.fromEpochMilliseconds(value);
+        }
     }
 }
 export class ClusterBBTagUtilities implements BBTagUtilities {
@@ -598,10 +746,6 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
         return await this.cluster.util.getMember(guild, userId);
     }
 
-    public async findMembers(guild: string | eris.Guild, query?: string): Promise<eris.Member[]> {
-        return await this.cluster.util.findMembers(guild, query);
-    }
-
     public async getUser(userId: string): Promise<eris.User | undefined> {
         return await this.cluster.util.getUser(userId);
     }
@@ -616,14 +760,6 @@ export class ClusterBBTagUtilities implements BBTagUtilities {
 
     public async getMessage(channel: string, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined> {
         return await this.cluster.util.getMessage(channel, messageId, force);
-    }
-
-    public queryMember(options: EntityPickQueryOptions<string, eris.Member>): Promise<ChoiceQueryResult<eris.Member>> {
-        return this.cluster.util.queryMember({
-            ...options,
-            placeholder: util.literal(options.placeholder),
-            prompt: toPrompt(options.prompt)
-        });
     }
 
     public queryRole(options: EntityPickQueryOptions<string, eris.Role>): Promise<ChoiceQueryResult<eris.Role>> {

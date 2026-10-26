@@ -3,11 +3,22 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
+import type { GetUserNameFeature } from './userName.js';
 
 const tag = templates.subtags.userNickname;
 
+export interface GetMemberNicknameFeature {
+    getMemberNickname(guildId: string, userId: string): Promise<string | null | undefined>;
+}
+export interface GetUserNicknameFeature {
+    getUserNickname(userId: string): Promise<string | null | undefined>;
+}
+
+type Features = GetMemberNicknameFeature & GetUserNicknameFeature & GetUserNameFeature;
 export class UserNicknameSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userNickname',
             aliases: ['userNick'],
@@ -31,21 +42,21 @@ export class UserNicknameSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async getUserNick(
         context: BBTagContext,
-        userId: string,
+        userStr: string,
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userId, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (member === undefined) {
-            throw new UserNotFoundError(userId)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return member.nick ?? member.username;
+        return await this.#features.getMemberNickname(context.root.guildId, userId)
+            ?? await this.#features.getUserNickname(userId)
+            ?? await this.#features.getUserName(userId)
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
     }
 }

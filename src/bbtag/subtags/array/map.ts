@@ -4,13 +4,14 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.map;
 
+type Features = VariablesFeature;
 export class MapSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'map',
             category: SubtagType.ARRAY,
@@ -25,11 +26,11 @@ export class MapSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async * map(context: BBTagContext, varName: string, arrayStr: string, code: SubtagArgument): AsyncIterable<string> {
-        const variables = this.#variables.forContext(context);
+        const variables = this.#features.variables.forContext(context);
         const array = await bbtag.tagArray.deserializeOrGetIterable(variables, arrayStr) ?? [];
         try {
             for (const item of array) {

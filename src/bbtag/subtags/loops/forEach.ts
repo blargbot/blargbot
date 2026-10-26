@@ -4,13 +4,14 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.forEach;
 
+type Features = VariablesFeature;
 export class ForEachSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'forEach',
             category: SubtagType.LOOPS,
@@ -25,7 +26,7 @@ export class ForEachSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
     public async * foreach(
         context: BBTagContext,
@@ -33,7 +34,7 @@ export class ForEachSubtag extends CompiledSubtag {
         source: string,
         code: SubtagArgument
     ): AsyncIterable<string> {
-        const variables = this.#variables.forContext(context);
+        const variables = this.#features.variables.forContext(context);
         const array = await bbtag.tagArray.deserializeOrGetIterable(variables, source) ?? [];
         try {
             for (const item of array) {

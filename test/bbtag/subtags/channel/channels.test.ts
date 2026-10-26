@@ -1,20 +1,18 @@
-import type { ListChannelsThunk } from '@blargbot/bbtag/subtags';
+import type { ListChannelsFeature } from '@blargbot/bbtag/subtags';
 import { ChannelsSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-const listChannels = new Mock<ListChannelsThunk>({ id: 'listChannels', callable: true });
+const features = new Mock<ListChannelsFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new ChannelsSubtag({
-        listChannels: listChannels.instance
-    }),
+    subtag: new ChannelsSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
     names: ['channels'],
     setup(ctx) {
-        ctx.adoptMock(listChannels);
+        ctx.adoptMock(features);
     },
     cases: [
         ...createGetChannelPropTestCases({
@@ -27,13 +25,13 @@ await runSubtagTests({
                 {
                     expected: '[]',
                     setup(channelId, ctx) {
-                        listChannels.setup(m => m(ctx.guild.id, channelId)).resolves([]).mustHappen(1);
+                        features.setup(m => m.listChannels(ctx.guild.id, channelId)).resolves([]).mustHappen(1);
                     }
                 },
                 {
                     expected: '["2398462398472","23098475928447"]',
                     setup(channelId, ctx) {
-                        listChannels.setup(m => m(ctx.guild.id, channelId)).resolves(['2398462398472', '23098475928447']).mustHappen(1);
+                        features.setup(m => m.listChannels(ctx.guild.id, channelId)).resolves(['2398462398472', '23098475928447']).mustHappen(1);
                     }
                 }
             ]
@@ -42,7 +40,7 @@ await runSubtagTests({
             code: '{channels}',
             expected: '["23489762384769837","342789565384956435"]',
             setup(ctx) {
-                listChannels.setup(m => m(ctx.guild.id)).resolves(['23489762384769837', '342789565384956435']).mustHappen(1);
+                features.setup(m => m.listChannels(ctx.guild.id)).resolves(['23489762384769837', '342789565384956435']).mustHappen(1);
             }
         }
     ]

@@ -5,6 +5,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.warn;
 
@@ -16,13 +17,14 @@ export interface WarnOptions {
     readonly reason: string;
 }
 
-export interface WarnThunk {
-    (options: WarnOptions): Promise<number>;
+export interface WarnFeature {
+    warnUser(options: WarnOptions): Promise<number>;
 }
 
+type Features = WarnFeature
 export class WarnSubtag extends CompiledSubtag {
-    readonly #warn: WarnThunk;
-    public constructor({ warn }: { warn: WarnThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'warn',
             category: SubtagType.USER,
@@ -46,7 +48,7 @@ export class WarnSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#warn = warn;
+        this.#features = features;
     }
 
     public async warnUser(
@@ -57,17 +59,15 @@ export class WarnSubtag extends CompiledSubtag {
     ): Promise<number> {
         const count = parse.int(countStr);
 
-        const member = await context.queryMember(userStr);
-
-        if (member === undefined)
-            throw new UserNotFoundError(userStr);
+        const targetId = await UserIdSubtag.query(context, userStr)
+            ?? new UserNotFoundError(userStr).throw();
 
         if (count === undefined)
             throw new NotANumberError(countStr);
 
-        return await this.#warn({
+        return await this.#features.warnUser({
             guildId: context.root.guildId,
-            targetId: member.id,
+            targetId,
             moderatorId: context.root.message.author.id,
             count,
             reason: reason !== '' ? reason : 'Tag Warning'

@@ -1,5 +1,5 @@
 import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag';
-import type { ListMessageReactionsThunk, ListMessageReactionUsersThunk } from '@blargbot/bbtag/subtags';
+import type { ListMessageReactionsFeature, ListMessageReactionUsersFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, ReactionListSubtag } from '@blargbot/bbtag/subtags';
 import { Emote } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
@@ -7,21 +7,16 @@ import { Mock } from '@blargbot/test-util';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const listMessageReactions = new Mock<ListMessageReactionsThunk>({ id: 'listMessageReactions', callable: true });
-const listMessageReactionUsers = new Mock<ListMessageReactionUsersThunk>({ id: 'listMessageReactionUsers', callable: true });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+const features = new Mock<ListMessageReactionsFeature & ListMessageReactionUsersFeature>({ id: 'features' });
+const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
 
 await runSubtagTests({
-    subtag: new ReactionListSubtag({
-        listMessageReactions: listMessageReactions.instance,
-        listMessageReactionUsers: listMessageReactionUsers.instance
-    }),
+    subtag: new ReactionListSubtag(features.instance),
     argCountBounds: { min: 0, max: Infinity },
     names: ['reactionList', 'listReact', 'reactList'],
     otherSubtags: [channelIdSubtag.instance],
     setup(ctx) {
-        ctx.adoptMock(listMessageReactions);
-        ctx.adoptMock(listMessageReactionUsers);
+        ctx.adoptMock(features);
         ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
     },
     cases: [
@@ -39,7 +34,7 @@ await runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
-            getProp: (c, i) => listMessageReactions.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.listMessageReactions(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: () => ({ noErrors: true, noLookup: true }),
             emptyIsCurrentMessage: false,
@@ -68,7 +63,7 @@ await runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
-            getProp: (c, i) => listMessageReactions.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.listMessageReactions(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: () => ({ noErrors: true, noLookup: true }),
             emptyIsCurrentMessage: false,
@@ -87,7 +82,7 @@ await runSubtagTests({
                         ];
                         getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
                         for (const { emote, userIds } of emoteUsers) {
-                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                            features.setup((m, $) => m.listMessageReactionUsers(channelId, messageId, $(emote)))
                                 .resolves(userIds)
                                 .mustHappen(1);
                         }
@@ -108,7 +103,7 @@ await runSubtagTests({
                         ];
                         getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
                         for (const { emote, userIds } of emoteUsers) {
-                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                            features.setup((m, $) => m.listMessageReactionUsers(channelId, messageId, $(emote)))
                                 .resolves(userIds)
                                 .mustHappen(1);
                         }
@@ -119,7 +114,7 @@ await runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
-            getProp: (c, i) => listMessageReactions.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.listMessageReactions(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: () => ({ noErrors: true, noLookup: true }),
             emptyIsCurrentMessage: false,
@@ -142,7 +137,7 @@ await runSubtagTests({
                         ];
                         getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
                         for (const { emote, userIds } of emoteUsers) {
-                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                            features.setup((m, $) => m.listMessageReactionUsers(channelId, messageId, $(emote)))
                                 .resolves(userIds)
                                 .mustHappen(1);
                         }
@@ -163,7 +158,7 @@ await runSubtagTests({
                         ];
                         getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
                         for (const { emote, userIds } of emoteUsers) {
-                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                            features.setup((m, $) => m.listMessageReactionUsers(channelId, messageId, $(emote)))
                                 .resolves(userIds)
                                 .mustHappen(1);
                         }
@@ -174,7 +169,7 @@ await runSubtagTests({
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
-            getProp: (c, i) => listMessageReactions.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.listMessageReactions(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: () => ({ noErrors: true, noLookup: true }),
             emptyIsCurrentMessage: false,
@@ -197,7 +192,7 @@ await runSubtagTests({
                         ];
                         getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
                         for (const { emote, userIds } of emoteUsers) {
-                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                            features.setup((m, $) => m.listMessageReactionUsers(channelId, messageId, $(emote)))
                                 .resolves(userIds)
                                 .mustHappen(1);
                         }
@@ -218,7 +213,7 @@ await runSubtagTests({
                         ];
                         getProp.resolves(emoteUsers.map(x => x.emote)).mustHappen(1);
                         for (const { emote, userIds } of emoteUsers) {
-                            listMessageReactionUsers.setup((m, $) => m(channelId, messageId, $(emote)))
+                            features.setup((m, $) => m.listMessageReactionUsers(channelId, messageId, $(emote)))
                                 .resolves(userIds)
                                 .mustHappen(1);
                         }
@@ -237,7 +232,7 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
                     .resolves(ctx.channels.command.id)
                     .mustHappen(1);
-                listMessageReactions.setup(m => m(ctx.channels.command.id, '92384982642323432343'))
+                features.setup(m => m.listMessageReactions(ctx.channels.command.id, '92384982642323432343'))
                     .resolves([])
                     .mustHappen(1);
             }
@@ -252,10 +247,10 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
                     .resolves(ctx.channels.command.id)
                     .mustHappen(1);
-                listMessageReactions.setup(m => m(ctx.channels.command.id, '92384982642323432343'))
+                features.setup(m => m.listMessageReactions(ctx.channels.command.id, '92384982642323432343'))
                     .resolves([])
                     .mustHappen(1);
-                listMessageReactionUsers.setup((m, $) => m(ctx.channels.command.id, '92384982642323432343', $(new Emote('fakeemote', '192612896213677963'))))
+                features.setup((m, $) => m.listMessageReactionUsers(ctx.channels.command.id, '92384982642323432343', $(new Emote('fakeemote', '192612896213677963'))))
                     .resolves(undefined)
                     .mustHappen(1);
             }

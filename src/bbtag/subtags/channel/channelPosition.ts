@@ -7,13 +7,14 @@ import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.channelPosition;
 
-export interface GetChannelPositionThunk {
-    (guildId: string, channelId: string): Promise<number | 'thread' | undefined>;
+export interface GetChannelPositionFeature {
+    getChannelPosition(guildId: string, channelId: string): Promise<number | 'thread' | undefined>;
 }
 
+type Features = GetChannelPositionFeature;
 export class ChannelPositionSubtag extends CompiledSubtag {
-    readonly #getChannelPosition: GetChannelPositionThunk;
-    public constructor({ getChannelPosition }: { getChannelPosition: GetChannelPositionThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelPosition',
             aliases: ['channelPos', 'categoryPosition', 'categoryPos'],
@@ -38,11 +39,11 @@ export class ChannelPositionSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getChannelPosition = getChannelPosition;
+        this.#features = features;
     }
 
     public async currentChannel(context: BBTagContext): Promise<number> {
-        const result = await this.#getChannelPosition(context.root.guildId, context.local.message.channel.id)
+        const result = await this.#features.getChannelPosition(context.root.guildId, context.local.message.channel.id)
             ?? new ChannelNotFoundError(context.local.message.channel.id).throw();
         if (result === 'thread')
             this.#throwIsThread(context.local.message.channel.id);
@@ -52,7 +53,7 @@ export class ChannelPositionSubtag extends CompiledSubtag {
     public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<number> {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
-        const result = await this.#getChannelPosition(context.root.guildId, channelId)
+        const result = await this.#features.getChannelPosition(context.root.guildId, channelId)
             ?? new ChannelNotFoundError(context.local.message.channel.id).withDisplay(quiet ? '' : undefined).throw();
         if (result === 'thread')
             this.#throwIsThread(channelId);

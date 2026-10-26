@@ -1,18 +1,19 @@
-import type { IsChannelNsfwThunk } from '@blargbot/bbtag/subtags';
+import type { IsChannelNsfwFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIsNsfwSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-const isChannelNsfw = new Mock<IsChannelNsfwThunk>({ id: 'isChannelNsfw', callable: true });
+const features = new Mock<IsChannelNsfwFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new ChannelIsNsfwSubtag({
-        isChannelNsfw: isChannelNsfw.instance
-    }),
+    subtag: new ChannelIsNsfwSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
     names: ['channelIsNsfw', 'isNsfw'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetChannelPropTestCases({
             quiet: '',
@@ -24,19 +25,19 @@ await runSubtagTests({
                 {
                     expected: 'true',
                     setup(channelId, ctx) {
-                        isChannelNsfw.setup(m => m(ctx.guild.id, channelId)).resolves(true).mustHappen(1);
+                        features.setup(m => m.isChannelNsfw(ctx.guild.id, channelId)).resolves(true).mustHappen(1);
                     }
                 },
                 {
                     expected: 'false',
                     setup(channelId, ctx) {
-                        isChannelNsfw.setup(m => m(ctx.guild.id, channelId)).resolves(false).mustHappen(1);
+                        features.setup(m => m.isChannelNsfw(ctx.guild.id, channelId)).resolves(false).mustHappen(1);
                     }
                 },
                 {
                     expected: 'false',
                     setup(channelId, ctx) {
-                        isChannelNsfw.setup(m => m(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
+                        features.setup(m => m.isChannelNsfw(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
                     }
                 }
             ]

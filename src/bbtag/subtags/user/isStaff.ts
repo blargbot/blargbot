@@ -3,17 +3,19 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.isStaff;
 
-export interface IsUserStaffThunk {
-    (guildId: string, userId: string): Promise<boolean>;
+export interface IsUserStaffFeature {
+    isUserStaff(guildId: string, userId: string): Promise<boolean>;
 }
 
+type Features = IsUserStaffFeature
 export class IsStaffSubtag extends CompiledSubtag {
-    readonly #isUserStaff: IsUserStaffThunk;
     readonly #cache = new WeakMap<BBTagContext, Map<string, Promise<boolean>>>();
-    public constructor({ isUserStaff }: { isUserStaff: IsUserStaffThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'isStaff',
             aliases: ['isMod'],
@@ -37,7 +39,7 @@ export class IsStaffSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#isUserStaff = isUserStaff;
+        this.#features = features;
     }
 
     public static async isStaff(context: BBTagContext, userId?: string): Promise<boolean> {
@@ -48,18 +50,14 @@ export class IsStaffSubtag extends CompiledSubtag {
         userId ??= context.root.authorizer?.id;
         return userId !== undefined
             && await this.#cache.getOrInsertComputed(context, () => new Map())
-                .getOrInsertComputed(userId, id => this.#isUserStaff(context.root.guildId, id));
+                .getOrInsertComputed(userId, id => this.#features.isUserStaff(context.root.guildId, id));
     }
 
     public async isStaffLookup(context: BBTagContext, userStr: string, quiet: boolean): Promise<boolean> {
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userStr, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (member === undefined) {
-            throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return await this.isStaff(context, member.id);
+        return await this.isStaff(context, userId);
     }
 }

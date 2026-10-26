@@ -12,15 +12,14 @@ const tag = templates.subtags.delete;
 
 export type DeleteMessageResult = ApiResult<null, { cause: 'notFound' | 'failed'; }>;
 
-export interface DeleteMessageThunk {
-    (channelId: string, messageId: string): Promise<DeleteMessageResult>;
+export interface DeleteMessageFeature {
+    deleteMessage(channelId: string, messageId: string): Promise<DeleteMessageResult>;
 }
 
+type Features = DeleteMessageFeature
 export class DeleteSubtag extends CompiledSubtag {
-    readonly #deleteMessage: DeleteMessageThunk;
-    public constructor({ deleteMessage }: {
-        deleteMessage: DeleteMessageThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'delete',
             description: tag.description,
@@ -52,7 +51,7 @@ export class DeleteSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#deleteMessage = deleteMessage;
+        this.#features = features;
     }
 
     public async deleteMessage(
@@ -69,7 +68,7 @@ export class DeleteSubtag extends CompiledSubtag {
         if (messageId.length === 0 || !await ChannelIsTextSubtag.check(context, channelId))
             throw new MessageNotFoundError(channelId, messageId).withDisplay('');
 
-        const result = await this.#deleteMessage(channelId, messageId);
+        const result = await this.#features.deleteMessage(channelId, messageId);
         //TODO return something like true/false
         if (result.success)
             return;

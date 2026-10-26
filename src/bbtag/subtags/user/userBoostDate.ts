@@ -1,4 +1,3 @@
-import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -6,11 +5,18 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userBoostDate;
 
+export interface GetMemberBoostTimestampFeature {
+    getMemberBoostTimestamp(guildId: string, userId: string): Promise<Temporal.Instant | null | undefined>;
+}
+
+type Features = GetMemberBoostTimestampFeature;
 export class UserBoostDateSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userBoostDate',
             category: SubtagType.USER,
@@ -23,7 +29,7 @@ export class UserBoostDateSubtag extends CompiledSubtag {
                     exampleOut: tag.target.exampleOut,
                     returns: 'string',
 
-                    execute: (ctx, [format]) => this.getUserBoostDate(ctx.local.message.member, format.value)
+                    execute: (ctx, [format]) => this.getUserBoostDate(ctx, ctx.local.message.author.id, format.value)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],
@@ -35,24 +41,22 @@ export class UserBoostDateSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async findUserBoostDate(context: BBTagContext, format: string, userStr: string, quiet: boolean): Promise<string> {
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userStr, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (member === undefined) {
-            throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return this.getUserBoostDate(member, format);
+        return await this.getUserBoostDate(context, userId, format);
     }
 
-    public getUserBoostDate(user: eris.Member, format: string): string {
-        if (typeof user.premiumSince !== 'number')
+    public async getUserBoostDate(context: BBTagContext, userId: string, format: string): Promise<string> {
+        const timestamp = await this.#features.getMemberBoostTimestamp(context.root.guildId, userId) ?? null;
+        if (timestamp === null)
             throw new BBTagRuntimeError('User not boosting');
 
-        return moment(user.premiumSince).utcOffset(0).format(format);
+        return moment(timestamp.epochMilliseconds).utcOffset(0).format(format);
     }
 }

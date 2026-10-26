@@ -1,15 +1,19 @@
-import { guard, parse } from '@blargbot/core';
+import { parse } from '@blargbot/core';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { ListGuildRolesFeature, ListMemberRolesFeature } from '../role/roles.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userHasRoles;
 
+type Features = ListMemberRolesFeature & ListGuildRolesFeature;
 export class UserHasRolesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userHasRoles',
             category: SubtagType.USER,
@@ -34,6 +38,7 @@ export class UserHasRolesSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async userHasRoles(
@@ -43,23 +48,21 @@ export class UserHasRolesSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<boolean> {
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userStr, { noLookup: quiet });
-        if (member === undefined)
-            throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? 'false' : undefined);
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? 'false' : undefined).throw();
 
-        if (!guard.hasValue(member.guild) || !guard.hasValue(member.roles))
-            return false;
+        const userRoles = new Set(await this.#features.listMemberRoles(context.root.guildId, userId));
+        const guildRoles = new Set(await this.#features.listGuildRoles(context.root.guildId));
 
         const arr = bbtag.tagArray.deserialize(roleStr) ?? { v: [roleStr] };
         const roleArr = arr.v.map(x => parse.string(x));
         for (const role of roleArr) {
-            if (member.guild.roles.get(role) === undefined) {
+            if (!guildRoles.has(role)) {
                 throw new RoleNotFoundError(role)
                     .withDisplay(quiet ? 'false' : undefined);
             }
         }
 
-        return roleArr.every(r => member.roles.includes(r));
+        return roleArr.every(r => userRoles.has(r));
     }
 }

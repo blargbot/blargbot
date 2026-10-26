@@ -9,13 +9,14 @@ import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageEmbeds;
 
-export interface GetMessageEmbedsThunk {
-    (channelId: string, messageId: string): Promise<readonly eris.Embed[] | undefined>;
+export interface GetMessageEmbedsFeature {
+    getMessageEmbeds(channelId: string, messageId: string): Promise<readonly eris.Embed[] | undefined>;
 }
 
+type Features = GetMessageEmbedsFeature
 export class MessageEmbedsSubtag extends CompiledSubtag {
-    readonly #getMessageEmbeds: GetMessageEmbedsThunk;
-    public constructor({ getMessageEmbeds }: { getMessageEmbeds: GetMessageEmbedsThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'messageEmbeds',
             category: SubtagType.MESSAGE,
@@ -46,7 +47,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getMessageEmbeds = getMessageEmbeds;
+        this.#features = features;
     }
 
     public async getMessageEmbeds(
@@ -62,7 +63,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '[]' : undefined).throw();
 
-        return await this.#getMessageEmbeds(channelId, messageId)
+        return await this.#features.getMessageEmbeds(channelId, messageId)
             ?? new MessageNotFoundError(channelId, messageId).withDisplay(quiet ? '[]' : undefined).throw();
 
     }

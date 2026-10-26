@@ -1,112 +1,160 @@
 import { RoleNotFoundError } from '@blargbot/bbtag';
-import { UserHasRolesSubtag } from '@blargbot/bbtag/subtags';
+import type { ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag/subtags';
+import { UserHasRolesSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
+const features = new Mock<ListMemberRolesFeature & ListGuildRolesFeature>({ id: 'features' });
+const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+
 await runSubtagTests({
-    subtag: new UserHasRolesSubtag(),
+    subtag: new UserHasRolesSubtag(features.instance),
     argCountBounds: { min: 1, max: 3 },
     names: ['hasRoles', 'userHasRoles'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+    },
     cases: [
         {
             code: '{userhasroles;}',
             expected: '`No role found`',
+            subtags: [userIdSubtag.instance],
             errors: [
                 { error: new RoleNotFoundError('') }
-            ]
+            ],
+            setup(ctx) {
+                features.setup(m => m.listGuildRoles(ctx.guild.id))
+                    .resolves(['12345678901234567'])
+                    .mustHappen(1);
+                features.setup(m => m.listMemberRoles(ctx.guild.id, ctx.users.command.id))
+                    .resolves(['12345678901234567'])
+                    .mustHappen(1);
+            },
+            postSetup(bbctx, ctx) {
+                userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: false })))
+                    .resolves(ctx.users.command.id)
+                    .mustHappen(1);
+            }
         },
         ...createGetUserPropTestCases({
+            quiet: 'false',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['userhasroles', '12345678901234567', ...args].join(';')}}`;
             },
-            quiet: 'false',
             cases: [
                 {
                     expected: 'true',
-                    setup(user, ctx) {
-                        const role = SubtagTestContext.createApiRole({ id: '12345678901234567' });
-                        ctx.guild.roles.push(role);
-                        user.roles.push(role.id);
+                    setup(userId, ctx) {
+                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                            .resolves(['12345678901234567'])
+                            .mustHappen(1);
+                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                            .resolves(['12345678901234567'])
+                            .mustHappen(1);
                     }
                 }
             ]
         }),
         ...createGetUserPropTestCases({
+            quiet: 'false',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['userhasroles', '09876544321098765', ...args].join(';')}}`;
             },
-            quiet: 'false',
             cases: [
                 {
                     expected: 'false',
-                    setup(_, ctx) {
-                        const role = SubtagTestContext.createApiRole({ id: '09876544321098765' });
-                        ctx.guild.roles.push(role);
+                    setup(userId, ctx) {
+                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                            .resolves(['09876544321098765'])
+                            .mustHappen(1);
+                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                            .resolves([])
+                            .mustHappen(1);
                     }
                 }
             ]
         }),
         ...createGetUserPropTestCases({
+            quiet: 'false',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['userhasroles', '["12345678901234567"]', ...args].join(';')}}`;
             },
-            quiet: 'false',
             cases: [
                 {
                     expected: 'true',
-                    setup(user, ctx) {
-                        const role = SubtagTestContext.createApiRole({ id: '12345678901234567' });
-                        ctx.guild.roles.push(role);
-                        user.roles.push(role.id);
+                    setup(userId, ctx) {
+                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                            .resolves(['12345678901234567'])
+                            .mustHappen(1);
+                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                            .resolves(['12345678901234567'])
+                            .mustHappen(1);
                     }
                 }
             ]
         }),
         ...createGetUserPropTestCases({
+            quiet: 'false',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['userhasroles', '["09876544321098765"]', ...args].join(';')}}`;
             },
-            quiet: 'false',
             cases: [
                 {
                     expected: 'false',
-                    setup(_, ctx) {
-                        const role = SubtagTestContext.createApiRole({ id: '09876544321098765' });
-                        ctx.guild.roles.push(role);
+                    setup(userId, ctx) {
+                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                            .resolves(['09876544321098765'])
+                            .mustHappen(1);
+                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                            .resolves([])
+                            .mustHappen(1);
                     }
                 }
             ]
         }),
         ...createGetUserPropTestCases({
+            quiet: 'false',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['userhasroles', '["123456788909876543","12345678901234567"]', ...args].join(';')}}`;
             },
-            quiet: 'false',
             cases: [
                 {
                     expected: 'false',
-                    setup(user, ctx) {
-                        const role1 = SubtagTestContext.createApiRole({ id: '12345678901234567' });
-                        const role2 = SubtagTestContext.createApiRole({ id: '123456788909876543' });
-                        ctx.guild.roles.push(role1, role2);
-                        user.roles.push(role1.id);
+                    setup(userId, ctx) {
+                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                            .resolves(['123456788909876543', '12345678901234567'])
+                            .mustHappen(1);
+                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                            .resolves(['12345678901234567'])
+                            .mustHappen(1);
                     }
                 }
             ]
         }),
         ...createGetUserPropTestCases({
+            quiet: 'false',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['userhasroles', '["09876544321098765", "123456788909876543"]', ...args].join(';')}}`;
             },
-            quiet: 'false',
             cases: [
                 {
                     expected: 'false',
-                    setup(_, ctx) {
-                        const role1 = SubtagTestContext.createApiRole({ id: '09876544321098765' });
-                        const role2 = SubtagTestContext.createApiRole({ id: '123456788909876543' });
-                        ctx.guild.roles.push(role1, role2);
+                    setup(userId, ctx) {
+                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                            .resolves(['09876544321098765', '123456788909876543'])
+                            .mustHappen(1);
+                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                            .resolves([])
+                            .mustHappen(1);
                     }
                 }
             ]
@@ -114,16 +162,44 @@ await runSubtagTests({
         {
             code: '{userhasroles;aaaaaa}',
             expected: '`No role found`',
+            subtags: [userIdSubtag.instance],
             errors: [
                 { error: new RoleNotFoundError('aaaaaa') }
-            ]
+            ],
+            setup(ctx) {
+                features.setup(m => m.listGuildRoles(ctx.guild.id))
+                    .resolves(['12345678901234567'])
+                    .mustHappen(1);
+                features.setup(m => m.listMemberRoles(ctx.guild.id, ctx.users.command.id))
+                    .resolves(['12345678901234567'])
+                    .mustHappen(1);
+            },
+            postSetup(bbctx, ctx) {
+                userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: false })))
+                    .resolves(ctx.users.command.id)
+                    .mustHappen(1);
+            }
         },
         {
             code: '{userhasroles;aaaaaa;;q}',
             expected: 'false',
+            subtags: [userIdSubtag.instance],
             errors: [
                 { error: new RoleNotFoundError('aaaaaa').withDisplay('false') }
-            ]
+            ],
+            setup(ctx) {
+                features.setup(m => m.listGuildRoles(ctx.guild.id))
+                    .resolves(['12345678901234567'])
+                    .mustHappen(1);
+                features.setup(m => m.listMemberRoles(ctx.guild.id, ctx.users.command.id))
+                    .resolves(['12345678901234567'])
+                    .mustHappen(1);
+            },
+            postSetup(bbctx, ctx) {
+                userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true })))
+                    .resolves(ctx.users.command.id)
+                    .mustHappen(1);
+            }
         }
     ]
 });

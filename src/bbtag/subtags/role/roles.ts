@@ -1,15 +1,22 @@
-import { guard } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from '../user/userId.js';
 
 const tag = templates.subtags.roles;
+export interface ListMemberRolesFeature {
+    listMemberRoles(guildId: string, userId: string): Promise<readonly string[] | undefined>;
+}
+export interface ListGuildRolesFeature {
+    listGuildRoles(guildId: string): Promise<readonly string[]>;
+}
 
+type Features = ListMemberRolesFeature & ListGuildRolesFeature;
 export class RolesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'roles',
             category: SubtagType.ROLE,
@@ -32,33 +39,23 @@ export class RolesSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
-    public getGuildRoles(context: BBTagContext): string[] {
-        return [...context.root.message.channel.guild.roles.values()]
-            .sort((a, b) => b.position - a.position)
-            .map(r => r.id);
+    public async getGuildRoles(context: BBTagContext): Promise<readonly string[]> {
+        return await this.#features.listGuildRoles(context.root.guildId);
     }
 
     public async getUserRoles(
         context: BBTagContext,
-        userId: string,
+        userStr: string,
         quiet: boolean
-    ): Promise<string[]> {
+    ): Promise<readonly string[]> {
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userId, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (member === undefined) {
-            throw new UserNotFoundError(userId)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        if (!guard.hasValue(member.guild) || !guard.hasValue(member.roles))
-            return [];
-
-        return member.roles
-            .map(r => ({ r, p: member.guild.roles.get(r)?.position ?? -Infinity }))
-            .sort((a, b) => b.p - a.p)
-            .map(r => r.r);
+        return await this.#features.listMemberRoles(context.root.guildId, userId)
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
     }
 }

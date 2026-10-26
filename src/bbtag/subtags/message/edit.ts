@@ -9,7 +9,7 @@ import { SubtagType } from '../../utils/index.js';
 import { ChannelIdSubtag } from '../channel/channelId.js';
 import type { ApiResult } from '../types.js';
 import { IsStaffSubtag } from '../user/isStaff.js';
-import type { GetMessageAuthorThunk } from './messageSender.js';
+import type { GetMessageAuthorFeature } from './messageSender.js';
 
 const tag = templates.subtags.edit;
 
@@ -22,17 +22,14 @@ export interface EditMessageOptions {
 
 export type EditMessageResult = ApiResult<null, { cause: 'messageEmpty' | 'failed'; }>
 
-export interface EditMessageThunk {
-    (options: EditMessageOptions): Promise<EditMessageResult>;
+export interface EditMessageFeature {
+    editMessage(options: EditMessageOptions): Promise<EditMessageResult>;
 }
 
+type Features = EditMessageFeature & GetMessageAuthorFeature;
 export class EditSubtag extends CompiledSubtag {
-    readonly #editMessage: EditMessageThunk;
-    readonly #getMessageAuthor: GetMessageAuthorThunk;
-    public constructor({ editMessage, getMessageAuthor }: {
-        editMessage: EditMessageThunk;
-        getMessageAuthor: GetMessageAuthorThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'edit',
             category: SubtagType.MESSAGE,
@@ -97,8 +94,7 @@ export class EditSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#editMessage = editMessage;
-        this.#getMessageAuthor = getMessageAuthor;
+        this.#features = features;
     }
 
     public async edit(
@@ -150,7 +146,7 @@ export class EditSubtag extends CompiledSubtag {
             }
         }
 
-        const authorId = await this.#getMessageAuthor(channelId, messageId)
+        const authorId = await this.#features.getMessageAuthor(channelId, messageId)
             ?? new MessageNotFoundError(channelId, messageId).throw();
         if (authorId !== context.root.botId)
             throw new BBTagRuntimeError('I must be the message author');
@@ -158,7 +154,7 @@ export class EditSubtag extends CompiledSubtag {
         if (contentStr === '_delete') content = '';
         if (embedStr === '_delete') embeds = [];
 
-        const result = await this.#editMessage({
+        const result = await this.#features.editMessage({
             channelId,
             messageId,
             content,

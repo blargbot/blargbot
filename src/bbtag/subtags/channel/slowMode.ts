@@ -5,14 +5,15 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { EditChannelThunk } from './channelEdit.js';
+import type { EditChannelFeature } from './channelEdit.js';
 import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.slowMode;
 
+type Features = EditChannelFeature;
 export class SlowModeSubtag extends CompiledSubtag {
-    readonly #editChannel: EditChannelThunk;
-    public constructor({ editChannel }: { editChannel: EditChannelThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'slowMode',
             category: SubtagType.CHANNEL,
@@ -52,7 +53,7 @@ export class SlowModeSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#editChannel = editChannel;
+        this.#features = features;
     }
 
     public async setSlowmode(
@@ -73,7 +74,7 @@ export class SlowModeSubtag extends CompiledSubtag {
         time ??= 0;
         time = Math.min(time, 21600);
 
-        const result = await this.#editChannel(context.root.guildId, channelId, {
+        const result = await this.#features.editChannel(context.root.guildId, channelId, {
             rateLimitPerUser: time,
             auditReason: context.auditReason()
         });

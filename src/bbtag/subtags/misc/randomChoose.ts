@@ -5,13 +5,14 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.randomChoose;
 
+type Features = VariablesFeature;
 export class RandomChooseSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'randomChoose',
             aliases: ['randChoose'],
@@ -35,7 +36,7 @@ export class RandomChooseSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async randChooseArg(choices: readonly SubtagArgument[]): Promise<string> {
@@ -43,7 +44,7 @@ export class RandomChooseSubtag extends CompiledSubtag {
     }
 
     public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {
-        const variables = this.#variables.forContext(context);
+        const variables = this.#features.variables.forContext(context);
         const choices = await bbtag.tagArray.deserializeOrGetArray(variables, arrayStr);
         if (choices === undefined)
             return arrayStr;

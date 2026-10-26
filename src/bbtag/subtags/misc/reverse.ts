@@ -2,13 +2,14 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.reverse;
 
+type Features = VariablesFeature;
 export class ReverseSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'reverse',
             category: SubtagType.MISC,
@@ -23,7 +24,7 @@ export class ReverseSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async reverse(context: BBTagContext, input: string): Promise<string> {
@@ -35,7 +36,7 @@ export class ReverseSubtag extends CompiledSubtag {
         if (arr.n === undefined)
             return bbtag.tagArray.serialize(arr.v);
 
-        await this.#variables.forContext(context).set(arr.n, arr.v);
+        await this.#features.variables.forContext(context).set(arr.n, arr.v);
         return '';
     }
 }

@@ -5,13 +5,14 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.brainfuck;
 
-export interface BrainfuckThunk {
-    (code: string, input: string): Promise<string>;
+export interface BrainfuckFeature {
+    executeBrainfuck(code: string, input: string): Promise<string>;
 }
 
+type Features = BrainfuckFeature
 export class BrainfuckSubtag extends CompiledSubtag {
-    readonly #brainfuck: BrainfuckThunk;
-    public constructor({ brainfuck }: { brainfuck: BrainfuckThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'brainfuck',
             category: SubtagType.MISC,
@@ -26,12 +27,12 @@ export class BrainfuckSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#brainfuck = brainfuck;
+        this.#features = features;
     }
 
     public async runBrainfuck(code: string, input: string): Promise<string> {
         try {
-            return await this.#brainfuck(code, input);
+            return await this.#features.executeBrainfuck(code, input);
         } catch (e: unknown) {
             if (e instanceof Error)
                 throw new BBTagRuntimeError(e.message);

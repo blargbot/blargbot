@@ -7,13 +7,14 @@ import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageAttachments;
 
-export interface GetMessageAttachmentUrlsThunk {
-    (channelId: string, messageId: string): Promise<readonly URL[] | undefined>;
+export interface GetMessageAttachmentUrlsFeature {
+    getMessageAttachmentUrls(channelId: string, messageId: string): Promise<readonly URL[] | undefined>;
 }
 
+type Features = GetMessageAttachmentUrlsFeature
 export class MessageAttachmentsSubtag extends CompiledSubtag {
-    readonly #getMessageAttachmentUrls: GetMessageAttachmentUrlsThunk;
-    public constructor({ getMessageAttachmentUrls }: { getMessageAttachmentUrls: GetMessageAttachmentUrlsThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'messageAttachments',
             category: SubtagType.MESSAGE,
@@ -45,7 +46,7 @@ export class MessageAttachmentsSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getMessageAttachmentUrls = getMessageAttachmentUrls;
+        this.#features = features;
     }
 
     public async getMessageAttachments(
@@ -61,7 +62,7 @@ export class MessageAttachmentsSubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '[]' : undefined).throw();
 
-        const attachments = await this.#getMessageAttachmentUrls(channelId, messageId)
+        const attachments = await this.#features.getMessageAttachmentUrls(channelId, messageId)
             ?? new MessageNotFoundError(channelId, messageId).withDisplay(quiet ? '[]' : undefined).throw();
 
         return attachments.map(x => x.toString());

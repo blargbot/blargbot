@@ -7,6 +7,7 @@ import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../err
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 import type { ApiResult } from '../types.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.ban;
 
@@ -22,13 +23,14 @@ export interface BanUserOptions {
 
 export type BanUserResult = ApiResult<null, { cause: 'bot' | 'authorizer'; }>;
 
-export interface BanUserThunk {
-    (options: BanUserOptions): Promise<BanUserResult>;
+export interface BanUserFeature {
+    banUser(options: BanUserOptions): Promise<BanUserResult>;
 }
 
+type Features = BanUserFeature
 export class BanSubtag extends CompiledSubtag {
-    readonly #banUser: BanUserThunk;
-    public constructor({ banUser }: { banUser: BanUserThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'ban',
             category: SubtagType.USER,
@@ -60,7 +62,7 @@ export class BanSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#banUser = banUser;
+        this.#features = features;
     }
 
     public async banMember(
@@ -71,12 +73,10 @@ export class BanSubtag extends CompiledSubtag {
         timeToUnbanStr: string,
         noPerms: boolean
     ): Promise<boolean | number> {
-        const user = await context.queryUser(userStr, {
-            noLookup: true, noErrors: context.local.noLookupErrors ?? false
-        });
-
-        if (user === undefined)
-            throw new UserNotFoundError(userStr);
+        const targetId = await UserIdSubtag.query(context, userStr, {
+            noLookup: true,
+            global: true
+        }) ?? new UserNotFoundError(userStr).throw();
         const daysToDelete = parse.int(daysToDeleteStr);
         if (daysToDelete === undefined) {
             throw new NotANumberError(daysToDeleteStr)
@@ -88,9 +88,9 @@ export class BanSubtag extends CompiledSubtag {
             reason = 'Tag Ban';
 
         const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
-        const result = await this.#banUser({
+        const result = await this.#features.banUser({
             guildId: context.root.guildId,
-            targetId: user.id,
+            targetId,
             moderatorId: context.root.message.author.id,
             authorizerId: authorizer.id,
             daysToDelete,

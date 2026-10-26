@@ -5,6 +5,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userMention;
 
@@ -36,7 +37,7 @@ export class UserMentionSubtag extends CompiledSubtag {
 
     public async userMention(
         context: BBTagContext,
-        userId: string,
+        userStr: string,
         quiet: boolean,
         noPingStr: string
     ): Promise<string> {
@@ -45,15 +46,11 @@ export class UserMentionSubtag extends CompiledSubtag {
         if (noPing === undefined)
             throw new NotABooleanError(noPing);
 
-        const user = await context.queryUser(userId, { noLookup: quiet });
-
-        if (user === undefined) {
-            throw new UserNotFoundError(userId)
-                .withDisplay(quiet ? '' : undefined);
-        }
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet, global: true })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
         if (!noPing)
-            context.root.allowedMentions.users.add(user.id);
-        return user.mention;
+            context.root.allowedMentions.users.add(userId);
+        return `<@${userId}>`;
     }
 }

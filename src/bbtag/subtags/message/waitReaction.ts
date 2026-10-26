@@ -7,18 +7,20 @@ import type { BBTagExpression } from '../../language/index.js';
 import { templates } from '../../text.js';
 import type { ReactionEvent } from '../../types.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from '../user/userId.js';
 
 const tag = templates.subtags.waitReaction;
 
 const defaultCondition = bbtag.parse('true');
 
-export interface StreamReactionsThunk {
-    (messageIds: Iterable<string>, timeoutMs: number): AsyncIterable<ReactionEvent>;
+export interface StreamReactionsFeature {
+    streamReactions(messageIds: Iterable<string>, timeoutMs: number): AsyncIterable<ReactionEvent>;
 }
 
+type Features = StreamReactionsFeature
 export class WaitReactionSubtag extends CompiledSubtag {
-    readonly #streamReactions: StreamReactionsThunk;
-    public constructor({ streamReactions }: { streamReactions: StreamReactionsThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'waitReaction',
             category: SubtagType.MESSAGE,
@@ -45,7 +47,7 @@ export class WaitReactionSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#streamReactions = streamReactions;
+        this.#features = features;
     }
 
     public async awaitReaction(
@@ -57,8 +59,8 @@ export class WaitReactionSubtag extends CompiledSubtag {
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string, userId: string, emoji: string]> {
         const messages = bbtag.tagArray.flattenArray([messageStr]).map(i => parse.string(i));
-        const users = await this.#bulkLookup(userIDStr, i => context.queryUser(i, { noErrors: true, noLookup: true }), UserNotFoundError)
-            ?? [context.local.message.author];
+        const users = await this.#bulkLookup(userIDStr, i => UserIdSubtag.query(context, i, { noLookup: true, global: true }), UserNotFoundError)
+            ?? [context.local.message.author.id];
 
         // parse reactions
         let parsedReactions: Emote[] | undefined;
@@ -78,10 +80,10 @@ export class WaitReactionSubtag extends CompiledSubtag {
         if (condition.values.length === 0)
             condition = defaultCondition;
 
-        const userSet = new Set(users.map(u => u.id));
+        const userSet = new Set(users);
         const reactionSet = new Set(parsedReactions?.map(r => r.toString()));
         const checkReaction = reactionSet.size === 0 ? () => true : (emoji: Emote) => reactionSet.has(emoji.toString());
-        for await (const { user, reaction, message } of this.#streamReactions(messages, timeout * 1000)) {
+        for await (const { user, reaction, message } of this.#features.streamReactions(messages, timeout * 1000)) {
             if (!userSet.has(user.id) || !checkReaction(reaction) || !guard.isGuildMessage(message))
                 continue;
 

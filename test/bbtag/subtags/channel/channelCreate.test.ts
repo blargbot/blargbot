@@ -1,5 +1,5 @@
 import { BBTagRuntimeError, ChannelType, DiscordPermissions } from '@blargbot/bbtag';
-import type { CreateChannelThunk, GetUserPermissionsThunk } from '@blargbot/bbtag/subtags';
+import type { CreateChannelFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag/subtags';
 import { ChannelCreateSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 import { OverwriteType } from 'discord-api-types/v9';
@@ -7,27 +7,22 @@ import { OverwriteType } from 'discord-api-types/v9';
 import type { SubtagTestContext } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const getUserPermissions = new Mock<GetUserPermissionsThunk>({ id: 'getUserPermissions', callable: true });
-const createChannel = new Mock<CreateChannelThunk>({ id: 'createChannel', callable: true });
+const features = new Mock<CreateChannelFeature & GetMemberPermissionsFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new ChannelCreateSubtag({
-        getUserPermissions: getUserPermissions.instance,
-        createChannel: createChannel.instance
-    }),
+    subtag: new ChannelCreateSubtag(features.instance),
     argCountBounds: { min: 1, max: 3 },
     names: ['channelCreate'],
     setup(ctx) {
-        ctx.adoptMock(getUserPermissions);
-        ctx.adoptMock(createChannel);
+        ctx.adoptMock(features);
     },
     cases: [
         {
             code: '{channelcreate;My new channel}',
             expected: '28376128632132',
             setup(ctx) {
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                createChannel.setup((m, $) => m(ctx.guild.id, $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.createChannel(ctx.guild.id, $({
                     type: ChannelType.GUILD_TEXT,
                     name: 'My new channel',
                     bitrate: undefined,
@@ -55,8 +50,8 @@ await runSubtagTests({
                 code: `{channelcreate;My new channel;${typeStr}}`,
                 expected: '28376128632132',
                 setup(ctx: SubtagTestContext) {
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                    createChannel.setup((m, $) => m(ctx.guild.id, $({
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                    features.setup((m, $) => m.createChannel(ctx.guild.id, $({
                         type: type,
                         name: 'My new channel',
                         bitrate: undefined,
@@ -75,8 +70,8 @@ await runSubtagTests({
                 expected: '28376128632132',
                 subtags: [new EscapeBBTagSubtag()],
                 setup(ctx: SubtagTestContext) {
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                    createChannel.setup((m, $) => m(ctx.guild.id, $({
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                    features.setup((m, $) => m.createChannel(ctx.guild.id, $({
                         type: type,
                         name: 'My new channel',
                         bitrate: undefined,
@@ -117,8 +112,8 @@ await runSubtagTests({
                 expected: '28376128632132',
                 subtags: [new EscapeBBTagSubtag()],
                 setup(ctx: SubtagTestContext) {
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                    createChannel.setup((m, $) => m(ctx.guild.id, $({
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                    features.setup((m, $) => m.createChannel(ctx.guild.id, $({
                         type: type,
                         name: 'My new channel',
                         bitrate: 1234,
@@ -172,8 +167,8 @@ await runSubtagTests({
                 expected: '28376128632132',
                 subtags: [new EscapeBBTagSubtag()],
                 setup(ctx: SubtagTestContext) {
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                    createChannel.setup((m, $) => m(ctx.guild.id, $({
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                    features.setup((m, $) => m.createChannel(ctx.guild.id, $({
                         type: type,
                         name: 'My new channel',
                         bitrate: 1234,
@@ -213,8 +208,8 @@ await runSubtagTests({
             expected: '28376128632132',
             subtags: [new EscapeBBTagSubtag()],
             setup(ctx: SubtagTestContext) {
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                createChannel.setup((m, $) => m(ctx.guild.id, $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.createChannel(ctx.guild.id, $({
                     type: ChannelType.GUILD_TEXT,
                     name: 'My new channel',
                     bitrate: undefined,
@@ -251,7 +246,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
             }
         },
         {
@@ -261,7 +256,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Author cannot create channels') }
             ],
             setup(ctx) {
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(DiscordPermissions.NONE).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(DiscordPermissions.NONE).mustHappen(1);
             }
         },
         {
@@ -271,15 +266,15 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Invalid JSON') }
             ],
             setup(ctx) {
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
             }
         },
         {
             code: '{channelcreate;My new channel}',
             expected: '28376128632132',
             setup(ctx) {
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                createChannel.setup((m, $) => m(ctx.guild.id, $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.createChannel(ctx.guild.id, $({
                     type: ChannelType.GUILD_TEXT,
                     name: 'My new channel',
                     bitrate: undefined,
@@ -300,8 +295,8 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Failed to create channel: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                createChannel.setup((m, $) => m(ctx.guild.id, $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.createChannel(ctx.guild.id, $({
                     type: ChannelType.GUILD_TEXT,
                     name: 'My new channel',
                     bitrate: undefined,
@@ -322,8 +317,8 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Failed to create channel: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                createChannel.setup((m, $) => m(ctx.guild.id, $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id)).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.createChannel(ctx.guild.id, $({
                     type: ChannelType.GUILD_TEXT,
                     name: 'My new channel',
                     bitrate: undefined,

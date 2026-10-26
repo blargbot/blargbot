@@ -5,19 +5,16 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { GetUserPermissionsThunk } from '../types.js';
-import type { EditChannelThunk } from './channelEdit.js';
+import type { GetMemberPermissionsFeature } from '../types.js';
+import type { EditChannelFeature } from './channelEdit.js';
 import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.channelSetPosition;
 
+type Features = GetMemberPermissionsFeature & EditChannelFeature;
 export class ChannelSetPositionSubtag extends CompiledSubtag {
-    readonly #editChannel: EditChannelThunk;
-    readonly #getUserPermissions: GetUserPermissionsThunk;
-    public constructor({ editChannel, getUserPermissions }: {
-        editChannel: EditChannelThunk;
-        getUserPermissions: GetUserPermissionsThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelSetPosition',
             aliases: ['channelSetPos'],
@@ -33,8 +30,7 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getUserPermissions = getUserPermissions;
-        this.#editChannel = editChannel;
+        this.#features = features;
     }
 
     public async setChannelPosition(context: BBTagContext, channelStr: string, posStr: string): Promise<void> {
@@ -43,7 +39,7 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
         if (channelId === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO No channel found error
 
-        const authorizerPermissions = await this.#getUserPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId, channelId);
+        const authorizerPermissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId, channelId);
         if (!authorizerPermissions.hasAny('MANAGE_CHANNELS', 'ADMINISTRATOR'))
             throw new BBTagRuntimeError('Author cannot move this channel');
 
@@ -52,7 +48,7 @@ export class ChannelSetPositionSubtag extends CompiledSubtag {
             throw new NotANumberError(posStr);
 
         //TODO maybe check if the position doesn't exceed any bounds? Like amount of channels / greater than -1?
-        const result = await this.#editChannel(context.root.guildId, channelId, {
+        const result = await this.#features.editChannel(context.root.guildId, channelId, {
             position: pos,
             auditReason: context.auditReason()
         });

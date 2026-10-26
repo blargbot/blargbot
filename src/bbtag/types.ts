@@ -194,6 +194,10 @@ export interface QueryEntityOptions {
     readonly noErrors?: boolean;
 }
 
+export interface QueryUserOptions extends QueryEntityOptions {
+    readonly global?: boolean;
+}
+
 export interface ExecutionResult {
     readonly source: string;
     readonly tagName: string;

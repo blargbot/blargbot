@@ -1,29 +1,34 @@
 import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
-import type { WarnThunk } from '@blargbot/bbtag/subtags';
-import { WarnSubtag } from '@blargbot/bbtag/subtags';
+import type { WarnFeature } from '@blargbot/bbtag/subtags';
+import { UserIdSubtag, WarnSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
-import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const warn = new Mock<WarnThunk>({ id: 'warn', callable: true });
+const features = new Mock<WarnFeature>({ id: 'features' });
+
+const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
 
 await runSubtagTests({
-    subtag: new WarnSubtag({
-        warn: warn.instance
-    }),
+    subtag: new WarnSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
     names: ['warn'],
+    otherSubtags: [userIdSubtag.instance],
     setup(ctx) {
-        ctx.adoptMock(warn);
+        ctx.adoptMock(features);
+        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
     },
     cases: [
         {
             code: '{warn}',
             expected: '1',
-            setup(ctx) {
-                warn.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(1);
             }
@@ -31,8 +36,12 @@ await runSubtagTests({
         {
             code: '{warn}',
             expected: '7',
-            setup(ctx) {
-                warn.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(7);
             }
@@ -40,8 +49,12 @@ await runSubtagTests({
         {
             code: '{warn;}',
             expected: '2',
-            setup(ctx) {
-                warn.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(2);
             }
@@ -50,14 +63,11 @@ await runSubtagTests({
             code: '{warn;other user}',
             expected: '5',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const memberId = snowflake.create().toString();
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
-                member.setup(m => m.id).returns(memberId);
-
-                warn.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: memberId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(5);
             }
@@ -65,8 +75,12 @@ await runSubtagTests({
         {
             code: '{warn;;6}',
             expected: '29',
-            setup(ctx) {
-                warn.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 6, reason: 'Tag Warning' })))
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 6, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(29);
             }
@@ -75,14 +89,11 @@ await runSubtagTests({
             code: '{warn;other user;9}',
             expected: '9',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const memberId = snowflake.create().toString();
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
-                member.setup(m => m.id).returns(memberId);
-
-                warn.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: memberId, moderatorId: ctx.users.command.id, count: 9, reason: 'Tag Warning' })))
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 9, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(9);
             }
@@ -90,8 +101,12 @@ await runSubtagTests({
         {
             code: '{warn;;;My custom reason}',
             expected: '16',
-            setup(ctx) {
-                warn.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'My custom reason' })))
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'My custom reason' })))
                     .mustHappen(1)
                     .resolves(16);
             }
@@ -100,14 +115,11 @@ await runSubtagTests({
             code: '{warn;other user;6;My custom reason}',
             expected: '22',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const memberId = snowflake.create().toString();
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
-                member.setup(m => m.id).returns(memberId);
-
-                warn.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: memberId, moderatorId: ctx.users.command.id, count: 6, reason: 'My custom reason' })))
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 6, reason: 'My custom reason' })))
                     .mustHappen(1)
                     .resolves(22);
             }
@@ -118,10 +130,10 @@ await runSubtagTests({
             errors: [
                 { error: new UserNotFoundError('unknown user') }
             ],
-            setup(ctx) {
-                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown user'))
-                    .mustHappen(1)
-                    .resolves([]);
+            postSetup(bbctx) {
+                userIdSubtag.setup(m => m.query(bbctx, 'unknown user', undefined))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         },
         {
@@ -130,11 +142,11 @@ await runSubtagTests({
             errors: [
                 { error: new NotANumberError('abc') }
             ],
-            setup(ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
+            postSetup(bbctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
             }
         }
     ]

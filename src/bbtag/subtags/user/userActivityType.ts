@@ -3,11 +3,18 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userActivityType;
 
+export interface GetMemberActivityTypeFeature {
+    getMemberActivityType(guildId: string, userId: string): Promise<number | null | undefined>;
+}
+
+type Features = GetMemberActivityTypeFeature;
 export class UserActivityTypeSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userActivityType',
             aliases: ['userGameType'],
@@ -32,23 +39,22 @@ export class UserActivityTypeSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async getUserActivityType(
         context: BBTagContext,
-        userId: string,
+        userStr: string,
         quiet: boolean
     ): Promise<typeof activityTypeMap[keyof typeof activityTypeMap]> {
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userId, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (member === undefined) {
-            throw new UserNotFoundError(userId)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        const activityId = member.activities?.[0]?.type ?? 'default';
-        return activityTypeMap[activityId].toLowerCase();
+        const activityType = await this.#features.getMemberActivityType(context.root.guildId, userId);
+        if (typeof activityType !== 'number' || !Object.hasOwn(activityTypeMap, activityType))
+            return activityTypeMap.default;
+        return activityTypeMap[activityType];
     }
 }
 

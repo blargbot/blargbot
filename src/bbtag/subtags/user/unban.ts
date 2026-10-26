@@ -4,6 +4,7 @@ import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 import type { ApiResult } from '../types.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.unban;
 
@@ -17,13 +18,14 @@ export interface UnbanUserOptions {
 
 export type UnbanUserResult = ApiResult<null, { cause: 'bot' | 'authorizer' | 'notBanned'; }>
 
-export interface UnbanUserThunk {
-    (options: UnbanUserOptions): Promise<UnbanUserResult>;
+export interface UnbanUserFeature {
+    unbanUser(options: UnbanUserOptions): Promise<UnbanUserResult>;
 }
 
+type Features = UnbanUserFeature
 export class UnbanSubtag extends CompiledSubtag {
-    readonly #unbanUser: UnbanUserThunk;
-    public constructor({ unbanUser }: { unbanUser: UnbanUserThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'unban',
             category: SubtagType.USER,
@@ -46,7 +48,7 @@ export class UnbanSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#unbanUser = unbanUser;
+        this.#features = features;
     }
 
     public async unbanUser(
@@ -55,18 +57,16 @@ export class UnbanSubtag extends CompiledSubtag {
         reason: string,
         noPerms: boolean
     ): Promise<boolean> {
-        const user = await context.queryUser(userStr, { noErrors: context.local.noLookupErrors });
-
-        if (user === undefined)
-            throw new UserNotFoundError(userStr);
+        const targetId = await UserIdSubtag.query(context, userStr, { noLookup: true, global: true })
+            ?? new UserNotFoundError(userStr).throw();
 
         if (reason === '')
             reason = 'Tag Unban';
 
         const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
-        const result = await this.#unbanUser({
+        const result = await this.#features.unbanUser({
             guildId: context.root.guildId,
-            targetId: user.id,
+            targetId,
             moderatorId: context.root.message.author.id,
             authorizerId: authorizer.id,
             reason

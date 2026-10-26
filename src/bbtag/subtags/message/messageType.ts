@@ -7,13 +7,14 @@ import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageType;
 
-export interface GetMessageTypeThunk {
-    (channelId: string, messageId: string): Promise<number | undefined>;
+export interface GetMessageTypeFeature {
+    getMessageType(channelId: string, messageId: string): Promise<number | undefined>;
 }
 
+type Features = GetMessageTypeFeature
 export class MessageTypeSubtag extends CompiledSubtag {
-    readonly #getMessageType: GetMessageTypeThunk;
-    public constructor({ getMessageType }: { getMessageType: GetMessageTypeThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'messageType',
             category: SubtagType.MESSAGE,
@@ -37,13 +38,13 @@ export class MessageTypeSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getMessageType = getMessageType;
+        this.#features = features;
     }
 
     public async getCurrentMessageType(
         context: BBTagContext
     ): Promise<number> {
-        return await this.#getMessageType(context.local.message.channel.id, context.local.message.id)
+        return await this.#features.getMessageType(context.local.message.channel.id, context.local.message.id)
             ?? new MessageNotFoundError(context.local.message.channel.id, context.local.message.id).throw();
     }
 
@@ -58,7 +59,7 @@ export class MessageTypeSubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr)
             ?? new ChannelNotFoundError(channelStr).throw();
 
-        return await this.#getMessageType(channelId, messageId)
+        return await this.#features.getMessageType(channelId, messageId)
             ?? new MessageNotFoundError(channelId, messageId).throw();
     }
 }

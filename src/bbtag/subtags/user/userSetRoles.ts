@@ -1,19 +1,31 @@
 import { parse } from '@blargbot/core';
-import type { Logger } from '@blargbot/logger';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { ListGuildRolesFeature, ListMemberRolesFeature } from '../role/roles.js';
+import type { ApiResult, GetMemberPermissionsFeature, VariablesFeature } from '../types.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userSetRoles;
 
+export interface SetMemberRolesOptions {
+    readonly guildId: string;
+    readonly targetId: string;
+    readonly roleIds: readonly string[];
+    readonly auditReason: string;
+}
+
+export interface SetMemberRolesFeature {
+    setMemberRoles(options: SetMemberRolesOptions): Promise<ApiResult>;
+}
+
+type Features = SetMemberRolesFeature & ListMemberRolesFeature & ListGuildRolesFeature & GetMemberPermissionsFeature & VariablesFeature;
 export class UserSetRolesSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    readonly #logger: Logger;
-    public constructor({ variables, logger }: { variables: VariablesProvider; logger: Logger; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userSetRoles',
             aliases: ['setRoles'],
@@ -38,8 +50,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
-        this.#logger = logger;
+        this.#features = features;
     }
 
     public async userSetRole(
@@ -48,8 +59,14 @@ export class UserSetRolesSubtag extends CompiledSubtag {
         userStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        const topRole = context.roleEditPosition();
-        if (topRole <= 0)
+        const { guildId, botId, authorizerId = '' } = context.root;
+        const guildRoles = await this.#features.listGuildRoles(guildId);
+        const roleIndexes = new Map(guildRoles.map((r, i) => [r, i]));
+        const editRoleIndex = Math.min(
+            await this.#getEditRoleIndex(guildId, botId, roleIndexes),
+            await this.#getEditRoleIndex(guildId, authorizerId, roleIndexes)
+        );
+        if (editRoleIndex === 0)
             throw new BBTagRuntimeError('Author cannot remove roles');
 
         /*
@@ -57,16 +74,10 @@ export class UserSetRolesSubtag extends CompiledSubtag {
          * I feel like that is how it *should* work
         */
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userStr, {
-            noLookup: quiet,
-            noErrors: context.local.noLookupErrors
-        });
-        if (member === undefined) {
-            throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? 'false' : undefined);
-        }
+        const targetId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? 'false' : undefined).throw();
 
-        const variables = this.#variables.forContext(context);
+        const variables = this.#features.variables.forContext(context);
         const roleArr = await bbtag.tagArray.deserializeOrGetArray(variables, rolesStr !== '' ? rolesStr : '[]');
         if (roleArr === undefined) {
             throw new NotAnArrayError(rolesStr)
@@ -87,14 +98,23 @@ export class UserSetRolesSubtag extends CompiledSubtag {
             parsedRoles.push(role.id);
         }
 
-        try {
-            await member.edit({ roles: parsedRoles }, context.auditReason());
-            member.roles = parsedRoles;
-            return true;
-        } catch (err: unknown) {
-            this.#logger.error(err);
-            return false;
-        }
+        const result = await this.#features.setMemberRoles({
+            guildId: context.root.guildId,
+            targetId,
+            roleIds: parsedRoles,
+            auditReason: context.auditReason()
+        });
+        return result.success;
+    }
 
+    async #getEditRoleIndex(guildId: string, userId: string, roleIndexes: Map<string, number>): Promise<number> {
+        const permissions = await this.#features.getMemberPermissions(guildId, userId);
+        if (!permissions.hasAny('ADMINISTRATOR', 'MANAGE_ROLES'))
+            return 0;
+        const roles = await this.#features.listMemberRoles(guildId, userId);
+        const topRole = roles?.at(-1);
+        if (topRole === undefined)
+            return 0;
+        return roleIndexes.get(topRole) ?? 0;
     }
 }

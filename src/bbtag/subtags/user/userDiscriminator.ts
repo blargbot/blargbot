@@ -3,6 +3,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userDiscriminator;
 
@@ -40,13 +41,9 @@ export class UserDiscriminatorSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        void (await UserIdSubtag.query(context, userId, { noLookup: quiet, global: true })
+            ?? new UserNotFoundError(userId).withDisplay(quiet ? '' : undefined).throw());
 
-        if (user === undefined) {
-            throw new UserNotFoundError(userId)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return user.discriminator;
+        return '0000';
     }
 }

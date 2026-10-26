@@ -1,18 +1,28 @@
+import type { TagVariableScope } from '@blargbot/domain';
+
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
-import type { getLock as $getLock } from '../../getLock.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.lock;
 
+export interface AsyncLock {
+    enterWrite(): Promise<AsyncDisposable>;
+    enterRead(): Promise<AsyncDisposable>;
+}
+
+export interface GetLockFeature {
+    getLock(scope: TagVariableScope, name: string): AsyncLock;
+}
+
+type Features = VariablesFeature & GetLockFeature;
 export class LockSubtag extends CompiledSubtag {
-    readonly #getLock: typeof $getLock;
-    readonly #variables: VariablesProvider;
-    public constructor({ getLock, variables }: { getLock: typeof $getLock; variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'lock',
             category: SubtagType.BOT,
@@ -27,8 +37,7 @@ export class LockSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getLock = getLock;
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async lock(
@@ -50,11 +59,11 @@ export class LockSubtag extends CompiledSubtag {
         if (key.length === 0)
             throw new BBTagRuntimeError('Key cannot be empty');
 
-        const provider = this.#variables.forContext(context).scopes.find((s) => key.startsWith(s.prefix));
+        const provider = this.#features.variables.forContext(context).scopes.find((s) => key.startsWith(s.prefix));
         if (provider === undefined)
             throw new Error('Missing default variable scope!');
 
-        const lock = this.#getLock(provider.scope, key.substring(provider.prefix.length));
+        const lock = this.#features.getLock(provider.scope, key.substring(provider.prefix.length));
         await using _handle = await lock[`enter${m}`]();
         try {
             context.local.inLock = true;

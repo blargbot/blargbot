@@ -1,15 +1,17 @@
-import type * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { GetMemberBoostTimestampFeature } from './userBoostDate.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.isUserBoosting;
 
+type Features = GetMemberBoostTimestampFeature;
 export class IsUserBoostingSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: GetMemberBoostTimestampFeature;
+    public constructor(features: Features) {
         super({
             name: 'isUserBoosting',
             category: SubtagType.USER,
@@ -21,7 +23,7 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
 
-                    execute: (ctx) => this.isUserBoosting(ctx.local.message.member)
+                    execute: (ctx) => this.isUserBoosting(ctx, ctx.local.message.author.id)
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -33,21 +35,18 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async findIsUserBoosting(context: BBTagContext, userStr: string, quiet: boolean): Promise<boolean> {
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userStr, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (member === undefined) {
-            throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return this.isUserBoosting(member);
+        return await this.isUserBoosting(context, userId);
     }
 
-    public isUserBoosting(member: eris.Member): boolean {
-        return typeof member.premiumSince === 'number';
+    public async isUserBoosting(context: BBTagContext, userId: string): Promise<boolean> {
+        return (await this.#features.getMemberBoostTimestamp(context.root.guildId, userId) ?? null) !== null;
     }
 }

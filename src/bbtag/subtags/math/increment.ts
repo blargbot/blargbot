@@ -5,13 +5,14 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.increment;
 
+type Features = VariablesFeature;
 export class IncrementSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'increment',
             category: SubtagType.MATH,
@@ -34,7 +35,7 @@ export class IncrementSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async increment(context: BBTagContext, varName: string, amountStr: string, floorStr: string): Promise<number> {
@@ -46,7 +47,7 @@ export class IncrementSubtag extends CompiledSubtag {
         if (floor === undefined)
             throw new NotABooleanError(floorStr);
 
-        const variables = this.#variables.forContext(context);
+        const variables = this.#features.variables.forContext(context);
         const valueRaw = await variables.get(varName);
         let value: number | undefined;
         switch (typeof valueRaw.value) {

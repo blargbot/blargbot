@@ -1,16 +1,28 @@
-import type { Logger } from '@blargbot/logger';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { ApiResult } from '../types.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userSetNickname;
 
+export interface SetMemberNicknameOptions {
+    readonly guildId: string;
+    readonly targetId: string;
+    readonly nickname: string;
+    readonly auditReason: string;
+}
+
+export interface SetMemberNicknameFeature {
+    setMemberNickname(options: SetMemberNicknameOptions): Promise<ApiResult>;
+}
+
+type Features = SetMemberNicknameFeature;
 export class UserSetNickSubtag extends CompiledSubtag {
-    readonly #logger: Logger;
-    public constructor({ logger }: { logger: Logger; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userSetNickname',
             category: SubtagType.USER,
@@ -26,23 +38,21 @@ export class UserSetNickSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#logger = logger;
+        this.#features = features;
     }
 
     public async setUserNick(context: BBTagContext, nick: string, userStr: string): Promise<void> {
-        const member = await context.queryMember(userStr);
+        const targetId = await UserIdSubtag.query(context, userStr)
+            ?? new UserNotFoundError(userStr).throw();
 
-        if (member === undefined)
-            throw new UserNotFoundError(userStr);
+        const result = await this.#features.setMemberNickname({
+            guildId: context.root.guildId,
+            targetId,
+            nickname: nick,
+            auditReason: context.auditReason()
+        });
 
-        try {
-            await member.edit({ nick }, context.auditReason());
-            member.nick = nick;
-        } catch (err: unknown) {
-            this.#logger.error(err);
-            if (err instanceof Error)
-                throw new BBTagRuntimeError('Could not change nickname');
-            throw err;
-        }
+        if (!result.success)
+            throw new BBTagRuntimeError('Could not change nickname', result.reason);
     }
 }

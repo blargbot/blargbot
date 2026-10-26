@@ -1,24 +1,22 @@
 import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { ScheduleThunk } from '@blargbot/bbtag/subtags';
+import type { ScheduleFeature } from '@blargbot/bbtag/subtags';
 import { TimerSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const schedule = new Mock<ScheduleThunk>({ id: 'schedule', callable: true });
+const features = new Mock<ScheduleFeature>({ id: 'features' });
 const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
 const variables = new Mock<Variables>({ id: 'variables' });
 const now = Temporal.Instant.from('2026-09-22T22:20:00Z');
 
 await runSubtagTests({
-    subtag: new TimerSubtag({
-        schedule: schedule.instance
-    }),
+    subtag: new TimerSubtag(features.instance),
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 2, noEval: [0] } },
     names: ['timer'],
     setup(ctx, _, test) {
-        ctx.adoptMock(schedule);
+        ctx.adoptMock(features);
         ctx.adoptMock(variablesProvider);
         ctx.adoptMock(variables);
         test.mock.timers.enable({
@@ -50,7 +48,7 @@ await runSubtagTests({
                 ctx.limit.setup(m => m.serialize()).returns({ type: 'mock', rules: {} }).mustHappen(1);
                 variables.setup(m => m.list).returns([]).mustHappen(1);
                 const target = now.add({ seconds: 10 });
-                schedule.setup((m, $) => m($({
+                features.setup((m, $) => m.scheduleBBTag($({
                     msg: {
                         id: '1560411548978495584',
                         timestamp: 1792101504321,

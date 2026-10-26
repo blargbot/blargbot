@@ -4,13 +4,14 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.rollback;
 
+type Features = VariablesFeature;
 export class RollbackSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'rollback',
             category: SubtagType.BOT,
@@ -34,13 +35,13 @@ export class RollbackSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public rollback(context: BBTagContext, args: string[]): void {
         const keys = args.length === 0
             ? undefined
             : bbtag.tagArray.flattenArray(args).map(v => parse.string(v));
-        this.#variables.forContext(context).reset(keys);
+        this.#features.variables.forContext(context).reset(keys);
     }
 }

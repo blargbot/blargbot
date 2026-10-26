@@ -1,21 +1,19 @@
-import type { GetMessageEditTimeThunk } from '@blargbot/bbtag/subtags';
+import type { GetMessageEditTimestampFeature } from '@blargbot/bbtag/subtags';
 import { MessageEditTimeSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const getMessageEditTime = new Mock<GetMessageEditTimeThunk>({ id: 'getMessageEditTime', callable: true });
+const features = new Mock<GetMessageEditTimestampFeature>({ id: 'features' });
 
 const now = Temporal.Instant.from('2026-09-22T22:20:00Z');
 await runSubtagTests({
-    subtag: new MessageEditTimeSubtag({
-        getMessageEditTime: getMessageEditTime.instance
-    }),
+    subtag: new MessageEditTimeSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
     names: ['messageEditTime'],
     setup(ctx, _code, test) {
-        ctx.adoptMock(getMessageEditTime);
+        ctx.adoptMock(features);
         test.mock.method(Temporal.Now, 'instant', () => now);
     },
     cases: [
@@ -23,7 +21,7 @@ await runSubtagTests({
             quiet: false,
             includeNoArgs: true,
             emptyIsCurrentMessage: false,
-            getProp: (c, i) => getMessageEditTime.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.getMessageEditTimestamp(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: () => ({ noLookup: true }),
             generateCode(...args) {
@@ -50,7 +48,7 @@ await runSubtagTests({
             quiet: false,
             includeNoArgs: true,
             emptyIsCurrentMessage: false,
-            getProp: (c, i) => getMessageEditTime.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.getMessageEditTimestamp(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: () => ({ noLookup: true }),
             generateCode(...args) {

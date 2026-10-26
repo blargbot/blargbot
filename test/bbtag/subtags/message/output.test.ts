@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { AddReactionsThunk, CanPingEveryoneThunk, SendThunk } from '@blargbot/bbtag/subtags';
+import type { AddReactionsFeature, CanPingEveryoneFeature, SendFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIsNsfwSubtag, OutputSubtag } from '@blargbot/bbtag/subtags';
 import { Emote } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
@@ -10,24 +10,16 @@ import type * as eris from 'eris';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite.js';
 
 const emotes = [Emote.parse('<a:test:120272372032032937>'), Emote.parse('<:alsoatest:23094632472398746234>'), Emote.parse('🤔')];
-const canPingEveryone = new Mock<CanPingEveryoneThunk>({ id: 'canPingEveryone', callable: true });
-const send = new Mock<SendThunk>({ id: 'send', callable: true });
-const addReactions = new Mock<AddReactionsThunk>({ id: 'addReactions', callable: true });
+const features = new Mock<AddReactionsFeature & CanPingEveryoneFeature & SendFeature>({ id: 'features' });
 const channelIsNsfwSubtag = new Mock<ChannelIsNsfwSubtag>({ id: 'channelIsNsfwSubtag' });
 
 await runSubtagTests({
-    subtag: new OutputSubtag({
-        canPingEveryone: canPingEveryone.instance,
-        send: send.instance,
-        addReactions: addReactions.instance
-    }),
+    subtag: new OutputSubtag(features.instance),
     argCountBounds: { min: 0, max: 1 },
     names: ['output'],
     otherSubtags: [channelIsNsfwSubtag.instance],
     setup(ctx) {
-        ctx.adoptMock(canPingEveryone);
-        ctx.adoptMock(send);
-        ctx.adoptMock(addReactions);
+        ctx.adoptMock(features);
         ctx.adoptSubtagMock(channelIsNsfwSubtag, { type: ChannelIsNsfwSubtag });
     },
     cases: [
@@ -37,7 +29,7 @@ await runSubtagTests({
             expected: '0987654331234567',
             setup(ctx) {
                 ctx.input.isCC = true;
-                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
+                features.setup(m => m.canPingEveryone(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const embeds = [{ title: 'abc' }];
@@ -57,8 +49,8 @@ await runSubtagTests({
                 bbctx.root.output.reactions.push(...emotes.map(m => m.toString()));
 
                 const channel = bbctx.root.message.channel;
-                addReactions.setup((m, $) => m(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
-                send.setup((m, $) => m(channel.id, $({
+                features.setup((m, $) => m.addMessageReactions(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(channel.id, $({
                     content: '',
                     embeds: embeds,
                     files: files,
@@ -98,8 +90,8 @@ await runSubtagTests({
                 bbctx.root.output.reactions.push(...emotes.map(m => m.toString()));
 
                 const channel = bbctx.root.message.channel;
-                addReactions.setup((m, $) => m(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
-                send.setup((m, $) => m(channel.id, $({
+                features.setup((m, $) => m.addMessageReactions(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(channel.id, $({
                     content: '',
                     embeds: embeds,
                     files: files,
@@ -120,7 +112,7 @@ await runSubtagTests({
             expected: '0987654331234567',
             setup(ctx) {
                 ctx.input.isCC = true;
-                canPingEveryone.setup(m => m(ctx.guild.id)).resolves(true).mustHappen(1);
+                features.setup(m => m.canPingEveryone(ctx.guild.id)).resolves(true).mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 const embeds = [{ title: 'abc' }];
@@ -140,8 +132,8 @@ await runSubtagTests({
                 bbctx.root.output.reactions.push(...emotes.map(m => m.toString()));
 
                 const channel = bbctx.root.message.channel;
-                addReactions.setup((m, $) => m(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
-                send.setup((m, $) => m(channel.id, $({
+                features.setup((m, $) => m.addMessageReactions(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(channel.id, $({
                     content: 'This is my message content',
                     embeds: embeds,
                     files: files,
@@ -181,8 +173,8 @@ await runSubtagTests({
                 bbctx.root.output.reactions.push(...emotes.map(m => m.toString()));
 
                 const channel = bbctx.root.message.channel;
-                addReactions.setup((m, $) => m(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
-                send.setup((m, $) => m(channel.id, $({
+                features.setup((m, $) => m.addMessageReactions(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(channel.id, $({
                     content: 'This is my message content',
                     embeds: embeds,
                     files: files,
@@ -216,8 +208,8 @@ await runSubtagTests({
                 bbctx.root.output.nsfw = undefined;
 
                 const channel = bbctx.root.message.channel;
-                addReactions.setup((m, $) => m(channel.id, message.id, $([]))).resolves({ success: [], failed: [] });
-                send.setup((m, $) => m(channel.id, $({
+                features.setup((m, $) => m.addMessageReactions(channel.id, message.id, $([]))).resolves({ success: [], failed: [] });
+                features.setup((m, $) => m.sendMessage(channel.id, $({
                     content: 'This is my message content',
                     embeds: undefined,
                     files: undefined,
@@ -290,8 +282,8 @@ await runSubtagTests({
 
                 const channel = bbctx.root.message.channel;
                 channelIsNsfwSubtag.setup(m => m.check(bbctx, channel.id)).resolves(false).mustHappen(1);
-                addReactions.setup((m, $) => m(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
-                send.setup((m, $) => m(channel.id, $({
+                features.setup((m, $) => m.addMessageReactions(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(channel.id, $({
                     content: 'This is the nsfw message.',
                     embeds: undefined,
                     files: undefined,
@@ -333,8 +325,8 @@ await runSubtagTests({
 
                 const channel = bbctx.root.message.channel;
                 channelIsNsfwSubtag.setup(m => m.check(bbctx, channel.id)).resolves(true).mustHappen(1);
-                addReactions.setup((m, $) => m(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
-                send.setup((m, $) => m(channel.id, $({
+                features.setup((m, $) => m.addMessageReactions(channel.id, message.id, $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(channel.id, $({
                     content: 'This is my message content',
                     embeds: embeds,
                     files: files,

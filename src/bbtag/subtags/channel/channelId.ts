@@ -6,39 +6,24 @@ import { ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import type { QueryEntityOptions } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
-import type { ApiResult } from '../types.js';
+import type { QueryEntityRequest, QueryEntityResponse } from '../types.js';
 
 const tag = templates.subtags.channelId;
 
-export type QueryChannelResult = ApiResult<{ channelId: string; }, { cause: 'notFound' | 'aborted'; }>;
-
-export interface QueryChannelOptions {
-    readonly guildId: string;
-    readonly channelId: string;
-    readonly userId: string;
-    readonly searchText: string;
-    readonly source?: string;
+export interface CheckChannelExistsFeature {
+    checkChannelExists(guildId: string, channelId: string): Promise<boolean>;
+}
+export interface FindChannelFeature {
+    findChannel(guildId: string, searchText: string): Promise<string | undefined>;
+}
+export interface QueryChannelFeature {
+    queryChannel(request: QueryEntityRequest): Promise<QueryEntityResponse>;
 }
 
-export interface CheckChannelExistsThunk {
-    (guildId: string, channelId: string): Promise<boolean>;
-}
-export interface FindChannelThunk {
-    (guildId: string, searchText: string): Promise<string | undefined>;
-}
-export interface QueryChannelThunk {
-    (options: QueryChannelOptions): Promise<QueryChannelResult>;
-}
-
+type Features = CheckChannelExistsFeature & FindChannelFeature & QueryChannelFeature;
 export class ChannelIdSubtag extends CompiledSubtag {
-    readonly #checkChannelExists: CheckChannelExistsThunk;
-    readonly #findChannel: FindChannelThunk;
-    readonly #queryChannel: QueryChannelThunk;
-    public constructor({ checkChannelExists, findChannel, queryChannel }: {
-        checkChannelExists: CheckChannelExistsThunk;
-        findChannel: FindChannelThunk;
-        queryChannel: QueryChannelThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelId',
             aliases: ['categoryId'],
@@ -62,9 +47,7 @@ export class ChannelIdSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#checkChannelExists = checkChannelExists;
-        this.#findChannel = findChannel;
-        this.#queryChannel = queryChannel;
+        this.#features = features;
     }
 
     public currentChannel(context: BBTagContext): string {
@@ -88,17 +71,17 @@ export class ChannelIdSubtag extends CompiledSubtag {
         if (cached !== undefined)
             return cached;
 
-        if (snowflake.test(searchText) && await this.#checkChannelExists(context.root.guildId, searchText))
+        if (snowflake.test(searchText) && await this.#features.checkChannelExists(context.root.guildId, searchText))
             return searchText;
 
         if (options?.noLookup === true || context.local.quiet === true || context.root.queryCache.failedQueries >= 5) {
-            const result = await this.#findChannel(context.root.guildId, searchText);
+            const result = await this.#features.findChannel(context.root.guildId, searchText);
             if (result !== undefined)
                 context.root.queryCache.channel.set(searchText.toLowerCase(), result);
             return result;
         }
 
-        const result = await this.#queryChannel({
+        const result = await this.#features.queryChannel({
             guildId: context.root.guildId,
             channelId: context.root.message.channel.id,
             userId: context.root.message.author.id,
@@ -108,8 +91,8 @@ export class ChannelIdSubtag extends CompiledSubtag {
                 : undefined
         });
         if (result.success) {
-            context.root.queryCache.channel.set(searchText.toLowerCase(), result.channelId);
-            return result.channelId;
+            context.root.queryCache.channel.set(searchText.toLowerCase(), result.id);
+            return result.id;
         }
 
         switch (result.cause) {

@@ -1,20 +1,18 @@
-import type { GetRoleMemberCountThunk } from '@blargbot/bbtag/subtags';
+import type { GetRoleMemberCountFeature } from '@blargbot/bbtag/subtags';
 import { RoleSizeSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
-const getRoleMemberCount = new Mock<GetRoleMemberCountThunk>({ id: 'getRoleMemberCount', callable: true });
+const features = new Mock<GetRoleMemberCountFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new RoleSizeSubtag({
-        getRoleMemberCount: getRoleMemberCount.instance
-    }),
+    subtag: new RoleSizeSubtag(features.instance),
     argCountBounds: { min: 1, max: 1 },
     names: ['roleSize', 'inRole'],
     setup(ctx) {
-        ctx.adoptMock(getRoleMemberCount);
+        ctx.adoptMock(features);
     },
     cases: [
         ...createGetRolePropTestCases({
@@ -27,21 +25,21 @@ await runSubtagTests({
                     expected: '0',
                     setup(role, ctx) {
                         role.id = '92348672342308424';
-                        getRoleMemberCount.setup(m => m(ctx.guild.id, role.id)).resolves(0);
+                        features.setup(m => m.getRoleMemberCount(ctx.guild.id, role.id)).resolves(0);
                     }
                 },
                 {
                     expected: '1',
                     setup(role, ctx) {
                         role.id = '29384723084374304';
-                        getRoleMemberCount.setup(m => m(ctx.guild.id, role.id)).resolves(1);
+                        features.setup(m => m.getRoleMemberCount(ctx.guild.id, role.id)).resolves(1);
                     }
                 },
                 {
                     expected: '2',
                     setup(role, ctx) {
                         role.id = '29384723084374304';
-                        getRoleMemberCount.setup(m => m(ctx.guild.id, role.id)).resolves(2);
+                        features.setup(m => m.getRoleMemberCount(ctx.guild.id, role.id)).resolves(2);
                     }
                 }
             ]

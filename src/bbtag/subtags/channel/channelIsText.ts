@@ -5,13 +5,14 @@ import { ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 import { ChannelIdSubtag } from './channelId.js';
-import type { GetChannelTypeThunk } from './channelType.js';
+import type { GetChannelTypeFeature } from './channelType.js';
 
 const tag = templates.subtags.channelIsText;
 
+type Features = GetChannelTypeFeature;
 export class ChannelIsTextSubtag extends CompiledSubtag {
-    readonly #getChannelType: GetChannelTypeThunk;
-    public constructor({ getChannelType }: { getChannelType: GetChannelTypeThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelIsText',
             aliases: ['isText'],
@@ -35,7 +36,7 @@ export class ChannelIsTextSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getChannelType = getChannelType;
+        this.#features = features;
     }
 
     public static async check(context: BBTagContext, channelId: string): Promise<boolean> {
@@ -43,7 +44,7 @@ export class ChannelIsTextSubtag extends CompiledSubtag {
     }
 
     public async check(context: BBTagContext, channelId: string): Promise<boolean> {
-        return channelTypes.has(await this.#getChannelType(context.root.guildId, channelId));
+        return channelTypes.has(await this.#features.getChannelType(context.root.guildId, channelId));
     }
 
     public async currentChannel(context: BBTagContext): Promise<boolean> {

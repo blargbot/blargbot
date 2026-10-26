@@ -1,29 +1,33 @@
 import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
-import type { PardonThunk } from '@blargbot/bbtag/subtags';
-import { PardonSubtag } from '@blargbot/bbtag/subtags';
+import type { PardonFeature } from '@blargbot/bbtag/subtags';
+import { PardonSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
-import * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const pardon = new Mock<PardonThunk>({ id: 'pardon', callable: true });
+const features = new Mock<PardonFeature>({ id: 'features' });
+const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
 
 await runSubtagTests({
-    subtag: new PardonSubtag({
-        pardon: pardon.instance
-    }),
+    subtag: new PardonSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
     names: ['pardon'],
+    otherSubtags: [userIdSubtag.instance],
     setup(ctx) {
-        ctx.adoptMock(pardon);
+        ctx.adoptMock(features);
+        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
     },
     cases: [
         {
             code: '{pardon}',
             expected: '0',
-            setup(ctx) {
-                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(0);
             }
@@ -31,8 +35,12 @@ await runSubtagTests({
         {
             code: '{pardon}',
             expected: '5',
-            setup(ctx) {
-                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(5);
             }
@@ -40,8 +48,12 @@ await runSubtagTests({
         {
             code: '{pardon;}',
             expected: '3',
-            setup(ctx) {
-                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(3);
             }
@@ -50,14 +62,11 @@ await runSubtagTests({
             code: '{pardon;other user}',
             expected: '7',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const memberId = snowflake.create().toString();
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
-                member.setup(m => m.id).returns(memberId);
-
-                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: memberId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(7);
             }
@@ -65,8 +74,12 @@ await runSubtagTests({
         {
             code: '{pardon;;6}',
             expected: '26',
-            setup(ctx) {
-                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 6, reason: 'Tag Pardon' })))
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 6, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(26);
             }
@@ -75,14 +88,11 @@ await runSubtagTests({
             code: '{pardon;other user;9}',
             expected: '0',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const memberId = snowflake.create().toString();
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
-                member.setup(m => m.id).returns(memberId);
-
-                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: memberId, moderatorId: ctx.users.command.id, count: 9, reason: 'Tag Pardon' })))
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 9, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(0);
             }
@@ -90,8 +100,12 @@ await runSubtagTests({
         {
             code: '{pardon;;;My custom reason}',
             expected: '16',
-            setup(ctx) {
-                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: ctx.users.command.id, moderatorId: ctx.users.command.id, count: 1, reason: 'My custom reason' })))
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'My custom reason' })))
                     .mustHappen(1)
                     .resolves(16);
             }
@@ -100,14 +114,11 @@ await runSubtagTests({
             code: '{pardon;other user;6;My custom reason}',
             expected: '6',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const memberId = snowflake.create().toString();
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
-                member.setup(m => m.id).returns(memberId);
-
-                pardon.setup((m, $) => m($({ guildId: ctx.guild.id, targetId: memberId, moderatorId: ctx.users.command.id, count: 6, reason: 'My custom reason' })))
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 6, reason: 'My custom reason' })))
                     .mustHappen(1)
                     .resolves(6);
             }
@@ -118,10 +129,10 @@ await runSubtagTests({
             errors: [
                 { error: new UserNotFoundError('unknown user') }
             ],
-            setup(ctx) {
-                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown user'))
-                    .mustHappen(1)
-                    .resolves([]);
+            postSetup(bbctx) {
+                userIdSubtag.setup(m => m.query(bbctx, 'unknown user', undefined))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         },
         {
@@ -130,11 +141,11 @@ await runSubtagTests({
             errors: [
                 { error: new NotANumberError('abc') }
             ],
-            setup(ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup((m, $) => m.findMembers($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
+            postSetup(bbctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
             }
         }
     ]

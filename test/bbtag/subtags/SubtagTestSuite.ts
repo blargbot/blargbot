@@ -93,7 +93,7 @@ export class SubtagTestContext {
     public readonly input: Mutable<Omit<BBTagRuntimeInput, 'message'>>;
 
     public readonly roles = {
-        everyone: SubtagTestContext.createApiRole({ id: makeId('everyoneRole') }),
+        everyone: SubtagTestContext.createApiRole({ id: makeId('guildId') }),
         top: SubtagTestContext.createApiRole({ id: makeId('topRole'), position: 5, name: 'Top Role' }),
         command: SubtagTestContext.createApiRole({ id: makeId('commandRole'), position: 3, name: 'Command User' }),
         authorizer: SubtagTestContext.createApiRole({ id: makeId('authorizerRole'), position: 4, name: 'Command Authorizer' }),

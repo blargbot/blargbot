@@ -11,13 +11,14 @@ import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.execTag;
 
-export interface GetTagThunk {
-    (name: string): Awaitable<StoredTag | undefined>;
+export interface GetTagFeature {
+    getTag(name: string): Awaitable<StoredTag | undefined>;
 }
 
+type Features = GetTagFeature
 export class ExecTagSubtag extends CompiledSubtag {
-    readonly #getTag: GetTagThunk;
-    public constructor({ getTag }: { getTag: GetTagThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'execTag',
             aliases: ['exec'],
@@ -33,11 +34,11 @@ export class ExecTagSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getTag = getTag;
+        this.#features = features;
     }
 
     async #cacheTag(context: BBTagContext, name: string): Promise<StoredTag | undefined> {
-        const result = await this.#getTag(name);
+        const result = await this.#features.getTag(name);
         if (result !== undefined)
             context.root.tagCache.set(name, result);
         return result;

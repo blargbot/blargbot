@@ -5,11 +5,18 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userCreatedAt;
 
+export interface GetUserCreatedTimestampFeature {
+    getUserCreatedTimestamp(userId: string): Promise<Temporal.Instant | undefined>;
+}
+
+type Features = GetUserCreatedTimestampFeature;
 export class UserCreatedAtSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userCreatedAt',
             category: SubtagType.USER,
@@ -32,17 +39,17 @@ export class UserCreatedAtSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async getUserCreatedAt(context: BBTagContext, format: string, userStr: string, quiet: boolean): Promise<string> {
         quiet ||= context.local.quiet ?? false;
-        const user = await context.queryUser(userStr, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet, global: true })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (user === undefined) {
-            throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
+        const timestamp = await this.#features.getUserCreatedTimestamp(userId)
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        return moment(user.createdAt).utcOffset(0).format(format);
+        return moment(timestamp.epochMilliseconds).utcOffset(0).format(format);
     }
 }

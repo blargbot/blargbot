@@ -10,13 +10,14 @@ import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageTime;
 
-export interface GetMessageTimestampThunk {
-    (channelId: string, messageId: string): Promise<Temporal.Instant | undefined>;
+export interface GetMessageTimestampFeature {
+    getMessageTimestamp(channelId: string, messageId: string): Promise<Temporal.Instant | undefined>;
 }
 
+type Features = GetMessageTimestampFeature
 export class MessageTimeSubtag extends CompiledSubtag {
-    readonly #getMessageTimestamp: GetMessageTimestampThunk;
-    public constructor({ getMessageTimestamp }: { getMessageTimestamp: GetMessageTimestampThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'messageTime',
             category: SubtagType.MESSAGE,
@@ -70,7 +71,7 @@ export class MessageTimeSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getMessageTimestamp = getMessageTimestamp;
+        this.#features = features;
     }
 
     public async getMessageTime(
@@ -85,7 +86,7 @@ export class MessageTimeSubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: true }) //TODO lookup
             ?? new ChannelNotFoundError(channelStr).throw();
 
-        const timestamp = await this.#getMessageTimestamp(channelId, messageId)
+        const timestamp = await this.#features.getMessageTimestamp(channelId, messageId)
             ?? new MessageNotFoundError(channelId, messageId).throw();
 
         return moment(timestamp.epochMilliseconds).format(format);

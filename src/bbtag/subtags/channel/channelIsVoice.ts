@@ -5,13 +5,14 @@ import { ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 import { ChannelIdSubtag } from './channelId.js';
-import type { GetChannelTypeThunk } from './channelType.js';
+import type { GetChannelTypeFeature } from './channelType.js';
 
 const tag = templates.subtags.channelIsVoice;
 
+type Features = GetChannelTypeFeature;
 export class ChannelIsVoiceSubtag extends CompiledSubtag {
-    readonly #getChannelType: GetChannelTypeThunk;
-    public constructor({ getChannelType }: { getChannelType: GetChannelTypeThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelIsVoice',
             aliases: ['isVoice'],
@@ -35,17 +36,17 @@ export class ChannelIsVoiceSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getChannelType = getChannelType;
+        this.#features = features;
     }
 
     public async currentChannel(context: BBTagContext): Promise<boolean> {
-        return channelTypes.has(await this.#getChannelType(context.root.guildId, context.local.message.channel.id));
+        return channelTypes.has(await this.#features.getChannelType(context.root.guildId, context.local.message.channel.id));
     }
 
     public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<boolean> {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
-        return channelTypes.has(await this.#getChannelType(context.root.guildId, channelId));
+        return channelTypes.has(await this.#features.getChannelType(context.root.guildId, channelId));
     }
 }
 const channelTypes = new Set([ChannelType.GUILD_VOICE, ChannelType.GUILD_STAGE_VOICE]);

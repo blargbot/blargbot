@@ -1,20 +1,16 @@
 import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
-import type { EditChannelThunk, GetUserPermissionsThunk } from '@blargbot/bbtag/subtags';
+import type { EditChannelFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag/subtags';
 import { ChannelEditSubtag, ChannelIdSubtag, ChannelIsThreadSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const editChannel = new Mock<EditChannelThunk>({ id: 'editChannel', callable: true });
-const getUserPermissions = new Mock<GetUserPermissionsThunk>({ id: 'getUserPermissions', callable: true });
+const features = new Mock<EditChannelFeature & GetMemberPermissionsFeature>({ id: 'features' });
 const channelIsThreadSubtag = new Mock<ChannelIsThreadSubtag>({ id: 'channelIsThreadSubtag' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
 
 await runSubtagTests({
-    subtag: new ChannelEditSubtag({
-        editChannel: editChannel.instance,
-        getUserPermissions: getUserPermissions.instance
-    }),
+    subtag: new ChannelEditSubtag(features.instance),
     otherSubtags: [
         channelIsThreadSubtag.instance,
         channelIdSubtag.instance
@@ -22,8 +18,7 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: 2 },
     names: ['channelEdit'],
     setup(ctx) {
-        ctx.adoptMock(editChannel);
-        ctx.adoptMock(getUserPermissions);
+        ctx.adoptMock(features);
         ctx.adoptSubtagMock(channelIsThreadSubtag, { type: ChannelIsThreadSubtag });
         ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
     },
@@ -35,8 +30,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '1293671282973698', undefined)).resolves('1293671282973698').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '1293671282973698')).resolves(false).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
-                editChannel.setup((m, $) => m(ctx.guild.id, '1293671282973698', $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                features.setup((m, $) => m.editChannel(ctx.guild.id, '1293671282973698', $({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -64,8 +59,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '1293671282973698', undefined)).resolves('1293671282973698').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '1293671282973698')).resolves(true).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
-                editChannel.setup((m, $) => m(ctx.guild.id, '1293671282973698', $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                features.setup((m, $) => m.editChannel(ctx.guild.id, '1293671282973698', $({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -104,8 +99,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '1293671282973698', undefined)).resolves('1293671282973698').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '1293671282973698')).resolves(false).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                editChannel.setup((m, $) => m(ctx.guild.id, '1293671282973698', $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.editChannel(ctx.guild.id, '1293671282973698', $({
                     bitrate: 123,
                     name: 'new channel name',
                     nsfw: true,
@@ -141,8 +136,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '1293671282973698', undefined)).resolves('1293671282973698').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '1293671282973698')).resolves(true).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                editChannel.setup((m, $) => m(ctx.guild.id, '1293671282973698', $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.editChannel(ctx.guild.id, '1293671282973698', $({
                     archived: true,
                     autoArchiveDuration: 4320,
                     locked: true,
@@ -181,8 +176,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '1293671282973698', undefined)).resolves('1293671282973698').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '1293671282973698')).resolves(false).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                editChannel.setup((m, $) => m(ctx.guild.id, '1293671282973698', $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.editChannel(ctx.guild.id, '1293671282973698', $({
                     bitrate: 123,
                     name: 'new channel name',
                     nsfw: true,
@@ -218,8 +213,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '1293671282973698', undefined)).resolves('1293671282973698').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '1293671282973698')).resolves(true).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                editChannel.setup((m, $) => m(ctx.guild.id, '1293671282973698', $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.editChannel(ctx.guild.id, '1293671282973698', $({
                     archived: true,
                     autoArchiveDuration: 4320,
                     locked: true,
@@ -259,7 +254,7 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '1293671282973698', undefined)).resolves('1293671282973698').mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(DiscordPermissions.NONE).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(DiscordPermissions.NONE).mustHappen(1);
             }
         },
         {
@@ -280,7 +275,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '1293671282973698', undefined)).resolves('1293671282973698').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '1293671282973698')).resolves(false).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
             }
         },
         {
@@ -304,7 +299,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '1293671282973698', undefined)).resolves('1293671282973698').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '1293671282973698')).resolves(true).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
             }
         },
         {
@@ -316,8 +311,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '2384762844234324', undefined)).resolves('1293671282973698').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '1293671282973698')).resolves(true).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                editChannel.setup((m, $) => m(ctx.guild.id, '1293671282973698', $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.editChannel(ctx.guild.id, '1293671282973698', $({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,
@@ -347,8 +342,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '2384762844234324', undefined)).resolves('1293671282973698').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '1293671282973698')).resolves(true).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                editChannel.setup((m, $) => m(ctx.guild.id, '1293671282973698', $({
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '1293671282973698')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup((m, $) => m.editChannel(ctx.guild.id, '1293671282973698', $({
                     bitrate: undefined,
                     name: undefined,
                     nsfw: undefined,

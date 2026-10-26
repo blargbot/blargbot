@@ -1,27 +1,25 @@
-import type { GetMessageTimestampThunk } from '@blargbot/bbtag/subtags';
+import type { GetMessageTimestampFeature } from '@blargbot/bbtag/subtags';
 import { MessageTimeSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const getMessageTimestamp = new Mock<GetMessageTimestampThunk>({ id: 'getMessageTimestamp', callable: true });
+const features = new Mock<GetMessageTimestampFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new MessageTimeSubtag({
-        getMessageTimestamp: getMessageTimestamp.instance
-    }),
+    subtag: new MessageTimeSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
     names: ['messageTime', 'timestamp'],
     setup(ctx) {
-        ctx.adoptMock(getMessageTimestamp);
+        ctx.adoptMock(features);
     },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
             includeNoArgs: true,
             emptyIsCurrentMessage: false,
-            getProp: (c, i) => getMessageTimestamp.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.getMessageTimestamp(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: () => ({ noLookup: true }),
             generateCode(...args) {
@@ -40,7 +38,7 @@ await runSubtagTests({
             quiet: false,
             includeNoArgs: true,
             emptyIsCurrentMessage: false,
-            getProp: (c, i) => getMessageTimestamp.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.getMessageTimestamp(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: () => ({ noLookup: true }),
             generateCode(...args) {

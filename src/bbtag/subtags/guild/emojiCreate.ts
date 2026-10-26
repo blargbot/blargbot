@@ -7,7 +7,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { HttpFetchFeature, VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.emojiCreate;
 
@@ -17,10 +17,10 @@ interface EmojiCreateOptions {
     roles: string[];
 }
 
+type Features = VariablesFeature & HttpFetchFeature;
 export class EmojiCreateSubtag extends CompiledSubtag {
-    readonly #fetch: typeof globalThis.fetch;
-    readonly #variables: VariablesProvider;
-    public constructor({ fetch, variables }: { fetch: typeof globalThis.fetch; variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'emojiCreate',
             category: SubtagType.GUILD,
@@ -35,8 +35,7 @@ export class EmojiCreateSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#fetch = fetch;
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async createEmoji(
@@ -59,14 +58,14 @@ export class EmojiCreateSubtag extends CompiledSubtag {
 
         const image: string = parse.url(options.image);
         if (guard.isUrl(image)) {
-            const res = await this.#fetch(image);
+            const res = await this.#features.fetch(image);
             const contentType = res.headers.get('content-type');
             options.image = `data:${contentType ?? ''};base64,${asBuffer(await res.bytes()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
 
-        const variables = this.#variables.forContext(context);
+        const variables = this.#features.variables.forContext(context);
         //TODO would be nice to be able to provide one role without using an array like {emojicreate;name;image;role} and not {emojicreate;name;image;["role"]}
         const roleArray = await bbtag.tagArray.deserializeOrGetArray(variables, rolesStr);
         if (roleArray !== undefined) {

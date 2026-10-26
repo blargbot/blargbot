@@ -37,7 +37,7 @@ function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestD
         yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'general', [c.queryString ?? 'general', '123456789123456789', 'q']));
     }
 
-    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
 
     yield {
         title: 'Message not found',
@@ -151,7 +151,7 @@ export interface GetMessagePropTestCase<Result> {
 function createTestCase<Result>(data: GetMessagePropTestData<Result>, testCase: GetMessagePropTestCase<Result>, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetMessagePropTestData<Result>['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     const apiMessageMap = new WeakMap<SubtagTestContext, string>();
-    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
     return {
         title: testCase.title,
         code,

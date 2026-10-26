@@ -8,18 +8,20 @@ import type { BBTagExpression } from '../../language/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import { ChannelIdSubtag } from '../channel/channelId.js';
+import { UserIdSubtag } from '../user/userId.js';
 
 const tag = templates.subtags.waitMessage;
 
 const defaultCondition = bbtag.parse('true');
 
-export interface StreamMessagesThunk {
-    (channelIds: Iterable<string>, timeoutMs: number): AsyncIterable<eris.KnownMessage>;
+export interface StreamMessagesFeature {
+    streamMessages(channelIds: Iterable<string>, timeoutMs: number): AsyncIterable<eris.KnownMessage>;
 }
 
+type Features = StreamMessagesFeature
 export class WaitMessageSubtag extends CompiledSubtag {
-    readonly #streamMessages: StreamMessagesThunk;
-    public constructor({ streamMessages }: { streamMessages: StreamMessagesThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'waitMessage',
             category: SubtagType.MESSAGE,
@@ -43,7 +45,7 @@ export class WaitMessageSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#streamMessages = streamMessages;
+        this.#features = features;
     }
 
     public async awaitMessage(
@@ -56,8 +58,8 @@ export class WaitMessageSubtag extends CompiledSubtag {
         const channels = await this.#bulkLookup(channelStr, i => ChannelIdSubtag.query(context, i, { noLookup: true }), ChannelNotFoundError)
             ?? [context.local.message.channel.id];
 
-        const users = await this.#bulkLookup(userStr, i => context.queryUser(i, { noLookup: true }), UserNotFoundError)
-            ?? [context.local.message.author];
+        const users = await this.#bulkLookup(userStr, i => UserIdSubtag.query(context, i, { noLookup: true, global: true }), UserNotFoundError)
+            ?? [context.local.message.author.id];
 
         const timeout = clamp(parse.float(timeoutStr) ?? NaN, 0, 300);
         if (isNaN(timeout))
@@ -66,8 +68,8 @@ export class WaitMessageSubtag extends CompiledSubtag {
         if (condition.values.length === 0)
             condition = defaultCondition;
 
-        const userSet = new Set(users.map(u => u.id));
-        for await (const message of this.#streamMessages(channels, timeout * 1000)) {
+        const userSet = new Set(users);
+        for await (const message of this.#features.streamMessages(channels, timeout * 1000)) {
             if (!userSet.has(message.author.id) || !guard.isGuildMessage(message))
                 continue;
             using scope = context.enterScope();

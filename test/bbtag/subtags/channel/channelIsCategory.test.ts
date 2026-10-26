@@ -1,21 +1,19 @@
 import { ChannelType } from '@blargbot/bbtag';
-import type { GetChannelTypeThunk } from '@blargbot/bbtag/subtags';
+import type { GetChannelTypeFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIsCategorySubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-const getChannelType = new Mock<GetChannelTypeThunk>({ id: 'getChannelType ', callable: true });
+const features = new Mock<GetChannelTypeFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new ChannelIsCategorySubtag({
-        getChannelType: getChannelType.instance
-    }),
+    subtag: new ChannelIsCategorySubtag(features.instance),
     argCountBounds: { min: 1, max: 2 },
     names: ['channelIsCategory', 'isCategory'],
     setup(ctx) {
-        ctx.adoptMock(getChannelType);
+        ctx.adoptMock(features);
     },
     cases: [
         ...createGetChannelPropTestCases({
@@ -42,7 +40,7 @@ await runSubtagTests({
                 title: `Channel is a ${key} (${ChannelType[key]})`,
                 expected: success.toString(),
                 setup(channelId, ctx) {
-                    getChannelType.setup(m => m(ctx.guild.id, channelId)).resolves(ChannelType[key]);
+                    features.setup(m => m.getChannelType(ctx.guild.id, channelId)).resolves(ChannelType[key]);
                 }
             }))
         })

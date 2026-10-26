@@ -3,11 +3,18 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userIsBot;
 
+export interface CheckUserIsBotFeature {
+    checkUserIsBot(userId: string): Promise<boolean | undefined>;
+}
+
+type Features = CheckUserIsBotFeature;
 export class UserIsBotSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userIsBot',
             category: SubtagType.USER,
@@ -31,21 +38,18 @@ export class UserIsBotSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async getUserIsBot(
         context: BBTagContext,
-        userId: string,
+        userStr: string,
         quiet: boolean
     ): Promise<boolean> {
         quiet ||= context.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet, global: true })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (user === undefined) {
-            throw new UserNotFoundError(userId)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return user.bot;
+        return await this.#features.checkUserIsBot(userId) ?? false;
     }
 }

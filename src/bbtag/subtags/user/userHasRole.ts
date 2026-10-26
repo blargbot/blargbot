@@ -1,15 +1,19 @@
-import { guard, parse } from '@blargbot/core';
+import { parse } from '@blargbot/core';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { ListGuildRolesFeature, ListMemberRolesFeature } from '../role/roles.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userHasRole;
 
+type Features = ListMemberRolesFeature & ListGuildRolesFeature;
 export class UserHasRoleSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userHasRole',
             category: SubtagType.USER,
@@ -34,6 +38,7 @@ export class UserHasRoleSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async userHasRole(
@@ -43,20 +48,17 @@ export class UserHasRoleSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<boolean> {
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userStr, { noLookup: quiet });
-        if (member === undefined)
-            throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? 'false' : undefined);
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? 'false' : undefined).throw();
 
         const arr = bbtag.tagArray.deserialize(roleStr) ?? { v: [roleStr] };
         const roleArr = arr.v.map(x => parse.string(x));
-        if (!guard.hasValue(member.guild) || !guard.hasValue(member.roles))
-            return false;
-
-        if (roleArr.every(role => member.guild.roles.get(role) === undefined))
+        const userRoles = new Set(await this.#features.listMemberRoles(context.root.guildId, userId));
+        const guildRoles = new Set(await this.#features.listGuildRoles(context.root.guildId));
+        if (roleArr.every(role => !guildRoles.has(role)))
             throw new RoleNotFoundError(roleStr)
                 .withDisplay(quiet ? 'false' : undefined);
 
-        return roleArr.some(r => member.roles.includes(r));
+        return roleArr.some(r => userRoles.has(r));
     }
 }

@@ -8,15 +8,14 @@ import { ChannelIsTextSubtag } from './channelIsText.js';
 
 const tag = templates.subtags.lastMessageId;
 
-export interface GetLastMessageIdThunk {
-    (guildId: string, channelId: string): Promise<string | undefined>;
+export interface GetLastMessageIdFeature {
+    getLastMessageId(guildId: string, channelId: string): Promise<string | undefined>;
 }
 
+type Features = GetLastMessageIdFeature;
 export class LastMessageIdSubtag extends CompiledSubtag {
-    readonly #getLastMessageId: GetLastMessageIdThunk;
-    public constructor({ getLastMessageId }: {
-        getLastMessageId: GetLastMessageIdThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'lastMessageId',
             category: SubtagType.CHANNEL,
@@ -40,7 +39,7 @@ export class LastMessageIdSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getLastMessageId = getLastMessageId;
+        this.#features = features;
     }
 
     public async currentChannel(context: BBTagContext): Promise<string> {
@@ -56,6 +55,6 @@ export class LastMessageIdSubtag extends CompiledSubtag {
     async #impl(context: BBTagContext, channelId: string): Promise<string> {
         if (!await ChannelIsTextSubtag.check(context, channelId))
             throw new BBTagRuntimeError('Channel must be a textable channel');
-        return await this.#getLastMessageId(context.root.guildId, channelId) ?? '';
+        return await this.#features.getLastMessageId(context.root.guildId, channelId) ?? '';
     }
 }

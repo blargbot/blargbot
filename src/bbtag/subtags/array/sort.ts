@@ -5,13 +5,14 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.sort;
 
+type Features = VariablesFeature;
 export class SortSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'sort',
             category: SubtagType.ARRAY,
@@ -26,11 +27,11 @@ export class SortSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async sort(context: BBTagContext, arrayStr: string, descendingStr: string): Promise<JArray | undefined> {
-        const variables = this.#variables.forContext(context);
+        const variables = this.#features.variables.forContext(context);
         const arr = await bbtag.tagArray.deserializeOrGetArray(variables, arrayStr);
         if (arr === undefined)
             throw new NotAnArrayError(arrayStr);

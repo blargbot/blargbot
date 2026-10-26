@@ -6,24 +6,21 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { ApiResult, GetUserPermissionsThunk } from '../types.js';
+import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
 import { ChannelIdSubtag } from './channelId.js';
 import { ChannelIsThreadSubtag } from './channelIsThread.js';
 
 const tag = templates.subtags.channelEdit;
 
 export type EditChannelOptions = (z.infer<typeof mapThreadOptions> | z.infer<typeof mapChannelOptions> & { position?: number; }) & { auditReason: string; };
-export interface EditChannelThunk {
-    (guildId: string, channelId: string, options: EditChannelOptions): Promise<ApiResult>;
+export interface EditChannelFeature {
+    editChannel(guildId: string, channelId: string, options: EditChannelOptions): Promise<ApiResult>;
 }
 
+type Features = EditChannelFeature & GetMemberPermissionsFeature
 export class ChannelEditSubtag extends CompiledSubtag {
-    readonly #getUserPermissions: GetUserPermissionsThunk;
-    readonly #editChannel: EditChannelThunk;
-    public constructor({ getUserPermissions, editChannel }: {
-        getUserPermissions: GetUserPermissionsThunk;
-        editChannel: EditChannelThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelEdit',
             category: SubtagType.CHANNEL,
@@ -38,15 +35,14 @@ export class ChannelEditSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getUserPermissions = getUserPermissions;
-        this.#editChannel = editChannel;
+        this.#features = features;
     }
 
     public async channelEdit(context: BBTagContext, channelStr: string, editJson: string): Promise<string> {
         const channelId = await ChannelIdSubtag.query(context, channelStr)
             ?? new BBTagRuntimeError('Channel does not exist').throw();//TODO no channel found error
 
-        const authorizerPermissions = await this.#getUserPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId, channelId);
+        const authorizerPermissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId, channelId);
         if (!authorizerPermissions.hasAny('MANAGE_CHANNELS', 'ADMINISTRATOR'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
@@ -55,7 +51,7 @@ export class ChannelEditSubtag extends CompiledSubtag {
         if (!mapped.success)
             throw new BBTagRuntimeError('Invalid JSON');
 
-        const result = await this.#editChannel(context.root.guildId, channelId, { ...mapped.data, auditReason: context.auditReason() });
+        const result = await this.#features.editChannel(context.root.guildId, channelId, { ...mapped.data, auditReason: context.auditReason() });
         if (result.success)
             return channelId;
 

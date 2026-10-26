@@ -6,13 +6,14 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.filter;
 
+type Features = VariablesFeature;
 export class FilterSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'filter',
             category: SubtagType.LOOPS,
@@ -27,11 +28,11 @@ export class FilterSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async * filter(context: BBTagContext, varName: string, source: string, code: SubtagArgument): AsyncIterable<JToken> {
-        const variables = this.#variables.forContext(context);
+        const variables = this.#features.variables.forContext(context);
         const array = await bbtag.tagArray.deserializeOrGetIterable(variables, source) ?? [];
         try {
             for (const item of array) {

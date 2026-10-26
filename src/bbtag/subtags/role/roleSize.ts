@@ -6,13 +6,14 @@ import { /*parse,*/ SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleSize;
 
-export interface GetRoleMemberCountThunk {
-    (guildId: string, roleId: string): Promise<number>;
+export interface GetRoleMemberCountFeature {
+    getRoleMemberCount(guildId: string, roleId: string): Promise<number>;
 }
 
+type Features = GetRoleMemberCountFeature
 export class RoleSizeSubtag extends CompiledSubtag {
-    readonly #getRoleMemberCount: GetRoleMemberCountThunk;
-    public constructor({ getRoleMemberCount }: { getRoleMemberCount: GetRoleMemberCountThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'roleSize',
             category: SubtagType.ROLE,
@@ -28,7 +29,7 @@ export class RoleSizeSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getRoleMemberCount = getRoleMemberCount;
+        this.#features = features;
     }
 
     public async getRoleSize(context: BBTagContext, roleStr: string/*, quiet: boolean*/): Promise<number> {
@@ -40,6 +41,6 @@ export class RoleSizeSubtag extends CompiledSubtag {
         if (role === undefined)
             throw new RoleNotFoundError(roleStr);
 
-        return await this.#getRoleMemberCount(context.root.guildId, role.id);
+        return await this.#features.getRoleMemberCount(context.root.guildId, role.id);
     }
 }

@@ -1,20 +1,18 @@
-import type { GetChannelNameThunk } from '@blargbot/bbtag/subtags';
+import type { GetChannelNameFeature } from '@blargbot/bbtag/subtags';
 import { ChannelNameSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-const getChannelName = new Mock<GetChannelNameThunk>({ id: 'getChannelName', callable: true });
+const features = new Mock<GetChannelNameFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new ChannelNameSubtag({
-        getChannelName: getChannelName.instance
-    }),
+    subtag: new ChannelNameSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
     names: ['channelName', 'categoryName'],
     setup(ctx) {
-        ctx.adoptMock(getChannelName);
+        ctx.adoptMock(features);
     },
     cases: [
         ...createGetChannelPropTestCases({
@@ -27,13 +25,13 @@ await runSubtagTests({
                 {
                     expected: 'my cool channel',
                     setup(channelId, ctx) {
-                        getChannelName.setup(m => m(ctx.guild.id, channelId)).resolves('my cool channel').mustHappen(1);
+                        features.setup(m => m.getChannelName(ctx.guild.id, channelId)).resolves('my cool channel').mustHappen(1);
                     }
                 },
                 {
                     expected: 'unknown',
                     setup(channelId, ctx) {
-                        getChannelName.setup(m => m(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
+                        features.setup(m => m.getChannelName(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
                     }
                 }
             ]

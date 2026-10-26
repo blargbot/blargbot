@@ -4,6 +4,7 @@ import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 import type { ApiResult } from '../types.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.kick;
 
@@ -17,13 +18,14 @@ export interface KickUserOptions {
 
 export type KickUserResult = ApiResult<null, { cause: 'bot' | 'authorizer'; }>
 
-export interface KickUserThunk {
-    (options: KickUserOptions): Promise<KickUserResult>;
+export interface KickMemberFeature {
+    kickMember(options: KickUserOptions): Promise<KickUserResult>;
 }
 
+type Features = KickMemberFeature
 export class KickSubtag extends CompiledSubtag {
-    readonly #kickUser: KickUserThunk;
-    public constructor({ kickUser }: { kickUser: KickUserThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'kick',
             category: SubtagType.USER,
@@ -47,7 +49,7 @@ export class KickSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#kickUser = kickUser;
+        this.#features = features;
     }
 
     public async kickMember(
@@ -56,17 +58,16 @@ export class KickSubtag extends CompiledSubtag {
         reason: string,
         noPerms: boolean
     ): Promise<string> {
-        const member = await context.queryMember(userStr, { noLookup: true /* TODO why? */ });
-        if (member === undefined)
-            throw new UserNotFoundError(userStr);
+        const targetId = await UserIdSubtag.query(context, userStr, { noLookup: true /* TODO why? */ })
+            ?? new UserNotFoundError(userStr).throw();
 
         if (reason === '')
             reason = 'Tag Kick';
 
         const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
-        const result = await this.#kickUser({
+        const result = await this.#features.kickMember({
             guildId: context.root.guildId,
-            targetId: member.id,
+            targetId: targetId,
             moderatorId: context.root.message.author.id,
             authorizerId: authorizer.id,
             reason

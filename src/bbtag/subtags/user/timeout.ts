@@ -7,6 +7,7 @@ import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 import type { ApiResult } from '../types.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.timeout;
 
@@ -21,13 +22,14 @@ export interface SetUserTimeoutOptions {
 
 export type SetUserTimeoutResult = ApiResult<null, { cause: 'bot' | 'authorizer' | 'noChange'; }>
 
-export interface SetUserTimeoutThunk {
-    (options: SetUserTimeoutOptions): Promise<SetUserTimeoutResult>;
+export interface SetUserTimeoutFeature {
+    setMemberTimeout(options: SetUserTimeoutOptions): Promise<SetUserTimeoutResult>;
 }
 
+type Features = SetUserTimeoutFeature
 export class TimeoutSubtag extends CompiledSubtag {
-    readonly #setUserTimeout: SetUserTimeoutThunk;
-    public constructor({ setUserTimeout }: { setUserTimeout: SetUserTimeoutThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'timeout',
             category: SubtagType.USER,
@@ -51,7 +53,7 @@ export class TimeoutSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#setUserTimeout = setUserTimeout;
+        this.#features = features;
     }
 
     public async timeoutMember(
@@ -65,17 +67,16 @@ export class TimeoutSubtag extends CompiledSubtag {
         if (delay === undefined)
             throw new BBTagRuntimeError('Invalid duration');
 
-        const member = await context.queryMember(userStr, { noLookup: true /* TODO why? */ });
-        if (member === undefined)
-            throw new UserNotFoundError(userStr);
+        const targetId = await UserIdSubtag.query(context, userStr, { noLookup: true /* TODO why? */ })
+            ?? new UserNotFoundError(userStr).throw();
 
         if (reason === '')
             reason = 'Tag Timeout';
 
         const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
-        const result = await this.#setUserTimeout({
+        const result = await this.#features.setMemberTimeout({
             guildId: context.root.guildId,
-            targetId: member.id,
+            targetId,
             moderatorId: context.root.message.author.id,
             authorizerId: authorizer.id,
             reason,

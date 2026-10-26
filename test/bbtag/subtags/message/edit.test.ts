@@ -1,26 +1,21 @@
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
-import type { EditMessageThunk, GetMessageAuthorThunk } from '@blargbot/bbtag/subtags';
+import type { EditMessageFeature, GetMessageAuthorFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, EditSubtag, EscapeBBTagSubtag, IsStaffSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const editMessage = new Mock<EditMessageThunk>({ id: 'editMessage', callable: true });
-const getMessageAuthor = new Mock<GetMessageAuthorThunk>({ id: 'getMessageAuthor', callable: true });
+const features = new Mock<EditMessageFeature & GetMessageAuthorFeature>({ id: 'features' });
 const isStaffSubtag = new Mock<IsStaffSubtag>({ id: 'IsStaffSubtag' });
 const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
 
 await runSubtagTests({
-    subtag: new EditSubtag({
-        editMessage: editMessage.instance,
-        getMessageAuthor: getMessageAuthor.instance
-    }),
+    subtag: new EditSubtag(features.instance),
     otherSubtags: [channelIdSubtag.instance, isStaffSubtag.instance],
     argCountBounds: { min: 2, max: 4 },
     names: ['edit'],
     setup(ctx) {
-        ctx.adoptMock(editMessage);
-        ctx.adoptMock(getMessageAuthor);
+        ctx.adoptMock(features);
         ctx.adoptSubtagMock(isStaffSubtag, { type: IsStaffSubtag });
         ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
     },
@@ -34,7 +29,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                getMessageAuthor.setup(m => m(ctx.channels.command.id, '12345678901234567'))
+                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
                     .resolves(undefined)
                     .mustHappen(1);
             },
@@ -56,7 +51,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                getMessageAuthor.setup(m => m(ctx.channels.command.id, '12345678901234567'))
+                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
                     .resolves('812768723681368213')
                     .mustHappen(1);
             },
@@ -78,10 +73,10 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                getMessageAuthor.setup(m => m(ctx.channels.command.id, '12345678901234567'))
+                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: ctx.channels.command.id,
                     messageId: '12345678901234567',
                     content: '',
@@ -102,10 +97,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                getMessageAuthor.setup(m => m(ctx.channels.command.id, '12345678901234567'))
+                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: ctx.channels.command.id,
                     messageId: '12345678901234567',
                     content: 'New message text',
@@ -127,10 +122,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                getMessageAuthor.setup(m => m(ctx.channels.command.id, '12345678901234567'))
+                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: ctx.channels.command.id,
                     messageId: '12345678901234567',
                     content: undefined,
@@ -152,10 +147,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                getMessageAuthor.setup(m => m(ctx.channels.command.id, '12345678901234567'))
+                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: ctx.channels.command.id,
                     messageId: '12345678901234567',
                     content: '{"title":false}',
@@ -176,10 +171,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                getMessageAuthor.setup(m => m(ctx.channels.command.id, '12345678901234567'))
+                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: ctx.channels.command.id,
                     messageId: '12345678901234567',
                     content: '',
@@ -201,10 +196,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                getMessageAuthor.setup(m => m(ctx.channels.command.id, '12345678901234567'))
+                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: ctx.channels.command.id,
                     messageId: '12345678901234567',
                     content: 'New message text',
@@ -229,10 +224,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                getMessageAuthor.setup(m => m(ctx.channels.command.id, '12345678901234567'))
+                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: ctx.channels.command.id,
                     messageId: '12345678901234567',
                     content: '{"title":"New embed!"}',
@@ -260,10 +255,10 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                getMessageAuthor.setup(m => m(ctx.channels.command.id, '12345678901234567'))
+                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: ctx.channels.command.id,
                     messageId: '12345678901234567',
                     content: '',
@@ -287,10 +282,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
-                getMessageAuthor.setup(m => m('9876543212345678', '12345678901234567'))
+                features.setup(m => m.getMessageAuthor('9876543212345678', '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: '9876543212345678',
                     messageId: '12345678901234567',
                     content: 'New message text',
@@ -312,10 +307,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
-                getMessageAuthor.setup(m => m('9876543212345678', '12345678901234567'))
+                features.setup(m => m.getMessageAuthor('9876543212345678', '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: '9876543212345678',
                     messageId: '12345678901234567',
                     content: undefined,
@@ -337,10 +332,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
-                getMessageAuthor.setup(m => m('9876543212345678', '12345678901234567'))
+                features.setup(m => m.getMessageAuthor('9876543212345678', '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: '9876543212345678',
                     messageId: '12345678901234567',
                     content: '{"title":false}',
@@ -361,10 +356,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
-                getMessageAuthor.setup(m => m('9876543212345678', '12345678901234567'))
+                features.setup(m => m.getMessageAuthor('9876543212345678', '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: '9876543212345678',
                     messageId: '12345678901234567',
                     content: '',
@@ -386,10 +381,10 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.channels.general.id = '9876543212345678';
-                getMessageAuthor.setup(m => m('9876543212345678', '12345678901234567'))
+                features.setup(m => m.getMessageAuthor('9876543212345678', '12345678901234567'))
                     .resolves(ctx.users.bot.id)
                     .mustHappen(1);
-                editMessage.setup((m, $) => m($({
+                features.setup((m, $) => m.editMessage($({
                     channelId: '9876543212345678',
                     messageId: '12345678901234567',
                     content: 'New message text',

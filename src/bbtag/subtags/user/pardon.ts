@@ -5,6 +5,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.pardon;
 
@@ -16,13 +17,14 @@ export interface PardonOptions {
     readonly reason: string;
 }
 
-export interface PardonThunk {
-    (options: PardonOptions): Promise<number>;
+export interface PardonFeature {
+    pardonUser(options: PardonOptions): Promise<number>;
 }
 
+type Features = PardonFeature
 export class PardonSubtag extends CompiledSubtag {
-    readonly #pardon: PardonThunk;
-    public constructor({ pardon }: { pardon: PardonThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'pardon',
             category: SubtagType.USER,
@@ -46,7 +48,7 @@ export class PardonSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#pardon = pardon;
+        this.#features = features;
     }
 
     public async pardon(
@@ -55,17 +57,16 @@ export class PardonSubtag extends CompiledSubtag {
         countStr: string,
         reason: string
     ): Promise<number> {
-        const member = await context.queryMember(userStr);
-        if (member === undefined)
-            throw new UserNotFoundError(userStr);
+        const targetId = await UserIdSubtag.query(context, userStr)
+            ?? new UserNotFoundError(userStr).throw();
 
         const count = parse.int(countStr);
         if (count === undefined)
             throw new NotANumberError(countStr);
 
-        return await this.#pardon({
+        return await this.#features.pardonUser({
             guildId: context.root.guildId,
-            targetId: member.id,
+            targetId,
             moderatorId: context.root.message.author.id,
             count,
             reason: reason !== '' ? reason : 'Tag Pardon'

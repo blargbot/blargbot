@@ -1,26 +1,24 @@
-import type { GetMessageAuthorThunk } from '@blargbot/bbtag/subtags';
+import type { GetMessageAuthorFeature } from '@blargbot/bbtag/subtags';
 import { MessageSenderSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const getMessageAuthor = new Mock<GetMessageAuthorThunk>({ id: 'getMessageAuthor', callable: true });
+const features = new Mock<GetMessageAuthorFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new MessageSenderSubtag({
-        getMessageAuthor: getMessageAuthor.instance
-    }),
+    subtag: new MessageSenderSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
     names: ['messageSender', 'sender'],
     setup(ctx) {
-        ctx.adoptMock(getMessageAuthor);
+        ctx.adoptMock(features);
     },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: '',
             includeNoArgs: true,
-            getProp: (c, i) => getMessageAuthor.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.getMessageAuthor(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {

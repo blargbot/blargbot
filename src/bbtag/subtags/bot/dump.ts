@@ -9,13 +9,14 @@ export interface DumpOptions {
     readonly content: string;
     readonly channelId: string;
 }
-export interface DumpThunk {
-    (options: DumpOptions): Promise<URL>;
+export interface GenerateDumpLinkFeature {
+    generateDumpLink(options: DumpOptions): Promise<URL>;
 }
 
+type Features = GenerateDumpLinkFeature;
 export class DumpSubtag extends CompiledSubtag {
-    readonly #generateDumpLink: DumpThunk;
-    public constructor({ generateDumpLink }: { generateDumpLink: DumpThunk; }) {
+    readonly #features: GenerateDumpLinkFeature;
+    public constructor(features: Features) {
         super({
             name: 'dump',
             category: SubtagType.BOT,
@@ -30,11 +31,11 @@ export class DumpSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#generateDumpLink = generateDumpLink;
+        this.#features = features;
     }
 
     public async createDump(context: BBTagContext, text: string): Promise<string> {
-        const url = await this.#generateDumpLink({ content: text, channelId: context.local.message.channel.id });
+        const url = await this.#features.generateDumpLink({ content: text, channelId: context.local.message.channel.id });
         return url.toString();
     }
 }

@@ -6,13 +6,14 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.roleMembers;
 
-export interface ListRoleMembersThunk {
-    (guildId: string, roleId: string): Promise<readonly string[]>;
+export interface ListRoleMembersFeature {
+    listRoleMembers(guildId: string, roleId: string): Promise<readonly string[]>;
 }
 
+type Features = ListRoleMembersFeature
 export class RoleMembersSubtag extends CompiledSubtag {
-    readonly #listRoleMembers: ListRoleMembersThunk;
-    public constructor({ listRoleMembers }: { listRoleMembers: ListRoleMembersThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'roleMembers',
             category: SubtagType.ROLE,
@@ -27,7 +28,7 @@ export class RoleMembersSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#listRoleMembers = listRoleMembers;
+        this.#features = features;
     }
 
     public async getRoleMembers(
@@ -43,6 +44,6 @@ export class RoleMembersSubtag extends CompiledSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return await this.#listRoleMembers(context.root.guildId, role.id);
+        return await this.#features.listRoleMembers(context.root.guildId, role.id);
     }
 }

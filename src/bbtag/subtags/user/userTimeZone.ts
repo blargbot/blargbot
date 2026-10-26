@@ -3,16 +3,18 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userTimeZone;
 
-export interface GetUserTimezoneThunk {
-    (userId: string): Awaitable<string | undefined>;
+export interface GetUserTimezoneFeature {
+    getUserTimezone(userId: string): Awaitable<string | undefined>;
 }
 
+type Features = GetUserTimezoneFeature
 export class UserTimezoneSubtag extends CompiledSubtag {
-    readonly #getUserTimezone: GetUserTimezoneThunk;
-    public constructor({ getUserTimezone }: { getUserTimezone: GetUserTimezoneThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userTimeZone',
             category: SubtagType.USER,
@@ -35,7 +37,7 @@ export class UserTimezoneSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getUserTimezone = getUserTimezone;
+        this.#features = features;
     }
 
     public async getUserTimezone(
@@ -44,13 +46,9 @@ export class UserTimezoneSubtag extends CompiledSubtag {
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.local.quiet ?? false;
-        const user = await context.queryUser(userStr, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet, global: true })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (user === undefined) {
-            throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return await this.#getUserTimezone(user.id) ?? 'UTC';
+        return await this.#features.getUserTimezone(userId) ?? 'UTC';
     }
 }

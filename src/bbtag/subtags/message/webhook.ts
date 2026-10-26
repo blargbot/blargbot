@@ -17,13 +17,14 @@ export interface ExecuteWebhookPayload {
     readonly file: eris.FileContent[] | undefined;
 
 }
-export interface ExecuteWebhookThunk {
-    (webhookId: string, webhookToken: string, payload: ExecuteWebhookPayload): Promise<ApiResult>;
+export interface ExecuteWebhookFeature {
+    executeWebhook(webhookId: string, webhookToken: string, payload: ExecuteWebhookPayload): Promise<ApiResult>;
 }
 
+type Features = ExecuteWebhookFeature
 export class WebhookSubtag extends CompiledSubtag {
-    readonly #executeWebhook: ExecuteWebhookThunk;
-    public constructor({ executeWebhook }: { executeWebhook: ExecuteWebhookThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'webhook',
             category: SubtagType.MESSAGE,
@@ -63,7 +64,7 @@ export class WebhookSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#executeWebhook = executeWebhook;
+        this.#features = features;
     }
 
     public async executeWebhook(webhookID: string, webhookToken: string): Promise<never>;
@@ -71,7 +72,7 @@ export class WebhookSubtag extends CompiledSubtag {
     public async executeWebhook(webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void> {
         if (username === '') username = undefined;
         if (avatar === '') avatar = undefined;
-        const result = await this.#executeWebhook(webhookID, webhookToken, {
+        const result = await this.#features.executeWebhook(webhookID, webhookToken, {
             username: username,
             avatarURL: avatar,
             content: content,

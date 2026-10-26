@@ -1,29 +1,29 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
-import type { IsUserStaffThunk } from '@blargbot/bbtag/subtags';
-import { IsStaffSubtag } from '@blargbot/bbtag/subtags';
+import type { IsUserStaffFeature } from '@blargbot/bbtag/subtags';
+import { IsStaffSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
-import type * as eris from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const isUserStaff = new Mock<IsUserStaffThunk>({ id: 'isUserStaff', callable: true });
+const features = new Mock<IsUserStaffFeature>({ id: 'features' });
+const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
 
 await runSubtagTests({
-    subtag: new IsStaffSubtag({
-        isUserStaff: isUserStaff.instance
-    }),
+    subtag: new IsStaffSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
     names: ['isMod', 'isStaff'],
+    otherSubtags: [userIdSubtag.instance],
     setup(ctx) {
-        ctx.adoptMock(isUserStaff);
+        ctx.adoptMock(features);
+        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
     },
     cases: [
         {
             code: '{isstaff}',
             expected: 'true',
             setup(ctx) {
-                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id))
+                features.setup(m => m.isUserStaff(ctx.guild.id, ctx.users.authorizer.id))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -32,7 +32,7 @@ await runSubtagTests({
             code: '{isstaff},{isstaff},{isstaff}',
             expected: 'true,true,true',
             setup(ctx) {
-                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id))
+                features.setup(m => m.isUserStaff(ctx.guild.id, ctx.users.authorizer.id))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -41,7 +41,7 @@ await runSubtagTests({
             code: '{isstaff}',
             expected: 'false',
             setup(ctx) {
-                isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id))
+                features.setup(m => m.isUserStaff(ctx.guild.id, ctx.users.authorizer.id))
                     .resolves(false)
                     .mustHappen(1);
             }
@@ -50,13 +50,11 @@ await runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const userId = snowflake.create().toString();
-                member.setup(m => m.id).returns(userId);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .resolves([member.instance])
+                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+                    .resolves(userId)
                     .mustHappen(1);
-                isUserStaff.setup(m => m(ctx.guild.id, userId))
+                features.setup(m => m.isUserStaff(ctx.guild.id, userId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -65,13 +63,11 @@ await runSubtagTests({
             code: '{isstaff;other user},{isstaff;other user},{isstaff;other user}',
             expected: 'true,true,true',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const userId = snowflake.create().toString();
-                member.setup(m => m.id).returns(userId);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .resolves([member.instance])
+                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+                    .resolves(userId)
                     .mustHappen(3);
-                isUserStaff.setup(m => m(ctx.guild.id, userId))
+                features.setup(m => m.isUserStaff(ctx.guild.id, userId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -80,13 +76,11 @@ await runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'false',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
                 const userId = snowflake.create().toString();
-                member.setup(m => m.id).returns(userId);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .resolves([member.instance])
+                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+                    .resolves(userId)
                     .mustHappen(1);
-                isUserStaff.setup(m => m(ctx.guild.id, userId))
+                features.setup(m => m.isUserStaff(ctx.guild.id, userId))
                     .resolves(false)
                     .mustHappen(1);
             }
@@ -96,11 +90,10 @@ await runSubtagTests({
             expected: '`No user found`',
             errors: [
                 { error: new UserNotFoundError('other user') }
-
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .resolves([])
+            postSetup(bbctx) {
+                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+                    .resolves(undefined)
                     .mustHappen(1);
             }
         },
@@ -109,11 +102,10 @@ await runSubtagTests({
             expected: '`No user found`',
             errors: [
                 { error: new UserNotFoundError('other user') }
-
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .resolves([])
+            postSetup(bbctx) {
+                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+                    .resolves(undefined)
                     .mustHappen(1);
             }
         },
@@ -123,9 +115,9 @@ await runSubtagTests({
             errors: [
                 { error: new UserNotFoundError('other user').withDisplay('') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .resolves([])
+            postSetup(bbctx) {
+                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                    .resolves(undefined)
                     .mustHappen(1);
             }
         }

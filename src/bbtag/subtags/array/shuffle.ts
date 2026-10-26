@@ -5,13 +5,14 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.shuffle;
 
+type Features = VariablesFeature;
 export class ShuffleSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'shuffle',
             category: SubtagType.ARRAY,
@@ -35,7 +36,7 @@ export class ShuffleSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public shuffleInput(context: BBTagContext): void {
@@ -53,7 +54,7 @@ export class ShuffleSubtag extends CompiledSubtag {
         if (arr.n === undefined)
             return arr.v;
 
-        await this.#variables.forContext(context).set(arr.n, arr.v);
+        await this.#features.variables.forContext(context).set(arr.n, arr.v);
         return undefined;
     }
 }

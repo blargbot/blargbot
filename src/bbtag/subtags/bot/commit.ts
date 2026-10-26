@@ -4,13 +4,14 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.commit;
 
+type Features = VariablesFeature;
 export class CommitSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'commit',
             category: SubtagType.BOT,
@@ -34,7 +35,7 @@ export class CommitSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async commit(
@@ -44,6 +45,6 @@ export class CommitSubtag extends CompiledSubtag {
         const values = args.length === 0
             ? undefined
             : bbtag.tagArray.flattenArray(args).map(value => parse.string(value));
-        await this.#variables.forContext(context).persist(values);
+        await this.#features.variables.forContext(context).persist(values);
     }
 }

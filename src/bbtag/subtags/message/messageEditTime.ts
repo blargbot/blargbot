@@ -10,13 +10,14 @@ import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageEditTime;
 
-export interface GetMessageEditTimeThunk {
-    (channelId: string, messageId: string): Promise<Temporal.Instant | null | undefined>;
+export interface GetMessageEditTimestampFeature {
+    getMessageEditTimestamp(channelId: string, messageId: string): Promise<Temporal.Instant | null | undefined>;
 }
 
+type Features = GetMessageEditTimestampFeature
 export class MessageEditTimeSubtag extends CompiledSubtag {
-    readonly #getMessageEditTime: GetMessageEditTimeThunk;
-    public constructor({ getMessageEditTime }: { getMessageEditTime: GetMessageEditTimeThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'messageEditTime',
             category: SubtagType.MESSAGE,
@@ -70,7 +71,7 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getMessageEditTime = getMessageEditTime;
+        this.#features = features;
     }
 
     public async getMessageEditTime(
@@ -85,7 +86,7 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: true }) //TODO lookup
             ?? new ChannelNotFoundError(channelStr).throw();
 
-        const editTime = await this.#getMessageEditTime(channelId, messageId);
+        const editTime = await this.#features.getMessageEditTimestamp(channelId, messageId);
         if (editTime === undefined)
             throw new MessageNotFoundError(channelId, messageId);
 

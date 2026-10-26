@@ -1,17 +1,31 @@
 import { guard } from '@blargbot/core';
-import type { Logger } from '@blargbot/logger';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
+import { UserIdSubtag } from '../user/userId.js';
+import type { ListGuildRolesFeature, ListMemberRolesFeature } from './roles.js';
 
 const tag = templates.subtags.roleRemove;
 
+export interface RemoveMemberRolesOptions {
+    readonly guildId: string;
+    readonly targetId: string;
+    readonly roleIds: readonly string[];
+    readonly auditReason: string;
+}
+
+export interface RemoveMemberRolesFeature {
+    removeMemberRoles(options: RemoveMemberRolesOptions): Promise<ApiResult>;
+}
+
+type Features = RemoveMemberRolesFeature & ListMemberRolesFeature & ListGuildRolesFeature & GetMemberPermissionsFeature
 export class RoleRemoveSubtag extends CompiledSubtag {
-    readonly #logger: Logger;
-    public constructor({ logger }: { logger: Logger; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'roleRemove',
             category: SubtagType.ROLE,
@@ -36,7 +50,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#logger = logger;
+        this.#features = features;
     }
 
     public async removeRole(
@@ -45,39 +59,52 @@ export class RoleRemoveSubtag extends CompiledSubtag {
         userStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        const topRole = context.roleEditPosition();
-        if (topRole <= 0)
+        const { guildId, botId, authorizerId = '' } = context.root;
+        const guildRoles = await this.#features.listGuildRoles(guildId);
+        const roleIndexes = new Map(guildRoles.map((r, i) => [r, i]));
+        const editRoleIndex = Math.min(
+            await this.#getEditRoleIndex(guildId, botId, roleIndexes),
+            await this.#getEditRoleIndex(guildId, authorizerId, roleIndexes)
+        );
+        if (editRoleIndex <= 0)
             throw new BBTagRuntimeError('Author cannot remove roles');
 
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userStr, { noLookup: quiet });
-
-        if (member === undefined) {
-            throw new UserNotFoundError(userStr)
-                .withDisplay(quiet ? 'false' : undefined);
-        }
+        const targetId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? 'false' : undefined).throw();
 
         const roleStrs = bbtag.tagArray.deserialize(roleStr)?.v.filter(guard.isTypeOf('string', 'number')) ?? [roleStr];
-        const roles = roleStrs.map(role => context.root.message.channel.guild.roles.get(role)).filter((r): r is Exclude<typeof r, undefined> => r !== undefined);
+        const roles = roleStrs.map(String).filter(v => roleIndexes.has(v));
 
         if (roles.length === 0)
             throw new RoleNotFoundError(roleStr);
 
-        if (roles.find(role => role.position >= topRole) !== undefined)
+        const topRoleIndex = roles.reduce((p, r) => Math.max(p, roleIndexes.get(r) ?? 0), 0);
+        if (topRoleIndex >= editRoleIndex)
             throw new BBTagRuntimeError('Role above author');
 
-        if (roles.every(r => !member.roles.includes(r.id)))
+        const userRoles = new Set(await this.#features.listMemberRoles(guildId, targetId) ?? []);
+        const toRemove = roles.filter(r => userRoles.has(r));
+        if (toRemove.length === 0)
             return false;
 
-        try {
-            const removeRoles = new Set(roles.map(r => r.id));
-            const newRoleList = [...new Set(member.roles.filter(r => !removeRoles.has(r)))];
-            await member.edit({ roles: newRoleList }, context.auditReason());
-            member.roles = newRoleList;
-            return true;
-        } catch (err: unknown) {
-            this.#logger.error(err);
-            return false;
-        }
+        const result = await this.#features.removeMemberRoles({
+            guildId,
+            targetId,
+            roleIds: toRemove,
+            auditReason: context.auditReason()
+        });
+        return result.success;
+    }
+
+    async #getEditRoleIndex(guildId: string, userId: string, roleIndexes: Map<string, number>): Promise<number> {
+        const permissions = await this.#features.getMemberPermissions(guildId, userId);
+        if (!permissions.hasAny('ADMINISTRATOR', 'MANAGE_ROLES'))
+            return 0;
+        const roles = await this.#features.listMemberRoles(guildId, userId);
+        const topRole = roles?.at(-1);
+        if (topRole === undefined)
+            return 0;
+        return roleIndexes.get(topRole) ?? 0;
     }
 }

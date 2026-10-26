@@ -5,6 +5,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from '../user/userId.js';
 
 const tag = templates.subtags.modLog;
 
@@ -17,13 +18,14 @@ export interface AddModLogOptions {
     readonly color?: number;
 }
 
-export interface AddModLogThunk {
-    (options: AddModLogOptions): Promise<void>;
+export interface AddModLogFeature {
+    addModLog(options: AddModLogOptions): Promise<void>;
 }
 
+type Features = AddModLogFeature;
 export class ModLogSubtag extends CompiledSubtag {
-    readonly #addModLog: AddModLogThunk;
-    public constructor({ addModLog }: { addModLog: AddModLogThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'modLog',
             category: SubtagType.BOT,
@@ -39,7 +41,7 @@ export class ModLogSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#addModLog = addModLog;
+        this.#features = features;
     }
 
     public async createModLog(
@@ -50,20 +52,20 @@ export class ModLogSubtag extends CompiledSubtag {
         reason: string,
         colorStr: string
     ): Promise<void> {
-        const user = await context.queryUser(userStr);
-        if (user === undefined)
-            throw new UserNotFoundError(userStr);
+        const targetId = await UserIdSubtag.query(context, userStr, { global: true })
+            ?? new UserNotFoundError(userStr).throw();
 
         const color = parse.color(colorStr);
 
         //TODO no user found for this?
-        const mod = await context.queryUser(modStr) ?? context.root.message.author;
+        const moderatorId = await UserIdSubtag.query(context, modStr, { global: true })
+            ?? context.root.message.author.id;
 
-        await this.#addModLog({
+        await this.#features.addModLog({
             guildId: context.root.guildId,
             action,
-            targetId: user.id,
-            moderatorId: mod.id,
+            targetId,
+            moderatorId,
             reason,
             color
         });

@@ -5,20 +5,21 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.get;
 
+type Features = VariablesFeature;
 export class GetSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'get',
             category: SubtagType.BOT,
             definition: [
                 {
                     parameters: ['name'],
-                    description: tag.value.description({ scopes: variables.kinds }),
+                    description: tag.value.description({ scopes: features.variables.kinds }),
                     exampleCode: tag.value.exampleCode,
                     exampleOut: tag.value.exampleOut,
                     returns: 'json|nothing',
@@ -34,11 +35,11 @@ export class GetSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async get(context: BBTagContext, variableName: string): Promise<JToken | undefined> {
-        const result = await this.#variables.forContext(context).get(variableName);
+        const result = await this.#features.variables.forContext(context).get(variableName);
         if (!Array.isArray(result.value))
             return result.value;
 
@@ -46,7 +47,7 @@ export class GetSubtag extends CompiledSubtag {
     }
 
     public async getArray(context: BBTagContext, variableName: string, indexStr: string): Promise<JToken | undefined> {
-        const result = await this.#variables.forContext(context).get(variableName);
+        const result = await this.#features.variables.forContext(context).get(variableName);
         if (!Array.isArray(result.value))
             return result.value;
 

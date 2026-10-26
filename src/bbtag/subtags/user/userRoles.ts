@@ -1,15 +1,17 @@
-import { guard } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { ListMemberRolesFeature } from '../role/roles.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.userRoles;
 
+type Features = ListMemberRolesFeature;
 export class UserRolesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'userRoles',
             category: SubtagType.USER,
@@ -32,24 +34,18 @@ export class UserRolesSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async getUserRoles(
         context: BBTagContext,
-        userId: string,
+        userStr: string,
         quiet: boolean
     ): Promise<Iterable<string>> {
         quiet ||= context.local.quiet ?? false;
-        const member = await context.queryMember(userId, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
+            ?? new UserNotFoundError(userStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (member === undefined) {
-            throw new UserNotFoundError(userId)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        if (!guard.hasValue(member.guild) || !guard.hasValue(member.roles))
-            return [];
-
-        return member.roles;
+        return await this.#features.listMemberRoles(context.root.guildId, userId) ?? [];
     }
 }

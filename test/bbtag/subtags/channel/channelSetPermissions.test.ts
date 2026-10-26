@@ -1,21 +1,17 @@
 import { BBTagRuntimeError, DiscordPermissions, PermissionOverwriteType } from '@blargbot/bbtag';
-import type { GetUserPermissionsThunk, SetPermissionOverrideThunk } from '@blargbot/bbtag/subtags';
+import type { GetMemberPermissionsFeature, SetPermissionOverrideFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, ChannelIsThreadSubtag, ChannelSetPermissionsSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const getUserPermissions = new Mock<GetUserPermissionsThunk>({ id: 'getUserPermissions', callable: true });
-const setPermissionOverride = new Mock<SetPermissionOverrideThunk>({ id: 'setPermissionOverride', callable: true });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
-const channelIsThreadSubtag = new Mock<ChannelIsThreadSubtag>({ id: 'channelIdSubtag' });
+const features = new Mock<GetMemberPermissionsFeature & SetPermissionOverrideFeature>({ id: 'features' });
+const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+const channelIsThreadSubtag = new Mock<ChannelIsThreadSubtag>({ id: 'ChannelIdSubtag' });
 
 await runSubtagTests({
-    subtag: new ChannelSetPermissionsSubtag({
-        getUserPermissions: getUserPermissions.instance,
-        setPermissionOverride: setPermissionOverride.instance
-    }),
+    subtag: new ChannelSetPermissionsSubtag(features.instance),
     otherSubtags: [
         channelIdSubtag.instance,
         channelIsThreadSubtag.instance
@@ -23,8 +19,7 @@ await runSubtagTests({
     argCountBounds: { min: 3, max: 5 },
     names: ['channelSetPermissions', 'channelSetPerms'],
     setup(ctx) {
-        ctx.adoptMock(getUserPermissions);
-        ctx.adoptMock(setPermissionOverride);
+        ctx.adoptMock(features);
         ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
         ctx.adoptSubtagMock(channelIsThreadSubtag, { type: ChannelIsThreadSubtag });
     },
@@ -39,8 +34,8 @@ await runSubtagTests({
                 postSetup(bbctx, ctx) {
                     channelIdSubtag.setup(m => m.query(bbctx, '12835768123756132', undefined)).resolves('12835768123756132').mustHappen(1);
                     channelIsThreadSubtag.setup(m => m.check(bbctx, '12835768123756132')).resolves(false).mustHappen(1);
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
-                    setPermissionOverride.setup((m, $) => m($({
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                    features.setup((m, $) => m.setPermissionOverride($({
                         guildId: ctx.guild.id,
                         channelId: '12835768123756132',
                         entityId: '12876318236836323',
@@ -55,8 +50,8 @@ await runSubtagTests({
                 postSetup(bbctx, ctx) {
                     channelIdSubtag.setup(m => m.query(bbctx, '12835768123756132', undefined)).resolves('12835768123756132').mustHappen(1);
                     channelIsThreadSubtag.setup(m => m.check(bbctx, '12835768123756132')).resolves(false).mustHappen(1);
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                    setPermissionOverride.setup((m, $) => m($({
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                    features.setup((m, $) => m.setPermissionOverride($({
                         guildId: ctx.guild.id,
                         channelId: '12835768123756132',
                         entityId: '12876318236836323',
@@ -73,8 +68,8 @@ await runSubtagTests({
                 postSetup(bbctx, ctx) {
                     channelIdSubtag.setup(m => m.query(bbctx, '12835768123756132', undefined)).resolves('12835768123756132').mustHappen(1);
                     channelIsThreadSubtag.setup(m => m.check(bbctx, '12835768123756132')).resolves(false).mustHappen(1);
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                    setPermissionOverride.setup((m, $) => m($({
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                    features.setup((m, $) => m.setPermissionOverride($({
                         guildId: ctx.guild.id,
                         channelId: '12835768123756132',
                         entityId: '12876318236836323',
@@ -91,8 +86,8 @@ await runSubtagTests({
                 postSetup(bbctx, ctx) {
                     channelIdSubtag.setup(m => m.query(bbctx, '12835768123756132', undefined)).resolves('12835768123756132').mustHappen(1);
                     channelIsThreadSubtag.setup(m => m.check(bbctx, '12835768123756132')).resolves(false).mustHappen(1);
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                    setPermissionOverride.setup((m, $) => m($({
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                    features.setup((m, $) => m.setPermissionOverride($({
                         guildId: ctx.guild.id,
                         channelId: '12835768123756132',
                         entityId: '12876318236836323',
@@ -133,7 +128,7 @@ await runSubtagTests({
                 postSetup(bbctx, ctx) {
                     channelIdSubtag.setup(m => m.query(bbctx, '12835768123756132', undefined)).resolves('12835768123756132').mustHappen(1);
                     channelIsThreadSubtag.setup(m => m.check(bbctx, '12835768123756132')).resolves(false).mustHappen(1);
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(DiscordPermissions.NONE).mustHappen(1);
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(DiscordPermissions.NONE).mustHappen(1);
                 }
             },
             {
@@ -145,7 +140,7 @@ await runSubtagTests({
                 postSetup(bbctx, ctx) {
                     channelIdSubtag.setup(m => m.query(bbctx, '12835768123756132', undefined)).resolves('12835768123756132').mustHappen(1);
                     channelIsThreadSubtag.setup(m => m.check(bbctx, '12835768123756132')).resolves(false).mustHappen(1);
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
                 }
             },
             {
@@ -157,8 +152,8 @@ await runSubtagTests({
                 postSetup(bbctx, ctx) {
                     channelIdSubtag.setup(m => m.query(bbctx, '12835768123756132', undefined)).resolves('12835768123756132').mustHappen(1);
                     channelIsThreadSubtag.setup(m => m.check(bbctx, '12835768123756132')).resolves(false).mustHappen(1);
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                    setPermissionOverride.setup((m, $) => m($({
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                    features.setup((m, $) => m.setPermissionOverride($({
                         guildId: ctx.guild.id,
                         channelId: '12835768123756132',
                         entityId: '12876318236836323',
@@ -178,8 +173,8 @@ await runSubtagTests({
                 postSetup(bbctx, ctx) {
                     channelIdSubtag.setup(m => m.query(bbctx, '12835768123756132', undefined)).resolves('12835768123756132').mustHappen(1);
                     channelIsThreadSubtag.setup(m => m.check(bbctx, '12835768123756132')).resolves(false).mustHappen(1);
-                    getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
-                    setPermissionOverride.setup((m, $) => m($({
+                    features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                    features.setup((m, $) => m.setPermissionOverride($({
                         guildId: ctx.guild.id,
                         channelId: '12835768123756132',
                         entityId: '12876318236836323',
@@ -200,7 +195,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 channelIdSubtag.setup(m => m.query(bbctx, '12835768123756132', undefined)).resolves('12835768123756132').mustHappen(1);
                 channelIsThreadSubtag.setup(m => m.check(bbctx, '12835768123756132')).resolves(false).mustHappen(1);
-                getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, '12835768123756132')).resolves(new DiscordPermissions(~0n)).mustHappen(1);
             }
         }
     ]

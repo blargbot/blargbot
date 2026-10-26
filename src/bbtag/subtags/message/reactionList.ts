@@ -9,21 +9,18 @@ import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.reactionList;
 
-export interface ListMessageReactionsThunk {
-    (channelId: string, messageId: string): Promise<readonly Emote[] | undefined>;
+export interface ListMessageReactionsFeature {
+    listMessageReactions(channelId: string, messageId: string): Promise<readonly Emote[] | undefined>;
 }
 
-export interface ListMessageReactionUsersThunk {
-    (channelId: string, messageId: string, reaction: Emote): Promise<readonly string[] | undefined>;
+export interface ListMessageReactionUsersFeature {
+    listMessageReactionUsers(channelId: string, messageId: string, reaction: Emote): Promise<readonly string[] | undefined>;
 }
 
+type Features = ListMessageReactionUsersFeature & ListMessageReactionsFeature
 export class ReactionListSubtag extends CompiledSubtag {
-    readonly #listMessageReactions: ListMessageReactionsThunk;
-    readonly #listMessageReactionUsers: ListMessageReactionUsersThunk;
-    public constructor({ listMessageReactions, listMessageReactionUsers }: {
-        listMessageReactions: ListMessageReactionsThunk;
-        listMessageReactionUsers: ListMessageReactionUsersThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'reactionList',
             category: SubtagType.MESSAGE,
@@ -58,8 +55,7 @@ export class ReactionListSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#listMessageReactions = listMessageReactions;
-        this.#listMessageReactionUsers = listMessageReactionUsers;
+        this.#features = features;
     }
 
     public async getReactionsOrReactors(
@@ -71,7 +67,7 @@ export class ReactionListSubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noErrors: true, noLookup: true })
             ?? new ChannelNotFoundError(channelStr).throw();
 
-        const messageReactions = await this.#listMessageReactions(channelId, messageId)
+        const messageReactions = await this.#features.listMessageReactions(channelId, messageId)
             ?? new MessageNotFoundError(channelId, messageId).throw();
 
         if (reactions === undefined)
@@ -84,7 +80,7 @@ export class ReactionListSubtag extends CompiledSubtag {
         const users: string[] = [];
         const errors = [];
         for (const emote of reactions) {
-            const reactionUsers = await this.#listMessageReactionUsers(channelId, messageId, emote);
+            const reactionUsers = await this.#features.listMessageReactionUsers(channelId, messageId, emote);
             if (reactionUsers === undefined)
                 errors.push(emote);
             else
@@ -97,7 +93,7 @@ export class ReactionListSubtag extends CompiledSubtag {
     }
 
     public async getReactions(context: BBTagContext, messageId: string): Promise<string[]> {
-        const emotes = await this.#listMessageReactions(context.local.message.channel.id, messageId)
+        const emotes = await this.#features.listMessageReactions(context.local.message.channel.id, messageId)
             ?? new MessageNotFoundError(context.local.message.channel.id, messageId).throw();
         return emotes.map(x => x.toApi());
     }

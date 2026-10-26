@@ -7,7 +7,7 @@ import { ChannelType, PermissionOverwriteType } from '../../enums.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
-import type { ApiResult, GetUserPermissionsThunk } from '../types.js';
+import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
 import type { ChannelTypeSubtag } from './channelType.js';
 
 const tag = templates.subtags.channelCreate;
@@ -17,20 +17,17 @@ export interface CreateChannelOptions extends z.infer<typeof mapOptions> {
     name: string;
 };
 export type CreateChannelResult = ApiResult<{ channelId: string; }>
-export interface CreateChannelThunk {
-    (guildId: string, options: CreateChannelOptions): Promise<CreateChannelResult>;
+export interface CreateChannelFeature {
+    createChannel(guildId: string, options: CreateChannelOptions): Promise<CreateChannelResult>;
 }
 
+type Features = CreateChannelFeature & GetMemberPermissionsFeature;
 export class ChannelCreateSubtag extends CompiledSubtag {
     public static get channelTypes(): ReadonlyArray<keyof typeof channelTypes> {
         return Object.keys(channelTypes);
     }
-    readonly #getUserPermissions: GetUserPermissionsThunk;
-    readonly #createChannel: CreateChannelThunk;
-    public constructor({ getUserPermissions, createChannel }: {
-        getUserPermissions: GetUserPermissionsThunk;
-        createChannel: CreateChannelThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelCreate',
             category: SubtagType.CHANNEL,
@@ -46,12 +43,11 @@ export class ChannelCreateSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getUserPermissions = getUserPermissions;
-        this.#createChannel = createChannel;
+        this.#features = features;
     }
 
     public async channelCreate(context: BBTagContext, name: string, typeKey: string, optionsJson: string): Promise<string> {
-        const authorizerPermissions = await this.#getUserPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId);
+        const authorizerPermissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId);
         if (!authorizerPermissions.hasAny('MANAGE_CHANNELS', 'ADMINISTRATOR'))
             throw new BBTagRuntimeError('Author cannot create channels');
 
@@ -70,7 +66,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
 
         if (options.reason === '') options.reason = undefined;
         options.reason ??= context.auditReason();
-        const result = await this.#createChannel(context.root.guildId, { ...options, type, name });
+        const result = await this.#features.createChannel(context.root.guildId, { ...options, type, name });
         if (result.success)
             return result.channelId;
 

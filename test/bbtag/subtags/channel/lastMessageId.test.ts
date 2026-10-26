@@ -1,23 +1,21 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { GetLastMessageIdThunk } from '@blargbot/bbtag/subtags';
+import type { GetLastMessageIdFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIsTextSubtag, LastMessageIdSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-const getLastMessageId = new Mock<GetLastMessageIdThunk>({ id: 'getLastMessageId', callable: true });
+const features = new Mock<GetLastMessageIdFeature>({ id: 'features' });
 const channelIsTextSubtag = new Mock<ChannelIsTextSubtag>({ id: 'channelIsTextSubtag' });
 
 await runSubtagTests({
-    subtag: new LastMessageIdSubtag({
-        getLastMessageId: getLastMessageId.instance
-    }),
+    subtag: new LastMessageIdSubtag(features.instance),
     otherSubtags: [channelIsTextSubtag.instance],
     argCountBounds: { min: 0, max: 1 },
     names: ['lastMessageId'],
     setup(ctx) {
-        ctx.adoptMock(getLastMessageId);
+        ctx.adoptMock(features);
         ctx.adoptSubtagMock(channelIsTextSubtag, { type: ChannelIsTextSubtag });
     },
     cases: [
@@ -33,7 +31,7 @@ await runSubtagTests({
                     expected: '2349786234946724',
                     postSetup(channelId, bbctx, ctx) {
                         channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
-                        getLastMessageId.setup(m => m(ctx.guild.id, channelId)).resolves('2349786234946724').mustHappen(1);
+                        features.setup(m => m.getLastMessageId(ctx.guild.id, channelId)).resolves('2349786234946724').mustHappen(1);
                     }
                 },
                 {
@@ -41,7 +39,7 @@ await runSubtagTests({
                     expected: '',
                     postSetup(channelId, bbctx, ctx) {
                         channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
-                        getLastMessageId.setup(m => m(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
+                        features.setup(m => m.getLastMessageId(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
                     }
                 },
                 {

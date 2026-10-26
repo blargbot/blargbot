@@ -6,20 +6,15 @@ import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
 import { ChannelIsNsfwSubtag } from '../channel/channelIsNsfw.js';
-import type { AddReactionsThunk } from './reactionAdd.js';
-import type { CanPingEveryoneThunk, SendThunk } from './send.js';
+import type { AddReactionsFeature } from './reactionAdd.js';
+import type { CanPingEveryoneFeature, SendFeature } from './send.js';
 
 const tag = templates.subtags.output;
 
+type Features = CanPingEveryoneFeature & SendFeature & AddReactionsFeature;
 export class OutputSubtag extends CompiledSubtag {
-    readonly #canPingEveryone: CanPingEveryoneThunk;
-    readonly #send: SendThunk;
-    readonly #addReactions: AddReactionsThunk;
-    public constructor({ canPingEveryone, send, addReactions }: {
-        canPingEveryone: CanPingEveryoneThunk;
-        send: SendThunk;
-        addReactions: AddReactionsThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'output',
             category: SubtagType.MESSAGE,
@@ -34,9 +29,7 @@ export class OutputSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#canPingEveryone = canPingEveryone;
-        this.#send = send;
-        this.#addReactions = addReactions;
+        this.#features = features;
     }
 
     public async sendTagOutput(context: BBTagContext, text: string): Promise<string> {
@@ -66,14 +59,14 @@ export class OutputSubtag extends CompiledSubtag {
             files = undefined;
         }
 
-        const response = await this.#send(channel.id, {
+        const response = await this.#features.sendMessage(channel.id, {
             content,
             embeds,
             files,
             allowedMentions: {
                 everyone: context.root.allowedMentions.everybody
                     && context.root.isCC
-                    && await this.#canPingEveryone(channel.guild.id),
+                    && await this.#features.canPingEveryone(channel.guild.id),
                 roles: context.root.isCC ? context.root.allowedMentions.roles : new Set(),
                 users: context.root.isCC ? context.root.allowedMentions.users : new Set()
             }
@@ -82,7 +75,7 @@ export class OutputSubtag extends CompiledSubtag {
         if (response.success) {
             context.root.output.messageId = response.id;
             context.root.ownedMessageIds.add(response.id);
-            await this.#addReactions(channel.id, response.id, [...new Set(context.root.output.reactions)].map(Emote.parse));
+            await this.#features.addMessageReactions(channel.id, response.id, [...new Set(context.root.output.reactions)].map(Emote.parse));
             return response.id;
         }
         if (response.reason === undefined)

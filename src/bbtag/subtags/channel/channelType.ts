@@ -8,16 +8,17 @@ import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.channelType;
 
-export interface GetChannelTypeThunk {
-    (guildId: string, channelId: string): Promise<number | undefined>;
+export interface GetChannelTypeFeature {
+    getChannelType(guildId: string, channelId: string): Promise<number | undefined>;
 }
 
+type Features = GetChannelTypeFeature;
 export class ChannelTypeSubtag extends CompiledSubtag {
     public static get typeMap(): typeof channelTypes {
         return channelTypes;
     }
-    readonly #getChannelType: GetChannelTypeThunk;
-    public constructor({ getChannelType }: { getChannelType: GetChannelTypeThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelType',
             category: SubtagType.CHANNEL,
@@ -42,7 +43,7 @@ export class ChannelTypeSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getChannelType = getChannelType;
+        this.#features = features;
     }
 
     public async currentChannel(context: BBTagContext): Promise<string> {
@@ -56,7 +57,7 @@ export class ChannelTypeSubtag extends CompiledSubtag {
     }
 
     async #getChannelTypeStr(context: BBTagContext, channelId: string): Promise<string> {
-        const channelType = await this.#getChannelType(context.root.guildId, channelId) ?? -1;
+        const channelType = await this.#features.getChannelType(context.root.guildId, channelId) ?? -1;
         if (!Object.hasOwn(channelTypes, channelType))
             return 'unknown';
 

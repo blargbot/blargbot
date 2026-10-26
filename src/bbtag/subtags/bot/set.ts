@@ -2,13 +2,14 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { VariablesProvider } from '../../Variables.js';
+import type { VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.set;
 
+type Features = VariablesFeature;
 export class SetSubtag extends CompiledSubtag {
-    readonly #variables: VariablesProvider;
-    public constructor({ variables }: { variables: VariablesProvider; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'set',
             category: SubtagType.BOT,
@@ -19,11 +20,11 @@ export class SetSubtag extends CompiledSubtag {
                     exampleCode: tag.clear.exampleCode,
                     exampleOut: tag.clear.exampleOut,
                     returns: 'nothing',
-                    execute: async (ctx, [name]) => await variables.forContext(ctx).set(name.value, undefined)
+                    execute: async (ctx, [name]) => await features.variables.forContext(ctx).set(name.value, undefined)
                 },
                 {
                     parameters: ['name', 'value'],
-                    description: tag.value.description({ scopes: variables.kinds }),
+                    description: tag.value.description({ scopes: features.variables.kinds }),
                     exampleCode: tag.value.exampleCode,
                     exampleOut: tag.value.exampleOut,
                     returns: 'nothing',
@@ -39,7 +40,7 @@ export class SetSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#variables = variables;
+        this.#features = features;
     }
 
     public async set(
@@ -49,9 +50,9 @@ export class SetSubtag extends CompiledSubtag {
     ): Promise<void> {
         const deserializedArray = bbtag.tagArray.deserialize(value);
         if (deserializedArray !== undefined) {
-            await this.#variables.forContext(context).set(variableName, deserializedArray.v);
+            await this.#features.variables.forContext(context).set(variableName, deserializedArray.v);
         } else {
-            await this.#variables.forContext(context).set(variableName, value);
+            await this.#features.variables.forContext(context).set(variableName, value);
         }
     }
 
@@ -60,6 +61,6 @@ export class SetSubtag extends CompiledSubtag {
         variableName: string,
         values: string[]
     ): Promise<void> {
-        await this.#variables.forContext(context).set(variableName, values);
+        await this.#features.variables.forContext(context).set(variableName, values);
     }
 }

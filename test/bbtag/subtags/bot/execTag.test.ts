@@ -1,22 +1,20 @@
 import assert from 'node:assert/strict';
 
 import { BBTagRuntimeError, BBTagRuntimeState, SubtagStackOverflowError } from '@blargbot/bbtag';
-import type { GetTagThunk } from '@blargbot/bbtag/subtags';
+import type { GetTagFeature } from '@blargbot/bbtag/subtags';
 import { ExecTagSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-const getTag = new Mock<GetTagThunk>({ id: 'getTag', callable: true });
+const features = new Mock<GetTagFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new ExecTagSubtag({
-        getTag: getTag.instance
-    }),
+    subtag: new ExecTagSubtag(features.instance),
     argCountBounds: { min: 1, max: Infinity },
     names: ['execTag', 'exec'],
     setup(ctx) {
-        ctx.adoptMock(getTag);
+        ctx.adoptMock(features);
     },
     cases: [
         {
@@ -40,7 +38,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getTag.setup(m => m('otherSubtag')).resolves({
+                features.setup(m => m.getTag('otherSubtag')).resolves({
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     name: 'otherSubtag',
@@ -82,7 +80,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getTag.setup(m => m('otherSubtag')).resolves({
+                features.setup(m => m.getTag('otherSubtag')).resolves({
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     name: 'otherSubtag',
@@ -122,7 +120,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getTag.setup(m => m('otherSubtag')).resolves({
+                features.setup(m => m.getTag('otherSubtag')).resolves({
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     name: 'otherSubtag',
@@ -163,7 +161,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getTag.setup(m => m('otherSubtag')).resolves({
+                features.setup(m => m.getTag('otherSubtag')).resolves({
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     name: 'otherSubtag',
@@ -191,7 +189,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Tag not found: abc') }
             ],
             setup() {
-                getTag.setup(m => m('abc')).resolves(undefined).mustHappen(1);
+                features.setup(m => m.getTag('abc')).resolves(undefined).mustHappen(1);
             }
         },
         {
@@ -201,7 +199,7 @@ await runSubtagTests({
                 { error: new SubtagStackOverflowError(200) }
             ],
             setup() {
-                getTag.setup(m => m('otherSubtag')).resolves({
+                features.setup(m => m.getTag('otherSubtag')).resolves({
                     author: '212097368371683623',
                     content: '{fail}',
                     name: 'otherSubtag',
@@ -240,7 +238,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getTag.setup(m => m('otherSubtag')).resolves({
+                features.setup(m => m.getTag('otherSubtag')).resolves({
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     name: 'otherSubtag',
@@ -285,7 +283,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getTag.setup(m => m('otherSubtag')).resolves({
+                features.setup(m => m.getTag('otherSubtag')).resolves({
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     name: 'otherSubtag',
@@ -330,7 +328,7 @@ await runSubtagTests({
                 ctx.input.cooldown = 4;
                 ctx.input.tagName = 'test tag';
                 ctx.input.input = 'This is some input text';
-                getTag.setup(m => m('otherSubtag')).resolves({
+                features.setup(m => m.getTag('otherSubtag')).resolves({
                     author: '212097368371683623',
                     content: '{assert}{eval}',
                     name: 'otherSubtag',

@@ -1,23 +1,24 @@
-import type { GetMessageEmbedsThunk } from '@blargbot/bbtag/subtags';
+import type { GetMessageEmbedsFeature } from '@blargbot/bbtag/subtags';
 import { MessageEmbedsSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const getMessageEmbeds = new Mock<GetMessageEmbedsThunk>({ id: 'getMessageEmbeds', callable: true });
+const features = new Mock<GetMessageEmbedsFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new MessageEmbedsSubtag({
-        getMessageEmbeds: getMessageEmbeds.instance
-    }),
+    subtag: new MessageEmbedsSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
     names: ['messageEmbeds'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: '[]',
             includeNoArgs: true,
-            getProp: (c, i) => getMessageEmbeds.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.getMessageEmbeds(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {

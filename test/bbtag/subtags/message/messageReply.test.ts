@@ -1,26 +1,24 @@
-import type { GetMessageReplyTargetThunk } from '@blargbot/bbtag/subtags';
+import type { GetMessageReplyTargetFeature } from '@blargbot/bbtag/subtags';
 import { MessageReplySubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const getMessageReplyTarget = new Mock<GetMessageReplyTargetThunk>({ id: 'getMessageReplyTarget', callable: true });
+const features = new Mock<GetMessageReplyTargetFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new MessageReplySubtag({
-        getMessageReplyTarget: getMessageReplyTarget.instance
-    }),
+    subtag: new MessageReplySubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
     names: ['messageReply'],
     setup(ctx) {
-        ctx.adoptMock(getMessageReplyTarget);
+        ctx.adoptMock(features);
     },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: '',
             includeNoArgs: true,
-            getProp: (c, i) => getMessageReplyTarget.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.getMessageReplyTarget(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {

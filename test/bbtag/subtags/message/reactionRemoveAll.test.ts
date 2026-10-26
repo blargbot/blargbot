@@ -1,43 +1,33 @@
 import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
-import type { CheckMessageExistsThunk, GetUserPermissionsThunk, IsUserStaffThunk, RemoveMessageReactionsThunk } from '@blargbot/bbtag/subtags';
+import type { CheckMessageExistsFeature, GetMemberPermissionsFeature, RemoveMessageReactionsFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, IsStaffSubtag, ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const isUserStaff = new Mock<IsUserStaffThunk>({ id: 'isUserStaff', callable: true });
-const checkMessageExists = new Mock<CheckMessageExistsThunk>({ id: 'checkMessageExists', callable: true });
-const getUserPermissions = new Mock<GetUserPermissionsThunk>({ id: 'getUserPermissions', callable: true });
-const removeMessageReactions = new Mock<RemoveMessageReactionsThunk>({ id: 'removeMessageReactions', callable: true });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+const features = new Mock<CheckMessageExistsFeature & GetMemberPermissionsFeature & RemoveMessageReactionsFeature>({ id: 'features' });
+const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+const isStaffSubtag = new Mock<IsStaffSubtag>({ id: 'IsStaffSubtag' });
 
 await runSubtagTests({
-    subtag: new ReactionRemoveAllSubtag({
-        checkMessageExists: checkMessageExists.instance,
-        getUserPermissions: getUserPermissions.instance,
-        removeMessageReactions: removeMessageReactions.instance
-    }),
+    subtag: new ReactionRemoveAllSubtag(features.instance),
     argCountBounds: { min: 1, max: 2 },
     names: ['reactionRemoveAll', 'reactRemoveAll', 'removeReactAll'],
     otherSubtags: [
-        new IsStaffSubtag({
-            isUserStaff: isUserStaff.instance
-        }),
+        isStaffSubtag.instance,
         channelIdSubtag.instance
     ],
     setup(ctx) {
-        ctx.adoptMock(isUserStaff);
-        ctx.adoptMock(checkMessageExists);
-        ctx.adoptMock(getUserPermissions);
-        ctx.adoptMock(removeMessageReactions);
+        ctx.adoptMock(features);
         ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+        ctx.adoptSubtagMock(isStaffSubtag, { type: IsStaffSubtag });
     },
     cases: [
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
-            getProp: (c, i) => checkMessageExists.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.checkMessageExists(c, i)),
             notExists: Promise.resolve(false),
             queryOptions: () => undefined,
             emptyIsCurrentMessage: false,
@@ -51,7 +41,7 @@ await runSubtagTests({
                     error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions'),
                     setup(getProp, channelId, _, ctx) {
                         getProp.resolves(true);
-                        getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
                             .resolves(DiscordPermissions.NONE)
                             .mustHappen(1);
                     }
@@ -61,11 +51,13 @@ await runSubtagTests({
                     expected: '',
                     setup(getProp, channelId, messageId, ctx) {
                         getProp.resolves(true);
-                        getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
                             .resolves(DiscordPermissions.MANAGE_MESSAGES)
                             .mustHappen(1);
-                        isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(true).mustHappen(1);
-                        removeMessageReactions.setup(m => m(channelId, messageId)).resolves(undefined).mustHappen(1);
+                        features.setup(m => m.removeMessageReactions(channelId, messageId)).resolves(undefined).mustHappen(1);
+                    },
+                    postSetup(bbctx) {
+                        isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(true).mustHappen(1);
                     }
                 },
                 {
@@ -73,10 +65,10 @@ await runSubtagTests({
                     expected: '',
                     setup(getProp, channelId, messageId, ctx) {
                         getProp.resolves(true);
-                        getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
                             .resolves(DiscordPermissions.MANAGE_MESSAGES)
                             .mustHappen(1);
-                        removeMessageReactions.setup(m => m(channelId, messageId)).resolves(undefined).mustHappen(1);
+                        features.setup(m => m.removeMessageReactions(channelId, messageId)).resolves(undefined).mustHappen(1);
                     },
                     postSetup(bbctx, __, messageId) {
                         bbctx.root.ownedMessageIds.add(messageId);
@@ -88,10 +80,12 @@ await runSubtagTests({
                     error: new BBTagRuntimeError('Author must be staff to modify unrelated messages'),
                     setup(getProp, channelId, _, ctx) {
                         getProp.resolves(true);
-                        getUserPermissions.setup(m => m(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
                             .resolves(DiscordPermissions.MANAGE_MESSAGES)
                             .mustHappen(1);
-                        isUserStaff.setup(m => m(ctx.guild.id, ctx.users.authorizer.id)).resolves(false).mustHappen(1);
+                    },
+                    postSetup(bbctx) {
+                        isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(false).mustHappen(1);
                     }
                 }
             ]

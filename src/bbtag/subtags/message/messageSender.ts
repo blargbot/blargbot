@@ -7,13 +7,14 @@ import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageSender;
 
-export interface GetMessageAuthorThunk {
-    (channelId: string, messageId: string): Promise<string | undefined>;
+export interface GetMessageAuthorFeature {
+    getMessageAuthor(channelId: string, messageId: string): Promise<string | undefined>;
 }
 
+type Features = GetMessageAuthorFeature
 export class MessageSenderSubtag extends CompiledSubtag {
-    readonly #getMessageAuthor: GetMessageAuthorThunk;
-    public constructor({ getMessageAuthor }: { getMessageAuthor: GetMessageAuthorThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'messageSender',
             category: SubtagType.MESSAGE,
@@ -45,7 +46,7 @@ export class MessageSenderSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getMessageAuthor = getMessageAuthor;
+        this.#features = features;
     }
 
     public async getMessageSender(
@@ -61,7 +62,7 @@ export class MessageSenderSubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
 
-        return await this.#getMessageAuthor(channelId, messageId)
+        return await this.#features.getMessageAuthor(channelId, messageId)
             ?? new MessageNotFoundError(channelId, messageId).withDisplay(quiet ? '' : undefined).throw();
     }
 }

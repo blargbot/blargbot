@@ -3,16 +3,18 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { UserIdSubtag } from './userId.js';
 
 const tag = templates.subtags.warnings;
 
-export interface GetWarnings {
-    (guildId: string, userId: string): Awaitable<number | undefined>;
+export interface GetWarningsFeature {
+    getWarnings(guildId: string, userId: string): Awaitable<number | undefined>;
 }
 
+type Features = GetWarningsFeature;
 export class WarningsSubtag extends CompiledSubtag {
-    readonly #getWarnings: GetWarnings;
-    public constructor({ getWarnings }: { getWarnings: GetWarnings; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'warnings',
             category: SubtagType.USER,
@@ -27,15 +29,13 @@ export class WarningsSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getWarnings = getWarnings;
+        this.#features = features;
     }
 
     public async getUserWarnings(context: BBTagContext, userQuery: string, quiet: boolean): Promise<number> {
-        const user = await context.queryUser(userQuery, { noLookup: quiet });
+        const userId = await UserIdSubtag.query(context, userQuery, { noLookup: quiet, global: true })
+            ?? new UserNotFoundError(userQuery).throw();
 
-        if (user === undefined)
-            throw new UserNotFoundError(userQuery);
-
-        return await this.#getWarnings(context.root.guildId, user.id) ?? 0;
+        return await this.#features.getWarnings(context.root.guildId, userId) ?? 0;
     }
 }

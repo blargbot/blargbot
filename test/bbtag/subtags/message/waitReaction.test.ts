@@ -1,7 +1,7 @@
 import type { ReactionEvent } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { StreamReactionsThunk } from '@blargbot/bbtag/subtags';
-import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, WaitReactionSubtag } from '@blargbot/bbtag/subtags';
+import type { StreamReactionsFeature } from '@blargbot/bbtag/subtags';
+import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, UserIdSubtag, WaitReactionSubtag } from '@blargbot/bbtag/subtags';
 import { Emote } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 import * as eris from 'eris';
@@ -9,16 +9,18 @@ import * as eris from 'eris';
 import type { SubtagTestContext } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-const streamReactions = new Mock<StreamReactionsThunk>({ id: 'streamReactions', callable: true });
+const features = new Mock<StreamReactionsFeature>({ id: 'features' });
+const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
 
 await runSubtagTests({
-    subtag: new WaitReactionSubtag({
-        streamReactions: streamReactions.instance
-    }),
+    subtag: new WaitReactionSubtag(features.instance),
     argCountBounds: { min: 1, max: { count: 5, noEval: [3] } },
     names: ['waitReaction', 'waitReact'],
+    otherSubtags: [userIdSubtag.instance],
     setup(ctx) {
-        ctx.adoptMock(streamReactions);
+        ctx.adoptMock(features);
+        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+
     },
     cases: [
         {
@@ -29,7 +31,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '23642834762378964232');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction]);
             }
         },
@@ -44,7 +46,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
             }
         },
@@ -59,7 +61,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
             }
         },
@@ -74,7 +76,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '34897465835684954375', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                streamReactions.setup((m, $) => m($(['328974628744623874', '34897465835684954375', '9328479238794834798487']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874', '34897465835684954375', '9328479238794834798487']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
             }
         },
@@ -88,15 +90,10 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
             }
         },
         {
@@ -109,15 +106,11 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -130,29 +123,12 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member1 = ctx.createMock<eris.Member>({ id: 'member1' });
-                const user1 = ctx.createMock<eris.User>({ id: 'user1' });
-                member1.setup(m => m.user).returns(user1.instance);
-                user1.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member1.instance]);
-
-                const member2 = ctx.createMock<eris.Member>({ id: 'member2' });
-                const user2 = ctx.createMock<eris.User>({ id: 'user2' });
-                member2.setup(m => m.user).returns(user2.instance);
-                user2.setup(m => m.id).returns('9234874534905735485');
-                ctx.util.setup(m => m.getUser('9234874534905735485')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '9234874534905735485')).resolves([member2.instance]);
-
-                const member3 = ctx.createMock<eris.Member>({ id: 'member3' });
-                const user3 = ctx.createMock<eris.User>({ id: 'user3' });
-                member3.setup(m => m.user).returns(user3.instance);
-                user3.setup(m => m.id).returns('39857623874642873');
-                ctx.util.setup(m => m.getUser('39857623874642873')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '39857623874642873')).resolves([member3.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '9234874534905735485', $({ noLookup: true, global: true }))).resolves('9234874534905735485').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '39857623874642873', $({ noLookup: true, global: true }))).resolves('39857623874642873').mustHappen(1);
             }
         },
         {
@@ -166,15 +142,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '❌', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -188,15 +160,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -210,15 +178,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -232,15 +196,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -254,15 +214,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -276,15 +232,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -298,15 +250,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -319,15 +267,11 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -346,15 +290,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '238746283794634234', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -373,15 +313,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -398,15 +334,11 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -425,15 +357,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -449,15 +377,11 @@ await runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 const rejectedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 60000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
                     .yieldsAsync([rejectedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -476,15 +400,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 10000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 10000))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -503,15 +423,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 0))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 0))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -530,15 +446,11 @@ await runSubtagTests({
                 const acceptedReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const filteredReaction = createFilterableReaction(ctx, bbctx.root.message.channel.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                streamReactions.setup((m, $) => m($(['328974628744623874']), 300000))
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 300000))
                     .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                const user = ctx.createMock<eris.User>({ id: 'user' });
-                member.setup(m => m.user).returns(user.instance);
-                user.setup(m => m.id).returns('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).resolves(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, '23897462384627348293436')).resolves([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         }
     ]

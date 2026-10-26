@@ -7,13 +7,14 @@ import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.channels;
 
-export interface ListChannelsThunk {
-    (guildId: string, parentId?: string): Promise<readonly string[]>;
+export interface ListChannelsFeature {
+    listChannels(guildId: string, parentId?: string): Promise<readonly string[]>;
 }
 
+type Features = ListChannelsFeature;
 export class ChannelsSubtag extends CompiledSubtag {
-    readonly #listChannels: ListChannelsThunk;
-    public constructor({ listChannels }: { listChannels: ListChannelsThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channels',
             category: SubtagType.CHANNEL,
@@ -36,16 +37,16 @@ export class ChannelsSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#listChannels = listChannels;
+        this.#features = features;
     }
 
     public async getAllChannels(context: BBTagContext): Promise<readonly string[]> {
-        return await this.#listChannels(context.root.guildId);
+        return await this.#features.listChannels(context.root.guildId);
     }
 
     public async getChannelsInCategory(context: BBTagContext, channelStr: string, quiet: boolean): Promise<readonly string[]> {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
-        return await this.#listChannels(context.root.guildId, channelId);
+        return await this.#features.listChannels(context.root.guildId, channelId);
     }
 }

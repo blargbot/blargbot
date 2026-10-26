@@ -7,13 +7,14 @@ import { ChannelIdSubtag } from './channelId.js';
 
 const tag = templates.subtags.channelIsNsfw;
 
-export interface IsChannelNsfwThunk {
-    (guildId: string, channelId: string): Promise<boolean | undefined>;
+export interface IsChannelNsfwFeature {
+    isChannelNsfw(guildId: string, channelId: string): Promise<boolean | undefined>;
 }
 
+type Features = IsChannelNsfwFeature;
 export class ChannelIsNsfwSubtag extends CompiledSubtag {
-    readonly #isChannelNsfw: IsChannelNsfwThunk;
-    public constructor({ isChannelNsfw }: { isChannelNsfw: IsChannelNsfwThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'channelIsNsfw',
             category: SubtagType.CHANNEL,
@@ -37,7 +38,7 @@ export class ChannelIsNsfwSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#isChannelNsfw = isChannelNsfw;
+        this.#features = features;
     }
 
     public static async check(context: BBTagContext, channelId: string): Promise<boolean> {
@@ -45,7 +46,7 @@ export class ChannelIsNsfwSubtag extends CompiledSubtag {
     }
 
     public async check(context: BBTagContext, channelId: string): Promise<boolean> {
-        return await this.#isChannelNsfw(context.root.guildId, channelId) ?? false;
+        return await this.#features.isChannelNsfw(context.root.guildId, channelId) ?? false;
     }
 
     public async currentChannel(context: BBTagContext): Promise<boolean> {

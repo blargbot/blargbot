@@ -11,13 +11,14 @@ import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.execCustomCommand;
 
-export interface GetCustomCommandThunk {
-    (guildId: string, name: string): Awaitable<GuildCommandTag | undefined>;
+export interface GetCustomCommandFeature {
+    getCustomCommand(guildId: string, name: string): Awaitable<GuildCommandTag | undefined>;
 }
 
+type Features = GetCustomCommandFeature;
 export class ExecCustomCommandSubtag extends CompiledSubtag {
-    readonly #getCustomCommand: GetCustomCommandThunk;
-    public constructor({ getCustomCommand }: { getCustomCommand: GetCustomCommandThunk; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'execCustomCommand',
             aliases: ['execCC'],
@@ -33,11 +34,11 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#getCustomCommand = getCustomCommand;
+        this.#features = features;
     }
 
     async #cacheTag(context: BBTagContext, name: string): Promise<GuildCommandTag | undefined> {
-        const result = await this.#getCustomCommand(context.root.guildId, name);
+        const result = await this.#features.getCustomCommand(context.root.guildId, name);
         if (result !== undefined)
             context.root.ccCache.set(name, result);
         return result;

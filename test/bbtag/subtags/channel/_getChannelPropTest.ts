@@ -30,7 +30,7 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
     }
 
     const notFound = options.notFound ?? (c => new ChannelNotFoundError(c));
-    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
 
     yield {
         title: 'Channel not found',
@@ -89,7 +89,7 @@ export interface GetChannelPropTestCase {
 
 function createTestCase(data: GetChannelPropTestData, testCase: GetChannelPropTestCase, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetChannelPropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
-    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelIdSubtag' });
+    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
     return {
         title: testCase.title,
         code,

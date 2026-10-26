@@ -6,22 +6,20 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { HttpFetchFeature } from '../types.js';
 
 const tag = templates.subtags.request;
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
-export interface CanRequestDomainThunk {
-    (domain: string): Promise<boolean>;
+export interface CanRequestDomainFeature {
+    canRequestDomain(domain: string): Promise<boolean>;
 }
 
+type Features = CanRequestDomainFeature & HttpFetchFeature;
 export class RequestSubtag extends CompiledSubtag {
-    readonly #fetch: typeof globalThis.fetch;
-    readonly #canRequestDomain: CanRequestDomainThunk;
-    public constructor({ fetch, canRequestDomain }: {
-        fetch: typeof globalThis.fetch;
-        canRequestDomain: CanRequestDomainThunk;
-    }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'request',
             category: SubtagType.BOT,
@@ -37,8 +35,7 @@ export class RequestSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#fetch = fetch;
-        this.#canRequestDomain = canRequestDomain;
+        this.#features = features;
     }
 
     public async requestUrl(
@@ -52,7 +49,7 @@ export class RequestSubtag extends CompiledSubtag {
 
         let requireOk = true;
         const domain = domainMatch[1];
-        if (!await this.#canRequestDomain(domain))
+        if (!await this.#features.canRequestDomain(domain))
             throw new BBTagRuntimeError(`Domain is not whitelisted: ${domain}`);
 
         const request = {
@@ -89,7 +86,7 @@ export class RequestSubtag extends CompiledSubtag {
         }
 
         try {
-            const response = await this.#fetch(url + (query !== undefined ? `?${query}` : ''), request);
+            const response = await this.#features.fetch(url + (query !== undefined ? `?${query}` : ''), request);
             if (requireOk && !(response.status >= 200 && response.status < 400))
                 throw new BBTagRuntimeError(`${response.status} ${response.statusText}`);
 

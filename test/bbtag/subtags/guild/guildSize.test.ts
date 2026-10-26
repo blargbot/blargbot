@@ -1,26 +1,24 @@
-import type { GetGuildMemberCountThunk } from '@blargbot/bbtag/subtags';
+import type { GetGuildMemberCountFeature } from '@blargbot/bbtag/subtags';
 import { GuildSizeSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
-const getGuildMemberCount = new Mock<GetGuildMemberCountThunk>({ id: 'getGuildMemberCount', callable: true });
+const features = new Mock<GetGuildMemberCountFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new GuildSizeSubtag({
-        getGuildMemberCount: getGuildMemberCount.instance
-    }),
+    subtag: new GuildSizeSubtag(features.instance),
     argCountBounds: { min: 0, max: 0 },
     names: ['guildSize', 'inGuild'],
     setup(ctx) {
-        ctx.adoptMock(getGuildMemberCount);
+        ctx.adoptMock(features);
     },
     cases: [
         {
             code: '{guildsize}',
             expected: '123',
             setup(ctx) {
-                getGuildMemberCount.setup(m => m(ctx.guild.id))
+                features.setup(m => m.getGuildMemberCount(ctx.guild.id))
                     .resolves(123);
             }
         }

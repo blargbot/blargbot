@@ -1,21 +1,19 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { GetChannelCategoryThunk } from '@blargbot/bbtag/subtags';
+import type { GetChannelCategoryFeature } from '@blargbot/bbtag/subtags';
 import { ChannelCategorySubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-const getChannelCategory = new Mock<GetChannelCategoryThunk>({ id: 'getChannelCategory', callable: true });
+const features = new Mock<GetChannelCategoryFeature>({ id: 'features' });
 
 await runSubtagTests({
-    subtag: new ChannelCategorySubtag({
-        getChannelCategory: getChannelCategory.instance
-    }),
+    subtag: new ChannelCategorySubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
     names: ['channelCategory', 'category'],
     setup(ctx) {
-        ctx.adoptMock(getChannelCategory);
+        ctx.adoptMock(features);
     },
     cases: [
         ...createGetChannelPropTestCases({
@@ -28,14 +26,14 @@ await runSubtagTests({
                 {
                     expected: '8237642839674943',
                     setup(channelId, ctx) {
-                        getChannelCategory.setup(m => m(ctx.guild.id, channelId)).resolves('8237642839674943').mustHappen(1);
+                        features.setup(m => m.getChannelCategory(ctx.guild.id, channelId)).resolves('8237642839674943').mustHappen(1);
                     }
                 },
                 {
                     expected: '',
                     error: new BBTagRuntimeError('Channel has no parent').withDisplay(''),
                     setup(channelId, ctx) {
-                        getChannelCategory.setup(m => m(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
+                        features.setup(m => m.getChannelCategory(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
                     }
                 }
             ]

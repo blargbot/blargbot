@@ -1,28 +1,27 @@
-import type { GetMessageAttachmentUrlsThunk } from '@blargbot/bbtag/subtags';
+import type { GetMessageAttachmentUrlsFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, MessageAttachmentsSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-const getMessageAttachmentUrls = new Mock<GetMessageAttachmentUrlsThunk>({ id: 'getMessageAttachmentUrls', callable: true });
+const features = new Mock<GetMessageAttachmentUrlsFeature>({ id: 'features' });
 const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
 
 await runSubtagTests({
-    subtag: new MessageAttachmentsSubtag({
-        getMessageAttachmentUrls: getMessageAttachmentUrls.instance
-    }),
+    subtag: new MessageAttachmentsSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
     names: ['messageAttachments', 'attachments'],
     otherSubtags: [channelIdSubtag.instance],
     setup(ctx) {
+        ctx.adoptMock(features);
         ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
     },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: '[]',
             includeNoArgs: true,
-            getProp: (c, i) => getMessageAttachmentUrls.setup(m => m(c, i)),
+            getProp: (c, i) => features.setup(m => m.getMessageAttachmentUrls(c, i)),
             notExists: Promise.resolve(undefined),
             queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {

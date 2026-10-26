@@ -94,7 +94,7 @@ export class BBTagContext {
     }
 
     public roleEditPosition(channel?: eris.KnownGuildChannel): number {
-        if (this.root.message.channel.guild.ownerID === this.root.authorizer?.id)
+        if (this.root.message.channel.guild.ownerID === this.root.botId)
             return Infinity;
 
         const permission = channel === undefined ? this.root.authorizerPermissions : this.permissionIn(channel);
@@ -124,28 +124,6 @@ export class BBTagContext {
     public addError(error: BBTagRuntimeError, subtag?: SubtagCall): string {
         this.errors.push({ subtag: subtag, error });
         return error.display ?? this.local.fallback ?? `\`${error.message}\``;
-    }
-
-    public async queryUser(query: string | undefined, options: FindEntityOptions = {}): Promise<eris.User | undefined> {
-        if (query === '' || query === undefined || query === this.local.message.author.id)
-            return this.local.message.author;
-        const user = await this.engine.util.getUser(query);
-        if (user !== undefined)
-            return user;
-        const member = await this.queryMember(query, options);
-        return member?.user;
-    }
-
-    public async queryMember(query: string | undefined, options: FindEntityOptions = {}): Promise<eris.Member | undefined> {
-        if (query === '' || query === undefined || query === this.local.message.member.id)
-            return this.local.message.member;
-        return await this.#queryEntity(
-            query, 'user', 'User',
-            async (id) => await this.engine.util.getMember(this.root.message.channel.guild, id),
-            async (query) => await this.engine.util.findMembers(this.root.message.channel.guild, query),
-            async (options) => await this.engine.util.queryMember(options),
-            options
-        );
     }
 
     public async queryRole(query: string, options: FindEntityOptions = {}): Promise<eris.Role | undefined> {

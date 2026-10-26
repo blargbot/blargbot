@@ -1,58 +1,70 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
-import { UserSetNickSubtag } from '@blargbot/bbtag/subtags';
-import type { Logger } from '@blargbot/logger';
+import type { SetMemberNicknameFeature } from '@blargbot/bbtag/subtags';
+import { UserIdSubtag, UserSetNickSubtag } from '@blargbot/bbtag/subtags';
+import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
-import type * as eris from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-const logger = new Mock<Logger>({ id: 'logger' });
+const features = new Mock<SetMemberNicknameFeature>({ id: 'features' });
+const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
 
 await runSubtagTests({
-    subtag: new UserSetNickSubtag({
-        logger: logger.instance
-    }),
+    subtag: new UserSetNickSubtag(features.instance),
     argCountBounds: { min: 1, max: 2 },
     names: ['userSetNickname', 'setNickname', 'setNick', 'userSetNick'],
+    otherSubtags: [userIdSubtag.instance],
     setup(ctx) {
-        ctx.adoptMock(logger);
+        ctx.adoptMock(features);
+        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
     },
     cases: [
         {
             code: '{usersetnick;abc}',
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup((m, $) => m.editGuildMember(ctx.guild.id, ctx.users.command.id, $({ nick: 'abc' }), 'Command User#0000'))
-                    .mustHappen(1)
-                    .resolves(null!);
+            postSetup(bbctx, ctx) {
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.setMemberNickname($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    nickname: 'abc',
+                    auditReason: 'Command User#0000'
+                }))).resolves({ success: true }).mustHappen(1);
             }
         },
         {
             code: '{usersetnick;abc;other user}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'other user'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
-                member.setup((m, $) => m.edit($({ nick: 'abc' }), 'Command User#0000'))
-                    .mustHappen(1)
-                    .resolves();
-                member.setupSet(m => m.nick = 'abc').returns(true).mustHappen(1);
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.setMemberNickname($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    nickname: 'abc',
+                    auditReason: 'Command User#0000'
+                }))).resolves({ success: true }).mustHappen(1);
             }
         },
         {
             code: '{usersetnick;abc;blargbot}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const member = ctx.createMock<eris.Member>({ id: 'member' });
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'blargbot'))
-                    .mustHappen(1)
-                    .resolves([member.instance]);
-                member.setup((m, $) => m.edit($({ nick: 'abc' }), 'Command User#0000'))
-                    .mustHappen(1)
-                    .resolves();
-                member.setupSet(m => m.nick = 'abc').returns(true).mustHappen(1);
+                const userId = snowflake.create().toString();
+                userIdSubtag.setup(m => m.query(bbctx, 'blargbot', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup((m, $) => m.setMemberNickname($({
+                    guildId: ctx.guild.id,
+                    targetId: userId,
+                    nickname: 'abc',
+                    auditReason: 'Command User#0000'
+                }))).resolves({ success: true }).mustHappen(1);
             }
         },
         {
@@ -62,10 +74,10 @@ await runSubtagTests({
                 { start: 13, end: 19, error: new MarkerError('eval', 13) },
                 { error: new UserNotFoundError('unknown user') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.root.message.channel.guild, 'unknown user'))
-                    .mustHappen(1)
-                    .resolves([]);
+            postSetup(bbctx) {
+                userIdSubtag.setup(m => m.query(bbctx, 'unknown user', undefined))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         }
     ]
