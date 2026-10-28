@@ -25,7 +25,7 @@ export class MessageReplySubtag extends CompiledSubtag {
                     exampleCode: tag.trigger.exampleCode,
                     exampleOut: tag.trigger.exampleOut,
                     returns: 'id',
-                    execute: (ctx) => this.getMessageReplyId(ctx, ctx.local.message.channel.id, ctx.local.message.id, false)
+                    execute: (ctx) => this.getMessageReplyId(ctx, ctx.local.channelId, ctx.local.messageId, false)
                 },
                 {
                     parameters: ['messageid'],
@@ -33,7 +33,7 @@ export class MessageReplySubtag extends CompiledSubtag {
                     exampleCode: tag.inCurrent.exampleCode,
                     exampleOut: tag.inCurrent.exampleOut,
                     returns: 'id',
-                    execute: (ctx, [message]) => this.getMessageReplyId(ctx, ctx.local.message.channel.id, message.value, false)
+                    execute: (ctx, [message]) => this.getMessageReplyId(ctx, ctx.local.channelId, message.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
@@ -51,7 +51,7 @@ export class MessageReplySubtag extends CompiledSubtag {
     public async getMessageReplyId(context: BBTagContext, channelStr: string, messageId: string, quiet: boolean): Promise<string> {
         quiet ||= context.local.quiet ?? false;
         if (messageId === '')
-            messageId = context.local.message.id;
+            messageId = context.local.messageId;
 
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();

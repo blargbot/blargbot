@@ -21,32 +21,28 @@ await runSubtagTests({
             code: '{userid}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.users.command.id = '983798372948729434';
-                ctx.message.author.id = '983798372948729434';
+                ctx.userId = '983798372948729434';
             }
         },
         {
             code: '{userid;}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.users.command.id = '983798372948729434';
-                ctx.message.author.id = '983798372948729434';
+                ctx.userId = '983798372948729434';
             }
         },
         {
             code: '{userid;;}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.users.command.id = '983798372948729434';
-                ctx.message.author.id = '983798372948729434';
+                ctx.userId = '983798372948729434';
             }
         },
         {
             code: '{userid;;q}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.users.command.id = '983798372948729434';
-                ctx.message.author.id = '983798372948729434';
+                ctx.userId = '983798372948729434';
             }
         },
         {
@@ -54,8 +50,7 @@ await runSubtagTests({
             code: '{userid;983798372948729434}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.users.command.id = '983798372948729434';
-                ctx.message.author.id = '983798372948729434';
+                ctx.userId = '983798372948729434';
             }
         },
         {
@@ -92,12 +87,12 @@ await runSubtagTests({
             code: '{userid;General}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.input.isCC = false;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = false;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryMember($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'tag `MyCoolTag`'
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
@@ -112,12 +107,12 @@ await runSubtagTests({
             code: '{userid;General}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.input.isCC = true;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = true;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryMember($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'custom command `MyCoolTag`'
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
@@ -132,12 +127,12 @@ await runSubtagTests({
             code: '{userid;General}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.input.isCC = true;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = true;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryMember($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: undefined
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
@@ -155,12 +150,12 @@ await runSubtagTests({
             code: '{userid;General;}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.input.isCC = false;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = false;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryMember($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'tag `MyCoolTag`'
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
@@ -175,12 +170,12 @@ await runSubtagTests({
             code: '{userid;General;}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.input.isCC = true;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = true;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryMember($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'custom command `MyCoolTag`'
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
@@ -194,7 +189,7 @@ await runSubtagTests({
             code: '{userid;General;q}',
             expected: '983798372948729434',
             setup(ctx) {
-                features.setup(m => m.findMember(ctx.guild.id, 'General')).resolves('983798372948729434').mustHappen(1);
+                features.setup(m => m.findMember(ctx.guildId, 'General')).resolves('983798372948729434').mustHappen(1);
             },
             assert(ctx) {
                 assert.equal(ctx.root.queryCache.failedQueries, 0);
@@ -208,12 +203,12 @@ await runSubtagTests({
                 { error: new UserNotFoundError('General') }
             ],
             setup(ctx) {
-                ctx.input.isCC = true;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = true;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryMember($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'custom command `MyCoolTag`'
                 }))).resolves({ success: false, cause: 'notFound' }).mustHappen(1);
@@ -230,12 +225,12 @@ await runSubtagTests({
                 { error: new UserNotFoundError('General') }
             ],
             setup(ctx) {
-                ctx.input.isCC = true;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = true;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryMember($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'custom command `MyCoolTag`'
                 }))).resolves({ success: false, cause: 'aborted' }).mustHappen(1);
@@ -252,7 +247,7 @@ await runSubtagTests({
                 { error: new UserNotFoundError('General').withDisplay('') }
             ],
             setup(ctx) {
-                features.setup(m => m.findMember(ctx.guild.id, 'General')).resolves(undefined).mustHappen(1);
+                features.setup(m => m.findMember(ctx.guildId, 'General')).resolves(undefined).mustHappen(1);
             },
             assert(ctx) {
                 assert.equal(ctx.root.queryCache.failedQueries, 0);

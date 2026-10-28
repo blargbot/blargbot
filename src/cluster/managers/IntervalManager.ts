@@ -5,7 +5,7 @@ import { guard, snowflake } from '@blargbot/core';
 import type { GuildTriggerTag } from '@blargbot/domain';
 import { sleep } from '@blargbot/util';
 import type eris from 'eris';
-import moment from 'moment-timezone';
+import type moment from 'moment-timezone';
 
 export class IntervalManager {
     readonly #cluster: Cluster;
@@ -79,25 +79,19 @@ export class IntervalManager {
     async #invoke(member: eris.Member, channel: eris.KnownGuildTextableChannel, interval: GuildTriggerTag): Promise<ExecutionResult | 'FAILED'> {
         try {
             const result = await this.#cluster.bbtag.execute(interval.content, {
-                message: {
-                    channel: channel,
-                    author: member.user,
-                    member: member,
-                    createdAt: moment.now(),
-                    attachments: [],
-                    embeds: [],
-                    content: '',
-                    id: snowflake.create().toString()
-                },
+                messageId: snowflake.create().toString(),
+                channelId: channel.id,
+                guildId: channel.guild.id,
+                userId: member.id,
                 tagName: '_interval',
                 input: '',
                 flagDefinitions: [],
                 silent: true,
                 isCC: true,
                 tagVars: false,
-                limit: new limits.CustomCommandLimit(channel.guild),
+                limit: new limits.CustomCommandLimit(channel.guild.memberCount),
                 author: interval.author ?? undefined,
-                authorizer: interval.authorizer ?? undefined,
+                authorizer: interval.authorizer ?? interval.author ?? channel.guild.ownerID,
                 cooldown: 0,
                 prefix: undefined
             });

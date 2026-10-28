@@ -26,7 +26,7 @@ await runSubtagTests({
                 {
                     expected: '324',
                     setup(channelId, ctx) {
-                        features.setup(m => m.getChannelPosition(ctx.guild.id, channelId)).resolves(324).mustHappen(1);;
+                        features.setup(m => m.getChannelPosition(ctx.guildId, channelId)).resolves(324).mustHappen(1);;
                     }
                 },
                 {
@@ -34,7 +34,7 @@ await runSubtagTests({
                     channelId: '23948762874624372942',
                     error: new BBTagRuntimeError('Threads dont have a position', '<#23948762874624372942> is a thread and doesnt have a position'),
                     setup(channelId, ctx) {
-                        features.setup(m => m.getChannelPosition(ctx.guild.id, channelId)).resolves('thread').mustHappen(1);;
+                        features.setup(m => m.getChannelPosition(ctx.guildId, channelId)).resolves('thread').mustHappen(1);;
                     }
                 }
             ]
@@ -46,9 +46,8 @@ await runSubtagTests({
                 { error: new ChannelNotFoundError('23948762874624372942') }
             ],
             setup(ctx) {
-                ctx.channels.command.id = '23948762874624372942';
-                ctx.message.channel_id = ctx.channels.command.id;
-                features.setup(m => m.getChannelPosition(ctx.guild.id, '23948762874624372942')).resolves(undefined).mustHappen(1);
+                ctx.channelId = '23948762874624372942';
+                features.setup(m => m.getChannelPosition(ctx.guildId, '23948762874624372942')).resolves(undefined).mustHappen(1);
             }
         }
     ]

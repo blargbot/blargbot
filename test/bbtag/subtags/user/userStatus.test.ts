@@ -25,7 +25,7 @@ await runSubtagTests({
                 {
                     expected: 'dnd',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberStatus(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberStatus(ctx.guildId, userId))
                             .resolves('dnd')
                             .mustHappen(1);
                     }
@@ -33,7 +33,7 @@ await runSubtagTests({
                 {
                     expected: 'idle',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberStatus(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberStatus(ctx.guildId, userId))
                             .resolves('idle')
                             .mustHappen(1);
                     }
@@ -41,7 +41,7 @@ await runSubtagTests({
                 {
                     expected: 'offline',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberStatus(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberStatus(ctx.guildId, userId))
                             .resolves('offline')
                             .mustHappen(1);
                     }
@@ -49,7 +49,7 @@ await runSubtagTests({
                 {
                     expected: 'online',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberStatus(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberStatus(ctx.guildId, userId))
                             .resolves('online')
                             .mustHappen(1);
                     }
@@ -57,7 +57,7 @@ await runSubtagTests({
                 {
                     expected: 'offline',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberStatus(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberStatus(ctx.guildId, userId))
                             .resolves(undefined)
                             .mustHappen(1);
                     }

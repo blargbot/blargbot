@@ -1,10 +1,11 @@
-import { Emote, snowflake } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { isSnowflake } from '../../utils/snowflake.js';
 import { ChannelIdSubtag } from '../channel/channelId.js';
 import type { CheckMessageExistsFeature, GetMemberPermissionsFeature } from '../types.js';
 
@@ -65,7 +66,7 @@ export class ReactionAddSubtag extends CompiledSubtag {
             ?? new ChannelNotFoundError(channelStr).throw();
 
         if (messageId === '')
-            messageId = context.local.message.id;
+            messageId = context.local.messageId;
 
         if (messageId !== undefined && !await this.#features.checkMessageExists(channelId, messageId))
             throw new MessageNotFoundError(channelId, messageId);
@@ -90,13 +91,13 @@ export class ReactionAddSubtag extends CompiledSubtag {
     }
 
     #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string | undefined, reactions: Emote[]] {
-        let channel = context.local.message.channel.id;
+        let channel = context.local.channelId;
         let message = context.root.output.messageId;
 
-        if (args.length >= 2 && snowflake.test(args[1]))
+        if (args.length >= 2 && isSnowflake(args[1]))
             channel = args.splice(0, 1)[0];
 
-        if (args.length >= 1 && snowflake.test(args[0]))
+        if (args.length >= 1 && isSnowflake(args[0]))
             message = args.splice(0, 1)[0];
 
         return [channel, message, args.flatMap(x => Emote.findAll(x))];

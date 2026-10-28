@@ -1,8 +1,10 @@
-import type { BBTagSendContent, BBTagUtilities, ReactionEvent, RwLock, SerializedBBTagContext, subtags, VariablesProvider } from '@blargbot/bbtag';
+import type { BBTagUtilities, MessageEvent, ReactionEvent, RwLock, SerializedBBTagContext, subtags, TagDetails, VariablesProvider } from '@blargbot/bbtag';
 import { ChannelType, DiscordPermissions, getLock } from '@blargbot/bbtag';
 import type * as Subtags from '@blargbot/bbtag/subtags';
-import { type ChoiceQueryResult, Emote, type EntityPickQueryOptions, type SendContent, snowflake } from '@blargbot/core';
-import type { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain';
+import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core';
+import { snowflake } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
+import type { TagVariableScope } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import type { Logger } from '@blargbot/logger';
@@ -35,6 +37,203 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public constructor(cluster: Cluster) {
         this.#cluster = cluster;
         this.#bfClient = new Brainfuck();
+    }
+    public async createEmoji(options: Subtags.CreateEmojiOptions): Promise<Subtags.CreateEmojiResult> {
+        try {
+            const guild = await this.#cluster.util.getGuild(options.guildId);
+            const emoji = await guild?.createEmoji({
+                image: `data:${options.contentType};base64,${Buffer.from(options.image.buffer, options.image.byteOffset, options.image.byteLength).toString('base64')}`,
+                name: options.name,
+                roles: [...options.roles]
+            }, options.auditReason);
+            if (emoji === undefined)
+                return { success: false, cause: 'UNKNOWN', reason: 'Failed to create emoji' };
+            return { success: true, emojiId: emoji.id };
+        } catch (error) {
+            const { reason } = this.#handleError(error);
+            if (reason === undefined) return { success: false, cause: 'UNKNOWN' };
+            const parts = reason.split('\n');
+            return {
+                success: false,
+                cause: (parts[1] ?? parts[0]).trim(),
+                reason
+            };
+        }
+    }
+    public async deleteEmoji(options: Subtags.DeleteEmojiOptions): Promise<Subtags.DeleteEmojiResult> {
+        try {
+            const guild = await this.#cluster.util.getGuild(options.guildId);
+            const emoji = await guild?.deleteEmoji(options.emojiId, options.auditReason);
+            if (emoji === undefined)
+                return { success: false, cause: 'UNKNOWN', reason: 'Failed to delete emoji' };
+            return { success: true };
+        } catch (error) {
+            const { reason } = this.#handleError(error);
+            if (reason === undefined) return { success: false, cause: 'UNKNOWN' };
+            const parts = reason.split('\n');
+            return {
+                success: false,
+                cause: (parts[1] ?? parts[0]).trim(),
+                reason
+            };
+        }
+    }
+    public async listEmojis(guildId: string, roleId?: string): Promise<readonly Emote[] | undefined> {
+        const guild = await this.#cluster.util.getGuild(guildId);
+        if (guild === undefined)
+            return undefined;
+        let emojis = guild.emojis;
+        if (roleId !== undefined)
+            emojis = emojis.filter(x => x.roles.includes(roleId));
+        return emojis.map(x => new Emote(x.name, BigInt(x.id), x.animated));
+    }
+    public async getGuildCreatedTimestamp(guildId: string): Promise<Temporal.Instant | undefined> {
+        const guild = await this.#cluster.util.getGuild(guildId);
+        return this.#toTimestamp(guild, 'createdAt');
+    }
+    public async listGuildFeatures(guildId: string): Promise<readonly string[] | undefined> {
+        const guild = await this.#cluster.util.getGuild(guildId);
+        return guild?.features;
+    }
+    public async getGuildIcon(guildId: string): Promise<URL | null | undefined> {
+        const guild = await this.#cluster.util.getGuild(guildId);
+        const url = guild?.iconURL;
+        if (typeof url !== 'string')
+            return url;
+        return new URL(url);
+    }
+    public async getGuildName(guildId: string): Promise<string | undefined> {
+        const guild = await this.#cluster.util.getGuild(guildId);
+        return guild?.name;
+    }
+    public async getGuildOwnerId(guildId: string): Promise<string | undefined> {
+        const guild = await this.#cluster.util.getGuild(guildId);
+        return guild?.ownerID;
+    }
+    public async setGuildIcon(options: Subtags.SetGuildIconOptions): Promise<Subtags.SetGuildIconResult> {
+        try {
+            const guild = await this.#cluster.util.getGuild(options.guildId);
+            const emoji = await guild?.edit({
+                icon: `data:${options.contentType};base64,${Buffer.from(options.image.buffer, options.image.byteOffset, options.image.byteLength).toString('base64')}`
+            }, options.auditReason);
+            if (emoji === undefined)
+                return { success: false, cause: 'UNKNOWN', reason: 'Failed to create emoji' };
+            return { success: true };
+        } catch (error) {
+            const { reason } = this.#handleError(error);
+            if (reason === undefined) return { success: false, cause: 'UNKNOWN' };
+            const parts = reason.split('\n');
+            return {
+                success: false,
+                cause: (parts[1] ?? parts[0]).trim(),
+                reason
+            };
+        }
+    }
+    public async getRoleColor(guildId: string, roleId: string): Promise<number | undefined> {
+        const role = await this.#cluster.util.getRole(guildId, roleId);
+        return role?.color;
+    }
+    public async createRole(options: Subtags.CreateRoleOptions): Promise<Subtags.CreateRoleResult> {
+        try {
+            const guild = await this.#cluster.util.getGuild(options.guildId);
+            if (guild === undefined) return { success: false, reason: 'Guild not found' };
+            const role = await guild.createRole({
+                name: options.name,
+                color: options.color,
+                hoist: options.hoist,
+                mentionable: options.mentionable,
+                permissions: options.permissions.raw
+            }, options.auditReason);
+            return { success: true, roleId: role.id };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async deleteRole(options: Subtags.DeleteRoleOptions): Promise<Subtags.ApiResult> {
+        try {
+            const role = await this.#cluster.util.getRole(options.guildId, options.roleId);
+            if (role === undefined) return { success: false, reason: 'Role not found' };
+            await role.delete(options.auditReason);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async checkRoleExists(guildId: string, roleId: string): Promise<boolean> {
+        const role = await this.#cluster.util.getRole(guildId, roleId);
+        return role !== undefined;
+    }
+    public async findRole(guildId: string, searchText: string): Promise<string | undefined> {
+        const candidates = await this.#cluster.util.findRoles(guildId, searchText);
+        return candidates.length === 1 ? candidates[0].id : undefined;
+    }
+    public async queryRole(request: Subtags.QueryEntityRequest): Promise<Subtags.QueryEntityResponse> {
+        return await this.#queryEntity('Role', 'role', request);
+    }
+    public async getRoleName(guildId: string, roleId: string): Promise<string | undefined> {
+        const role = await this.#cluster.util.getRole(guildId, roleId);
+        return role?.name;
+    }
+    public async getRolePermissions(guildId: string, roleId: string): Promise<DiscordPermissions | undefined> {
+        const role = await this.#cluster.util.getRole(guildId, roleId);
+        if (role === undefined)
+            return undefined;
+        return new DiscordPermissions(role.permissions.allow);
+    }
+    public async getRolePosition(guildId: string, roleId: string): Promise<number | undefined> {
+        const role = await this.#cluster.util.getRole(guildId, roleId);
+        return role?.position;
+    }
+    public async setRoleColor(options: Subtags.SetRoleColorOptions): Promise<Subtags.ApiResult> {
+        try {
+            const role = await this.#cluster.util.getRole(options.guildId, options.roleId);
+            if (role === undefined) return { success: false, reason: 'Role not found' };
+            await role.edit({ color: options.color }, options.auditReason);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async setRoleMentionable(options: Subtags.SetRoleMentionableOptions): Promise<Subtags.ApiResult> {
+        try {
+            const role = await this.#cluster.util.getRole(options.guildId, options.roleId);
+            if (role === undefined) return { success: false, reason: 'Role not found' };
+            await role.edit({ mentionable: options.mentionable }, options.auditReason);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async setRoleName(options: Subtags.SetRoleNameOptions): Promise<Subtags.ApiResult> {
+        try {
+            const role = await this.#cluster.util.getRole(options.guildId, options.roleId);
+            if (role === undefined) return { success: false, reason: 'Role not found' };
+            await role.edit({ name: options.name }, options.auditReason);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async setRolePermissions(options: Subtags.SetRolePermissionsOptions): Promise<Subtags.ApiResult> {
+        try {
+            const role = await this.#cluster.util.getRole(options.guildId, options.roleId);
+            if (role === undefined) return { success: false, reason: 'Role not found' };
+            await role.edit({ permissions: options.permissions.raw }, options.auditReason);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
+    }
+    public async setRolePosition(options: Subtags.SetRolePositionOptions): Promise<Subtags.ApiResult> {
+        try {
+            const role = await this.#cluster.util.getRole(options.guildId, options.roleId);
+            if (role === undefined) return { success: false, reason: 'Role not found' };
+            await role.editPosition(options.position);
+            return { success: true };
+        } catch (error) {
+            return this.#handleError(error);
+        }
     }
     public async getMemberTimeout(guildId: string, userId: string): Promise<Temporal.Instant | null | undefined> {
         const member = await this.#cluster.util.getMember(guildId, userId);
@@ -168,11 +367,25 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public canRequestDomain(domain: string): Promise<boolean> {
         return Promise.resolve(this.#cluster.domains.isWhitelisted(domain));
     }
-    public async getTag(name: string): Promise<StoredTag | undefined> {
-        return await this.#cluster.database.tags.get(name);
+    public async getTag(name: string): Promise<TagDetails | undefined> {
+        const tag = await this.#cluster.database.tags.get(name);
+        if (tag === undefined)
+            return undefined;
+        return {
+            content: tag.content,
+            cooldown: tag.cooldown
+        };
     }
-    public async getCustomCommand(guildId: string, name: string): Promise<GuildCommandTag | undefined> {
-        return await this.#cluster.database.guilds.getCommand(guildId, name);
+    public async getCustomCommand(guildId: string, name: string): Promise<TagDetails | 'alias' | undefined> {
+        const ccommand = await this.#cluster.database.guilds.getCommand(guildId, name);
+        if (ccommand === undefined)
+            return undefined;
+        if ('alias' in ccommand)
+            return 'alias';
+        return {
+            content: ccommand.content,
+            cooldown: ccommand.cooldown
+        };
     }
     public async checkUserExists(userId: string): Promise<boolean> {
         return await this.#cluster.util.getUser(userId) !== undefined;
@@ -201,7 +414,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public async getMemberPermissions(guildId: string, userId: string, channelId?: string): Promise<DiscordPermissions> {
         const result = await this.#getUserPermissions(guildId, userId, channelId);
         return result.has('ADMINISTRATOR')
-            ? new DiscordPermissions(~0n)
+            ? DiscordPermissions.NONE.not()
             : result;
     }
     async #getUserPermissions(guildId: string, userId: string, channelId?: string): Promise<DiscordPermissions> {
@@ -249,7 +462,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         }
     }
     public async banUser(options: Subtags.BanUserOptions): Promise<Subtags.BanUserResult> {
-        const { guildId, targetId, moderatorId, authorizerId, daysToDelete, reason, unbanAfter = moment.duration(Infinity) } = options;
+        const { guildId, targetId, moderatorId, authorizerId, daysToDelete, auditReason: reason, unbanAfter } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
         if (guild === undefined) return { success: false, cause: 'bot' };
         const target = await this.#cluster.util.getUser(targetId);
@@ -258,7 +471,15 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         if (moderator === undefined) return { success: false, cause: 'authorizer' };
         const authorizer = await this.#cluster.util.getUser(authorizerId);
         if (authorizer === undefined) return { success: false, cause: 'authorizer' };
-        const result = await this.#cluster.moderation.bans.ban(guild, target, moderator, authorizer, daysToDelete, util.literal(reason), unbanAfter);
+        const result = await this.#cluster.moderation.bans.ban(
+            guild,
+            target,
+            moderator,
+            authorizer,
+            daysToDelete,
+            util.literal(reason),
+            this.#toMomentDuration(unbanAfter) ?? moment.duration(Infinity)
+        );
         switch (result) {
             case 'success':
             case 'alreadyBanned':
@@ -274,7 +495,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         }
     }
     public async unbanUser(options: Subtags.UnbanUserOptions): Promise<Subtags.UnbanUserResult> {
-        const { guildId, targetId, moderatorId, authorizerId, reason } = options;
+        const { guildId, targetId, moderatorId, authorizerId, auditReason: reason } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
         if (guild === undefined) return { success: false, cause: 'bot' };
         const target = await this.#cluster.util.getUser(targetId);
@@ -298,7 +519,7 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         }
     }
     public async kickMember(options: Subtags.KickUserOptions): Promise<Subtags.KickUserResult> {
-        const { guildId, targetId, moderatorId, authorizerId, reason } = options;
+        const { guildId, targetId, moderatorId, authorizerId, auditReason: reason } = options;
         const guild = await this.#cluster.util.getGuild(guildId);
         if (guild === undefined) return { success: false, cause: 'bot' };
         const target = guild.members.get(targetId);
@@ -331,9 +552,9 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         if (moderator === undefined) return { success: false, cause: 'authorizer' };
         const authorizer = await this.#cluster.util.getUser(authorizerId);
         if (authorizer === undefined) return { success: false, cause: 'authorizer' };
-        const result = duration.asMilliseconds() === 0
+        const result = duration.sign === 0
             ? await this.#cluster.moderation.timeouts.clearTimeout(target, moderator, authorizer, util.literal(reason))
-            : await this.#cluster.moderation.timeouts.timeout(target, moderator, authorizer, duration, util.literal(reason));
+            : await this.#cluster.moderation.timeouts.timeout(target, moderator, authorizer, this.#toMomentDuration(duration), util.literal(reason));
         switch (result) {
             case 'success':
                 return { success: true };
@@ -457,10 +678,22 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         const partitions = Iterator.from(messageIds).map(x => this.#cluster.awaiter.reactions.getPartition(x));
         yield* raceAsyncIterable(partitions, abort.signal);
     }
-    public async* streamMessages(channelIds: Iterable<string>, timeoutMs: number): AsyncIterable<eris.KnownMessage> {
+    public async* streamMessages(channelIds: Iterable<string>, timeoutMs: number): AsyncIterable<MessageEvent> {
         const abort = new AbortController();
         using _onTimeout = usingTimeout(() => abort.abort(), timeoutMs);
-        const partitions = Iterator.from(channelIds).map(x => this.#cluster.awaiter.messages.getPartition(x));
+        const messages = this.#cluster.awaiter.messages;
+        const partitions = Iterator.from(channelIds).map(async function* (x) {
+            for await (const message of messages.getPartition(x)) {
+                yield {
+                    messageId: message.id,
+                    channelId: message.channel.id,
+                    guildId: 'guild' in message.channel
+                        ? message.channel.guild.id
+                        : undefined,
+                    authorId: message.author.id
+                };
+            }
+        });
         yield* raceAsyncIterable(partitions, abort.signal);
     }
     async #getChannel(guildId: string, channelId: string): Promise<eris.KnownGuildChannel | undefined> {
@@ -493,12 +726,12 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public async getLastMessageId(guildId: string, channelId: string): Promise<string | undefined> {
         return await this.#getChannelProp(guildId, channelId, 'lastMessageID');
     }
-    public async deleteChannel(guildId: string, channelId: string, auditReason: string): Promise<Subtags.ApiResult> {
+    public async deleteChannel(options: Subtags.DeleteChannelOptions): Promise<Subtags.ApiResult> {
         try {
-            const channel = await this.#getChannel(guildId, channelId);
+            const channel = await this.#getChannel(options.guildId, options.channelId);
             if (channel === undefined)
                 return { success: false, reason: 'Channel doesnt exist.' };
-            await channel.delete(auditReason);
+            await channel.delete(options.auditReason);
             return { success: true };
         } catch (error) {
             return this.#handleError(error);
@@ -515,9 +748,9 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
             return this.#handleError(error);
         }
     }
-    public async editChannel(guildId: string, channelId: string, options: Subtags.EditChannelOptions): Promise<Subtags.ApiResult> {
+    public async editChannel(options: Subtags.EditChannelOptions): Promise<Subtags.ApiResult> {
         try {
-            const channel = await this.#getChannel(guildId, channelId);
+            const channel = await this.#getChannel(options.guildId, options.channelId);
             if (channel === undefined)
                 return { success: false, reason: 'Channel not found' };
             await channel.edit(options);
@@ -716,8 +949,6 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         this.#cluster.logger.error(error);
         return { success: false };
     }
-    #toTimestamp<Prop extends PropertyKey>(target: { readonly [P in Prop]: number }, prop: Prop): Temporal.Instant
-    #toTimestamp<Prop extends PropertyKey>(target: { readonly [P in Prop]: number | null }, prop: Prop): Temporal.Instant | null
     #toTimestamp<Prop extends PropertyKey>(target: { readonly [P in Prop]?: number } | undefined, prop: Prop): Temporal.Instant | undefined
     #toTimestamp<Prop extends PropertyKey>(target: { readonly [P in Prop]?: number | null } | undefined, prop: Prop): Temporal.Instant | undefined | null
     #toTimestamp<Prop extends PropertyKey>(target: { readonly [P in Prop]?: number | null } | undefined, prop: Prop): Temporal.Instant | undefined | null {
@@ -728,88 +959,37 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
             default: return Temporal.Instant.fromEpochMilliseconds(value);
         }
     }
+    #toMomentDuration(duration: Temporal.Duration): moment.Duration
+    #toMomentDuration(duration: Temporal.Duration | undefined): moment.Duration | undefined
+    #toMomentDuration(duration: Temporal.Duration | undefined): moment.Duration | undefined {
+        if (duration === undefined)
+            return undefined;
+        return moment.duration({
+            years: duration.years,
+            months: duration.months,
+            weeks: duration.weeks,
+            days: duration.days,
+            hours: duration.hours,
+            minutes: duration.minutes,
+            seconds: duration.seconds,
+            // moment has no microsecond or nanosecond fields, but it stores milliseconds as a float
+            milliseconds: duration.milliseconds + (duration.microseconds * 1e3 + duration.nanoseconds) / 1e6
+        });
+    }
 }
 export class ClusterBBTagUtilities implements BBTagUtilities {
     public constructor(public readonly cluster: Cluster) {
     }
-
-    public async send<T extends eris.TextableChannel>(channel: T, payload: BBTagSendContent, author?: eris.User): Promise<eris.Message<T> | undefined> {
-        return payload.nsfw !== undefined && guard.isGuildChannel(channel) && !channel.nsfw
-            ? await this.cluster.util.send(channel, util.literal({ content: payload.nsfw, allowedMentions: payload.allowedMentions }))
-            : await this.cluster.util.send(channel, util.literal(payload), author);
+    public async getChannelGuild(channelId: string): Promise<string | undefined> {
+        const channel = await this.cluster.util.getChannel(channelId);
+        return channel !== undefined && 'guild' in channel ? channel.guild.id : undefined;
     }
-    public async getChannel(channelId: string): Promise<eris.KnownChannel | undefined> {
-        return await this.cluster.util.getChannel(channelId);
-    }
-
-    public async getMember(guild: string | eris.Guild, userId: string): Promise<eris.Member | undefined> {
-        return await this.cluster.util.getMember(guild, userId);
-    }
-
-    public async getUser(userId: string): Promise<eris.User | undefined> {
-        return await this.cluster.util.getUser(userId);
-    }
-
-    public async getRole(guild: string | eris.Guild, roleId: string): Promise<eris.Role | undefined> {
-        return await this.cluster.util.getRole(guild, roleId);
-    }
-
-    public async findRoles(guild: string | eris.Guild, query?: string): Promise<eris.Role[]> {
-        return await this.cluster.util.findRoles(guild, query);
-    }
-
-    public async getMessage(channel: string, messageId: string, force?: boolean): Promise<eris.KnownMessage | undefined> {
-        return await this.cluster.util.getMessage(channel, messageId, force);
-    }
-
-    public queryRole(options: EntityPickQueryOptions<string, eris.Role>): Promise<ChoiceQueryResult<eris.Role>> {
-        return this.cluster.util.queryRole({
-            ...options,
-            placeholder: util.literal(options.placeholder),
-            prompt: toPrompt(options.prompt)
-        });
-    }
-
-    public queryChannel<T extends eris.KnownChannel>(options: EntityPickQueryOptions<string, T>): Promise<ChoiceQueryResult<T>>
-    public queryChannel(options: EntityPickQueryOptions<string, eris.KnownChannel>): Promise<ChoiceQueryResult<eris.KnownChannel>>
-    public queryChannel(options: EntityPickQueryOptions<string, eris.KnownChannel>): Promise<ChoiceQueryResult<eris.KnownChannel>> {
-        return this.cluster.util.queryChannel({
-            ...options,
-            placeholder: util.literal(options.placeholder),
-            prompt: toPrompt(options.prompt)
-        });
+    public async getMessageAuthor(channelId: string, messageId: string): Promise<string | undefined> {
+        const message = await this.cluster.util.getMessage(channelId, messageId);
+        return message?.author.id;
     }
 }
 
-function toPrompt(value: string | Omit<SendContent<string>, 'components'> | undefined): IFormattable<string> | Omit<SendContent<IFormattable<string>>, 'components'> | undefined {
-    switch (typeof value) {
-        case 'string':
-        case 'undefined':
-            return util.literal(value);
-        default: return {
-            ...value,
-            content: util.literal(value.content),
-            embeds: value.embeds?.map(e => ({
-                ...e,
-                title: util.literal(e.title),
-                description: util.literal(e.description),
-                author: e.author === undefined ? undefined : {
-                    ...e.author,
-                    name: util.literal(e.author.name)
-                },
-                footer: e.footer === undefined ? undefined : {
-                    ...e.footer,
-                    text: util.literal(e.footer.text)
-                },
-                fields: e.fields?.map(f => ({
-                    ...f,
-                    name: util.literal(f.name),
-                    value: util.literal(f.value)
-                }))
-            }))
-        };
-    }
-}
 type KeysOfUnion<T> = T extends unknown ? keyof T : never;
 type ValueOfUnion<T, K extends PropertyKey> =
     T extends unknown ? K extends keyof T ? T[K] : never : never;

@@ -7,6 +7,7 @@
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/discord-emote": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",

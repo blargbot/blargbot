@@ -1,6 +1,6 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import type { EditChannelFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, SlowModeSubtag } from '@blargbot/bbtag/subtags';
+import { ChannelIdSubtag, ReasonSubtag, SlowModeSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
@@ -8,25 +8,35 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<EditChannelFeature>({ id: 'features' });
 const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelId' });
+const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
 
 await runSubtagTests({
     subtag: new SlowModeSubtag(features.instance),
-    otherSubtags: [channelIdSubtag.instance],
+    otherSubtags: [channelIdSubtag.instance, reasonSubtag.instance],
     argCountBounds: { min: 0, max: 2 },
     names: ['slowMode'],
     setup(ctx) {
         ctx.adoptMock(features);
         ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
+    },
+    postSetup(bbctx) {
+        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
     },
     cases: [
         {
             code: '{slowmode}',
             expected: '',
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                features.setup((m, $) => m.editChannel(ctx.guild.id, ctx.channels.command.id, $({ rateLimitPerUser: 0, auditReason: 'Command User#0000' })))
+                features.setup((m, $) => m.editChannel($({
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    rateLimitPerUser: 0,
+                    auditReason: '@command.user'
+                })))
                     .resolves({ success: true })
                     .mustHappen(1);
             }
@@ -38,7 +48,12 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '1234', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                features.setup((m, $) => m.editChannel(ctx.guild.id, ctx.channels.command.id, $({ rateLimitPerUser: 1234, auditReason: 'Command User#0000' })))
+                features.setup((m, $) => m.editChannel($({
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    rateLimitPerUser: 1234,
+                    auditReason: '@command.user'
+                })))
                     .resolves({ success: true })
                     .mustHappen(1);
             }
@@ -51,7 +66,12 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                features.setup((m, $) => m.editChannel(ctx.guild.id, channelId, $({ rateLimitPerUser: 0, auditReason: 'Command User#0000' })))
+                features.setup((m, $) => m.editChannel($({
+                    guildId: ctx.guildId,
+                    channelId,
+                    rateLimitPerUser: 0,
+                    auditReason: '@command.user'
+                })))
                     .resolves({ success: true })
                     .mustHappen(1);
             }
@@ -64,7 +84,12 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                features.setup((m, $) => m.editChannel(ctx.guild.id, channelId, $({ rateLimitPerUser: 21600, auditReason: 'Command User#0000' })))
+                features.setup((m, $) => m.editChannel($({
+                    guildId: ctx.guildId,
+                    channelId,
+                    rateLimitPerUser: 21600,
+                    auditReason: '@command.user'
+                })))
                     .resolves({ success: true })
                     .mustHappen(1);
             }
@@ -77,7 +102,12 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                features.setup((m, $) => m.editChannel(ctx.guild.id, channelId, $({ rateLimitPerUser: 0, auditReason: 'Command User#0000' })))
+                features.setup((m, $) => m.editChannel($({
+                    guildId: ctx.guildId,
+                    channelId,
+                    rateLimitPerUser: 0,
+                    auditReason: '@command.user'
+                })))
                     .resolves({ success: true })
                     .mustHappen(1);
             }
@@ -93,7 +123,12 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                features.setup((m, $) => m.editChannel(ctx.guild.id, channelId, $({ rateLimitPerUser: 0, auditReason: 'Command User#0000' })))
+                features.setup((m, $) => m.editChannel($({
+                    guildId: ctx.guildId,
+                    channelId,
+                    rateLimitPerUser: 0,
+                    auditReason: '@command.user'
+                })))
                     .resolves({ success: false, reason: 'Test REST error' })
                     .mustHappen(1);
             }
@@ -109,7 +144,12 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                features.setup((m, $) => m.editChannel(ctx.guild.id, channelId, $({ rateLimitPerUser: 0, auditReason: 'Command User#0000' })))
+                features.setup((m, $) => m.editChannel($({
+                    guildId: ctx.guildId,
+                    channelId,
+                    rateLimitPerUser: 0,
+                    auditReason: '@command.user'
+                })))
                     .resolves({ success: false, reason: 'Some other error message' })
                     .mustHappen(1);
             }

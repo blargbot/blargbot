@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.newline;
@@ -28,7 +27,7 @@ export class NewlineSubtag extends CompiledSubtag {
     }
 
     public getNewlines(ctx: BBTagContext, countStr: string): string {
-        const count = parse.int(countStr) ?? parse.int(ctx.local.fallback ?? '');
+        const count = convertToInteger(countStr) ?? convertToInteger(ctx.local.fallback ?? '');
         if (count === undefined)
             throw new NotANumberError(countStr);
 

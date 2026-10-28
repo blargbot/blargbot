@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 import type { VariablesFeature } from '../types.js';
 
@@ -54,7 +53,7 @@ export class GetSubtag extends CompiledSubtag {
         if (indexStr === '')
             return { v: result.value, n: result.key };
 
-        const index = parse.int(indexStr);
+        const index = convertToInteger(indexStr);
         if (index === undefined)
             throw new NotANumberError(indexStr);
 

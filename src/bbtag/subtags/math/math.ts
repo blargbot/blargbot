@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidOperatorError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToNumber } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.math;
@@ -35,7 +34,7 @@ export class MathSubtag extends CompiledSubtag {
         return bbtag.tagArray.flattenArray(args).map((arg: JToken | undefined) => {
             const argRaw = arg;
             if (typeof arg === 'string')
-                arg = parse.float(arg);
+                arg = convertToNumber(arg);
             if (typeof arg !== 'number')
                 throw new NotANumberError(argRaw);
             return arg;

@@ -24,7 +24,7 @@ await runSubtagTests({
             },
             cases: [
                 {
-                    expected: '<runtime mention>',
+                    expected: '<dynamic mention>',
                     setup(userId) {
                         this.expected = `<@${userId}>`;
                     },
@@ -38,9 +38,6 @@ await runSubtagTests({
             code: '{usermention;12345678900987236;;false}',
             expected: '<@12345678900987236>',
             subtags: [userIdSubtag.instance],
-            setup(ctx) {
-                ctx.users.command.id = '12345678900987236';
-            },
             postSetup(bbctx) {
                 userIdSubtag.setup((m, $) => m.query(bbctx, '12345678900987236', $({ noLookup: false, global: true })))
                     .resolves('12345678900987236')
@@ -54,9 +51,6 @@ await runSubtagTests({
             code: '{usermention;12345678900987236;;true}',
             expected: '<@12345678900987236>',
             subtags: [userIdSubtag.instance],
-            setup(ctx) {
-                ctx.users.command.id = '12345678900987236';
-            },
             postSetup(bbctx) {
                 userIdSubtag.setup((m, $) => m.query(bbctx, '12345678900987236', $({ noLookup: false, global: true })))
                     .resolves('12345678900987236')
@@ -70,9 +64,6 @@ await runSubtagTests({
             code: '{usermention;12345678900987236}{usermention;12345678900987236}',
             expected: '<@12345678900987236><@12345678900987236>',
             subtags: [userIdSubtag.instance],
-            setup(ctx) {
-                ctx.users.command.id = '12345678900987236';
-            },
             postSetup(bbctx) {
                 userIdSubtag.setup((m, $) => m.query(bbctx, '12345678900987236', $({ noLookup: false, global: true })))
                     .resolves('12345678900987236')
@@ -86,10 +77,6 @@ await runSubtagTests({
             code: '{usermention;12345678900987236}{usermention;098765434512212678}',
             expected: '<@12345678900987236><@098765434512212678>',
             subtags: [userIdSubtag.instance],
-            setup(ctx) {
-                ctx.users.command.id = '12345678900987236';
-                ctx.users.other.id = '098765434512212678';
-            },
             postSetup(bbctx) {
                 userIdSubtag.setup((m, $) => m.query(bbctx, '12345678900987236', $({ noLookup: false, global: true })))
                     .resolves('12345678900987236')

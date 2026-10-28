@@ -28,8 +28,8 @@ await runSubtagTests({
                 { error: new MessageNotFoundError('987654321123456789', '12345678901234567') }
             ],
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
+                ctx.channelId = ctx.channelId = '987654321123456789';
+                features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
                     .resolves(undefined)
                     .mustHappen(1);
             },
@@ -37,8 +37,8 @@ await runSubtagTests({
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
             }
         },
@@ -50,8 +50,8 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('I must be the message author') }
             ],
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
+                ctx.channelId = ctx.channelId = '987654321123456789';
+                features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
                     .resolves('812768723681368213')
                     .mustHappen(1);
             },
@@ -59,8 +59,8 @@ await runSubtagTests({
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
             }
         },
@@ -72,12 +72,12 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Message cannot be empty') }
             ],
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                ctx.channelId = ctx.channelId = '987654321123456789';
+                features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
-                    channelId: ctx.channels.command.id,
+                    channelId: ctx.channelId,
                     messageId: '12345678901234567',
                     content: '',
                     embeds: undefined
@@ -87,8 +87,8 @@ await runSubtagTests({
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
             }
         },
@@ -96,12 +96,12 @@ await runSubtagTests({
             code: '{edit;12345678901234567;New message text}',
             expected: '',
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                ctx.channelId = ctx.channelId = '987654321123456789';
+                features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
-                    channelId: ctx.channels.command.id,
+                    channelId: ctx.channelId,
                     messageId: '12345678901234567',
                     content: 'New message text',
                     embeds: undefined
@@ -111,8 +111,8 @@ await runSubtagTests({
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
             }
         },
@@ -121,12 +121,12 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                ctx.channelId = ctx.channelId = '987654321123456789';
+                features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
-                    channelId: ctx.channels.command.id,
+                    channelId: ctx.channelId,
                     messageId: '12345678901234567',
                     content: undefined,
                     embeds: [{ title: 'New embed!' }]
@@ -136,8 +136,8 @@ await runSubtagTests({
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
             }
         },
@@ -146,12 +146,12 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                ctx.channelId = ctx.channelId = '987654321123456789';
+                features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
-                    channelId: ctx.channels.command.id,
+                    channelId: ctx.channelId,
                     messageId: '12345678901234567',
                     content: '{"title":false}',
                     embeds: undefined
@@ -161,8 +161,8 @@ await runSubtagTests({
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
             }
         },
@@ -170,12 +170,12 @@ await runSubtagTests({
             code: '{edit;12345678901234567;_delete}',
             expected: '',
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                ctx.channelId = ctx.channelId = '987654321123456789';
+                features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
-                    channelId: ctx.channels.command.id,
+                    channelId: ctx.channelId,
                     messageId: '12345678901234567',
                     content: '',
                     embeds: undefined
@@ -185,8 +185,8 @@ await runSubtagTests({
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
             }
         },
@@ -195,12 +195,12 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                ctx.channelId = ctx.channelId = '987654321123456789';
+                features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
-                    channelId: ctx.channels.command.id,
+                    channelId: ctx.channelId,
                     messageId: '12345678901234567',
                     content: 'New message text',
                     embeds: [{ title: 'New embed!' }]
@@ -213,8 +213,8 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '12345678901234567', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
             }
         },
@@ -223,12 +223,12 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                ctx.channelId = ctx.channelId = '987654321123456789';
+                features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
-                    channelId: ctx.channels.command.id,
+                    channelId: ctx.channelId,
                     messageId: '12345678901234567',
                     content: '{"title":"New embed!"}',
                     embeds: [{ fields: [{ name: 'Malformed JSON', value: '"New message text"' }], malformed: true }]
@@ -241,8 +241,8 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '12345678901234567', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
             }
         },
@@ -254,12 +254,12 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Message cannot be empty') }
             ],
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '987654321123456789';
-                features.setup(m => m.getMessageAuthor(ctx.channels.command.id, '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                ctx.channelId = ctx.channelId = '987654321123456789';
+                features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
-                    channelId: ctx.channels.command.id,
+                    channelId: ctx.channelId,
                     messageId: '12345678901234567',
                     content: '',
                     embeds: []
@@ -272,8 +272,8 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '12345678901234567', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
             }
         },
@@ -281,9 +281,8 @@ await runSubtagTests({
             code: '{edit;9876543212345678;12345678901234567;New message text}',
             expected: '',
             setup(ctx) {
-                ctx.channels.general.id = '9876543212345678';
                 features.setup(m => m.getMessageAuthor('9876543212345678', '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
                     channelId: '9876543212345678',
@@ -306,9 +305,8 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                ctx.channels.general.id = '9876543212345678';
                 features.setup(m => m.getMessageAuthor('9876543212345678', '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
                     channelId: '9876543212345678',
@@ -331,9 +329,8 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                ctx.channels.general.id = '9876543212345678';
                 features.setup(m => m.getMessageAuthor('9876543212345678', '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
                     channelId: '9876543212345678',
@@ -355,9 +352,8 @@ await runSubtagTests({
             code: '{edit;9876543212345678;12345678901234567;_delete}',
             expected: '',
             setup(ctx) {
-                ctx.channels.general.id = '9876543212345678';
                 features.setup(m => m.getMessageAuthor('9876543212345678', '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
                     channelId: '9876543212345678',
@@ -380,9 +376,8 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                ctx.channels.general.id = '9876543212345678';
                 features.setup(m => m.getMessageAuthor('9876543212345678', '12345678901234567'))
-                    .resolves(ctx.users.bot.id)
+                    .resolves(ctx.botId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editMessage($({
                     channelId: '9876543212345678',
@@ -408,9 +403,6 @@ await runSubtagTests({
             errors: [
                 { error: new ChannelNotFoundError('9876543212345678') }
             ],
-            setup(ctx) {
-                ctx.channels.general.id = '9876543212345678';
-            },
             postSetup(bbctx) {
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
                     .resolves(true)

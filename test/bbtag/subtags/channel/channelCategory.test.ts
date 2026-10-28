@@ -26,14 +26,14 @@ await runSubtagTests({
                 {
                     expected: '8237642839674943',
                     setup(channelId, ctx) {
-                        features.setup(m => m.getChannelCategory(ctx.guild.id, channelId)).resolves('8237642839674943').mustHappen(1);
+                        features.setup(m => m.getChannelCategory(ctx.guildId, channelId)).resolves('8237642839674943').mustHappen(1);
                     }
                 },
                 {
                     expected: '',
                     error: new BBTagRuntimeError('Channel has no parent').withDisplay(''),
                     setup(channelId, ctx) {
-                        features.setup(m => m.getChannelCategory(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
+                        features.setup(m => m.getChannelCategory(ctx.guildId, channelId)).resolves(undefined).mustHappen(1);
                     }
                 }
             ]

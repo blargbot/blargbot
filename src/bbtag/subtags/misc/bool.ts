@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidOperatorError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToBooleanStrict } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.bool;
@@ -40,10 +39,10 @@ export class BoolSubtag extends CompiledSubtag {
         } else
             throw new InvalidOperatorError(evaluator);
 
-        const leftBool = parse.boolean(left, undefined, false);
+        const leftBool = convertToBooleanStrict(left);
         if (leftBool !== undefined)
             left = leftBool.toString();
-        const rightBool = parse.boolean(right, undefined, false);
+        const rightBool = convertToBooleanStrict(right);
         if (rightBool !== undefined)
             right = rightBool.toString();
 

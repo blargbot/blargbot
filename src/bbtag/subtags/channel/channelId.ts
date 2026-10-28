@@ -1,11 +1,10 @@
-import { snowflake } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import type { QueryEntityOptions } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
+import { isSnowflake } from '../../utils/snowflake.js';
 import type { QueryEntityRequest, QueryEntityResponse } from '../types.js';
 
 const tag = templates.subtags.channelId;
@@ -51,7 +50,7 @@ export class ChannelIdSubtag extends CompiledSubtag {
     }
 
     public currentChannel(context: BBTagContext): string {
-        return context.local.message.channel.id;
+        return context.local.channelId;
     }
 
     public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string> {
@@ -64,14 +63,14 @@ export class ChannelIdSubtag extends CompiledSubtag {
     }
 
     public async query(context: BBTagContext, searchText: string, options?: QueryEntityOptions): Promise<string | undefined> {
-        if (searchText === '' || searchText === context.local.message.channel.id)
-            return context.local.message.channel.id;
+        if (searchText === '' || searchText === context.local.channelId)
+            return context.local.channelId;
 
         const cached = context.root.queryCache.channel.get(searchText.toLowerCase());
         if (cached !== undefined)
             return cached;
 
-        if (snowflake.test(searchText) && await this.#features.checkChannelExists(context.root.guildId, searchText))
+        if (isSnowflake(searchText) && await this.#features.checkChannelExists(context.root.guildId, searchText))
             return searchText;
 
         if (options?.noLookup === true || context.local.quiet === true || context.root.queryCache.failedQueries >= 5) {
@@ -83,8 +82,8 @@ export class ChannelIdSubtag extends CompiledSubtag {
 
         const result = await this.#features.queryChannel({
             guildId: context.root.guildId,
-            channelId: context.root.message.channel.id,
-            userId: context.root.message.author.id,
+            channelId: context.root.channelId,
+            userId: context.root.userId,
             searchText: searchText,
             source: options?.noErrors !== true && context.local.noLookupErrors !== true
                 ? `${context.root.isCC ? 'custom command' : 'tag'} \`${context.root.tagName}\``

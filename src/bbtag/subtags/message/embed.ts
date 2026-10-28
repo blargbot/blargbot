@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToEmbed } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.embed;
@@ -26,7 +25,7 @@ export class EmbedSubtag extends CompiledSubtag {
     }
 
     public setEmbed(context: BBTagContext, embedStr: string[]): void {
-        context.root.output.embeds = embedStr.flatMap(e => parse.embed(e) ?? []);
+        context.root.output.embeds = embedStr.flatMap(e => convertToEmbed(e) ?? []);
 
     }
 }

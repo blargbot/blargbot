@@ -34,25 +34,22 @@ await runSubtagTests({
                 },
                 {
                     title: '1 embed',
-                    expected: '[{"type":"rich","title":"Embed 1"}]',
+                    expected: '[{"title":"Embed 1"}]',
                     setup(getProp) {
                         getProp.resolves([{
-                            type: 'rich',
                             title: 'Embed 1'
                         }]).mustHappen(1);
                     }
                 },
                 {
                     title: '2 embeds',
-                    expected: '[{"type":"rich","title":"Embed 1"},{"type":"rich","title":"Embed 2"}]',
+                    expected: '[{"title":"Embed 1"},{"title":"Embed 2"}]',
                     setup(getProp) {
                         getProp.resolves([
                             {
-                                type: 'rich',
                                 title: 'Embed 1'
                             },
                             {
-                                type: 'rich',
                                 title: 'Embed 2'
                             }
                         ]).mustHappen(1);

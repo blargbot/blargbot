@@ -1,9 +1,9 @@
-import { parse } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { SubtagLogic } from '../logic/index.js';
 import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic/index.js';
 import type { SubtagReturnTypeMap, SubtagSignature, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types.js';
+import { convertToIntegerStrict, convertToString } from '../utils/converters.js';
 import type { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions.js';
 import type { SubtagSignatureCallable } from './SubtagSignatureCallable.js';
 import type { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions.js';
@@ -56,7 +56,7 @@ function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignat
 
     let name = parameter.slice(0, Math.min(startDefault, startMaxLength));
     let defaultValue = parameter.slice(startDefault + 1, startMaxLength);
-    let maxLength = parse.int(parameter.slice(startMaxLength + 1), { strict: true });
+    let maxLength = convertToIntegerStrict(parameter.slice(startMaxLength + 1));
     if (maxLength === undefined) {
         maxLength = 1_000_000;
         defaultValue = parameter.slice(startDefault + 1);
@@ -128,8 +128,8 @@ const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLog
     'string': StringSubtagLogic,
     'string|nothing': StringSubtagLogic,
     'string[]': ArraySubtagLogic,
-    'json': StringSubtagLogic.withConversion(parse.string),
-    'json|nothing': StringSubtagLogic.withConversion(parse.string),
+    'json': StringSubtagLogic.withConversion(convertToString),
+    'json|nothing': StringSubtagLogic.withConversion(convertToString),
     'json[]': ArraySubtagLogic,
     'json[]|nothing': ArraySubtagLogic,
     'nothing': IgnoreSubtagLogic,

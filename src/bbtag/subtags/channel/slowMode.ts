@@ -1,10 +1,10 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
 import type { EditChannelFeature } from './channelEdit.js';
 import { ChannelIdSubtag } from './channelId.js';
 
@@ -24,7 +24,7 @@ export class SlowModeSubtag extends CompiledSubtag {
                     exampleCode: tag.clearCurrent.exampleCode,
                     exampleOut: tag.clearCurrent.exampleOut,
                     returns: 'nothing',
-                    execute: (ctx) => this.setSlowmode(ctx, ctx.local.message.channel.id, '0')
+                    execute: (ctx) => this.setSlowmode(ctx, ctx.local.channelId, '0')
                 },
                 {
                     parameters: ['channel|time'],
@@ -61,22 +61,24 @@ export class SlowModeSubtag extends CompiledSubtag {
         channelStr: string,
         timeStr: string
     ): Promise<void> {
-        let time = parse.int(timeStr);
+        let time = convertToInteger(timeStr);
         let channelId;
         const lookupChannel = await ChannelIdSubtag.query(context, channelStr, { noLookup: true });//TODO yikes
         if (lookupChannel !== undefined)
             channelId = lookupChannel;
         else {
-            channelId = context.local.message.channel.id;
-            time = parse.int(channelStr);
+            channelId = context.local.channelId;
+            time = convertToInteger(channelStr);
         }
 
         time ??= 0;
         time = Math.min(time, 21600);
 
-        const result = await this.#features.editChannel(context.root.guildId, channelId, {
+        const result = await this.#features.editChannel({
+            guildId: context.root.guildId,
+            channelId,
             rateLimitPerUser: time,
-            auditReason: context.auditReason()
+            auditReason: await ReasonSubtag.get(context)
         });
         if (result.success)
             return;

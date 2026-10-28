@@ -22,3 +22,5 @@ export const bbtag = Object.freeze({
     tagArray,
     overrides
 });
+
+export * from './getEditRolePositionDetails.js';

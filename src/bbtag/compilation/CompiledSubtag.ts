@@ -1,4 +1,3 @@
-import { guard } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { BBTagContext } from '../BBTagContext.js';
@@ -36,13 +35,13 @@ export abstract class CompiledSubtag extends Subtag {
         this.deprecated = options.deprecated ?? false;
         this.staff = options.staff ?? false;
         this.hidden = options.hidden ?? false;
-        this.signatures = signatures.map(s => s.signature).filter(guard.hasValue);
+        this.signatures = signatures.map(s => s.signature).filter(x => x !== undefined);
         this.aliases = [
             ...options.aliases ?? [],
-            ...this.signatures.map(s => s.subtagName).filter(guard.hasValue)
+            ...this.signatures.map(s => s.subtagName).filter(x => x !== undefined)
         ];
 
-        this.#handler = compileSignatures(signatures.map(s => s.implementation).filter(guard.hasValue));
+        this.#handler = compileSignatures(signatures.map(s => s.implementation).filter(x => x !== undefined));
     }
 
     protected override executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {

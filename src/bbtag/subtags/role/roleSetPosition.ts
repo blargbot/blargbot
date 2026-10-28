@@ -1,16 +1,32 @@
-import { parse } from '@blargbot/core';
-import * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
-import { SubtagType } from '../../utils/index.js';
+import { convertToInteger } from '../../utils/converters.js';
+import { getEditRoleDetails, SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
+import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
+import { RoleIdSubtag } from './roleId.js';
+import type { GetRolePositionFeature } from './rolePosition.js';
+import type { ListGuildRolesFeature, ListMemberRolesFeature } from './roles.js';
 
 const tag = templates.subtags.roleSetPosition;
 
+export interface SetRolePositionOptions {
+    readonly guildId: string;
+    readonly roleId: string;
+    readonly position: number;
+    readonly auditReason: string;
+}
+
+export interface SetRolePositionFeature {
+    setRolePosition(options: SetRolePositionOptions): Promise<ApiResult>;
+}
+
+type Features = SetRolePositionFeature & GetRolePositionFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature;
 export class RoleSetPositionSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'roleSetPosition',
             aliases: ['roleSetPos'],
@@ -26,37 +42,40 @@ export class RoleSetPositionSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async setRolePosition(context: BBTagContext, roleStr: string, positionStr: string, quiet: boolean): Promise<boolean> {
-        const topRole = context.roleEditPosition();
-        if (topRole <= 0)
+        const { guildId, botId, authorizerId } = context.root;
+        const { topRoleId, topRoleIndex, roleIndexMap } = await getEditRoleDetails(guildId, [botId, authorizerId], this.#features);
+        if (topRoleIndex <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
-        const role = await context.queryRole(roleStr, { noLookup: quiet });
-        const pos = parse.int(positionStr);
-        if (pos === undefined)
+        const position = convertToInteger(positionStr);
+        if (position === undefined)
             throw new NotANumberError(positionStr);
 
-        if (role === undefined)
-            throw new RoleNotFoundError(roleStr);
+        const roleId = await RoleIdSubtag.query(context, roleStr, { noLookup: quiet })
+            ?? new RoleNotFoundError(roleStr).throw();
 
-        if (role.position >= topRole)
+        if ((roleIndexMap.get(roleId) ?? 0) >= topRoleIndex)
             throw new BBTagRuntimeError('Role above author');
-        if (pos >= topRole)
+
+        const topRolePosition = topRoleId === undefined ? -1 : await this.#features.getRolePosition(guildId, topRoleId) ?? -1;
+
+        if (position >= topRolePosition)
             throw new BBTagRuntimeError('Desired position above author');
 
-        try {
-            await role.editPosition(pos);
+        const result = await this.#features.setRolePosition({
+            guildId,
+            roleId,
+            position,
+            auditReason: await ReasonSubtag.get(context)
+        });
+        if (result.success)
             return true;
-        } catch (err: unknown) {
-            if (!(err instanceof eris.DiscordRESTError))
-                throw err;
 
-            if (quiet)
-                return false;
-
-            throw new BBTagRuntimeError('Failed to edit role: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to edit role: no perms', result.reason)
+            .withDisplay(quiet ? 'false' : undefined);
     }
 }

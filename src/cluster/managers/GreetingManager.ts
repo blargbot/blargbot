@@ -4,7 +4,6 @@ import type { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/core';
 import type { GuildTriggerTag } from '@blargbot/domain';
 import type eris from 'eris';
-import moment from 'moment-timezone';
 
 export class GreetingManager {
     public constructor(protected readonly cluster: Cluster) {
@@ -38,25 +37,19 @@ export class GreetingManager {
 
     async #execute(command: GuildTriggerTag, channel: eris.KnownGuildTextableChannel, member: eris.Member, name: string): Promise<ExecutionResult> {
         return await this.cluster.bbtag.execute(command.content, {
-            message: {
-                attachments: [],
-                author: member.user,
-                channel: channel,
-                content: '',
-                embeds: [],
-                id: snowflake.create().toString(),
-                member: member,
-                createdAt: moment().valueOf()
-            },
+            messageId: snowflake.create().toString(),
+            channelId: channel.id,
+            guildId: channel.guild.id,
+            userId: member.id,
             tagName: name,
             input: '',
             flagDefinitions: [],
             silent: false,
             isCC: true,
             tagVars: false,
-            limit: new limits.CustomCommandLimit(channel.guild),
+            limit: new limits.CustomCommandLimit(channel.guild.memberCount),
             author: command.author ?? undefined,
-            authorizer: command.authorizer ?? undefined,
+            authorizer: command.authorizer ?? command.author ?? channel.guild.ownerID,
             cooldown: 0,
             prefix: undefined
         });

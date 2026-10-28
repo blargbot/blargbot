@@ -1,11 +1,9 @@
-import { parse } from '@blargbot/core';
-import moment from 'moment-timezone';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import type { SerializedBBTagContext } from '../../types.js';
+import { convertToDuration } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.timer;
@@ -36,12 +34,12 @@ export class TimerSubtag extends CompiledSubtag {
     }
 
     public async queueTimer(context: BBTagContext, code: string, durationStr: string): Promise<void> {
-        const duration = parse.duration(durationStr);
+        const duration = convertToDuration(durationStr);
 
-        if (duration === undefined || duration.asMilliseconds() <= 0)
+        if (duration === undefined || duration.sign <= 0)
             throw new BBTagRuntimeError('Invalid duration');
 
-        const dueTime = Temporal.Instant.fromEpochMilliseconds(moment().add(duration).valueOf());
+        const dueTime = Temporal.Now.instant().add(duration);
         await this.#features.scheduleBBTag(context.engine.serialize(context), code, dueTime);
     }
 }

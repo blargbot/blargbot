@@ -7,8 +7,14 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildCreatedAt;
 
+export interface GetGuildCreatedTimestampFeature {
+    getGuildCreatedTimestamp(guildId: string): Promise<Temporal.Instant | undefined>;
+}
+
+type Features = GetGuildCreatedTimestampFeature;
 export class GuildCreatedAtSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: GetGuildCreatedTimestampFeature;
+    public constructor(features: Features) {
         super({
             name: 'guildCreatedAt',
             category: SubtagType.GUILD,
@@ -23,9 +29,12 @@ export class GuildCreatedAtSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
-    public getGuildCreatedDate(context: BBTagContext, format: string): string {
-        return moment(context.root.message.channel.guild.createdAt).utcOffset(0).format(format);
+    public async getGuildCreatedDate(context: BBTagContext, format: string): Promise<string> {
+        const timestamp = await this.#features.getGuildCreatedTimestamp(context.root.guildId)
+            ?? Temporal.Now.instant();
+        return moment(timestamp.epochMilliseconds).utcOffset(0).format(format);
     }
 }

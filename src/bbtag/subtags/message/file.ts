@@ -26,7 +26,7 @@ export class FileSubtag extends CompiledSubtag {
     public attachFile(context: BBTagContext, fileName: string, fileContent: string): void {
         const data = fileContent.startsWith('buffer:')
             ? Buffer.from(fileContent.substring(7), 'base64')
-            : fileContent;
+            : Buffer.from(fileContent);
         context.root.output.files = [{ file: data, name: fileName }];
     }
 }

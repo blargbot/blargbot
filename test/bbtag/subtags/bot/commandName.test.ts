@@ -11,14 +11,14 @@ await runSubtagTests({
             code: '{commandname}',
             expected: 'My cool command',
             setup(ctx) {
-                ctx.input.tagName = 'My cool command';
+                ctx.tagName = 'My cool command';
             }
         },
         {
             code: '{commandname}',
             expected: 'My cool command',
             setup(ctx) {
-                ctx.input.tagName = 'My cool command';
+                ctx.tagName = 'My cool command';
             },
             postSetup(bbctx) {
                 bbctx.enterScope();

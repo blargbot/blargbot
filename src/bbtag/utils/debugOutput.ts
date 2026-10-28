@@ -1,12 +1,11 @@
 import type { IFormattable } from '@blargbot/formatting';
-import type * as eris from 'eris';
 
 import type { SubtagCall } from '../language/index.js';
 import { templates } from '../text.js';
-import type { ExecutionResult } from '../types.js';
+import type { ExecutionResult, FileContent } from '../types.js';
 import { stringify } from './stringify.js';
 
-export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; file: eris.FileContent[]; } {
+export function createDebugOutput(result: ExecutionResult): { content: IFormattable<string>; file: FileContent[]; } {
     const performance: Record<string, unknown> = {};
     for (const [key, times] of result.duration.subtag) {
         if (times.length > 0) {
@@ -29,7 +28,7 @@ export function createDebugOutput(result: ExecutionResult): { content: IFormatta
         file: [
             {
                 name: 'bbtag.debug.json',
-                file: JSON.stringify({
+                file: Buffer.from(JSON.stringify({
                     tagName: result.tagName,
                     userInput: result.input,
                     code: result.source,
@@ -45,7 +44,7 @@ export function createDebugOutput(result: ExecutionResult): { content: IFormatta
                     })),
                     variables: result.database.values,
                     performance: performance
-                }, undefined, 2)
+                }, undefined, 2))
             }
         ]
     };

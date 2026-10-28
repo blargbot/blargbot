@@ -18,7 +18,7 @@ await runSubtagTests({
             code: '{guildsize}',
             expected: '123',
             setup(ctx) {
-                features.setup(m => m.getGuildMemberCount(ctx.guild.id))
+                features.setup(m => m.getGuildMemberCount(ctx.guildId))
                     .resolves(123);
             }
         }

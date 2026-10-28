@@ -26,7 +26,7 @@ await runSubtagTests({
                 {
                     expected: '2021-01-01T00:00:00+00:00',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(Temporal.Instant.from('2021-01-01T00:00:00+0000'))
                             .mustHappen(1);
                     }
@@ -34,7 +34,7 @@ await runSubtagTests({
                 {
                     expected: '2021-12-20T15:12:37+00:00',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(Temporal.Instant.from('2021-12-20T15:12:37+00:00'))
                             .mustHappen(1);
                     }
@@ -43,7 +43,7 @@ await runSubtagTests({
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(null)
                             .mustHappen(1);
                     }
@@ -52,7 +52,7 @@ await runSubtagTests({
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(undefined)
                             .mustHappen(1);
                     }
@@ -69,7 +69,7 @@ await runSubtagTests({
                 {
                     expected: '2021-01-01T00:00:00+00:00',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(Temporal.Instant.from('2021-01-01T00:00:00+0000'))
                             .mustHappen(1);
                     }
@@ -77,7 +77,7 @@ await runSubtagTests({
                 {
                     expected: '2021-12-20T15:12:37+00:00',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(Temporal.Instant.from('2021-12-20T15:12:37+00:00'))
                             .mustHappen(1);
                     }
@@ -86,7 +86,7 @@ await runSubtagTests({
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(null)
                             .mustHappen(1);
                     }
@@ -95,7 +95,7 @@ await runSubtagTests({
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(undefined)
                             .mustHappen(1);
                     }
@@ -112,7 +112,7 @@ await runSubtagTests({
                 {
                     expected: '01/01/2021',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(Temporal.Instant.from('2021-01-01T00:00:00+0000'))
                             .mustHappen(1);
                     }
@@ -120,7 +120,7 @@ await runSubtagTests({
                 {
                     expected: '20/12/2021',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(Temporal.Instant.from('2021-12-20T15:12:37+00:00'))
                             .mustHappen(1);
                     }
@@ -129,7 +129,7 @@ await runSubtagTests({
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(null)
                             .mustHappen(1);
                     }
@@ -138,7 +138,7 @@ await runSubtagTests({
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberTimeout(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
                             .resolves(undefined)
                             .mustHappen(1);
                     }

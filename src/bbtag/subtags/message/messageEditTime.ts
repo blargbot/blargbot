@@ -1,4 +1,3 @@
-import { snowflake } from '@blargbot/core';
 import moment from 'moment-timezone';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -6,6 +5,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { isSnowflake } from '../../utils/snowflake.js';
 import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageEditTime;
@@ -26,24 +26,24 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
                 {
                     parameters: [],
                     returns: 'string',
-                    execute: (ctx) => this.getMessageEditTime(ctx, ctx.local.message.channel.id, ctx.local.message.id, 'x')
+                    execute: (ctx) => this.getMessageEditTime(ctx, ctx.local.channelId, ctx.local.messageId, 'x')
                 },
                 {
                     parameters: ['format|messageid'],
                     returns: 'string',
                     execute: (context, [formatOrMessageId]) => {
-                        if (snowflake.test(formatOrMessageId.value))
-                            return this.getMessageEditTime(context, context.local.message.channel.id, formatOrMessageId.value, 'x');
-                        return this.getMessageEditTime(context, context.local.message.channel.id, context.local.message.id, formatOrMessageId.value);
+                        if (isSnowflake(formatOrMessageId.value))
+                            return this.getMessageEditTime(context, context.local.channelId, formatOrMessageId.value, 'x');
+                        return this.getMessageEditTime(context, context.local.channelId, context.local.messageId, formatOrMessageId.value);
                     }
                 },
                 {
                     parameters: ['channel|messageid', 'messageid|format'],
                     returns: 'string',
                     execute: async (context, [channelOrMessageId, messageIdOrFormat]) => {
-                        if (snowflake.test(messageIdOrFormat.value))
+                        if (isSnowflake(messageIdOrFormat.value))
                             return await this.getMessageEditTime(context, channelOrMessageId.value, messageIdOrFormat.value, 'x');
-                        return await this.getMessageEditTime(context, context.local.message.channel.id, channelOrMessageId.value, messageIdOrFormat.value);
+                        return await this.getMessageEditTime(context, context.local.channelId, channelOrMessageId.value, messageIdOrFormat.value);
                     }
                 },
                 {
@@ -81,7 +81,7 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
         format: string
     ): Promise<string> {
         if (messageId === '')
-            messageId = context.local.message.id;
+            messageId = context.local.messageId;
 
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: true }) //TODO lookup
             ?? new ChannelNotFoundError(channelStr).throw();

@@ -1,16 +1,36 @@
-import { parse } from '@blargbot/core';
-import * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import { DiscordPermissions } from '../../enums.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
-import { SubtagType } from '../../utils/index.js';
+import { convertToBigInt, convertToBoolean, convertToColor } from '../../utils/converters.js';
+import { getEditRoleDetails, SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
+import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
+import type { ListGuildRolesFeature, ListMemberRolesFeature } from './roles.js';
 
 const tag = templates.subtags.roleCreate;
 
+export type CreateRoleResult = ApiResult<{ roleId: string; }>
+
+export interface CreateRoleOptions {
+    readonly guildId: string;
+    readonly name: string;
+    readonly color: number | undefined;
+    readonly permissions: DiscordPermissions;
+    readonly mentionable: boolean;
+    readonly hoist: boolean;
+    readonly auditReason: string;
+}
+
+export interface CreateRoleFeature {
+    createRole(options: CreateRoleOptions): Promise<CreateRoleResult>;
+}
+
+type Features = CreateRoleFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature;
 export class RoleCreateSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'roleCreate',
             category: SubtagType.ROLE,
@@ -25,6 +45,7 @@ export class RoleCreateSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async createRole(
@@ -35,35 +56,32 @@ export class RoleCreateSubtag extends CompiledSubtag {
         mentionableStr: string,
         hoistedStr: string
     ): Promise<string> {
-        const topRole = context.roleEditPosition();
-        if (topRole <= 0)
+        const { guildId, botId, authorizerId } = context.root;
+        const { topRoleIndex, permissions } = await getEditRoleDetails(guildId, [botId, authorizerId], this.#features);
+        if (topRoleIndex <= 0)
             throw new BBTagRuntimeError('Author cannot create roles');
 
-        const rolePerms = parse.bigInt(permStr);
+        const rolePerms = convertToBigInt(permStr);
         if (rolePerms === undefined)
             throw new BBTagRuntimeError('Permission not a number', `${JSON.stringify(permStr)} is not a number`);
 
-        const options: eris.RoleOptions = {
+        const options: CreateRoleOptions = {
+            guildId,
             name,
-            color: parse.color(colorStr),
-            permissions: rolePerms,
-            mentionable: parse.boolean(mentionableStr, false),
-            hoist: parse.boolean(hoistedStr, false)
+            color: convertToColor(colorStr),
+            permissions: new DiscordPermissions(rolePerms),
+            mentionable: convertToBoolean(mentionableStr) ?? false,
+            hoist: convertToBoolean(hoistedStr) ?? false,
+            auditReason: await ReasonSubtag.get(context)
         };
 
-        if (!context.hasPermission(rolePerms))
+        if (!permissions.has('ADMINISTRATOR') && !permissions.has(rolePerms))
             throw new BBTagRuntimeError('Author missing requested permissions');
 
-        try {
-            const role = await context.root.message.channel.guild.createRole(options, context.auditReason());
-            if (context.root.message.channel.guild.roles.get(role.id) === undefined)
-                context.root.message.channel.guild.roles.set(role.id, role);
-            return role.id;
-        } catch (err: unknown) {
-            if (!(err instanceof eris.DiscordRESTError))
-                throw err;
+        const result = await this.#features.createRole(options);
+        if (result.success)
+            return result.roleId;
 
-            throw new BBTagRuntimeError('Failed to create role: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to create role: no perms', result.reason);
     }
 }

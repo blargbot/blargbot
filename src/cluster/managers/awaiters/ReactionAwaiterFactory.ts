@@ -9,6 +9,6 @@ export class ReactionAwaiterFactory extends AwaiterFactoryBase<ReactionEvent> {
     }
 
     protected getPoolId(response: ReactionEvent): string {
-        return response.message.id;
+        return response.messageId;
     }
 }

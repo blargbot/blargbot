@@ -1,4 +1,4 @@
-import { guard, zodStringToJson } from '@blargbot/core';
+import { zodStringToJson } from '@blargbot/core';
 import z from 'zod';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -7,14 +7,16 @@ import { ChannelType, PermissionOverwriteType } from '../../enums.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
 import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
 import type { ChannelTypeSubtag } from './channelType.js';
 
 const tag = templates.subtags.channelCreate;
 
-export interface CreateChannelOptions extends z.infer<typeof mapOptions> {
+export interface CreateChannelOptions extends Omit<z.infer<typeof mapOptions>, 'reason'> {
     type: typeof channelTypes[keyof typeof channelTypes];
     name: string;
+    auditReason: string;
 };
 export type CreateChannelResult = ApiResult<{ channelId: string; }>
 export interface CreateChannelFeature {
@@ -47,7 +49,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
     }
 
     public async channelCreate(context: BBTagContext, name: string, typeKey: string, optionsJson: string): Promise<string> {
-        const authorizerPermissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId);
+        const authorizerPermissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId);
         if (!authorizerPermissions.hasAny('MANAGE_CHANNELS', 'ADMINISTRATOR'))
             throw new BBTagRuntimeError('Author cannot create channels');
 
@@ -56,7 +58,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Invalid JSON');
         const options = mapped.data;
 
-        const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : ChannelType.GUILD_TEXT;
+        const type = Object.hasOwn(channelTypes, typeKey) ? channelTypes[typeKey] : ChannelType.GUILD_TEXT;
 
         if (!authorizerPermissions.has('ADMINISTRATOR')) {
             for (const permission of options.permissionOverwrites ?? [])
@@ -65,8 +67,9 @@ export class ChannelCreateSubtag extends CompiledSubtag {
         }
 
         if (options.reason === '') options.reason = undefined;
-        options.reason ??= context.auditReason();
-        const result = await this.#features.createChannel(context.root.guildId, { ...options, type, name });
+        options.reason ??= await ReasonSubtag.get(context);
+        const { reason: auditReason, ...rest } = options;
+        const result = await this.#features.createChannel(context.root.guildId, { ...rest, auditReason, type, name });
         if (result.success)
             return result.channelId;
 

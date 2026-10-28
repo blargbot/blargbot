@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToNumber } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.absolute;
@@ -46,7 +45,7 @@ export class AbsoluteSubtag extends CompiledSubtag {
             .map(s => {
                 switch (typeof s) {
                     case 'string': {
-                        const result = parse.float(s);
+                        const result = convertToNumber(s);
                         if (result === undefined)
                             throw new NotANumberError(s);
                         return result;

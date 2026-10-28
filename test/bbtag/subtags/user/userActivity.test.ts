@@ -25,7 +25,7 @@ await runSubtagTests({
                 {
                     expected: 'My test game',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberActivityName(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberActivityName(ctx.guildId, userId))
                             .resolves('My test game')
                             .mustHappen(1);
                     }
@@ -33,7 +33,7 @@ await runSubtagTests({
                 {
                     expected: 'Some cool music',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberActivityName(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberActivityName(ctx.guildId, userId))
                             .resolves('Some cool music')
                             .mustHappen(1);
                     }
@@ -42,7 +42,7 @@ await runSubtagTests({
                     title: 'Name is null',
                     expected: 'nothing',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberActivityName(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberActivityName(ctx.guildId, userId))
                             .resolves(null)
                             .mustHappen(1);
                     }
@@ -51,7 +51,7 @@ await runSubtagTests({
                     title: 'Name is undefined',
                     expected: 'nothing',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberActivityName(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberActivityName(ctx.guildId, userId))
                             .resolves(undefined)
                             .mustHappen(1);
                     }
@@ -68,7 +68,7 @@ await runSubtagTests({
                 {
                     expected: 'My test game',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberActivityName(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberActivityName(ctx.guildId, userId))
                             .resolves('My test game')
                             .mustHappen(1);
                     }
@@ -76,7 +76,7 @@ await runSubtagTests({
                 {
                     expected: 'Some cool music',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberActivityName(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberActivityName(ctx.guildId, userId))
                             .resolves('Some cool music')
                             .mustHappen(1);
                     }
@@ -85,7 +85,7 @@ await runSubtagTests({
                     title: 'Name is null',
                     expected: 'nothing',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberActivityName(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberActivityName(ctx.guildId, userId))
                             .resolves(null)
                             .mustHappen(1);
                     }
@@ -94,7 +94,7 @@ await runSubtagTests({
                     title: 'Name is undefined',
                     expected: 'nothing',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberActivityName(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberActivityName(ctx.guildId, userId))
                             .resolves(undefined)
                             .mustHappen(1);
                     }

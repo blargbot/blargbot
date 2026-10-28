@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.params;
@@ -54,7 +53,7 @@ export class ParamsSubtag extends CompiledSubtag {
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
-        const i = parse.int(index);
+        const i = convertToInteger(index);
         if (i === undefined)
             throw new NotANumberError(index);
 
@@ -73,13 +72,13 @@ export class ParamsSubtag extends CompiledSubtag {
         if (params === undefined)
             throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
-        let from = parse.int(start);
+        let from = convertToInteger(start);
         if (from === undefined)
             throw new NotANumberError(start);
 
         let to = end.toLowerCase() === 'n'
             ? params.length
-            : parse.int(end);
+            : convertToInteger(end);
 
         if (to === undefined)
             throw new NotANumberError(end);

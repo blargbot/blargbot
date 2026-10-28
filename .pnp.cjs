@@ -51,6 +51,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:src/cluster"\
     },\
     {\
+      "name": "@blargbot/colors",\
+      "reference": "workspace:src/colors"\
+    },\
+    {\
       "name": "@blargbot/config",\
       "reference": "workspace:src/config"\
     },\
@@ -69,6 +73,10 @@ const RAW_RUNTIME_STATE =
     {\
       "name": "@blargbot/database",\
       "reference": "workspace:src/database"\
+    },\
+    {\
+      "name": "@blargbot/discord-emote",\
+      "reference": "workspace:src/discord-emote"\
     },\
     {\
       "name": "@blargbot/discord-gateway-orchestrator",\
@@ -144,6 +152,7 @@ const RAW_RUNTIME_STATE =
     ["@blargbot/bbtag-tests", ["workspace:test/bbtag"]],\
     ["@blargbot/cluster", ["workspace:src/cluster"]],\
     ["@blargbot/cluster-tests", ["workspace:test/cluster"]],\
+    ["@blargbot/colors", ["workspace:src/colors"]],\
     ["@blargbot/config", ["workspace:src/config"]],\
     ["@blargbot/contracts", ["workspace:src/contracts"]],\
     ["@blargbot/core", ["workspace:src/core"]],\
@@ -151,6 +160,7 @@ const RAW_RUNTIME_STATE =
     ["@blargbot/crowdin", ["workspace:src/crowdin"]],\
     ["@blargbot/database", ["workspace:src/database"]],\
     ["@blargbot/database-tests", ["workspace:test/database"]],\
+    ["@blargbot/discord-emote", ["workspace:src/discord-emote"]],\
     ["@blargbot/discord-gateway-orchestrator", ["workspace:src/discord-gateway-orchestrator"]],\
     ["@blargbot/discord-gateway-relay", ["workspace:src/discord-gateway-relay"]],\
     ["@blargbot/discord-gateway-worker", ["workspace:src/discord-gateway-worker"]],\
@@ -240,17 +250,16 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./src/bbtag/",\
         "packageDependencies": [\
           ["@blargbot/bbtag", "workspace:src/bbtag"],\
-          ["@blargbot/config", "workspace:src/config"],\
+          ["@blargbot/colors", "workspace:src/colors"],\
           ["@blargbot/core", "workspace:src/core"],\
+          ["@blargbot/discord-emote", "workspace:src/discord-emote"],\
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/color", "npm:3.0.3"],\
-          ["@types/eris", "workspace:definitions/eris"],\
           ["@types/rwlock", "npm:5.0.3"],\
           ["color", "npm:5.0.3"],\
-          ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
           ["html-entities", "npm:2.3.3"],\
           ["moment-timezone", "npm:0.6.4"],\
           ["rwlock", "npm:5.0.0"],\
@@ -267,6 +276,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/bbtag-tests", "workspace:test/bbtag"],\
           ["@blargbot/config", "workspace:src/config"],\
           ["@blargbot/core", "workspace:src/core"],\
+          ["@blargbot/discord-emote", "workspace:src/discord-emote"],\
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
@@ -291,6 +301,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/contracts", "workspace:src/contracts"],\
           ["@blargbot/core", "workspace:src/core"],\
           ["@blargbot/database", "workspace:src/database"],\
+          ["@blargbot/discord-emote", "workspace:src/discord-emote"],\
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/image", "workspace:src/image"],\
@@ -336,6 +347,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
+    ["@blargbot/colors", [\
+      ["workspace:src/colors", {\
+        "packageLocation": "./src/colors/",\
+        "packageDependencies": [\
+          ["@blargbot/colors", "workspace:src/colors"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
     ["@blargbot/config", [\
       ["workspace:src/config", {\
         "packageLocation": "./src/config/",\
@@ -369,6 +389,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/core", "workspace:src/core"],\
           ["@blargbot/crowdin", "workspace:src/crowdin"],\
           ["@blargbot/database", "workspace:src/database"],\
+          ["@blargbot/discord-emote", "workspace:src/discord-emote"],\
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
           ["@blargbot/logger", "workspace:src/logger"],\
@@ -464,6 +485,15 @@ const RAW_RUNTIME_STATE =
           ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.8.0"],\
           ["rethinkdb", "npm:2.4.2"],\
           ["sequelize", "virtual:8d54d45c5fbacbc5fbdef49d043be53f31b1d78235ae02008a9651ad6148906489cc37763776c18e118438102082b14a4a6f8a74e56919826aa06aef5a2f5328#npm:6.25.8"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@blargbot/discord-emote", [\
+      ["workspace:src/discord-emote", {\
+        "packageLocation": "./src/discord-emote/",\
+        "packageDependencies": [\
+          ["@blargbot/discord-emote", "workspace:src/discord-emote"]\
         ],\
         "linkType": "SOFT"\
       }]\

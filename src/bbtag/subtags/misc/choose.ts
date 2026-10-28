@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { SubtagArgument } from '../../arguments/index.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.choose;
@@ -29,7 +28,7 @@ export class ChooseSubtag extends CompiledSubtag {
         choice: string,
         options: SubtagArgument[]
     ): Promise<string> | string {
-        const index = parse.int(choice);
+        const index = convertToInteger(choice);
 
         if (index === undefined)
             throw new NotANumberError(choice);

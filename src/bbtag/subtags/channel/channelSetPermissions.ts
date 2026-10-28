@@ -1,12 +1,12 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import type { DiscordPermissions } from '../../enums.js';
 import { PermissionOverwriteType } from '../../enums.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToBigInt } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
 import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
 import { ChannelIdSubtag } from './channelId.js';
 import { ChannelIsThreadSubtag } from './channelIsThread.js';
@@ -51,7 +51,7 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
                     exampleCode: tag.channel.exampleCode,
                     exampleOut: tag.channel.exampleOut,
                     returns: 'id',
-                    execute: (ctx, [channel, type, entityId, allow, deny]) => this.setPerms(ctx, channel.value, type.value, entityId.value, parse.bigInt(allow.value), parse.bigInt(deny.value))
+                    execute: (ctx, [channel, type, entityId, allow, deny]) => this.setPerms(ctx, channel.value, type.value, entityId.value, convertToBigInt(allow.value), convertToBigInt(deny.value))
                 }
             ]
         });
@@ -89,7 +89,7 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
         if (await ChannelIsThreadSubtag.check(context, channelId))
             throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
-        const authorizerPermissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId, channelId);
+        const authorizerPermissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId, channelId);
         if (!authorizerPermissions.hasAny('MANAGE_CHANNELS', 'ADMINISTRATOR'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
@@ -98,7 +98,7 @@ export class ChannelSetPermissionsSubtag extends CompiledSubtag {
             channelId: channelId,
             entityId: entityId,
             type: this.#getOverwriteType(type),
-            auditReason: context.auditReason(),
+            auditReason: await ReasonSubtag.get(context),
             authorizerPermissions
         };
     }

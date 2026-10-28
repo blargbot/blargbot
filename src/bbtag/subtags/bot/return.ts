@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
+import { convertToBoolean } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.return;
@@ -27,7 +26,7 @@ export class ReturnSubtag extends CompiledSubtag {
     }
 
     public setReturn(context: BBTagContext, forcedStr: string): void {
-        const forced = parse.boolean(forcedStr, true);
+        const forced = convertToBoolean(forcedStr) ?? true;
         context.state = forced ? BBTagRuntimeState.ABORT : BBTagRuntimeState.RETURN;
     }
 }

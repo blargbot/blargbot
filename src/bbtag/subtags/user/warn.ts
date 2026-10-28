@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 import { UserIdSubtag } from './userId.js';
 
@@ -57,7 +56,7 @@ export class WarnSubtag extends CompiledSubtag {
         countStr: string,
         reason: string
     ): Promise<number> {
-        const count = parse.int(countStr);
+        const count = convertToInteger(countStr);
 
         const targetId = await UserIdSubtag.query(context, userStr)
             ?? new UserNotFoundError(userStr).throw();
@@ -68,7 +67,7 @@ export class WarnSubtag extends CompiledSubtag {
         return await this.#features.warnUser({
             guildId: context.root.guildId,
             targetId,
-            moderatorId: context.root.message.author.id,
+            moderatorId: context.root.userId,
             count,
             reason: reason !== '' ? reason : 'Tag Warning'
         });

@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-import type * as eris from 'eris';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import type { Embed, FileContent } from '../../types.js';
+import { convertToEmbed } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 import type { ApiResult } from '../types.js';
 
@@ -13,8 +12,8 @@ export interface ExecuteWebhookPayload {
     readonly username: string | undefined;
     readonly avatarURL: string | undefined;
     readonly content: string | undefined;
-    readonly embeds: eris.EmbedOptions[] | undefined;
-    readonly file: eris.FileContent[] | undefined;
+    readonly embeds: Embed[] | undefined;
+    readonly file: FileContent[] | undefined;
 
 }
 export interface ExecuteWebhookFeature {
@@ -76,7 +75,7 @@ export class WebhookSubtag extends CompiledSubtag {
             username: username,
             avatarURL: avatar,
             content: content,
-            embeds: parse.embed(embedStr),
+            embeds: convertToEmbed(embedStr),
             file: fileStr === undefined ? undefined : [
                 {
                     name: fileName ?? 'file.txt',

@@ -1,18 +1,31 @@
-import { guard, parse } from '@blargbot/core';
-import { asBuffer } from '@blargbot/util';
-import * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { cleanUrl, isUrl, readDataUrl } from '../../utils/url.js';
+import { ReasonSubtag } from '../bot/reason.js';
+import type { ApiResult, GetMemberPermissionsFeature, HttpFetchFeature } from '../types.js';
 
 const tag = templates.subtags.guildSetIcon;
 
+export type SetGuildIconResult = ApiResult<null, { cause: string; }>
+
+export interface SetGuildIconOptions {
+    readonly guildId: string;
+    readonly image: Uint8Array;
+    readonly contentType: string;
+    readonly auditReason: string;
+}
+
+export interface SetGuildIconFeature {
+    setGuildIcon(options: SetGuildIconOptions): Promise<SetGuildIconResult>;
+}
+
+type Features = SetGuildIconFeature & HttpFetchFeature & GetMemberPermissionsFeature;
 export class GuildSetIconSubtag extends CompiledSubtag {
-    readonly #fetch: typeof globalThis.fetch;
-    public constructor({ fetch }: { fetch: typeof globalThis.fetch; }) {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'guildSetIcon',
             category: SubtagType.GUILD,
@@ -28,30 +41,38 @@ export class GuildSetIconSubtag extends CompiledSubtag {
                 }
             ]
         });
-        this.#fetch = fetch;
+        this.#features = features;
     }
 
-    public async setGuildIcon(context: BBTagContext, image: string): Promise<void> {
-        if (!context.hasPermission('MANAGE_GUILD'))
+    public async setGuildIcon(context: BBTagContext, imageStr: string): Promise<void> {
+        const permissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId);
+        if (!permissions.hasAny('ADMINISTRATOR', 'MANAGE_GUILD'))
             throw new BBTagRuntimeError('Author cannot modify the guild');
 
-        image = parse.url(image);
-        if (guard.isUrl(image)) {
-            const res = await this.#fetch(image);
-            const contentType = res.headers.get('content-type');
-            image = `data:${contentType ?? ''};base64,${asBuffer(await res.bytes()).toString('base64')}`;
-        } else if (!image.startsWith('data:')) {
-            throw new BBTagRuntimeError('Image was not a buffer or a URL');
+        let image;
+        let contentType;
+        imageStr = cleanUrl(imageStr);
+        if (isUrl(imageStr)) {
+            const res = await this.#features.fetch(imageStr);
+            contentType = res.headers.get('content-type');
+            image = await res.bytes();
+        } else {
+            const dataUri = readDataUrl(imageStr);
+            if (dataUri === undefined)
+                throw new BBTagRuntimeError('Image was not a buffer or a URL');
+            ({ contentType, bytes: image } = dataUri);
         }
 
-        try {
-            await context.root.message.channel.guild.edit({ icon: image }, context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof eris.DiscordRESTError))
-                throw err;
+        const result = await this.#features.setGuildIcon({
+            guildId: context.root.guildId,
+            image,
+            contentType: contentType ?? 'application/octet-stream',
+            auditReason: await ReasonSubtag.get(context)
+        });
 
-            const parts = err.message.split('\n').map(m => m.trim());
-            throw new BBTagRuntimeError(`Failed to set icon: ${parts[1] ?? parts[0]}`);
-        }
+        if (result.success)
+            return;
+
+        throw new BBTagRuntimeError(`Failed to set icon: ${result.cause}`, result.reason);
     }
 }

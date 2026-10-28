@@ -10,17 +10,17 @@ await runSubtagTests({
         {
             code: '{argslength}',
             expected: '0',
-            setup(ctx) { ctx.input.input = ''; }
+            setup(ctx) { ctx.input = ''; }
         },
         {
             code: '{argslength}',
             expected: '4',
-            setup(ctx) { ctx.input.input = 'this is a test'; }
+            setup(ctx) { ctx.input = 'this is a test'; }
         },
         {
             code: '{argslength}',
             expected: '3',
-            setup(ctx) { ctx.input.input = 'this "is a" test'; }
+            setup(ctx) { ctx.input = 'this "is a" test'; }
         }
     ]
 });

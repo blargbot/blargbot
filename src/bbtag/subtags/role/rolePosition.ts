@@ -3,11 +3,18 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { RoleIdSubtag } from './roleId.js';
 
 const tag = templates.subtags.rolePosition;
 
+export interface GetRolePositionFeature {
+    getRolePosition(guildId: string, roleId: string): Promise<number | undefined>;
+}
+
+type Features = GetRolePositionFeature;
 export class RolePositionSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: GetRolePositionFeature;
+    public constructor(features: Features) {
         super({
             name: 'rolePosition',
             category: SubtagType.ROLE,
@@ -23,21 +30,19 @@ export class RolePositionSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async getRolePosition(
         context: BBTagContext,
-        roleId: string,
+        roleStr: string,
         quiet: boolean
     ): Promise<number> {
         quiet ||= context.local.quiet ?? false;
-        const role = await context.queryRole(roleId, { noLookup: quiet });
+        const roleId = await RoleIdSubtag.query(context, roleStr, { noLookup: quiet })
+            ?? new RoleNotFoundError(roleStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (role === undefined) {
-            throw new RoleNotFoundError(roleId)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return role.position;
+        return await this.#features.getRolePosition(context.root.guildId, roleId)
+            ?? new RoleNotFoundError(roleStr).withDisplay(quiet ? '' : undefined).throw();
     }
 }

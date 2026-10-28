@@ -43,7 +43,7 @@ export class LastMessageIdSubtag extends CompiledSubtag {
     }
 
     public async currentChannel(context: BBTagContext): Promise<string> {
-        return await this.#impl(context, context.local.message.channel.id);
+        return await this.#impl(context, context.local.channelId);
     }
 
     public async queryChannel(context: BBTagContext, channelStr: string): Promise<string> {

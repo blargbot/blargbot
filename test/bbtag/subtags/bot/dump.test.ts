@@ -18,9 +18,7 @@ await runSubtagTests({
             code: '{dump;abc123}',
             expected: 'https://blargbot.xyz/dumps/1271927912712712',
             setup(ctx) {
-                ctx.channels.command.id = '279137289731731231';
-                ctx.message.channel_id = ctx.channels.command.id;
-                features.setup((m, $) => m.generateDumpLink($({ content: 'abc123', channelId: '279137289731731231' })))
+                features.setup((m, $) => m.generateDumpLink($({ content: 'abc123', channelId: ctx.channelId })))
                     .resolves(new URL('https://blargbot.xyz/dumps/1271927912712712'))
                     .mustHappen(1);
             }

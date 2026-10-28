@@ -35,7 +35,7 @@ export class DumpSubtag extends CompiledSubtag {
     }
 
     public async createDump(context: BBTagContext, text: string): Promise<string> {
-        const url = await this.#features.generateDumpLink({ content: text, channelId: context.local.message.channel.id });
+        const url = await this.#features.generateDumpLink({ content: text, channelId: context.local.channelId });
         return url.toString();
     }
 }

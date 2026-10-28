@@ -1,10 +1,11 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import { convertToString } from '../../utils/converters.js';
+import { bbtag, getEditRoleDetails, SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
+import { RoleIdSubtag } from '../role/roleId.js';
 import type { ListGuildRolesFeature, ListMemberRolesFeature } from '../role/roles.js';
 import type { ApiResult, GetMemberPermissionsFeature, VariablesFeature } from '../types.js';
 import { UserIdSubtag } from './userId.js';
@@ -38,7 +39,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.root.message.author.id, false)
+                    execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.root.userId, false)
                 },
                 {
                     parameters: ['roleArray', 'user', 'quiet?'],
@@ -59,14 +60,9 @@ export class UserSetRolesSubtag extends CompiledSubtag {
         userStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        const { guildId, botId, authorizerId = '' } = context.root;
-        const guildRoles = await this.#features.listGuildRoles(guildId);
-        const roleIndexes = new Map(guildRoles.map((r, i) => [r, i]));
-        const editRoleIndex = Math.min(
-            await this.#getEditRoleIndex(guildId, botId, roleIndexes),
-            await this.#getEditRoleIndex(guildId, authorizerId, roleIndexes)
-        );
-        if (editRoleIndex === 0)
+        const { guildId, botId, authorizerId } = context.root;
+        const { topRoleIndex } = await getEditRoleDetails(guildId, [botId, authorizerId], this.#features);
+        if (topRoleIndex === 0)
             throw new BBTagRuntimeError('Author cannot remove roles');
 
         /*
@@ -86,35 +82,19 @@ export class UserSetRolesSubtag extends CompiledSubtag {
 
         const parsedRoles: string[] = [];
 
-        for (const roleStr of roleArr.v.map(v => parse.string(v))) {
-            const role = await context.queryRole(roleStr, {
-                noLookup: quiet,
-                noErrors: context.local.noLookupErrors
-            });
-            if (role === undefined) {
-                throw new RoleNotFoundError(roleStr)
-                    .withDisplay(quiet ? 'false' : undefined);
-            }
-            parsedRoles.push(role.id);
+        for (const roleStr of roleArr.v.map(convertToString)) {
+            parsedRoles.push(
+                await RoleIdSubtag.query(context, roleStr, { noLookup: quiet })
+                ?? new RoleNotFoundError(roleStr).withDisplay(quiet ? 'false' : undefined).throw()
+            );
         }
 
         const result = await this.#features.setMemberRoles({
             guildId: context.root.guildId,
             targetId,
             roleIds: parsedRoles,
-            auditReason: context.auditReason()
+            auditReason: await ReasonSubtag.get(context)
         });
         return result.success;
-    }
-
-    async #getEditRoleIndex(guildId: string, userId: string, roleIndexes: Map<string, number>): Promise<number> {
-        const permissions = await this.#features.getMemberPermissions(guildId, userId);
-        if (!permissions.hasAny('ADMINISTRATOR', 'MANAGE_ROLES'))
-            return 0;
-        const roles = await this.#features.listMemberRoles(guildId, userId);
-        const topRole = roles?.at(-1);
-        if (topRole === undefined)
-            return 0;
-        return roleIndexes.get(topRole) ?? 0;
     }
 }

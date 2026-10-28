@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { VariablesFeature } from '../types.js';
 
@@ -41,7 +40,7 @@ export class RollbackSubtag extends CompiledSubtag {
     public rollback(context: BBTagContext, args: string[]): void {
         const keys = args.length === 0
             ? undefined
-            : bbtag.tagArray.flattenArray(args).map(v => parse.string(v));
+            : bbtag.tagArray.flattenArray(args).map(convertToString);
         this.#features.variables.forContext(context).reset(keys);
     }
 }

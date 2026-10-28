@@ -12,6 +12,7 @@
         "@blargbot/contracts": "workspace:^",
         "@blargbot/crowdin": "workspace:^",
         "@blargbot/database": "workspace:^",
+        "@blargbot/discord-emote": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",

@@ -3,6 +3,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { RoleIdSubtag } from './roleId.js';
 
 const tag = templates.subtags.roleMembers;
 
@@ -33,17 +34,13 @@ export class RoleMembersSubtag extends CompiledSubtag {
 
     public async getRoleMembers(
         context: BBTagContext,
-        roleId: string,
+        roleStr: string,
         quiet: boolean
     ): Promise<readonly string[]> {
         quiet ||= context.local.quiet ?? false;
-        const role = await context.queryRole(roleId, { noLookup: quiet });
+        const roleId = await RoleIdSubtag.query(context, roleStr, { noLookup: quiet })
+            ?? new RoleNotFoundError(roleStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (role === undefined) {
-            throw new RoleNotFoundError(roleId)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return await this.#features.listRoleMembers(context.root.guildId, role.id);
+        return await this.#features.listRoleMembers(context.root.guildId, roleId);
     }
 }

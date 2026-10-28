@@ -31,7 +31,7 @@ await runSubtagTests({
                     expected: '2349786234946724',
                     postSetup(channelId, bbctx, ctx) {
                         channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
-                        features.setup(m => m.getLastMessageId(ctx.guild.id, channelId)).resolves('2349786234946724').mustHappen(1);
+                        features.setup(m => m.getLastMessageId(ctx.guildId, channelId)).resolves('2349786234946724').mustHappen(1);
                     }
                 },
                 {
@@ -39,7 +39,7 @@ await runSubtagTests({
                     expected: '',
                     postSetup(channelId, bbctx, ctx) {
                         channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
-                        features.setup(m => m.getLastMessageId(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
+                        features.setup(m => m.getLastMessageId(ctx.guildId, channelId)).resolves(undefined).mustHappen(1);
                     }
                 },
                 {

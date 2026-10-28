@@ -25,7 +25,7 @@ export class UserNameSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'string',
-                    execute: (ctx) => this.getUserName(ctx, ctx.local.message.author.id, true)
+                    execute: (ctx) => this.getUserName(ctx, ctx.local.userId, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

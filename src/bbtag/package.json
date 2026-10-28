@@ -8,14 +8,14 @@
         "./subtags": "./subtags/index.js"
     },
     "dependencies": {
-        "@blargbot/config": "workspace:^",
+        "@blargbot/colors": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/discord-emote": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/util": "workspace:^",
         "color": "^5.0.3",
-        "eris": "^0.17.1",
         "html-entities": "^2.3.3",
         "moment-timezone": "^0.6.4",
         "rwlock": "^5.0.0",
@@ -23,7 +23,6 @@
     },
     "devDependencies": {
         "@types/color": "^3.0.3",
-        "@types/eris": "workspace:^",
         "@types/rwlock": "^5.0.3"
     }
 }

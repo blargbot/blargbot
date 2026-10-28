@@ -1,23 +1,29 @@
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
 import type { BanUserFeature } from '@blargbot/bbtag/subtags';
-import { BanSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { BanSubtag, ReasonSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
-import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<BanUserFeature>({ id: 'features' });
 const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
 
+const now = Temporal.Instant.from('2026-09-22T22:20:00Z');
 await runSubtagTests({
     subtag: new BanSubtag(features.instance),
     argCountBounds: { min: 1, max: 5 },
     names: ['ban'],
-    otherSubtags: [userIdSubtag.instance],
-    setup(ctx) {
+    otherSubtags: [userIdSubtag.instance, reasonSubtag.instance],
+    setup(ctx, _, test) {
         ctx.adoptMock(features);
         ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
+        test.mock.method(Temporal.Now, 'instant', () => now);
+    },
+    postSetup(bbctx) {
+        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
     },
     cases: [
         {
@@ -42,12 +48,12 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 1,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -64,12 +70,12 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 1,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -89,12 +95,12 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 1,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -114,12 +120,12 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 1,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -139,12 +145,12 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 1,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -164,12 +170,12 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 1,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -186,12 +192,12 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 5,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -208,12 +214,12 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: -1,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -243,12 +249,12 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 1,
-                    reason: 'My custom reason',
+                    auditReason: 'My custom reason',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -265,12 +271,12 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 7,
-                    reason: 'My custom reason',
+                    auditReason: 'My custom reason',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -287,13 +293,13 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 1,
-                    reason: 'Tag Ban',
-                    unbanAfter: moment.duration({ days: 5 })
+                    auditReason: 'Tag Ban',
+                    unbanAfter: Temporal.Duration.from({ days: 5 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -309,13 +315,13 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
-                    authorizerId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     daysToDelete: 7,
-                    reason: 'My custom reason',
-                    unbanAfter: moment.duration({ hours: 2 })
+                    auditReason: 'My custom reason',
+                    unbanAfter: Temporal.Duration.from({ hours: 2 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -325,19 +331,19 @@ await runSubtagTests({
             code: '{ban;other user;;;;x}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const authorizerId = ctx.users.authorizer.id;
+                const authorizerId = ctx.authorizerId;
                 const userId = snowflake.create().toString();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
                     authorizerId,
                     daysToDelete: 1,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -348,19 +354,19 @@ await runSubtagTests({
             code: '{ban;other user;;;;false}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const authorizerId = ctx.users.authorizer.id;
+                const authorizerId = ctx.authorizerId;
                 const userId = snowflake.create().toString();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
                     authorizerId,
                     daysToDelete: 1,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -371,19 +377,19 @@ await runSubtagTests({
             code: '{ban;other user;;;;true}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const authorizerId = ctx.users.authorizer.id;
+                const authorizerId = ctx.authorizerId;
                 const userId = snowflake.create().toString();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
                     authorizerId,
                     daysToDelete: 1,
-                    reason: 'Tag Ban',
+                    auditReason: 'Tag Ban',
                     unbanAfter: undefined
                 })))
                     .mustHappen(1)
@@ -394,20 +400,20 @@ await runSubtagTests({
             code: '{ban;other user;4;My custom reason;2 hours 30s;abc}',
             expected: '7230000',
             postSetup(bbctx, ctx) {
-                const authorizerId = ctx.users.authorizer.id;
+                const authorizerId = ctx.authorizerId;
                 const userId = snowflake.create().toString();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
                 features.setup((m, $) => m.banUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
                     authorizerId,
                     daysToDelete: 4,
-                    reason: 'My custom reason',
-                    unbanAfter: moment.duration({ hours: 2, seconds: 30 })
+                    auditReason: 'My custom reason',
+                    unbanAfter: Temporal.Duration.from({ hours: 2, seconds: 30 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });

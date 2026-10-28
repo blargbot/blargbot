@@ -1,16 +1,31 @@
-import { parse } from '@blargbot/core';
-import * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
-import { SubtagType } from '../../utils/index.js';
+import { convertToColor } from '../../utils/converters.js';
+import { getEditRoleDetails, SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
+import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
+import { RoleIdSubtag } from './roleId.js';
+import type { ListGuildRolesFeature, ListMemberRolesFeature } from './roles.js';
 
 const tag = templates.subtags.roleSetColor;
 
+export interface SetRoleColorOptions {
+    readonly guildId: string;
+    readonly roleId: string;
+    readonly color: number;
+    readonly auditReason: string;
+}
+
+export interface SetRoleColorFeature {
+    setRoleColor(options: SetRoleColorOptions): Promise<ApiResult>;
+}
+
+type Features = SetRoleColorFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature;
 export class RoleSetColorSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'roleSetColor',
             category: SubtagType.ROLE,
@@ -33,6 +48,7 @@ export class RoleSetColorSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async setRolecolor(
@@ -41,30 +57,30 @@ export class RoleSetColorSubtag extends CompiledSubtag {
         colorStr: string,
         quiet: boolean
     ): Promise<void> {
-        const topRole = context.roleEditPosition();
-        if (topRole <= 0)
+        const { guildId, botId, authorizerId } = context.root;
+        const { topRoleIndex, roleIndexMap } = await getEditRoleDetails(guildId, [botId, authorizerId], this.#features);
+        if (topRoleIndex <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
         quiet ||= context.local.quiet ?? false;
-        const role = await context.queryRole(roleStr, { noLookup: quiet });
-        const color = parse.color(colorStr !== '' ? colorStr : 0);
+        const roleId = await RoleIdSubtag.query(context, roleStr, { noLookup: quiet })
+            ?? new BBTagRuntimeError('Role not found').throw();//TODO RoleNotFoundError instead
 
-        if (role === undefined)
-            throw new BBTagRuntimeError('Role not found'); //TODO RoleNotFoundError instead
+        const color = convertToColor(colorStr !== '' ? colorStr : 0) ?? 0;
 
-        if (role.position >= topRole)
+        if ((roleIndexMap.get(roleId) ?? 0) >= topRoleIndex)
             throw new BBTagRuntimeError('Role above author');
 
-        try {
-            await role.edit({ color }, context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof eris.DiscordRESTError))
-                throw err;
+        const result = await this.#features.setRoleColor({
+            guildId,
+            roleId,
+            color,
+            auditReason: await ReasonSubtag.get(context)
+        });
+        if (result.success)
+            return;
 
-            if (quiet)
-                return;
-
-            throw new BBTagRuntimeError('Failed to edit role: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to edit role: no perms', result.reason)
+            .withDisplay(quiet ? '' : undefined);
     }
 }

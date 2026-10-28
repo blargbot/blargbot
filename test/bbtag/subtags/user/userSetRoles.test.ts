@@ -1,9 +1,9 @@
 import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError, DiscordPermissions, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag';
-import { type GetMemberPermissionsFeature, type ListGuildRolesFeature, type ListMemberRolesFeature, UserIdSubtag, UserSetRolesSubtag, type VariablesFeature } from '@blargbot/bbtag/subtags';
+import type { GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature, VariablesFeature } from '@blargbot/bbtag/subtags';
+import { ReasonSubtag, RoleIdSubtag, UserIdSubtag, UserSetRolesSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
-import * as eris from 'eris';
 
 import type { SetMemberRolesFeature } from '../../../../src/bbtag/subtags/user/userSetRoles.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -14,34 +14,38 @@ const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' 
 variablesProvider.setup(m => m.kinds).returns([]);
 const variables = new Mock<Variables>({ id: 'variables' });
 const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
+const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
 
 await runSubtagTests({
     subtag: new UserSetRolesSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
     names: ['userSetRoles', 'setRoles'],
-    otherSubtags: [userIdSubtag.instance],
+    otherSubtags: [roleIdSubtag.instance, reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
         ctx.adoptMock(variablesProvider);
         ctx.adoptMock(variables);
         ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
-        ctx.roles.authorizer.permissions = eris.Constants.Permissions.manageRoles.toString();
-        ctx.members.authorizer.roles.push(ctx.roles.top.id);
+        ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
+        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
         features.setup(m => m.variables).returns(variablesProvider.instance);
     },
     postSetup(bbctx) {
+        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
         variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
     },
     cases: [
         {
             code: '{usersetroles}',
             expected: 'true',
+            subtags: [userIdSubtag.instance],
             postSetup(bbctx, ctx) {
-                const guildId = ctx.guild.id;
+                const guildId = ctx.guildId;
                 const adminId = snowflake.create().toString();
-                const userId = ctx.users.command.id;
-                const botId = ctx.users.bot.id;
-                const modId = ctx.users.authorizer.id;
+                const userId = ctx.userId;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
@@ -54,7 +58,7 @@ await runSubtagTests({
                     guildId,
                     targetId: userId,
                     roleIds: [],
-                    auditReason: 'Command User#0000'
+                    auditReason: '@command.user'
                 }))).resolves({ success: true }).mustHappen(1);
             }
         },
@@ -65,10 +69,10 @@ await runSubtagTests({
                 return `{${['usersetroles', '[]', ...args].join(';')}}`;
             },
             setup(ctx) {
-                const guildId = ctx.guild.id;
+                const guildId = ctx.guildId;
                 const adminId = snowflake.create().toString();
-                const botId = ctx.users.bot.id;
-                const modId = ctx.users.authorizer.id;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
@@ -80,10 +84,10 @@ await runSubtagTests({
                     expected: 'true',
                     setup(userId, ctx) {
                         features.setup((m, $) => m.setMemberRoles($({
-                            guildId: ctx.guild.id,
+                            guildId: ctx.guildId,
                             targetId: userId,
                             roleIds: [],
-                            auditReason: 'Command User#0000'
+                            auditReason: '@command.user'
                         }))).resolves({ success: true }).mustHappen(1);
                     }
                 }
@@ -96,11 +100,11 @@ await runSubtagTests({
                 return `{${['usersetroles', '["283674284762348926","234967249876489624"]', ...args].join(';')}}`;
             },
             setup(ctx) {
-                const guildId = ctx.guild.id;
+                const guildId = ctx.guildId;
                 const roleIds = ['283674284762348926', '234967249876489624'];
                 const adminId = snowflake.create().toString();
-                const botId = ctx.users.bot.id;
-                const modId = ctx.users.authorizer.id;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
@@ -110,20 +114,15 @@ await runSubtagTests({
             cases: [
                 {
                     expected: 'true',
-                    postSetup(userId, bbctx, ctx) {
+                    postSetup(userId, bbctx, ctx, quiet) {
                         const roleIds = ['283674284762348926', '234967249876489624'];
-                        for (const roleId of roleIds) {
-                            const role = new Mock<eris.Role>({ id: `role<${roleId}>` });
-                            role.setup(m => m.id).returns(roleId);
-                            ctx.util.setup(m => m.findRoles(bbctx.root.message.channel.guild, roleId))
-                                .resolves([role.instance])
-                                .mustHappen(1);
-                        }
+                        for (const roleId of roleIds)
+                            roleIdSubtag.setup((m, $) => m.query(bbctx, roleId, $({ noLookup: quiet }))).resolves(roleId).mustHappen(1);
                         features.setup((m, $) => m.setMemberRoles($({
-                            guildId: ctx.guild.id,
+                            guildId: ctx.guildId,
                             targetId: userId,
                             roleIds: roleIds,
-                            auditReason: 'Command User#0000'
+                            auditReason: '@command.user'
                         }))).resolves({ success: true }).mustHappen(1);
                     }
                 }
@@ -132,14 +131,15 @@ await runSubtagTests({
         {
             code: '{usersetroles}',
             expected: '`Author cannot remove roles`',
+            subtags: [userIdSubtag.instance],
             errors: [
                 { error: new BBTagRuntimeError('Author cannot remove roles') }
             ],
             setup(ctx) {
-                const guildId = ctx.guild.id;
+                const guildId = ctx.guildId;
                 const adminId = snowflake.create().toString();
-                const botId = ctx.users.bot.id;
-                const modId = ctx.users.authorizer.id;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
@@ -149,15 +149,16 @@ await runSubtagTests({
         {
             code: '{usersetroles;abc}',
             expected: '`Not an array`',
+            subtags: [userIdSubtag.instance],
             errors: [
                 { error: new NotAnArrayError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                const guildId = ctx.guild.id;
+                const guildId = ctx.guildId;
                 const adminId = snowflake.create().toString();
-                const userId = ctx.users.command.id;
-                const botId = ctx.users.bot.id;
-                const modId = ctx.users.authorizer.id;
+                const userId = ctx.userId;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
@@ -172,15 +173,16 @@ await runSubtagTests({
         {
             code: '{usersetroles;abc;;q}',
             expected: 'false',
+            subtags: [userIdSubtag.instance],
             errors: [
                 { error: new NotAnArrayError('abc').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                const guildId = ctx.guild.id;
+                const guildId = ctx.guildId;
                 const adminId = snowflake.create().toString();
-                const userId = ctx.users.command.id;
-                const botId = ctx.users.bot.id;
-                const modId = ctx.users.authorizer.id;
+                const userId = ctx.userId;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
@@ -195,15 +197,16 @@ await runSubtagTests({
         {
             code: '{usersetroles;["unknown role"]}',
             expected: '`No role found`',
+            subtags: [userIdSubtag.instance],
             errors: [
                 { error: new RoleNotFoundError('unknown role') }
             ],
             postSetup(bbctx, ctx) {
-                const guildId = ctx.guild.id;
+                const guildId = ctx.guildId;
                 const adminId = snowflake.create().toString();
-                const userId = ctx.users.command.id;
-                const botId = ctx.users.bot.id;
-                const modId = ctx.users.authorizer.id;
+                const userId = ctx.userId;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
@@ -212,21 +215,22 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);
-                ctx.util.setup(m => m.findRoles(bbctx.root.message.channel.guild, 'unknown role')).resolves([]);
+                roleIdSubtag.setup((m, $) => m.query(bbctx, 'unknown role', $({ noLookup: false }))).resolves(undefined).mustHappen(1);
             }
         },
         {
             code: '{usersetroles;["unknown role"];;q}',
             expected: 'false',
+            subtags: [userIdSubtag.instance],
             errors: [
                 { error: new RoleNotFoundError('unknown role').withDisplay('false') }
             ],
             postSetup(bbctx, ctx) {
-                const guildId = ctx.guild.id;
+                const guildId = ctx.guildId;
                 const adminId = snowflake.create().toString();
-                const userId = ctx.users.command.id;
-                const botId = ctx.users.bot.id;
-                const modId = ctx.users.authorizer.id;
+                const userId = ctx.userId;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
@@ -235,7 +239,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                ctx.util.setup(m => m.findRoles(bbctx.root.message.channel.guild, 'unknown role')).resolves([]);
+                roleIdSubtag.setup((m, $) => m.query(bbctx, 'unknown role', $({ noLookup: true }))).resolves(undefined).mustHappen(1);
             }
         }
     ]

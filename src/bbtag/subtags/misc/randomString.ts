@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.randomString;
@@ -33,7 +32,7 @@ export class RandomStringSubtag extends CompiledSubtag {
         countStr: string
     ): string {
         const chars = charsStr.split('');
-        const count = parse.int(countStr) ?? parse.int(context.local.fallback ?? '');
+        const count = convertToInteger(countStr) ?? convertToInteger(context.local.fallback ?? '');
         if (count === undefined)
             throw new NotANumberError(countStr);
 

@@ -13,7 +13,7 @@ export interface UnbanUserOptions {
     readonly targetId: string;
     readonly moderatorId: string;
     readonly authorizerId: string;
-    readonly reason: string;
+    readonly auditReason: string;
 }
 
 export type UnbanUserResult = ApiResult<null, { cause: 'bot' | 'authorizer' | 'notBanned'; }>
@@ -63,13 +63,13 @@ export class UnbanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Unban';
 
-        const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
+        const authorizerId = noPerms ? context.root.authorizerId ?? context.root.userId : context.root.userId;
         const result = await this.#features.unbanUser({
             guildId: context.root.guildId,
             targetId,
-            moderatorId: context.root.message.author.id,
-            authorizerId: authorizer.id,
-            reason
+            moderatorId: context.root.userId,
+            authorizerId,
+            auditReason: reason
         });
         if (result.success)
             return true;

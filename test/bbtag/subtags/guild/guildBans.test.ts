@@ -19,7 +19,7 @@ await runSubtagTests({
             code: '{guildbans}',
             expected: '["23946327849364832","32967423897649864"]',
             setup(ctx) {
-                features.setup(m => m.getBannedUsers(ctx.guild.id))
+                features.setup(m => m.getBannedUsers(ctx.guildId))
                     .resolves([
                         '23946327849364832',
                         '32967423897649864'
@@ -33,7 +33,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Missing required permissions') }
             ],
             setup(ctx) {
-                features.setup(m => m.getBannedUsers(ctx.guild.id))
+                features.setup(m => m.getBannedUsers(ctx.guildId))
                     .resolves(undefined);
             }
         }

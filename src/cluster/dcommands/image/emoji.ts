@@ -1,6 +1,6 @@
 import type { CommandContext } from '@blargbot/cluster';
 import { GlobalImageCommand } from '@blargbot/cluster';
-import { Emote } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
 import { util } from '@blargbot/formatting';
 
 import { templates } from '../../text.js';

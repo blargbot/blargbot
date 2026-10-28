@@ -6,15 +6,20 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
 import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
 import { ChannelIdSubtag } from './channelId.js';
 import { ChannelIsThreadSubtag } from './channelIsThread.js';
 
 const tag = templates.subtags.channelEdit;
 
-export type EditChannelOptions = (z.infer<typeof mapThreadOptions> | z.infer<typeof mapChannelOptions> & { position?: number; }) & { auditReason: string; };
+export type EditChannelOptions = (z.infer<typeof mapThreadOptions> | z.infer<typeof mapChannelOptions> & { position?: number; }) & {
+    guildId: string;
+    channelId: string;
+    auditReason: string;
+};
 export interface EditChannelFeature {
-    editChannel(guildId: string, channelId: string, options: EditChannelOptions): Promise<ApiResult>;
+    editChannel(options: EditChannelOptions): Promise<ApiResult>;
 }
 
 type Features = EditChannelFeature & GetMemberPermissionsFeature
@@ -42,7 +47,7 @@ export class ChannelEditSubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr)
             ?? new BBTagRuntimeError('Channel does not exist').throw();//TODO no channel found error
 
-        const authorizerPermissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId ?? context.root.guildOwnerId, channelId);
+        const authorizerPermissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId, channelId);
         if (!authorizerPermissions.hasAny('MANAGE_CHANNELS', 'ADMINISTRATOR'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
@@ -51,7 +56,12 @@ export class ChannelEditSubtag extends CompiledSubtag {
         if (!mapped.success)
             throw new BBTagRuntimeError('Invalid JSON');
 
-        const result = await this.#features.editChannel(context.root.guildId, channelId, { ...mapped.data, auditReason: context.auditReason() });
+        const result = await this.#features.editChannel({
+            ...mapped.data,
+            guildId: context.root.guildId,
+            channelId,
+            auditReason: await ReasonSubtag.get(context)
+        });
         if (result.success)
             return channelId;
 

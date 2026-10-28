@@ -1,10 +1,10 @@
-import { parse } from '@blargbot/core';
 import { Lazy } from '@blargbot/util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.substring;
@@ -28,12 +28,12 @@ export class SubstringSubtag extends CompiledSubtag {
     }
 
     public substring(context: BBTagContext, text: string, startStr: string, endStr: string): string {
-        const fallback = new Lazy(() => parse.int(context.local.fallback ?? ''));
-        const start = parse.int(startStr) ?? fallback.value;
+        const fallback = new Lazy(() => convertToInteger(context.local.fallback ?? ''));
+        const start = convertToInteger(startStr) ?? fallback.value;
         if (start === undefined)
             throw new NotANumberError(startStr);
 
-        const end = endStr === '' ? text.length : parse.int(endStr) ?? fallback.value;
+        const end = endStr === '' ? text.length : convertToInteger(endStr) ?? fallback.value;
         if (end === undefined)
             throw new NotANumberError(endStr);
 

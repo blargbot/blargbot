@@ -300,11 +300,8 @@ function* generateScopeTestCases(tagVars: boolean): Generator<SubtagTestCase> {
                     return 'code result';
                 })],
                 setup(ctx) {
-                    ctx.guild.id = guildId;
-                    ctx.roles.everyone.id = guildId;
-                    ctx.users.command.id = authorId;
-                    ctx.input.tagVars = tagVars;
-                    ctx.input.tagName = tagName;
+                    ctx.userId = authorId;
+                    ctx.tagName = tagName;
                     getLock.setup(m => m(scope, 'myLock')).returns(lock.instance).mustHappen(1);
                     lock.setup(m => m[lockMode]()).resolves(lockHandle.instance).mustHappen(1);
                     lockHandle[Symbol.asyncDispose].setup(m => m()).resolves().mustHappen(1);

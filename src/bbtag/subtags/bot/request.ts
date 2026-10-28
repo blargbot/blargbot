@@ -1,10 +1,11 @@
-import { parse, zodStringToJson } from '@blargbot/core';
+import { zodStringToJson } from '@blargbot/core';
 import { BufferWriterStream } from '@blargbot/util';
 import z from 'zod';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToString } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 import type { HttpFetchFeature } from '../types.js';
 
@@ -75,7 +76,7 @@ export class RequestSubtag extends CompiledSubtag {
         let query;
         if (request.method === 'GET') {
             if (typeof data === 'object' && data !== null) {
-                query = new URLSearchParams(Object.fromEntries(Object.entries(data).map(([k, v]) => [k, parse.string(v as JToken)] as const))).toString();
+                query = new URLSearchParams(Object.fromEntries(Object.entries(data).map(([k, v]) => [k, convertToString(v)] as const))).toString();
             }
         } else if (data !== undefined) {
             if (!Object.keys(request.headers).map(h => h.toLowerCase()).includes('content-type'))
@@ -126,8 +127,8 @@ const mapOptions = zodStringToJson.pipe(z.strictObject({
         .optional()
         .default('GET'),
     headers: z.union([
-        zodStringToJson.pipe(z.record(z.string(), z.json().transform(v => parse.string(v)))),
-        z.record(z.string(), z.json().transform(v => parse.string(v)))
+        zodStringToJson.pipe(z.record(z.string(), z.json().transform(convertToString))),
+        z.record(z.string(), z.json().transform(convertToString))
     ]).optional().default(() => ({})),
     requireOk: z.boolean().optional().default(true)
 }));

@@ -1,10 +1,8 @@
-import { parse } from '@blargbot/core';
-import type moment from 'moment-timezone';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToDuration } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 import type { ApiResult } from '../types.js';
 import { UserIdSubtag } from './userId.js';
@@ -17,7 +15,7 @@ export interface SetUserTimeoutOptions {
     readonly moderatorId: string;
     readonly authorizerId: string;
     readonly reason: string;
-    readonly duration: moment.Duration;
+    readonly duration: Temporal.Duration;
 }
 
 export type SetUserTimeoutResult = ApiResult<null, { cause: 'bot' | 'authorizer' | 'noChange'; }>
@@ -63,7 +61,7 @@ export class TimeoutSubtag extends CompiledSubtag {
         reason: string,
         noPerms: boolean
     ): Promise<string> {
-        const delay = parse.duration(duration);
+        const delay = convertToDuration(duration);
         if (delay === undefined)
             throw new BBTagRuntimeError('Invalid duration');
 
@@ -73,12 +71,12 @@ export class TimeoutSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Timeout';
 
-        const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
+        const authorizerId = noPerms ? context.root.authorizerId : context.root.userId;
         const result = await this.#features.setMemberTimeout({
             guildId: context.root.guildId,
             targetId,
-            moderatorId: context.root.message.author.id,
-            authorizerId: authorizer.id,
+            moderatorId: context.root.userId,
+            authorizerId,
             reason,
             duration: delay
         });
@@ -87,7 +85,9 @@ export class TimeoutSubtag extends CompiledSubtag {
 
         switch (result.cause) {
             case 'noChange':
-                throw new BBTagRuntimeError(delay.asMilliseconds() === 0 ? 'User is not timed out' : 'User is already timed out', result.reason);
+                throw new BBTagRuntimeError(delay.sign === 0
+                    ? 'User is not timed out'
+                    : 'User is already timed out', result.reason);
             case 'bot':
                 throw new BBTagRuntimeError('Bot has no permissions', result.reason);
             case 'authorizer':

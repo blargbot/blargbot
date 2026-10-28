@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, DiscordPermissions, NotANumberError } from '@blargbot/bbtag';
 import type { EditChannelFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, ChannelSetPositionSubtag } from '@blargbot/bbtag/subtags';
+import { ChannelIdSubtag, ChannelSetPositionSubtag, ReasonSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
@@ -8,15 +8,20 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<EditChannelFeature & GetMemberPermissionsFeature>({ id: 'features' });
 const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
 
 await runSubtagTests({
     subtag: new ChannelSetPositionSubtag(features.instance),
-    otherSubtags: [channelIdSubtag.instance],
+    otherSubtags: [channelIdSubtag.instance, reasonSubtag.instance],
     argCountBounds: { min: 2, max: 2 },
     names: ['channelSetPosition', 'channelSetPos'],
     setup(ctx) {
         ctx.adoptMock(features);
         ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
+    },
+    postSetup(bbctx) {
+        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
     },
     cases: [
         {
@@ -25,10 +30,12 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
                 channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
-                features.setup((m, $) => m.editChannel(ctx.guild.id, channelId, $({
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                features.setup((m, $) => m.editChannel($({
+                    guildId: ctx.guildId,
+                    channelId,
                     position: 123,
-                    auditReason: 'Command User#0000'
+                    auditReason: '@command.user'
                 }))).resolves({ success: true }).mustHappen(1);
             }
         },
@@ -41,7 +48,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
                 channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
             }
         },
         {
@@ -63,7 +70,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
                 channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.NONE).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.NONE).mustHappen(1);
             }
         },
         {
@@ -75,10 +82,12 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
                 channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
-                features.setup((m, $) => m.editChannel(ctx.guild.id, channelId, $({
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                features.setup((m, $) => m.editChannel($({
+                    guildId: ctx.guildId,
+                    channelId,
                     position: 123,
-                    auditReason: 'Command User#0000'
+                    auditReason: '@command.user'
                 }))).resolves({ success: false, reason: 'Test REST error' }).mustHappen(1);
             }
         },
@@ -91,10 +100,12 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
                 channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.authorizer.id, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
-                features.setup((m, $) => m.editChannel(ctx.guild.id, channelId, $({
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
+                features.setup((m, $) => m.editChannel($({
+                    guildId: ctx.guildId,
+                    channelId,
                     position: 123,
-                    auditReason: 'Command User#0000'
+                    auditReason: '@command.user'
                 }))).resolves({ success: false, reason: 'Some other error message' }).mustHappen(1);
             }
         }

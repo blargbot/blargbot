@@ -10,17 +10,17 @@ await runSubtagTests({
         {
             code: '{argsarray}',
             expected: '[]',
-            setup(ctx) { ctx.input.input = ''; }
+            setup(ctx) { ctx.input = ''; }
         },
         {
             code: '{argsarray}',
             expected: '["this","is","a","test"]',
-            setup(ctx) { ctx.input.input = 'this is a test'; }
+            setup(ctx) { ctx.input = 'this is a test'; }
         },
         {
             code: '{argsarray}',
             expected: '["this","is a","test"]',
-            setup(ctx) { ctx.input.input = 'this "is a" test'; }
+            setup(ctx) { ctx.input = 'this "is a" test'; }
         }
     ]
 });

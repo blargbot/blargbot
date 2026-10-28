@@ -1,5 +1,3 @@
-import { guard } from '@blargbot/core';
-
 import type { BBTagContext } from './BBTagContext.js';
 import type { TagVariableScopeDetails, TagVariableScopeEntry, TagVariableScopeFactory, TagVariableScopeKind, TagVariableScopeProvider } from './tagVariableScopeProvider.js';
 
@@ -56,7 +54,6 @@ export class Variables {
     public get list(): VariableReference[] {
         return this.#cache
             .values()
-            .filter(guard.hasValue)
             .map(v => v.reference)
             .toArray();
     }
@@ -73,8 +70,8 @@ export class Variables {
 
     #getCached(variables?: string[]): Iterable<CacheEntry> {
         if (variables === undefined)
-            return this.#cache.values().filter(guard.hasValue);
-        return variables.map(k => this.#cache.get(k)).filter(guard.hasValue);
+            return this.#cache.values();
+        return variables.map(k => this.#cache.get(k)).filter(v => v !== undefined);
     }
 
     async #getEntry(variable: string): Promise<CacheEntry> {

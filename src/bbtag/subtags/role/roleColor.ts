@@ -3,11 +3,18 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { RoleIdSubtag } from './roleId.js';
 
 const tag = templates.subtags.roleColor;
 
+export interface GetRoleColorFeature {
+    getRoleColor(guildId: string, roleId: string): Promise<number | undefined>;
+}
+
+type Features = GetRoleColorFeature;
 export class RoleColorSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'roleColor',
             category: SubtagType.ROLE,
@@ -22,21 +29,19 @@ export class RoleColorSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async getRoleHexColor(
         context: BBTagContext,
-        roleId: string,
+        roleStr: string,
         quiet: boolean
     ): Promise<number> {
         quiet ||= context.local.quiet ?? false;
-        const role = await context.queryRole(roleId, { noLookup: quiet });
+        const roleId = await RoleIdSubtag.query(context, roleStr, { noLookup: quiet })
+            ?? new RoleNotFoundError(roleStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (role === undefined) {
-            throw new RoleNotFoundError(roleId)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return role.color;
+        return await this.#features.getRoleColor(context.root.guildId, roleId)
+            ?? new RoleNotFoundError(roleStr).withDisplay(quiet ? '' : undefined).throw();
     }
 }

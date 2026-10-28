@@ -17,29 +17,27 @@ await runSubtagTests({
     cases: [
         ...createGetRolePropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['rolemembers', ...args].join(';')}}`;
             },
             cases: [
                 {
                     expected: '[]',
-                    setup(role, ctx) {
-                        role.id = '92348672342308424';
-                        features.setup(m => m.listRoleMembers(ctx.guild.id, role.id)).resolves([]);
+                    setup(roleId, ctx) {
+                        features.setup(m => m.listRoleMembers(ctx.guildId, roleId)).resolves([]);
                     }
                 },
                 {
                     expected: '["23908467240974"]',
-                    setup(role, ctx) {
-                        role.id = '29384723084374304';
-                        features.setup(m => m.listRoleMembers(ctx.guild.id, role.id)).resolves(['23908467240974']);
+                    setup(roleId, ctx) {
+                        features.setup(m => m.listRoleMembers(ctx.guildId, roleId)).resolves(['23908467240974']);
                     }
                 },
                 {
                     expected: '["23908467240974","98347593834657389"]',
-                    setup(role, ctx) {
-                        role.id = '29384723084374304';
-                        features.setup(m => m.listRoleMembers(ctx.guild.id, role.id)).resolves(['23908467240974', '98347593834657389']);
+                    setup(roleId, ctx) {
+                        features.setup(m => m.listRoleMembers(ctx.guildId, roleId)).resolves(['23908467240974', '98347593834657389']);
                     }
                 }
             ]

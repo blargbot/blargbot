@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { VariablesFeature } from '../types.js';
 
@@ -44,7 +43,7 @@ export class CommitSubtag extends CompiledSubtag {
     ): Promise<void> {
         const values = args.length === 0
             ? undefined
-            : bbtag.tagArray.flattenArray(args).map(value => parse.string(value));
+            : bbtag.tagArray.flattenArray(args).map(convertToString);
         await this.#features.variables.forContext(context).persist(values);
     }
 }

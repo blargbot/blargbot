@@ -1,7 +1,8 @@
-import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag';
+import type { BBTagContext, BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
 import { RoleNotFoundError } from '@blargbot/bbtag';
-import type { APIRole } from 'discord-api-types/v9';
-import * as eris from 'eris';
+import { RoleIdSubtag } from '@blargbot/bbtag/subtags';
+import { snowflake } from '@blargbot/core';
+import { Mock } from '@blargbot/test-util';
 
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
@@ -10,108 +11,115 @@ export function createGetRolePropTestCases(options: GetRolePropTestData): Subtag
 }
 
 function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generator<SubtagTestCase, void, undefined> {
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command']));
+    if (options.includeNoArgs === true)
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, []));
 
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['', 'q']));
+    }
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['command']));
+    if (options.quiet !== false) {
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['command', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['command', 'q']));
+    }
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [c.queryString ?? 'general']));
+    if (options.quiet !== false) {
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [c.queryString ?? 'general', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [c.queryString ?? 'general', 'q']));
     }
 
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other role']));
-    if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other role', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other role', 'q']));
-    }
-
-    const notFound = options.notFound ?? (r => new RoleNotFoundError(r));
+    const notFound = options.notFound ?? (c => new RoleNotFoundError(c));
+    const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
 
     yield {
-        code: options.generateCode('unknown role'),
-        expected: `\`${notFound('unknown role').message}\``,
+        title: 'Role not found',
+        code: options.generateCode('123456789987654329'),
+        expected: `\`${notFound('123456789987654329').message}\``,
+        subtags: [roleIdSubtag.instance],
         errors: [
-            { error: notFound('unknown role') }
+            { error: notFound('123456789987654329') }
         ],
         setup(ctx) {
-            ctx.util.setup((m, $) => m.findRoles($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown role'))
-                .mustHappen(1)
-                .resolves([]);
+            options.setup?.(ctx, false);
+            ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
+        },
+        postSetup(bbctx) {
+            const queryOptions = options.queryOptions(false);
+            roleIdSubtag.setup((m, $) => m.query(bbctx, '123456789987654329', $(queryOptions))).resolves(undefined);
         }
     };
-
     if (options.quiet !== false) {
         yield {
-            code: options.generateCode('unknown role', ''),
-            expected: `\`${notFound('unknown role').message}\``,
+            title: 'Role not found but quiet',
+            code: options.generateCode('123456789987654329', 'q'),
+            expected: options.quiet ?? `\`${notFound('123456789987654329').message}\``,
+            subtags: [roleIdSubtag.instance],
             errors: [
-                { error: notFound('unknown role') }
+                { error: notFound('123456789987654329').withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                ctx.util.setup((m, $) => m.findRoles($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown role'))
-                    .mustHappen(1)
-                    .resolves([]);
-            }
-        };
-        yield {
-            code: options.generateCode('unknown role', 'q'),
-            expected: options.quiet ?? `\`${notFound('unknown role').message}\``,
-            errors: [
-                { error: notFound('unknown role').withDisplay(options.quiet) }
-            ],
-            setup(ctx) {
-                ctx.util.setup((m, $) => m.findRoles($.allOf($.instanceOf(eris.Guild), $.looksLikeLoose({ id: ctx.guild.id })), 'unknown role'))
-                    .mustHappen(1)
-                    .resolves([]);
+                options.setup?.(ctx, true);
+                ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
+            },
+            postSetup(bbctx) {
+                const queryOptions = options.queryOptions(true);
+                roleIdSubtag.setup((m, $) => m.query(bbctx, '123456789987654329', $(queryOptions))).resolves(undefined);
             }
         };
     }
 }
 
-interface GetRolePropTestData {
+export interface GetRolePropTestData {
     cases: GetRolePropTestCase[];
+    includeNoArgs?: boolean;
     quiet?: string | false;
+    queryOptions: (quiet: boolean) => QueryEntityOptions | undefined;
     generateCode: (...args: [roleStr?: string, quietStr?: string]) => string;
     notFound?: (roleStr: string) => BBTagRuntimeError;
+    setup?: (context: SubtagTestContext, quiet: boolean) => void;
 }
 
-interface GetRolePropTestCase {
+export interface GetRolePropTestCase {
     title?: string;
-    expected: string;
+    expected: string | RegExp;
     error?: BBTagRuntimeError;
+    retries?: number;
     queryString?: string;
     generateCode?: (...args: [roleStr?: string, quietStr?: string]) => string;
-    setup?: (role: APIRole, context: SubtagTestContext) => void;
-    postSetup?: (role: eris.Role, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, role: eris.Role, context: BBTagContext, test: SubtagTestContext) => void;
+    setup?: (roleId: string, context: SubtagTestContext) => void;
+    postSetup?: (roleId: string, context: BBTagContext, test: SubtagTestContext, quiet: boolean) => void;
+    assert?: (result: string, roleId: string, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
-function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase, roleKey: keyof SubtagTestContext['roles'], args: Parameters<GetRolePropTestData['generateCode']>): SubtagTestCase {
+function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase, args: Parameters<GetRolePropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
+    const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
+    const [roleQuery, quietStr = ''] = args;
+    const roleId = `roleId${snowflake.create()}`;
     return {
-        code,
         title: testCase.title,
-        expected: testCase.expected,
+        code,
+        expected: () => testCase.expected,
+        retries: testCase.retries,
+        subtags: [roleIdSubtag.instance],
         errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
-            testCase.setup?.(ctx.roles[roleKey], ctx);
+            data.setup?.(ctx, quietStr !== '');
+            testCase.setup?.(roleId, ctx);
+            ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
+
         },
         postSetup(bbctx, ctx) {
-            const role = bbctx.root.message.channel.guild.roles.get(ctx.roles[roleKey].id);
-            if (role === undefined)
-                throw new Error('Cannot find the role under test');
-            if (args[0] !== undefined && args[0] !== '') {
-                ctx.util.setup(m => m.findRoles(role.guild, args[0]))
-                    .resolves([role]);
+            if (roleQuery !== undefined) {
+                const queryOptions = data.queryOptions(quietStr !== '');
+                roleIdSubtag.setup((m, $) => m.query(bbctx, roleQuery, $(queryOptions))).resolves(roleId);
             }
-
-            testCase.postSetup?.(role, bbctx, ctx);
+            testCase.postSetup?.(roleId, bbctx, ctx, quietStr !== '');
         },
         assert(bbctx, result, ctx) {
-            if (testCase.assert === undefined)
-                return;
-            const role = bbctx.root.message.channel.guild.roles.get(ctx.roles[roleKey].id);
-            if (role === undefined)
-                throw new Error('Cannot find the role under test');
-            testCase.assert(result, role, bbctx, ctx);
+            testCase.assert?.(result, roleId, bbctx, ctx);
         }
     };
 }

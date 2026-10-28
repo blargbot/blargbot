@@ -5,8 +5,13 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildIcon;
 
+export interface GetGuildIconFeature {
+    getGuildIcon(guildId: string): Promise<URL | null | undefined>;
+}
+type Features = GetGuildIconFeature;
 export class GuildIconSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: GetGuildIconFeature;
+    public constructor(features: Features) {
         super({
             name: 'guildIcon',
             category: SubtagType.GUILD,
@@ -21,9 +26,10 @@ export class GuildIconSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
-    public getGuildIcon(context: BBTagContext): string | undefined {
-        return context.root.message.channel.guild.iconURL ?? undefined;
+    public async getGuildIcon(context: BBTagContext): Promise<string | undefined> {
+        return (await this.#features.getGuildIcon(context.root.guildId))?.toString();
     }
 }

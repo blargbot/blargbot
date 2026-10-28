@@ -1,10 +1,7 @@
-import { guard, Timer } from '@blargbot/core';
-import type { Logger } from '@blargbot/logger';
-import * as eris from 'eris';
+import { Timer } from '@blargbot/core';
 
 import { BBTagContext } from './BBTagContext.js';
-import type { BBTagUtilities, InjectionContext } from './BBTagUtilities.js';
-import { DiscordPermissions } from './enums.js';
+import type { InjectionContext } from './BBTagUtilities.js';
 import { BBTagRuntimeError, InternalServerError, TagCooldownError } from './errors/index.js';
 import type { BBTagExpression, SubtagCall } from './language/index.js';
 import { BaseRuntimeLimit } from './limits/BaseRuntimeLimit.js';
@@ -13,24 +10,26 @@ import { OutputSubtag } from './subtags/index.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
 import { templates } from './text.js';
 import { toBBTagInput } from './toBBTagInput.js';
-import type { AnalysisResults, BBTagContextMessage, BBTagRuntimeInput, ExecutionResult, SerializedBBTagContext } from './types.js';
+import type { AnalysisResults, BBTagRuntimeInput, ExecutionResult, SerializedBBTagContext } from './types.js';
 import { BBTagRuntimeState } from './types.js';
 import { bbtag as bbtagUtil } from './utils/index.js';
+import type { VariablesProvider } from './Variables.js';
 
 type SubtagCtor = abstract new (...args: never) => Subtag;
 export class BBTagEngine {
+    readonly #dependencies: InjectionContext;
     readonly #subtagsByClass: ReadonlyMap<SubtagCtor, Subtag>;
     readonly #subtagsByName: ReadonlyMap<string, Subtag>;
     readonly #subtagInstances: Set<Subtag>;
-    public get discord(): eris.Client { return this.dependencies.discord; }
-    public get logger(): Logger { return this.dependencies.logger; }
-    public get util(): BBTagUtilities { return this.dependencies.util; }
+
+    public get variables(): VariablesProvider {
+        return this.#dependencies.variables;
+    }
 
     public readonly cooldowns: TagCooldownManager;
 
-    public constructor(
-        public readonly dependencies: InjectionContext
-    ) {
+    public constructor(dependencies: InjectionContext) {
+        this.#dependencies = dependencies;
         this.cooldowns = new TagCooldownManager();
         this.#subtagInstances = new Set(dependencies.subtags);
         this.#subtagsByClass = new Map(this.#subtagInstances.values().map(v => {
@@ -78,16 +77,12 @@ export class BBTagEngine {
     }
 
     public createContext(options: BBTagRuntimeInput): BBTagContext {
-        const authorizerId = options.authorizer ?? options.author;
-        const authorizer = authorizerId === undefined ? undefined : options.message.channel.guild.members.get(authorizerId);
-        const authorizerPermissions = authorizer?.permissions ?? (options.message.channel.guild.id === authorizerId
-            ? new eris.Permission(8n)
-            : new eris.Permission(0n)
-        );
         const context = new BBTagContext(this, {
-            botId: this.discord.user.id,
-            guildId: options.message.channel.guild.id,
-            guildOwnerId: options.message.channel.guild.ownerID,
+            botId: this.#dependencies.botId,
+            guildId: options.guildId,
+            messageId: options.messageId,
+            channelId: options.channelId,
+            userId: options.userId,
             recursion: {
                 depth: 0
             },
@@ -101,11 +96,7 @@ export class BBTagEngine {
             },
             limit: options.limit,
             authorId: options.author,
-            authorizerId,
-            authorizer,
-            authorizerPermissions: authorizerPermissions.has('administrator')
-                ? new DiscordPermissions(~0n)
-                : new DiscordPermissions(authorizerPermissions.allow),
+            authorizerId: options.authorizer,
             prefix: options.prefix,
             isCC: options.isCC,
             tagVars: options.tagVars,
@@ -118,7 +109,7 @@ export class BBTagEngine {
                 role: new Map(),
                 channel: new Map()
             },
-            ownedMessageIds: new Set([options.message.id]),
+            ownedMessageIds: new Set([options.messageId]),
             tagCache: new Map(),
             ccCache: new Map(),
             allowedMentions: {
@@ -127,7 +118,6 @@ export class BBTagEngine {
                 everybody: false
             },
             tagName: options.tagName,
-            message: options.message,
             quiet: undefined,
             fallback: undefined,
             noLookupErrors: undefined,
@@ -144,16 +134,16 @@ export class BBTagEngine {
 
     public async execute(source: string, options: BBTagRuntimeInput): Promise<ExecutionResult> {
         const { isCC, tagName } = options;
-        this.logger.bbtag(`Start running ${isCC ? 'CC' : 'tag'} ${tagName}`);
+        this.#dependencies.logger.bbtag(`Start running ${isCC ? 'CC' : 'tag'} ${tagName}`);
         const timer = new Timer().start();
         const bbtag = bbtagUtil.parse(source);
-        this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
+        this.#dependencies.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
         const context = this.createContext(options);
-        this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
+        this.#dependencies.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
         let content: string;
         const cooldown = this.cooldowns.check({
             guildId: context.root.guildId,
-            userId: context.root.message.author.id,
+            userId: context.root.userId,
             tagName: context.local.tagName,
             isCC: context.root.isCC,
             cooldownMs: context.local.cooldown
@@ -168,11 +158,11 @@ export class BBTagEngine {
             if (context.root.output.replace !== undefined)
                 content = content.replace(context.root.output.replace.regex, context.root.output.replace.with);
             context.execTimer.end();
-            this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
-            await this.dependencies.variables.forContext(context).persist();
-            this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
+            this.#dependencies.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
+            await this.#dependencies.variables.forContext(context).persist();
+            this.#dependencies.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
             await OutputSubtag.sendOutput(context, content);
-            this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
+            this.#dependencies.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
         }
 
         return {
@@ -190,7 +180,7 @@ export class BBTagEngine {
             },
             database: {
                 committed: context.dbObjectsCommitted,
-                values: this.dependencies.variables.forContext(context).list.reduce<JObject>((v, c) => {
+                values: this.#dependencies.variables.forContext(context).list.reduce<JObject>((v, c) => {
                     if (c.value !== undefined)
                         v[c.key] = c.value;
                     return v;
@@ -205,16 +195,21 @@ export class BBTagEngine {
 
     public serialize(context: BBTagContext): SerializedBBTagContext {
         const { local, root } = context;
-        const message = root.message;
         return {
             msg: {
-                id: message.id,
-                timestamp: message.createdAt,
-                content: message.content,
-                channel: serializeEntity(message.channel),
-                member: serializeEntity(message.member),
-                attachments: message.attachments,
-                embeds: message.embeds
+                id: root.messageId,
+                timestamp: 0,
+                content: '',
+                channel: {
+                    id: root.channelId,
+                    serialized: JSON.stringify({ id: root.channelId })
+                },
+                member: {
+                    id: root.userId,
+                    serialized: JSON.stringify({ id: root.userId })
+                },
+                attachments: [],
+                embeds: []
             },
             isCC: root.isCC,
             scope: {
@@ -253,7 +248,7 @@ export class BBTagEngine {
             author: root.authorId,
             authorizer: root.authorizerId,
             limit: root.limit.serialize(),
-            tempVars: this.dependencies.variables.forContext(context).list
+            tempVars: this.#dependencies.variables.forContext(context).list
                 .filter(v => v.key.startsWith('~'))
                 .reduce<Record<string, JToken>>((p, v) => {
                     if (v.value !== undefined)
@@ -261,26 +256,23 @@ export class BBTagEngine {
                     return p;
                 }, {})
         };
-
-        function serializeEntity(entity: { id: string; }): { id: string; serialized: string; }
-        function serializeEntity(entity?: { id: string; }): { id: string; serialized: string; } | undefined
-        function serializeEntity(entity?: { id: string; }): { id: string; serialized: string; } | undefined {
-            if (entity === undefined)
-                return undefined;
-            return { id: entity.id, serialized: JSON.stringify(entity) };
-        }
     }
 
     public async deserialize(obj: SerializedBBTagContext): Promise<BBTagContext> {
-        const message = await this.#getOrFabricateMessage(obj);
         const result = this.createContext({
             author: obj.author,
-            authorizer: obj.authorizer ?? obj.author ?? message.channel.guild.id,
+            authorizer: obj.authorizer ?? obj.author ?? this.#dependencies.botId,
             flagDefinitions: obj.flags,
             input: obj.inputRaw,
             isCC: obj.isCC,
             limit: BaseRuntimeLimit.deserialize(obj.limit),
-            message: message,
+            messageId: obj.msg.id,
+            channelId: obj.msg.channel.id,
+            userId: obj.msg.member?.id
+                ?? await this.#dependencies.util.getMessageAuthor(obj.msg.channel.id, obj.msg.id)
+                ?? (() => { throw new Error('No user found'); })(),
+            guildId: await this.#dependencies.util.getChannelGuild(obj.msg.channel.id)
+                ?? (() => { throw new Error('Channel must be a guild channel to work with BBTag'); })(),
             prefix: obj.prefix,
             silent: false,
             tagName: obj.tagName,
@@ -305,65 +297,9 @@ export class BBTagEngine {
         result.local.reaction = obj.scope.reaction;
         result.local.reactUser = obj.scope.reactUser;
         Object.entries(obj.scope.functions).forEach(x => result.root.functions.set(...x));
-        const variables = this.dependencies.variables.forContext(result);
+        const variables = this.#dependencies.variables.forContext(result);
         await Promise.all(Object.entries(obj.tempVars).map(x => variables.set(...x)));
         return result;
-    }
-
-    async #getOrFabricateMessage(obj: SerializedBBTagContext): Promise<BBTagContextMessage> {
-        const msg = await this.util.getMessage(obj.msg.channel.id, obj.msg.id);
-        if (msg !== undefined) {
-            if (guard.isGuildMessage(msg))
-                return msg;
-            throw new Error('Channel must be a guild channel to work with BBTag');
-        }
-
-        const channel = await this.util.getChannel(obj.msg.channel.id);
-        if (channel === undefined || !guard.isGuildChannel(channel))
-            throw new Error('Channel must be a guild channel to work with BBTag');
-
-        if (!guard.isTextableChannel(channel))
-            throw new Error('Channel must be able to send and receive messages to work with BBTag');
-
-        const member = await this.#getOrFabricateMember(channel.guild, obj);
-        return {
-            id: obj.msg.id,
-            createdAt: obj.msg.timestamp,
-            content: obj.msg.content,
-            channel: channel,
-            member: member,
-            author: member.user,
-            attachments: obj.msg.attachments,
-            embeds: obj.msg.embeds
-        };
-    }
-
-    async #getOrFabricateMember(guild: eris.Guild, obj: SerializedBBTagContext): Promise<eris.Member> {
-        if (obj.msg.member === undefined)
-            throw new Error('No user id given');
-
-        const member = await this.util.getMember(guild, obj.msg.member.id);
-        if (member !== undefined)
-            return member;
-
-        const user = await this.util.getUser(obj.msg.member.id);
-        if (user === undefined)
-            throw new Error('No user found');
-
-        return new eris.Member({
-            id: user.id,
-            avatar: null,
-            communication_disabled_until: null,
-            deaf: null,
-            flags: 0,
-            joined_at: null,
-            mute: false,
-            nick: null,
-            premium_since: null,
-            pending: false,
-            roles: [],
-            user: user.toJSON()
-        }, guild, this.dependencies.discord);
     }
 
     async #evalStatementScoped(bbtag: BBTagExpression, context: BBTagContext): Promise<string> {
@@ -384,7 +320,7 @@ export class BBTagEngine {
                 for await (const item of subtag.execute(context, name, bbtag)) {
                     // allow the eventloop to process other stuff every 1000 subtag calls
                     if (++context.subtagCount % 1000 === 0)
-                        await this.dependencies.sleep(0);
+                        await this.#dependencies.sleep(0);
 
                     if (item !== undefined)
                         yield item;
@@ -433,7 +369,7 @@ export class BBTagEngine {
         if (error instanceof RangeError)
             throw error;
 
-        this.logger.error(error);
+        this.#dependencies.logger.error(error);
         return context.addError(new InternalServerError(error), bbtag);
     }
 
@@ -445,7 +381,7 @@ export class BBTagEngine {
         for (const call of getSubtagCalls(statement)) {
             if (call.name.values.length === 0)
                 result.warnings.push({ location: call.start, message: templates.analysis.unnamed });
-            else if (guard.every(call.name.values, guard.isTypeOf('string'))) {
+            else if (call.name.values.every(v => typeof v === 'string')) {
                 const subtag = this.#subtagsByName.get(call.name.values.join(''));
                 // TODO Detect unknown subtags
                 switch (typeof subtag?.deprecated) {

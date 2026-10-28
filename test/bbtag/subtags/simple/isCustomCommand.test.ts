@@ -10,12 +10,12 @@ await runSubtagTests({
         {
             code: '{iscc}',
             expected: 'true',
-            setup(ctx) { ctx.input.isCC = true; }
+            setup(ctx) { ctx.isCC = true; }
         },
         {
             code: '{iscc}',
             expected: 'false',
-            setup(ctx) { ctx.input.isCC = false; }
+            setup(ctx) { ctx.isCC = false; }
         }
     ]
 });

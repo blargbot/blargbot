@@ -1,18 +1,19 @@
-import { humanize, parse } from '@blargbot/core';
-import type { StoredTag } from '@blargbot/domain';
+import { humanize } from '@blargbot/core';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { toBBTagInput } from '../../toBBTagInput.js';
+import type { TagDetails } from '../../types.js';
 import { BBTagRuntimeState } from '../../types.js';
+import { convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.execTag;
 
 export interface GetTagFeature {
-    getTag(name: string): Awaitable<StoredTag | undefined>;
+    getTag(name: string): Awaitable<TagDetails | undefined>;
 }
 
 type Features = GetTagFeature
@@ -37,7 +38,7 @@ export class ExecTagSubtag extends CompiledSubtag {
         this.#features = features;
     }
 
-    async #cacheTag(context: BBTagContext, name: string): Promise<StoredTag | undefined> {
+    async #cacheTag(context: BBTagContext, name: string): Promise<TagDetails | undefined> {
         const result = await this.#features.getTag(name);
         if (result !== undefined)
             context.root.tagCache.set(name, result);
@@ -54,7 +55,7 @@ export class ExecTagSubtag extends CompiledSubtag {
 
         let input = args[0] ?? '';
         if (args.length > 1)
-            input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(x => parse.string(x)));
+            input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(convertToString));
 
         using scope = context.enterScope();
         scope.tagName = tagName;
@@ -63,7 +64,7 @@ export class ExecTagSubtag extends CompiledSubtag {
         const expr = bbtag.parse(tag.content, { throw: true });
         context.engine.cooldowns.assert({
             guildId: context.root.guildId,
-            userId: context.root.message.author.id,
+            userId: context.root.userId,
             tagName: context.local.tagName,
             isCC: context.root.isCC,
             cooldownMs: context.local.cooldown

@@ -1,7 +1,6 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.parseInt;
@@ -25,6 +24,6 @@ export class ParseIntSubtag extends CompiledSubtag {
     }
 
     public parseInt(number: string): number {
-        return parse.int(number) ?? NaN;
+        return convertToInteger(number) ?? NaN;
     }
 }

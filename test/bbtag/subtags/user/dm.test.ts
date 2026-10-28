@@ -1,12 +1,12 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
-import type { GetDmChannelIdFeature, SendFeature } from '@blargbot/bbtag/subtags';
+import type { GetDmChannelIdFeature, GetGuildNameFeature, GetUserNameFeature, SendFeature } from '@blargbot/bbtag/subtags';
 import { DMSubtag, EscapeBBTagSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-const features = new Mock<SendFeature & GetDmChannelIdFeature>({ id: 'features' });
+const features = new Mock<SendFeature & GetDmChannelIdFeature & GetGuildNameFeature & GetUserNameFeature>({ id: 'features' });
 const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
 
 await runSubtagTests({
@@ -44,7 +44,9 @@ await runSubtagTests({
                 features.setup(m => m.getDmChannelId(userId))
                     .resolves(channelId)
                     .mustHappen(1);
-                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(1);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(1);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
                     .mustHappen(1)
                     .resolves({ success: true, id: 'unused' });
                 features.setup((m, $) => m.sendMessage(channelId, $({ content: 'Hello!', embeds: undefined })))
@@ -65,7 +67,9 @@ await runSubtagTests({
                 features.setup(m => m.getDmChannelId(userId))
                     .resolves(channelId)
                     .mustHappen(1);
-                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(1);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(1);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
                     .mustHappen(1)
                     .resolves({ success: true, id: 'unused' });
                 features.setup((m, $) => m.sendMessage(channelId, $({ content: undefined, embeds: [{ title: 'Hi!' }] })))
@@ -86,7 +90,9 @@ await runSubtagTests({
                 features.setup(m => m.getDmChannelId(userId))
                     .resolves(channelId)
                     .mustHappen(1);
-                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(1);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(1);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
                     .mustHappen(1)
                     .resolves({ success: true, id: 'unused' });
                 features.setup((m, $) => m.sendMessage(channelId, $({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] })))
@@ -107,7 +113,9 @@ await runSubtagTests({
                 features.setup(m => m.getDmChannelId(userId))
                     .resolves(channelId)
                     .mustHappen(1);
-                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(1);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(1);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
                     .mustHappen(1)
                     .resolves({ success: true, id: 'unused' });
                 features.setup((m, $) => m.sendMessage(channelId, $({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] })))
@@ -127,7 +135,9 @@ await runSubtagTests({
                 features.setup(m => m.getDmChannelId(userId))
                     .resolves(channelId)
                     .mustHappen(5);
-                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(1);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(1);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
                     .mustHappen(1)
                     .resolves({ success: true, id: 'unused' });
                 features.setup((m, $) => m.sendMessage(channelId, $({ content: 'Hi!', embeds: undefined })))
@@ -147,7 +157,9 @@ await runSubtagTests({
                 features.setup(m => m.getDmChannelId(userId))
                     .resolves(channelId)
                     .mustHappen(6);
-                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(2);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(2);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
                     .mustHappen(2)
                     .resolves({ success: true, id: 'unused' });
                 features.setup((m, $) => m.sendMessage(channelId, $({ content: 'Hi!', embeds: undefined })))

@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.realPad;
@@ -39,7 +38,7 @@ export class RealPadSubtag extends CompiledSubtag {
         filler: string,
         directionStr: string
     ): string {
-        const length = parse.int(lengthStr);
+        const length = convertToInteger(lengthStr);
         if (length === undefined)
             throw new NotANumberError(lengthStr);
 

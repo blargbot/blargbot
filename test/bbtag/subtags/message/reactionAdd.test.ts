@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
 import type { AddReactionsFeature, CheckMessageExistsFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, ReactionAddSubtag } from '@blargbot/bbtag/subtags';
-import { Emote } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -28,10 +28,10 @@ await runSubtagTests({
             expected: '',
             subtags: [channelIdSubtag.instance],
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, ctx.channels.command.id))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
                     .resolves(DiscordPermissions.ADD_REACTIONS)
                     .mustHappen(1);
             },
@@ -54,7 +54,7 @@ await runSubtagTests({
                     expected: '',
                     setup(getProp, channelId, messageId, ctx) {
                         getProp.resolves(true).mustHappen(1);
-                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                             .resolves(DiscordPermissions.ADD_REACTIONS)
                             .mustHappen(1);
                         features.setup((m, $) => m.addMessageReactions(channelId, messageId, $([unicodeEmote])))
@@ -67,7 +67,7 @@ await runSubtagTests({
                     error: new BBTagRuntimeError('I dont have permission to Add Reactions'),
                     setup(getProp, channelId, _, ctx) {
                         getProp.resolves(true).mustHappen(1);
-                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                             .resolves(DiscordPermissions.NONE)
                             .mustHappen(1);
                     }
@@ -79,10 +79,10 @@ await runSubtagTests({
             expected: '',
             subtags: [channelIdSubtag.instance],
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, ctx.channels.command.id))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
                     .resolves(DiscordPermissions.ADD_REACTIONS)
                     .mustHappen(1);
             },
@@ -105,7 +105,7 @@ await runSubtagTests({
                     expected: '',
                     setup(getProp, channelId, messageId, ctx) {
                         getProp.resolves(true).mustHappen(1);
-                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                             .resolves(DiscordPermissions.ADD_REACTIONS)
                             .mustHappen(1);
                         features.setup((m, $) => m.addMessageReactions(channelId, messageId, $([unicodeEmote, guildEmote])))
@@ -120,10 +120,10 @@ await runSubtagTests({
             expected: '',
             subtags: [channelIdSubtag.instance],
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, ctx.channels.command.id))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
                     .resolves(DiscordPermissions.ADD_REACTIONS)
                     .mustHappen(1);
             },
@@ -146,7 +146,7 @@ await runSubtagTests({
                     expected: '',
                     setup(getProp, channelId, messageId, ctx) {
                         getProp.resolves(true).mustHappen(1);
-                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                             .resolves(DiscordPermissions.ADD_REACTIONS)
                             .mustHappen(1);
                         features.setup((m, $) => m.addMessageReactions(channelId, messageId, $([unicodeEmote, guildEmote])))
@@ -164,10 +164,10 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, ctx.channels.command.id))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
                     .resolves(DiscordPermissions.ADD_REACTIONS)
                     .mustHappen(1);
             }
@@ -180,10 +180,10 @@ await runSubtagTests({
                 assert.deepEqual(bbctx.root.output.reactions, ['🤔']);
             },
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, ctx.channels.command.id))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
                     .resolves(DiscordPermissions.ADD_REACTIONS)
                     .mustHappen(1);
             }
@@ -196,16 +196,16 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('I cannot add \'🤔\' as reactions') }
             ],
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                features.setup(m => m.checkMessageExists(ctx.channels.command.id, '2938456469267324234'))
+                features.setup(m => m.checkMessageExists(ctx.channelId, '2938456469267324234'))
                     .resolves(true)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, ctx.channels.command.id))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
                     .resolves(DiscordPermissions.ADD_REACTIONS)
                     .mustHappen(1);
-                features.setup((m, $) => m.addMessageReactions(ctx.channels.command.id, '2938456469267324234', $([unicodeEmote])))
+                features.setup((m, $) => m.addMessageReactions(ctx.channelId, '2938456469267324234', $([unicodeEmote])))
                     .resolves({ success: [], failed: [unicodeEmote] })
                     .mustHappen(1);
             }

@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError, NotEnoughArgumentsError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.args;
@@ -50,7 +49,7 @@ export class ArgsSubtag extends CompiledSubtag {
     }
 
     public getArg(context: BBTagContext, index: string): string {
-        const i = parse.int(index);
+        const i = convertToInteger(index);
         if (i === undefined)
             throw new NotANumberError(index);
 
@@ -65,13 +64,13 @@ export class ArgsSubtag extends CompiledSubtag {
         start: string,
         end: string
     ): string {
-        let from = parse.int(start);
+        let from = convertToInteger(start);
         if (from === undefined)
             throw new NotANumberError(start);
 
         let to = end.toLowerCase() === 'n'
             ? context.local.input.array.length
-            : parse.int(end);
+            : convertToInteger(end);
 
         if (to === undefined)
             throw new NotANumberError(end);

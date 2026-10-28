@@ -18,7 +18,7 @@ await runSubtagTests({
             code: '{prefix}',
             expected: 'b!',
             setup(ctx) {
-                features.setup(m => m.getPrefix(ctx.guild.id)).resolves(undefined).mustHappen(1);
+                features.setup(m => m.getPrefix(ctx.guildId)).resolves(undefined).mustHappen(1);
                 features.setup(m => m.defaultPrefix).returns('b!').mustHappen(1);
             }
         },
@@ -26,21 +26,21 @@ await runSubtagTests({
             code: '{prefix}',
             expected: 'abc',
             setup(ctx) {
-                features.setup(m => m.getPrefix(ctx.guild.id)).resolves('abc');
+                features.setup(m => m.getPrefix(ctx.guildId)).resolves('abc');
             }
         },
         {
             code: '{prefix}',
             expected: 'def',
             setup(ctx) {
-                features.setup(m => m.getPrefix(ctx.guild.id)).resolves(['def', 'ghi']);
+                features.setup(m => m.getPrefix(ctx.guildId)).resolves(['def', 'ghi']);
             }
         },
         {
             code: '{prefix}',
             expected: 'ghi',
             setup(ctx) {
-                ctx.input.prefix = 'ghi';
+                ctx.prefix = 'ghi';
             }
         }
     ]

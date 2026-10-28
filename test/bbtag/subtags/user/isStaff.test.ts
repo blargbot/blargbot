@@ -23,7 +23,7 @@ await runSubtagTests({
             code: '{isstaff}',
             expected: 'true',
             setup(ctx) {
-                features.setup(m => m.isUserStaff(ctx.guild.id, ctx.users.authorizer.id))
+                features.setup(m => m.isUserStaff(ctx.guildId, ctx.authorizerId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -32,7 +32,7 @@ await runSubtagTests({
             code: '{isstaff},{isstaff},{isstaff}',
             expected: 'true,true,true',
             setup(ctx) {
-                features.setup(m => m.isUserStaff(ctx.guild.id, ctx.users.authorizer.id))
+                features.setup(m => m.isUserStaff(ctx.guildId, ctx.authorizerId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -41,7 +41,7 @@ await runSubtagTests({
             code: '{isstaff}',
             expected: 'false',
             setup(ctx) {
-                features.setup(m => m.isUserStaff(ctx.guild.id, ctx.users.authorizer.id))
+                features.setup(m => m.isUserStaff(ctx.guildId, ctx.authorizerId))
                     .resolves(false)
                     .mustHappen(1);
             }
@@ -54,7 +54,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.isUserStaff(ctx.guild.id, userId))
+                features.setup(m => m.isUserStaff(ctx.guildId, userId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -67,7 +67,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(3);
-                features.setup(m => m.isUserStaff(ctx.guild.id, userId))
+                features.setup(m => m.isUserStaff(ctx.guildId, userId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -80,7 +80,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.isUserStaff(ctx.guild.id, userId))
+                features.setup(m => m.isUserStaff(ctx.guildId, userId))
                     .resolves(false)
                     .mustHappen(1);
             }

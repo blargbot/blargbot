@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag';
 import type { KickMemberFeature } from '@blargbot/bbtag/subtags';
-import { KickSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { KickSubtag, ReasonSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
@@ -8,15 +8,20 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<KickMemberFeature>({ id: 'features' });
 const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
 
 await runSubtagTests({
     subtag: new KickSubtag(features.instance),
     argCountBounds: { min: 1, max: 3 },
     names: ['kick'],
-    otherSubtags: [userIdSubtag.instance],
+    otherSubtags: [userIdSubtag.instance, reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
         ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
+    },
+    postSetup(bbctx) {
+        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
     },
     cases: [
         {
@@ -41,11 +46,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.kickMember($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'Tag Kick'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Kick'
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -64,11 +69,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.kickMember($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'Tag Kick'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Kick'
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'bot', reason: 'I don\'t have permission to kick users!' });
@@ -87,11 +92,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.kickMember($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'Tag Kick'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Kick'
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'bot', reason: 'I don\'t have permission to kick other user!' });
@@ -110,11 +115,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.kickMember($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'Tag Kick'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Kick'
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'authorizer', reason: 'You don\'t have permission to kick users!' });
@@ -133,11 +138,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.kickMember($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'Tag Kick'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Kick'
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'authorizer', reason: 'You don\'t have permission to kick other user!' });
@@ -153,11 +158,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.kickMember($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'My reason here'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'My reason here'
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -173,11 +178,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.kickMember($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.authorizer.id,
-                    reason: 'My reason here'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.authorizerId,
+                    auditReason: 'My reason here'
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -193,11 +198,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.kickMember($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'My reason here'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'My reason here'
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });

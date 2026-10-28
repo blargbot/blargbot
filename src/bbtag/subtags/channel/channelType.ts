@@ -47,7 +47,7 @@ export class ChannelTypeSubtag extends CompiledSubtag {
     }
 
     public async currentChannel(context: BBTagContext): Promise<string> {
-        return await this.#getChannelTypeStr(context, context.local.message.channel.id);
+        return await this.#getChannelTypeStr(context, context.local.channelId);
     }
 
     public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string> {

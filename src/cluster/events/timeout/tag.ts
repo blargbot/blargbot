@@ -17,7 +17,7 @@ export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
         context.root.limit.addRules(['timer', 'output'], rules.disabledRule);
         const expr = bbtag.parse(event.content);
         const result = await context.eval(expr);
-        await this.cluster.bbtag.dependencies.variables.forContext(context).persist();
+        await this.cluster.bbtag.variables.forContext(context).persist();
         await OutputSubtag.sendOutput(context, result);
     }
 }

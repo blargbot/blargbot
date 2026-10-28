@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToBoolean } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.suppressLookup;
@@ -29,7 +28,7 @@ export class SuppressLookupSubtag extends CompiledSubtag {
     public suppress(context: BBTagContext, value: string): void {
         let suppress: boolean | undefined = true;
         if (value !== '') {
-            suppress = parse.boolean(value);
+            suppress = convertToBoolean(value);
             if (suppress === undefined)
                 throw new NotABooleanError(value);
         }

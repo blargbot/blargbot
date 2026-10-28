@@ -1,4 +1,3 @@
-import { guard } from '@blargbot/core';
 import type { ColorInstance } from 'color';
 import Color from 'color';
 
@@ -87,7 +86,7 @@ interface ColorConverter {
 
 function getConverter(name: string): ColorConverter | undefined {
     name = name.toLowerCase();
-    if (guard.hasProperty(colorConverters, name))
+    if (Object.hasOwn(colorConverters, name))
         return colorConverters[name];
     if (name === '')
         return defaultColorConverter;

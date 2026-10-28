@@ -1,7 +1,6 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.unindent;
@@ -26,7 +25,7 @@ export class UnindentSubtag extends CompiledSubtag {
     }
 
     public unindent(text: string, levelStr: string): string {
-        let level = parse.int(levelStr);
+        let level = convertToInteger(levelStr);
         if (level === undefined) {
             const lines = text.split('\n').slice(1);
             level = lines.length === 0 ? 0 : Math.min(...lines.map(l => l.length - l.replace(/^ +/, '').length));

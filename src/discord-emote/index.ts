@@ -1,13 +1,6 @@
-import { discordEmoteData } from '@blargbot/res';
-import type { Snowflake } from 'catflake';
-import type * as eris from 'eris';
-import twemoji from 'twemoji';
+import { rawEmoteJson } from './data.js';
 
-import { snowflake } from './utils/index.js';
-
-await discordEmoteData.ensureLoaded();
-
-export class Emote {
+export default class Emote {
     public static findAll(this: void, text: string): Emote[] {
         return Emote.#findAll(text)[0];
     }
@@ -20,32 +13,19 @@ export class Emote {
         return result[0];
     }
 
-    public static create(this: void, data: eris.PartialEmoji): Emote {
-        if (data.id === null)
-            return Emote.parse(data.name);
-        return Emote.parse(`<${data.animated === true ? 'a' : ''}:${data.name}:${data.id}>`);
-    }
-
     static #findAll(this: void, text: string): [results: Emote[], strict: boolean] {
         const initial = text;
         const emotes: Emote[] = [];
         guildEmoteRegex.lastIndex = 0;
-        text = text.replaceAll(guildEmoteRegex, (_, animated: string, name: string, id: Snowflake) => {
-            emotes.push(new Emote(name, id, animated !== ''));
+        text = text.replaceAll(guildEmoteRegex, (_, animated: string, name: string, id: string) => {
+            emotes.push(new Emote(name, BigInt(id), animated !== ''));
             return '';
-        }).replaceAll(guildApiEmoteRegex, (_, name: string, id: Snowflake) => {
-            emotes.push(new Emote(name, id));
+        }).replaceAll(guildApiEmoteRegex, (_, name: string, id: string) => {
+            emotes.push(new Emote(name, BigInt(id)));
             return '';
         }).replaceAll(discordEmoteRegex, emote => {
             emotes.push(new Emote(emote));
             return '';
-        });
-        twemoji.parse(text, {
-            callback(codepoint) {
-                const emote = twemoji.convert.fromCodePoint(codepoint);
-                emotes.push(new Emote(emote));
-                return text = text.replace(emote, '');
-            }
         });
 
         const result = emotes
@@ -57,14 +37,12 @@ export class Emote {
     }
 
     public constructor(name: string);
-    public constructor(name: string, id: Snowflake, animated?: boolean);
+    public constructor(name: string, id?: bigint, animated?: boolean);
     public constructor(
         public readonly name: string,
-        public readonly id?: Snowflake,
-        public readonly animated = false) {
-        if (id !== undefined && !snowflake.test(id))
-            throw new Error(`${id as string} is not a valid emote id`);
-    }
+        public readonly id?: bigint,
+        public readonly animated = false
+    ) { }
 
     public toApi(): string {
         return this.id === undefined ? this.name : `${this.name}:${this.id}`;
@@ -81,7 +59,7 @@ export class Emote {
 
 const guildEmoteRegex = /<(?<animated>a?):(?<name>[\w_]{1,32}):(?<id>\d{17,23})>/g;
 const guildApiEmoteRegex = /(?<name>[\w_]{1,32}):(?<id>\d{17,23})/g;
-const discordEmotes = discordEmoteData.data.emojis.map(x => x.surrogates);
+const discordEmotes = (JSON.parse(rawEmoteJson) as { emojis: Array<{ surrogates: string; }>; }).emojis.map(x => x.surrogates);
 
 const isLeaf: unique symbol = Symbol();
 interface CodepointTree {

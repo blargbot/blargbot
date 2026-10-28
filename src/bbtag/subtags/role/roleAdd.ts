@@ -1,10 +1,9 @@
-import { guard } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
-import { bbtag, SubtagType } from '../../utils/index.js';
+import { bbtag, getEditRoleDetails, SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
 import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
 import { UserIdSubtag } from '../user/userId.js';
 import type { ListGuildRolesFeature, ListMemberRolesFeature } from './roles.js';
@@ -38,7 +37,7 @@ export class RoleAddSubtag extends CompiledSubtag {
                     exampleCode: tag.target.exampleCode,
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [role]) => this.addRole(ctx, role.value, ctx.root.message.author.id, false)
+                    execute: (ctx, [role]) => this.addRole(ctx, role.value, ctx.root.userId, false)
                 },
                 {
                     parameters: ['role', 'user', 'quiet?'],
@@ -59,28 +58,23 @@ export class RoleAddSubtag extends CompiledSubtag {
         userStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        const { guildId, botId, authorizerId = '' } = context.root;
-        const guildRoles = await this.#features.listGuildRoles(guildId);
-        const roleIndexes = new Map(guildRoles.map((r, i) => [r, i]));
-        const editRoleIndex = Math.min(
-            await this.#getEditRoleIndex(guildId, botId, roleIndexes),
-            await this.#getEditRoleIndex(guildId, authorizerId, roleIndexes)
-        );
-        if (editRoleIndex === 0)
+        const { guildId, botId, authorizerId } = context.root;
+        const { topRoleIndex, roleIndexMap } = await getEditRoleDetails(guildId, [botId, authorizerId], this.#features);
+        if (topRoleIndex === 0)
             throw new BBTagRuntimeError('Author cannot add roles');
 
         quiet ||= context.local.quiet ?? false;
         const targetId = await UserIdSubtag.query(context, userStr, { noLookup: quiet })
             ?? new UserNotFoundError(userStr).withDisplay(quiet ? 'false' : undefined).throw();
 
-        const roleStrs = bbtag.tagArray.deserialize(roleStr)?.v.filter(guard.isTypeOf('string', 'number')) ?? [roleStr];
-        const roles = roleStrs.map(String).filter(v => roleIndexes.has(v));
+        const roleStrs = bbtag.tagArray.deserialize(roleStr)?.v.filter(v => typeof v === 'number' || typeof v === 'string') ?? [roleStr];
+        const roles = roleStrs.map(String).filter(v => roleIndexMap.has(v));
 
         if (roles.length === 0)
             throw new RoleNotFoundError(roleStr);
 
-        const topRoleIndex = roles.reduce((p, r) => Math.max(p, roleIndexes.get(r) ?? 0), 0);
-        if (topRoleIndex >= editRoleIndex)
+        const requiredRoleIndex = roles.reduce((p, r) => Math.max(p, roleIndexMap.get(r) ?? 0), 0);
+        if (requiredRoleIndex >= topRoleIndex)
             throw new BBTagRuntimeError('Role above author');
 
         const userRoles = new Set(await this.#features.listMemberRoles(guildId, targetId) ?? []);
@@ -92,19 +86,8 @@ export class RoleAddSubtag extends CompiledSubtag {
             guildId,
             targetId,
             roleIds: toAdd,
-            auditReason: context.auditReason()
+            auditReason: await ReasonSubtag.get(context)
         });
         return result.success;
-    }
-
-    async #getEditRoleIndex(guildId: string, userId: string, roleIndexes: Map<string, number>): Promise<number> {
-        const permissions = await this.#features.getMemberPermissions(guildId, userId);
-        if (!permissions.hasAny('ADMINISTRATOR', 'MANAGE_ROLES'))
-            return 0;
-        const roles = await this.#features.listMemberRoles(guildId, userId);
-        const topRole = roles?.at(-1);
-        if (topRole === undefined)
-            return 0;
-        return roleIndexes.get(topRole) ?? 0;
     }
 }

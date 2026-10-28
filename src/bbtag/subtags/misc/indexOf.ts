@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.indexOf;
@@ -27,7 +26,7 @@ export class IndexOfSubtag extends CompiledSubtag {
     }
 
     public indexOf(context: BBTagContext, text: string, query: string, startStr: string): number {
-        const from = parse.int(startStr) ?? parse.int(context.local.fallback ?? '');
+        const from = convertToInteger(startStr) ?? convertToInteger(context.local.fallback ?? '');
         if (from === undefined)
             throw new NotANumberError(startStr);
 

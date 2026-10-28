@@ -35,15 +35,11 @@ await runSubtagTests({
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.input.cooldown = 4;
-                ctx.input.tagName = 'test tag';
-                ctx.input.input = 'This is some input text';
+                ctx.cooldownMs = 4;
+                ctx.tagName = 'test tag';
+                ctx.input = 'This is some input text';
                 features.setup(m => m.getTag('otherSubtag')).resolves({
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 }).mustHappen(1);
             },
@@ -77,15 +73,11 @@ await runSubtagTests({
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.input.cooldown = 4;
-                ctx.input.tagName = 'test tag';
-                ctx.input.input = 'This is some input text';
+                ctx.cooldownMs = 4;
+                ctx.tagName = 'test tag';
+                ctx.input = 'This is some input text';
                 features.setup(m => m.getTag('otherSubtag')).resolves({
-                    author: '212097368371683623',
-                    content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0
+                    content: '{assert}{eval}'
                 }).mustHappen(1);
             },
             postSetup(ctx) {
@@ -117,15 +109,11 @@ await runSubtagTests({
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.input.cooldown = 4;
-                ctx.input.tagName = 'test tag';
-                ctx.input.input = 'This is some input text';
+                ctx.cooldownMs = 4;
+                ctx.tagName = 'test tag';
+                ctx.input = 'This is some input text';
                 features.setup(m => m.getTag('otherSubtag')).resolves({
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 }).mustHappen(1);
             },
@@ -158,15 +146,11 @@ await runSubtagTests({
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.input.cooldown = 4;
-                ctx.input.tagName = 'test tag';
-                ctx.input.input = 'This is some input text';
+                ctx.cooldownMs = 4;
+                ctx.tagName = 'test tag';
+                ctx.input = 'This is some input text';
                 features.setup(m => m.getTag('otherSubtag')).resolves({
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 }).mustHappen(1);
             },
@@ -200,11 +184,7 @@ await runSubtagTests({
             ],
             setup() {
                 features.setup(m => m.getTag('otherSubtag')).resolves({
-                    author: '212097368371683623',
                     content: '{fail}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 }).mustHappen(1);
             },
@@ -225,8 +205,8 @@ await runSubtagTests({
                 assert.equal(ctx.local.cooldown, 7);
                 assert.equal(ctx.local.input.raw, 'arg1 arg2 "-f flag value"');
                 assert.deepEqual(ctx.local.input.array, ['arg1', 'arg2', '-f flag value']);
-                assert.equal(ctx.local.input.flags.f?.merge().raw, 'flag value');
-                assert.equal(ctx.local.input.flags._.merge().raw, 'arg1 arg2');
+                assert.equal(ctx.local.input.flags.f, 'flag value');
+                assert.equal(ctx.local.input.flags._, 'arg1 arg2');
                 assert.equal(ctx.root.recursion.depth, 101);
                 assert.notEqual(ctx.local, ctx.root);
                 return 'Success!';
@@ -235,15 +215,11 @@ await runSubtagTests({
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.input.cooldown = 4;
-                ctx.input.tagName = 'test tag';
-                ctx.input.input = 'This is some input text';
+                ctx.cooldownMs = 4;
+                ctx.tagName = 'test tag';
+                ctx.input = 'This is some input text';
                 features.setup(m => m.getTag('otherSubtag')).resolves({
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 }).mustHappen(1);
             },
@@ -255,8 +231,8 @@ await runSubtagTests({
                 assert.equal(ctx.root.tagName, 'test tag');
                 assert.equal(ctx.local.cooldown, 4);
                 assert.equal(ctx.local.input.raw, 'This is some input text');
-                assert.equal(ctx.local.input.flags.f?.merge().raw, undefined);
-                assert.equal(ctx.local.input.flags._.merge().raw, 'This is some input text');
+                assert.equal(ctx.local.input.flags.f, undefined);
+                assert.equal(ctx.local.input.flags._, 'This is some input text');
                 assert.equal(ctx.root.recursion.depth, 100);
                 assert.equal(ctx.local, ctx.root);
             }
@@ -270,8 +246,8 @@ await runSubtagTests({
                 assert.equal(ctx.local.cooldown, 7);
                 assert.equal(ctx.local.input.raw, 'arg1 arg2 -f flag value');
                 assert.deepEqual(ctx.local.input.array, ['arg1', 'arg2', '-f', 'flag', 'value']);
-                assert.equal(ctx.local.input.flags.f?.merge().raw, 'flag value');
-                assert.equal(ctx.local.input.flags._.merge().raw, 'arg1 arg2');
+                assert.equal(ctx.local.input.flags.f, 'flag value');
+                assert.equal(ctx.local.input.flags._, 'arg1 arg2');
                 assert.equal(ctx.root.recursion.depth, 101);
                 assert.notEqual(ctx.local, ctx.root);
                 return 'Success!';
@@ -280,15 +256,11 @@ await runSubtagTests({
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.input.cooldown = 4;
-                ctx.input.tagName = 'test tag';
-                ctx.input.input = 'This is some input text';
+                ctx.cooldownMs = 4;
+                ctx.tagName = 'test tag';
+                ctx.input = 'This is some input text';
                 features.setup(m => m.getTag('otherSubtag')).resolves({
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 }).mustHappen(1);
             },
@@ -300,8 +272,8 @@ await runSubtagTests({
                 assert.equal(ctx.root.tagName, 'test tag');
                 assert.equal(ctx.local.cooldown, 4);
                 assert.equal(ctx.local.input.raw, 'This is some input text');
-                assert.equal(ctx.local.input.flags.f?.merge().raw, undefined);
-                assert.equal(ctx.local.input.flags._.merge().raw, 'This is some input text');
+                assert.equal(ctx.local.input.flags.f, undefined);
+                assert.equal(ctx.local.input.flags._, 'This is some input text');
                 assert.equal(ctx.root.recursion.depth, 100);
                 assert.equal(ctx.local, ctx.root);
             }
@@ -315,8 +287,8 @@ await runSubtagTests({
                 assert.equal(ctx.local.cooldown, 7);
                 assert.equal(ctx.local.input.raw, 'arg1 arg2 \\-f flag value');
                 assert.deepEqual(ctx.local.input.array, ['arg1', 'arg2', '-f', 'flag', 'value']);
-                assert.equal(ctx.local.input.flags.f?.merge().raw, undefined);
-                assert.equal(ctx.local.input.flags._.merge().raw, 'arg1 arg2 \\-f flag value');
+                assert.equal(ctx.local.input.flags.f, undefined);
+                assert.equal(ctx.local.input.flags._, 'arg1 arg2 -f flag value');
                 assert.equal(ctx.root.recursion.depth, 101);
                 assert.notEqual(ctx.local, ctx.root);
                 return 'Success!';
@@ -325,15 +297,11 @@ await runSubtagTests({
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.input.cooldown = 4;
-                ctx.input.tagName = 'test tag';
-                ctx.input.input = 'This is some input text';
+                ctx.cooldownMs = 4;
+                ctx.tagName = 'test tag';
+                ctx.input = 'This is some input text';
                 features.setup(m => m.getTag('otherSubtag')).resolves({
-                    author: '212097368371683623',
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 }).mustHappen(1);
             },
@@ -345,8 +313,8 @@ await runSubtagTests({
                 assert.equal(ctx.root.tagName, 'test tag');
                 assert.equal(ctx.local.cooldown, 4);
                 assert.equal(ctx.local.input.raw, 'This is some input text');
-                assert.equal(ctx.local.input.flags.f?.merge().raw, undefined);
-                assert.equal(ctx.local.input.flags._.merge().raw, 'This is some input text');
+                assert.equal(ctx.local.input.flags.f, undefined);
+                assert.equal(ctx.local.input.flags._, 'This is some input text');
                 assert.equal(ctx.root.recursion.depth, 100);
                 assert.equal(ctx.local, ctx.root);
             }

@@ -1,6 +1,7 @@
 import type { BBTagContext, BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
 import { UserNotFoundError } from '@blargbot/bbtag';
 import { UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
@@ -11,22 +12,22 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
 
 function* createGetUserPropTestCasesIter(options: GetUserPropTestData): Generator<SubtagTestCase, void, undefined> {
     if (options.includeNoArgs === true)
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', []));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, []));
 
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['', 'q']));
     }
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['command']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['command', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['command', 'q']));
     }
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'general']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [c.queryString ?? 'general']));
     if (options.quiet !== false) {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'general', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'general', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [c.queryString ?? 'general', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [c.queryString ?? 'general', 'q']));
     }
 
     const notFound = options.notFound ?? (c => new UserNotFoundError(c));
@@ -34,37 +35,37 @@ function* createGetUserPropTestCasesIter(options: GetUserPropTestData): Generato
 
     yield {
         title: 'User not found',
-        code: options.generateCode('12345678998765432'),
-        expected: `\`${notFound('12345678998765432').message}\``,
+        code: options.generateCode('123456789987654329'),
+        expected: `\`${notFound('123456789987654329').message}\``,
         subtags: [userIdSubtag.instance],
         errors: [
-            { error: notFound('12345678998765432') }
+            { error: notFound('123456789987654329') }
         ],
         setup(ctx) {
-            options.setup?.(ctx);
+            options.setup?.(ctx, false);
             ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
         },
         postSetup(bbctx) {
             const queryOptions = options.queryOptions(false);
-            userIdSubtag.setup((m, $) => m.query(bbctx, '12345678998765432', $(queryOptions))).resolves(undefined);
+            userIdSubtag.setup((m, $) => m.query(bbctx, '123456789987654329', $(queryOptions))).resolves(undefined);
         }
     };
     if (options.quiet !== false) {
         yield {
             title: 'User not found but quiet',
-            code: options.generateCode('12345678998765432', 'q'),
-            expected: options.quiet ?? `\`${notFound('12345678998765432').message}\``,
+            code: options.generateCode('123456789987654329', 'q'),
+            expected: options.quiet ?? `\`${notFound('123456789987654329').message}\``,
             subtags: [userIdSubtag.instance],
             errors: [
-                { error: notFound('12345678998765432').withDisplay(options.quiet) }
+                { error: notFound('123456789987654329').withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                options.setup?.(ctx);
+                options.setup?.(ctx, true);
                 ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
             },
             postSetup(bbctx) {
                 const queryOptions = options.queryOptions(true);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '12345678998765432', $(queryOptions))).resolves(undefined);
+                userIdSubtag.setup((m, $) => m.query(bbctx, '123456789987654329', $(queryOptions))).resolves(undefined);
             }
         };
     }
@@ -77,25 +78,26 @@ export interface GetUserPropTestData {
     queryOptions: (quiet: boolean) => QueryEntityOptions | undefined;
     generateCode: (...args: [userStr?: string, quietStr?: string]) => string;
     notFound?: (userStr: string) => BBTagRuntimeError;
-    setup?: (context: SubtagTestContext) => void;
+    setup?: (context: SubtagTestContext, quiet: boolean) => void;
 }
 
 export interface GetUserPropTestCase {
     title?: string;
     expected: string | RegExp;
-    userId?: string;
     error?: BBTagRuntimeError;
     retries?: number;
     queryString?: string;
     generateCode?: (...args: [userStr?: string, quietStr?: string]) => string;
     setup?: (userId: string, context: SubtagTestContext) => void;
-    postSetup?: (userId: string, context: BBTagContext, test: SubtagTestContext) => void;
+    postSetup?: (userId: string, context: BBTagContext, test: SubtagTestContext, quiet: boolean) => void;
     assert?: (result: string, userId: string, context: BBTagContext, test: SubtagTestContext) => void;
 }
 
-function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase, userKey: keyof SubtagTestContext['users'], args: Parameters<GetUserPropTestData['generateCode']>): SubtagTestCase {
+function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase, args: Parameters<GetUserPropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+    const [userQuery, quietStr = ''] = args;
+    const userId = `userId<${snowflake.create()}>`;
     return {
         title: testCase.title,
         code,
@@ -104,27 +106,20 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
         subtags: [userIdSubtag.instance],
         errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
-            data.setup?.(ctx);
-            const isMessageUser = ctx.users[userKey].id === ctx.message.author.id;
-            const user = ctx.users[userKey];
-            if (testCase.userId !== undefined)
-                user.id = testCase.userId;
-            testCase.setup?.(user.id, ctx);
-            if (isMessageUser)
-                ctx.message.author.id = user.id;
+            data.setup?.(ctx, quietStr !== '');
+            testCase.setup?.(userId, ctx);
             ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
 
         },
         postSetup(bbctx, ctx) {
-            const [userQuery, quietStr = ''] = args;
             if (userQuery !== undefined) {
                 const queryOptions = data.queryOptions(quietStr !== '');
-                userIdSubtag.setup((m, $) => m.query(bbctx, userQuery, $(queryOptions))).resolves(ctx.users[userKey].id);
+                userIdSubtag.setup((m, $) => m.query(bbctx, userQuery, $(queryOptions))).resolves(userId);
             }
-            testCase.postSetup?.(ctx.users[userKey].id, bbctx, ctx);
+            testCase.postSetup?.(userId, bbctx, ctx, quietStr !== '');
         },
         assert(bbctx, result, ctx) {
-            testCase.assert?.(result, ctx.users[userKey].id, bbctx, ctx);
+            testCase.assert?.(result, userId, bbctx, ctx);
         }
     };
 }

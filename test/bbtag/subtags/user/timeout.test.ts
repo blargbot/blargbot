@@ -3,7 +3,6 @@ import type { SetUserTimeoutFeature } from '@blargbot/bbtag/subtags';
 import { TimeoutSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
-import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -48,12 +47,12 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     reason: 'Tag Timeout',
-                    duration: moment.duration({ seconds: 1 })
+                    duration: Temporal.Duration.from({ seconds: 1 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -68,12 +67,12 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     reason: 'Tag Timeout',
-                    duration: moment.duration({ days: 29 })
+                    duration: Temporal.Duration.from({ days: 29 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -98,12 +97,12 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     reason: 'Tag Timeout',
-                    duration: moment.duration({ seconds: 0 })
+                    duration: Temporal.Duration.from({ seconds: 0 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'noChange', reason: 'other user is not timed out!' });
@@ -121,12 +120,12 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     reason: 'Tag Timeout',
-                    duration: moment.duration({ seconds: 1 })
+                    duration: Temporal.Duration.from({ seconds: 1 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'noChange', reason: 'other user is already timed out!' });
@@ -144,12 +143,12 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     reason: 'Tag Timeout',
-                    duration: moment.duration({ seconds: 1 })
+                    duration: Temporal.Duration.from({ seconds: 1 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'bot', reason: 'I don\'t have permission to (remove) time out (from) users!' });
@@ -167,12 +166,12 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     reason: 'Tag Timeout',
-                    duration: moment.duration({ seconds: 1 })
+                    duration: Temporal.Duration.from({ seconds: 1 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'bot', reason: 'I don\'t have permission to (remove) time out (from) other user!' });
@@ -190,12 +189,12 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     reason: 'Tag Timeout',
-                    duration: moment.duration({ seconds: 1 })
+                    duration: Temporal.Duration.from({ seconds: 1 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'authorizer', reason: 'You don\'t have permission to (remove) time out (from) users!' });
@@ -213,12 +212,12 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
                     reason: 'Tag Timeout',
-                    duration: moment.duration({ seconds: 1 })
+                    duration: Temporal.Duration.from({ seconds: 1 })
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'authorizer', reason: 'You don\'t have permission to (remove) time out (from) other user!' });

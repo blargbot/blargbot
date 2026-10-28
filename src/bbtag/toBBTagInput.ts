@@ -1,12 +1,15 @@
 import { humanize, parse } from '@blargbot/core';
-import type { FlagDefinition } from '@blargbot/domain';
 
-import type { BBTagInput } from './types.js';
+import type { BBTagInput, FlagDefinition, FlagResult } from './types.js';
 
-export function toBBTagInput(input: string, flags: ReadonlyArray<FlagDefinition<string>>): BBTagInput {
+export function toBBTagInput(input: string, flags: readonly FlagDefinition[]): BBTagInput {
+    const parsed = parse.flags(flags, input);
     return {
         raw: input,
         array: humanize.smartSplit(input),
-        flags: parse.flags(flags, input)
+        flags: Object.fromEntries(
+            Object.entries(parsed)
+                .map(([key, value]) => [key, value?.merge().value])
+        ) as FlagResult
     };
 }

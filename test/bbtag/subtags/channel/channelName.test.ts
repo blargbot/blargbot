@@ -25,13 +25,13 @@ await runSubtagTests({
                 {
                     expected: 'my cool channel',
                     setup(channelId, ctx) {
-                        features.setup(m => m.getChannelName(ctx.guild.id, channelId)).resolves('my cool channel').mustHappen(1);
+                        features.setup(m => m.getChannelName(ctx.guildId, channelId)).resolves('my cool channel').mustHappen(1);
                     }
                 },
                 {
                     expected: 'unknown',
                     setup(channelId, ctx) {
-                        features.setup(m => m.getChannelName(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
+                        features.setup(m => m.getChannelName(ctx.guildId, channelId)).resolves(undefined).mustHappen(1);
                     }
                 }
             ]

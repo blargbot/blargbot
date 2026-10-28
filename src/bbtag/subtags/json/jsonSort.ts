@@ -1,9 +1,10 @@
-import { compare, parse } from '@blargbot/core';
+import { compare } from '@blargbot/core';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotAnArrayError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToBoolean, convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { VariablesFeature } from '../types.js';
 
@@ -33,7 +34,7 @@ export class JsonSortSubtag extends CompiledSubtag {
 
     public async jsonSort(context: BBTagContext, arrStr: string, pathStr: string, descStr: string): Promise<JArray | undefined> {
         const variables = this.#features.variables.forContext(context);
-        const descending = parse.boolean(descStr) ?? descStr !== '';
+        const descending = convertToBoolean(descStr) ?? descStr !== '';
         const obj = await bbtag.json.resolveObj(variables, arrStr);
         if (!Array.isArray(obj.object))
             throw new NotAnArrayError(arrStr);
@@ -45,7 +46,7 @@ export class JsonSortSubtag extends CompiledSubtag {
             .map((v, i, a) => {
                 if (v.sortKey === undefined)
                     throw new BBTagRuntimeError(`Cannot read property ${pathStr} at index ${i}, ${a.filter(x => x.sortKey === undefined).length} total failures`);
-                return { value: v.value, sortKey: parse.string(v.sortKey) };
+                return { value: v.value, sortKey: convertToString(v.sortKey) };
             })
             .sort((a, b) => orderMult * compare(a.sortKey, b.sortKey))
             .map(x => x.value);

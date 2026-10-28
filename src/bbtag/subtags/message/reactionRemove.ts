@@ -1,4 +1,4 @@
-import { Emote } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
 
 import type { SubtagArgumentArray } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -85,29 +85,29 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
     async #bindArguments(context: BBTagContext, rawArgs: SubtagArgumentArray): Promise<[channel: string, message: string, user: string, reactions: Emote[] | undefined]> {
         const args = rawArgs.map(x => x.value);
         if (args.length === 1)
-            args.unshift(context.local.message.channel.id);
+            args.unshift(context.local.channelId);
 
         let channelId = await ChannelIdSubtag.query(context, args[0], { noLookup: true, noErrors: true });
         if (channelId !== undefined)
             args.shift();
-        else if (args[0] !== context.local.message.channel.id) {
-            channelId = await ChannelIdSubtag.query(context, context.local.message.channel.id, { noLookup: true, noErrors: true })
+        else if (args[0] !== context.local.channelId) {
+            channelId = await ChannelIdSubtag.query(context, context.local.channelId, { noLookup: true, noErrors: true })
                 ?? new ChannelNotFoundError(args[0]).throw();
         } else
-            throw new ChannelNotFoundError(context.local.message.channel.id);
+            throw new ChannelNotFoundError(context.local.channelId);
 
         const message = args.splice(0, 1)[0];
         if (args.length === 0)
-            args.unshift(context.local.message.author.id);
+            args.unshift(context.local.userId);
 
         let userId = await UserIdSubtag.query(context, args[0], { noLookup: true, noErrors: true, global: true });
         if (userId !== undefined)
             args.shift();
-        else if (args[0] !== context.local.message.author.id) {
-            userId = await UserIdSubtag.query(context, context.local.message.author.id, { noLookup: true, noErrors: true, global: true })
+        else if (args[0] !== context.local.userId) {
+            userId = await UserIdSubtag.query(context, context.local.userId, { noLookup: true, noErrors: true, global: true })
                 ?? new UserNotFoundError(args[0]).throw();
         } else
-            throw new UserNotFoundError(context.local.message.author.id);
+            throw new UserNotFoundError(context.local.userId);
 
         if (args.length === 0)
             return [channelId, message, userId, undefined];

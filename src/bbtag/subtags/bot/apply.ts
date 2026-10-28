@@ -1,10 +1,9 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UnknownSubtagError } from '../../errors/index.js';
 import type { SubtagCall } from '../../language/index.js';
 import { templates } from '../../text.js';
+import { convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.apply;
@@ -43,7 +42,7 @@ export class ApplySubtag extends CompiledSubtag {
 
         const flatArgs = args
             .flatMap(arg => bbtag.tagArray.deserialize(arg)?.v ?? [arg])
-            .map(v => parse.string(v));
+            .map(convertToString);
 
         const source = `{${[subtagName, ...flatArgs].join(';')}}`;
 

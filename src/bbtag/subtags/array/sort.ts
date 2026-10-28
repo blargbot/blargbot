@@ -1,9 +1,10 @@
-import { compare, parse } from '@blargbot/core';
+import { compare } from '@blargbot/core';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToBoolean, convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { VariablesFeature } from '../types.js';
 
@@ -36,8 +37,8 @@ export class SortSubtag extends CompiledSubtag {
         if (arr === undefined)
             throw new NotAnArrayError(arrayStr);
 
-        const direction = parse.boolean(descendingStr, descendingStr !== '') ? -1 : 1;
-        arr.v = arr.v.sort((a, b) => direction * compare(parse.string(a), parse.string(b)));
+        const direction = convertToBoolean(descendingStr) ?? descendingStr !== '' ? -1 : 1;
+        arr.v = arr.v.sort((a, b) => direction * compare(convertToString(a), convertToString(b)));
 
         if (arr.n === undefined)
             return arr.v;

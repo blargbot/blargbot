@@ -1,10 +1,10 @@
-import { parse } from '@blargbot/core';
 import { Lazy } from '@blargbot/util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotAnArrayError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { VariablesFeature } from '../types.js';
 
@@ -34,16 +34,16 @@ export class SliceSubtag extends CompiledSubtag {
     public async slice(context: BBTagContext, array: string, startStr: string, endStr: string): Promise<JArray> {
         const variables = this.#features.variables.forContext(context);
         const arr = await bbtag.tagArray.deserializeOrGetArray(variables, array);
-        const fallback = new Lazy(() => parse.int(context.local.fallback ?? ''));
+        const fallback = new Lazy(() => convertToInteger(context.local.fallback ?? ''));
 
         if (arr === undefined)
             throw new NotAnArrayError(array);
 
-        const start = parse.int(startStr) ?? fallback.value;
+        const start = convertToInteger(startStr) ?? fallback.value;
         if (start === undefined)
             throw new NotANumberError(startStr);
 
-        const end = parse.int(endStr) ?? fallback.value;
+        const end = convertToInteger(endStr) ?? fallback.value;
         if (end === undefined)
             throw new NotANumberError(endStr);
 

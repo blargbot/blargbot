@@ -25,19 +25,19 @@ await runSubtagTests({
                 {
                     expected: '0',
                     setup(userId, ctx) {
-                        features.setup(m => m.getWarnings(ctx.guild.id, userId)).resolves(undefined);
+                        features.setup(m => m.getWarnings(ctx.guildId, userId)).resolves(undefined);
                     }
                 },
                 {
                     expected: '0',
                     setup(userId, ctx) {
-                        features.setup(m => m.getWarnings(ctx.guild.id, userId)).resolves(0);
+                        features.setup(m => m.getWarnings(ctx.guildId, userId)).resolves(0);
                     }
                 },
                 {
                     expected: '1234',
                     setup(userId, ctx) {
-                        features.setup(m => m.getWarnings(ctx.guild.id, userId)).resolves(1234);
+                        features.setup(m => m.getWarnings(ctx.guildId, userId)).resolves(1234);
                     }
                 }
             ]

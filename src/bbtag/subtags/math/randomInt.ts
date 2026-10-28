@@ -1,10 +1,10 @@
-import { parse } from '@blargbot/core';
 import { Lazy, random } from '@blargbot/util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.randomInt;
@@ -33,12 +33,12 @@ export class RandomIntSubtag extends CompiledSubtag {
         minStr: string,
         maxStr: string
     ): number {
-        const fallback = new Lazy(() => parse.int(context.local.fallback ?? ''));
-        const min = parse.int(minStr) ?? fallback.value;
+        const fallback = new Lazy(() => convertToInteger(context.local.fallback ?? ''));
+        const min = convertToInteger(minStr) ?? fallback.value;
         if (min === undefined)
             throw new NotANumberError(minStr);
 
-        const max = parse.int(maxStr) ?? fallback.value;
+        const max = convertToInteger(maxStr) ?? fallback.value;
         if (max === undefined)
             throw new NotANumberError(maxStr);
 

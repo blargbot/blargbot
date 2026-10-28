@@ -25,19 +25,19 @@ await runSubtagTests({
                 {
                     expected: 'true',
                     setup(channelId, ctx) {
-                        features.setup(m => m.isChannelNsfw(ctx.guild.id, channelId)).resolves(true).mustHappen(1);
+                        features.setup(m => m.isChannelNsfw(ctx.guildId, channelId)).resolves(true).mustHappen(1);
                     }
                 },
                 {
                     expected: 'false',
                     setup(channelId, ctx) {
-                        features.setup(m => m.isChannelNsfw(ctx.guild.id, channelId)).resolves(false).mustHappen(1);
+                        features.setup(m => m.isChannelNsfw(ctx.guildId, channelId)).resolves(false).mustHappen(1);
                     }
                 },
                 {
                     expected: 'false',
                     setup(channelId, ctx) {
-                        features.setup(m => m.isChannelNsfw(ctx.guild.id, channelId)).resolves(undefined).mustHappen(1);
+                        features.setup(m => m.isChannelNsfw(ctx.guildId, channelId)).resolves(undefined).mustHappen(1);
                     }
                 }
             ]

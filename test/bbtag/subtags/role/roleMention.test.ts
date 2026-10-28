@@ -12,71 +12,57 @@ await runSubtagTests({
     cases: [
         ...createGetRolePropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['rolemention', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: '<@&89176598273912362713>',
-                    setup(role) {
-                        role.id = '89176598273912362713';
+                    expected: '<dynamic mention>',
+                    setup(roleId) {
+                        this.expected = `<@&${roleId}>`;
                     },
-                    assert(_, __, ctx) {
-                        assert.deepEqual(ctx.root.allowedMentions.roles, new Set(['89176598273912362713']));
+                    assert(_, roleId, ctx) {
+                        assert.deepEqual(ctx.root.allowedMentions.roles, new Set([roleId]));
                     }
                 }
             ]
         }),
-        {
-            code: '{rolemention;other role;;}',
-            expected: '<@&347865137576334534>',
-            setup(ctx) {
-                ctx.roles.other.id = '347865137576334534';
+        ...createGetRolePropTestCases({
+            quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
+            generateCode(roleStr, quiet) {
+                return `{${['rolemention', roleStr, quiet, 'true'].join(';')}}`;
             },
-            postSetup(bbctx, ctx) {
-                const role = bbctx.root.message.channel.guild.roles.get(ctx.roles.other.id);
-                if (role === undefined)
-                    throw new Error('Cannot find the role under test');
-                ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .resolves([role]);
+            cases: [
+                {
+                    expected: '<dynamic mention>',
+                    setup(roleId) {
+                        this.expected = `<@&${roleId}>`;
+                    },
+                    assert(_, __, ctx) {
+                        assert.deepEqual(ctx.root.allowedMentions.roles, new Set([]));
+                    }
+                }
+            ]
+        }),
+        ...createGetRolePropTestCases({
+            quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
+            generateCode(roleStr, quiet) {
+                return `{${['rolemention', roleStr, quiet, 'false'].join(';')}}`;
             },
-            assert(bbctx) {
-                assert.deepEqual(bbctx.root.allowedMentions.roles, new Set(['347865137576334534']));
-            }
-        },
-        {
-            code: '{rolemention;other role;;true}',
-            expected: '<@&347865137576334534>',
-            setup(ctx) {
-                ctx.roles.other.id = '347865137576334534';
-            },
-            postSetup(bbctx, ctx) {
-                const role = bbctx.root.message.channel.guild.roles.get(ctx.roles.other.id);
-                if (role === undefined)
-                    throw new Error('Cannot find the role under test');
-                ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .resolves([role]);
-            },
-            assert(bbctx) {
-                assert.deepEqual(bbctx.root.allowedMentions.roles, new Set([]));
-            }
-        },
-        {
-            code: '{rolemention;other role;;false}',
-            expected: '<@&347865137576334534>',
-            setup(ctx) {
-                ctx.roles.other.id = '347865137576334534';
-            },
-            postSetup(bbctx, ctx) {
-                const role = bbctx.root.message.channel.guild.roles.get(ctx.roles.other.id);
-                if (role === undefined)
-                    throw new Error('Cannot find the role under test');
-                ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .resolves([role]);
-            },
-            assert(bbctx) {
-                assert.deepEqual(bbctx.root.allowedMentions.roles, new Set(['347865137576334534']));
-            }
-        }
+            cases: [
+                {
+                    expected: '<dynamic mention>',
+                    setup(roleId) {
+                        this.expected = `<@&${roleId}>`;
+                    },
+                    assert(_, roleId, ctx) {
+                        assert.deepEqual(ctx.root.allowedMentions.roles, new Set([roleId]));
+                    }
+                }
+            ]
+        })
     ]
 });

@@ -1,10 +1,10 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, RoleNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToBoolean } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
+import { RoleIdSubtag } from './roleId.js';
 
 const tag = templates.subtags.roleMention;
 
@@ -28,24 +28,21 @@ export class RoleMentionSubtag extends CompiledSubtag {
 
     public async roleMention(
         context: BBTagContext,
-        roleId: string,
+        roleStr: string,
         quiet: boolean,
         noPingStr: string
     ): Promise<string> {
         quiet ||= context.local.quiet ?? false;
-        const noPing = parse.boolean(noPingStr);
+        const noPing = convertToBoolean(noPingStr);
         if (noPing === undefined)
             throw new NotABooleanError(noPing);
 
-        const role = await context.queryRole(roleId, { noLookup: quiet });
-
-        if (role === undefined) {
-            throw new RoleNotFoundError(roleId)
-                .withDisplay(quiet ? '' : undefined);
-        }
+        const roleId = await RoleIdSubtag.query(context, roleStr, { noLookup: quiet })
+            ?? new RoleNotFoundError(roleStr).withDisplay(quiet ? '' : undefined).throw();
 
         if (!noPing)
-            context.root.allowedMentions.roles.add(role.id);
-        return role.mention;
+            context.root.allowedMentions.roles.add(roleId);
+
+        return `<@&${roleId}>`;
     }
 }

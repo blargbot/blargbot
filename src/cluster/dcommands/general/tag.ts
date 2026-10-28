@@ -187,8 +187,12 @@ export class TagCommand extends GuildCommand {
 
         await context.database.tags.incrementUses(match.name, 1);
 
+        const message = context.message;
         const result = await context.bbtag.execute(match.content, {
-            message: context.message,
+            messageId: message.id,
+            channelId: message.channel.id,
+            guildId: message.channel.guild.id,
+            userId: message.author.id,
             tagName: match.name,
             input: input ?? '',
             flagDefinitions: match.flags ?? [],
@@ -196,7 +200,7 @@ export class TagCommand extends GuildCommand {
             silent: false,
             isCC: false,
             tagVars: true,
-            limit: new limits.TagLimit(context.message.channel.guild),
+            limit: new limits.TagLimit(context.message.channel.guild.memberCount),
             author: match.author,
             authorizer: match.author,
             prefix: context.prefix
@@ -215,17 +219,21 @@ export class TagCommand extends GuildCommand {
         input: string,
         debug: boolean
     ): Promise<CommandResult> {
+        const message = context.message;
         const result = await context.bbtag.execute(content, {
-            message: context.message,
+            messageId: message.id,
+            channelId: message.channel.id,
+            guildId: message.channel.guild.id,
+            userId: message.author.id,
             tagName: 'test',
             input: input,
             flagDefinitions: [],
             silent: false,
             isCC: false,
             tagVars: true,
-            limit: new limits.TagLimit(context.message.channel.guild),
+            limit: new limits.TagLimit(context.message.channel.guild.memberCount),
             author: context.author.id,
-            authorizer: undefined,
+            authorizer: context.author.id,
             prefix: context.prefix,
             cooldown: 0
         });

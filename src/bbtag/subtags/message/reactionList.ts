@@ -1,10 +1,11 @@
-import { Emote, snowflake } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { isSnowflake } from '../../utils/snowflake.js';
 import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.reactionList;
@@ -29,7 +30,7 @@ export class ReactionListSubtag extends CompiledSubtag {
                 {
                     parameters: [],
                     returns: 'error',
-                    execute: (ctx) => { throw new MessageNotFoundError(ctx.local.message.channel.id, ''); }
+                    execute: (ctx) => { throw new MessageNotFoundError(ctx.local.channelId, ''); }
                 },
                 {
                     parameters: ['messageid'],
@@ -93,15 +94,15 @@ export class ReactionListSubtag extends CompiledSubtag {
     }
 
     public async getReactions(context: BBTagContext, messageId: string): Promise<string[]> {
-        const emotes = await this.#features.listMessageReactions(context.local.message.channel.id, messageId)
-            ?? new MessageNotFoundError(context.local.message.channel.id, messageId).throw();
+        const emotes = await this.#features.listMessageReactions(context.local.channelId, messageId)
+            ?? new MessageNotFoundError(context.local.channelId, messageId).throw();
         return emotes.map(x => x.toApi());
     }
 
     #bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
-        let channel = context.local.message.channel.id;
+        let channel = context.local.channelId;
 
-        if (args.length >= 2 && snowflake.test(args[1]))
+        if (args.length >= 2 && isSnowflake(args[1]))
             channel = args.splice(0, 1)[0];
 
         const message = args.splice(0, 1)[0];

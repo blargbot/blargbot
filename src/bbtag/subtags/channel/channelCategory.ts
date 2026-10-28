@@ -42,7 +42,7 @@ export class ChannelCategorySubtag extends CompiledSubtag {
     }
 
     public async currentChannelCategory(context: BBTagContext): Promise<string> {
-        return await this.#features.getChannelCategory(context.root.guildId, context.local.message.channel.id)
+        return await this.#features.getChannelCategory(context.root.guildId, context.local.channelId)
             ?? new BBTagRuntimeError('Channel has no parent').withDisplay('').throw();
     }
 

@@ -26,7 +26,7 @@ export class MessageSenderSubtag extends CompiledSubtag {
                     exampleCode: tag.trigger.exampleCode,
                     exampleOut: tag.trigger.exampleOut,
                     returns: 'id',
-                    execute: (ctx) => this.getMessageSender(ctx, ctx.local.message.channel.id, ctx.local.message.id, false)
+                    execute: (ctx) => this.getMessageSender(ctx, ctx.local.channelId, ctx.local.messageId, false)
                 },
                 {
                     parameters: ['messageid'],
@@ -34,7 +34,7 @@ export class MessageSenderSubtag extends CompiledSubtag {
                     exampleCode: tag.inCurrent.exampleCode,
                     exampleOut: tag.inCurrent.exampleOut,
                     returns: 'id',
-                    execute: (ctx, [messageId]) => this.getMessageSender(ctx, ctx.local.message.channel.id, messageId.value, false)
+                    execute: (ctx, [messageId]) => this.getMessageSender(ctx, ctx.local.channelId, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
@@ -57,7 +57,7 @@ export class MessageSenderSubtag extends CompiledSubtag {
     ): Promise<string> {
         quiet ||= context.local.quiet ?? false;
         if (messageId === '')
-            messageId = context.local.message.id;
+            messageId = context.local.messageId;
 
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();

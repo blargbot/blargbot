@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotABooleanError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToBoolean, convertToNumber } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 import type { VariablesFeature } from '../types.js';
 
@@ -39,11 +38,11 @@ export class DecrementSubtag extends CompiledSubtag {
     }
 
     public async decrement(context: BBTagContext, varName: string, amountStr: string, floorStr: string): Promise<number> {
-        let amount = parse.float(amountStr);
+        let amount = convertToNumber(amountStr);
         if (amount === undefined)
             throw new NotANumberError(amountStr);
 
-        const floor = parse.boolean(floorStr);
+        const floor = convertToBoolean(floorStr);
         if (floor === undefined)
             throw new NotABooleanError(floorStr);
 
@@ -52,7 +51,7 @@ export class DecrementSubtag extends CompiledSubtag {
         let value: number | undefined;
         switch (typeof valueRaw.value) {
             case 'string':
-                value = parse.float(valueRaw.value);
+                value = convertToNumber(valueRaw.value);
                 break;
             case 'number':
                 value = valueRaw.value;

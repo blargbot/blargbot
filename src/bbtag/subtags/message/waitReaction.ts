@@ -1,4 +1,5 @@
-import { clamp, discord, Emote, guard, parse } from '@blargbot/core';
+import { discord } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -6,6 +7,7 @@ import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../err
 import type { BBTagExpression } from '../../language/index.js';
 import { templates } from '../../text.js';
 import type { ReactionEvent } from '../../types.js';
+import { convertToBoolean, convertToNumber, convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import { UserIdSubtag } from '../user/userId.js';
 
@@ -58,14 +60,14 @@ export class WaitReactionSubtag extends CompiledSubtag {
         condition: BBTagExpression,
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string, userId: string, emoji: string]> {
-        const messages = bbtag.tagArray.flattenArray([messageStr]).map(i => parse.string(i));
+        const messages = bbtag.tagArray.flattenArray([messageStr]).map(convertToString);
         const users = await this.#bulkLookup(userIDStr, i => UserIdSubtag.query(context, i, { noLookup: true, global: true }), UserNotFoundError)
-            ?? [context.local.message.author.id];
+            ?? [context.local.userId];
 
         // parse reactions
         let parsedReactions: Emote[] | undefined;
         if (reactions !== '') {
-            parsedReactions = bbtag.tagArray.flattenArray([reactions]).map(i => parse.string(i)).flatMap(i => Emote.findAll(i));
+            parsedReactions = bbtag.tagArray.flattenArray([reactions]).map(convertToString).flatMap(i => Emote.findAll(i));
             parsedReactions = [...new Set(parsedReactions)];
             if (parsedReactions.length === 0)
                 throw new BBTagRuntimeError('Invalid Emojis');
@@ -73,7 +75,7 @@ export class WaitReactionSubtag extends CompiledSubtag {
             parsedReactions = undefined;
         }
 
-        const timeout = clamp(parse.float(timeoutStr) ?? NaN, 0, 300);
+        const timeout = Math.max(0, Math.min(convertToNumber(timeoutStr) ?? NaN, 300));
         if (isNaN(timeout))
             throw new NotANumberError(timeoutStr);
 
@@ -83,20 +85,22 @@ export class WaitReactionSubtag extends CompiledSubtag {
         const userSet = new Set(users);
         const reactionSet = new Set(parsedReactions?.map(r => r.toString()));
         const checkReaction = reactionSet.size === 0 ? () => true : (emoji: Emote) => reactionSet.has(emoji.toString());
-        for await (const { user, reaction, message } of this.#features.streamReactions(messages, timeout * 1000)) {
-            if (!userSet.has(user.id) || !checkReaction(reaction) || !guard.isGuildMessage(message))
+        for await (const event of this.#features.streamReactions(messages, timeout * 1000)) {
+            if (!userSet.has(event.reactorId) || !checkReaction(event.reaction) || event.guildId !== context.root.guildId)
                 continue;
 
             using scope = context.enterScope();
-            scope.reaction = reaction.toString();
-            scope.reactUser = user.id;
-            scope.message = message;
+            scope.reaction = event.reaction.toString();
+            scope.reactUser = event.reactorId;
+            scope.messageId = event.messageId;
+            scope.channelId = event.channelId;
+            scope.userId = event.authorId;
             const resultStr = await context.eval(condition);
-            switch (parse.boolean(resultStr.trim())) {
+            switch (convertToBoolean(resultStr.trim())) {
                 case undefined:
                     throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);
                 case true:
-                    return [message.channel.id, message.id, user.id, discord.emojiString(reaction)];
+                    return [event.channelId, event.messageId, event.reactorId, discord.emojiString(event.reaction)];
             }
         }
 
@@ -108,7 +112,7 @@ export class WaitReactionSubtag extends CompiledSubtag {
             return undefined;
 
         const flatSource = bbtag.tagArray.flattenArray([source])
-            .map(i => parse.string(i))
+            .map(convertToString)
             .map(async input => {
                 const element = await lookup(input);
                 if (element === undefined)

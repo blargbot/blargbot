@@ -1,7 +1,6 @@
-import { guard, parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToNumber } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.min;
@@ -28,15 +27,22 @@ export class MinSubtag extends CompiledSubtag {
         const flattenedArgs = bbtag.tagArray.flattenArray(args);
         const parsedArgs = [];
         for (const arg of flattenedArgs) {
-            if (!isValidArg(arg))
-                return NaN;
-            const parsed = parse.float(arg);
-            if (parsed === undefined)
-                return NaN;
-            parsedArgs.push(parsed);
+            switch (typeof arg) {
+                case 'number':
+                    parsedArgs.push(arg);
+                    break;
+                case 'string': {
+                    const parsed = convertToNumber(arg);
+                    if (parsed === undefined)
+                        return NaN;
+                    parsedArgs.push(parsed);
+                    break;
+                }
+                default:
+                    return NaN;
+            }
         }
 
         return Math.min(...parsedArgs);
     }
 }
-const isValidArg = guard.isTypeOf('string', 'number');

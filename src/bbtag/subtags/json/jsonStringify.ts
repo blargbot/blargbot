@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { VariablesFeature } from '../types.js';
 
@@ -31,7 +30,7 @@ export class JsonStringifySubtag extends CompiledSubtag {
         this.#features = features;
     }
     public async jsonStringify(context: BBTagContext, input: string, indentStr: string): Promise<string> {
-        const indent = parse.int(indentStr);
+        const indent = convertToInteger(indentStr);
         if (indent === undefined)
             throw new NotANumberError(indentStr);
 

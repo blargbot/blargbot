@@ -18,14 +18,14 @@ await runSubtagTests({
             code: '{channelcategories}',
             expected: '[]',
             setup(ctx) {
-                features.setup(m => m.getCategoryChannels(ctx.guild.id)).resolves([]);
+                features.setup(m => m.getCategoryChannels(ctx.guildId)).resolves([]);
             }
         },
         {
             code: '{channelcategories}',
             expected: '["29346782894762","2938476297493274"]',
             setup(ctx) {
-                features.setup(m => m.getCategoryChannels(ctx.guild.id)).resolves(['29346782894762', '2938476297493274']);
+                features.setup(m => m.getCategoryChannels(ctx.guildId)).resolves(['29346782894762', '2938476297493274']);
             }
         }
     ]

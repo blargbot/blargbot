@@ -8,7 +8,6 @@ import type $beemovie from './beemovie.json';
 import type $cah from './cah.json';
 import type $colors from './colors.json';
 import type $contributors from './contributors.json';
-import type $discordEmoteData from './discordEmoteData.json';
 import type $holidays from './holidays.json';
 import type $spells from './spells.json';
 
@@ -52,23 +51,5 @@ export const beemovie = new Resource<typeof $beemovie>('./beemovie.json', asJson
 export const cah = new Resource<typeof $cah>('./cah.json', asJson);
 export const colors = new Resource<typeof $colors>('./colors.json', asJson);
 export const contributors = new Resource<typeof $contributors>('./contributors.json', asJson);
-export const discordEmoteData = new Resource<DiscordEmoteData>('./discordEmoteData.json', asJson);
 export const holidays = new Resource<typeof $holidays>('./holidays.json', asJson);
 export const spells = new Resource<typeof $spells>('./spells.json', asJson);
-
-type DiscordEmoteDataRaw = typeof $discordEmoteData;
-type DiscordEmoteDataDirty = { emojis: Emoji[]; } & { [P in Exclude<keyof DiscordEmoteDataRaw, 'emojis'>]: DiscordEmoteDataRaw[P] };
-type DiscordEmoteData = { [P in keyof DiscordEmoteDataDirty]: DiscordEmoteDataDirty[P] } & {};
-
-interface Emoji {
-    readonly names: readonly string[];
-    readonly surrogates: string;
-    readonly unicodeVersion: number;
-    readonly spriteIndex: number;
-    readonly hasMultiDiversity?: boolean;
-    readonly hasDiversity?: boolean;
-    readonly hasMultiDiversityParent?: boolean;
-    readonly hasDiversityParent?: boolean;
-    readonly diversityChildren?: number[];
-    readonly diversity: string[];
-}

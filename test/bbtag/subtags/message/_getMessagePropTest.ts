@@ -1,6 +1,7 @@
 import type { BBTagContext, BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
 import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
+import { snowflake } from '@blargbot/core';
 import type { Mockable, SetupMock } from '@blargbot/test-util';
 import { Mock } from '@blargbot/test-util';
 
@@ -12,57 +13,57 @@ export function createGetMessagePropTestCases<Result>(options: GetMessagePropTes
 
 function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestData<Result>): Generator<SubtagTestCase, void, undefined> {
     if (options.includeNoArgs === true)
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', []));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, []));
 
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [undefined, '123456789123456789']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [undefined, '123456789123456789']));
     if (options.emptyIsCurrentMessage !== false)
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [undefined, '']));
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '123456789123456789']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [undefined, '']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['', '123456789123456789']));
     if (options.emptyIsCurrentMessage !== false)
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['', '']));
     if (typeof options.quiet !== 'boolean') {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '123456789123456789', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '123456789123456789', 'q']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['', '123456789123456789', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['', '', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['', '123456789123456789', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['', '', 'q']));
     }
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', '123456789123456789']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['command', '123456789123456789']));
     if (typeof options.quiet !== 'boolean') {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', '123456789123456789', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['command', '123456789123456789', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['command', '123456789123456789', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, ['command', '123456789123456789', 'q']));
     }
-    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'general', [c.queryString ?? 'general', '123456789123456789']));
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [c.queryString ?? 'general', '123456789123456789']));
     if (typeof options.quiet !== 'boolean') {
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'general', [c.queryString ?? 'general', '123456789123456789', '']));
-        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'general', [c.queryString ?? 'general', '123456789123456789', 'q']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [c.queryString ?? 'general', '123456789123456789', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [c.queryString ?? 'general', '123456789123456789', 'q']));
     }
 
     const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
 
     yield {
         title: 'Message not found',
-        code: options.generateCode(undefined, '12345678998765432'),
+        code: options.generateCode(undefined, '123456789987654329'),
         expected: '`No message found`',
         subtags: [channelIdSubtag.instance],
         errors: [
-            { error: new MessageNotFoundError('98765434567889121', '12345678998765432') }
+            { error: new MessageNotFoundError('98765434567889121', '123456789987654329') }
         ],
         setup(ctx) {
             ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-            ctx.message.channel_id = ctx.channels.command.id = '98765434567889121';
+            ctx.channelId = ctx.channelId = '98765434567889121';
         },
         postSetup(bbctx, ctx) {
             const queryOpt = options.queryOptions(false);
             channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
-                .resolves(ctx.channels.command.id);
+                .resolves(ctx.channelId);
             channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
                 .resolves('98765434567889121');
-            options.getProp('98765434567889121', '12345678998765432').returns(options.notExists);
+            options.getProp('98765434567889121', '123456789987654329').returns(options.notExists);
         }
     };
     yield {
         title: 'Channel not found',
-        code: options.generateCode('98765434567889121', '12345678998765432'),
+        code: options.generateCode('98765434567889121', '123456789987654329'),
         expected: '`No channel found`',
         subtags: [channelIdSubtag.instance],
         errors: [
@@ -70,12 +71,12 @@ function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestD
         ],
         setup(ctx) {
             ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-            ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
+            ctx.channelId = ctx.channelId = '0987654321123456789';
         },
         postSetup(bbctx, ctx) {
             const queryOpt = options.queryOptions(false);
             channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
-                .resolves(ctx.channels.command.id);
+                .resolves(ctx.channelId);
             channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
                 .resolves(undefined);
         }
@@ -83,28 +84,28 @@ function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestD
     if (typeof options.quiet !== 'boolean') {
         yield {
             title: 'Message not found but quiet',
-            code: options.generateCode('98765434567889121', '12345678998765432', 'q'),
+            code: options.generateCode('98765434567889121', '123456789987654329', 'q'),
             expected: options.quiet ?? '`No message found`',
             subtags: [channelIdSubtag.instance],
             errors: [
-                { error: new MessageNotFoundError('98765434567889121', '12345678998765432').withDisplay(options.quiet) }
+                { error: new MessageNotFoundError('98765434567889121', '123456789987654329').withDisplay(options.quiet) }
             ],
             setup(ctx) {
                 ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-                ctx.message.channel_id = ctx.channels.command.id = '98765434567889121';
+                ctx.channelId = ctx.channelId = '98765434567889121';
             },
             postSetup(bbctx, ctx) {
                 const queryOpt = options.queryOptions(true);
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
-                    .resolves(ctx.channels.command.id);
+                    .resolves(ctx.channelId);
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
                     .resolves('98765434567889121');
-                options.getProp('98765434567889121', '12345678998765432').returns(options.notExists);
+                options.getProp('98765434567889121', '123456789987654329').returns(options.notExists);
             }
         };
         yield {
             title: 'Channel not found but quiet',
-            code: options.generateCode('98765434567889121', '12345678998765432', 'q'),
+            code: options.generateCode('98765434567889121', '123456789987654329', 'q'),
             expected: options.quiet ?? '`No channel found`',
             subtags: [channelIdSubtag.instance],
             errors: [
@@ -112,12 +113,12 @@ function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestD
             ],
             setup(ctx) {
                 ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-                ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
+                ctx.channelId = ctx.channelId = '0987654321123456789';
             },
             postSetup(bbctx, ctx) {
                 const queryOpt = options.queryOptions(true);
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
-                    .resolves(ctx.channels.command.id);
+                    .resolves(ctx.channelId);
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
                     .resolves(undefined);
             }
@@ -148,10 +149,11 @@ export interface GetMessagePropTestCase<Result> {
     assert?: (context: BBTagContext, channelId: string, messageId: string, test: SubtagTestContext) => void;
 }
 
-function createTestCase<Result>(data: GetMessagePropTestData<Result>, testCase: GetMessagePropTestCase<Result>, channelKey: keyof SubtagTestContext['channels'], args: Parameters<GetMessagePropTestData<Result>['generateCode']>): SubtagTestCase {
+function createTestCase<Result>(data: GetMessagePropTestData<Result>, testCase: GetMessagePropTestCase<Result>, args: Parameters<GetMessagePropTestData<Result>['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     const apiMessageMap = new WeakMap<SubtagTestContext, string>();
     const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+    const channelId = `channelId<${snowflake.create()}>`;
     return {
         title: testCase.title,
         code,
@@ -160,28 +162,26 @@ function createTestCase<Result>(data: GetMessagePropTestData<Result>, testCase: 
         subtags: [channelIdSubtag.instance],
         errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
+            if (args[0] === undefined || args[0] === '')
+                ctx.channelId = channelId;
             ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-            const channel = ctx.channels[channelKey];
-            const messageId = (args[1] ?? '') !== '' ? args[1]! : ctx.message.id;
-            testCase.setup?.(data.getProp(channel.id, messageId), channel.id, messageId, ctx);
+            const messageId = (args[1] ?? '') !== '' ? args[1]! : ctx.messageId;
+            testCase.setup?.(data.getProp(channelId, messageId), channelId, messageId, ctx);
             apiMessageMap.set(ctx, messageId);
         },
         postSetup(bbctx, ctx) {
-            const channel = bbctx.root.message.channel.guild.channels.get(ctx.channels[channelKey].id);
-            if (channel === undefined)
-                throw new Error('Cannot find the channel under test');
             const messageId = apiMessageMap.get(ctx);
             if (messageId === undefined)
                 throw new Error('Cannot find the message under test');
-            const channelQuery = args[0] ?? channel.id;
+            const channelQuery = args[0] ?? channelId;
             const quietStr = args[2] ?? '';
             const queryOpt = data.queryOptions(quietStr !== '');
             channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
-                .resolves(ctx.channels.command.id);
+                .resolves(ctx.channelId);
             channelIdSubtag.setup((m, $) => m.query(bbctx, channelQuery, $(queryOpt)))
-                .resolves(channel.id);
+                .resolves(channelId);
 
-            testCase.postSetup?.(bbctx, channel.id, messageId, ctx);
+            testCase.postSetup?.(bbctx, channelId, messageId, ctx);
         }
     };
 }

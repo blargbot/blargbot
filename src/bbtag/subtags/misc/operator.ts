@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import type { SubtagSignatureCallableOptions as Options } from '../../compilation/SubtagSignatureCallableOptions.js';
 import { InvalidOperatorError, NotABooleanError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToBoolean, convertToNumber, convertToString } from '../../utils/converters.js';
 import type { LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '../../utils/index.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { AggregationOperator } from '../../utils/operators.js';
@@ -62,12 +61,12 @@ export class OperatorSubtag extends CompiledSubtag {
     }
 
     public applyOrdinalOperation(operator: OrdinalOperator, values: string[]): boolean {
-        const flattenedValues = bbtag.tagArray.flattenArray(values).map(v => parse.string(v));
+        const flattenedValues = bbtag.tagArray.flattenArray(values).map(convertToString);
         return bbtag.operate('&&', generatePairs(flattenedValues).map(args => bbtag.operate(operator, ...args)));
     }
 
     public applyAggregationOperation(operator: AggregationOperator, values: string[]): string {
-        const flattenedValues = bbtag.tagArray.flattenArray(values).map(v => parse.string(v));
+        const flattenedValues = bbtag.tagArray.flattenArray(values).map(convertToString);
         return bbtag.operate(operator, flattenedValues);
     }
 
@@ -84,7 +83,7 @@ export class OperatorSubtag extends CompiledSubtag {
     public applyNumericOperation(operator: NumericOperator, values: string[]): number {
         return bbtag.tagArray.flattenArray(values).map((arg: JToken | undefined) => {
             if (typeof arg === 'string')
-                arg = parse.float(arg);
+                arg = convertToNumber(arg);
             if (typeof arg !== 'number')
                 throw new NotANumberError(arg);
             return arg;
@@ -94,7 +93,7 @@ export class OperatorSubtag extends CompiledSubtag {
     public applyLogicOperation(operator: LogicOperator, values: string[]
     ): boolean {
         const parsed = values.map((value) => {
-            const bool = parse.boolean(value);
+            const bool = convertToBoolean(value);
             if (bool === undefined)
                 throw new NotABooleanError(value);
             return bool;

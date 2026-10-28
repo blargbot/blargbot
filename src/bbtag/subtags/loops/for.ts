@@ -1,11 +1,10 @@
-import { parse } from '@blargbot/core';
-
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
+import { convertToNumber, convertToString } from '../../utils/converters.js';
 import type { OrdinalOperator } from '../../utils/index.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { VariablesFeature } from '../types.js';
@@ -43,9 +42,9 @@ export class ForSubtag extends CompiledSubtag {
         code: SubtagArgument
     ): AsyncIterable<string> {
         const errors = [];
-        const initial = parse.float(initialStr) ?? NaN;
-        const limit = parse.float(limitStr) ?? NaN;
-        const increment = parse.float(incrementStr) ?? NaN;
+        const initial = convertToNumber(initialStr) ?? NaN;
+        const limit = convertToNumber(limitStr) ?? NaN;
+        const increment = convertToNumber(incrementStr) ?? NaN;
 
         if (isNaN(initial)) errors.push(new BBTagRuntimeError('Initial must be a number'));
         if (!bbtag.isComparisonOperator(operator)) errors.push(new InvalidOperatorError(operator));
@@ -62,7 +61,7 @@ export class ForSubtag extends CompiledSubtag {
                 yield await code.execute();
 
                 const varEntry = await variables.get(varName);
-                i = parse.float(parse.string(varEntry.value)) ?? NaN;
+                i = convertToNumber(convertToString(varEntry.value)) ?? NaN;
 
                 if (isNaN(i))
                     throw new NotANumberError(varEntry.value);

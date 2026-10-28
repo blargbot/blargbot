@@ -1,7 +1,6 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToInteger, convertToNumber } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.numberFormat;
@@ -39,10 +38,10 @@ export class NumberFormatSubtag extends CompiledSubtag {
         decimal: string,
         thousands: string
     ): string {
-        const number = parse.float(numberStr);
+        const number = convertToNumber(numberStr);
         if (number === undefined)
             return 'NaN';
-        let roundto = parse.int(roundToStr);
+        let roundto = convertToInteger(roundToStr);
         const options: Intl.NumberFormatOptions = {}; // create formatter options
         if (roundto !== undefined) {
             roundto = Math.min(20, Math.max(-21, roundto));

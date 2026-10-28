@@ -26,15 +26,15 @@ await runSubtagTests({
             code: '{delete}',
             expected: '',
             setup(ctx) {
-                features.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id))
+                features.setup(m => m.deleteMessage(ctx.channelId, ctx.messageId))
                     .resolves({ success: true })
                     .mustHappen(1);
             },
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channels.command.id, undefined))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.command.id))
+                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -47,15 +47,15 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Delete failed', 'Missing permissions').withDisplay('') }
             ],
             setup(ctx) {
-                features.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id))
+                features.setup(m => m.deleteMessage(ctx.channelId, ctx.messageId))
                     .resolves({ success: false, cause: 'failed', reason: 'Missing permissions' })
                     .mustHappen(1);
             },
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channels.command.id, undefined))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.command.id))
+                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -65,16 +65,16 @@ await runSubtagTests({
             code: '{delete;1234567890123456}',
             expected: '',
             setup(ctx) {
-                ctx.message.id = '1234567890123456';
-                features.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id))
+                ctx.messageId = '1234567890123456';
+                features.setup(m => m.deleteMessage(ctx.channelId, ctx.messageId))
                     .resolves({ success: true })
                     .mustHappen(1);
             },
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channels.command.id, undefined))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.command.id))
+                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -98,15 +98,15 @@ await runSubtagTests({
             expected: '',
             setup(ctx) {
                 ctx.ownedMessages.push('1234567890123456');
-                features.setup(m => m.deleteMessage(ctx.channels.command.id, '1234567890123456'))
+                features.setup(m => m.deleteMessage(ctx.channelId, '1234567890123456'))
                     .resolves({ success: true })
                     .mustHappen(1);
             },
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channels.command.id, undefined))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.command.id))
+                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -116,15 +116,15 @@ await runSubtagTests({
             code: '{delete;1234567890123456}',
             expected: '',
             setup(ctx) {
-                features.setup(m => m.deleteMessage(ctx.channels.command.id, '1234567890123456'))
+                features.setup(m => m.deleteMessage(ctx.channelId, '1234567890123456'))
                     .resolves({ success: true })
                     .mustHappen(1);
             },
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channels.command.id, undefined))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.command.id))
+                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
@@ -140,11 +140,11 @@ await runSubtagTests({
                 { error: new MessageNotFoundError('9876543212345678', '').withDisplay('') }
             ],
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '9876543212345678';
+                ctx.channelId = ctx.channelId = '9876543212345678';
             },
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channels.command.id, undefined))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
                     .resolves(true)
@@ -159,16 +159,16 @@ await runSubtagTests({
                 { error: new MessageNotFoundError('9876543212345678', '1234567890123456').withDisplay('') }
             ],
             setup(ctx) {
-                ctx.message.channel_id = ctx.channels.command.id = '9876543212345678';
-                features.setup(m => m.deleteMessage(ctx.channels.command.id, '1234567890123456'))
+                ctx.channelId = ctx.channelId = '9876543212345678';
+                features.setup(m => m.deleteMessage(ctx.channelId, '1234567890123456'))
                     .resolves({ success: false, cause: 'notFound' })
                     .mustHappen(1);
             },
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channels.command.id, undefined))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.command.id))
+                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
                 isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
@@ -181,17 +181,17 @@ await runSubtagTests({
             code: '{delete;987654322123456142;1234567890123456}',
             expected: '',
             setup(ctx) {
-                ctx.message.id = '1234567890123456';
-                ctx.message.channel_id = ctx.channels.command.id = '987654322123456142';
-                features.setup(m => m.deleteMessage(ctx.channels.command.id, ctx.message.id))
+                ctx.messageId = '1234567890123456';
+                ctx.channelId = ctx.channelId = '987654322123456142';
+                features.setup(m => m.deleteMessage(ctx.channelId, ctx.messageId))
                     .resolves({ success: true })
                     .mustHappen(1);
             },
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channels.command.id, undefined))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channels.command.id))
+                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -212,7 +212,6 @@ await runSubtagTests({
             code: '{delete;987654322123456142;1234567890123456}',
             expected: '',
             setup(ctx) {
-                ctx.channels.general.id = '987654322123456142';
                 ctx.ownedMessages.push('1234567890123456');
                 features.setup(m => m.deleteMessage('987654322123456142', '1234567890123456'))
                     .resolves({ success: true })

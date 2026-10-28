@@ -18,7 +18,7 @@ await runSubtagTests({
             code: '{guildmembers}',
             expected: '["384975638795634547536","329467864239864324","378962875436678423","237846384639462874","23746392746789426394"]',
             setup(ctx) {
-                features.setup(m => m.listGuildMembers(ctx.guild.id))
+                features.setup(m => m.listGuildMembers(ctx.guildId))
                     .resolves(['384975638795634547536', '329467864239864324', '378962875436678423', '237846384639462874', '23746392746789426394']);
             }
         }

@@ -25,7 +25,7 @@ await runSubtagTests({
                 {
                     expected: '[]',
                     setup(userId, ctx) {
-                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
                             .resolves([])
                             .mustHappen(1);
                     }
@@ -33,7 +33,7 @@ await runSubtagTests({
                 {
                     expected: '["098765434512212678"]',
                     setup(userId, ctx) {
-                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
                             .resolves(['098765434512212678'])
                             .mustHappen(1);
                     }
@@ -41,7 +41,7 @@ await runSubtagTests({
                 {
                     expected: '["098765434512212678","1234567890987654"]',
                     setup(userId, ctx) {
-                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
                             .resolves(['098765434512212678', '1234567890987654'])
                             .mustHappen(1);
                     }

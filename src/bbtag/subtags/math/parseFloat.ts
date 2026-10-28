@@ -1,7 +1,6 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToNumber } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.parseFloat;
@@ -25,6 +24,6 @@ export class ParseFloatSubtag extends CompiledSubtag {
     }
 
     public parseFloat(number: string): number {
-        return parse.float(number) ?? NaN;
+        return convertToNumber(number) ?? NaN;
     }
 }

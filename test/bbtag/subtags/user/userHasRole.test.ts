@@ -27,16 +27,16 @@ await runSubtagTests({
                 { error: new RoleNotFoundError('') }
             ],
             setup(ctx) {
-                features.setup(m => m.listGuildRoles(ctx.guild.id))
+                features.setup(m => m.listGuildRoles(ctx.guildId))
                     .resolves(['12345678901234567'])
                     .mustHappen(1);
-                features.setup(m => m.listMemberRoles(ctx.guild.id, ctx.users.command.id))
+                features.setup(m => m.listMemberRoles(ctx.guildId, ctx.userId))
                     .resolves(['12345678901234567'])
                     .mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: false })))
-                    .resolves(ctx.users.command.id)
+                    .resolves(ctx.userId)
                     .mustHappen(1);
             }
         },
@@ -50,10 +50,10 @@ await runSubtagTests({
                 {
                     expected: 'true',
                     setup(userId, ctx) {
-                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                        features.setup(m => m.listGuildRoles(ctx.guildId))
                             .resolves(['12345678901234567'])
                             .mustHappen(1);
-                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
                             .resolves(['12345678901234567'])
                             .mustHappen(1);
                     }
@@ -70,10 +70,10 @@ await runSubtagTests({
                 {
                     expected: 'false',
                     setup(userId, ctx) {
-                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                        features.setup(m => m.listGuildRoles(ctx.guildId))
                             .resolves(['09876544321098765'])
                             .mustHappen(1);
-                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
                             .resolves([])
                             .mustHappen(1);
                     }
@@ -90,10 +90,10 @@ await runSubtagTests({
                 {
                     expected: 'true',
                     setup(userId, ctx) {
-                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                        features.setup(m => m.listGuildRoles(ctx.guildId))
                             .resolves(['12345678901234567'])
                             .mustHappen(1);
-                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
                             .resolves(['12345678901234567'])
                             .mustHappen(1);
                     }
@@ -110,10 +110,10 @@ await runSubtagTests({
                 {
                     expected: 'false',
                     setup(userId, ctx) {
-                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                        features.setup(m => m.listGuildRoles(ctx.guildId))
                             .resolves(['09876544321098765'])
                             .mustHappen(1);
-                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
                             .resolves([])
                             .mustHappen(1);
                     }
@@ -130,10 +130,10 @@ await runSubtagTests({
                 {
                     expected: 'true',
                     setup(userId, ctx) {
-                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                        features.setup(m => m.listGuildRoles(ctx.guildId))
                             .resolves(['123456788909876543', '12345678901234567'])
                             .mustHappen(1);
-                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
                             .resolves(['12345678901234567'])
                             .mustHappen(1);
                     }
@@ -150,10 +150,10 @@ await runSubtagTests({
                 {
                     expected: 'false',
                     setup(userId, ctx) {
-                        features.setup(m => m.listGuildRoles(ctx.guild.id))
+                        features.setup(m => m.listGuildRoles(ctx.guildId))
                             .resolves(['09876544321098765', '123456788909876543'])
                             .mustHappen(1);
-                        features.setup(m => m.listMemberRoles(ctx.guild.id, userId))
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
                             .resolves([])
                             .mustHappen(1);
                     }
@@ -168,16 +168,16 @@ await runSubtagTests({
                 { error: new RoleNotFoundError('aaaaaa') }
             ],
             setup(ctx) {
-                features.setup(m => m.listGuildRoles(ctx.guild.id))
+                features.setup(m => m.listGuildRoles(ctx.guildId))
                     .resolves(['12345678901234567'])
                     .mustHappen(1);
-                features.setup(m => m.listMemberRoles(ctx.guild.id, ctx.users.command.id))
+                features.setup(m => m.listMemberRoles(ctx.guildId, ctx.userId))
                     .resolves(['12345678901234567'])
                     .mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: false })))
-                    .resolves(ctx.users.command.id)
+                    .resolves(ctx.userId)
                     .mustHappen(1);
             }
         },
@@ -189,16 +189,16 @@ await runSubtagTests({
                 { error: new RoleNotFoundError('aaaaaa').withDisplay('false') }
             ],
             setup(ctx) {
-                features.setup(m => m.listGuildRoles(ctx.guild.id))
+                features.setup(m => m.listGuildRoles(ctx.guildId))
                     .resolves(['12345678901234567'])
                     .mustHappen(1);
-                features.setup(m => m.listMemberRoles(ctx.guild.id, ctx.users.command.id))
+                features.setup(m => m.listMemberRoles(ctx.guildId, ctx.userId))
                     .resolves(['12345678901234567'])
                     .mustHappen(1);
             },
             postSetup(bbctx, ctx) {
                 userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true })))
-                    .resolves(ctx.users.command.id)
+                    .resolves(ctx.userId)
                     .mustHappen(1);
             }
         }

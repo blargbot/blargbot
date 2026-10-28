@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { SubtagArgument } from '../../arguments/index.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidOperatorError, NotABooleanError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToBoolean, convertToBooleanStrict } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.if;
@@ -55,7 +54,7 @@ export class IfSubtag extends CompiledSubtag {
         thenCode: SubtagArgument,
         elseCode?: SubtagArgument
     ): Promise<string> {
-        const actualBoolean = parse.boolean(bool);
+        const actualBoolean = convertToBoolean(bool);
         if (typeof actualBoolean !== 'boolean')
             throw new NotABooleanError(bool);
 
@@ -85,11 +84,11 @@ export class IfSubtag extends CompiledSubtag {
         } else
             throw new InvalidOperatorError(evaluator);
 
-        const leftBool = parse.boolean(value1, undefined, false);
+        const leftBool = convertToBooleanStrict(value1);
         if (leftBool !== undefined)
             value1 = leftBool.toString();
 
-        const rightBool = parse.boolean(value2, undefined, false);
+        const rightBool = convertToBooleanStrict(value2);
         if (rightBool !== undefined)
             value2 = rightBool.toString();
 

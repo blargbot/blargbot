@@ -41,7 +41,7 @@ await runSubtagTests({
                     error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions'),
                     setup(getProp, channelId, _, ctx) {
                         getProp.resolves(true);
-                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                             .resolves(DiscordPermissions.NONE)
                             .mustHappen(1);
                     }
@@ -51,7 +51,7 @@ await runSubtagTests({
                     expected: '',
                     setup(getProp, channelId, messageId, ctx) {
                         getProp.resolves(true);
-                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                             .resolves(DiscordPermissions.MANAGE_MESSAGES)
                             .mustHappen(1);
                         features.setup(m => m.removeMessageReactions(channelId, messageId)).resolves(undefined).mustHappen(1);
@@ -65,7 +65,7 @@ await runSubtagTests({
                     expected: '',
                     setup(getProp, channelId, messageId, ctx) {
                         getProp.resolves(true);
-                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                             .resolves(DiscordPermissions.MANAGE_MESSAGES)
                             .mustHappen(1);
                         features.setup(m => m.removeMessageReactions(channelId, messageId)).resolves(undefined).mustHappen(1);
@@ -80,7 +80,7 @@ await runSubtagTests({
                     error: new BBTagRuntimeError('Author must be staff to modify unrelated messages'),
                     setup(getProp, channelId, _, ctx) {
                         getProp.resolves(true);
-                        features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                             .resolves(DiscordPermissions.MANAGE_MESSAGES)
                             .mustHappen(1);
                     },

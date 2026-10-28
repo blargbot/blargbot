@@ -1,6 +1,6 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
 import type { SetMemberNicknameFeature } from '@blargbot/bbtag/subtags';
-import { UserIdSubtag, UserSetNickSubtag } from '@blargbot/bbtag/subtags';
+import { ReasonSubtag, UserIdSubtag, UserSetNickSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
@@ -8,15 +8,20 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<SetMemberNicknameFeature>({ id: 'features' });
 const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
 
 await runSubtagTests({
     subtag: new UserSetNickSubtag(features.instance),
     argCountBounds: { min: 1, max: 2 },
     names: ['userSetNickname', 'setNickname', 'setNick', 'userSetNick'],
-    otherSubtags: [userIdSubtag.instance],
+    otherSubtags: [userIdSubtag.instance, reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
         ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
+    },
+    postSetup(bbctx) {
+        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
     },
     cases: [
         {
@@ -28,10 +33,10 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberNickname($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
                     nickname: 'abc',
-                    auditReason: 'Command User#0000'
+                    auditReason: '@command.user'
                 }))).resolves({ success: true }).mustHappen(1);
             }
         },
@@ -44,10 +49,10 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberNickname($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
                     nickname: 'abc',
-                    auditReason: 'Command User#0000'
+                    auditReason: '@command.user'
                 }))).resolves({ success: true }).mustHappen(1);
             }
         },
@@ -60,10 +65,10 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberNickname($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
                     nickname: 'abc',
-                    auditReason: 'Command User#0000'
+                    auditReason: '@command.user'
                 }))).resolves({ success: true }).mustHappen(1);
             }
         },

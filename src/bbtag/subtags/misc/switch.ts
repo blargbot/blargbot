@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import type { SubtagArgument } from '../../arguments/index.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.switch;
@@ -34,7 +33,7 @@ export class SwitchSubtag extends CompiledSubtag {
         for (const [caseValue, then] of cases) {
             const { v: options = [caseValue] } = bbtag.tagArray.deserialize(caseValue) ?? {};
             for (const option of options)
-                if (parse.string(option) === value)
+                if (convertToString(option) === value)
                     return await then.execute();
         }
         return await defaultCase?.execute() ?? '';

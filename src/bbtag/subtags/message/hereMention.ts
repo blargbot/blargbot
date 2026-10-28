@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToBoolean } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.hereMention;
@@ -30,7 +29,7 @@ export class HereMentionSubtag extends CompiledSubtag {
         context: BBTagContext,
         mention: string
     ): string {
-        const enabled = parse.boolean(mention, true);
+        const enabled = convertToBoolean(mention) ?? true;
         context.root.allowedMentions.everybody = enabled;
         return '@here';
     }

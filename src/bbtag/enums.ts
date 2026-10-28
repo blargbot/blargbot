@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/naming-convention, no-useless-assignment */
 import type { BitFlagNames } from './BitFlags.js';
-import { defineBitFlags } from './BitFlags.js';
+import { defineBitFlagConstants, defineBitFlags } from './BitFlags.js';
 
+/* eslint-disable @typescript-eslint/naming-convention, no-useless-assignment */
 function defineEnum<const T extends object>(values: T): T {
     Object.setPrototypeOf(values, null);
     Object.freeze(values);
@@ -27,16 +27,18 @@ export const ChannelType = defineEnum({
 });
 
 export type ChannelFlagsName = BitFlagNames<ChannelFlags>;
-export class ChannelFlags extends defineBitFlags({
+export type ChannelFlags = InstanceType<typeof ChannelFlags>;
+export const ChannelFlags = defineBitFlagConstants(class ChannelFlags extends defineBitFlags({
     PINNED: 1 << 1,
     REQUIRE_TAG: 1 << 4,
     HIDE_MEDIA_DOWNLOAD_OPTIONS: 1 << 15,
     CHANNEL_OBFUSCATED: 1 << 17,
     IS_SPOILER_CHANNEL: 1 << 21
-}) { }
+}) { });
 
 export type DiscordPermissionName = BitFlagNames<DiscordPermissions>;
-export class DiscordPermissions extends defineBitFlags({
+export type DiscordPermissions = InstanceType<typeof DiscordPermissions>;
+export const DiscordPermissions = defineBitFlagConstants(class DiscordPermissions extends defineBitFlags({
     NONE: 0n,
     CREATE_INSTANT_INVITE: 1n << 0n,
     KICK_MEMBERS: 1n << 1n,
@@ -90,7 +92,7 @@ export class DiscordPermissions extends defineBitFlags({
     USE_EXTERNAL_APPS: 1n << 50n,
     PIN_MESSAGES: 1n << 51n,
     BYPASS_SLOWMODE: 1n << 52n
-}) { };
+}) { });
 
 export type PermissionOverwriteTypeName = keyof typeof PermissionOverwriteType;
 export type PermissionOverwriteType = typeof PermissionOverwriteType[PermissionOverwriteTypeName];
@@ -142,7 +144,8 @@ export const MessageType = defineEnum({
 });
 
 export type MessageFlagsName = BitFlagNames<MessageFlags>;
-export class MessageFlags extends defineBitFlags({
+export type MessageFlags = InstanceType<typeof MessageFlags>;
+export const MessageFlags = defineBitFlagConstants(class MessageFlags extends defineBitFlags({
     CROSSPOSTED: 1 << 0,
     IS_CROSSPOST: 1 << 1,
     SUPPRESS_EMBEDS: 1 << 2,
@@ -156,7 +159,7 @@ export class MessageFlags extends defineBitFlags({
     IS_VOICE_MESSAGE: 1 << 13,
     HAS_SNAPSHOT: 1 << 14,
     IS_COMPONENTS_V2: 1 << 15
-}) { }
+}) { });
 
 export type InteractionTypeName = keyof typeof InteractionType;
 export type InteractionType = typeof InteractionType[InteractionTypeName];
@@ -317,14 +320,15 @@ export const PremiumTier = defineEnum({
 });
 
 export type SystemChannelFlagsName = BitFlagNames<SystemChannelFlags>;
-export class SystemChannelFlags extends defineBitFlags({
+export type SystemChannelFlags = InstanceType<typeof SystemChannelFlags>;
+export const SystemChannelFlags = defineBitFlagConstants(class SystemChannelFlags extends defineBitFlags({
     SUPPRESS_JOIN_NOTIFICATIONS: 1 << 0,
     SUPPRESS_PREMIUM_SUBSCRIPTIONS: 1 << 1,
     SUPPRESS_GUILD_REMINDER_NOTIFICATIONS: 1 << 2,
     SUPPRESS_JOIN_NOTIFICATION_REPLIES: 1 << 3,
     SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATIONS: 1 << 4,
     SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES: 1 << 5
-}) { }
+}) { });
 
 export type GuildScheduledEventPrivacyLevelName = keyof typeof GuildScheduledEventPrivacyLevel;
 export type GuildScheduledEventPrivacyLevel = typeof GuildScheduledEventPrivacyLevel[GuildScheduledEventPrivacyLevelName];
@@ -399,9 +403,10 @@ export const WebhookType = defineEnum({
 });
 
 export type GuildInviteFlagsName = BitFlagNames<GuildInviteFlags>;
-export class GuildInviteFlags extends defineBitFlags({
+export type GuildInviteFlags = InstanceType<typeof GuildInviteFlags>;
+export const GuildInviteFlags = defineBitFlagConstants(class GuildInviteFlags extends defineBitFlags({
     IS_GUEST_INVITE: 1 << 0
-}) { }
+}) { });
 
 export type VideoQualityModeName = keyof typeof VideoQualityMode;
 export type VideoQualityMode = typeof VideoQualityMode[VideoQualityModeName];

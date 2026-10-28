@@ -15,19 +15,17 @@ await runSubtagTests({
             code: '{flagsarray}',
             expected: '["_","a","b","c","e","E"]',
             setup(ctx) {
-                ctx.input.flagDefinitions = [
+                ctx.flagDefinitions = [
                     {
-                        description: '',
                         flag: 'e',
                         word: 'extra'
                     },
                     {
-                        description: '',
                         flag: 'E',
                         word: 'else'
                     }
                 ];
-                ctx.input.input = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
+                ctx.input = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
             }
         }
     ]

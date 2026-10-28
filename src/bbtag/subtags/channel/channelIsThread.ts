@@ -48,7 +48,7 @@ export class ChannelIsThreadSubtag extends CompiledSubtag {
     }
 
     public async currentChannel(context: BBTagContext): Promise<boolean> {
-        return await this.check(context, context.local.message.channel.id);
+        return await this.check(context, context.local.channelId);
     }
 
     public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<boolean> {

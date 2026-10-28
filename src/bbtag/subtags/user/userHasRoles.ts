@@ -1,9 +1,8 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { ListGuildRolesFeature, ListMemberRolesFeature } from '../role/roles.js';
 import { UserIdSubtag } from './userId.js';
@@ -55,7 +54,7 @@ export class UserHasRolesSubtag extends CompiledSubtag {
         const guildRoles = new Set(await this.#features.listGuildRoles(context.root.guildId));
 
         const arr = bbtag.tagArray.deserialize(roleStr) ?? { v: [roleStr] };
-        const roleArr = arr.v.map(x => parse.string(x));
+        const roleArr = arr.v.map(convertToString);
         for (const role of roleArr) {
             if (!guildRoles.has(role)) {
                 throw new RoleNotFoundError(role)

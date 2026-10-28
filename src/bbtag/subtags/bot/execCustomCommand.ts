@@ -1,18 +1,19 @@
-import { humanize, parse } from '@blargbot/core';
-import type { GuildCommandTag } from '@blargbot/domain';
+import { humanize } from '@blargbot/core';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { toBBTagInput } from '../../toBBTagInput.js';
+import type { TagDetails } from '../../types.js';
 import { BBTagRuntimeState } from '../../types.js';
+import { convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.execCustomCommand;
 
 export interface GetCustomCommandFeature {
-    getCustomCommand(guildId: string, name: string): Awaitable<GuildCommandTag | undefined>;
+    getCustomCommand(guildId: string, name: string): Awaitable<TagDetails | 'alias' | undefined>;
 }
 
 type Features = GetCustomCommandFeature;
@@ -37,7 +38,7 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
         this.#features = features;
     }
 
-    async #cacheTag(context: BBTagContext, name: string): Promise<GuildCommandTag | undefined> {
+    async #cacheTag(context: BBTagContext, name: string): Promise<TagDetails | 'alias' | undefined> {
         const result = await this.#features.getCustomCommand(context.root.guildId, name);
         if (result !== undefined)
             context.root.ccCache.set(name, result);
@@ -51,12 +52,12 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
 
         if (ccommand === undefined)
             throw new BBTagRuntimeError(`CCommand not found: ${tagName}`);
-        if ('alias' in ccommand)
+        if (ccommand === 'alias')
             throw new BBTagRuntimeError(`Cannot execcc imported tag: ${tagName}`);
 
         let input = args[0] ?? '';
         if (args.length > 1)
-            input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(x => parse.string(x)));
+            input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(convertToString));
 
         using scope = context.enterScope();
         scope.tagName = tagName;
@@ -65,7 +66,7 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
         const expr = bbtag.parse(ccommand.content, { throw: true });
         context.engine.cooldowns.assert({
             guildId: context.root.guildId,
-            userId: context.root.message.author.id,
+            userId: context.root.userId,
             tagName: context.local.tagName,
             isCC: context.root.isCC,
             cooldownMs: context.local.cooldown

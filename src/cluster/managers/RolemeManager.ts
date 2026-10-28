@@ -52,16 +52,19 @@ export class RolemeManager {
         };
 
         return await this.#cluster.bbtag.execute(tag.content, {
-            message: trigger,
+            messageId: trigger.id,
+            channelId: trigger.channel.id,
+            guildId: trigger.channel.guild.id,
+            userId: trigger.author.id,
             tagName: 'roleme',
             input: '',
             flagDefinitions: [],
             silent: false,
             isCC: true,
             tagVars: false,
-            limit: new limits.CustomCommandLimit(trigger.channel.guild),
+            limit: new limits.CustomCommandLimit(trigger.channel.guild.memberCount),
             author: tag.author ?? undefined,
-            authorizer: tag.authorizer ?? undefined,
+            authorizer: tag.authorizer ?? tag.author ?? trigger.channel.guild.ownerID,
             cooldown: 0,
             prefix: undefined
         });

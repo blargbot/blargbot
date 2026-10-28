@@ -1,16 +1,15 @@
-import type * as eris from 'eris';
-
 import type * as BBTagContextJs from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import type { Embed } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
 import { ChannelIdSubtag } from '../channel/channelId.js';
 
 const tag = templates.subtags.messageEmbeds;
 
 export interface GetMessageEmbedsFeature {
-    getMessageEmbeds(channelId: string, messageId: string): Promise<readonly eris.Embed[] | undefined>;
+    getMessageEmbeds(channelId: string, messageId: string): Promise<readonly Embed[] | undefined>;
 }
 
 type Features = GetMessageEmbedsFeature
@@ -27,7 +26,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
                     exampleCode: tag.trigger.exampleCode,
                     exampleOut: tag.trigger.exampleOut,
                     returns: 'embed[]',
-                    execute: (ctx) => this.getMessageEmbeds(ctx, ctx.local.message.channel.id, ctx.local.message.id, false)
+                    execute: (ctx) => this.getMessageEmbeds(ctx, ctx.local.channelId, ctx.local.messageId, false)
                 },
                 {
                     parameters: ['messageid'],
@@ -35,7 +34,7 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
                     exampleCode: tag.inCurrent.exampleCode,
                     exampleOut: tag.inCurrent.exampleOut,
                     returns: 'embed[]',
-                    execute: (ctx, [messageId]) => this.getMessageEmbeds(ctx, ctx.local.message.channel.id, messageId.value, false)
+                    execute: (ctx, [messageId]) => this.getMessageEmbeds(ctx, ctx.local.channelId, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
@@ -55,10 +54,10 @@ export class MessageEmbedsSubtag extends CompiledSubtag {
         channelStr: string,
         messageId: string,
         quiet: boolean
-    ): Promise<readonly eris.Embed[]> {
+    ): Promise<readonly Embed[]> {
         quiet ||= context.local.quiet ?? false;
         if (messageId === '')
-            messageId = context.local.message.id;
+            messageId = context.local.messageId;
 
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '[]' : undefined).throw();

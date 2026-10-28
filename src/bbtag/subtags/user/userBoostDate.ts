@@ -29,7 +29,7 @@ export class UserBoostDateSubtag extends CompiledSubtag {
                     exampleOut: tag.target.exampleOut,
                     returns: 'string',
 
-                    execute: (ctx, [format]) => this.getUserBoostDate(ctx, ctx.local.message.author.id, format.value)
+                    execute: (ctx, [format]) => this.getUserBoostDate(ctx, ctx.local.userId, format.value)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],

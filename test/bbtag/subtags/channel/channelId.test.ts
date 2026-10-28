@@ -21,32 +21,32 @@ await runSubtagTests({
             code: '{channelid}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.channels.command.id = '983798372948729434';
-                ctx.message.channel_id = '983798372948729434';
+                ctx.channelId = '983798372948729434';
+                ctx.channelId = '983798372948729434';
             }
         },
         {
             code: '{channelid;}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.channels.command.id = '983798372948729434';
-                ctx.message.channel_id = '983798372948729434';
+                ctx.channelId = '983798372948729434';
+                ctx.channelId = '983798372948729434';
             }
         },
         {
             code: '{channelid;;}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.channels.command.id = '983798372948729434';
-                ctx.message.channel_id = '983798372948729434';
+                ctx.channelId = '983798372948729434';
+                ctx.channelId = '983798372948729434';
             }
         },
         {
             code: '{channelid;;q}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.channels.command.id = '983798372948729434';
-                ctx.message.channel_id = '983798372948729434';
+                ctx.channelId = '983798372948729434';
+                ctx.channelId = '983798372948729434';
             }
         },
         {
@@ -54,8 +54,8 @@ await runSubtagTests({
             code: '{channelid;983798372948729434}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.channels.command.id = '983798372948729434';
-                ctx.message.channel_id = '983798372948729434';
+                ctx.channelId = '983798372948729434';
+                ctx.channelId = '983798372948729434';
             }
         },
         {
@@ -84,7 +84,7 @@ await runSubtagTests({
             code: '{channelid;983798372948729434}',
             expected: '983798372948729434',
             setup(ctx) {
-                features.setup(m => m.checkChannelExists(ctx.guild.id, '983798372948729434')).resolves(true);
+                features.setup(m => m.checkChannelExists(ctx.guildId, '983798372948729434')).resolves(true);
             }
         },
         {
@@ -92,12 +92,12 @@ await runSubtagTests({
             code: '{channelid;General}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.input.isCC = false;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = false;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryChannel($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'tag `MyCoolTag`'
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
@@ -112,12 +112,12 @@ await runSubtagTests({
             code: '{channelid;General}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.input.isCC = true;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = true;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryChannel($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'custom command `MyCoolTag`'
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
@@ -132,12 +132,12 @@ await runSubtagTests({
             code: '{channelid;General}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.input.isCC = true;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = true;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryChannel($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: undefined
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
@@ -155,12 +155,12 @@ await runSubtagTests({
             code: '{channelid;General;}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.input.isCC = false;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = false;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryChannel($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'tag `MyCoolTag`'
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
@@ -175,12 +175,12 @@ await runSubtagTests({
             code: '{channelid;General;}',
             expected: '983798372948729434',
             setup(ctx) {
-                ctx.input.isCC = true;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = true;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryChannel($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'custom command `MyCoolTag`'
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
@@ -194,7 +194,7 @@ await runSubtagTests({
             code: '{channelid;General;q}',
             expected: '983798372948729434',
             setup(ctx) {
-                features.setup(m => m.findChannel(ctx.guild.id, 'General')).resolves('983798372948729434').mustHappen(1);
+                features.setup(m => m.findChannel(ctx.guildId, 'General')).resolves('983798372948729434').mustHappen(1);
             },
             assert(ctx) {
                 assert.equal(ctx.root.queryCache.failedQueries, 0);
@@ -208,12 +208,12 @@ await runSubtagTests({
                 { error: new ChannelNotFoundError('General') }
             ],
             setup(ctx) {
-                ctx.input.isCC = true;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = true;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryChannel($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'custom command `MyCoolTag`'
                 }))).resolves({ success: false, cause: 'notFound' }).mustHappen(1);
@@ -230,12 +230,12 @@ await runSubtagTests({
                 { error: new ChannelNotFoundError('General') }
             ],
             setup(ctx) {
-                ctx.input.isCC = true;
-                ctx.input.tagName = 'MyCoolTag';
+                ctx.isCC = true;
+                ctx.tagName = 'MyCoolTag';
                 features.setup((m, $) => m.queryChannel($({
-                    guildId: ctx.guild.id,
-                    channelId: ctx.channels.command.id,
-                    userId: ctx.users.command.id,
+                    guildId: ctx.guildId,
+                    channelId: ctx.channelId,
+                    userId: ctx.userId,
                     searchText: 'General',
                     source: 'custom command `MyCoolTag`'
                 }))).resolves({ success: false, cause: 'aborted' }).mustHappen(1);
@@ -252,7 +252,7 @@ await runSubtagTests({
                 { error: new ChannelNotFoundError('General').withDisplay('') }
             ],
             setup(ctx) {
-                features.setup(m => m.findChannel(ctx.guild.id, 'General')).resolves(undefined).mustHappen(1);
+                features.setup(m => m.findChannel(ctx.guildId, 'General')).resolves(undefined).mustHappen(1);
             },
             assert(ctx) {
                 assert.equal(ctx.root.queryCache.failedQueries, 0);

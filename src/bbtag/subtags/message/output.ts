@@ -1,4 +1,4 @@
-import { Emote } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -49,24 +49,24 @@ export class OutputSubtag extends CompiledSubtag {
     async #sendOutput(context: BBTagContext, content: string): Promise<string | undefined> {
         if (context.root.silent || context.root.output.messageId !== undefined)
             return context.root.output.messageId;
-        const channel = context.root.message.channel;
+        const channelId = context.root.channelId;
 
         const nsfw = context.root.output.nsfw;
         let { embeds, files } = context.root.output;
-        if (nsfw !== undefined && !await ChannelIsNsfwSubtag.check(context, channel.id)) {
+        if (nsfw !== undefined && !await ChannelIsNsfwSubtag.check(context, channelId)) {
             content = nsfw;
             embeds = undefined;
             files = undefined;
         }
 
-        const response = await this.#features.sendMessage(channel.id, {
+        const response = await this.#features.sendMessage(channelId, {
             content,
             embeds,
             files,
             allowedMentions: {
                 everyone: context.root.allowedMentions.everybody
                     && context.root.isCC
-                    && await this.#features.canPingEveryone(channel.guild.id),
+                    && await this.#features.canPingEveryone(context.root.guildId),
                 roles: context.root.isCC ? context.root.allowedMentions.roles : new Set(),
                 users: context.root.isCC ? context.root.allowedMentions.users : new Set()
             }
@@ -75,7 +75,7 @@ export class OutputSubtag extends CompiledSubtag {
         if (response.success) {
             context.root.output.messageId = response.id;
             context.root.ownedMessageIds.add(response.id);
-            await this.#features.addMessageReactions(channel.id, response.id, [...new Set(context.root.output.reactions)].map(Emote.parse));
+            await this.#features.addMessageReactions(channelId, response.id, [...new Set(context.root.output.reactions)].map(Emote.parse));
             return response.id;
         }
         if (response.reason === undefined)

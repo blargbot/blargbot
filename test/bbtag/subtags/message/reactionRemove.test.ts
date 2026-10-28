@@ -1,7 +1,8 @@
 import { BBTagRuntimeError, ChannelNotFoundError, DiscordPermissions, MessageNotFoundError } from '@blargbot/bbtag';
 import type { CheckMessageExistsFeature, GetMemberPermissionsFeature, ListMessageReactionsFeature, RemoveMessageReactionUserFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, IsStaffSubtag, ReactionRemoveSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { Emote, snowflake } from '@blargbot/core';
+import { snowflake } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -31,16 +32,16 @@ await runSubtagTests({
             code: '{reactremove;2938453289453240}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = ctx.channels.command.id;
-                const userId = ctx.users.command.id;
-                const emotes = [new Emote('🤔'), new Emote('notlikecat', '280110565161041921')];
+                const channelId = ctx.channelId;
+                const userId = ctx.userId;
+                const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
                 userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -64,15 +65,15 @@ await runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
-                const userId = ctx.users.command.id;
-                const emotes = [new Emote('🤔'), new Emote('notlikecat', '280110565161041921')];
+                const userId = ctx.userId;
+                const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
                 userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -95,9 +96,9 @@ await runSubtagTests({
             code: '{reactremove;2938453289453240;other}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = ctx.channels.command.id;
+                const channelId = ctx.channelId;
                 const userId = snowflake.create().toString();
-                const emotes = [new Emote('🤔'), new Emote('notlikecat', '280110565161041921')];
+                const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2938453289453240', $({ noErrors: true, noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
@@ -107,7 +108,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -132,14 +133,14 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
                 const userId = snowflake.create().toString();
-                const emotes = [new Emote('🤔'), new Emote('notlikecat', '280110565161041921')];
+                const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -162,7 +163,7 @@ await runSubtagTests({
             code: '{reactremove;2938453289453240;other;🤔}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = ctx.channels.command.id;
+                const channelId = ctx.channelId;
                 const userId = snowflake.create().toString();
                 const emotes = [new Emote('🤔')];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2938453289453240', $({ noErrors: true, noLookup: true })))
@@ -174,7 +175,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -195,7 +196,7 @@ await runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
-                const userId = ctx.users.command.id;
+                const userId = ctx.userId;
                 const emotes = [new Emote('🤔')];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
@@ -206,7 +207,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -235,7 +236,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -266,7 +267,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -287,7 +288,7 @@ await runSubtagTests({
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -307,7 +308,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.NONE)
                     .mustHappen(1);
             }
@@ -327,7 +328,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -350,7 +351,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -374,7 +375,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -395,7 +396,7 @@ await runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
-                const userId = ctx.users.command.id;
+                const userId = ctx.userId;
                 const emotes = [new Emote('🤔')];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
@@ -406,7 +407,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -430,7 +431,7 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
-                const userId = ctx.users.command.id;
+                const userId = ctx.userId;
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
@@ -440,7 +441,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -460,14 +461,14 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const channelId = snowflake.create().toString();
                 const userId = snowflake.create().toString();
-                const emotes = [new Emote('fakeemote', '192612896213677963')];
+                const emotes = [new Emote('fakeemote', 192612896213677963n)];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.MANAGE_MESSAGES)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
@@ -498,7 +499,7 @@ await runSubtagTests({
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup(m => m.getMemberPermissions(ctx.guild.id, ctx.users.bot.id, channelId))
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                     .resolves(DiscordPermissions.NONE)
                     .mustHappen(1);
             }

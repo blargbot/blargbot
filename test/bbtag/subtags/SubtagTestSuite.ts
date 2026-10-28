@@ -1,25 +1,18 @@
 import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
-import { ClientRequest, IncomingMessage } from 'node:http';
 import * as inspector from 'node:inspector';
 import path from 'node:path';
 import type { TestContext } from 'node:test';
 import { describe, it } from 'node:test';
 
-import type { BaseRuntimeLimit, BBTagExpression, BBTagRuntimeInput, BBTagUtilities, InjectionContext, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
+import type { BaseRuntimeLimit, BBTagExpression, FlagDefinition, InjectionContext, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
 import { bbtag, BBTagContext, BBTagEngine, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag';
 import { pluralise as p, repeat, snowflake } from '@blargbot/core';
-import type { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import type { Mockable, MockCtorArgs } from '@blargbot/test-util';
 import { Mock } from '@blargbot/test-util';
-import type { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIUser, Snowflake } from 'discord-api-types/v9';
-import { ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types/v9';
-import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[keyof T];
-type RequireIds<T, OtherProps extends keyof T = never> = RequiredProps<Partial<T>, IdPropertiesOf<T> | OtherProps>;
 type AnyConstructor<T> = (abstract new (...args: never) => T) & {
     readonly prototype: T;
 }
@@ -72,97 +65,31 @@ function makeId(name: string): string {
 }
 
 type ArgCountBound = number | { count: number; noEval: number[]; };
-/* eslint-disable @typescript-eslint/naming-convention */
+
 export class SubtagTestContext {
     readonly #allMocks: Mock[] = [];
     #isCreated = false;
     public readonly dependencies = this.createMock<InjectionContext>({ id: 'dependencies' });
-    public readonly util = this.createMock<BBTagUtilities>({ id: 'util' });
-    public readonly shard = this.createMock<eris.Shard>({ id: 'shard' });
-    public readonly shards = this.createMock<eris.ShardManager>({ id: 'shards' });
-    public readonly discord = this.createMock<eris.Client>({ id: 'discord' });
     readonly #logger = this.createMock<Logger>({ id: 'logger' });
-    public readonly tagVariablesTable = this.createMock<TagVariableStore>({ id: 'tagVariablesTable' });
-    public readonly tagsTable = this.createMock<TagStore>({ id: 'tagsTable' });
-    public readonly guildTable = this.createMock<GuildStore>({ id: 'guildTable' });
-    public readonly userTable = this.createMock<UserStore>({ id: 'userTable' });
     public readonly limit = this.createMock<BaseRuntimeLimit>({ id: 'limit' });
-    public readonly discordOptions: eris.ClientOptions;
     public readonly ownedMessages: string[] = [];
 
-    public readonly input: Mutable<Omit<BBTagRuntimeInput, 'message'>>;
-
-    public readonly roles = {
-        everyone: SubtagTestContext.createApiRole({ id: makeId('guildId') }),
-        top: SubtagTestContext.createApiRole({ id: makeId('topRole'), position: 5, name: 'Top Role' }),
-        command: SubtagTestContext.createApiRole({ id: makeId('commandRole'), position: 3, name: 'Command User' }),
-        authorizer: SubtagTestContext.createApiRole({ id: makeId('authorizerRole'), position: 4, name: 'Command Authorizer' }),
-        other: SubtagTestContext.createApiRole({ id: makeId('otherRole'), position: 2, name: 'Other User' }),
-        bot: SubtagTestContext.createApiRole({ id: makeId('botRole'), position: 1, name: 'Bot' })
-    };
-
-    public readonly users = {
-        owner: SubtagTestContext.createApiUser({ id: makeId('ownerUser'), username: 'Guild owner' }),
-        command: SubtagTestContext.createApiUser({ id: makeId('commandUser'), username: 'Command User' }),
-        authorizer: SubtagTestContext.createApiUser({ id: makeId('authorizerUser'), username: 'Command Authorizer' }),
-        other: SubtagTestContext.createApiUser({ id: makeId('otherUser'), username: 'Other user' }),
-        bot: SubtagTestContext.createApiUser({
-            id: '134133271750639616',
-            username: 'blargbot',
-            discriminator: '0128'
-        })
-    };
-
-    public readonly members = {
-        owner: SubtagTestContext.createApiGuildMember({ roles: [] }, this.users.owner),
-        command: SubtagTestContext.createApiGuildMember({ roles: [this.roles.command.id] }, this.users.command),
-        authorizer: SubtagTestContext.createApiGuildMember({ roles: [this.roles.authorizer.id] }, this.users.authorizer),
-        other: SubtagTestContext.createApiGuildMember({ roles: [this.roles.other.id] }, this.users.other),
-        bot: SubtagTestContext.createApiGuildMember({ roles: [this.roles.bot.id] }, this.users.bot)
-    };
-
-    public readonly channels = {
-        command: SubtagTestContext.createApiChannel({ id: makeId('commandChannel'), name: 'commands' }),
-        general: SubtagTestContext.createApiChannel({ id: makeId('generalChannel'), name: 'general' })
-    } as {
-        command: Extract<APIChannel, { guild_id?: Snowflake; }>;
-        general: Extract<APIChannel, { guild_id?: Snowflake; }>;
-        [name: string]: Extract<APIChannel, { guild_id?: Snowflake; }>;
-    };
-
-    public readonly guild = SubtagTestContext.createApiGuild(
-        {
-            id: this.roles.everyone.id,
-            owner_id: this.users.owner.id,
-            roles: Object.values(this.roles)
-        }
-    );
-
-    public readonly message: APIMessage = SubtagTestContext.createApiMessage({
-        id: makeId('commandMessage'),
-        author: this.users.command,
-        channel_id: this.channels.command.id
-    }, this.users.command);
+    public guildId = makeId('guild');
+    public messageId = makeId('commandMessage');
+    public channelId = makeId('commandChannel');
+    public userId = makeId('commandUser');
+    public authorId: string | undefined = makeId('author');
+    public authorizerId = makeId('authorizer');
+    public botId = makeId('bot');
+    public tagName = makeId('tagName');
+    public isCC = false;
+    public flagDefinitions: FlagDefinition[] = [];
+    public cooldownMs = 0;
+    public input = '';
+    public prefix: string | undefined = undefined;
 
     public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<Subtag>) {
-        this.discordOptions = { intents: [] };
-        this.input = {
-            tagName: makeId('tagName'),
-            silent: false,
-            isCC: false,
-            flagDefinitions: [],
-            limit: this.limit.instance,
-            authorizer: '',
-            author: undefined,
-            cooldown: 0,
-            input: '',
-            prefix: undefined,
-            tagVars: true
-        };
-
-        this.dependencies.setup(m => m.discord).returns(this.discord.instance, { isFallback: true });
         this.dependencies.setup(m => m.logger).returns(this.#logger.instance, { isFallback: true });
-        this.dependencies.setup(m => m.util).returns(this.util.instance, { isFallback: true });
         this.dependencies.setup(c => c.subtags).returns(subtags, { isFallback: true });
         this.dependencies.setup(m => m.sleep).returns(() => {
             throw new Error('Sleep called, this typically means a runaway subtag.');
@@ -177,21 +104,6 @@ export class SubtagTestContext {
             .returns(undefined, { isFallback: true });
         this.#logger.setup((m, $) => m.bbtag('Commited', $.number, 'objects to the', $.string, 'pool in', $.number, 'ms.'))
             .returns(undefined, { isFallback: true });
-
-        this.discord.setup((m, $) => m.emit('warn', $.anything)).returns(false, { isFallback: true });
-
-        this.discord.setup(m => m.shards).returns(this.shards.instance, { isFallback: true });
-        this.discord.setup(m => m.guildShardMap).returns({}, { isFallback: true });
-        this.discord.setup(m => m.channelGuildMap).returns({}, { isFallback: true });
-        this.discord.setup(m => m.options).returns(this.discordOptions, { isFallback: true });
-        this.discord.setup((m, $) => m._formatImage($.anything)).invokes(i => eris.Client.prototype._formatImage.call(this.discord.instance, i.arguments[0] as never), { isFallback: true });
-        this.discord.setup((m, $) => m._formatAllowedMentions($.anything)).invokes(i => eris.Client.prototype._formatImage.call(this.discord.instance, i.arguments[0] as never), { isFallback: true });
-
-        this.shards.setup(m => m.get(0)).returns(this.shard.instance, { isFallback: true });
-        this.shard.setup(m => m.client).returns(this.discord.instance, { isFallback: true });
-
-        this.discord.setup(m => m.guilds).returns(new eris.Collection(eris.Guild), { isFallback: true });
-        this.discord.setup(m => m.users).returns(new eris.Collection(eris.User), { isFallback: true });
 
     }
 
@@ -235,30 +147,25 @@ export class SubtagTestContext {
             throw new Error('Cannot create multiple contexts from 1 mock');
         this.#isCreated = true;
 
+        this.dependencies.setup(m => m.botId).returns(this.botId).mustHappen(1);
+
         const engine = new BBTagEngine(this.dependencies.instance);
-
-        const bot = new eris.ExtendedUser(<eris.BaseData><unknown>this.users.bot, this.discord.instance);
-        this.discord.setup(m => m.user).returns(bot, { isFallback: true });
-
-        const guild = this.createGuild(this.guild, Object.values(this.channels), Object.values(this.members));
-        this.discord.instance.guilds.add(guild);
-
-        for (const channel of guild.channels.values())
-            this.discord.setup(m => m.getChannel(channel.id)).returns(channel, { isFallback: true });
-
-        const textableChannelTypes = new Set([ChannelType.GuildText, ChannelType.DM, ChannelType.GroupDM, ChannelType.GuildAnnouncement, ChannelType.AnnouncementThread, ChannelType.PrivateThread, ChannelType.PublicThread]);
-        const channel = guild.channels.find(c => textableChannelTypes.has(c.type));
-        if (channel === undefined)
-            throw new Error('No text channels were added');
-
-        const message = this.createMessage<eris.KnownGuildTextableChannel>(this.message);
-        this.util.setup(m => m.getMessage(channel.id, message.id)).resolves(message, { isFallback: true });
-
         const context = engine.createContext({
-            ...this.input,
-            authorizer: this.input.authorizer === '' ? this.input.author ?? this.users.authorizer.id : this.input.authorizer,
-            author: this.input.author ?? message.author.id,
-            message
+            guildId: this.guildId,
+            channelId: this.channelId,
+            messageId: this.messageId,
+            userId: this.userId,
+            authorizer: this.authorizerId,
+            author: this.authorId,
+            cooldown: this.cooldownMs,
+            flagDefinitions: this.flagDefinitions,
+            input: this.input,
+            isCC: this.isCC,
+            limit: this.limit.instance,
+            prefix: this.prefix,
+            silent: false,
+            tagName: this.tagName,
+            tagVars: true
         });
         context.toString = () => '<TestBBTagContext>';
 
@@ -266,175 +173,7 @@ export class SubtagTestContext {
 
         return context;
     }
-
-    public createRESTError(code: number, message = 'Test REST error'): eris.DiscordRESTError {
-        const request = this.createMock<ClientRequest>({ id: 'request' });
-        const apiMessage = this.createMock<IncomingMessage>({ id: 'apiMessage' });
-
-        apiMessage.setup(Reflect.getPrototypeOf).returns(IncomingMessage.prototype);
-        request.setup(Reflect.getPrototypeOf).returns(ClientRequest.prototype);
-
-        const x = { stack: '' };
-        Error.captureStackTrace(x);
-        return new eris.DiscordRESTError(request.instance, apiMessage.instance, { code, message }, x.stack);
-    }
-
-    public createHTTPError(code: number, message: string, method: string, path: string): eris.DiscordHTTPError {
-        const request = this.createMock<ClientRequest>({ id: 'request' });
-        const apiMessage = this.createMock<IncomingMessage>({ id: 'apiMessage' });
-
-        apiMessage.setup(Reflect.getPrototypeOf).returns(IncomingMessage.prototype);
-        request.setup(Reflect.getPrototypeOf).returns(ClientRequest.prototype);
-
-        apiMessage.setup(m => m.statusCode).returns(code);
-        apiMessage.setup(m => m.statusMessage).returns(message);
-        request.setup(m => m.method).returns(method);
-        request.setup(m => m.path).returns(path);
-
-        const x = { stack: '' };
-        Error.captureStackTrace(x);
-        return new eris.DiscordHTTPError(request.instance, apiMessage.instance, { code, message }, x.stack);
-    }
-
-    public createMessage<TChannel extends eris.KnownTextableChannel>(settings: APIMessage): eris.Message<TChannel>
-    public createMessage<TChannel extends eris.KnownTextableChannel>(settings: RequireIds<APIMessage>, author: APIUser): eris.Message<TChannel>
-    public createMessage<TChannel extends eris.KnownTextableChannel>(...args: [APIMessage] | [RequireIds<APIMessage>, APIUser]): eris.Message<TChannel> {
-        const data = args.length === 1 ? args[0] : SubtagTestContext.createApiMessage(...args);
-        return new eris.Message<TChannel>(<eris.BaseData><unknown>data, this.discord.instance);
-    }
-
-    public static createApiMessage(settings: RequireIds<APIMessage>, author: APIUser): APIMessage {
-        return {
-            author: author,
-            attachments: [],
-            content: '',
-            edited_timestamp: '1970-01-01T00:00:00Z',
-            embeds: [],
-            mention_everyone: false,
-            mention_roles: [],
-            mentions: [],
-            pinned: false,
-            timestamp: '1970-01-01T00:00:00Z',
-            tts: false,
-            type: eris.Constants.MessageTypes.DEFAULT,
-            ...settings
-        };
-    }
-
-    public createUser(settings: RequireIds<APIUser>): eris.User {
-        const data = SubtagTestContext.createApiUser(settings);
-        return new eris.User(<eris.BaseData><unknown>data, this.discord.instance);
-    }
-
-    public static createApiUser(settings: RequireIds<APIUser>): APIUser {
-        return {
-            avatar: null,
-            discriminator: '0000',
-            username: 'Test User',
-            ...settings
-        };
-    }
-
-    public createGuildMember(guild: eris.Guild | undefined, settings: RequireIds<APIGuildMember>, user: APIUser): eris.Member {
-        const data = SubtagTestContext.createApiGuildMember(settings, user);
-        return new eris.Member(<eris.BaseData><unknown>data, guild, this.discord.instance);
-    }
-
-    public static createApiGuildMember(settings: RequireIds<APIGuildMember>, user: APIUser): RequiredProps<APIGuildMember, 'user'> {
-        return {
-            deaf: false,
-            joined_at: '1970-01-01T00:00:00Z',
-            mute: false,
-            roles: ['0'],
-            user: user,
-            ...settings
-        };
-    }
-
-    public createRole(guild: eris.Guild, settings: RequireIds<APIRole>): eris.Role {
-        const data = SubtagTestContext.createApiRole(settings);
-        return new eris.Role(<eris.BaseData><unknown>data, guild);
-    }
-
-    public static createApiRole(settings: RequireIds<APIRole>): APIRole {
-        return {
-            color: 0,
-            hoist: false,
-            managed: false,
-            mentionable: false,
-            name: '@everyone',
-            permissions: '0',
-            position: 0,
-            ...settings
-        };
-    }
-
-    public createGuild(settings: APIGuild | RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): eris.Guild {
-        const data = 'hub_type' in settings ? settings : SubtagTestContext.createApiGuild(settings);
-        const guild = new eris.Guild({ ...data, members: members, channels: channels }, this.discord.instance);
-        return guild;
-    }
-
-    public static createApiGuild(settings: RequireIds<APIGuild>): RequiredProps<APIGuild, 'roles'> {
-        return {
-            afk_channel_id: null,
-            afk_timeout: 60,
-            application_id: null,
-            banner: null,
-            default_message_notifications: GuildDefaultMessageNotifications.AllMessages,
-            description: null,
-            discovery_splash: null,
-            emojis: [],
-            explicit_content_filter: GuildExplicitContentFilter.Disabled,
-            features: [],
-            icon: null,
-            mfa_level: GuildMFALevel.None,
-            name: 'Test Guild',
-            nsfw_level: GuildNSFWLevel.Default,
-            preferred_locale: 'en-US',
-            premium_progress_bar_enabled: false,
-            premium_tier: GuildPremiumTier.None,
-            roles: [
-                this.createApiRole({ id: settings.id })
-            ],
-            public_updates_channel_id: null,
-            rules_channel_id: null,
-            splash: null,
-            stickers: [],
-            system_channel_flags: 0 as never,
-            system_channel_id: null,
-            vanity_url_code: null,
-            verification_level: GuildVerificationLevel.None,
-            region: '',
-            hub_type: null,
-            ...settings
-        };
-    }
-
-    public createChannel<T extends keyof eris.KnownChannelMap>(settings: RequireIds<APIChannel> & { type: T; }): eris.KnownChannelMap[T]
-    public createChannel(settings: RequireIds<APITextChannel>): eris.KnownTextableChannel
-    public createChannel(settings: RequireIds<APIChannel>): eris.KnownChannel
-    public createChannel(settings: RequireIds<APIChannel>): eris.KnownChannel {
-        const data = SubtagTestContext.createApiChannel(settings);
-        return eris.Channel.from(<eris.BaseData><unknown>data, this.discord.instance);
-    }
-
-    public static createApiChannel<T extends ChannelType>(settings: RequireIds<Extract<APIChannel, { type: T; }>> & { type: T; }): Extract<APIChannel, { type: T; }>;
-    public static createApiChannel(settings: RequireIds<APITextChannel>): APITextChannel;
-    public static createApiChannel<T extends APIChannel>(settings: RequireIds<T>): T;
-    public static createApiChannel<T extends APIChannel>(settings: RequireIds<T>): T {
-        return {
-            name: 'Test Channel',
-            type: ChannelType.GuildText,
-            position: 0,
-            permission_overwrites: [],
-            nsfw: false,
-            topic: 'Test channel!',
-            ...settings
-        } as unknown as T;
-    }
 }
-/* eslint-enable @typescript-eslint/naming-convention */
 
 export async function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): Promise<void> {
     const error = { stack: '' };

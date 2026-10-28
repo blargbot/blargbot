@@ -1,11 +1,10 @@
-import { parse } from '@blargbot/core';
-
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
+import { convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.repeat;
@@ -33,7 +32,7 @@ export class RepeatSubtag extends CompiledSubtag {
         amountStr: string,
         code: SubtagArgument
     ): AsyncIterable<string> {
-        const amount = parse.int(amountStr) ?? parse.int(context.local.fallback ?? '');
+        const amount = convertToInteger(amountStr) ?? convertToInteger(context.local.fallback ?? '');
         if (amount === undefined)
             throw new NotANumberError(amountStr);
         if (amount < 0)

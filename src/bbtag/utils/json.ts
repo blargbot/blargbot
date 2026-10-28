@@ -1,7 +1,6 @@
-import { parse } from '@blargbot/core';
-
 import { BBTagRuntimeError } from '../errors/index.js';
 import type { Variables } from '../Variables.js';
+import { convertToInteger } from './converters.js';
 import { tagArray } from './tagArray.js';
 
 export interface JsonResolveResult {
@@ -171,5 +170,5 @@ function setArrayProp<T>(arr: T[], prop: string, value: T): void {
 function toArrayKey(key: string): 'length' | number | undefined {
     if (key === 'length')
         return 'length';
-    return parse.int(key);
+    return convertToInteger(key);
 }

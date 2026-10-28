@@ -1,9 +1,6 @@
-import type { Emote } from '@blargbot/core';
-import type { FlagDefinition, FlagResult, GuildCommandTag, StoredTag } from '@blargbot/domain';
+import type Emote from '@blargbot/discord-emote';
 import type { IFormattable } from '@blargbot/formatting';
-import type * as eris from 'eris';
 
-import type { DiscordPermissions } from './enums.js';
 import type { BBTagRuntimeError } from './errors/index.js';
 import type { BBTagExpression, SourceMarker, SubtagCall } from './language/index.js';
 import type { RuntimeLimit } from './limits/index.js';
@@ -23,7 +20,9 @@ export type BBTagArray = { n?: string; v: JArray; };
 
 export interface BBTagRuntimeScope {
     tagName: string;
-    message: BBTagContextMessage;
+    messageId: string;
+    channelId: string;
+    userId: string;
     quiet: boolean | undefined;
     fallback: string | undefined;
     noLookupErrors: boolean | undefined;
@@ -38,26 +37,23 @@ export interface BBTagRuntimeScope {
 export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
     readonly botId: string;
     readonly guildId: string;
-    readonly guildOwnerId: string;
     readonly recursion: { depth: number; };
     readonly output: {
         nsfw?: string;
         messageId?: string;
-        embeds?: eris.EmbedOptions[];
-        files?: eris.FileContent[];
+        embeds?: Embed[];
+        files?: FileContent[];
         replace?: { regex: RegExp | string; with: string; };
         readonly reactions: string[];
     };
     readonly limit: RuntimeLimit;
     readonly authorId: string | undefined;
-    readonly authorizerId: string | undefined;
-    readonly authorizer: eris.Member | undefined;
-    readonly authorizerPermissions: DiscordPermissions;
+    readonly authorizerId: string;
     readonly prefix: string | undefined;
     readonly isCC: boolean;
     readonly tagVars: boolean;
     readonly silent: boolean;
-    readonly flagDefinitions: ReadonlyArray<FlagDefinition<string>>;
+    readonly flagDefinitions: readonly FlagDefinition[];
     readonly functions: Map<string, BBTagExpression>;
     readonly queryCache: {
         failedQueries: number;
@@ -66,8 +62,8 @@ export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
         readonly channel: Map<string, string>;
     };
     readonly ownedMessageIds: Set<string>;
-    readonly tagCache: Map<string, StoredTag>;
-    readonly ccCache: Map<string, GuildCommandTag>;
+    readonly tagCache: Map<string, TagDetails>;
+    readonly ccCache: Map<string, TagDetails | 'alias'>;
     readonly allowedMentions: {
         readonly users: Set<string>;
         readonly roles: Set<string>;
@@ -78,15 +74,18 @@ export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
 export interface BBTagRuntimeInput {
     readonly cooldown: number;
     readonly author: string | undefined;
-    readonly authorizer: string | undefined;
+    readonly authorizer: string;
     readonly prefix: string | undefined;
     readonly isCC: boolean;
     readonly tagVars: boolean;
     readonly tagName: string;
-    readonly flagDefinitions: ReadonlyArray<FlagDefinition<string>>;
+    readonly flagDefinitions: readonly FlagDefinition[];
     readonly input: string;
     readonly limit: RuntimeLimit;
-    readonly message: BBTagContextMessage;
+    readonly messageId: string;
+    readonly guildId: string;
+    readonly channelId: string;
+    readonly userId: string;
     readonly silent: boolean;
 }
 
@@ -108,8 +107,8 @@ export interface SerializedBBTagContext {
         content: string;
         channel: { id: string; serialized: string; };
         member?: { id: string; serialized: string; };
-        attachments: eris.Attachment[];
-        embeds: eris.Embed[];
+        attachments: object[];
+        embeds: Embed[];
     };
     isCC: boolean;
     scope: {
@@ -125,7 +124,7 @@ export interface SerializedBBTagContext {
         isTag: boolean;
     };
     inputRaw: string;
-    flags: ReadonlyArray<FlagDefinition<string>>;
+    flags: readonly FlagDefinition[];
     data: {
         query: {
             count: number;
@@ -149,17 +148,6 @@ export interface SerializedBBTagContext {
     tagVars: boolean;
     tempVars: Record<string, JToken>;
     limit: SerializedRuntimeLimit;
-}
-
-export type BBTagContextMessage = {
-    id: string;
-    content: string;
-    embeds: eris.Embed[];
-    createdAt: number;
-    channel: eris.KnownGuildTextableChannel;
-    member: eris.Member;
-    author: eris.User;
-    attachments: eris.Attachment[];
 }
 
 export interface LocatedRuntimeError {
@@ -265,7 +253,7 @@ type SubtagReturnTypeValueMap = {
     string: string;
     id: string;
     json: JToken;
-    embed: eris.Embed;
+    embed: Embed;
     nothing: undefined;
 }
 
@@ -315,8 +303,74 @@ export interface SubtagProperties<Id extends SubtagType = SubtagType> {
     readonly hidden?: boolean;
 }
 
-export interface ReactionEvent {
-    readonly message: eris.KnownMessage;
+export interface MessageEvent {
+    readonly messageId: string;
+    readonly channelId: string;
+    readonly authorId: string;
+    readonly guildId?: string;
+}
+
+export interface ReactionEvent extends MessageEvent {
     readonly reaction: Emote;
-    readonly user: eris.User;
+    readonly reactorId: string;
+}
+
+export interface TagDetails {
+    readonly cooldown?: number;
+    readonly content: string;
+}
+
+export interface FlagDefinition {
+    readonly flag: Alphanumeric;
+    readonly word: string;
+}
+
+type FlagResultBase = { readonly [P in Alphanumeric]?: string };
+export interface FlagResult extends FlagResultBase {
+    readonly _: string;
+}
+
+export interface FileContent {
+    file: Buffer;
+    name: string;
+}
+
+export interface Embed {
+    author?: EmbedAuthor;
+    color?: number;
+    description?: string;
+    fields?: EmbedField[];
+    footer?: EmbedFooter;
+    image?: EmbedImage;
+    thumbnail?: EmbedImage;
+    timestamp?: Date | string;
+    title?: string;
+    url?: string;
+}
+
+export interface MalformedEmbed extends Embed {
+    malformed: true;
+}
+
+export interface EmbedAuthor {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    icon_url?: string;
+    name: string;
+    url?: string;
+}
+
+export interface EmbedField {
+    inline?: boolean;
+    name: string;
+    value: string;
+}
+
+export interface EmbedFooter {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    icon_url?: string;
+    text: string;
+}
+
+export interface EmbedImage {
+    url?: string;
 }

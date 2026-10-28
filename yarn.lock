@@ -47,6 +47,7 @@ __metadata:
     "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
+    "@blargbot/discord-emote": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
@@ -64,17 +65,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/bbtag@workspace:src/bbtag"
   dependencies:
-    "@blargbot/config": "workspace:^"
+    "@blargbot/colors": "workspace:^"
     "@blargbot/core": "workspace:^"
+    "@blargbot/discord-emote": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/util": "workspace:^"
     "@types/color": "npm:^3.0.3"
-    "@types/eris": "workspace:^"
     "@types/rwlock": "npm:^5.0.3"
     color: "npm:^5.0.3"
-    eris: "npm:^0.17.1"
     html-entities: "npm:^2.3.3"
     moment-timezone: "npm:^0.6.4"
     rwlock: "npm:^5.0.0"
@@ -107,6 +107,7 @@ __metadata:
     "@blargbot/contracts": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/database": "workspace:^"
+    "@blargbot/discord-emote": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/image": "workspace:^"
@@ -130,6 +131,12 @@ __metadata:
     wolken: "npm:^0.2.1"
     xml2js: "npm:^0.4.23"
     zod: "npm:^4.6.5"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/colors@workspace:^, @blargbot/colors@workspace:src/colors":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/colors@workspace:src/colors"
   languageName: unknown
   linkType: soft
 
@@ -173,6 +180,7 @@ __metadata:
     "@blargbot/contracts": "workspace:^"
     "@blargbot/crowdin": "workspace:^"
     "@blargbot/database": "workspace:^"
+    "@blargbot/discord-emote": "workspace:^"
     "@blargbot/domain": "workspace:^"
     "@blargbot/formatting": "workspace:^"
     "@blargbot/logger": "workspace:^"
@@ -247,6 +255,12 @@ __metadata:
     rethinkdb: "npm:^2.4.2"
     sequelize: "npm:^6.25.8"
     zod: "npm:^4.6.5"
+  languageName: unknown
+  linkType: soft
+
+"@blargbot/discord-emote@workspace:^, @blargbot/discord-emote@workspace:src/discord-emote":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/discord-emote@workspace:src/discord-emote"
   languageName: unknown
   linkType: soft
 

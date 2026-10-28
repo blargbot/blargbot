@@ -40,7 +40,7 @@ await runSubtagTests({
                 title: `Channel is a ${key} (${ChannelType[key]})`,
                 expected: success.toString(),
                 setup(channelId, ctx) {
-                    features.setup(m => m.getChannelType(ctx.guild.id, channelId)).resolves(ChannelType[key]);
+                    features.setup(m => m.getChannelType(ctx.guildId, channelId)).resolves(ChannelType[key]);
                 }
             }))
         })

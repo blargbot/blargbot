@@ -70,7 +70,10 @@ export class CensorManager extends ModerationManagerBase {
             delete this.#debugOutput[key];
 
             const result = await this.cluster.bbtag.execute(tag.content, {
-                message: message,
+                messageId: message.id,
+                channelId: message.channel.id,
+                guildId: message.channel.guild.id,
+                userId: message.author.id,
                 tagName: 'censor',
                 silent: false,
                 input: message.content,
@@ -79,7 +82,7 @@ export class CensorManager extends ModerationManagerBase {
                 tagVars: false,
                 limit: new limits.CustomCommandLimit(),
                 author: tag.author ?? undefined,
-                authorizer: tag.authorizer ?? undefined,
+                authorizer: tag.authorizer ?? tag.author ?? message.channel.guild.ownerID,
                 cooldown: 0,
                 prefix: undefined
             });

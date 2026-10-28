@@ -3,6 +3,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { RoleNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { /*parse,*/ SubtagType } from '../../utils/index.js';
+import { RoleIdSubtag } from './roleId.js';
 
 const tag = templates.subtags.roleSize;
 
@@ -37,10 +38,9 @@ export class RoleSizeSubtag extends CompiledSubtag {
         /* const role = await context.queryRole(roleStr, {
             quiet
         }) */
-        const role = await context.queryRole(roleStr, { noLookup: true, noErrors: true });
-        if (role === undefined)
-            throw new RoleNotFoundError(roleStr);
+        const roleId = await RoleIdSubtag.query(context, roleStr, { noLookup: true, noErrors: true })
+            ?? new RoleNotFoundError(roleStr).throw();
 
-        return await this.#features.getRoleMemberCount(context.root.guildId, role.id);
+        return await this.#features.getRoleMemberCount(context.root.guildId, roleId);
     }
 }

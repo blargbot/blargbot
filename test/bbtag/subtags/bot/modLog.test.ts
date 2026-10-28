@@ -28,13 +28,13 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ global: true })))
-                    .resolves(ctx.users.command.id)
+                    .resolves(ctx.userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.addModLog($({
                     guildId: bbctx.root.guildId,
                     action: 'poke',
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
                     reason: '',
                     color: undefined
                 }))).resolves(undefined);
@@ -118,13 +118,13 @@ await runSubtagTests({
                     .resolves(userId)
                     .mustHappen(1);
                 userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ global: true })))
-                    .resolves(ctx.users.command.id)
+                    .resolves(ctx.userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.addModLog($({
                     guildId: bbctx.root.guildId,
                     action: 'poke',
                     targetId: userId,
-                    moderatorId: bbctx.local.message.author.id,
+                    moderatorId: ctx.userId,
                     reason: '',
                     color: undefined
                 }))).resolves(undefined);

@@ -1,10 +1,8 @@
-import { parse } from '@blargbot/core';
-import type moment from 'moment-timezone';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToDuration, convertToInteger } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 import type { ApiResult } from '../types.js';
 import { UserIdSubtag } from './userId.js';
@@ -16,9 +14,9 @@ export interface BanUserOptions {
     readonly targetId: string;
     readonly moderatorId: string;
     readonly authorizerId: string;
-    readonly reason: string;
+    readonly auditReason: string;
     readonly daysToDelete: number;
-    readonly unbanAfter?: moment.Duration;
+    readonly unbanAfter?: Temporal.Duration;
 }
 
 export type BanUserResult = ApiResult<null, { cause: 'bot' | 'authorizer'; }>;
@@ -77,28 +75,28 @@ export class BanSubtag extends CompiledSubtag {
             noLookup: true,
             global: true
         }) ?? new UserNotFoundError(userStr).throw();
-        const daysToDelete = parse.int(daysToDeleteStr);
+        const daysToDelete = convertToInteger(daysToDeleteStr);
         if (daysToDelete === undefined) {
             throw new NotANumberError(daysToDeleteStr)
                 .withDisplay('false');
         }
-        const duration = timeToUnbanStr === '' ? undefined : parse.duration(timeToUnbanStr);
+        const duration = timeToUnbanStr === '' ? undefined : convertToDuration(timeToUnbanStr);
 
         if (reason === '')
             reason = 'Tag Ban';
 
-        const authorizer = noPerms ? context.root.authorizer?.user ?? context.root.message.author : context.root.message.author;
+        const authorizerId = noPerms ? context.root.authorizerId : context.root.userId;
         const result = await this.#features.banUser({
             guildId: context.root.guildId,
             targetId,
-            moderatorId: context.root.message.author.id,
-            authorizerId: authorizer.id,
+            moderatorId: context.root.userId,
+            authorizerId,
             daysToDelete,
-            reason,
+            auditReason: reason,
             unbanAfter: duration
         });
         if (result.success)
-            return duration?.asMilliseconds() ?? true;
+            return duration?.total({ unit: 'milliseconds', relativeTo: Temporal.Now.zonedDateTimeISO() }) ?? true;
         switch (result.cause) {
             case 'bot':
                 throw new BBTagRuntimeError('Bot has no permissions', result.reason);

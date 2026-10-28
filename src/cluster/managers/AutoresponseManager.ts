@@ -109,7 +109,10 @@ export class AutoresponseManager {
         this.#logAutoresponses(msg.channel.guild.id, id);
         const isEverything = id === 'everything';
         const result = await this.#cluster.bbtag.execute(tag.content, {
-            message: msg,
+            messageId: msg.id,
+            channelId: msg.channel.id,
+            guildId: msg.channel.guild.id,
+            userId: msg.author.id,
             tagName: `_autoresponse_${id}`,
             input: args.length === 1 ? msg.content : humanize.smartSplit.inverse(args),
             flagDefinitions: [],
@@ -120,7 +123,7 @@ export class AutoresponseManager {
                 ? new limits.EverythingAutoResponseLimit()
                 : new limits.GeneralAutoResponseLimit(),
             author: tag.author ?? undefined,
-            authorizer: tag.authorizer ?? undefined,
+            authorizer: tag.authorizer ?? tag.author ?? msg.channel.guild.ownerID,
             cooldown: 0,
             prefix: undefined
         });

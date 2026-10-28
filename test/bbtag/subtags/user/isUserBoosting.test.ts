@@ -25,7 +25,7 @@ await runSubtagTests({
                 {
                     expected: 'true',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberBoostTimestamp(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberBoostTimestamp(ctx.guildId, userId))
                             .resolves(Temporal.Instant.from('2021-01-01T00:00:00+0000'))
                             .mustHappen(1);
                     }
@@ -33,7 +33,7 @@ await runSubtagTests({
                 {
                     expected: 'false',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberBoostTimestamp(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberBoostTimestamp(ctx.guildId, userId))
                             .resolves(null)
                             .mustHappen(1);
                     }
@@ -41,7 +41,7 @@ await runSubtagTests({
                 {
                     expected: 'false',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberBoostTimestamp(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberBoostTimestamp(ctx.guildId, userId))
                             .resolves(undefined)
                             .mustHappen(1);
                     }

@@ -1,8 +1,7 @@
-import { guard } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { isFlagChar } from '../../utils/flags.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.flag;
@@ -27,9 +26,9 @@ export class FlagSubtag extends CompiledSubtag {
     }
 
     public getFlag(context: BBTagContext, flagName: string): string | undefined {
-        if (!guard.isFlagChar(flagName) && flagName !== '_')
+        if (!isFlagChar(flagName))
             return undefined;
 
-        return context.local.input.flags[flagName]?.merge().value;
+        return context.local.input.flags[flagName];
     }
 }

@@ -1,13 +1,21 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
+import type { DiscordPermissions } from '../../enums.js';
 import { RoleNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { RoleIdSubtag } from './roleId.js';
 
 const tag = templates.subtags.rolePermissions;
 
+export interface GetRolePermissionsFeature {
+    getRolePermissions(guildId: string, roleId: string): Promise<DiscordPermissions | undefined>;
+}
+
+type Features = GetRolePermissionsFeature;
 export class RolePermissionsSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: GetRolePermissionsFeature;
+    public constructor(features: Features) {
         super({
             name: 'rolePermissions',
             category: SubtagType.ROLE,
@@ -23,21 +31,19 @@ export class RolePermissionsSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async getRolePerms(
         context: BBTagContext,
-        roleId: string,
+        roleStr: string,
         quiet: boolean
     ): Promise<bigint> {
         quiet ||= context.local.quiet ?? false;
-        const role = await context.queryRole(roleId, { noLookup: quiet });
+        const roleId = await RoleIdSubtag.query(context, roleStr, { noLookup: quiet })
+            ?? new RoleNotFoundError(roleStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (role === undefined) {
-            throw new RoleNotFoundError(roleId)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        return role.permissions.allow;
+        return (await this.#features.getRolePermissions(context.root.guildId, roleId))?.raw
+            ?? new RoleNotFoundError(roleStr).withDisplay(quiet ? '' : undefined).throw();
     }
 }

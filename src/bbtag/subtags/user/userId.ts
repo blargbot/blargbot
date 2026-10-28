@@ -1,11 +1,10 @@
-import { snowflake } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import type { QueryUserOptions } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
+import { isSnowflake } from '../../utils/snowflake.js';
 import type { QueryEntityRequest, QueryEntityResponse } from '../types.js';
 
 const tag = templates.subtags.userId;
@@ -53,7 +52,7 @@ export class UserIdSubtag extends CompiledSubtag {
     }
 
     public currentUser(context: BBTagContext): string {
-        return context.local.message.author.id;
+        return context.local.userId;
     }
 
     public async queryUser(context: BBTagContext, userStr: string, quiet: boolean): Promise<string> {
@@ -66,14 +65,14 @@ export class UserIdSubtag extends CompiledSubtag {
     }
 
     public async query(context: BBTagContext, searchText: string, options?: QueryUserOptions): Promise<string | undefined> {
-        if (searchText === '' || searchText === context.local.message.author.id)
-            return context.local.message.author.id;
+        if (searchText === '' || searchText === context.local.userId)
+            return context.local.userId;
 
         const cached = context.root.queryCache.user.get(searchText.toLowerCase());
         if (cached !== undefined)
             return cached;
 
-        if (snowflake.test(searchText)
+        if (isSnowflake(searchText)
             && await (options?.global === true
                 ? this.#features.checkUserExists(searchText)
                 : this.#features.checkMemberExists(context.root.guildId, searchText)
@@ -91,8 +90,8 @@ export class UserIdSubtag extends CompiledSubtag {
 
         const result = await this.#features.queryMember({
             guildId: context.root.guildId,
-            channelId: context.root.message.channel.id,
-            userId: context.root.message.author.id,
+            channelId: context.root.channelId,
+            userId: context.root.userId,
             searchText: searchText,
             source: options?.noErrors !== true && context.local.noLookupErrors !== true
                 ? `${context.root.isCC ? 'custom command' : 'tag'} \`${context.root.tagName}\``

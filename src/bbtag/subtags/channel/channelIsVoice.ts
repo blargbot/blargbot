@@ -40,7 +40,7 @@ export class ChannelIsVoiceSubtag extends CompiledSubtag {
     }
 
     public async currentChannel(context: BBTagContext): Promise<boolean> {
-        return channelTypes.has(await this.#features.getChannelType(context.root.guildId, context.local.message.channel.id));
+        return channelTypes.has(await this.#features.getChannelType(context.root.guildId, context.local.channelId));
     }
 
     public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<boolean> {

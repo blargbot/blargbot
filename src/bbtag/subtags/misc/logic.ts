@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidOperatorError, NotABooleanError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToBoolean } from '../../utils/converters.js';
 import type { LogicOperator } from '../../utils/index.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 
@@ -43,7 +42,7 @@ export class LogicSubtag extends CompiledSubtag {
 
         const values = args;
         const parsed = values.map((value) => {
-            const parsed = parse.boolean(value);
+            const parsed = convertToBoolean(value);
             if (parsed === undefined)
                 throw new NotABooleanError(value);
             return parsed;

@@ -3,6 +3,7 @@ import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, UserNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
 import type { ApiResult } from '../types.js';
 import { UserIdSubtag } from './userId.js';
 
@@ -49,7 +50,7 @@ export class UserSetNickSubtag extends CompiledSubtag {
             guildId: context.root.guildId,
             targetId,
             nickname: nick,
-            auditReason: context.auditReason()
+            auditReason: await ReasonSubtag.get(context)
         });
 
         if (!result.success)

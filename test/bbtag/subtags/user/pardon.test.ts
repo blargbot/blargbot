@@ -27,7 +27,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(0);
             }
@@ -40,7 +40,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(5);
             }
@@ -53,7 +53,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(3);
             }
@@ -66,7 +66,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Pardon' })))
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(7);
             }
@@ -79,7 +79,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 6, reason: 'Tag Pardon' })))
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 6, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(26);
             }
@@ -92,7 +92,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 9, reason: 'Tag Pardon' })))
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 9, reason: 'Tag Pardon' })))
                     .mustHappen(1)
                     .resolves(0);
             }
@@ -105,7 +105,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'My custom reason' })))
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'My custom reason' })))
                     .mustHappen(1)
                     .resolves(16);
             }
@@ -118,7 +118,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 6, reason: 'My custom reason' })))
+                features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 6, reason: 'My custom reason' })))
                     .mustHappen(1)
                     .resolves(6);
             }

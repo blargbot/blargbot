@@ -23,7 +23,7 @@ export class IsUserBoostingSubtag extends CompiledSubtag {
                     exampleOut: tag.target.exampleOut,
                     returns: 'boolean',
 
-                    execute: (ctx) => this.isUserBoosting(ctx, ctx.local.message.author.id)
+                    execute: (ctx) => this.isUserBoosting(ctx, ctx.local.userId)
                 },
                 {
                     parameters: ['user', 'quiet?'],

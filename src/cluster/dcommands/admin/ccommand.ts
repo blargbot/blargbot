@@ -165,17 +165,21 @@ export class CustomCommandCommand extends GuildCommand {
         input: string,
         debug: boolean
     ): Promise<CommandResult> {
+        const message = context.message;
         const result = await context.bbtag.execute(content, {
-            message: context.message,
+            messageId: message.id,
+            channelId: message.channel.id,
+            guildId: message.channel.guild.id,
+            userId: message.author.id,
             tagName: 'test',
             input: input,
             flagDefinitions: [],
             silent: false,
             isCC: true,
             tagVars: false,
-            limit: new limits.CustomCommandLimit(context.message.channel.guild),
+            limit: new limits.CustomCommandLimit(context.message.channel.guild.memberCount),
             author: context.author.id,
-            authorizer: undefined,
+            authorizer: context.author.id,
             prefix: context.prefix,
             cooldown: 0
         });
@@ -207,8 +211,12 @@ export class CustomCommandCommand extends GuildCommand {
         if (guard.isGuildImportedCommandTag(match))
             return cmd.errors.isAlias({ commandName, tagName: match.alias });
 
+        const message = context.message;
         const result = await context.bbtag.execute(match.content, {
-            message: context.message,
+            messageId: message.id,
+            channelId: message.channel.id,
+            guildId: message.channel.guild.id,
+            userId: message.author.id,
             tagName: match.name,
             input: input ?? '',
             flagDefinitions: match.flags ?? [],
@@ -216,9 +224,9 @@ export class CustomCommandCommand extends GuildCommand {
             silent: false,
             isCC: true,
             tagVars: false,
-            limit: new limits.CustomCommandLimit(context.message.channel.guild),
+            limit: new limits.CustomCommandLimit(context.message.channel.guild.memberCount),
             author: match.author ?? undefined,
-            authorizer: match.authorizer ?? undefined,
+            authorizer: match.authorizer ?? match.author ?? message.channel.guild.ownerID,
             prefix: context.prefix
         });
 

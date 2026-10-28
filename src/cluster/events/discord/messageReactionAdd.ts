@@ -1,5 +1,6 @@
 import type { Cluster } from '@blargbot/cluster';
-import { DiscordEventService, Emote } from '@blargbot/core';
+import { DiscordEventService } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
 import * as eris from 'eris';
 
 export class DiscordMessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
@@ -14,7 +15,16 @@ export class DiscordMessageReactionAddHandler extends DiscordEventService<'messa
                 return;
 
             await this.cluster.autoresponses.handleWhitelistApproval(_message, emoji, _user);
-            this.cluster.awaiter.reactions.push({ message: _message, user: _user, reaction: Emote.create(emoji) });
+            this.cluster.awaiter.reactions.push({
+                messageId: _message.id,
+                authorId: _message.author.id,
+                channelId: _message.channel.id,
+                guildId: 'guild' in _message.channel
+                    ? _message.channel.guild.id
+                    : undefined,
+                reactorId: _user.id,
+                reaction: new Emote(emoji.name, emoji.id === null ? undefined : BigInt(emoji.id), emoji.animated)
+            });
         });
     }
 

@@ -25,13 +25,13 @@ await runSubtagTests({
                 {
                     expected: '[]',
                     setup(channelId, ctx) {
-                        features.setup(m => m.listChannels(ctx.guild.id, channelId)).resolves([]).mustHappen(1);
+                        features.setup(m => m.listChannels(ctx.guildId, channelId)).resolves([]).mustHappen(1);
                     }
                 },
                 {
                     expected: '["2398462398472","23098475928447"]',
                     setup(channelId, ctx) {
-                        features.setup(m => m.listChannels(ctx.guild.id, channelId)).resolves(['2398462398472', '23098475928447']).mustHappen(1);
+                        features.setup(m => m.listChannels(ctx.guildId, channelId)).resolves(['2398462398472', '23098475928447']).mustHappen(1);
                     }
                 }
             ]
@@ -40,7 +40,7 @@ await runSubtagTests({
             code: '{channels}',
             expected: '["23489762384769837","342789565384956435"]',
             setup(ctx) {
-                features.setup(m => m.listChannels(ctx.guild.id)).resolves(['23489762384769837', '342789565384956435']).mustHappen(1);
+                features.setup(m => m.listChannels(ctx.guildId)).resolves(['23489762384769837', '342789565384956435']).mustHappen(1);
             }
         }
     ]

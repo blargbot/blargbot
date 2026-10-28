@@ -43,10 +43,10 @@ export class ChannelPositionSubtag extends CompiledSubtag {
     }
 
     public async currentChannel(context: BBTagContext): Promise<number> {
-        const result = await this.#features.getChannelPosition(context.root.guildId, context.local.message.channel.id)
-            ?? new ChannelNotFoundError(context.local.message.channel.id).throw();
+        const result = await this.#features.getChannelPosition(context.root.guildId, context.local.channelId)
+            ?? new ChannelNotFoundError(context.local.channelId).throw();
         if (result === 'thread')
-            this.#throwIsThread(context.local.message.channel.id);
+            this.#throwIsThread(context.local.channelId);
         return result;
     }
 
@@ -54,7 +54,7 @@ export class ChannelPositionSubtag extends CompiledSubtag {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: quiet })
             ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
         const result = await this.#features.getChannelPosition(context.root.guildId, channelId)
-            ?? new ChannelNotFoundError(context.local.message.channel.id).withDisplay(quiet ? '' : undefined).throw();
+            ?? new ChannelNotFoundError(context.local.channelId).withDisplay(quiet ? '' : undefined).throw();
         if (result === 'thread')
             this.#throwIsThread(channelId);
         return result;

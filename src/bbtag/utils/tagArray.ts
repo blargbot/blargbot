@@ -1,9 +1,10 @@
-import { parse, zodStringToJson } from '@blargbot/core';
+import { zodStringToJson } from '@blargbot/core';
 import { Iterable } from '@blargbot/util';
 import z from 'zod';
 
 import type { BBTagArray } from '../types.js';
 import type { Variables } from '../Variables.js';
+import { convertToInteger } from './converters.js';
 
 export const tagArray = Object.freeze({
     serialize(array: JArray | BBTagArray, varName?: string): string {
@@ -26,8 +27,8 @@ export const tagArray = Object.freeze({
             value = value.replace(
                 /([[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
                 (_, ...[before, from, to, after]: string[]) => {
-                    const start = parse.int(from) ?? NaN;
-                    const end = parse.int(to) ?? NaN;
+                    const start = convertToInteger(from) ?? NaN;
+                    const end = convertToInteger(to) ?? NaN;
                     return before + Iterable.range(start, end - start).take(200).toArray().join(',') + after;
                 }
             );

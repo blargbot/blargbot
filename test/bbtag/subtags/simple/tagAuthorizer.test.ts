@@ -10,12 +10,12 @@ await runSubtagTests({
         {
             code: '{tagauthorizer}',
             expected: '1234567',
-            setup(ctx) { ctx.input.authorizer = '1234567'; }
+            setup(ctx) { ctx.authorizerId = '1234567'; }
         },
         {
             code: '{ccauthorizer}',
             expected: 'abcdefg',
-            setup(ctx) { ctx.input.authorizer = 'abcdefg'; }
+            setup(ctx) { ctx.authorizerId = 'abcdefg'; }
         }
     ]
 });

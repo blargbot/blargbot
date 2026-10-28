@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag';
 import type { ListMessageReactionsFeature, ListMessageReactionUsersFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, ReactionListSubtag } from '@blargbot/bbtag/subtags';
-import { Emote } from '@blargbot/core';
+import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -28,7 +28,7 @@ await runSubtagTests({
                 { error: new MessageNotFoundError('342756834937659745634', '') }
             ],
             setup(ctx) {
-                ctx.channels.command.id = ctx.message.channel_id = '342756834937659745634';
+                ctx.channelId = ctx.channelId = '342756834937659745634';
             }
         },
         ...createGetMessagePropTestCases({
@@ -53,8 +53,8 @@ await runSubtagTests({
                     setup(getProp) {
                         getProp.resolves([
                             new Emote('🤔'),
-                            new Emote('notlikecat', '280110565161041921', false),
-                            new Emote('blobdance', '636729199574515732', true)
+                            new Emote('notlikecat', 280110565161041921n, false),
+                            new Emote('blobdance', 636729199574515732n, true)
                         ]).mustHappen(1);
                     }
                 }
@@ -131,7 +131,7 @@ await runSubtagTests({
                                 userIds: []
                             },
                             {
-                                emote: new Emote('notlikecat', '280110565161041921'),
+                                emote: new Emote('notlikecat', 280110565161041921n),
                                 userIds: []
                             }
                         ];
@@ -152,7 +152,7 @@ await runSubtagTests({
                                 userIds: ['23098764238493489238', '32847623493687578962']
                             },
                             {
-                                emote: new Emote('notlikecat', '280110565161041921'),
+                                emote: new Emote('notlikecat', 280110565161041921n),
                                 userIds: ['23098764238493489238', '29874394027843984987']
                             }
                         ];
@@ -186,7 +186,7 @@ await runSubtagTests({
                                 userIds: []
                             },
                             {
-                                emote: new Emote('notlikecat', '280110565161041921'),
+                                emote: new Emote('notlikecat', 280110565161041921n),
                                 userIds: []
                             }
                         ];
@@ -207,7 +207,7 @@ await runSubtagTests({
                                 userIds: ['23098764238493489238', '32847623493687578962']
                             },
                             {
-                                emote: new Emote('notlikecat', '280110565161041921'),
+                                emote: new Emote('notlikecat', 280110565161041921n),
                                 userIds: ['23098764238493489238', '29874394027843984987']
                             }
                         ];
@@ -229,10 +229,10 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                features.setup(m => m.listMessageReactions(ctx.channels.command.id, '92384982642323432343'))
+                features.setup(m => m.listMessageReactions(ctx.channelId, '92384982642323432343'))
                     .resolves([])
                     .mustHappen(1);
             }
@@ -244,13 +244,13 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
             ],
             postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channels.command.id, $({ noErrors: true, noLookup: true })))
-                    .resolves(ctx.channels.command.id)
+                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
                     .mustHappen(1);
-                features.setup(m => m.listMessageReactions(ctx.channels.command.id, '92384982642323432343'))
+                features.setup(m => m.listMessageReactions(ctx.channelId, '92384982642323432343'))
                     .resolves([])
                     .mustHappen(1);
-                features.setup((m, $) => m.listMessageReactionUsers(ctx.channels.command.id, '92384982642323432343', $(new Emote('fakeemote', '192612896213677963'))))
+                features.setup((m, $) => m.listMessageReactionUsers(ctx.channelId, '92384982642323432343', $(new Emote('fakeemote', 192612896213677963n))))
                     .resolves(undefined)
                     .mustHappen(1);
             }

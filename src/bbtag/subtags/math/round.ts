@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { NotANumberError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToNumber } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.round;
@@ -26,7 +25,7 @@ export class RoundSubtag extends CompiledSubtag {
     }
 
     public round(value: string): number {
-        const number = parse.float(value);
+        const number = convertToNumber(value);
         if (number === undefined)
             throw new NotANumberError(value);
         return Math.round(number);

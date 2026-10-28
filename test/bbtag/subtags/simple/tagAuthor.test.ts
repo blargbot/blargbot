@@ -10,12 +10,12 @@ await runSubtagTests({
         {
             code: '{tagauthor}',
             expected: '1234567',
-            setup(ctx) { ctx.input.author = '1234567'; }
+            setup(ctx) { ctx.authorId = '1234567'; }
         },
         {
             code: '{ccauthor}',
             expected: 'abcdefg',
-            setup(ctx) { ctx.input.author = 'abcdefg'; }
+            setup(ctx) { ctx.authorId = 'abcdefg'; }
         }
     ]
 });

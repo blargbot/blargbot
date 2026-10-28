@@ -25,7 +25,7 @@ await runSubtagTests({
                 {
                     expected: 'cooldood69',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberNickname(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberNickname(ctx.guildId, userId))
                             .resolves('cooldood69')
                             .mustHappen(1);
                     }
@@ -33,7 +33,7 @@ await runSubtagTests({
                 {
                     expected: 'aaaaaaaa',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberNickname(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberNickname(ctx.guildId, userId))
                             .resolves(undefined)
                             .mustHappen(1);
                         features.setup(m => m.getUserNickname(userId))
@@ -45,7 +45,7 @@ await runSubtagTests({
                     queryString: '123456789098765432',
                     expected: 'nice',
                     setup(userId, ctx) {
-                        features.setup(m => m.getMemberNickname(ctx.guild.id, userId))
+                        features.setup(m => m.getMemberNickname(ctx.guildId, userId))
                             .resolves(undefined)
                             .mustHappen(1);
                         features.setup(m => m.getUserNickname(userId))

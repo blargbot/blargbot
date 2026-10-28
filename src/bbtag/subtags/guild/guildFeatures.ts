@@ -5,8 +5,14 @@ import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.guildFeatures;
 
+export interface ListGuildFeaturesFeature {
+    listGuildFeatures(guildId: string): Promise<readonly string[] | undefined>;
+}
+
+type Features = ListGuildFeaturesFeature;
 export class GuildFeaturesSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: ListGuildFeaturesFeature;
+    public constructor(features: Features) {
         super({
             name: 'guildFeatures',
             category: SubtagType.GUILD,
@@ -22,11 +28,10 @@ export class GuildFeaturesSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
-    public getGuildFeatures(
-        context: BBTagContext
-    ): string[] {
-        return context.root.message.channel.guild.features;
+    public async getGuildFeatures(context: BBTagContext): Promise<readonly string[]> {
+        return await this.#features.listGuildFeatures(context.root.guildId) ?? [];
     }
 }

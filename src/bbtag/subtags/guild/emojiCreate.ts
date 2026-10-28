@@ -1,23 +1,31 @@
-import { guard, parse } from '@blargbot/core';
-import { asBuffer } from '@blargbot/util';
-import * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import type { HttpFetchFeature, VariablesFeature } from '../types.js';
+import { cleanUrl, isUrl, readDataUrl } from '../../utils/url.js';
+import { ReasonSubtag } from '../bot/reason.js';
+import { RoleIdSubtag } from '../role/roleId.js';
+import type { ApiResult, GetMemberPermissionsFeature, HttpFetchFeature, VariablesFeature } from '../types.js';
 
 const tag = templates.subtags.emojiCreate;
 
-interface EmojiCreateOptions {
-    name: string;
-    image: string;
-    roles: string[];
+export type CreateEmojiResult = ApiResult<{ emojiId: string; }, { cause: string; }>;
+
+export interface CreateEmojiOptions {
+    readonly guildId: string;
+    readonly name: string;
+    readonly image: Uint8Array;
+    readonly contentType: string;
+    readonly roles: readonly string[];
+    readonly auditReason: string;
 }
 
-type Features = VariablesFeature & HttpFetchFeature;
+export interface CreateEmojiFeature {
+    createEmoji(options: CreateEmojiOptions): Promise<CreateEmojiResult>;
+}
+
+type Features = VariablesFeature & HttpFetchFeature & CreateEmojiFeature & GetMemberPermissionsFeature;
 export class EmojiCreateSubtag extends CompiledSubtag {
     readonly #features: Features;
     public constructor(features: Features) {
@@ -44,25 +52,26 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         imageStr: string,
         rolesStr: string
     ): Promise<string> {
-        if (!context.hasPermission('CREATE_GUILD_EXPRESSIONS'))
+        const permissions = await this.#features.getMemberPermissions(context.root.guildId, context.root.authorizerId);
+        if (!permissions.hasAny('ADMINISTRATOR', 'CREATE_GUILD_EXPRESSIONS'))
             throw new BBTagRuntimeError('Author cannot create emojis');
 
-        const options: EmojiCreateOptions = {
-            name,
-            image: imageStr,
-            roles: []
-        };
-
-        if (options.name === '')
+        if (name === '')
             throw new BBTagRuntimeError('Name was not provided');
 
-        const image: string = parse.url(options.image);
-        if (guard.isUrl(image)) {
-            const res = await this.#features.fetch(image);
-            const contentType = res.headers.get('content-type');
-            options.image = `data:${contentType ?? ''};base64,${asBuffer(await res.bytes()).toString('base64')}`;
-        } else if (!image.startsWith('data:')) {
-            throw new BBTagRuntimeError('Image was not a buffer or a URL');
+        let image;
+        let contentType;
+        const roles = [];
+        imageStr = cleanUrl(imageStr);
+        if (isUrl(imageStr)) {
+            const res = await this.#features.fetch(imageStr);
+            contentType = res.headers.get('content-type');
+            image = await res.bytes();
+        } else {
+            const dataUri = readDataUrl(imageStr);
+            if (dataUri === undefined)
+                throw new BBTagRuntimeError('Image was not a buffer or a URL');
+            ({ contentType, bytes: image } = dataUri);
         }
 
         const variables = this.#features.variables.forContext(context);
@@ -71,22 +80,23 @@ export class EmojiCreateSubtag extends CompiledSubtag {
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
                 // eslint-disable-next-line @typescript-eslint/no-base-to-string
-                const role = await context.queryRole(roleQuery?.toString() ?? '', { noLookup: true });
-                if (role !== undefined) {
-                    options.roles.push(role.id);
-                }
+                const roleId = await RoleIdSubtag.query(context, roleQuery?.toString() ?? '', { noLookup: true });
+                if (roleId !== undefined)
+                    roles.push(roleId);
             }
         }
 
-        try {
-            const emoji = await context.root.message.channel.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, context.auditReason());
-            return emoji.id;
-        } catch (err: unknown) {
-            if (!(err instanceof eris.DiscordRESTError))
-                throw err;
+        const result = await this.#features.createEmoji({
+            guildId: context.root.guildId,
+            name,
+            image,
+            contentType: contentType ?? 'application/octet-stream',
+            roles,
+            auditReason: await ReasonSubtag.get(context)
+        });
+        if (result.success)
+            return result.emojiId;
 
-            const parts = err.message.split('\n').map(m => m.trim());
-            throw new BBTagRuntimeError(`Failed to create emoji: ${parts[1] ?? parts[0]}`);
-        }
+        throw new BBTagRuntimeError(`Failed to create emoji: ${result.cause}`, result.reason);
     }
 }

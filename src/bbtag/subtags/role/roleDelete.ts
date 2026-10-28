@@ -1,15 +1,29 @@
-import * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, RoleNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
-import { SubtagType } from '../../utils/index.js';
+import { getEditRoleDetails, SubtagType } from '../../utils/index.js';
+import { ReasonSubtag } from '../bot/reason.js';
+import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
+import { RoleIdSubtag } from './roleId.js';
+import type { ListGuildRolesFeature, ListMemberRolesFeature } from './roles.js';
 
 const tag = templates.subtags.roleDelete;
 
+export interface DeleteRoleOptions {
+    readonly guildId: string;
+    readonly roleId: string;
+    readonly auditReason: string;
+}
+
+export interface DeleteRoleFeature {
+    deleteRole(options: DeleteRoleOptions): Promise<ApiResult>;
+}
+
+type Features = DeleteRoleFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature;
 export class RoleDeleteSubtag extends CompiledSubtag {
-    public constructor() {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'roleDelete',
             category: SubtagType.ROLE,
@@ -24,37 +38,31 @@ export class RoleDeleteSubtag extends CompiledSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
     public async deleteRole(context: BBTagContext, roleStr: string, quiet: boolean): Promise<void> {
-        const topRole = context.roleEditPosition();
-        if (topRole <= 0)
+        const { guildId, botId, authorizerId } = context.root;
+        const { topRoleIndex, roleIndexMap } = await getEditRoleDetails(guildId, [botId, authorizerId], this.#features);
+        if (topRoleIndex <= 0)
             throw new BBTagRuntimeError('Author cannot delete roles');
 
         quiet ||= context.local.quiet ?? false;
-        const role = await context.queryRole(roleStr, {
-            noErrors: quiet,
-            noLookup: quiet
-        });
+        const roleId = await RoleIdSubtag.query(context, roleStr, { noErrors: quiet, noLookup: quiet })
+            ?? new RoleNotFoundError(roleStr).withDisplay(quiet ? '' : undefined).throw();
 
-        if (role === undefined) {
-            throw new RoleNotFoundError(roleStr)
-                .withDisplay(quiet ? '' : undefined);
-        }
-
-        if (role.position >= topRole)
+        if ((roleIndexMap.get(roleId) ?? 0) >= topRoleIndex)
             throw new BBTagRuntimeError('Role above author');
 
-        try {
-            await role.delete(context.auditReason());
-        } catch (err: unknown) {
-            if (!(err instanceof eris.DiscordRESTError))
-                throw err;
+        const result = await this.#features.deleteRole({
+            guildId,
+            roleId,
+            auditReason: await ReasonSubtag.get(context)
+        });
+        if (result.success)
+            return;
 
-            if (quiet)
-                return;
-
-            throw new BBTagRuntimeError('Failed to delete role: no perms', err.message);
-        }
+        throw new BBTagRuntimeError('Failed to delete role: no perms', result.reason)
+            .withDisplay(quiet ? '' : undefined);
     }
 }

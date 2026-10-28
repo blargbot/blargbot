@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag';
 import type { UnbanUserFeature } from '@blargbot/bbtag/subtags';
-import { UnbanSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { ReasonSubtag, UnbanSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
@@ -8,15 +8,20 @@ import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<UnbanUserFeature>({ id: 'features' });
 const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
 
 await runSubtagTests({
     subtag: new UnbanSubtag(features.instance),
     argCountBounds: { min: 1, max: 3 },
     names: ['unban'],
-    otherSubtags: [userIdSubtag.instance],
+    otherSubtags: [userIdSubtag.instance, reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
         ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
+    },
+    postSetup(bbctx) {
+        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
     },
     cases: [
         {
@@ -41,11 +46,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.unbanUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'Tag Unban'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Unban'
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -64,11 +69,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.unbanUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'Tag Unban'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Unban'
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'bot' });
@@ -84,11 +89,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.unbanUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'Tag Unban'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Unban'
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'notBanned' });
@@ -107,11 +112,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.unbanUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'Tag Unban'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Unban'
                 })))
                     .mustHappen(1)
                     .resolves({ success: false, cause: 'authorizer' });
@@ -127,11 +132,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.unbanUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'My reason here'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'My reason here'
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -147,11 +152,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.unbanUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.authorizer.id,
-                    reason: 'My reason here'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.authorizerId,
+                    auditReason: 'My reason here'
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });
@@ -167,11 +172,11 @@ await runSubtagTests({
                     .mustHappen(1);
 
                 features.setup((m, $) => m.unbanUser($({
-                    guildId: ctx.guild.id,
+                    guildId: ctx.guildId,
                     targetId: userId,
-                    moderatorId: ctx.users.command.id,
-                    authorizerId: ctx.users.command.id,
-                    reason: 'My reason here'
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'My reason here'
                 })))
                     .mustHappen(1)
                     .resolves({ success: true });

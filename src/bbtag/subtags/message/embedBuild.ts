@@ -1,11 +1,13 @@
 import type { MessageComponent } from '@blargbot/core';
 import { discord, guard, parse } from '@blargbot/core';
-import type * as eris from 'eris';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidEmbedError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import type { Embed, EmbedAuthor, EmbedField, EmbedFooter } from '../../types.js';
+import { convertToBoolean, convertToColor } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
+import { isUrl } from '../../utils/url.js';
 
 const tag = templates.subtags.embedBuild;
 
@@ -54,14 +56,14 @@ export class EmbedBuildSubtag extends CompiledSubtag {
                     throw new InvalidEmbedError('Field missing name', `Field at index ${i}`);
             }
         }
-        if (!guard.checkEmbedSize([<eris.EmbedOptions>embed]))
+        if (!guard.checkEmbedSize([embed as Embed]))
             throw new InvalidEmbedError('Embed too long', JSON.stringify(embed));
         return embed as JObject;
     }
 
     #setField(embed: EmbedBuildOptions, key: string, value: string): void {
         const id = key.toLowerCase();
-        if (!guard.hasProperty(fields, id))
+        if (!Object.hasOwn(fields, id))
             throw new InvalidEmbedError(`Unknown key '${key}'`);
         fields[id].set(embed, value.trim());
     }
@@ -69,10 +71,10 @@ export class EmbedBuildSubtag extends CompiledSubtag {
 
 type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 // custom message for fields missing values/names
-type EmbedBuildOptions = Overwrite<eris.EmbedOptions, {
-    fields?: Array<Partial<eris.EmbedField>>;
-    author?: Partial<eris.EmbedAuthor>;
-    footer?: Partial<eris.EmbedFooter>;
+type EmbedBuildOptions = Overwrite<Embed, {
+    fields?: Array<Partial<EmbedField>>;
+    author?: Partial<EmbedAuthor>;
+    footer?: Partial<EmbedFooter>;
 }>
 interface EmbedFieldDetails {
     readonly description?: string;
@@ -85,7 +87,7 @@ function validateLength(value: { length: number; } | undefined, limitKey: Messag
 }
 
 function validateUrl(value: string, errorText: string): void {
-    if (!guard.isUrl(value))
+    if (!isUrl(value))
         throw new InvalidEmbedError(errorText, value);
 }
 
@@ -96,7 +98,7 @@ function parseOrError<T>(value: string, parse: (value: string) => T | undefined,
     return result;
 }
 
-function getCurrentField(embed: EmbedBuildOptions, errorText: string): Partial<eris.EmbedField> {
+function getCurrentField(embed: EmbedBuildOptions, errorText: string): Partial<EmbedField> {
     if (embed.fields === undefined || embed.fields.length === 0)
         throw new InvalidEmbedError(errorText);
     return embed.fields[embed.fields.length - 1];
@@ -180,7 +182,7 @@ const fieldSetters: Record<typeof fieldKeys[number], EmbedFieldDetails> = {
         embed.author.icon_url = value;
     },
     'color'(embed, value) {
-        const color = parseOrError(value, parse.color, 'Invalid color');
+        const color = parseOrError(value, convertToColor, 'Invalid color');
         embed.color = color;
     },
     'timestamp'(embed, value) {
@@ -189,7 +191,7 @@ const fieldSetters: Record<typeof fieldKeys[number], EmbedFieldDetails> = {
     },
     'fields.inline'(embed, value) {
         const field = getCurrentField(embed, 'Field name not specified');
-        const inline = parseOrError(value, parse.boolean, 'Inline must be a boolean');
+        const inline = parseOrError(value, convertToBoolean, 'Inline must be a boolean');
         field.inline = inline;
     }
 };

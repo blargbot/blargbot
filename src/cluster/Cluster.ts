@@ -191,7 +191,7 @@ export class Cluster extends BaseClient {
         );
         const subtagArgs = new ClusterSubtagConstructorArgs(this);
         this.bbtag = new BBTagEngine({
-            discord: this.discord,
+            botId: this.discord.user.id,
             logger: this.logger,
             util: new ClusterBBTagUtilities(this),
             subtags: Object.values(subtags).map(subtag => new subtag(subtagArgs)),

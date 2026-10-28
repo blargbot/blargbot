@@ -25,6 +25,6 @@ export class TagAuthorizerSubtag extends CompiledSubtag {
     }
 
     public getAuthorizer(context: BBTagContext): string {
-        return context.root.authorizerId ?? context.root.guildOwnerId;
+        return context.root.authorizerId;
     }
 }

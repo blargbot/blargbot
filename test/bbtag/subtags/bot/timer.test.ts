@@ -19,10 +19,7 @@ await runSubtagTests({
         ctx.adoptMock(features);
         ctx.adoptMock(variablesProvider);
         ctx.adoptMock(variables);
-        test.mock.timers.enable({
-            apis: ['Date'],
-            now: new Date(now.epochMilliseconds)
-        });
+        test.mock.method(Temporal.Now, 'instant', () => now);
         ctx.dependencies.setup(m => m.variables).returns(variablesProvider.instance);
     },
     postSetup(bbctx) {
@@ -33,74 +30,24 @@ await runSubtagTests({
             code: '{timer;abc{fail};10s}',
             expected: '',
             setup(ctx) {
-                ctx.message.id = '1560411548978495584';
-                ctx.message.timestamp = '1792101504321';
-                ctx.message.content = 'cool content';
-                ctx.message.channel_id = '1560411548978495582';
-                ctx.message.author.id = '1560411548978495579';
-                ctx.channels.command.id = '1560411548978495582';
-                ctx.users.command.id = '1560411548978495579';
-                ctx.members.command.roles = ['1560411548978495574'];
-                ctx.users.authorizer.id = '1560411548978495580';
-                ctx.input.tagName = 'testTag_1560411548978495585';
-                ctx.input.author = '1560411548978495579';
-                ctx.input.authorizer = '1560411548978495580';
                 ctx.limit.setup(m => m.serialize()).returns({ type: 'mock', rules: {} }).mustHappen(1);
                 variables.setup(m => m.list).returns([]).mustHappen(1);
                 const target = now.add({ seconds: 10 });
                 features.setup((m, $) => m.scheduleBBTag($({
                     msg: {
-                        id: '1560411548978495584',
-                        timestamp: 1792101504321,
-                        content: 'cool content',
+                        id: ctx.messageId,
+                        timestamp: 0,
+                        content: '',
                         channel: {
-                            id: '1560411548978495582',
+                            id: ctx.channelId,
                             serialized: JSON.stringify({
-                                id: '1560411548978495582',
-                                createdAt: 1792101504321,
-                                type: 0,
-                                name: 'commands',
-                                nsfw: false,
-                                permissionOverwrites: {},
-                                position: 0,
-                                lastMessageID: null,
-                                lastPinTimestamp: null,
-                                messages: {},
-                                rateLimitPerUser: null,
-                                topic: 'Test channel!'
+                                id: ctx.channelId
                             })
                         },
                         member: {
-                            id: '1560411548978495579',
+                            id: ctx.userId,
                             serialized: JSON.stringify({
-                                id: '1560411548978495579',
-                                createdAt: 1792101504321,
-                                joinedAt: 0,
-                                nick: null,
-                                roles: ['1560411548978495574'],
-                                user: {
-                                    id: '1560411548978495579',
-                                    createdAt: 1792101504321,
-                                    avatar: null,
-                                    bot: false,
-                                    discriminator: '0000',
-                                    system: false,
-                                    username: 'Command User'
-                                },
-                                voiceState: {
-                                    id: '1560411548978495579',
-                                    createdAt: 1792101504321,
-                                    channelID: null,
-                                    deaf: false,
-                                    mute: false,
-                                    requestToSpeakTimestamp: null,
-                                    selfDeaf: false,
-                                    selfMute: false,
-                                    selfStream: false,
-                                    selfVideo: false,
-                                    sessionID: null,
-                                    suppress: false
-                                }
+                                id: ctx.userId
                             })
                         },
                         attachments: [],
@@ -126,7 +73,7 @@ await runSubtagTests({
                             roles: [],
                             users: []
                         },
-                        ownedMsgs: ['1560411548978495584'],
+                        ownedMsgs: [ctx.messageId],
                         query: {
                             count: 0,
                             channel: {},
@@ -137,11 +84,11 @@ await runSubtagTests({
                     },
                     prefix: undefined,
                     flags: [],
-                    tagName: 'testTag_1560411548978495585',
-                    rootTagName: 'testTag_1560411548978495585',
+                    tagName: ctx.tagName,
+                    rootTagName: ctx.tagName,
                     tagVars: true,
-                    author: '1560411548978495579',
-                    authorizer: '1560411548978495580',
+                    author: ctx.authorId,
+                    authorizer: ctx.authorizerId,
                     limit: { type: 'mock', rules: {} },
                     tempVars: {}
                 }), 'abc{fail}', $(target))).resolves().mustHappen(1);

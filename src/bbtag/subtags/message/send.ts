@@ -1,10 +1,9 @@
-import { parse } from '@blargbot/core';
-import type * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import type { Embed, FileContent } from '../../types.js';
+import { convertToEmbed } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 import { ChannelIdSubtag } from '../channel/channelId.js';
 import { ChannelIsNsfwSubtag } from '../channel/channelIsNsfw.js';
@@ -15,8 +14,8 @@ const tag = templates.subtags.send;
 
 export interface SendPayload {
     readonly content?: string;
-    readonly embeds?: eris.EmbedOptions[];
-    readonly files?: eris.FileContent[];
+    readonly embeds?: Embed[];
+    readonly files?: FileContent[];
     readonly allowedMentions?: {
         readonly everyone: boolean;
         readonly users: ReadonlySet<string>;
@@ -48,7 +47,12 @@ export class SendSubtag extends CompiledSubtag {
                     exampleCode: tag.full.exampleCode,
                     exampleOut: tag.full.exampleOut,
                     returns: 'id',
-                    execute: (ctx, [channel, message, embed, fileContent, fileName]) => this.send(ctx, channel.value, message.value, parse.embed(embed.value), [{ file: fileContent.value, name: fileName.value }])
+                    execute: (ctx, [channel, message, embed, fileContent, fileName]) => this.send(ctx, channel.value, message.value, convertToEmbed(embed.value), [{
+                        file: fileContent.value.startsWith('buffer:')
+                            ? Buffer.from(fileContent.value.slice(7), 'base64')
+                            : Buffer.from(fileContent.value),
+                        name: fileName.value
+                    }])
                 },
                 {
                     parameters: ['channel', 'message', 'embed'],
@@ -56,7 +60,7 @@ export class SendSubtag extends CompiledSubtag {
                     exampleCode: tag.textAndEmbed.exampleCode,
                     exampleOut: tag.textAndEmbed.exampleOut,
                     returns: 'id',
-                    execute: (ctx, [channel, message, embed]) => this.send(ctx, channel.value, message.value, parse.embed(embed.value))
+                    execute: (ctx, [channel, message, embed]) => this.send(ctx, channel.value, message.value, convertToEmbed(embed.value))
                 },
                 {
                     parameters: ['channel', 'content'],
@@ -71,7 +75,7 @@ export class SendSubtag extends CompiledSubtag {
         this.#features = features;
     }
 
-    public async send(context: BBTagContext, channelStr: string, message?: string, embeds?: eris.EmbedOptions[], files?: eris.FileContent[]): Promise<string> {
+    public async send(context: BBTagContext, channelStr: string, message?: string, embeds?: Embed[], files?: FileContent[]): Promise<string> {
         const channelId = await ChannelIdSubtag.query(context, channelStr, { noLookup: true })
             ?? new ChannelNotFoundError(channelStr).throw();
         if (!await ChannelIsTextSubtag.check(context, channelId))
@@ -82,11 +86,6 @@ export class SendSubtag extends CompiledSubtag {
             message = nsfw;
             embeds = undefined;
             files = undefined;
-        } else {
-            for (const file of files ?? []) {
-                if (typeof file.file === 'string' && file.file.startsWith('buffer:'))
-                    file.file = Buffer.from(file.file.slice(7), 'base64');
-            }
         }
 
         const sent = await this.#features.sendMessage(channelId, {
@@ -114,8 +113,8 @@ export class SendSubtag extends CompiledSubtag {
     }
 }
 
-function resolveContent(content: string): [string | undefined, eris.EmbedOptions[] | undefined] {
-    const embeds = parse.embed(content);
+function resolveContent(content: string): [string | undefined, Embed[] | undefined] {
+    const embeds = convertToEmbed(content);
     if (embeds === undefined || 'malformed' in embeds[0])
         return [content, undefined];
     return [undefined, embeds];

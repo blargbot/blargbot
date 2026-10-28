@@ -1,10 +1,9 @@
-import { guard, parse } from '@blargbot/core';
-import type * as eris from 'eris';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import type { Embed } from '../../types.js';
+import { convertToEmbed } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 import { ChannelIdSubtag } from '../channel/channelId.js';
 import type { ApiResult } from '../types.js';
@@ -17,7 +16,7 @@ export interface EditMessageOptions {
     channelId: string;
     messageId: string;
     content?: string;
-    embeds?: eris.EmbedOptions[];
+    embeds?: Embed[];
 }
 
 export type EditMessageResult = ApiResult<null, { cause: 'messageEmpty' | 'failed'; }>
@@ -50,7 +49,7 @@ export class EditSubtag extends CompiledSubtag {
                 {
                     parameters: ['messageId', 'text|embed'],
                     returns: 'nothing',
-                    execute: (ctx, [messageId, content]) => this.edit(ctx, ctx.local.message.channel.id, messageId.value, content.value)
+                    execute: (ctx, [messageId, content]) => this.edit(ctx, ctx.local.channelId, messageId.value, content.value)
                 },
                 {
                     parameters: ['messageId', 'text', 'embed'],
@@ -80,7 +79,7 @@ export class EditSubtag extends CompiledSubtag {
                             return await this.#editAssertedChannel(ctx, channelId, messageOrText.value, content.value);
 
                         //{edit;msg;text;embed}
-                        return await this.edit(ctx, ctx.local.message.channel.id, chanOrMessage.value, messageOrText.value, content.value);
+                        return await this.edit(ctx, ctx.local.channelId, chanOrMessage.value, messageOrText.value, content.value);
 
                     }
                 },
@@ -133,13 +132,13 @@ export class EditSubtag extends CompiledSubtag {
     ): Promise<void> {
 
         let content: string | undefined;
-        let embeds: eris.EmbedOptions[] | undefined;
+        let embeds: Embed[] | undefined;
         if (embedStr !== undefined) {
-            embeds = parse.embed(embedStr);
+            embeds = convertToEmbed(embedStr);
             content = contentStr;
         } else {
-            const parsedEmbed = parse.embed(contentStr);
-            if (parsedEmbed === undefined || parsedEmbed.some(e => guard.hasProperty(e, 'malformed'))) {
+            const parsedEmbed = convertToEmbed(contentStr);
+            if (parsedEmbed === undefined || parsedEmbed.some(e => Object.hasOwn(e, 'malformed'))) {
                 content = contentStr;
             } else {
                 embeds = parsedEmbed;

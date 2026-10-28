@@ -1,5 +1,6 @@
-import { compare as compareFn, guard, parse } from '@blargbot/core';
+import { compare } from '@blargbot/core';
 
+import { convertToString } from './converters.js';
 import { tagArray } from './tagArray.js';
 
 export type OrdinalOperator = '==' | '!=' | '>=' | '>' | '<=' | '<';
@@ -10,11 +11,11 @@ export type LogicOperator = '||' | '&&' | '!' | 'xor';
 export type AggregationOperator = '??';
 
 export function isOrdinalOperator(operator: string): operator is OrdinalOperator {
-    return guard.hasProperty(ordinalOperators, operator);
+    return Object.hasOwn(ordinalOperators, operator);
 }
 
 export function isStringOperator(operator: string): operator is StringOperator {
-    return guard.hasProperty(stringOperators, operator);
+    return Object.hasOwn(stringOperators, operator);
 }
 
 export function isComparisonOperator(operator: string): operator is ComparisonOperator {
@@ -22,11 +23,11 @@ export function isComparisonOperator(operator: string): operator is ComparisonOp
 }
 
 export function isNumericOperator(operator: string): operator is NumericOperator {
-    return guard.hasProperty(numericOperators, operator);
+    return Object.hasOwn(numericOperators, operator);
 }
 
 export function isLogicOperator(operator: string): operator is LogicOperator {
-    return guard.hasProperty(logicOperators, operator);
+    return Object.hasOwn(logicOperators, operator);
 }
 
 export function operate<T extends keyof typeof operators>(operator: T, ...args: Parameters<typeof operators[T]>): ReturnType<typeof operators[T]> {
@@ -34,12 +35,12 @@ export function operate<T extends keyof typeof operators>(operator: T, ...args: 
 }
 
 export const ordinalOperators: Readonly<Record<OrdinalOperator, (a: string, b: string) => boolean>> = {
-    '==': (a, b) => compareFn(a, b) === 0,
-    '!=': (a, b) => compareFn(a, b) !== 0,
-    '>=': (a, b) => compareFn(a, b) >= 0,
-    '>': (a, b) => compareFn(a, b) > 0,
-    '<=': (a, b) => compareFn(a, b) <= 0,
-    '<': (a, b) => compareFn(a, b) < 0
+    '==': (a, b) => compare(a, b) === 0,
+    '!=': (a, b) => compare(a, b) !== 0,
+    '>=': (a, b) => compare(a, b) >= 0,
+    '>': (a, b) => compare(a, b) > 0,
+    '<=': (a, b) => compare(a, b) <= 0,
+    '<': (a, b) => compare(a, b) < 0
 };
 
 export const stringOperators: Readonly<Record<StringOperator, (a: string, b: string) => boolean>> = {
@@ -104,10 +105,10 @@ export const operators = {
 } as const;
 //TODO bitwise
 
-function getStrArray(text: string): JArray | undefined {
+function getStrArray(text: string): string[] | undefined {
     const arr = tagArray.deserialize(text);
     if (arr !== undefined) {
-        return arr.v.map(v => parse.string(v));
+        return arr.v.map(convertToString);
     }
     return undefined;
 }

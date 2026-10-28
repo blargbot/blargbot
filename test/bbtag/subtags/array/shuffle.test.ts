@@ -30,7 +30,7 @@ await runSubtagTests({
             expected: '',
             retries: 1,
             setup(ctx) {
-                ctx.input.input = 'arg1 arg2 arg3 arg4';
+                ctx.input = 'arg1 arg2 arg3 arg4';
             },
             assert(bbctx) {
                 assert.notDeepEqual(bbctx.local.input.array, ['arg1', 'arg2', 'arg3', 'arg4']);

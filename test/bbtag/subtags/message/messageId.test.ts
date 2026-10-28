@@ -11,7 +11,7 @@ await runSubtagTests({
             code: '{messageid}',
             expected: '098765432212345678',
             setup(ctx) {
-                ctx.message.id = '098765432212345678';
+                ctx.messageId = '098765432212345678';
             }
         }
     ]

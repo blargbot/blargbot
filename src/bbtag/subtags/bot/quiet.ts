@@ -1,8 +1,7 @@
-import { parse } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { convertToBoolean } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.quiet;
@@ -26,6 +25,6 @@ export class QuietSubtag extends CompiledSubtag {
     }
 
     public setQuiet(context: BBTagContext, valueStr: string): void {
-        context.local.quiet = parse.boolean(valueStr);
+        context.local.quiet = convertToBoolean(valueStr);
     }
 }

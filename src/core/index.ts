@@ -2,7 +2,6 @@ export * as transformers from './transformers/index.js';
 export * from './utils/index.js';
 export * from './text.js';
 export * from './Cache.js';
-export * from './Emote.js';
 export * from './BaseClient.js';
 export * from './BaseUtilities.js';
 export * from './Binder.js';

@@ -42,7 +42,7 @@ export class ChannelNameSubtag extends CompiledSubtag {
     }
 
     public async currentChannel(context: BBTagContext): Promise<string> {
-        return await this.#features.getChannelName(context.root.guildId, context.local.message.channel.id) ?? 'unknown';
+        return await this.#features.getChannelName(context.root.guildId, context.local.channelId) ?? 'unknown';
     }
 
     public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string> {

@@ -28,7 +28,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(1);
             }
@@ -41,7 +41,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(7);
             }
@@ -54,7 +54,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(2);
             }
@@ -67,7 +67,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'Tag Warning' })))
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(5);
             }
@@ -80,7 +80,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 6, reason: 'Tag Warning' })))
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 6, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(29);
             }
@@ -93,7 +93,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 9, reason: 'Tag Warning' })))
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 9, reason: 'Tag Warning' })))
                     .mustHappen(1)
                     .resolves(9);
             }
@@ -106,7 +106,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 1, reason: 'My custom reason' })))
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'My custom reason' })))
                     .mustHappen(1)
                     .resolves(16);
             }
@@ -119,7 +119,7 @@ await runSubtagTests({
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
-                features.setup((m, $) => m.warnUser($({ guildId: ctx.guild.id, targetId: userId, moderatorId: ctx.users.command.id, count: 6, reason: 'My custom reason' })))
+                features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 6, reason: 'My custom reason' })))
                     .mustHappen(1)
                     .resolves(22);
             }

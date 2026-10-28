@@ -47,7 +47,7 @@ export class IsStaffSubtag extends CompiledSubtag {
     }
 
     public async isStaff(context: BBTagContext, userId?: string): Promise<boolean> {
-        userId ??= context.root.authorizer?.id;
+        userId ??= context.root.authorizerId;
         return userId !== undefined
             && await this.#cache.getOrInsertComputed(context, () => new Map())
                 .getOrInsertComputed(userId, id => this.#features.isUserStaff(context.root.guildId, id));

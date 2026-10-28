@@ -119,17 +119,21 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         }
 
         metrics.commandCounter.labels('custom', 'custom').inc();
+        const message = context.message;
         await context.cluster.bbtag.execute(details.content, {
-            message: context.message,
+            messageId: message.id,
+            channelId: message.channel.id,
+            guildId: message.channel.guild.id,
+            userId: message.author.id,
             tagName: context.commandName,
             input: context.argsString,
             flagDefinitions: details.flags ?? [],
             silent: false,
             isCC: true,
             tagVars: details.tagVars,
-            limit: new limits.CustomCommandLimit(context.channel.guild),
+            limit: new limits.CustomCommandLimit(context.channel.guild.memberCount),
             author: details.author ?? undefined,
-            authorizer: details.authorizer ?? undefined,
+            authorizer: details.authorizer ?? details.author ?? message.channel.guild.ownerID,
             prefix: context.prefix,
             cooldown: details.cooldown ?? 0
         });

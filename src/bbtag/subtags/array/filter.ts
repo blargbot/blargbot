@@ -1,10 +1,9 @@
-import { parse } from '@blargbot/core';
-
 import type { SubtagArgument } from '../../arguments/index.js';
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
 import { BBTagRuntimeState } from '../../types.js';
+import { convertToBoolean } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
 import type { VariablesFeature } from '../types.js';
 
@@ -38,7 +37,7 @@ export class FilterSubtag extends CompiledSubtag {
             for (const item of array) {
                 await context.root.limit.check(context, 'filter:loops');
                 await variables.set(varName, item);
-                if (parse.boolean((await code.execute()).trim()) === true)
+                if (convertToBoolean((await code.execute()).trim()) ?? false)
                     yield item;
 
                 if (context.state !== BBTagRuntimeState.RUNNING)
