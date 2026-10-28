@@ -10,7 +10,7 @@ export interface GetGuildIconFeature {
 }
 type Features = GetGuildIconFeature;
 export class GuildIconSubtag extends CompiledSubtag {
-    readonly #features: GetGuildIconFeature;
+    readonly #features: Features;
     public constructor(features: Features) {
         super({
             name: 'guildIcon',

@@ -6,7 +6,7 @@ import type { Configuration } from '@blargbot/config';
 import type { ImageChannel } from '@blargbot/contracts';
 import { getImageChannel } from '@blargbot/contracts';
 import type { EvalResult } from '@blargbot/core';
-import { BaseClient, BaseService, ModuleLoader, snowflake } from '@blargbot/core';
+import { BaseClient, BaseService, metrics, ModuleLoader, snowflake } from '@blargbot/core';
 import { TagVariableType } from '@blargbot/domain';
 import type { Logger } from '@blargbot/logger';
 import { memoize, ResetValue, sleep } from '@blargbot/util';
@@ -196,7 +196,20 @@ export class Cluster extends BaseClient {
             util: new ClusterBBTagUtilities(this),
             subtags: Object.values(subtags).map(subtag => new subtag(subtagArgs)),
             variables: this.bbtagVariables,
-            sleep
+            sleep,
+            hooks: {
+                subtagExecuting(context, subtag) {
+                    const start = performance.now();
+                    return {
+                        [Symbol.dispose]: memoize(() => {
+                            const elapsed = performance.now() - start;
+                            metrics.subtagLatency.labels(subtag.name).observe(elapsed);
+                            metrics.subtagCounter.labels(subtag.name).inc();
+                            context.subtagInvocations.getOrInsert(subtag.name, []).push(elapsed);
+                        })
+                    };
+                }
+            }
         });
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));
         this.rolemes = new RolemeManager(this);

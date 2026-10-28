@@ -1,11 +1,15 @@
-import { RegexSubtag } from '../../RegexSubtag.js';
+import { CompiledSubtag } from '../../compilation/CompiledSubtag.js';
+import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { CompileRegexFeature } from '../types.js';
 
 const tag = templates.subtags.regexMatch;
 
-export class RegexMatchSubtag extends RegexSubtag {
-    public constructor() {
+type Features = CompileRegexFeature;
+export class RegexMatchSubtag extends CompiledSubtag {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'regexMatch',
             category: SubtagType.ARRAY, //? Why?
@@ -21,13 +25,24 @@ export class RegexMatchSubtag extends RegexSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
-    public regexMatch(text: string, regexStr: string): string[] {
-        const regex = this.createRegex(regexStr);
-        const matches = text.match(regex);
-        if (matches === null)
-            return [];
-        return matches;
+    public async regexMatch(text: string, regexStr: string): Promise<string[]> {
+        const match = /^\/?(?<body>.+?)\/(?<flags>[igmsuy]*)$/.exec(regexStr);
+        if (match === null)
+            throw new BBTagRuntimeError('Invalid Regex');
+        const { body = '', flags = '' } = match.groups ?? {};
+        const result = await this.#features.compileRegex(body, flags);
+        if (result.success)
+            return await result.regex.match(text);
+        switch (result.cause) {
+            case 'invalid':
+                throw new BBTagRuntimeError('Invalid Regex');
+            case 'tooLong':
+                throw new BBTagRuntimeError('Regex too long');
+            case 'unsafe':
+                throw new BBTagRuntimeError('Unsafe Regex');
+        }
     }
 }

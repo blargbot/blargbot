@@ -1,8 +1,8 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
-import { isFlagChar } from '../../utils/flags.js';
 import { SubtagType } from '../../utils/index.js';
+import { isFlagChar } from '../../utils/input.js';
 
 const tag = templates.subtags.flagSet;
 

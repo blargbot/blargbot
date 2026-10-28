@@ -1,11 +1,8 @@
-import type { MessageComponent } from '@blargbot/core';
-import { discord, guard, parse } from '@blargbot/core';
-
 import { CompiledSubtag } from '../../compilation/index.js';
 import { InvalidEmbedError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import type { Embed, EmbedAuthor, EmbedField, EmbedFooter } from '../../types.js';
-import { convertToBoolean, convertToColor } from '../../utils/converters.js';
+import { convertToBoolean, convertToColor, convertToTimestamp } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 import { isUrl } from '../../utils/url.js';
 
@@ -56,7 +53,7 @@ export class EmbedBuildSubtag extends CompiledSubtag {
                     throw new InvalidEmbedError('Field missing name', `Field at index ${i}`);
             }
         }
-        if (!guard.checkEmbedSize([embed as Embed]))
+        if (!checkEmbedSize([embed]))
             throw new InvalidEmbedError('Embed too long', JSON.stringify(embed));
         return embed as JObject;
     }
@@ -82,7 +79,7 @@ interface EmbedFieldDetails {
 }
 
 function validateLength(value: { length: number; } | undefined, limitKey: MessageComponent, errorText: string): void {
-    if (value !== undefined && value.length > discord.getLimit(limitKey))
+    if (value !== undefined && value.length > getLimit(limitKey))
         throw new InvalidEmbedError(errorText, typeof value === 'string' ? value : undefined);
 }
 
@@ -186,8 +183,8 @@ const fieldSetters: Record<typeof fieldKeys[number], EmbedFieldDetails> = {
         embed.color = color;
     },
     'timestamp'(embed, value) {
-        const date = parseOrError(value, parse.time, 'Invalid timestamp', t => t.isValid());
-        embed.timestamp = date.toDate();
+        const date = parseOrError(value, convertToTimestamp, 'Invalid timestamp');
+        embed.timestamp = date.toInstant();
     },
     'fields.inline'(embed, value) {
         const field = getCurrentField(embed, 'Field name not specified');
@@ -199,3 +196,66 @@ const fieldSetters: Record<typeof fieldKeys[number], EmbedFieldDetails> = {
 const fields = Object.fromEntries(fieldKeys.map(k => [k, {
     set: fieldSetters[k]
 }]));
+function getLimit(component: MessageComponent): number {
+    switch (component) {
+        case 'content': return 2000;
+        case 'embed.title': return 256;
+        case 'embed.description': return 4096;
+        case 'embed.fields': return 25;
+        case 'embed.field.name': return 256;
+        case 'embed.field.value': return 1024;
+        case 'embed.footer.text': return 2048;
+        case 'embed.author.name': return 256;
+        case 'embeds': return 6000;
+    }
+}
+
+function checkEmbedSize(embed: readonly EmbedBuildOptions[] | undefined): boolean {
+    if (embed === undefined) return true;
+    for (const [value, limit] of getEmbedValueLimits(embed))
+        if (value !== undefined && value !== null && value.length > limit)
+            return false;
+
+    return true;
+}
+
+function* getEmbedValueLimits(embeds: readonly EmbedBuildOptions[]): IterableIterator<[value: { length: number; } | null | undefined, limit: number]> {
+    const allValues: string[] = [];
+    const append = <T>(value: T): T => {
+        if (typeof value === 'string')
+            allValues.push(value);
+        return value;
+    };
+
+    // Limits come from the discord documentation
+    // https://discord.com/developers/docs/resources/channel#embed-limits
+
+    for (const embed of embeds) {
+        yield [append(embed.title), getLimit('embed.title')];
+        yield [append(embed.description), getLimit('embed.description')];
+        yield [embed.fields, getLimit('embed.fields')];
+        for (const field of embed.fields ?? []) {
+            yield [append(field.name), getLimit('embed.field.name')];
+            yield [append(field.value), getLimit('embed.field.value')];
+        }
+        yield [append(embed.footer?.text), getLimit('embed.footer.text')];
+        yield [append(embed.author?.name), getLimit('embed.author.name')];
+    }
+
+    yield [allValues.join(''), getLimit('embeds')];
+
+}
+
+type MessageStringComponent =
+    | 'content'
+    | 'embed.title'
+    | 'embed.description'
+    | 'embed.field.name'
+    | 'embed.field.value'
+    | 'embed.footer.text'
+    | 'embed.author.name'
+
+type MessageComponent =
+    | MessageStringComponent
+    | 'embed.fields'
+    | 'embeds'

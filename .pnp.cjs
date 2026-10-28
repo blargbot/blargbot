@@ -251,7 +251,6 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@blargbot/bbtag", "workspace:src/bbtag"],\
           ["@blargbot/colors", "workspace:src/colors"],\
-          ["@blargbot/core", "workspace:src/core"],\
           ["@blargbot/discord-emote", "workspace:src/discord-emote"],\
           ["@blargbot/domain", "workspace:src/domain"],\
           ["@blargbot/formatting", "workspace:src/formatting"],\
@@ -259,10 +258,13 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/util", "workspace:src/util"],\
           ["@types/color", "npm:3.0.3"],\
           ["@types/rwlock", "npm:5.0.3"],\
+          ["@types/unorm", "npm:1.3.28"],\
           ["color", "npm:5.0.3"],\
           ["html-entities", "npm:2.3.3"],\
+          ["limax", "npm:3.0.0"],\
           ["moment-timezone", "npm:0.6.4"],\
           ["rwlock", "npm:5.0.0"],\
+          ["unorm", "npm:1.6.0"],\
           ["zod", "npm:4.6.5"]\
         ],\
         "linkType": "SOFT"\
@@ -633,6 +635,7 @@ const RAW_RUNTIME_STATE =
           ["@blargbot/logger", "workspace:src/logger"],\
           ["@blargbot/master", "workspace:src/master"],\
           ["@blargbot/res", "workspace:src/res"],\
+          ["@blargbot/util", "workspace:src/util"],\
           ["@types/eris", "workspace:definitions/eris"],\
           ["eris", "patch:eris@npm%3A0.17.1#./.yarn/patches/eris-npm-0.17.1-58a0f6abb5.patch::version=0.17.1&hash=96e2fe&locator=blargbot%40workspace%3A."],\
           ["moment-timezone", "npm:0.6.4"],\

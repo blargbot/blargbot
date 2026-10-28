@@ -17,15 +17,13 @@ const testData = {
 };
 
 const now = Temporal.Instant.from('2026-09-22T22:20:00Z');
+
 await runSubtagTests({
     subtag: new EmbedBuildSubtag(),
     argCountBounds: { min: 1, max: Infinity },
     names: ['embedBuild', 'buildEmbed'],
     setup(_, __, test) {
-        test.mock.timers.enable({
-            apis: ['Date'],
-            now: new Date(now.epochMilliseconds)
-        });
+        test.mock.method(Temporal.Now, 'zonedDateTimeISO', (v: string) => now.toZonedDateTimeISO(v));
     },
     cases: [
         {
@@ -298,11 +296,11 @@ await runSubtagTests({
         },
         {
             code: '{buildembed;timestamp:2022-01-01}',
-            expected: '{"timestamp":"2022-01-01T00:00:00.000Z"}'
+            expected: '{"timestamp":"2022-01-01T00:00:00Z"}'
         },
         {
             code: '{buildembed;timestamp:now}',
-            expected: '{"timestamp":"2026-09-22T22:20:00.000Z"}'
+            expected: '{"timestamp":"2026-09-22T22:20:00Z"}'
         },
         {
             code: '{buildembed;timestamp:abc}',

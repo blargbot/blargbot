@@ -3,8 +3,8 @@ import { createInterface } from 'node:readline';
 import streams from 'node:stream';
 
 import type { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core';
-import { Timer } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
+import { Timer } from '@blargbot/util';
 import moment from 'moment-timezone';
 
 import { IPCMessageEmitter } from './IPCMessageEmitter.js';

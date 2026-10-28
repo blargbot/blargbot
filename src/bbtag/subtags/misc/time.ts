@@ -1,8 +1,9 @@
-import { parse } from '@blargbot/core';
+import moment from 'moment-timezone';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
+import { convertToTimestamp } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.time;
@@ -27,9 +28,10 @@ export class TimeSubtag extends CompiledSubtag {
     }
 
     public changeTimezone(timestampStr: string, inputFormat: string, inputTimezone: string, outputFormat: string, outputTimezone: string): string {
-        const timestamp = parse.time(timestampStr, inputFormat, inputTimezone);
-        if (!timestamp.isValid())
-            throw new BBTagRuntimeError('Invalid date');
-        return timestamp.tz(outputTimezone).format(outputFormat);
+        const timestamp = convertToTimestamp(timestampStr, inputFormat, inputTimezone)
+            ?? new BBTagRuntimeError('Invalid date').throw();
+        const result = timestamp.withTimeZone(outputTimezone);
+        return moment.tz(result.epochMilliseconds, result.timeZoneId)
+            .format(outputFormat);
     }
 }

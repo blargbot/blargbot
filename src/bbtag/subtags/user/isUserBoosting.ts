@@ -10,7 +10,7 @@ const tag = templates.subtags.isUserBoosting;
 
 type Features = GetMemberBoostTimestampFeature;
 export class IsUserBoostingSubtag extends CompiledSubtag {
-    readonly #features: GetMemberBoostTimestampFeature;
+    readonly #features: Features;
     public constructor(features: Features) {
         super({
             name: 'isUserBoosting',

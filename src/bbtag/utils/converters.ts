@@ -1,4 +1,5 @@
 import { colorMap } from '@blargbot/colors';
+import moment from 'moment-timezone';
 import z from 'zod';
 
 import type { Embed, MalformedEmbed } from '../types.js';
@@ -94,34 +95,15 @@ export function convertToBigInt(value: string): bigint | undefined {
 type DurationWord = keyof typeof durationWords;
 type DurationUnit = typeof durationWords[DurationWord];
 const durationWords = {
-    y: 'years',
-    year: 'years',
-    years: 'years',
-    M: 'months',
-    month: 'months',
-    months: 'months',
-    w: 'weeks',
-    week: 'weeks',
-    weeks: 'weeks',
-    d: 'days',
-    day: 'days',
-    days: 'days',
-    h: 'hours',
-    hour: 'hours',
-    hours: 'hours',
-    m: 'minutes',
-    min: 'minutes',
-    mins: 'minutes',
-    minute: 'minutes',
-    minutes: 'minutes',
-    s: 'seconds',
-    sec: 'seconds',
-    secs: 'seconds',
-    second: 'seconds',
-    seconds: 'seconds',
-    ms: 'milliseconds',
-    millisecond: 'milliseconds',
-    milliseconds: 'milliseconds'
+    y: 'years', year: 'years', years: 'years',
+    M: 'months', month: 'months', months: 'months',
+    w: 'weeks', week: 'weeks', weeks: 'weeks',
+    d: 'days', day: 'days', days: 'days',
+    h: 'hours', hour: 'hours', hours: 'hours',
+    m: 'minutes', min: 'minutes', mins: 'minutes', minute: 'minutes', minutes: 'minutes',
+    s: 'seconds', sec: 'seconds', secs: 'seconds', second: 'seconds', seconds: 'seconds',
+    ms: 'milliseconds', millisecond: 'milliseconds', milliseconds: 'milliseconds',
+    q: 'quarters', quarter: 'quarters', quarters: 'quarters'
 } as const;
 
 function unitOf(word: string): DurationUnit | undefined {
@@ -133,18 +115,15 @@ function unitOf(word: string): DurationUnit | undefined {
     return undefined;
 }
 
-// Size of each unit in nanoseconds, used to turn a fractional part into smaller units.
-// Months use the Gregorian average (30.436875 days), which is also what moment assumed.
-const seconds = 1_000_000_000n;
-const unitMultiples: Record<Exclude<DurationUnit, 'years'>, bigint> = {
-    months: 2_629_746n * seconds,
-    weeks: 7n * 86_400n * seconds,
-    days: 86_400n * seconds,
-    hours: 3_600n * seconds,
-    minutes: 60n * seconds,
-    seconds: seconds,
+const nsPerSecond = 1_000_000_000n;
+const unitMultiples = {
+    months: BigInt(Math.round(30.436875 * 24 * 60 * 60)) * nsPerSecond,
+    days: 24n * 60n * 60n * nsPerSecond,
+    hours: 60n * 60n * nsPerSecond,
+    minutes: 60n * nsPerSecond,
+    seconds: nsPerSecond,
     milliseconds: 1_000_000n
-};
+} as const;
 
 export function convertToDuration(value: string): Temporal.Duration | undefined {
     const pattern = /\s*(\d+(?:\.\d+)?) ?([a-z]+)/iy;
@@ -171,22 +150,32 @@ export function convertToDuration(value: string): Temporal.Duration | undefined 
     let remainder = 0n;
     for (const [unit, quantity] of quantities) {
         const [integer, fraction = ''] = quantity.split('.');
-        const numerator = BigInt(integer + fraction);
+        let numerator = BigInt(integer + fraction);
         const denominator = 10n ** BigInt(fraction.length);
         const whole = numerator / denominator;
-        const part = numerator % denominator;
+        numerator %= denominator;
 
-        if (unit === 'years') {
-            const months = part * 12n;
-            total.years += whole;
-            total.months += months / denominator;
-            remainder += months % denominator * unitMultiples.months / denominator;
-        } else if (unit === 'weeks') {
-            total.days += 7n * whole;
-            remainder += part * unitMultiples.weeks / denominator;
-        } else {
-            total[unit] += whole;
-            remainder += part * unitMultiples[unit] / denominator;
+        switch (unit) {
+            case 'years':
+                numerator *= 12n;
+                total.years += whole;
+                total.months += numerator / denominator;
+                remainder += numerator % denominator * unitMultiples.months / denominator;
+                break;
+            case 'quarters':
+                numerator *= 3n;
+                total.months += 3n * whole;
+                total.months += numerator / denominator;
+                remainder += numerator % denominator * unitMultiples.months / denominator;
+                break;
+            case 'weeks':
+                total.days += 7n * whole;
+                remainder += 7n * numerator * unitMultiples.days / denominator;
+                break;
+            default:
+                total[unit] += whole;
+                remainder += numerator * unitMultiples[unit] / denominator;
+                break;
         }
     }
 
@@ -219,6 +208,41 @@ export function convertToDuration(value: string): Temporal.Duration | undefined 
             return undefined;
         throw e;
     }
+}
+
+export function convertToTimestamp(text: string, format?: string, timezone = 'Etc/UTC'): Temporal.ZonedDateTime | undefined {
+    const now = Temporal.Now.zonedDateTimeISO(timezone);
+    if (text === '')
+        return now;
+
+    switch (text.toLowerCase()) {
+        case 'now': return now;
+        case 'today': return now.startOfDay();
+        case 'tomorrow': return now.startOfDay().add({ days: 1 });
+        case 'yesterday': return now.startOfDay().add({ days: -1 });
+    }
+
+    let match = /^\s*in\s+(.*)*$/i.exec(text);
+    let sign: 'add' | 'subtract' = 'add';
+    if (match === null) {
+        match = /^(.*?)\s+ago\s*$/i.exec(text);
+        sign = 'subtract';
+    }
+    if (match !== null) {
+        const duration = convertToDuration(match[1]);
+        if (duration === undefined)
+            return undefined;
+        return now[sign](duration);
+    }
+
+    const m = format === undefined || format.length === 0
+        ? moment.tz(text, timezone)
+        : moment.tz(text, format, timezone);
+    if (!m.isValid())
+        return undefined;
+    return Temporal.Instant
+        .fromEpochMilliseconds(m.valueOf())
+        .toZonedDateTimeISO(m.tz() ?? timezone);
 }
 
 export function convertToEmbed(embedText: undefined, allowMalformed?: true): undefined;
@@ -277,9 +301,7 @@ const mapEmbedCore = z.object({
     thumbnail: z.object({
         url: z.string().optional()
     }).optional(),
-    timestamp: z.union([
-        z.iso.date()
-    ]).optional(),
+    timestamp: z.iso.date().transform(v => Temporal.Instant.from(v)).optional(),
     title: z.string().optional(),
     url: z.string().optional()
 });

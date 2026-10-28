@@ -1,11 +1,15 @@
-import { RegexSubtag } from '../../RegexSubtag.js';
+import { CompiledSubtag } from '../../compilation/CompiledSubtag.js';
+import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { CompileRegexFeature } from '../types.js';
 
 const tag = templates.subtags.regexSplit;
 
-export class RegexSplitSubtag extends RegexSubtag {
-    public constructor() {
+type Features = CompileRegexFeature;
+export class RegexSplitSubtag extends CompiledSubtag {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'regexSplit',
             category: SubtagType.MISC,
@@ -20,10 +24,25 @@ export class RegexSplitSubtag extends RegexSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
-    public regexSplit(text: string, regexStr: string): string[] {
-        const regex = this.createRegex(regexStr);
-        return text.split(regex);
+    public async regexSplit(text: string, regexStr: string): Promise<string[]> {
+        const match = /^\/?(?<body>.+?)\/(?<flags>[igmsuy]*)$/.exec(regexStr);
+        if (match === null)
+            throw new BBTagRuntimeError('Invalid Regex');
+        const { body = '', flags = '' } = match.groups ?? {};
+        const result = await this.#features.compileRegex(body, flags);
+        if (result.success)
+            return await result.regex.split(text);
+
+        switch (result.cause) {
+            case 'invalid':
+                throw new BBTagRuntimeError('Invalid Regex');
+            case 'tooLong':
+                throw new BBTagRuntimeError('Regex too long');
+            case 'unsafe':
+                throw new BBTagRuntimeError('Unsafe Regex');
+        }
     }
 }

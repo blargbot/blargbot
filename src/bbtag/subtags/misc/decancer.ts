@@ -1,4 +1,5 @@
-import { humanize } from '@blargbot/core';
+import limax from 'limax';
+import unorm from 'unorm';
 
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
@@ -25,6 +26,17 @@ export class DecancerSubtag extends CompiledSubtag {
     }
 
     public decancer(text: string): string {
-        return humanize.decancer(text);
+        return unorm.nfkd(text)
+            .replace(/[^ ]+/g, text => limax(text, limaxOptions))
+            .replaceAll('\u0000', '');
     }
 }
+
+const limaxOptions: Parameters<typeof limax>[1] = {
+    tone: false,
+    separateNumbers: false,
+    separateApostrophes: false,
+    maintainCase: true,
+    custom: Array.from('., !\'"?0123456789'),
+    replacement: '\u0000'
+};

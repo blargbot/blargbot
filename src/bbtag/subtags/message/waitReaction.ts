@@ -1,4 +1,3 @@
-import { discord } from '@blargbot/core';
 import Emote from '@blargbot/discord-emote';
 
 import type { BBTagContext } from '../../BBTagContext.js';
@@ -100,7 +99,7 @@ export class WaitReactionSubtag extends CompiledSubtag {
                 case undefined:
                     throw new BBTagRuntimeError('Condition must return \'true\' or \'false\'', `Actually returned ${JSON.stringify(resultStr)}`);
                 case true:
-                    return [event.channelId, event.messageId, event.reactorId, discord.emojiString(event.reaction)];
+                    return [event.channelId, event.messageId, event.reactorId, event.reaction.toString()];
             }
         }
 

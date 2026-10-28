@@ -12,8 +12,9 @@ await runSubtagTests({
         {
             code: '{replace;abc;123}',
             expected: '',
-            assert(ctx) {
-                assert.deepEqual(ctx.root.output.replace, { regex: 'abc', with: '123' });
+            async assert(ctx) {
+                const result = await ctx.root.output.replace?.('|abc,abc,def|');
+                assert.equal(result, '|123,abc,def|');
             }
         },
         { code: '{replace;This is a test;is;aaaa}', expected: 'Thaaaa is a test' }

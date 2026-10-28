@@ -30,3 +30,17 @@ export interface QueryEntityRequest {
     readonly source?: string;
 }
 export type QueryEntityResponse = ApiResult<{ id: string; }, { cause: 'notFound' | 'aborted'; }>;
+
+export type CompileRegexResult = ApiResult<{ regex: AsyncRegex; }, { cause: 'invalid' | 'unsafe' | 'tooLong'; }>;
+
+export interface CompileRegexFeature {
+    compileRegex(pattern: string, flags: string): Promise<CompileRegexResult>;
+}
+
+export interface AsyncRegex {
+    test(text: string): Promise<boolean>;
+    replace(text: string, replaceWith: string): Promise<string>;
+    match(text: string): Promise<string[]>;
+    split(text: string): Promise<string[]>;
+
+}

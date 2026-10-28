@@ -13,7 +13,7 @@ export interface GetRolePositionFeature {
 
 type Features = GetRolePositionFeature;
 export class RolePositionSubtag extends CompiledSubtag {
-    readonly #features: GetRolePositionFeature;
+    readonly #features: Features;
     public constructor(features: Features) {
         super({
             name: 'rolePosition',

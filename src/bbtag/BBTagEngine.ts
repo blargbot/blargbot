@@ -1,7 +1,7 @@
-import { Timer } from '@blargbot/core';
+import { Timer } from '@blargbot/util';
 
 import { BBTagContext } from './BBTagContext.js';
-import type { InjectionContext } from './BBTagUtilities.js';
+import type { BBTagHooks, InjectionContext } from './BBTagUtilities.js';
 import { BBTagRuntimeError, InternalServerError, TagCooldownError } from './errors/index.js';
 import type { BBTagExpression, SubtagCall } from './language/index.js';
 import { BaseRuntimeLimit } from './limits/BaseRuntimeLimit.js';
@@ -9,10 +9,10 @@ import { Subtag } from './Subtag.js';
 import { OutputSubtag } from './subtags/index.js';
 import { TagCooldownManager } from './TagCooldownManager.js';
 import { templates } from './text.js';
-import { toBBTagInput } from './toBBTagInput.js';
 import type { AnalysisResults, BBTagRuntimeInput, ExecutionResult, SerializedBBTagContext } from './types.js';
 import { BBTagRuntimeState } from './types.js';
 import { bbtag as bbtagUtil } from './utils/index.js';
+import { parseInput } from './utils/input.js';
 import type { VariablesProvider } from './Variables.js';
 
 type SubtagCtor = abstract new (...args: never) => Subtag;
@@ -27,6 +27,10 @@ export class BBTagEngine {
     }
 
     public readonly cooldowns: TagCooldownManager;
+
+    public get hooks(): BBTagHooks {
+        return this.#dependencies.hooks;
+    }
 
     public constructor(dependencies: InjectionContext) {
         this.#dependencies = dependencies;
@@ -126,7 +130,7 @@ export class BBTagEngine {
             paramsarray: undefined,
             reaction: undefined,
             reactUser: undefined,
-            input: toBBTagInput(options.input, options.flagDefinitions),
+            input: parseInput(options.input, options.flagDefinitions),
             cooldown: options.cooldown
         });
         return context;
@@ -156,7 +160,7 @@ export class BBTagEngine {
             context.execTimer.start();
             content = await context.eval(bbtag);
             if (context.root.output.replace !== undefined)
-                content = content.replace(context.root.output.replace.regex, context.root.output.replace.with);
+                content = await context.root.output.replace(content);
             context.execTimer.end();
             this.#dependencies.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
             await this.#dependencies.variables.forContext(context).persist();
@@ -175,7 +179,9 @@ export class BBTagEngine {
             duration: {
                 active: context.execTimer.elapsed,
                 database: context.dbTimer.elapsed,
-                total: context.execTimer.duration.add(context.dbTimer.duration).asMilliseconds(),
+                total: context.execTimer.duration
+                    .add(context.dbTimer.duration)
+                    .total({ unit: 'milliseconds' }),
                 subtag: context.subtagInvocations
             },
             database: {

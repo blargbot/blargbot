@@ -11,7 +11,7 @@ export interface GetGuildNameFeature {
 
 type Features = GetGuildNameFeature;
 export class GuildNameSubtag extends CompiledSubtag {
-    readonly #features: GetGuildNameFeature;
+    readonly #features: Features;
     public constructor(features: Features) {
         super({
             name: 'guildName',

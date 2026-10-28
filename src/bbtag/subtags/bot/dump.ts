@@ -15,7 +15,7 @@ export interface GenerateDumpLinkFeature {
 
 type Features = GenerateDumpLinkFeature;
 export class DumpSubtag extends CompiledSubtag {
-    readonly #features: GenerateDumpLinkFeature;
+    readonly #features: Features;
     public constructor(features: Features) {
         super({
             name: 'dump',

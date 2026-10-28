@@ -149,6 +149,7 @@ export class SubtagTestContext {
         this.#isCreated = true;
 
         this.dependencies.setup(m => m.botId).returns(this.botId).mustHappen(1);
+        this.dependencies.setup(m => m.hooks).returns({});
 
         const engine = new BBTagEngine(this.dependencies.instance);
         const context = engine.createContext({

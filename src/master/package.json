@@ -15,6 +15,7 @@
         "@blargbot/formatting": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/res": "workspace:^",
+        "@blargbot/util": "workspace:^",
         "eris": "^0.17.1",
         "moment-timezone": "^0.6.4",
         "prom-client": "^14.1.0",

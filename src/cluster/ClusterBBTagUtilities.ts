@@ -1,8 +1,8 @@
-import type { BBTagUtilities, MessageEvent, ReactionEvent, RwLock, SerializedBBTagContext, subtags, TagDetails, VariablesProvider } from '@blargbot/bbtag';
+import type { BBTagUtilities, Embed, MessageEvent, ReactionEvent, RwLock, SerializedBBTagContext, subtags, TagDetails, VariablesProvider } from '@blargbot/bbtag';
 import { ChannelType, DiscordPermissions, getLock } from '@blargbot/bbtag';
 import type * as Subtags from '@blargbot/bbtag/subtags';
 import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core';
-import { snowflake } from '@blargbot/core';
+import { createSafeRegExp, snowflake } from '@blargbot/core';
 import Emote from '@blargbot/discord-emote';
 import type { TagVariableScope } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
@@ -37,6 +37,23 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     public constructor(cluster: Cluster) {
         this.#cluster = cluster;
         this.#bfClient = new Brainfuck();
+    }
+    public compileRegex(pattern: string, flags: string): Promise<Subtags.CompileRegexResult> {
+        const result = createSafeRegExp(`/${pattern}/${flags}`);
+        switch (result.state) {
+            case 'success':
+                return Promise.resolve({
+                    success: true,
+                    regex: {
+                        match: text => Promise.resolve(text.match(result.regex) ?? []),
+                        replace: (text, replacement) => Promise.resolve(text.replaceAll(result.regex, replacement)),
+                        split: text => Promise.resolve(text.split(result.regex)),
+                        test: text => Promise.resolve(result.regex.test(text))
+                    }
+                });
+            default:
+                return Promise.resolve({ success: false, cause: result.state });
+        }
     }
     public async createEmoji(options: Subtags.CreateEmojiOptions): Promise<Subtags.CreateEmojiResult> {
         try {
@@ -617,7 +634,10 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
     }
     public async executeWebhook(webhookId: string, webhookToken: string, payload: Subtags.ExecuteWebhookPayload): Promise<Subtags.ApiResult> {
         try {
-            await this.#cluster.discord.executeWebhook(webhookId, webhookToken, payload);
+            await this.#cluster.discord.executeWebhook(webhookId, webhookToken, {
+                ...payload,
+                embeds: payload.embeds?.map(toErisEmbed)
+            });
             return { success: true };
         } catch (error) {
             return this.#handleError(error);
@@ -632,7 +652,14 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
                 return { success: false, reason: 'Channel cannot receive messages.' };
             const message = await this.#cluster.util.send(channel, util.literal({
                 content: payload.content,
-                embeds: payload.embeds,
+                embeds: payload.embeds?.map(({ timestamp, ...e }) => {
+                    if (timestamp === undefined)
+                        return e;
+                    return {
+                        ...e,
+                        timestamp: timestamp.toString()
+                    };
+                }),
                 file: payload.files,
                 allowedMentions: payload.allowedMentions !== undefined ? {
                     everyone: payload.allowedMentions.everyone,
@@ -826,7 +853,10 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
             return { success: false, cause: 'messageEmpty', reason: 'Message is empty.' };
 
         try {
-            await message.edit(data);
+            await message.edit({
+                ...data,
+                embeds: data.embeds?.map(toErisEmbed)
+            });
             return { success: true };
         } catch (error) {
             const { reason } = this.#handleError(error);
@@ -841,9 +871,9 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
         const message = await this.#cluster.util.getMessage(channelId, messageId);
         return message?.author.id;
     }
-    public async getMessageEmbeds(channelId: string, messageId: string): Promise<readonly eris.Embed[] | undefined> {
+    public async getMessageEmbeds(channelId: string, messageId: string): Promise<readonly Embed[] | undefined> {
         const message = await this.#cluster.util.getMessage(channelId, messageId);
-        return message?.embeds;
+        return message?.embeds.map(fromErisEmbed);
     }
     public async getMessageContent(channelId: string, messageId: string): Promise<string | undefined> {
         const message = await this.#cluster.util.getMessage(channelId, messageId);
@@ -976,6 +1006,24 @@ export class ClusterSubtagConstructorArgs implements SubtagConstructorArgs {
             milliseconds: duration.milliseconds + (duration.microseconds * 1e3 + duration.nanoseconds) / 1e6
         });
     }
+}
+function toErisEmbed({ timestamp, ...e }: Embed): eris.EmbedOptions {
+    if (timestamp === undefined)
+        return e;
+    return {
+        ...e,
+        timestamp: timestamp.toString()
+    };
+}
+function fromErisEmbed({ timestamp, ...e }: eris.Embed): Embed {
+    if (timestamp === undefined)
+        return e;
+    if (typeof timestamp !== 'string')
+        timestamp = timestamp.toISOString();
+    return {
+        ...e,
+        timestamp: Temporal.Instant.from(timestamp)
+    };
 }
 export class ClusterBBTagUtilities implements BBTagUtilities {
     public constructor(public readonly cluster: Cluster) {

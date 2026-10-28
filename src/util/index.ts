@@ -26,6 +26,7 @@ export * from './sortBy.js';
 export * from './streamEventEmitter.js';
 export * from './streamEventTarget.js';
 export * from './throttle.js';
+export * from './Timer.js';
 export * from './usingEventListener.js';
 export * from './usingInterval.js';
 export * from './usingListener.js';

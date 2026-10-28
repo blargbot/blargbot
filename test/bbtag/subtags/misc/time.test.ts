@@ -9,10 +9,7 @@ await runSubtagTests({
     argCountBounds: { min: 0, max: 5 },
     names: ['time'],
     setup(_, __, test) {
-        test.mock.timers.enable({
-            apis: ['Date'],
-            now: new Date(now.epochMilliseconds)
-        });
+        test.mock.method(Temporal.Now, 'zonedDateTimeISO', (v: string) => now.toZonedDateTimeISO(v));
     },
     cases: [
         { code: '{time}', expected: '2026-09-22T22:20:00+00:00' },

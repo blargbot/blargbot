@@ -1,7 +1,8 @@
 import type { ClusterConnection } from '@blargbot/cluster';
-import { FormattableMessageContent, Timer, WorkerPoolEventService  } from '@blargbot/core';
+import { FormattableMessageContent, WorkerPoolEventService } from '@blargbot/core';
 import { util } from '@blargbot/formatting';
 import type { Master } from '@blargbot/master';
+import { Timer } from '@blargbot/util';
 
 export class ClusterRespawnAllHandler extends WorkerPoolEventService<ClusterConnection, 'respawnAll'> {
     readonly #master: Master;

@@ -1,12 +1,16 @@
 import type { BBTagContext } from '../../BBTagContext.js';
-import { RegexSubtag } from '../../RegexSubtag.js';
+import { CompiledSubtag } from '../../compilation/CompiledSubtag.js';
+import { BBTagRuntimeError } from '../../errors/BBTagRuntimeError.js';
 import { templates } from '../../text.js';
 import { SubtagType } from '../../utils/index.js';
+import type { CompileRegexFeature } from '../types.js';
 
 const tag = templates.subtags.regexReplace;
 
-export class RegexReplaceSubtag extends RegexSubtag {
-    public constructor() {
+type Features = CompileRegexFeature;
+export class RegexReplaceSubtag extends CompiledSubtag {
+    readonly #features: Features;
+    public constructor(features: Features) {
         super({
             name: 'regexReplace',
             category: SubtagType.MISC,
@@ -30,17 +34,44 @@ export class RegexReplaceSubtag extends RegexSubtag {
                 }
             ]
         });
+        this.#features = features;
     }
 
-    public setOutputReplacement(context: BBTagContext, regexStr: string, replacement: string): void {
-        context.root.output.replace = {
-            regex: this.createRegex(regexStr),
-            with: replacement
-        };
+    public async setOutputReplacement(context: BBTagContext, regexStr: string, replacement: string): Promise<void> {
+        const match = /^\/?(?<body>.+?)\/(?<flags>[igmsuy]*)$/.exec(regexStr);
+        if (match === null)
+            throw new BBTagRuntimeError('Invalid Regex');
+        const { body = '', flags = '' } = match.groups ?? {};
+        const result = await this.#features.compileRegex(body, flags);
+        if (result.success)
+            context.root.output.replace = value => result.regex.replace(value, replacement);
+        else {
+            switch (result.cause) {
+                case 'invalid':
+                    throw new BBTagRuntimeError('Invalid Regex');
+                case 'tooLong':
+                    throw new BBTagRuntimeError('Regex too long');
+                case 'unsafe':
+                    throw new BBTagRuntimeError('Unsafe Regex');
+            }
+        }
     }
 
-    public regexReplace(text: string, regexStr: string, replaceWith: string): string {
-        const regex = this.createRegex(regexStr);
-        return text.replace(regex, replaceWith);
+    public async regexReplace(text: string, regexStr: string, replaceWith: string): Promise<string> {
+        const match = /^\/?(?<body>.+?)\/(?<flags>[igmsuy]*)$/.exec(regexStr);
+        if (match === null)
+            throw new BBTagRuntimeError('Invalid Regex');
+        const { body = '', flags = '' } = match.groups ?? {};
+        const result = await this.#features.compileRegex(body, flags);
+        if (result.success)
+            return await result.regex.replace(text, replaceWith);
+        switch (result.cause) {
+            case 'invalid':
+                throw new BBTagRuntimeError('Invalid Regex');
+            case 'tooLong':
+                throw new BBTagRuntimeError('Regex too long');
+            case 'unsafe':
+                throw new BBTagRuntimeError('Unsafe Regex');
+        }
     }
 }

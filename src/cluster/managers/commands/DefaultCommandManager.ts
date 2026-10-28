@@ -1,9 +1,10 @@
 import type { Cluster, CommandContext, CommandGetCoreResult, CommandParameter, CommandProperties, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster';
 import { Command, commandTypeDetails, guard } from '@blargbot/cluster';
 import type { NextMiddleware } from '@blargbot/core';
-import { metrics, ModuleLoader, Timer } from '@blargbot/core';
+import { metrics, ModuleLoader } from '@blargbot/core';
 import type { CommandPermissions, FlagDefinition } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
+import { Timer } from '@blargbot/util';
 import * as eris from 'eris';
 
 import { CommandManager } from './CommandManager.js';

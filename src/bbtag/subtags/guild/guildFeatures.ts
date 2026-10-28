@@ -11,7 +11,7 @@ export interface ListGuildFeaturesFeature {
 
 type Features = ListGuildFeaturesFeature;
 export class GuildFeaturesSubtag extends CompiledSubtag {
-    readonly #features: ListGuildFeaturesFeature;
+    readonly #features: Features;
     public constructor(features: Features) {
         super({
             name: 'guildFeatures',

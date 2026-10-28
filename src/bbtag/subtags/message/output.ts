@@ -41,7 +41,7 @@ export class OutputSubtag extends CompiledSubtag {
     public static async sendOutput(context: BBTagContext, text: string): Promise<string | undefined> {
         const replace = context.root.output.replace;
         if (replace !== undefined)
-            text = text.replace(replace.regex, replace.with);
+            text = await replace(text);
 
         return await context.engine.getSubtag(OutputSubtag).#sendOutput(context, text);
     }

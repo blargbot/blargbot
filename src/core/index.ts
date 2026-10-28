@@ -9,7 +9,6 @@ export * from './FormattableMessageContent.js';
 export * from './MessageIdQueue.js';
 export * from './Metrics.js';
 export * from './MultiKeyMap.js';
-export * from './Timer.js';
 export * from './types.js';
 export * from './serviceTypes/index.js';
 export * from './modules/index.js';

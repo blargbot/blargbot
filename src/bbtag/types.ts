@@ -43,7 +43,7 @@ export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
         messageId?: string;
         embeds?: Embed[];
         files?: FileContent[];
-        replace?: { regex: RegExp | string; with: string; };
+        replace?: (value: string) => Promise<string>;
         readonly reactions: string[];
     };
     readonly limit: RuntimeLimit;
@@ -343,7 +343,7 @@ export interface Embed {
     footer?: EmbedFooter;
     image?: EmbedImage;
     thumbnail?: EmbedImage;
-    timestamp?: Date | string;
+    timestamp?: Temporal.Instant;
     title?: string;
     url?: string;
 }

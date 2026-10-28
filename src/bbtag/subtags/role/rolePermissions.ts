@@ -14,7 +14,7 @@ export interface GetRolePermissionsFeature {
 
 type Features = GetRolePermissionsFeature;
 export class RolePermissionsSubtag extends CompiledSubtag {
-    readonly #features: GetRolePermissionsFeature;
+    readonly #features: Features;
     public constructor(features: Features) {
         super({
             name: 'rolePermissions',

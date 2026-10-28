@@ -1,14 +1,12 @@
-import { humanize } from '@blargbot/core';
-
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
-import { toBBTagInput } from '../../toBBTagInput.js';
 import type { TagDetails } from '../../types.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
+import { joinInput, parseInput } from '../../utils/input.js';
 
 const tag = templates.subtags.execCustomCommand;
 
@@ -57,12 +55,12 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
 
         let input = args[0] ?? '';
         if (args.length > 1)
-            input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(convertToString));
+            input = joinInput(bbtag.tagArray.flattenArray(args).map(convertToString));
 
         using scope = context.enterScope();
         scope.tagName = tagName;
         scope.cooldown = ccommand.cooldown ?? 0;
-        scope.input = toBBTagInput(input, context.root.flagDefinitions);
+        scope.input = parseInput(input, context.root.flagDefinitions);
         const expr = bbtag.parse(ccommand.content, { throw: true });
         context.engine.cooldowns.assert({
             guildId: context.root.guildId,

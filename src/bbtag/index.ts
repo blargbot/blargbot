@@ -7,7 +7,6 @@ export * from './BBTagEngine.js';
 export * from './BBTagUtilities.js';
 export * from './arguments/index.js';
 export * from './Subtag.js';
-export * from './RegexSubtag.js';
 export * from './Variables.js';
 export * from './BBTagEngine.js';
 export * from './limits/index.js';

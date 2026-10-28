@@ -13,7 +13,7 @@ export interface GetGuildCreatedTimestampFeature {
 
 type Features = GetGuildCreatedTimestampFeature;
 export class GuildCreatedAtSubtag extends CompiledSubtag {
-    readonly #features: GetGuildCreatedTimestampFeature;
+    readonly #features: Features;
     public constructor(features: Features) {
         super({
             name: 'guildCreatedAt',

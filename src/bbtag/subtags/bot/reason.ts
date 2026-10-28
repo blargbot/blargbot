@@ -8,7 +8,7 @@ const tag = templates.subtags.reason;
 
 type Features = GetUserNameFeature;
 export class ReasonSubtag extends CompiledSubtag {
-    readonly #features: GetUserNameFeature;
+    readonly #features: Features;
     public constructor(features: Features) {
         super({
             name: 'reason',

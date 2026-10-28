@@ -15,7 +15,7 @@ export interface ListEmojisFeature {
 type Features = ListEmojisFeature;
 //TODO IMO this should return an array of emoji IDs instead of an array of emojis
 export class EmojisSubtag extends CompiledSubtag {
-    readonly #features: ListEmojisFeature;
+    readonly #features: Features;
     public constructor(features: Features) {
         super({
             name: 'emojis',

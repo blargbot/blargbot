@@ -1,5 +1,4 @@
-import { Timer } from '@blargbot/core';
-import { memoize } from '@blargbot/util';
+import { memoize, Timer } from '@blargbot/util';
 
 import type { BBTagEngine } from './BBTagEngine.js';
 import type { BBTagRuntimeError } from './errors/index.js';

@@ -1,4 +1,3 @@
-import { metrics } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { BBTagContext } from './BBTagContext.js';
@@ -17,15 +16,8 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
     public abstract readonly signatures: ReadonlyArray<SubtagSignature<IFormattable<string>>>;
 
     public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
-        const start = performance.now();
-        try {
-            yield* this.executeCore(context, subtagName, subtag);
-        } finally {
-            const elapsed = performance.now() - start;
-            metrics.subtagLatency.labels(this.name).observe(elapsed);
-            metrics.subtagCounter.labels(this.name).inc();
-            context.subtagInvocations.getOrInsert(this.name, []).push(elapsed);
-        }
+        using _hook = context.engine.hooks.subtagExecuting?.(context, this);
+        yield* this.executeCore(context, subtagName, subtag);
     }
 
     protected abstract executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined>;
