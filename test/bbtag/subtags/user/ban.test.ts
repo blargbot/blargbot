@@ -1,9 +1,9 @@
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
 import type { BanUserFeature } from '@blargbot/bbtag/subtags';
 import { BanSubtag, ReasonSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<BanUserFeature>({ id: 'features' });
@@ -42,7 +42,7 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -64,7 +64,7 @@ await runSubtagTests({
             code: '{ban;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -89,7 +89,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Bot has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -114,7 +114,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('User has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -139,7 +139,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('User has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -164,7 +164,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Bot has no permissions') }
             ],
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -186,7 +186,7 @@ await runSubtagTests({
             code: '{ban;other user;5}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -208,7 +208,7 @@ await runSubtagTests({
             code: '{ban;other user;-1}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -233,7 +233,7 @@ await runSubtagTests({
                 { error: new NotANumberError('abc').withDisplay('false') }
             ],
             postSetup(bbctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -243,7 +243,7 @@ await runSubtagTests({
             code: '{ban;other user;;My custom reason}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -265,7 +265,7 @@ await runSubtagTests({
             code: '{ban;other user;7;My custom reason}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -287,7 +287,7 @@ await runSubtagTests({
             code: '{ban;other user;;;5 days}',
             expected: '432000000',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -309,7 +309,7 @@ await runSubtagTests({
             code: '{ban;other user;7;My custom reason;2 hours}',
             expected: '7200000',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -332,7 +332,7 @@ await runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const authorizerId = ctx.authorizerId;
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -355,7 +355,7 @@ await runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const authorizerId = ctx.authorizerId;
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -378,7 +378,7 @@ await runSubtagTests({
             expected: 'true',
             postSetup(bbctx, ctx) {
                 const authorizerId = ctx.authorizerId;
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -401,7 +401,7 @@ await runSubtagTests({
             expected: '7230000',
             postSetup(bbctx, ctx) {
                 const authorizerId = ctx.authorizerId;
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);

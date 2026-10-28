@@ -3,19 +3,19 @@ import assert from 'node:assert/strict';
 import type { getLock as defaultGetLock, RwLock, TagVariableScopeDetails, Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import { LockSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import type { TagVariableScope } from '@blargbot/domain';
 import { TagVariableType } from '@blargbot/domain';
 import { FormatString } from '@blargbot/formatting';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-const formattableString = FormatString.create(snowflake.create().toString(), '');
+const formattableString = FormatString.create(createSnowflake(), '');
 const guildId = '23904768237436873424';
 const authorId = '823764823946284623234';
-const tempId = snowflake.create().toString();
+const tempId = createSnowflake();
 const tagName = 'testTag';
 const invalidModeMessage = 'Mode must be \'read\' or \'write\'';
 const getLock = new Mock<typeof defaultGetLock>({ id: 'getLock', callable: true });
@@ -258,7 +258,7 @@ function* generateModeTestCases(): Generator<SubtagTestCase> {
         ['write', 'enterWrite'], ['WRITE', 'enterWrite'], ['Write', 'enterWrite']
     ];
     for (const [mode, lockMode] of modes) {
-        const scope = { type: TagVariableType.LOCAL_TAG, name: snowflake.create().toString() } as const;
+        const scope = { type: TagVariableType.LOCAL_TAG, name: createSnowflake() } as const;
         yield {
             title: 'Mode is case insensitive',
             code: `{lock;${mode};myLock;{assert}}`,

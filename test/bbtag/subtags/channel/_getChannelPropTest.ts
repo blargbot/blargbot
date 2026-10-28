@@ -1,9 +1,9 @@
 import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag';
 import { ChannelNotFoundError } from '@blargbot/bbtag';
 import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetChannelPropTestCases(options: GetChannelPropTestData): SubtagTestCase[] {
@@ -92,7 +92,7 @@ function createTestCase(data: GetChannelPropTestData, testCase: GetChannelPropTe
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
     const [channelQuery, quietStr = ''] = args;
-    const channelId = testCase.channelId ?? `channelId<${snowflake.create()}>`;
+    const channelId = testCase.channelId ?? `channelId<${createSnowflake()}>`;
     return {
         title: testCase.title,
         code,

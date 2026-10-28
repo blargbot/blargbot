@@ -1,9 +1,9 @@
 import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
 import type { PardonFeature } from '@blargbot/bbtag/subtags';
 import { PardonSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<PardonFeature>({ id: 'features' });
@@ -23,7 +23,7 @@ await runSubtagTests({
             code: '{pardon}',
             expected: '0',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -36,7 +36,7 @@ await runSubtagTests({
             code: '{pardon}',
             expected: '5',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -49,7 +49,7 @@ await runSubtagTests({
             code: '{pardon;}',
             expected: '3',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -62,7 +62,7 @@ await runSubtagTests({
             code: '{pardon;other user}',
             expected: '7',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -75,7 +75,7 @@ await runSubtagTests({
             code: '{pardon;;6}',
             expected: '26',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -88,7 +88,7 @@ await runSubtagTests({
             code: '{pardon;other user;9}',
             expected: '0',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -101,7 +101,7 @@ await runSubtagTests({
             code: '{pardon;;;My custom reason}',
             expected: '16',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -114,7 +114,7 @@ await runSubtagTests({
             code: '{pardon;other user;6;My custom reason}',
             expected: '6',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -142,7 +142,7 @@ await runSubtagTests({
                 { error: new NotANumberError('abc') }
             ],
             postSetup(bbctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);

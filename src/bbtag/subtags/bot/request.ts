@@ -1,4 +1,3 @@
-import { zodStringToJson } from '@blargbot/core';
 import { BufferWriterStream } from '@blargbot/util';
 import z from 'zod';
 
@@ -7,6 +6,7 @@ import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
 import { convertToString } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
+import { zodStringToJson } from '../../utils/zodStringToJson.js';
 import type { HttpFetchFeature } from '../types.js';
 
 const tag = templates.subtags.request;

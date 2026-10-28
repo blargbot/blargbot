@@ -1,9 +1,9 @@
 import { BBTagRuntimeError, DiscordPermissions, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag';
 import type { AddMemberRolesFeature, GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag/subtags';
 import { ReasonSubtag, RoleAddSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<AddMemberRolesFeature & ListMemberRolesFeature & ListGuildRolesFeature & GetMemberPermissionsFeature>({ id: 'features' });
@@ -31,7 +31,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const userId = ctx.userId;
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
@@ -61,7 +61,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const userId = ctx.userId;
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
@@ -84,7 +84,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924', '9238476938485'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const userId = ctx.userId;
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
@@ -113,7 +113,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const userId = ctx.userId;
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
@@ -145,7 +145,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924', '9238476938485'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -163,7 +163,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -186,7 +186,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const guildId = ctx.guildId;
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
@@ -207,8 +207,8 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
-                const userId = `otherUser<${snowflake.create()}>`;
+                const adminId = createSnowflake();
+                const userId = `otherUser<${createSnowflake()}>`;
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -237,7 +237,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -261,7 +261,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -286,7 +286,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);

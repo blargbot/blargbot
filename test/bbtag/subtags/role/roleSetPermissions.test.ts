@@ -1,9 +1,9 @@
 import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
 import type { GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature, SetRolePermissionsFeature } from '@blargbot/bbtag/subtags';
 import { ReasonSubtag, RoleIdSubtag, RoleSetPermissionsSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
@@ -44,7 +44,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -77,7 +77,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -109,7 +109,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -187,7 +187,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -206,7 +206,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -229,7 +229,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -258,7 +258,7 @@ await runSubtagTests({
             postSetup(bbctx, ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);

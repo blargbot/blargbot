@@ -2,10 +2,10 @@ import type { ReactionEvent } from '@blargbot/bbtag';
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import type { StreamReactionsFeature } from '@blargbot/bbtag/subtags';
 import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, UserIdSubtag, WaitReactionSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import type { SubtagTestContext } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -439,7 +439,7 @@ function createFilterableReaction(
         guildId: ctx.guildId,
         messageId,
         channelId,
-        authorId: snowflake.create().toString(),
+        authorId: createSnowflake(),
         reactorId: userId,
         reaction: Emote.parse(emote)
     };
@@ -452,9 +452,9 @@ function createRejectedReaction(
 ): ReactionEvent {
     return {
         guildId: ctx.guildId,
-        messageId: snowflake.create().toString(),
+        messageId: createSnowflake(),
         channelId: ctx.channelId,
-        authorId: snowflake.create().toString(),
+        authorId: createSnowflake(),
         reactorId: userId,
         reaction: Emote.parse(emote)
     };

@@ -7,11 +7,12 @@ import { describe, it } from 'node:test';
 
 import type { BaseRuntimeLimit, BBTagExpression, FlagDefinition, InjectionContext, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
 import { bbtag, BBTagContext, BBTagEngine, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag';
-import { pluralise as p, repeat, snowflake } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
 import type { Mockable, MockCtorArgs } from '@blargbot/test-util';
 import { Mock } from '@blargbot/test-util';
 import moment from 'moment-timezone';
+
+import { createSnowflake } from '../snowflake.js';
 
 type AnyConstructor<T> = (abstract new (...args: never) => T) & {
     readonly prototype: T;
@@ -61,7 +62,7 @@ export interface SubtagTestSuiteData<T extends Subtag = Subtag> extends Pick<Sub
 }
 
 function makeId(name: string): string {
-    return `${name}<${snowflake.create()}>`;
+    return `${name}<${createSnowflake()}>`;
 }
 
 type ArgCountBound = number | { count: number; noEval: number[]; };
@@ -114,7 +115,7 @@ export class SubtagTestContext {
 
     public adoptSubtagMock<T extends Subtag>(mock: Mock<T>, options: { name?: string; aliases?: string[]; type: AnyConstructor<T>; }): void {
         this.adoptMock(mock);
-        mock.setup(m => m.name).returns(options.name ?? `test-subtag-${snowflake.create()}`);
+        mock.setup(m => m.name).returns(options.name ?? `test-subtag-${createSnowflake()}`);
         mock.setup(m => m.aliases).returns(options.aliases ?? []);
         mock.setup(Reflect.getPrototypeOf).returns(options.type.prototype);
         mock.setup(m => m.constructor).returns(options.type);
@@ -426,8 +427,8 @@ function getTestName(testCase: SubtagTestCase): string {
     if (typeof testCase.errors === 'object') {
         const [errorCount, markerCount] = testCase.errors.reduce((p, c) => c.error instanceof MarkerError ? [p[0], p[1] + 1] : [p[0] + 1, p[1]], [0, 0]);
         if (errorCount > 0 || markerCount > 0) {
-            const errorStr = errorCount === 0 ? undefined : `${errorCount} ${p(errorCount, 'error')}`;
-            const markerStr = markerCount === 0 ? undefined : `${markerCount} ${p(markerCount, 'marker')}`;
+            const errorStr = errorCount === 0 ? undefined : `${errorCount} ${errorCount === 1 ? 'error' : 'errors'}`;
+            const markerStr = markerCount === 0 ? undefined : `${markerCount} ${markerCount === 1 ? 'marker' : 'markers'}`;
             result += ` with ${[markerStr, errorStr].filter(x => x !== undefined).join(' and ')}`;
         }
     }
@@ -550,7 +551,7 @@ function getExpectation(testCase: SubtagTestCase): Exclude<SubtagTestCase['expec
 export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: number, noEval: number[]): Generator<SubtagTestCase> {
     const noEvalLookup = new Set(noEval);
     for (let i = 0; i < minArgCount; i++) {
-        const codeParts = repeat(i, j => {
+        const codeParts = Array.from({ length: i }, (_, j) => {
             const start = 2 + subtagName.length + 7 * j;
             return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
         });
@@ -563,7 +564,7 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
             ]
         };
     }
-    const codeParts = repeat(minArgCount, j => {
+    const codeParts = Array.from({ length: minArgCount }, (_, j) => {
         const start = 2 + subtagName.length + 7 * j;
         return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
     });
@@ -584,7 +585,7 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
 
 export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: number, noEval: number[]): Generator<SubtagTestCase> {
     const noEvalLookup = new Set(noEval);
-    const codeParts = repeat(maxArgCount + 1, j => {
+    const codeParts = Array.from({ length: maxArgCount + 1 }, (_, j) => {
         const start = 2 + subtagName.length + 7 * j;
         return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
     });

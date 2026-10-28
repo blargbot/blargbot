@@ -1,9 +1,9 @@
 import { BBTagRuntimeError, DiscordPermissions, NotANumberError } from '@blargbot/bbtag';
 import type { EditChannelFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, ChannelSetPositionSubtag, ReasonSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<EditChannelFeature & GetMemberPermissionsFeature>({ id: 'features' });
@@ -28,7 +28,7 @@ await runSubtagTests({
             code: '{channelsetpos;239874692346327846;123}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
                 features.setup((m, $) => m.editChannel($({
@@ -46,7 +46,7 @@ await runSubtagTests({
                 { error: new NotANumberError('abc') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
             }
@@ -68,7 +68,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Author cannot move this channel') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.NONE).mustHappen(1);
             }
@@ -80,7 +80,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Failed to move channel: no perms', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
                 features.setup((m, $) => m.editChannel($({
@@ -98,7 +98,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Failed to move channel: no perms', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 channelIdSubtag.setup(m => m.query(bbctx, '239874692346327846', undefined)).resolves(channelId).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.MANAGE_CHANNELS).mustHappen(1);
                 features.setup((m, $) => m.editChannel($({

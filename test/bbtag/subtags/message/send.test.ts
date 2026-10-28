@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag';
 import type { CanPingEveryoneFeature, SendFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, ChannelIsNsfwSubtag, ChannelIsTextSubtag, EscapeBBTagSubtag, SendSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<CanPingEveryoneFeature & SendFeature>({ id: 'features' });
@@ -47,7 +47,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -82,7 +82,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -117,7 +117,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -151,7 +151,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -186,7 +186,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -219,7 +219,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -253,7 +253,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -288,7 +288,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -322,7 +322,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -357,7 +357,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -391,7 +391,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -426,7 +426,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -467,7 +467,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -509,7 +509,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -543,7 +543,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -578,7 +578,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -619,7 +619,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.allowedMentions.everybody = true;
                 roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
@@ -660,7 +660,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.output.nsfw = 'This is a nsfw message';
                 bbctx.root.allowedMentions.everybody = true;
@@ -696,7 +696,7 @@ await runSubtagTests({
             postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const channelId = `otherChannel<${snowflake.create()}>`;
+                const channelId = `otherChannel<${createSnowflake()}>`;
 
                 bbctx.root.output.nsfw = 'This is a nsfw message';
                 bbctx.root.allowedMentions.everybody = true;

@@ -1,9 +1,9 @@
 import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
 import type { WarnFeature } from '@blargbot/bbtag/subtags';
 import { UserIdSubtag, WarnSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<WarnFeature>({ id: 'features' });
@@ -24,7 +24,7 @@ await runSubtagTests({
             code: '{warn}',
             expected: '1',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -37,7 +37,7 @@ await runSubtagTests({
             code: '{warn}',
             expected: '7',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -50,7 +50,7 @@ await runSubtagTests({
             code: '{warn;}',
             expected: '2',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -63,7 +63,7 @@ await runSubtagTests({
             code: '{warn;other user}',
             expected: '5',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -76,7 +76,7 @@ await runSubtagTests({
             code: '{warn;;6}',
             expected: '29',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -89,7 +89,7 @@ await runSubtagTests({
             code: '{warn;other user;9}',
             expected: '9',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -102,7 +102,7 @@ await runSubtagTests({
             code: '{warn;;;My custom reason}',
             expected: '16',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -115,7 +115,7 @@ await runSubtagTests({
             code: '{warn;other user;6;My custom reason}',
             expected: '22',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -143,7 +143,7 @@ await runSubtagTests({
                 { error: new NotANumberError('abc') }
             ],
             postSetup(bbctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);

@@ -137,8 +137,8 @@ export class EditSubtag extends CompiledSubtag {
             embeds = convertToEmbed(embedStr);
             content = contentStr;
         } else {
-            const parsedEmbed = convertToEmbed(contentStr);
-            if (parsedEmbed === undefined || parsedEmbed.some(e => Object.hasOwn(e, 'malformed'))) {
+            const parsedEmbed = convertToEmbed(contentStr, false);
+            if (parsedEmbed === undefined) {
                 content = contentStr;
             } else {
                 embeds = parsedEmbed;

@@ -64,7 +64,7 @@ export class KickSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Kick';
 
-        const authorizerId = noPerms ? context.root.authorizerId ?? context.root.userId : context.root.userId;
+        const authorizerId = noPerms ? context.root.authorizerId : context.root.userId;
         const result = await this.#features.kickMember({
             guildId: context.root.guildId,
             targetId: targetId,

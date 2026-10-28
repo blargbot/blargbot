@@ -63,7 +63,7 @@ export class UnbanSubtag extends CompiledSubtag {
         if (reason === '')
             reason = 'Tag Unban';
 
-        const authorizerId = noPerms ? context.root.authorizerId ?? context.root.userId : context.root.userId;
+        const authorizerId = noPerms ? context.root.authorizerId : context.root.userId;
         const result = await this.#features.unbanUser({
             guildId: context.root.guildId,
             targetId,

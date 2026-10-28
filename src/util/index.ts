@@ -22,6 +22,7 @@ export * from './RollingArray.js';
 export * from './safeJSON.js';
 export * from './Semaphore.js';
 export * from './sleep.js';
+export * from './sortBy.js';
 export * from './streamEventEmitter.js';
 export * from './streamEventTarget.js';
 export * from './throttle.js';

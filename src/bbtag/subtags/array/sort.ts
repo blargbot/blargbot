@@ -1,4 +1,4 @@
-import { compare } from '@blargbot/core';
+import { compareNaturalSortKeys, sortBy, toNaturalSortKey } from '@blargbot/util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -38,7 +38,11 @@ export class SortSubtag extends CompiledSubtag {
             throw new NotAnArrayError(arrayStr);
 
         const direction = convertToBoolean(descendingStr) ?? descendingStr !== '' ? -1 : 1;
-        arr.v = arr.v.sort((a, b) => direction * compare(convertToString(a), convertToString(b)));
+        arr.v = sortBy(
+            arr.v,
+            v => toNaturalSortKey(convertToString(v)),
+            (a, b) => direction * compareNaturalSortKeys(a, b)
+        );
 
         if (arr.n === undefined)
             return arr.v;

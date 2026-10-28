@@ -1,8 +1,8 @@
 import type { GetUserCreatedTimestampFeature } from '@blargbot/bbtag/subtags';
 import { UserCreatedAtSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
@@ -23,7 +23,7 @@ await runSubtagTests({
             expected: '2021-01-01T00:00:00+00:00',
             subtags: [userIdSubtag.instance],
             postSetup(bbctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -37,7 +37,7 @@ await runSubtagTests({
             expected: '2021-12-18T16:42:33+00:00',
             subtags: [userIdSubtag.instance],
             postSetup(bbctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);

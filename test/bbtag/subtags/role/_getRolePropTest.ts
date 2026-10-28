@@ -1,9 +1,9 @@
 import type { BBTagContext, BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
 import { RoleNotFoundError } from '@blargbot/bbtag';
 import { RoleIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetRolePropTestCases(options: GetRolePropTestData): SubtagTestCase[] {
@@ -97,7 +97,7 @@ function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
     const [roleQuery, quietStr = ''] = args;
-    const roleId = `roleId${snowflake.create()}`;
+    const roleId = `roleId${createSnowflake()}`;
     return {
         title: testCase.title,
         code,

@@ -1,10 +1,10 @@
 import { BBTagRuntimeError, ChannelNotFoundError, DiscordPermissions, MessageNotFoundError } from '@blargbot/bbtag';
 import type { CheckMessageExistsFeature, GetMemberPermissionsFeature, ListMessageReactionsFeature, RemoveMessageReactionUserFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, IsStaffSubtag, ReactionRemoveSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<CheckMessageExistsFeature & GetMemberPermissionsFeature & ListMessageReactionsFeature & RemoveMessageReactionUserFeature>({ id: 'features' });
@@ -64,7 +64,7 @@ await runSubtagTests({
             code: '{reactremove;general;2938453289453240}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 const userId = ctx.userId;
                 const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
@@ -97,7 +97,7 @@ await runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const channelId = ctx.channelId;
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2938453289453240', $({ noErrors: true, noLookup: true })))
                     .resolves(undefined)
@@ -131,8 +131,8 @@ await runSubtagTests({
             code: '{reactremove;general;2938453289453240;other}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
-                const userId = snowflake.create().toString();
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
                 const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
@@ -164,7 +164,7 @@ await runSubtagTests({
             expected: '',
             postSetup(bbctx, ctx) {
                 const channelId = ctx.channelId;
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 const emotes = [new Emote('🤔')];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2938453289453240', $({ noErrors: true, noLookup: true })))
                     .resolves(undefined)
@@ -195,7 +195,7 @@ await runSubtagTests({
             code: '{reactremove;general;2938453289453240;🤔}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 const userId = ctx.userId;
                 const emotes = [new Emote('🤔')];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
@@ -227,8 +227,8 @@ await runSubtagTests({
             code: '{reactremove;general;2938453289453240;other;🤔}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
-                const userId = snowflake.create().toString();
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
                 const emotes = [new Emote('🤔')];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
@@ -259,8 +259,8 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
-                const userId = snowflake.create().toString();
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
@@ -300,8 +300,8 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
-                const userId = snowflake.create().toString();
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
@@ -321,7 +321,7 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const channelId = '2389476728423424378';
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
@@ -343,8 +343,8 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Author must be staff to modify unrelated messages') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
-                const userId = snowflake.create().toString();
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
@@ -366,8 +366,8 @@ await runSubtagTests({
             code: '{reactremove;general;2938453289453240;other;🤔}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
-                const userId = snowflake.create().toString();
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
                 const emotes = [new Emote('🤔')];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
@@ -395,7 +395,7 @@ await runSubtagTests({
             code: '{reactremove;general;2938453289453240;other;🤔}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 const userId = ctx.userId;
                 const emotes = [new Emote('🤔')];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
@@ -430,7 +430,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 const userId = ctx.userId;
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
@@ -459,8 +459,8 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
-                const userId = snowflake.create().toString();
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
                 const emotes = [new Emote('fakeemote', 192612896213677963n)];
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
@@ -491,8 +491,8 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
-                const userId = snowflake.create().toString();
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
                 channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);

@@ -1,4 +1,4 @@
-import { compare } from '@blargbot/core';
+import { compareNaturalSortKeys, sortBy, toNaturalSortKey } from '@blargbot/util';
 
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
@@ -42,14 +42,17 @@ export class JsonSortSubtag extends CompiledSubtag {
         const path = bbtag.json.getPathKeys(pathStr);
         const orderMult = descending ? -1 : 1;
 
-        obj.object = obj.object.map(v => ({ value: v, sortKey: bbtag.json.get(v, path) }))
-            .map((v, i, a) => {
-                if (v.sortKey === undefined)
-                    throw new BBTagRuntimeError(`Cannot read property ${pathStr} at index ${i}, ${a.filter(x => x.sortKey === undefined).length} total failures`);
-                return { value: v.value, sortKey: convertToString(v.sortKey) };
-            })
-            .sort((a, b) => orderMult * compare(a.sortKey, b.sortKey))
-            .map(x => x.value);
+        obj.object = sortBy(
+            obj.object
+                .map(v => ({ value: v, sortKey: bbtag.json.get(v, path) }))
+                .map((v, i, a) => {
+                    if (v.sortKey === undefined)
+                        throw new BBTagRuntimeError(`Cannot read property ${pathStr} at index ${i}, ${a.filter(x => x.sortKey === undefined).length} total failures`);
+                    return { value: v.value, sortKey: convertToString(v.sortKey) };
+                }),
+            v => toNaturalSortKey(v.sortKey),
+            (a, b) => orderMult * compareNaturalSortKeys(a, b)
+        ).map(x => x.value);
 
         if (obj.variable === undefined)
             return obj.object;

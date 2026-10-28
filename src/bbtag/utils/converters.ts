@@ -1,8 +1,8 @@
 import { colorMap } from '@blargbot/colors';
-import { zodStringToJson } from '@blargbot/core';
 import z from 'zod';
 
 import type { Embed, MalformedEmbed } from '../types.js';
+import { zodStringToJson } from './zodStringToJson.js';
 
 export function convertToString(value: unknown): string {
     switch (typeof value) {
@@ -50,13 +50,6 @@ export function convertToNumber(value: string): number | undefined {
     return isNaN(result) ? undefined : result;
 }
 
-export function convertToNumberStrict(value: string): number | undefined {
-    value = value.replaceAll(/[,.](?=[^,.]*[,.])/g, '').replace(/[,.]/, '.');
-    if (!/^[+-]?\d+(?:\.\d+)?$/.test(value))
-        return undefined;
-    const result = parseFloat(value);
-    return isNaN(result) ? undefined : result;
-}
 type Enumerate<
     N extends number,
     Acc extends number[] = [],
@@ -153,14 +146,14 @@ const unitMultiples: Record<Exclude<DurationUnit, 'years'>, bigint> = {
     milliseconds: 1_000_000n
 };
 
-export function convertToDuration(text: string): Temporal.Duration | undefined {
+export function convertToDuration(value: string): Temporal.Duration | undefined {
     const pattern = /\s*(\d+(?:\.\d+)?) ?([a-z]+)/iy;
     const quantities = new Map<DurationUnit, string>();
 
     let position = 0;
-    while (position < text.length) {
+    while (position < value.length) {
         pattern.lastIndex = position;
-        const match = pattern.exec(text);
+        const match = pattern.exec(value);
         if (match === null)
             break;
         const [, quantity, word] = match;
@@ -171,7 +164,7 @@ export function convertToDuration(text: string): Temporal.Duration | undefined {
         position = pattern.lastIndex;
     }
 
-    if (quantities.size === 0 || text.slice(position).trim().length > 0)
+    if (quantities.size === 0 || value.slice(position).trim().length > 0)
         return undefined;
 
     const total = { years: 0n, months: 0n, days: 0n, hours: 0n, minutes: 0n, seconds: 0n, milliseconds: 0n };

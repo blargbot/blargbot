@@ -2,9 +2,9 @@ import type { MessageEvent } from '@blargbot/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag';
 import type { StreamMessagesFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, MessageIdSubtag, OperatorSubtag, UserIdSubtag, WaitMessageSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import type { SubtagTestContext } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
@@ -317,7 +317,7 @@ function createRejectedMessage(
     return {
         guildId: ctx.guildId,
         authorId: userId,
-        channelId: snowflake.create().toString(),
-        messageId: snowflake.create().toString()
+        channelId: createSnowflake(),
+        messageId: createSnowflake()
     };
 }

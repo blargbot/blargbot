@@ -114,8 +114,8 @@ export class SendSubtag extends CompiledSubtag {
 }
 
 function resolveContent(content: string): [string | undefined, Embed[] | undefined] {
-    const embeds = convertToEmbed(content);
-    if (embeds === undefined || 'malformed' in embeds[0])
+    const embeds = convertToEmbed(content, false);
+    if (embeds === undefined)
         return [content, undefined];
     return [undefined, embeds];
 }

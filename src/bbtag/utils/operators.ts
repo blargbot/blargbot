@@ -1,4 +1,4 @@
-import { compare } from '@blargbot/core';
+import { compareNaturalSortKeys, toNaturalSortKey } from '@blargbot/util';
 
 import { convertToString } from './converters.js';
 import { tagArray } from './tagArray.js';
@@ -35,12 +35,12 @@ export function operate<T extends keyof typeof operators>(operator: T, ...args: 
 }
 
 export const ordinalOperators: Readonly<Record<OrdinalOperator, (a: string, b: string) => boolean>> = {
-    '==': (a, b) => compare(a, b) === 0,
-    '!=': (a, b) => compare(a, b) !== 0,
-    '>=': (a, b) => compare(a, b) >= 0,
-    '>': (a, b) => compare(a, b) > 0,
-    '<=': (a, b) => compare(a, b) <= 0,
-    '<': (a, b) => compare(a, b) < 0
+    '==': (a, b) => compareNaturalSortKeys(toNaturalSortKey(a), toNaturalSortKey(b)) === 0,
+    '!=': (a, b) => compareNaturalSortKeys(toNaturalSortKey(a), toNaturalSortKey(b)) !== 0,
+    '>=': (a, b) => compareNaturalSortKeys(toNaturalSortKey(a), toNaturalSortKey(b)) >= 0,
+    '>': (a, b) => compareNaturalSortKeys(toNaturalSortKey(a), toNaturalSortKey(b)) > 0,
+    '<=': (a, b) => compareNaturalSortKeys(toNaturalSortKey(a), toNaturalSortKey(b)) <= 0,
+    '<': (a, b) => compareNaturalSortKeys(toNaturalSortKey(a), toNaturalSortKey(b)) < 0
 };
 
 export const stringOperators: Readonly<Record<StringOperator, (a: string, b: string) => boolean>> = {

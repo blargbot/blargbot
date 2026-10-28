@@ -1,10 +1,10 @@
-import { zodStringToJson } from '@blargbot/core';
 import { Iterable } from '@blargbot/util';
 import z from 'zod';
 
 import type { BBTagArray } from '../types.js';
 import type { Variables } from '../Variables.js';
 import { convertToInteger } from './converters.js';
+import { zodStringToJson } from './zodStringToJson.js';
 
 export const tagArray = Object.freeze({
     serialize(array: JArray | BBTagArray, varName?: string): string {

@@ -1,9 +1,9 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
 import type { AddModLogFeature } from '@blargbot/bbtag/subtags';
 import { ModLogSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<AddModLogFeature>({ id: 'features' });
@@ -23,7 +23,7 @@ await runSubtagTests({
             code: '{modlog;poke;023634983746234834}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, '023634983746234834', $({ global: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -44,8 +44,8 @@ await runSubtagTests({
             code: '{modlog;poke;023634983746234834;2365432687945234625}',
             expected: '',
             postSetup(bbctx) {
-                const user1Id = snowflake.create().toString();
-                const user2Id = snowflake.create().toString();
+                const user1Id = createSnowflake();
+                const user2Id = createSnowflake();
 
                 userIdSubtag.setup((m, $) => m.query(bbctx, '023634983746234834', $({ global: true })))
                     .resolves(user1Id)
@@ -67,8 +67,8 @@ await runSubtagTests({
             code: '{modlog;poke;023634983746234834;2365432687945234625;power abuse is fun}',
             expected: '',
             postSetup(bbctx) {
-                const user1Id = snowflake.create().toString();
-                const user2Id = snowflake.create().toString();
+                const user1Id = createSnowflake();
+                const user2Id = createSnowflake();
 
                 userIdSubtag.setup((m, $) => m.query(bbctx, '023634983746234834', $({ global: true })))
                     .resolves(user1Id)
@@ -90,8 +90,8 @@ await runSubtagTests({
             code: '{modlog;poke;023634983746234834;2365432687945234625;power abuse is fun;red}',
             expected: '',
             postSetup(bbctx) {
-                const user1Id = snowflake.create().toString();
-                const user2Id = snowflake.create().toString();
+                const user1Id = createSnowflake();
+                const user2Id = createSnowflake();
 
                 userIdSubtag.setup((m, $) => m.query(bbctx, '023634983746234834', $({ global: true })))
                     .resolves(user1Id)
@@ -113,7 +113,7 @@ await runSubtagTests({
             code: '{modlog;poke;023634983746234834;;;}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, '023634983746234834', $({ global: true })))
                     .resolves(userId)
                     .mustHappen(1);

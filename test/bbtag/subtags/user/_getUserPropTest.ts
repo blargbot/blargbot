@@ -1,9 +1,9 @@
 import type { BBTagContext, BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
 import { UserNotFoundError } from '@blargbot/bbtag';
 import { UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetUserPropTestCases(options: GetUserPropTestData): SubtagTestCase[] {
@@ -97,7 +97,7 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
     const [userQuery, quietStr = ''] = args;
-    const userId = `userId<${snowflake.create()}>`;
+    const userId = `userId<${createSnowflake()}>`;
     return {
         title: testCase.title,
         code,

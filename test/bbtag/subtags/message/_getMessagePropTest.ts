@@ -1,10 +1,10 @@
 import type { BBTagContext, BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
 import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import type { Mockable, SetupMock } from '@blargbot/test-util';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetMessagePropTestCases<Result>(options: GetMessagePropTestData<Result>): SubtagTestCase[] {
@@ -153,7 +153,7 @@ function createTestCase<Result>(data: GetMessagePropTestData<Result>, testCase: 
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
     const apiMessageMap = new WeakMap<SubtagTestContext, string>();
     const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
-    const channelId = `channelId<${snowflake.create()}>`;
+    const channelId = `channelId<${createSnowflake()}>`;
     return {
         title: testCase.title,
         code,

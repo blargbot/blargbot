@@ -2,10 +2,10 @@ import type { Variables, VariablesProvider } from '@blargbot/bbtag';
 import { BBTagRuntimeError, DiscordPermissions, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag';
 import type { GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature, VariablesFeature } from '@blargbot/bbtag/subtags';
 import { ReasonSubtag, RoleIdSubtag, UserIdSubtag, UserSetRolesSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
 import type { SetMemberRolesFeature } from '../../../../src/bbtag/subtags/user/userSetRoles.js';
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
@@ -42,7 +42,7 @@ await runSubtagTests({
             subtags: [userIdSubtag.instance],
             postSetup(bbctx, ctx) {
                 const guildId = ctx.guildId;
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const userId = ctx.userId;
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
@@ -70,7 +70,7 @@ await runSubtagTests({
             },
             setup(ctx) {
                 const guildId = ctx.guildId;
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
@@ -102,7 +102,7 @@ await runSubtagTests({
             setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['283674284762348926', '234967249876489624'];
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
@@ -137,7 +137,7 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 const guildId = ctx.guildId;
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
@@ -155,7 +155,7 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const guildId = ctx.guildId;
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const userId = ctx.userId;
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
@@ -179,7 +179,7 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const guildId = ctx.guildId;
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const userId = ctx.userId;
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
@@ -203,7 +203,7 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const guildId = ctx.guildId;
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const userId = ctx.userId;
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
@@ -227,7 +227,7 @@ await runSubtagTests({
             ],
             postSetup(bbctx, ctx) {
                 const guildId = ctx.guildId;
-                const adminId = snowflake.create().toString();
+                const adminId = createSnowflake();
                 const userId = ctx.userId;
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;

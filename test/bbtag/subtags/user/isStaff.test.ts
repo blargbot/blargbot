@@ -1,9 +1,9 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
 import type { IsUserStaffFeature } from '@blargbot/bbtag/subtags';
 import { IsStaffSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<IsUserStaffFeature>({ id: 'features' });
@@ -50,7 +50,7 @@ await runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'true',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -63,7 +63,7 @@ await runSubtagTests({
             code: '{isstaff;other user},{isstaff;other user},{isstaff;other user}',
             expected: 'true,true,true',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(3);
@@ -76,7 +76,7 @@ await runSubtagTests({
             code: '{isstaff;other user}',
             expected: 'false',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);

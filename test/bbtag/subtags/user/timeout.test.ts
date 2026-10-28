@@ -1,9 +1,9 @@
 import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag';
 import type { SetUserTimeoutFeature } from '@blargbot/bbtag/subtags';
 import { TimeoutSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<SetUserTimeoutFeature>({ id: 'features' });
@@ -42,7 +42,7 @@ await runSubtagTests({
             code: '{timeout;other user;1s}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -62,7 +62,7 @@ await runSubtagTests({
             code: '{timeout;other user;29d}',
             expected: 'Success',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -92,7 +92,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
             ],
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -115,7 +115,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('User is already timed out', 'other user is already timed out!') }
             ],
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -138,7 +138,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) users!') }
             ],
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -161,7 +161,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -184,7 +184,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) users!') }
             ],
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
@@ -207,7 +207,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) other user!') }
             ],
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);

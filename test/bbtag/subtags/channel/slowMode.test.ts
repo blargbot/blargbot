@@ -1,9 +1,9 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag';
 import type { EditChannelFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, ReasonSubtag, SlowModeSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<EditChannelFeature>({ id: 'features' });
@@ -62,7 +62,7 @@ await runSubtagTests({
             code: '{slowmode;2342543235325252345}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
@@ -80,7 +80,7 @@ await runSubtagTests({
             code: '{slowmode;2342543235325252345;37645}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
@@ -98,7 +98,7 @@ await runSubtagTests({
             code: '{slowmode;2342543235325252345;this is some random text}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
@@ -119,7 +119,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
@@ -140,7 +140,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Missing required permissions', 'Some other error message') }
             ],
             postSetup(bbctx, ctx) {
-                const channelId = snowflake.create().toString();
+                const channelId = createSnowflake();
                 channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);

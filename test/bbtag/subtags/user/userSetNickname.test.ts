@@ -1,9 +1,9 @@
 import { UserNotFoundError } from '@blargbot/bbtag';
 import type { SetMemberNicknameFeature } from '@blargbot/bbtag/subtags';
 import { ReasonSubtag, UserIdSubtag, UserSetNickSubtag } from '@blargbot/bbtag/subtags';
-import { snowflake } from '@blargbot/core';
 import { Mock } from '@blargbot/test-util';
 
+import { createSnowflake } from '../../snowflake.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<SetMemberNicknameFeature>({ id: 'features' });
@@ -28,7 +28,7 @@ await runSubtagTests({
             code: '{usersetnick;abc}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -44,7 +44,7 @@ await runSubtagTests({
             code: '{usersetnick;abc;other user}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
@@ -60,7 +60,7 @@ await runSubtagTests({
             code: '{usersetnick;abc;blargbot}',
             expected: '',
             postSetup(bbctx, ctx) {
-                const userId = snowflake.create().toString();
+                const userId = createSnowflake();
                 userIdSubtag.setup(m => m.query(bbctx, 'blargbot', undefined))
                     .resolves(userId)
                     .mustHappen(1);
