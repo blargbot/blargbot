@@ -93,7 +93,7 @@ export class SubtagTestContext {
         this.hooks.setup((m, $) => m.internalServerError!($.anything)).invokes(i => {
             throw i.arguments[0];
         }, { isFallback: true });
-        this.hooks.setup((m, $) => m.step!()).returns(undefined, { isFallback: true });
+        this.hooks.setup(m => m.step!()).returns(undefined, { isFallback: true });
         this.hooks.setup((m, $) => m.subtagExecuting!($.anything, $.anything)).returns(undefined, { isFallback: true });
         this.hooks.setup((m, $) => m.loop!($.anything)).returns(undefined, { isFallback: true });
 
