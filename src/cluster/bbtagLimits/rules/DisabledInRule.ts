@@ -1,9 +1,8 @@
+import type { SubtagCall } from '@blargbot/bbtag';
+import { BBTagRuntimeError, templates } from '@blargbot/bbtag';
 import type { IFormattable } from '@blargbot/formatting';
 
-import type { BBTagContext } from '../../BBTagContext.js';
-import { BBTagRuntimeError } from '../../errors/index.js';
-import type { SubtagCall } from '../../language/index.js';
-import { templates } from '../../text.js';
+import type { ClusterBBTagContextMetadata } from '../../managers/BBTagManager.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export class DisabledInRule implements RuntimeLimitRule {
@@ -12,7 +11,7 @@ export class DisabledInRule implements RuntimeLimitRule {
         this.#subtags = subtagNames;
     }
 
-    public check(context: BBTagContext, subtagName: string): void {
+    public check(context: ClusterBBTagContextMetadata, subtagName: string): void {
         const problem = this.#subtags.map(s => ({ s, i: context.callStack.lastIndexOf(s) }))
             .reduce((p, c) => p.i < c.i ? c : p, { s: '', i: -1 });
         if (problem.s.length > 0) {

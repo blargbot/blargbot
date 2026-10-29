@@ -3,11 +3,11 @@ import { UserCreatedAtSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 const features = new Mock<GetUserCreatedTimestampFeature>({ id: 'features' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
 
 await runSubtagTests({
     subtag: new UserCreatedAtSubtag(features.instance),
@@ -15,16 +15,16 @@ await runSubtagTests({
     names: ['userCreatedAt'],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptMock(userIdSubtag);
     },
     cases: [
         {
             code: '{usercreatedat}',
             expected: '2021-01-01T00:00:00+00:00',
             subtags: [userIdSubtag.instance],
-            postSetup(bbctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getUserCreatedTimestamp(userId))
@@ -36,9 +36,9 @@ await runSubtagTests({
             code: '{usercreatedat}',
             expected: '2021-12-18T16:42:33+00:00',
             subtags: [userIdSubtag.instance],
-            postSetup(bbctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $({ noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getUserCreatedTimestamp(userId))

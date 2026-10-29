@@ -2,21 +2,18 @@ import type Emote from '@blargbot/discord-emote';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { BBTagRuntimeError } from './errors/index.js';
-import type { BBTagExpression, SourceMarker, SubtagCall } from './language/index.js';
-import type { RuntimeLimit } from './limits/index.js';
+import type { BBTagExpression, SubtagCall } from './language/index.js';
+import type { Subtag } from './Subtag.js';
 import type { SubtagType } from './utils/index.js';
 
-export interface AnalysisResults {
-    readonly errors: AnalysisResult[];
-    readonly warnings: AnalysisResult[];
-}
-
-export interface AnalysisResult {
-    readonly location: SourceMarker;
-    readonly message: IFormattable<string>;
-}
-
 export type BBTagArray = { n?: string; v: JArray; };
+
+export interface BBTagHooks {
+    loop?: (subtag: Subtag) => Awaitable<void>;
+    subtagExecuting?: (subtag: Subtag, call: SubtagCall) => Awaitable<Disposable | undefined>;
+    internalServerError?: (error: unknown) => Awaitable<void>;
+    step?: () => Awaitable<void>;
+}
 
 export interface BBTagRuntimeScope {
     tagName: string;
@@ -32,7 +29,6 @@ export interface BBTagRuntimeScope {
     reaction: string | undefined;
     reactUser: string | undefined;
     input: BBTagInput;
-    cooldown: number;
 }
 export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
     readonly botId: string;
@@ -46,14 +42,12 @@ export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
         replace?: (value: string) => Promise<string>;
         readonly reactions: string[];
     };
-    readonly limit: RuntimeLimit;
     readonly authorId: string | undefined;
     readonly authorizerId: string;
     readonly prefix: string | undefined;
     readonly isCC: boolean;
     readonly tagVars: boolean;
     readonly silent: boolean;
-    readonly flagDefinitions: readonly FlagDefinition[];
     readonly functions: Map<string, BBTagExpression>;
     readonly queryCache: {
         failedQueries: number;
@@ -71,83 +65,9 @@ export interface BBTagRuntimeRootScope extends BBTagRuntimeScope {
     };
 }
 
-export interface BBTagRuntimeInput {
-    readonly cooldown: number;
-    readonly author: string | undefined;
-    readonly authorizer: string;
-    readonly prefix: string | undefined;
-    readonly isCC: boolean;
-    readonly tagVars: boolean;
-    readonly tagName: string;
-    readonly flagDefinitions: readonly FlagDefinition[];
-    readonly input: string;
-    readonly limit: RuntimeLimit;
-    readonly messageId: string;
-    readonly guildId: string;
-    readonly channelId: string;
-    readonly userId: string;
-    readonly silent: boolean;
-}
-
 export interface BBTagInput {
-    readonly raw: string;
     readonly array: readonly string[];
     readonly flags: FlagResult;
-}
-
-export interface SerializedRuntimeLimit {
-    type: string;
-    rules: { [key: string]: JToken[]; };
-}
-
-export interface SerializedBBTagContext {
-    msg: {
-        id: string;
-        timestamp: number;
-        content: string;
-        channel: { id: string; serialized: string; };
-        member?: { id: string; serialized: string; };
-        attachments: object[];
-        embeds: Embed[];
-    };
-    isCC: boolean;
-    scope: {
-        quiet?: boolean;
-        fallback?: string;
-        noLookupErrors?: boolean;
-        reason?: string;
-        inLock: boolean;
-        paramsarray?: string[];
-        reaction?: string;
-        reactUser?: string;
-        functions: Record<string, BBTagExpression>;
-        isTag: boolean;
-    };
-    inputRaw: string;
-    flags: readonly FlagDefinition[];
-    data: {
-        query: {
-            count: number;
-            user: Record<string, string>;
-            role: Record<string, string>;
-            channel: Record<string, string>;
-        };
-        ownedMsgs: string[];
-        allowedMentions: {
-            users: string[];
-            roles: string[];
-            everybody: boolean;
-        };
-        stackSize: number;
-    };
-    tagName: string;
-    rootTagName: string;
-    author: string | undefined;
-    authorizer: string | undefined;
-    prefix: string | undefined;
-    tagVars: boolean;
-    tempVars: Record<string, JToken>;
-    limit: SerializedRuntimeLimit;
 }
 
 export interface LocatedRuntimeError {
@@ -184,26 +104,6 @@ export interface QueryEntityOptions {
 
 export interface QueryUserOptions extends QueryEntityOptions {
     readonly global?: boolean;
-}
-
-export interface ExecutionResult {
-    readonly source: string;
-    readonly tagName: string;
-    readonly input: string;
-    readonly content: string;
-    readonly errors: LocatedRuntimeError[];
-    readonly debug: RuntimeDebugEntry[];
-    readonly duration: {
-        readonly total: number;
-        readonly database: number;
-        readonly active: number;
-        readonly subtag: ReadonlyMap<string, readonly number[]>;
-    };
-    readonly database: {
-        readonly committed: number;
-        readonly values: JObject;
-    };
-    readonly loadedSources: readonly string[];
 }
 
 export type SubtagSignatureValueParameter =
@@ -328,6 +228,11 @@ export interface FlagDefinition {
 type FlagResultBase = { readonly [P in Alphanumeric]?: string };
 export interface FlagResult extends FlagResultBase {
     readonly _: string;
+}
+
+const flagChars = new Set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_');
+export function isFlagKey(value: string): value is keyof FlagResult {
+    return flagChars.has(value);
 }
 
 export interface FileContent {

@@ -1,4 +1,6 @@
+import type { BBTagContext } from '../BBTagContext.js';
 import type { DiscordPermissions } from '../enums.js';
+import type { BBTagInput } from '../types.js';
 import type { VariablesProvider } from '../Variables.js';
 
 export interface VariablesFeature {
@@ -43,4 +45,35 @@ export interface AsyncRegex {
     match(text: string): Promise<string[]>;
     split(text: string): Promise<string[]>;
 
+}
+
+export interface CooldownScope {
+    readonly guildId: string;
+    readonly userId: string;
+    readonly tagName: string;
+    readonly isCC: boolean;
+    readonly cooldownMs: number;
+}
+
+export interface TagCooldownFeature {
+    assertTagCooldown(scope: CooldownScope): Promise<void>;
+}
+
+export interface ParseInputFeature {
+    parseInput(context: BBTagContext, input: string | string[]): BBTagInput;
+}
+
+export interface EditRoleOptions {
+    readonly guildId: string;
+    readonly roleId: string;
+    readonly name?: string;
+    readonly permissions?: DiscordPermissions;
+    readonly color?: number;
+    readonly hoist?: boolean;
+    readonly mentionable?: boolean;
+    readonly auditReason: string;
+}
+
+export interface EditRoleFeature {
+    editRole(options: EditRoleOptions): Promise<ApiResult>;
 }

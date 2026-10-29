@@ -4,11 +4,11 @@ import { ChannelIdSubtag, ReasonSubtag, SlowModeSubtag } from '@blargbot/bbtag/s
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<EditChannelFeature>({ id: 'features' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'channelId' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 
 await runSubtagTests({
     subtag: new SlowModeSubtag(features.instance),
@@ -17,18 +17,16 @@ await runSubtagTests({
     names: ['slowMode'],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
+        ctx.adoptMock(channelIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         {
             code: '{slowmode}',
             expected: '',
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editChannel($({
@@ -44,8 +42,8 @@ await runSubtagTests({
         {
             code: '{slowmode;1234}',
             expected: '',
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1234', $({ noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1234', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
                 features.setup((m, $) => m.editChannel($({
@@ -61,9 +59,9 @@ await runSubtagTests({
         {
             code: '{slowmode;2342543235325252345}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editChannel($({
@@ -79,9 +77,9 @@ await runSubtagTests({
         {
             code: '{slowmode;2342543235325252345;37645}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editChannel($({
@@ -97,9 +95,9 @@ await runSubtagTests({
         {
             code: '{slowmode;2342543235325252345;this is some random text}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editChannel($({
@@ -118,9 +116,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editChannel($({
@@ -139,9 +137,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Missing required permissions', 'Some other error message') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '2342543235325252345', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '2342543235325252345', $({ noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
                 features.setup((m, $) => m.editChannel($({

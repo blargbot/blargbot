@@ -18,8 +18,8 @@ await runSubtagTests({
         {
             code: '{reactuser}',
             expected: '237462498437649',
-            postSetup(bbctx) {
-                bbctx.local.reactUser = '237462498437649';
+            setup(ctx) {
+                ctx.bbtag.local.reactUser = '237462498437649';
             }
         }
     ]

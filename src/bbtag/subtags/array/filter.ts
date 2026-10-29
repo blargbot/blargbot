@@ -35,7 +35,7 @@ export class FilterSubtag extends CompiledSubtag {
         const array = await bbtag.tagArray.deserializeOrGetIterable(variables, source) ?? [];
         try {
             for (const item of array) {
-                await context.root.limit.check(context, 'filter:loops');
+                await context.hooks.loop?.(this);
                 await variables.set(varName, item);
                 if (convertToBoolean((await code.execute()).trim()) ?? false)
                     yield item;

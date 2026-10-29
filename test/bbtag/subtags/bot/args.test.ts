@@ -8,7 +8,7 @@ await runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     names: ['args'],
     setup(ctx) {
-        ctx.input = 'arg1 arg2 "arg3 arg3" arg4 "arg5"';
+        ctx.input.array = ['arg1', 'arg2', 'arg3 arg3', 'arg4', 'arg5'];
     },
     cases: [
         {
@@ -19,14 +19,14 @@ await runSubtagTests({
             code: '{args}',
             expected: '',
             setup(ctx) {
-                ctx.input = '';
+                ctx.input.array = [];
             }
         },
         {
             code: '{args}',
             expected: '{json;{\n "key": "value"\n}}',
             setup(ctx) {
-                ctx.input = '{json;{\n  "key": "value"\n}}';
+                ctx.input.array = ['{json;{\n', '"key":', '"value"\n}}'];
             }
         },
         {

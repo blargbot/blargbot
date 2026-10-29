@@ -13,30 +13,30 @@ await runSubtagTests({
             code: '{debug}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.debug.length, 1);
-                assert.equal(ctx.debug[0].text, '');
-                assert.equal(ctx.debug[0].subtag.start.index, 0);
-                assert.equal(ctx.debug[0].subtag.end.index, 7);
+                assert.equal(ctx.bbtag.debug.length, 1);
+                assert.equal(ctx.bbtag.debug[0].text, '');
+                assert.equal(ctx.bbtag.debug[0].subtag.start.index, 0);
+                assert.equal(ctx.bbtag.debug[0].subtag.end.index, 7);
             }
         },
         {
             code: '{debug;some text!}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.debug.length, 1);
-                assert.equal(ctx.debug[0].text, 'some text!');
-                assert.equal(ctx.debug[0].subtag.start.index, 0);
-                assert.equal(ctx.debug[0].subtag.end.index, 18);
+                assert.equal(ctx.bbtag.debug.length, 1);
+                assert.equal(ctx.bbtag.debug[0].text, 'some text!');
+                assert.equal(ctx.bbtag.debug[0].subtag.start.index, 0);
+                assert.equal(ctx.bbtag.debug[0].subtag.end.index, 18);
             }
         },
         {
             code: '{debug;some text!;and some more;ooh fancy}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.debug.length, 1);
-                assert.equal(ctx.debug[0].text, 'some text! and some more ooh fancy');
-                assert.equal(ctx.debug[0].subtag.start.index, 0);
-                assert.equal(ctx.debug[0].subtag.end.index, 42);
+                assert.equal(ctx.bbtag.debug.length, 1);
+                assert.equal(ctx.bbtag.debug[0].text, 'some text! and some more ooh fancy');
+                assert.equal(ctx.bbtag.debug[0].subtag.start.index, 0);
+                assert.equal(ctx.bbtag.debug[0].subtag.end.index, 42);
             }
         }
     ]

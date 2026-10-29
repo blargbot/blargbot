@@ -4,11 +4,11 @@ import { KickSubtag, ReasonSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags'
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<KickMemberFeature>({ id: 'features' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 
 await runSubtagTests({
     subtag: new KickSubtag(features.instance),
@@ -17,11 +17,9 @@ await runSubtagTests({
     otherSubtags: [userIdSubtag.instance, reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
+        ctx.adoptMock(userIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         {
@@ -30,8 +28,8 @@ await runSubtagTests({
             errors: [
                 { error: new UserNotFoundError('abc') }
             ],
-            postSetup(bbctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'abc', $({ noLookup: true })))
+            setup(ctx) {
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'abc', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -39,9 +37,9 @@ await runSubtagTests({
         {
             code: '{kick;other user}',
             expected: 'Success',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
@@ -62,9 +60,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick users!') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
@@ -85,9 +83,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick other user!') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
@@ -108,9 +106,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
@@ -131,9 +129,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick other user!') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
@@ -151,9 +149,9 @@ await runSubtagTests({
         {
             code: '{kick;other user;My reason here}',
             expected: 'Success',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
@@ -171,9 +169,9 @@ await runSubtagTests({
         {
             code: '{kick;other user;My reason here;x}',
             expected: 'Success',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
 
@@ -191,9 +189,9 @@ await runSubtagTests({
         {
             code: '{kick;other user;My reason here;}',
             expected: 'Success',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
 

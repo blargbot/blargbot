@@ -19,10 +19,8 @@ await runSubtagTests({
             expected: 'My cool command',
             setup(ctx) {
                 ctx.tagName = 'My cool command';
-            },
-            postSetup(bbctx) {
-                bbctx.enterScope();
-                bbctx.local.tagName = 'WRONG';
+                ctx.bbtag.enterScope();
+                ctx.bbtag.local.tagName = 'WRONG';
             }
         }
     ]

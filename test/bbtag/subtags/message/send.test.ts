@@ -6,12 +6,12 @@ import { ChannelIdSubtag, ChannelIsNsfwSubtag, ChannelIsTextSubtag, EscapeBBTagS
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<CanPingEveryoneFeature & SendFeature>({ id: 'features' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
-const channelIsTextSubtag = new Mock<ChannelIsTextSubtag>({ id: 'channelIsTextSubtag' });
-const channelIsNsfwSubtag = new Mock<ChannelIsNsfwSubtag>({ id: 'channelIsNsfwSubtag' });
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
+const channelIsTextSubtag = createMockSubtag(ChannelIsTextSubtag);
+const channelIsNsfwSubtag = createMockSubtag(ChannelIsNsfwSubtag);
 
 await runSubtagTests({
     subtag: new SendSubtag(features.instance),
@@ -20,9 +20,9 @@ await runSubtagTests({
     otherSubtags: [channelIdSubtag.instance, channelIsTextSubtag.instance, channelIsNsfwSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-        ctx.adoptSubtagMock(channelIsTextSubtag, { type: ChannelIsTextSubtag });
-        ctx.adoptSubtagMock(channelIsNsfwSubtag, { type: ChannelIsNsfwSubtag });
+        ctx.adoptMock(channelIdSubtag);
+        ctx.adoptMock(channelIsTextSubtag);
+        ctx.adoptMock(channelIsNsfwSubtag);
     },
     cases: [
         {
@@ -31,8 +31,8 @@ await runSubtagTests({
             errors: [
                 { error: new ChannelNotFoundError('1923681361978632931') }
             ],
-            postSetup(bbctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(undefined).mustHappen(1);
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(undefined).mustHappen(1);
             }
         },
         {
@@ -43,18 +43,16 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: undefined,
@@ -66,8 +64,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: false, reason: 'Test error' });
             },
-            assert(bbctx) {
-                assert.equal(bbctx.root.ownedMessageIds.size, 1);
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.ownedMessageIds.size, 1);
             }
         },
         {
@@ -78,18 +76,16 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: undefined,
@@ -101,8 +97,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: false, reason: 'UNKNOWN' });
             },
-            assert(bbctx) {
-                assert.equal(bbctx.root.ownedMessageIds.size, 1);
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.ownedMessageIds.size, 1);
             }
         },
         {
@@ -113,18 +109,16 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: undefined,
@@ -136,8 +130,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: false });
             },
-            assert(bbctx) {
-                assert.equal(bbctx.root.ownedMessageIds.size, 1);
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.ownedMessageIds.size, 1);
             }
         },
         {
@@ -147,18 +141,16 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.isCC = true;
                 features.setup(m => m.canPingEveryone(ctx.guildId)).resolves(true).mustHappen(1);
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: undefined,
@@ -170,8 +162,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -182,18 +174,16 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.isCC = true;
                 features.setup(m => m.canPingEveryone(ctx.guildId)).resolves(true).mustHappen(1);
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
@@ -205,8 +195,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -215,18 +205,16 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: undefined,
@@ -238,8 +226,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -249,18 +237,16 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }],
@@ -272,8 +258,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -284,18 +270,16 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.isCC = true;
                 features.setup(m => m.canPingEveryone(ctx.guildId)).resolves(true).mustHappen(1);
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -307,8 +291,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -318,18 +302,16 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -341,8 +323,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -353,18 +335,16 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.isCC = true;
                 features.setup(m => m.canPingEveryone(ctx.guildId)).resolves(true).mustHappen(1);
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -376,8 +356,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -387,18 +367,16 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -410,8 +388,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -422,18 +400,16 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.isCC = true;
                 features.setup(m => m.canPingEveryone(ctx.guildId)).resolves(true).mustHappen(1);
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -452,8 +428,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -463,18 +439,16 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -493,8 +467,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -505,18 +479,16 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.isCC = true;
                 features.setup(m => m.canPingEveryone(ctx.guildId)).resolves(true).mustHappen(1);
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -528,8 +500,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -539,18 +511,16 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -562,8 +532,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -574,18 +544,16 @@ await runSubtagTests({
             setup(ctx) {
                 ctx.isCC = true;
                 features.setup(m => m.canPingEveryone(ctx.guildId)).resolves(true).mustHappen(1);
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -604,8 +572,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -615,18 +583,16 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -645,8 +611,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -656,20 +622,18 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.output.nsfw = 'This is a nsfw message';
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.output.nsfw = 'This is a nsfw message';
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
-                channelIsNsfwSubtag.setup(m => m.check(bbctx, channelId)).resolves(false).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
+                channelIsNsfwSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(false).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'This is a nsfw message',
                     embeds: undefined,
@@ -681,8 +645,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         },
         {
@@ -692,20 +656,18 @@ await runSubtagTests({
             expected: '239476239742340234',
             setup(ctx) {
                 ctx.isCC = false;
-            },
-            postSetup(bbctx) {
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
                 const channelId = `otherChannel<${createSnowflake()}>`;
 
-                bbctx.root.output.nsfw = 'This is a nsfw message';
-                bbctx.root.allowedMentions.everybody = true;
-                roleMentions.forEach(v => bbctx.root.allowedMentions.roles.add(v));
-                userMentions.forEach(v => bbctx.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.output.nsfw = 'This is a nsfw message';
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
-                channelIsNsfwSubtag.setup(m => m.check(bbctx, channelId)).resolves(true).mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '1923681361978632931', $({ noLookup: true }))).resolves(channelId).mustHappen(1);
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
+                channelIsNsfwSubtag.setup(m => m.check(ctx.bbtag, channelId)).resolves(true).mustHappen(1);
                 features.setup((m, $) => m.sendMessage(channelId, $({
                     content: 'abc',
                     embeds: [{ title: 'New embed!' }],
@@ -724,8 +686,8 @@ await runSubtagTests({
                     }
                 }))).resolves({ success: true, id: '239476239742340234' });
             },
-            assert(bbctx) {
-                assert(bbctx.root.ownedMessageIds.has('239476239742340234'));
+            assert(ctx) {
+                assert(ctx.bbtag.root.ownedMessageIds.has('239476239742340234'));
             }
         }
     ]

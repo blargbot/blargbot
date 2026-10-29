@@ -38,9 +38,7 @@ await runSubtagTests({
         ctx.adoptMock(lockHandle);
         ctx.adoptMock(variablesProvider);
         ctx.adoptMock(variables);
-    },
-    postSetup(bbctx) {
-        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
     },
     cases: [
         {
@@ -50,13 +48,11 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Lock cannot be nested') }
             ],
-            setup() {
+            setup(ctx) {
                 variables.setup(m => m.scopes).returns([
                     toTagVariableScopeDetails('', { type: TagVariableType.GLOBAL })
                 ]);
-            },
-            postSetup(ctx) {
-                ctx.root.inLock = true;
+                ctx.root.setup(m => m.inLock).returns(true).mustHappen(1);
             }
         },
         {
@@ -80,9 +76,14 @@ await runSubtagTests({
                 variables.setup(m => m.scopes).returns([
                     toTagVariableScopeDetails('', scope)
                 ]);
+                ctx.root.setupProperty('inLock', false);
             },
             assert(ctx) {
-                assert(!ctx.local.inLock);
+                Mock.verifySequence(
+                    ctx.root.expression(m => m.inLock),
+                    ctx.root.expression(m => m.inLock = true),
+                    ctx.root.expression(m => m.inLock = false)
+                );
             }
         },
         {
@@ -92,8 +93,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Lock cannot be nested') }
             ],
-            postSetup(ctx) {
-                ctx.root.inLock = true;
+            setup(ctx) {
+                ctx.root.setup(m => m.inLock).returns(true).mustHappen(1);
             }
         },
         {
@@ -103,8 +104,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError(invalidModeMessage, 'bad') }
             ],
-            assert(ctx) {
-                assert(!ctx.local.inLock);
+            setup(ctx) {
+                ctx.root.setup(m => m.inLock).returns(false).mustHappen(1);
             }
         },
         ...generateInvalidModeTestCases(),
@@ -116,7 +117,7 @@ await runSubtagTests({
             title: 'Only the first prefix is stripped from the key',
             code: '{lock;read;*@myLock;done}',
             expected: 'done',
-            setup() {
+            setup(ctx) {
                 const scope = { type: TagVariableType.GLOBAL } as const;
                 getLock.setup(m => m(scope, '@myLock'))
                     .returns(lock.instance)
@@ -129,9 +130,14 @@ await runSubtagTests({
                     toTagVariableScopeDetails('*', scope),
                     toTagVariableScopeDetails('@', { type: TagVariableType.TEMP, id: 'FAIL' })
                 ]);
+                ctx.root.setupProperty('inLock', false);
             },
             assert(ctx) {
-                assert(!ctx.local.inLock);
+                Mock.verifySequence(
+                    ctx.root.expression(m => m.inLock),
+                    ctx.root.expression(m => m.inLock = true),
+                    ctx.root.expression(m => m.inLock = false)
+                );
             }
         },
         {
@@ -144,7 +150,7 @@ await runSubtagTests({
                 lockHandle[Symbol.asyncDispose].verify(m => m()).mustNotHaveHappened();
                 return 'code result';
             })],
-            setup() {
+            setup(ctx) {
                 const scope = { type: TagVariableType.GLOBAL } as const;
                 getLock.setup(m => m(scope, 'myLock')).returns(lock.instance).mustHappen(1);
                 lock.setup(m => m.enterWrite()).resolves(lockHandle.instance).mustHappen(1);
@@ -152,9 +158,14 @@ await runSubtagTests({
                 variables.setup(m => m.scopes).returns([
                     toTagVariableScopeDetails('', scope)
                 ]);
+                ctx.root.setupProperty('inLock', false);
             },
             assert(ctx) {
-                assert(!ctx.local.inLock);
+                Mock.verifySequence(
+                    ctx.root.expression(m => m.inLock),
+                    ctx.root.expression(m => m.inLock = true),
+                    ctx.root.expression(m => m.inLock = false)
+                );
             }
         },
         {
@@ -164,7 +175,7 @@ await runSubtagTests({
             errors: [
                 { start: 19, end: 25, error: new MarkerError('eval', 19) }
             ],
-            setup() {
+            setup(ctx) {
                 const scope = { type: TagVariableType.GLOBAL } as const;
                 getLock.setup(m => m(scope, 'myLock'))
                     .returns(lock.instance)
@@ -176,9 +187,14 @@ await runSubtagTests({
                 variables.setup(m => m.scopes).returns([
                     toTagVariableScopeDetails('', scope)
                 ]);
+                ctx.root.setupProperty('inLock', false);
             },
             assert(ctx) {
-                assert(!ctx.local.inLock);
+                Mock.verifySequence(
+                    ctx.root.expression(m => m.inLock),
+                    ctx.root.expression(m => m.inLock = true),
+                    ctx.root.expression(m => m.inLock = false)
+                );
             }
         },
         {
@@ -191,7 +207,7 @@ await runSubtagTests({
                     return '';
                 })
             ],
-            setup() {
+            setup(ctx) {
                 const scope = { type: TagVariableType.GLOBAL } as const;
                 getLock.setup(m => m(scope, 'myLock'))
                     .returns(lock.instance)
@@ -203,9 +219,14 @@ await runSubtagTests({
                 variables.setup(m => m.scopes).returns([
                     toTagVariableScopeDetails('', scope)
                 ]);
+                ctx.root.setupProperty('inLock', false);
             },
             assert(ctx) {
-                assert(!ctx.local.inLock);
+                Mock.verifySequence(
+                    ctx.root.expression(m => m.inLock),
+                    ctx.root.expression(m => m.inLock = true),
+                    ctx.root.expression(m => m.inLock = false)
+                );
             }
         }
     ]
@@ -230,8 +251,8 @@ function* generateInvalidModeTestCases(): Generator<SubtagTestCase> {
             errors: [
                 { error: new BBTagRuntimeError(invalidModeMessage, mode) }
             ],
-            assert(ctx) {
-                assert(!ctx.local.inLock);
+            setup(ctx) {
+                ctx.root.setup(m => m.inLock).returns(false).mustHappen(1);
             }
         };
     }
@@ -245,8 +266,8 @@ function* generateEmptyKeyTestCases(): Generator<SubtagTestCase> {
             errors: [
                 { error: new BBTagRuntimeError('Key cannot be empty') }
             ],
-            assert(ctx) {
-                assert(!ctx.local.inLock);
+            setup(ctx) {
+                ctx.root.setup(m => m.inLock).returns(false).mustHappen(1);
             }
         };
     }
@@ -269,16 +290,21 @@ function* generateModeTestCases(): Generator<SubtagTestCase> {
                 lockHandle[Symbol.asyncDispose].verify(m => m()).mustNotHaveHappened();
                 return 'code result';
             })],
-            setup() {
+            setup(ctx) {
                 getLock.setup(m => m(scope, 'myLock')).returns(lock.instance).mustHappen(1);
                 lock.setup(m => m[lockMode]()).resolves(lockHandle.instance).mustHappen(1);
                 lockHandle[Symbol.asyncDispose].setup(m => m()).resolves().mustHappen(1);
                 variables.setup(m => m.scopes).returns([
                     toTagVariableScopeDetails('', scope)
                 ]).mustHappen(1);
+                ctx.root.setupProperty('inLock', false);
             },
             assert(ctx) {
-                assert(!ctx.local.inLock);
+                Mock.verifySequence(
+                    ctx.root.expression(m => m.inLock),
+                    ctx.root.expression(m => m.inLock = true),
+                    ctx.root.expression(m => m.inLock = false)
+                );
             }
         };
     }
@@ -308,9 +334,14 @@ function* generateScopeTestCases(tagVars: boolean): Generator<SubtagTestCase> {
                     variables.setup(m => m.scopes).returns(
                         scopes.map(({ prefix, scope }) => toTagVariableScopeDetails(prefix, scope))
                     );
+                    ctx.root.setupProperty('inLock', false);
                 },
                 assert(ctx) {
-                    assert(!ctx.local.inLock);
+                    Mock.verifySequence(
+                        ctx.root.expression(m => m.inLock),
+                        ctx.root.expression(m => m.inLock = true),
+                        ctx.root.expression(m => m.inLock = false)
+                    );
                 }
             };
         }

@@ -1,9 +1,8 @@
+import { BBTagRuntimeError, templates } from '@blargbot/bbtag';
 import type { IFormattable } from '@blargbot/formatting';
 import z from 'zod';
 
-import type { BBTagContext } from '../../BBTagContext.js';
-import { BBTagRuntimeError } from '../../errors/index.js';
-import { templates } from '../../text.js';
+import type { ClusterBBTagContextMetadata } from '../../managers/BBTagManager.js';
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export class UseCountRule implements RuntimeLimitRule {
@@ -25,7 +24,7 @@ export class UseCountRule implements RuntimeLimitRule {
             : error;
     }
 
-    public check(_context: BBTagContext, subtagName: string): void {
+    public check(_context: ClusterBBTagContextMetadata, subtagName: string): void {
         if (this.#remaining-- <= 0)
             throw this.#makeError(subtagName);
     }

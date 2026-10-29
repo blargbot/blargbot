@@ -5,14 +5,14 @@ import { Mock } from '@blargbot/test-util';
 import { asUint8Array } from '@blargbot/util';
 
 import type { CreateEmojiFeature } from '../../../../src/bbtag/subtags/guild/emojiCreate.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<VariablesFeature & HttpFetchFeature & CreateEmojiFeature & GetMemberPermissionsFeature>({ id: 'features' });
 const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
 variablesProvider.setup(m => m.kinds).returns([]);
 const variables = new Mock<Variables>({ id: 'variables' });
-const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const roleIdSubtag = createMockSubtag(RoleIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 
 await runSubtagTests({
     subtag: new EmojiCreateSubtag(features.instance),
@@ -21,13 +21,11 @@ await runSubtagTests({
     otherSubtags: [roleIdSubtag.instance, reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
+        ctx.adoptMock(roleIdSubtag);
+        ctx.adoptMock(reasonSubtag);
         features.setup(m => m.variables).returns(variablesProvider.instance);
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
-        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
     },
     cases: [
         {
@@ -114,11 +112,9 @@ await runSubtagTests({
                     roles: ['9128735617428916'],
                     auditReason: '@command.user'
                 }))).resolves({ success: true, emojiId: '23946249762743426' }).mustHappen(1);
-            },
-            postSetup(bbctx) {
-                roleIdSubtag.setup((m, $) => m.query(bbctx, '9128735617428916', $({ noLookup: true }))).resolves('9128735617428916').mustHappen(1);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, 'abc', $({ noLookup: true }))).resolves(undefined).mustHappen(1);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true }))).resolves(undefined).mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '9128735617428916', $({ noLookup: true }))).resolves('9128735617428916').mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'abc', $({ noLookup: true }))).resolves(undefined).mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $({ noLookup: true }))).resolves(undefined).mustHappen(1);
             }
         },
         {

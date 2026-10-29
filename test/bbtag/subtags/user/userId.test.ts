@@ -56,22 +56,22 @@ await runSubtagTests({
         {
             code: '{userid;In Cache}',
             expected: '983798372948729434',
-            postSetup(bbctx) {
-                bbctx.root.queryCache.user.set('in cache', '983798372948729434');
+            setup(ctx) {
+                ctx.bbtag.root.queryCache.user.set('in cache', '983798372948729434');
             }
         },
         {
             code: '{userid;In Cache;}',
             expected: '983798372948729434',
-            postSetup(bbctx) {
-                bbctx.root.queryCache.user.set('in cache', '983798372948729434');
+            setup(ctx) {
+                ctx.bbtag.root.queryCache.user.set('in cache', '983798372948729434');
             }
         },
         {
             code: '{userid;In Cache;q}',
             expected: '983798372948729434',
-            postSetup(bbctx) {
-                bbctx.root.queryCache.user.set('in cache', '983798372948729434');
+            setup(ctx) {
+                ctx.bbtag.root.queryCache.user.set('in cache', '983798372948729434');
             }
         },
         {
@@ -98,8 +98,8 @@ await runSubtagTests({
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.queryCache.failedQueries, 0);
-                assert.equal(ctx.root.queryCache.user.get('general'), '983798372948729434');
+                assert.equal(ctx.bbtag.root.queryCache.failedQueries, 0);
+                assert.equal(ctx.bbtag.root.queryCache.user.get('general'), '983798372948729434');
             }
         },
         {
@@ -118,8 +118,8 @@ await runSubtagTests({
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.queryCache.failedQueries, 0);
-                assert.equal(ctx.root.queryCache.user.get('general'), '983798372948729434');
+                assert.equal(ctx.bbtag.root.queryCache.failedQueries, 0);
+                assert.equal(ctx.bbtag.root.queryCache.user.get('general'), '983798372948729434');
             }
         },
         {
@@ -136,13 +136,11 @@ await runSubtagTests({
                     searchText: 'General',
                     source: undefined
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
-            },
-            postSetup(bbctx) {
-                bbctx.root.noLookupErrors = true;
+                ctx.bbtag.root.noLookupErrors = true;
             },
             assert(ctx) {
-                assert.equal(ctx.root.queryCache.failedQueries, 0);
-                assert.equal(ctx.root.queryCache.user.get('general'), '983798372948729434');
+                assert.equal(ctx.bbtag.root.queryCache.failedQueries, 0);
+                assert.equal(ctx.bbtag.root.queryCache.user.get('general'), '983798372948729434');
             }
         },
         {
@@ -161,8 +159,8 @@ await runSubtagTests({
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.queryCache.failedQueries, 0);
-                assert.equal(ctx.root.queryCache.user.get('general'), '983798372948729434');
+                assert.equal(ctx.bbtag.root.queryCache.failedQueries, 0);
+                assert.equal(ctx.bbtag.root.queryCache.user.get('general'), '983798372948729434');
             }
         },
         {
@@ -181,8 +179,8 @@ await runSubtagTests({
                 }))).resolves({ success: true, id: '983798372948729434' }).mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.queryCache.failedQueries, 0);
-                assert.equal(ctx.root.queryCache.user.get('general'), '983798372948729434');
+                assert.equal(ctx.bbtag.root.queryCache.failedQueries, 0);
+                assert.equal(ctx.bbtag.root.queryCache.user.get('general'), '983798372948729434');
             }
         },
         {
@@ -192,8 +190,8 @@ await runSubtagTests({
                 features.setup(m => m.findMember(ctx.guildId, 'General')).resolves('983798372948729434').mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.queryCache.failedQueries, 0);
-                assert.equal(ctx.root.queryCache.user.get('general'), '983798372948729434');
+                assert.equal(ctx.bbtag.root.queryCache.failedQueries, 0);
+                assert.equal(ctx.bbtag.root.queryCache.user.get('general'), '983798372948729434');
             }
         },
         {
@@ -214,8 +212,8 @@ await runSubtagTests({
                 }))).resolves({ success: false, cause: 'notFound' }).mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.queryCache.failedQueries, 1);
-                assert.equal(ctx.root.queryCache.user.get('general'), undefined);
+                assert.equal(ctx.bbtag.root.queryCache.failedQueries, 1);
+                assert.equal(ctx.bbtag.root.queryCache.user.get('general'), undefined);
             }
         },
         {
@@ -236,8 +234,8 @@ await runSubtagTests({
                 }))).resolves({ success: false, cause: 'aborted' }).mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.queryCache.failedQueries, Infinity);
-                assert.equal(ctx.root.queryCache.user.get('general'), undefined);
+                assert.equal(ctx.bbtag.root.queryCache.failedQueries, Infinity);
+                assert.equal(ctx.bbtag.root.queryCache.user.get('general'), undefined);
             }
         },
         {
@@ -250,8 +248,8 @@ await runSubtagTests({
                 features.setup(m => m.findMember(ctx.guildId, 'General')).resolves(undefined).mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.queryCache.failedQueries, 0);
-                assert.equal(ctx.root.queryCache.user.get('general'), undefined);
+                assert.equal(ctx.bbtag.root.queryCache.failedQueries, 0);
+                assert.equal(ctx.bbtag.root.queryCache.user.get('general'), undefined);
             }
         }
     ]

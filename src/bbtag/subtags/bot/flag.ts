@@ -1,8 +1,8 @@
 import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { templates } from '../../text.js';
+import { isFlagKey } from '../../types.js';
 import { SubtagType } from '../../utils/index.js';
-import { isFlagChar } from '../../utils/input.js';
 
 const tag = templates.subtags.flag;
 
@@ -26,7 +26,7 @@ export class FlagSubtag extends CompiledSubtag {
     }
 
     public getFlag(context: BBTagContext, flagName: string): string | undefined {
-        if (!isFlagChar(flagName))
+        if (!isFlagKey(flagName))
             return undefined;
 
         return context.local.input.flags[flagName];

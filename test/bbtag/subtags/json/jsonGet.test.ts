@@ -19,9 +19,7 @@ await runSubtagTests({
     setup(ctx) {
         ctx.adoptMock(variablesProvider);
         ctx.adoptMock(variables);
-    },
-    postSetup(bbctx) {
-        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
     },
     cases: [
         ...generateTestCases({ array: [{ test: { abc: 123 } }] }, 'array.0.test', '{"abc":123}'),

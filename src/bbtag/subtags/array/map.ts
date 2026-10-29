@@ -34,7 +34,7 @@ export class MapSubtag extends CompiledSubtag {
         const array = await bbtag.tagArray.deserializeOrGetIterable(variables, arrayStr) ?? [];
         try {
             for (const item of array) {
-                await context.root.limit.check(context, 'map:loops');
+                await context.hooks.loop?.(this);
                 await variables.set(varName, item);
                 yield await code.execute();
 

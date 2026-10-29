@@ -9,29 +9,26 @@ const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' 
 variablesProvider.setup(m => m.kinds).returns([]);
 const variables = new Mock<Variables>({ id: 'variables' });
 
+const sut = new ForSubtag({
+    variables: variablesProvider.instance
+});
 await runSubtagTests({
-    subtag: new ForSubtag({
-        variables: variablesProvider.instance
-    }),
+    subtag: sut,
     argCountBounds: { min: { count: 5, noEval: [4] }, max: { count: 6, noEval: [5] } },
     names: ['for'],
     setup(ctx) {
         ctx.adoptMock(variablesProvider);
         ctx.adoptMock(variables);
-    },
-    postSetup(bbctx) {
-        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
     },
     cases: [
         {
             code: '{for;index;0;<;10;{get;index},}',
             expected: '0,1,2,3,4,5,6,7,8,9,',
             subtags: [new GetSubtag({ variables: variablesProvider.instance })],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', 'initial', 20, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).mustHappen(10).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
             assert() {
                 assertVariable('index', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -41,11 +38,9 @@ await runSubtagTests({
             code: '{for;index;0;<;10;2;{get;index},}',
             expected: '0,2,4,6,8,',
             subtags: [new GetSubtag({ variables: variablesProvider.instance })],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', 'initial', 10, [0, 2, 4, 6, 8]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).mustHappen(5).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(5).resolves(undefined);
             },
             assert() {
                 assertVariable('index', [0, 2, 4, 6, 8]);
@@ -55,11 +50,9 @@ await runSubtagTests({
             code: '{for;index;10;>;0;-1;{get;index},}',
             expected: '10,9,8,7,6,5,4,3,2,1,',
             subtags: [new GetSubtag({ variables: variablesProvider.instance })],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', 'initial', 20, [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).mustHappen(10).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
             assert() {
                 assertVariable('index', [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]);
@@ -69,11 +62,9 @@ await runSubtagTests({
             code: '{for;index;1;<;513;0;{get;index},{set;index;{*;{get;index};2}}}',
             expected: '1,2,4,8,16,32,64,128,256,512,',
             subtags: [new GetSubtag({ variables: variablesProvider.instance }), new SetSubtag({ variables: variablesProvider.instance }), new OperatorSubtag()],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', 'initial', 30, [1, ...[2, 4, 8, 16, 32, 64, 128, 256, 512].flatMap(v => [`${v}`, v]), '1024']);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).mustHappen(10).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
             assert() {
                 assertVariable('index', [
@@ -91,11 +82,9 @@ await runSubtagTests({
                 { error: new NotANumberError('abc') }
             ],
             subtags: [new SetSubtag({ variables: variablesProvider.instance })],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', 'initial', 1, [1, 'abc']);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).mustHappen(1).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             },
             assert() {
                 assertVariable('index', [1, 'abc']);
@@ -150,12 +139,10 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Too many loops') }
             ],
             subtags: [new GetSubtag({ variables: variablesProvider.instance })],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', 'initial', 8, [0, 1, 2, 3]);
-            },
-            postSetup(bbctx, ctx) {
                 let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).mustHappen(5).invokesAsync(() => {
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(5).invokesAsync(() => {
                     if (i++ >= 4)
                         throw new BBTagRuntimeError('Too many loops');
                     return undefined;
@@ -169,11 +156,9 @@ await runSubtagTests({
             code: '{for;index;0;<;10;{get;index}{if;{get;index};==;5;{return}},}',
             expected: '0,1,2,3,4,5',
             subtags: [new GetSubtag({ variables: variablesProvider.instance }), new IfSubtag(), new ReturnSubtag()],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', 'initial', 18, [0, 1, 2, 3, 4, 5]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'for:loops')).mustHappen(6).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(6).resolves(undefined);
             },
             assert() {
                 assertVariable('index', [0, 1, 2, 3, 4, 5]);

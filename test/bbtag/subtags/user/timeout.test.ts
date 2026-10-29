@@ -4,10 +4,10 @@ import { TimeoutSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<SetUserTimeoutFeature>({ id: 'features' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
 
 await runSubtagTests({
     subtag: new TimeoutSubtag(features.instance),
@@ -16,7 +16,7 @@ await runSubtagTests({
     otherSubtags: [userIdSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptMock(userIdSubtag);
     },
     cases: [
         {
@@ -32,8 +32,8 @@ await runSubtagTests({
             errors: [
                 { error: new UserNotFoundError('abc') }
             ],
-            postSetup(bbctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'abc', $({ noLookup: true })))
+            setup(ctx) {
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'abc', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -41,9 +41,9 @@ await runSubtagTests({
         {
             code: '{timeout;other user;1s}',
             expected: 'Success',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
@@ -61,9 +61,9 @@ await runSubtagTests({
         {
             code: '{timeout;other user;29d}',
             expected: 'Success',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
@@ -91,9 +91,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('User is not timed out', 'other user is not timed out!') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
@@ -114,9 +114,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('User is already timed out', 'other user is already timed out!') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
@@ -137,9 +137,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) users!') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
@@ -160,9 +160,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to (remove) time out (from) other user!') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
@@ -183,9 +183,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) users!') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({
@@ -206,9 +206,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to (remove) time out (from) other user!') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberTimeout($({

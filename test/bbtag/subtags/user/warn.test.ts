@@ -4,11 +4,11 @@ import { UserIdSubtag, WarnSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<WarnFeature>({ id: 'features' });
 
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
 
 await runSubtagTests({
     subtag: new WarnSubtag(features.instance),
@@ -17,15 +17,15 @@ await runSubtagTests({
     otherSubtags: [userIdSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptMock(userIdSubtag);
     },
     cases: [
         {
             code: '{warn}',
             expected: '1',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Warning' })))
@@ -36,9 +36,9 @@ await runSubtagTests({
         {
             code: '{warn}',
             expected: '7',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Warning' })))
@@ -49,9 +49,9 @@ await runSubtagTests({
         {
             code: '{warn;}',
             expected: '2',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Warning' })))
@@ -62,9 +62,9 @@ await runSubtagTests({
         {
             code: '{warn;other user}',
             expected: '5',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Warning' })))
@@ -75,9 +75,9 @@ await runSubtagTests({
         {
             code: '{warn;;6}',
             expected: '29',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 6, reason: 'Tag Warning' })))
@@ -88,9 +88,9 @@ await runSubtagTests({
         {
             code: '{warn;other user;9}',
             expected: '9',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 9, reason: 'Tag Warning' })))
@@ -101,9 +101,9 @@ await runSubtagTests({
         {
             code: '{warn;;;My custom reason}',
             expected: '16',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'My custom reason' })))
@@ -114,9 +114,9 @@ await runSubtagTests({
         {
             code: '{warn;other user;6;My custom reason}',
             expected: '22',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.warnUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 6, reason: 'My custom reason' })))
@@ -130,8 +130,8 @@ await runSubtagTests({
             errors: [
                 { error: new UserNotFoundError('unknown user') }
             ],
-            postSetup(bbctx) {
-                userIdSubtag.setup(m => m.query(bbctx, 'unknown user', undefined))
+            setup(ctx) {
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'unknown user', undefined))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -142,9 +142,9 @@ await runSubtagTests({
             errors: [
                 { error: new NotANumberError('abc') }
             ],
-            postSetup(bbctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
             }

@@ -11,17 +11,17 @@ await runSubtagTests({
         {
             code: '{paramsarray}',
             expected: '[]',
-            postSetup(ctx) { ctx.root.paramsarray = []; }
+            setup(ctx) { ctx.bbtag.root.paramsarray = []; }
         },
         {
             code: '{paramsarray}',
             expected: '["this","is","a","test"]',
-            postSetup(ctx) { ctx.root.paramsarray = ['this', 'is', 'a', 'test']; }
+            setup(ctx) { ctx.bbtag.root.paramsarray = ['this', 'is', 'a', 'test']; }
         },
         {
             code: '{paramsarray}',
             expected: '["this","is a","test"]',
-            postSetup(ctx) { ctx.root.paramsarray = ['this', 'is a', 'test']; }
+            setup(ctx) { ctx.bbtag.root.paramsarray = ['this', 'is a', 'test']; }
         },
         {
             code: '{paramsarray}',
@@ -29,8 +29,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('{paramsarray} can only be used inside {function}') }
             ],
-            postSetup(ctx) {
-                ctx.root.paramsarray = undefined;
+            setup(ctx) {
+                ctx.bbtag.root.paramsarray = undefined;
             }
         }
     ]

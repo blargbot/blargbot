@@ -1,6 +1,5 @@
 import { createHmac } from 'node:crypto';
 
-import { bbtag, limits } from '@blargbot/bbtag';
 import type { Cluster, CommandContext, CommandResult, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster';
 import { CommandType, guard, GuildCommand, parse } from '@blargbot/cluster';
 import type { Configuration } from '@blargbot/config';
@@ -12,6 +11,7 @@ import type * as eris from 'eris';
 import moment from 'moment-timezone';
 import z from 'zod';
 
+import { CustomCommandLimit } from '../../bbtagLimits/CustomCommandLimit.js';
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager.js';
 import { templates } from '../../text.js';
@@ -177,7 +177,7 @@ export class CustomCommandCommand extends GuildCommand {
             silent: false,
             isCC: true,
             tagVars: false,
-            limit: new limits.CustomCommandLimit(context.message.channel.guild.memberCount),
+            limit: new CustomCommandLimit(context.message.channel.guild.memberCount),
             author: context.author.id,
             authorizer: context.author.id,
             prefix: context.prefix,
@@ -187,7 +187,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (!debug)
             return undefined;
 
-        await context.send(context.author, bbtag.createDebugOutput(result));
+        await context.send(context.author, result);
         return cmd.debug.success;
     }
 
@@ -224,7 +224,7 @@ export class CustomCommandCommand extends GuildCommand {
             silent: false,
             isCC: true,
             tagVars: false,
-            limit: new limits.CustomCommandLimit(context.message.channel.guild.memberCount),
+            limit: new CustomCommandLimit(context.message.channel.guild.memberCount),
             author: match.author ?? undefined,
             authorizer: match.authorizer ?? match.author ?? message.channel.guild.ownerID,
             prefix: context.prefix
@@ -233,7 +233,7 @@ export class CustomCommandCommand extends GuildCommand {
         if (!debug)
             return undefined;
 
-        await context.send(context.author, bbtag.createDebugOutput(result));
+        await context.send(context.author, result);
         return cmd.debug.success;
     }
 

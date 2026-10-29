@@ -2,11 +2,11 @@ import type { ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bb
 import { RolesSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from '../user/_getUserPropTest.js';
 
 const features = new Mock<ListMemberRolesFeature & ListGuildRolesFeature>({ id: 'features' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
 
 await runSubtagTests({
     subtag: new RolesSubtag(features.instance),
@@ -14,7 +14,7 @@ await runSubtagTests({
     names: ['roles'],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptMock(userIdSubtag);
     },
     cases: [
         {

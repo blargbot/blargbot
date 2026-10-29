@@ -29,8 +29,8 @@ await runSubtagTests({
         {
             code: '{base;10;37}',
             expected: '12',
-            postSetup(ctx) {
-                ctx.root.fallback = '8';
+            setup(ctx) {
+                ctx.bbtag.root.fallback = '8';
             }
         },
         {
@@ -50,15 +50,15 @@ await runSubtagTests({
         {
             code: '{base;10;1;16}',
             expected: 'a',
-            postSetup(ctx) {
-                ctx.root.fallback = '10';
+            setup(ctx) {
+                ctx.bbtag.root.fallback = '10';
             }
         },
         {
             code: '{base;10;37;16}',
             expected: 'a',
-            postSetup(ctx) {
-                ctx.root.fallback = '10';
+            setup(ctx) {
+                ctx.bbtag.root.fallback = '10';
             }
         },
         {
@@ -78,15 +78,15 @@ await runSubtagTests({
         {
             code: '{base;10;abc;16}',
             expected: 'a',
-            postSetup(ctx) {
-                ctx.root.fallback = '10';
+            setup(ctx) {
+                ctx.bbtag.root.fallback = '10';
             }
         },
         {
             code: '{base;10;16;abc}',
             expected: '20',
-            postSetup(ctx) {
-                ctx.root.fallback = '8';
+            setup(ctx) {
+                ctx.bbtag.root.fallback = '8';
             }
         },
         {
@@ -99,8 +99,8 @@ await runSubtagTests({
         {
             code: '{base;ghi;16;11}',
             expected: '85',
-            postSetup(ctx) {
-                ctx.root.fallback = '93';
+            setup(ctx) {
+                ctx.bbtag.root.fallback = '93';
             }
         }
     ]

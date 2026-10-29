@@ -1,15 +1,15 @@
 import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
-import type { GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature, SetRolePermissionsFeature } from '@blargbot/bbtag/subtags';
+import type { EditRoleFeature, GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag/subtags';
 import { ReasonSubtag, RoleIdSubtag, RoleSetPermissionsSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
-const features = new Mock<SetRolePermissionsFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature>({ id: 'features' });
-const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const features = new Mock<EditRoleFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature>({ id: 'features' });
+const roleIdSubtag = createMockSubtag(RoleIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 const manyPerms = new DiscordPermissions(
     'BAN_MEMBERS',
     'VIEW_AUDIT_LOG',
@@ -27,11 +27,9 @@ await runSubtagTests({
     otherSubtags: [reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
+        ctx.adoptMock(roleIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         ...createGetRolePropTestCases({
@@ -57,7 +55,7 @@ await runSubtagTests({
                 {
                     expected: '',
                     setup(roleId, ctx) {
-                        features.setup((m, $) => m.setRolePermissions($({
+                        features.setup((m, $) => m.editRole($({
                             guildId: ctx.guildId,
                             roleId,
                             permissions: DiscordPermissions.NONE,
@@ -90,7 +88,7 @@ await runSubtagTests({
                 {
                     expected: '',
                     setup(roleId, ctx) {
-                        features.setup((m, $) => m.setRolePermissions($({
+                        features.setup((m, $) => m.editRole($({
                             guildId: ctx.guildId,
                             roleId,
                             permissions: DiscordPermissions.NONE,
@@ -123,7 +121,7 @@ await runSubtagTests({
                     title: 'Author is missing permissions',
                     expected: '',
                     setup(roleId, ctx) {
-                        features.setup((m, $) => m.setRolePermissions($({
+                        features.setup((m, $) => m.editRole($({
                             guildId: ctx.guildId,
                             roleId,
                             permissions: DiscordPermissions.NONE,
@@ -138,7 +136,7 @@ await runSubtagTests({
                         features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId))
                             .resolves(DiscordPermissions.ADMINISTRATOR)
                             .mustHappen(1);
-                        features.setup((m, $) => m.setRolePermissions($({
+                        features.setup((m, $) => m.editRole($({
                             guildId: ctx.guildId,
                             roleId,
                             permissions: manyPerms,
@@ -151,9 +149,9 @@ await runSubtagTests({
                     expected: '',
                     setup(roleId, ctx) {
                         features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId))
-                            .resolves(DiscordPermissions.ADMINISTRATOR.not())
+                            .resolves(DiscordPermissions.ADMINISTRATOR.inverse())
                             .mustHappen(1);
-                        features.setup((m, $) => m.setRolePermissions($({
+                        features.setup((m, $) => m.editRole($({
                             guildId: ctx.guildId,
                             roleId,
                             permissions: manyPerms,
@@ -168,7 +166,7 @@ await runSubtagTests({
                         features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId))
                             .resolves(new DiscordPermissions('MANAGE_ROLES', 'VIEW_AUDIT_LOG', 'READ_MESSAGE_HISTORY'))
                             .mustHappen(1);
-                        features.setup((m, $) => m.setRolePermissions($({
+                        features.setup((m, $) => m.editRole($({
                             guildId: ctx.guildId,
                             roleId,
                             permissions: new DiscordPermissions('VIEW_AUDIT_LOG', 'READ_MESSAGE_HISTORY'),
@@ -203,7 +201,7 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Role above author') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
                 const adminId = createSnowflake();
@@ -214,7 +212,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, ...roleIds]).mustHappen(1);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, '3298746326924', $({ noLookup: false })))
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
                     .resolves('3298746326924')
                     .mustHappen(1);
             }
@@ -226,7 +224,7 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Failed to edit role: no perms', 'Test REST error') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
                 const adminId = createSnowflake();
@@ -237,10 +235,10 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, '3298746326924', $({ noLookup: false })))
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
                     .resolves('3298746326924')
                     .mustHappen(1);
-                features.setup((m, $) => m.setRolePermissions($({
+                features.setup((m, $) => m.editRole($({
                     guildId: ctx.guildId,
                     roleId: roleIds[0],
                     permissions: DiscordPermissions.NONE,
@@ -255,7 +253,7 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Failed to edit role: no perms', 'Some other error message') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
                 const adminId = createSnowflake();
@@ -266,10 +264,10 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, '3298746326924', $({ noLookup: false })))
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
                     .resolves('3298746326924')
                     .mustHappen(1);
-                features.setup((m, $) => m.setRolePermissions($({
+                features.setup((m, $) => m.editRole($({
                     guildId: ctx.guildId,
                     roleId: roleIds[0],
                     permissions: DiscordPermissions.NONE,

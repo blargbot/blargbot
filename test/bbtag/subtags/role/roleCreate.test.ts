@@ -4,10 +4,10 @@ import { ReasonSubtag, RoleCreateSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<CreateRoleFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature>({ id: 'features' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 const manyPerms = new DiscordPermissions(
     'BAN_MEMBERS',
     'VIEW_AUDIT_LOG',
@@ -38,10 +38,8 @@ await runSubtagTests({
     otherSubtags: [reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         {
@@ -158,7 +156,7 @@ await runSubtagTests({
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
-                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.ADMINISTRATOR.not()).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.ADMINISTRATOR.inverse()).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup((m, $) => m.createRole($({
                     guildId,
@@ -346,9 +344,9 @@ await runSubtagTests({
                 const botId = ctx.botId;
                 const modId = ctx.authorizerId;
                 features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
-                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR.not()).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR.inverse()).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
-                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.SPEAK.not()).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.SPEAK.inverse()).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
             }
         },

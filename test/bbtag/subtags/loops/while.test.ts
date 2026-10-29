@@ -9,8 +9,9 @@ const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' 
 variablesProvider.setup(m => m.kinds).returns([]);
 const variables = new Mock<Variables>({ id: 'variables' });
 
+const sut = new WhileSubtag();
 await runSubtagTests({
-    subtag: new WhileSubtag(),
+    subtag: sut,
     argCountBounds: { min: { count: 2, noEval: [0, 1] }, max: { count: 4, noEval: [0, 1, 2, 3] } },
     names: ['while'],
     otherSubtags: [
@@ -22,20 +23,16 @@ await runSubtagTests({
     setup(ctx) {
         ctx.adoptMock(variablesProvider);
         ctx.adoptMock(variables);
-    },
-    postSetup(bbctx) {
-        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
     },
     cases: [
         {
             code: '{while;{<;{get;index};10};{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
             subtags: [new OperatorSubtag()],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 21, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).mustHappen(10).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
             assert() {
                 Mock.verifySequence(...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -45,11 +42,9 @@ await runSubtagTests({
         {
             code: '{while;{get;index};<;10;{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 21, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).mustHappen(10).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
             assert() {
                 Mock.verifySequence(...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -59,11 +54,9 @@ await runSubtagTests({
         {
             code: '{while;<;{get;index};10;{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 21, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).mustHappen(10).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
             assert() {
                 Mock.verifySequence(...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -73,11 +66,9 @@ await runSubtagTests({
         {
             code: '{while;{get;index};10;<;{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 21, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).mustHappen(10).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
             assert() {
                 Mock.verifySequence(...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -87,11 +78,9 @@ await runSubtagTests({
         {
             code: '{while;{get;index};<;10;{increment;index;2},}',
             expected: '2,4,6,8,10,',
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 11, [2, 4, 6, 8, 10]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).mustHappen(5).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(5).resolves(undefined);
             },
             assert() {
                 Mock.verifySequence(...[2, 4, 6, 8, 10]
@@ -101,11 +90,9 @@ await runSubtagTests({
         {
             code: '{while;{get;index};>;0;{decrement;index},}',
             expected: '9,8,7,6,5,4,3,2,1,0,',
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '10', 21, [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).mustHappen(10).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
             assert() {
                 Mock.verifySequence(...[9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
@@ -116,11 +103,9 @@ await runSubtagTests({
             code: '{while;{get;index};<;513;{get;index},{set;index;{*;{get;index};2}}}',
             expected: '1,2,4,8,16,32,64,128,256,512,',
             subtags: [new OperatorSubtag()],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '1', 31, ['2', '4', '8', '16', '32', '64', '128', '256', '512', '1024']);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).mustHappen(10).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
             assert() {
                 Mock.verifySequence(...['2', '4', '8', '16', '32', '64', '128', '256', '512', '1024']
@@ -133,11 +118,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Too many loops') }
             ],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 9, [1, 2, 3, 4]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops'))
+                ctx.hooks.setup(m => m.loop!(sut))
                     .resolves()
                     .resolves()
                     .resolves()
@@ -155,11 +138,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Too many loops') }
             ],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 4, [1, 2, 3, 4]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops'))
+                ctx.hooks.setup(m => m.loop!(sut))
                     .resolves()
                     .resolves()
                     .resolves()
@@ -177,11 +158,9 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Too many loops') }
             ],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 4, [1, 2, 3, 4]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops'))
+                ctx.hooks.setup(m => m.loop!(sut))
                     .resolves()
                     .resolves()
                     .resolves()
@@ -197,11 +176,9 @@ await runSubtagTests({
             code: '{while;{get;index};<;10;{increment;index}{if;{get;index};==;6;{return}},}',
             expected: '1,2,3,4,5,6',
             subtags: [new IfSubtag(), new ReturnSubtag()],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 18, [1, 2, 3, 4, 5, 6]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).mustHappen(6).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(6).resolves(undefined);
             },
             assert() {
                 Mock.verifySequence(...[1, 2, 3, 4, 5, 6]

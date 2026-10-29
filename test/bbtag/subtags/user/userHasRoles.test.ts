@@ -3,11 +3,11 @@ import type { ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bb
 import { UserHasRolesSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 const features = new Mock<ListMemberRolesFeature & ListGuildRolesFeature>({ id: 'features' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
 
 await runSubtagTests({
     subtag: new UserHasRolesSubtag(features.instance),
@@ -15,7 +15,7 @@ await runSubtagTests({
     names: ['hasRoles', 'userHasRoles'],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptMock(userIdSubtag);
     },
     cases: [
         {
@@ -32,9 +32,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(ctx.guildId, ctx.userId))
                     .resolves(['12345678901234567'])
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $({ noLookup: false })))
                     .resolves(ctx.userId)
                     .mustHappen(1);
             }
@@ -173,9 +171,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(ctx.guildId, ctx.userId))
                     .resolves(['12345678901234567'])
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $({ noLookup: false })))
                     .resolves(ctx.userId)
                     .mustHappen(1);
             }
@@ -194,9 +190,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(ctx.guildId, ctx.userId))
                     .resolves(['12345678901234567'])
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $({ noLookup: true })))
                     .resolves(ctx.userId)
                     .mustHappen(1);
             }

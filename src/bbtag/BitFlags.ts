@@ -88,7 +88,7 @@ export function defineBitFlags<Flag extends number | bigint, Name extends string
             const f = toFlag(flags);
             return this.#from(xor(this.raw, f));
         }
-        public not(): this {
+        public inverse(): this {
             return this.#from(not(this.raw));
         }
         * #iterateNames(): Generator<Name, void, void> {
@@ -222,7 +222,7 @@ export interface BitFlags<Flag extends number | bigint, Name extends string | sy
     or(...flags: Array<BitFlagConvertible<Flag, Name>>): this;
     and(...flags: Array<BitFlagConvertible<Flag, Name>>): this;
     xor(...flags: Array<BitFlagConvertible<Flag, Name>>): this;
-    not(): this;
+    inverse(): this;
     [Symbol.toPrimitive](): Flag;
     toArray(): Name[];
     toJSON(): Flag extends bigint ? string : Flag;

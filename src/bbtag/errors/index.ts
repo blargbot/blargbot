@@ -16,7 +16,6 @@ export * from './RoleNotFoundError.js';
 export * from './StaffOnlyError.js';
 export * from './SubtagDisabledError.js';
 export * from './SubtagStackOverflowError.js';
-export * from './TagCooldownError.js';
 export * from './TooManyArgumentsError.js';
 export * from './TooManyLoopsError.js';
 export * from './UnknownSubtagError.js';

@@ -38,15 +38,7 @@ await runSubtagTests({
         },
         {
             code: '{subtagexists;func.abc}',
-            expected: 'false',
-            postSetup(ctx) {
-                ctx.root.functions.set('abc', {
-                    end: { index: 0, line: 0, column: 0 },
-                    start: { index: 0, line: 0, column: 0 },
-                    source: '',
-                    values: []
-                });
-            }
+            expected: 'false'
         }
     ]
 });

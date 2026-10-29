@@ -13,21 +13,21 @@ await runSubtagTests({
             code: '{nsfw}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.root.output.nsfw, '❌ This contains NSFW content! Go to a NSFW channel. ❌');
+                assert.equal(ctx.bbtag.root.output.nsfw, '❌ This contains NSFW content! Go to a NSFW channel. ❌');
             }
         },
         {
             code: '{nsfw;}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.root.output.nsfw, '❌ This contains NSFW content! Go to a NSFW channel. ❌');
+                assert.equal(ctx.bbtag.root.output.nsfw, '❌ This contains NSFW content! Go to a NSFW channel. ❌');
             }
         },
         {
             code: '{nsfw;Buddy you need a bonk}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.root.output.nsfw, 'Buddy you need a bonk');
+                assert.equal(ctx.bbtag.root.output.nsfw, 'Buddy you need a bonk');
             }
         }
     ]

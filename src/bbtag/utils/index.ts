@@ -1,5 +1,4 @@
 import { parseBBTag } from '../language/parseBBTag.js';
-import { createDebugOutput } from './debugOutput.js';
 import { json } from './json.js';
 import * as operators from './operators.js';
 import { overrides } from './overrides.js';
@@ -13,7 +12,6 @@ export * from './subtagType.js';
 export * from './subtagArgumentKind.js';
 
 export const bbtag = Object.freeze({
-    createDebugOutput,
     json,
     ...operators,
     parse: parseBBTag,

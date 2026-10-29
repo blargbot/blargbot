@@ -1,5 +1,3 @@
-import assert from 'node:assert/strict';
-
 import type { GetUserNameFeature } from '@blargbot/bbtag/subtags';
 import { ReasonSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
@@ -19,22 +17,22 @@ await runSubtagTests({
         {
             code: '{reason}',
             expected: '',
-            assert(ctx) {
-                assert.equal(ctx.local.reason, '');
+            setup(ctx) {
+                ctx.root.setupSet(m => m.reason = '').returns(true).mustHappen(1);
             }
         },
         {
             code: '{reason;}',
             expected: '',
-            assert(ctx) {
-                assert.equal(ctx.local.reason, '');
+            setup(ctx) {
+                ctx.root.setupSet(m => m.reason = '').returns(true).mustHappen(1);
             }
         },
         {
             code: '{reason;Because i can}',
             expected: '',
-            assert(ctx) {
-                assert.equal(ctx.local.reason, 'Because i can');
+            setup(ctx) {
+                ctx.root.setupSet(m => m.reason = 'Because i can').returns(true).mustHappen(1);
             }
         }
     ]

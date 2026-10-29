@@ -18,8 +18,8 @@ await runSubtagTests({
         {
             code: '{reaction}',
             expected: '🤔',
-            postSetup(bbctx) {
-                bbctx.local.reaction = '🤔';
+            setup(ctx) {
+                ctx.bbtag.local.reaction = '🤔';
             }
         }
     ]

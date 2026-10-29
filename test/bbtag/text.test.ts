@@ -14,7 +14,7 @@ class TestSubtag extends Subtag {
     public staff = false;
     public hidden = false;
     public signatures = [];
-    protected executeCore: Subtag['executeCore'] = () => {
+    public execute: Subtag['execute'] = () => {
         throw new Error('Method not implemented');
     };
 }

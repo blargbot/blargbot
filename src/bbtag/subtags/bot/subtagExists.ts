@@ -16,7 +16,7 @@ export class SubtagExistsSubtag extends CompiledSubtag {
                     exampleCode: tag.default.exampleCode,
                     exampleOut: tag.default.exampleOut,
                     returns: 'boolean',
-                    execute: (ctx, [subtag]) => ctx.engine.getSubtag(subtag.value) !== undefined
+                    execute: (ctx, [subtag]) => ctx.subtags.find(subtag.value) !== undefined
                 }
             ]
         });

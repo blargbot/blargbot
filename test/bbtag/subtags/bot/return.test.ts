@@ -14,28 +14,28 @@ await runSubtagTests({
             code: 'abc{return}def',
             expected: 'abc',
             assert(ctx) {
-                assert.equal(ctx.state, BBTagRuntimeState.ABORT);
+                assert.equal(ctx.bbtag.state, BBTagRuntimeState.ABORT);
             }
         },
         {
             code: '{return;true}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.state, BBTagRuntimeState.ABORT);
+                assert.equal(ctx.bbtag.state, BBTagRuntimeState.ABORT);
             }
         },
         {
             code: 'abc{return;false}def',
             expected: 'abc',
             assert(ctx) {
-                assert.equal(ctx.state, BBTagRuntimeState.RETURN);
+                assert.equal(ctx.bbtag.state, BBTagRuntimeState.RETURN);
             }
         },
         {
             code: '{return;abc}',
             expected: '',
             assert(ctx) {
-                assert.equal(ctx.state, BBTagRuntimeState.ABORT);
+                assert.equal(ctx.bbtag.state, BBTagRuntimeState.ABORT);
             }
         }
     ]

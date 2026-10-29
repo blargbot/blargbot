@@ -20,7 +20,7 @@ await runSubtagTests({
         {
             code: '{indexof;This is some text;s;a}',
             expected: '6',
-            postSetup(ctx) { ctx.root.fallback = '4'; }
+            setup(ctx) { ctx.bbtag.root.fallback = '4'; }
         },
         {
             code: '{indexof;This is some text;s;a}',
@@ -32,7 +32,7 @@ await runSubtagTests({
         {
             code: '{indexof;This is some text;s;a}',
             expected: 'b',
-            postSetup(ctx) { ctx.root.fallback = 'b'; },
+            setup(ctx) { ctx.bbtag.root.fallback = 'b'; },
             errors: [
                 { error: new NotANumberError('a') }
             ]

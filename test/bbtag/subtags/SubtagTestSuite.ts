@@ -5,9 +5,8 @@ import path from 'node:path';
 import type { TestContext } from 'node:test';
 import { describe, it } from 'node:test';
 
-import type { BaseRuntimeLimit, BBTagExpression, FlagDefinition, InjectionContext, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
-import { bbtag, BBTagContext, BBTagEngine, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag';
-import type { Logger } from '@blargbot/logger';
+import type { BBTagExpression, BBTagHooks, BBTagInput, BBTagRuntimeRootScope, FlagDefinition, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
+import { bbtag, BBTagContext, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagProvider, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag';
 import type { Mockable, MockCtorArgs } from '@blargbot/test-util';
 import { Mock } from '@blargbot/test-util';
 import moment from 'moment-timezone';
@@ -24,8 +23,7 @@ export interface SubtagTestCase {
     readonly subtagName?: string;
     readonly expected?: string | RegExp | (() => string | RegExp);
     readonly setup?: (context: SubtagTestContext, bbtag: BBTagExpression, nodeTest: TestContext) => Awaitable<void>;
-    readonly postSetup?: (context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>;
-    readonly assert?: (context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>;
+    readonly assert?: (context: SubtagTestContext, result: string) => Awaitable<void>;
     readonly teardown?: (context: SubtagTestContext) => Awaitable<void>;
     readonly expectError?: {
         required?: boolean;
@@ -40,9 +38,8 @@ export interface SubtagTestCase {
 
 interface TestSuiteConfig {
     readonly setup: Array<(context: SubtagTestContext, bbtag: BBTagExpression, nodeTest: TestContext) => Awaitable<void>>;
-    readonly assert: Array<(context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>>;
+    readonly assert: Array<(context: SubtagTestContext, result: string) => Awaitable<void>>;
     readonly teardown: Array<(context: SubtagTestContext) => Awaitable<void>>;
-    readonly postSetup: Array<(context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>>;
 }
 
 export class MarkerError extends BBTagRuntimeError {
@@ -52,7 +49,7 @@ export class MarkerError extends BBTagRuntimeError {
     }
 }
 
-export interface SubtagTestSuiteData<T extends Subtag = Subtag> extends Pick<SubtagTestCase, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
+export interface SubtagTestSuiteData<T extends Subtag = Subtag> extends Pick<SubtagTestCase, 'setup' | 'assert' | 'teardown'> {
     readonly names: Iterable<string>;
     readonly cases: SubtagTestCase[];
     readonly subtag: T;
@@ -69,11 +66,9 @@ type ArgCountBound = number | { count: number; noEval: number[]; };
 
 export class SubtagTestContext {
     readonly #allMocks: Mock[] = [];
-    #isCreated = false;
-    public readonly dependencies = this.createMock<InjectionContext>({ id: 'dependencies' });
-    readonly #logger = this.createMock<Logger>({ id: 'logger' });
-    public readonly limit = this.createMock<BaseRuntimeLimit>({ id: 'limit' });
-    public readonly ownedMessages: string[] = [];
+    public readonly bbtag: BBTagContext;
+    public readonly hooks = this.createMock<BBTagHooks>({ id: 'hooks' });
+    public readonly root = this.createMock<BBTagRuntimeRootScope>({ id: 'root' });
 
     public guildId = makeId('guild');
     public messageId = makeId('commandMessage');
@@ -85,40 +80,64 @@ export class SubtagTestContext {
     public tagName = makeId('tagName');
     public isCC = false;
     public flagDefinitions: FlagDefinition[] = [];
-    public cooldownMs = 0;
-    public input = '';
     public prefix: string | undefined = undefined;
+    public readonly input: Mutable<BBTagInput> = { array: [], flags: { _: '' } };
+    public readonly ownedMessages = new Set<string>();
 
     public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<Subtag>) {
-        this.dependencies.setup(m => m.logger).returns(this.#logger.instance, { isFallback: true });
-        this.dependencies.setup(c => c.subtags).returns(subtags, { isFallback: true });
-        this.dependencies.setup(m => m.sleep).returns(() => {
-            throw new Error('Sleep called, this typically means a runaway subtag.');
+        this.bbtag = new BBTagContext(
+            new SubtagProvider(subtags),
+            this.hooks.instance,
+            this.root.instance
+        );
+        this.hooks.setup((m, $) => m.internalServerError!($.anything)).invokes(i => {
+            throw i.arguments[0];
+        }, { isFallback: true });
+        this.hooks.setup((m, $) => m.step!()).returns(undefined, { isFallback: true });
+        this.hooks.setup((m, $) => m.subtagExecuting!($.anything, $.anything)).returns(undefined, { isFallback: true });
+        this.hooks.setup((m, $) => m.loop!($.anything)).returns(undefined, { isFallback: true });
+
+        this.root.setup(m => m.guildId).invokes(() => this.guildId, { isFallback: true });
+        this.root.setup(m => m.messageId).invokes(() => this.messageId, { isFallback: true });
+        this.root.setup(m => m.channelId).invokes(() => this.channelId, { isFallback: true });
+        this.root.setup(m => m.userId).invokes(() => this.userId, { isFallback: true });
+        this.root.setup(m => m.authorId).invokes(() => this.authorId, { isFallback: true });
+        this.root.setup(m => m.authorizerId).invokes(() => this.authorizerId, { isFallback: true });
+        this.root.setup(m => m.botId).invokes(() => this.botId, { isFallback: true });
+        this.root.setup(m => m.tagName).invokes(() => this.tagName, { isFallback: true });
+        this.root.setup(m => m.isCC).invokes(() => this.isCC, { isFallback: true });
+        this.root.setup(m => m.input).returns(this.input, { isFallback: true });
+        this.root.setup(m => m.prefix).invokes(() => this.prefix, { isFallback: true });
+        this.root.setup(m => m.ownedMessageIds).returns(this.ownedMessages, { isFallback: true });
+        this.root.setup(m => m.recursion).returns({ depth: 0 }, { isFallback: true });
+        this.root.setup(m => m.functions).returns(new Map(), { isFallback: true });
+        this.root.setup(m => m.ccCache).returns(new Map(), { isFallback: true });
+        this.root.setup(m => m.tagCache).returns(new Map(), { isFallback: true });
+        this.root.setup(m => m.output).returns({ reactions: [] }, { isFallback: true });
+        this.root.setup(m => m.queryCache).returns({
+            channel: new Map(),
+            role: new Map(),
+            user: new Map(),
+            failedQueries: 0
+        }, { isFallback: true });
+        this.root.setup(m => m.allowedMentions).returns({
+            roles: new Set(),
+            users: new Set(),
+            everybody: false
         }, { isFallback: true });
 
-        for (const level of ['error', 'warn'] as const) {
-            this.#logger.setup(m => m[level]).returns((...args) => {
-                throw args.find(x => x instanceof Error) ?? new Error(args.join());
-            }, { isFallback: true });
-        }
-        this.#logger.setup((m, $) => m.bbtag('Committing', $.number, 'objects to the', $.string, 'pool.'))
-            .returns(undefined, { isFallback: true });
-        this.#logger.setup((m, $) => m.bbtag('Commited', $.number, 'objects to the', $.string, 'pool in', $.number, 'ms.'))
-            .returns(undefined, { isFallback: true });
-
+        this.root.setupProperty('fallback', undefined);
+        this.root.setupProperty('paramsarray', undefined);
+        this.root.setupProperty('reactUser', undefined);
+        this.root.setupProperty('reaction', undefined);
+        this.root.setupProperty('quiet', undefined);
+        this.root.setupProperty('noLookupErrors', undefined);
+        this.root.setupProperty('silent', false);
     }
 
     public adoptMock(mock: Mock): void {
         this.#allMocks.push(mock);
         mock.reset();
-    }
-
-    public adoptSubtagMock<T extends Subtag>(mock: Mock<T>, options: { name?: string; aliases?: string[]; type: AnyConstructor<T>; }): void {
-        this.adoptMock(mock);
-        mock.setup(m => m.name).returns(options.name ?? `test-subtag-${createSnowflake()}`);
-        mock.setup(m => m.aliases).returns(options.aliases ?? []);
-        mock.setup(Reflect.getPrototypeOf).returns(options.type.prototype);
-        mock.setup(m => m.constructor).returns(options.type);
     }
 
     public createMock<T extends Mockable>(...args: MockCtorArgs<T>): Mock<T> {
@@ -142,39 +161,20 @@ export class SubtagTestContext {
             default: throw new AggregateError(errors, errors.join('\n'));
         }
     }
+}
 
-    public createContext(): BBTagContext {
-        if (this.#isCreated)
-            throw new Error('Cannot create multiple contexts from 1 mock');
-        this.#isCreated = true;
-
-        this.dependencies.setup(m => m.botId).returns(this.botId).mustHappen(1);
-        this.dependencies.setup(m => m.hooks).returns({});
-
-        const engine = new BBTagEngine(this.dependencies.instance);
-        const context = engine.createContext({
-            guildId: this.guildId,
-            channelId: this.channelId,
-            messageId: this.messageId,
-            userId: this.userId,
-            authorizer: this.authorizerId,
-            author: this.authorId,
-            cooldown: this.cooldownMs,
-            flagDefinitions: this.flagDefinitions,
-            input: this.input,
-            isCC: this.isCC,
-            limit: this.limit.instance,
-            prefix: this.prefix,
-            silent: false,
-            tagName: this.tagName,
-            tagVars: true
-        });
-        context.toString = () => '<TestBBTagContext>';
-
-        this.ownedMessages.forEach(v => context.root.ownedMessageIds.add(v));
-
-        return context;
-    }
+export function createMockSubtag<T extends Subtag>(type: AnyConstructor<T>): Mock<T> {
+    const mock = new Mock<T>(...[{ id: type.name }] as MockCtorArgs<T>);
+    const clearInterceptors = mock.clearInterceptors.bind(mock);
+    mock.clearInterceptors = () => {
+        clearInterceptors();
+        mock.setup(m => m.name).returns(`test-subtag-${createSnowflake()}`);
+        mock.setup(m => m.aliases).returns([]);
+        mock.setup(Reflect.getPrototypeOf).returns(type.prototype);
+        mock.setup(m => m.constructor).returns(type);
+    };
+    mock.clearInterceptors();
+    return mock;
 }
 
 export async function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): Promise<void> {
@@ -184,8 +184,6 @@ export async function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData
     const suite = new SubtagTestSuite([data.subtag, ...data.otherSubtags ?? []], data.names);
     if (data.setup !== undefined)
         suite.setup(data.setup);
-    if (data.postSetup !== undefined)
-        suite.postSetup(data.postSetup);
     if (data.assert !== undefined)
         suite.assert(data.assert);
     if (data.teardown !== undefined)
@@ -246,7 +244,7 @@ export class TestDataSubtag extends TestSubtagBase {
         super();
     }
 
-    protected async * executeCore(_: unknown, __: unknown, subtag: SubtagCall): AsyncIterable<string> {
+    public async * execute(_: unknown, __: unknown, subtag: SubtagCall): AsyncIterable<string> {
         if (subtag.args.length !== 1)
             throw new RangeError(`Subtag ${this.name} must be given 1 argument!`);
         const key = subtag.args[0].source;
@@ -262,7 +260,7 @@ export class TestDataSubtag extends TestSubtagBase {
 export class EvalSubtag extends TestSubtagBase {
     public name = 'eval';
 
-    protected executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
+    public execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new MarkerError('eval', subtag.start.index);
     }
 }
@@ -271,12 +269,12 @@ export class AssertSubtag extends TestSubtagBase {
     readonly #assertion: (context: BBTagContext, subtagName: string, subtag: SubtagCall) => Awaitable<string>;
     public name = 'assert';
 
-    public constructor(assertion: (...args: Parameters<Subtag['executeCore']>) => Awaitable<string>) {
+    public constructor(assertion: (...args: Parameters<Subtag['execute']>) => Awaitable<string>) {
         super();
         this.#assertion = assertion;
     }
 
-    protected async * executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string> {
+    public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string> {
         yield await this.#assertion(context, subtagName, subtag);
     }
 }
@@ -284,7 +282,7 @@ export class AssertSubtag extends TestSubtagBase {
 export class FailTestSubtag extends TestSubtagBase {
     public name = 'fail';
 
-    public executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
+    public execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new RangeError(`Subtag ${subtag.source} was evaluated when it wasnt supposed to!`);
     }
 }
@@ -299,7 +297,7 @@ export class LimitedTestSubtag extends TestSubtagBase {
         this.#limit = limit;
     }
 
-    protected executeCore(context: BBTagContext): never {
+    public execute(context: BBTagContext): never {
         const count = this.#counts.get(context) ?? 0;
         this.#counts.set(context, count + 1);
 
@@ -311,7 +309,7 @@ export class LimitedTestSubtag extends TestSubtagBase {
 
 export class EchoArgsSubtag extends TestSubtagBase {
     public name = 'echoargs';
-    protected async * executeCore(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
+    public async * execute(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
         await Promise.resolve();
         yield '[';
         yield JSON.stringify(subtag.name.source);
@@ -324,7 +322,7 @@ export class EchoArgsSubtag extends TestSubtagBase {
 }
 
 export class SubtagTestSuite {
-    readonly #config: TestSuiteConfig = { setup: [], assert: [], teardown: [], postSetup: [] };
+    readonly #config: TestSuiteConfig = { setup: [], assert: [], teardown: [] };
     readonly #testCases: SubtagTestCase[] = [];
     readonly #subtags: Subtag[];
     readonly #names: Iterable<string>;
@@ -336,11 +334,6 @@ export class SubtagTestSuite {
 
     public setup(setup: TestSuiteConfig['setup'][number]): this {
         this.#config.setup.push(setup);
-        return this;
-    }
-
-    public postSetup(setup: TestSuiteConfig['postSetup'][number]): this {
-        this.#config.postSetup.push(setup);
         return this;
     }
 
@@ -455,17 +448,13 @@ async function runTestCase<TestCase extends SubtagTestCase>(subtags: Subtag[], t
         for (const setup of config.setup)
             await setup(test, code, testCtx);
         await actualTestCase.setup?.(test, code, testCtx);
-        for (const s of subtags)
-            test.limit.setup((m, $) => m.check($.instanceOf(BBTagContext), s.name)).resolves(undefined, { isFallback: true });
-        const context = test.createContext();
-        for (const postSetup of config.postSetup)
-            await postSetup.call(actualTestCase, context, test);
-        await actualTestCase.postSetup?.(context, test);
+
+        test.ownedMessages.add(test.messageId);
 
         const expected = getExpectation(testCase);
 
         // act
-        const result = await runSafe(() => context.eval(code));
+        const result = await runSafe(() => test.bbtag.eval(code));
         if (!result.success) {
             if (actualTestCase.expectError === undefined)
                 throw result.error;
@@ -485,14 +474,14 @@ async function runTestCase<TestCase extends SubtagTestCase>(subtags: Subtag[], t
                 break;
         }
 
-        await actualTestCase.assert?.(context, result.value, test);
+        await actualTestCase.assert?.(test, result.value);
         for (const assert of config.assert)
-            await assert.call(actualTestCase, context, result.value, test);
+            await assert.call(actualTestCase, test, result.value);
 
         if (typeof testCase.errors === 'function') {
-            testCase.errors(context.errors);
+            testCase.errors(test.bbtag.errors);
         } else {
-            const errors = context.errors.map(err => ({
+            const errors = test.bbtag.errors.map(err => ({
                 error: noStack(err.error),
                 start: err.subtag?.start,
                 end: err.subtag?.end

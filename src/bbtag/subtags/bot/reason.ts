@@ -32,7 +32,7 @@ export class ReasonSubtag extends CompiledSubtag {
     }
 
     public static async get(context: BBTagContext): Promise<string> {
-        return await context.engine.getSubtag(ReasonSubtag).get(context);
+        return await context.subtags.get(ReasonSubtag).get(context);
     }
 
     public async get(context: BBTagContext): Promise<string> {

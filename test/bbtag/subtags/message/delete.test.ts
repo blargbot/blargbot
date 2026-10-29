@@ -3,11 +3,11 @@ import type { DeleteMessageFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, ChannelIsTextSubtag, DeleteSubtag, IsStaffSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
-const isStaffSubtag = new Mock<IsStaffSubtag>({ id: 'IsStaffSubtag' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
-const channelIsTextSubtag = new Mock<ChannelIsTextSubtag>({ id: 'ChannelIsTextSubtag' });
+const isStaffSubtag = createMockSubtag(IsStaffSubtag);
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
+const channelIsTextSubtag = createMockSubtag(ChannelIsTextSubtag);
 const features = new Mock<DeleteMessageFeature>({ id: 'features' });
 
 await runSubtagTests({
@@ -17,9 +17,9 @@ await runSubtagTests({
     otherSubtags: [isStaffSubtag.instance, channelIdSubtag.instance, channelIsTextSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(isStaffSubtag, { type: IsStaffSubtag });
-        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-        ctx.adoptSubtagMock(channelIsTextSubtag, { type: ChannelIsTextSubtag });
+        ctx.adoptMock(isStaffSubtag);
+        ctx.adoptMock(channelIdSubtag);
+        ctx.adoptMock(channelIsTextSubtag);
     },
     cases: [
         {
@@ -29,12 +29,10 @@ await runSubtagTests({
                 features.setup(m => m.deleteMessage(ctx.channelId, ctx.messageId))
                     .resolves({ success: true })
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                channelIdSubtag.setup(m => m.query(ctx.bbtag, ctx.channelId, undefined))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -50,12 +48,10 @@ await runSubtagTests({
                 features.setup(m => m.deleteMessage(ctx.channelId, ctx.messageId))
                     .resolves({ success: false, cause: 'failed', reason: 'Missing permissions' })
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                channelIdSubtag.setup(m => m.query(ctx.bbtag, ctx.channelId, undefined))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -69,12 +65,10 @@ await runSubtagTests({
                 features.setup(m => m.deleteMessage(ctx.channelId, ctx.messageId))
                     .resolves({ success: true })
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                channelIdSubtag.setup(m => m.query(ctx.bbtag, ctx.channelId, undefined))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -86,8 +80,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Author must be staff to delete unrelated messages') }
             ],
-            postSetup(bbctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+            setup(ctx) {
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(false)
                     .mustHappen(1);
             }
@@ -97,16 +91,14 @@ await runSubtagTests({
             code: '{delete;1234567890123456}',
             expected: '',
             setup(ctx) {
-                ctx.ownedMessages.push('1234567890123456');
+                ctx.ownedMessages.add('1234567890123456');
                 features.setup(m => m.deleteMessage(ctx.channelId, '1234567890123456'))
                     .resolves({ success: true })
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                channelIdSubtag.setup(m => m.query(ctx.bbtag, ctx.channelId, undefined))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -119,15 +111,13 @@ await runSubtagTests({
                 features.setup(m => m.deleteMessage(ctx.channelId, '1234567890123456'))
                     .resolves({ success: true })
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                channelIdSubtag.setup(m => m.query(ctx.bbtag, ctx.channelId, undefined))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -141,12 +131,10 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.channelId = ctx.channelId = '9876543212345678';
-            },
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                channelIdSubtag.setup(m => m.query(ctx.bbtag, ctx.channelId, undefined))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -163,15 +151,13 @@ await runSubtagTests({
                 features.setup(m => m.deleteMessage(ctx.channelId, '1234567890123456'))
                     .resolves({ success: false, cause: 'notFound' })
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                channelIdSubtag.setup(m => m.query(ctx.bbtag, ctx.channelId, undefined))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -186,12 +172,10 @@ await runSubtagTests({
                 features.setup(m => m.deleteMessage(ctx.channelId, ctx.messageId))
                     .resolves({ success: true })
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, ctx.channelId, undefined))
+                channelIdSubtag.setup(m => m.query(ctx.bbtag, ctx.channelId, undefined))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, ctx.channelId))
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, ctx.channelId))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -203,8 +187,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Author must be staff to delete unrelated messages') }
             ],
-            postSetup(bbctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(false).mustHappen(1);
+            setup(ctx) {
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined)).resolves(false).mustHappen(1);
             }
         },
         {
@@ -212,16 +196,14 @@ await runSubtagTests({
             code: '{delete;987654322123456142;1234567890123456}',
             expected: '',
             setup(ctx) {
-                ctx.ownedMessages.push('1234567890123456');
+                ctx.ownedMessages.add('1234567890123456');
                 features.setup(m => m.deleteMessage('987654322123456142', '1234567890123456'))
                     .resolves({ success: true })
                     .mustHappen(1);
-            },
-            postSetup(bbctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, '987654322123456142', undefined))
+                channelIdSubtag.setup(m => m.query(ctx.bbtag, '987654322123456142', undefined))
                     .resolves('987654322123456142')
                     .mustHappen(1);
-                channelIsTextSubtag.setup(m => m.check(bbctx, '987654322123456142'))
+                channelIsTextSubtag.setup(m => m.check(ctx.bbtag, '987654322123456142'))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -233,11 +215,11 @@ await runSubtagTests({
             errors: [
                 { error: new ChannelNotFoundError('987654322123456142') }
             ],
-            postSetup(bbctx) {
-                channelIdSubtag.setup(m => m.query(bbctx, '987654322123456142', undefined))
+            setup(ctx) {
+                channelIdSubtag.setup(m => m.query(ctx.bbtag, '987654322123456142', undefined))
                     .resolves(undefined)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
             }

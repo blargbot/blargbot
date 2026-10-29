@@ -42,7 +42,7 @@ export class ChannelIsNsfwSubtag extends CompiledSubtag {
     }
 
     public static async check(context: BBTagContext, channelId: string): Promise<boolean> {
-        return await context.engine.getSubtag(ChannelIsNsfwSubtag).check(context, channelId);
+        return await context.subtags.get(ChannelIsNsfwSubtag).check(context, channelId);
     }
 
     public async check(context: BBTagContext, channelId: string): Promise<boolean> {

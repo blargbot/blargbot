@@ -15,12 +15,7 @@ export abstract class Subtag implements SubtagOptions<IFormattable<string>> {
     public abstract readonly hidden: boolean;
     public abstract readonly signatures: ReadonlyArray<SubtagSignature<IFormattable<string>>>;
 
-    public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
-        using _hook = context.engine.hooks.subtagExecuting?.(context, this);
-        yield* this.executeCore(context, subtagName, subtag);
-    }
-
-    protected abstract executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined>;
+    public abstract execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined>;
 
     public toString(): string {
         return this.signatures.length === 0 ? `{${this.name}}` : `{${this.name};...}`;

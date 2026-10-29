@@ -6,16 +6,16 @@ import { Mock } from '@blargbot/test-util';
 
 import type { SetMemberRolesFeature } from '../../../../src/bbtag/subtags/user/userSetRoles.js';
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
 const features = new Mock<SetMemberRolesFeature & ListMemberRolesFeature & ListGuildRolesFeature & GetMemberPermissionsFeature & VariablesFeature>({ id: 'features' });
 const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
 variablesProvider.setup(m => m.kinds).returns([]);
 const variables = new Mock<Variables>({ id: 'variables' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
-const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+const roleIdSubtag = createMockSubtag(RoleIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 
 await runSubtagTests({
     subtag: new UserSetRolesSubtag(features.instance),
@@ -26,21 +26,19 @@ await runSubtagTests({
         ctx.adoptMock(features);
         ctx.adoptMock(variablesProvider);
         ctx.adoptMock(variables);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
-        ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
+        ctx.adoptMock(userIdSubtag);
+        ctx.adoptMock(roleIdSubtag);
+        ctx.adoptMock(reasonSubtag);
         features.setup(m => m.variables).returns(variablesProvider.instance);
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
-        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
     },
     cases: [
         {
             code: '{usersetroles}',
             expected: 'true',
             subtags: [userIdSubtag.instance],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const adminId = createSnowflake();
                 const userId = ctx.userId;
@@ -51,7 +49,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberRoles($({
@@ -114,10 +112,10 @@ await runSubtagTests({
             cases: [
                 {
                     expected: 'true',
-                    postSetup(userId, bbctx, ctx, quiet) {
+                    setup(userId, ctx, quiet) {
                         const roleIds = ['283674284762348926', '234967249876489624'];
                         for (const roleId of roleIds)
-                            roleIdSubtag.setup((m, $) => m.query(bbctx, roleId, $({ noLookup: quiet }))).resolves(roleId).mustHappen(1);
+                            roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, roleId, $({ noLookup: quiet }))).resolves(roleId).mustHappen(1);
                         features.setup((m, $) => m.setMemberRoles($({
                             guildId: ctx.guildId,
                             targetId: userId,
@@ -153,7 +151,7 @@ await runSubtagTests({
             errors: [
                 { error: new NotAnArrayError('abc') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const adminId = createSnowflake();
                 const userId = ctx.userId;
@@ -164,7 +162,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);
                 variables.setup(m => m.get('abc')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
@@ -177,7 +175,7 @@ await runSubtagTests({
             errors: [
                 { error: new NotAnArrayError('abc').withDisplay('false') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const adminId = createSnowflake();
                 const userId = ctx.userId;
@@ -188,7 +186,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 variables.setup(m => m.get('abc')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
@@ -201,7 +199,7 @@ await runSubtagTests({
             errors: [
                 { error: new RoleNotFoundError('unknown role') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const adminId = createSnowflake();
                 const userId = ctx.userId;
@@ -212,10 +210,10 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, 'unknown role', $({ noLookup: false }))).resolves(undefined).mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'unknown role', $({ noLookup: false }))).resolves(undefined).mustHappen(1);
             }
         },
         {
@@ -225,7 +223,7 @@ await runSubtagTests({
             errors: [
                 { error: new RoleNotFoundError('unknown role').withDisplay('false') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const adminId = createSnowflake();
                 const userId = ctx.userId;
@@ -236,10 +234,10 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $({ noLookup: true })))
                     .resolves(userId)
                     .mustHappen(1);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, 'unknown role', $({ noLookup: true }))).resolves(undefined).mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'unknown role', $({ noLookup: true }))).resolves(undefined).mustHappen(1);
             }
         }
     ]

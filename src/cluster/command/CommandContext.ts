@@ -1,4 +1,3 @@
-import type { BBTagEngine } from '@blargbot/bbtag';
 import type { Cluster, ClusterUtilities, CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster';
 import type { Configuration } from '@blargbot/config';
 import type { ChoiceQueryOptions, ChoiceQueryResult, ConfirmQuery, MultipleQueryOptions, MultipleQueryResult, SendContent, SendContext, SlimConfirmQueryOptions, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core';
@@ -9,9 +8,11 @@ import { format, util } from '@blargbot/formatting';
 import type { Logger } from '@blargbot/logger';
 import type * as eris from 'eris';
 
+import type { BBTagManager } from '../managers/BBTagManager.js';
+
 export class CommandContext<TChannel extends eris.KnownTextableChannel = eris.KnownTextableChannel> {
     public get logger(): Logger { return this.cluster.logger; }
-    public get bbtag(): BBTagEngine { return this.cluster.bbtag; }
+    public get bbtag(): BBTagManager { return this.cluster.bbtag; }
     public get util(): ClusterUtilities { return this.cluster.util; }
     public get config(): Configuration { return this.cluster.config; }
     public get discord(): eris.Client { return this.cluster.discord; }

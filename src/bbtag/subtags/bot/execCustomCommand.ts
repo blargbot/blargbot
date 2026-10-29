@@ -6,7 +6,7 @@ import type { TagDetails } from '../../types.js';
 import { BBTagRuntimeState } from '../../types.js';
 import { convertToString } from '../../utils/converters.js';
 import { bbtag, SubtagType } from '../../utils/index.js';
-import { joinInput, parseInput } from '../../utils/input.js';
+import type { ParseInputFeature, TagCooldownFeature } from '../types.js';
 
 const tag = templates.subtags.execCustomCommand;
 
@@ -14,7 +14,7 @@ export interface GetCustomCommandFeature {
     getCustomCommand(guildId: string, name: string): Awaitable<TagDetails | 'alias' | undefined>;
 }
 
-type Features = GetCustomCommandFeature;
+type Features = GetCustomCommandFeature & TagCooldownFeature & ParseInputFeature;
 export class ExecCustomCommandSubtag extends CompiledSubtag {
     readonly #features: Features;
     public constructor(features: Features) {
@@ -53,21 +53,21 @@ export class ExecCustomCommandSubtag extends CompiledSubtag {
         if (ccommand === 'alias')
             throw new BBTagRuntimeError(`Cannot execcc imported tag: ${tagName}`);
 
-        let input = args[0] ?? '';
-        if (args.length > 1)
-            input = joinInput(bbtag.tagArray.flattenArray(args).map(convertToString));
-
         using scope = context.enterScope();
         scope.tagName = tagName;
-        scope.cooldown = ccommand.cooldown ?? 0;
-        scope.input = parseInput(input, context.root.flagDefinitions);
+        scope.input = this.#features.parseInput(
+            context,
+            args.length > 1
+                ? bbtag.tagArray.flattenArray(args).map(convertToString)
+                : args[0] ?? ''
+        );
         const expr = bbtag.parse(ccommand.content, { throw: true });
-        context.engine.cooldowns.assert({
+        await this.#features.assertTagCooldown({
             guildId: context.root.guildId,
             userId: context.root.userId,
             tagName: context.local.tagName,
             isCC: context.root.isCC,
-            cooldownMs: context.local.cooldown
+            cooldownMs: ccommand.cooldown ?? 0
         });
         using _recurse = context.enterRecursion();
         const result = await context.eval(expr);

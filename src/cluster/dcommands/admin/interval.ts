@@ -1,6 +1,5 @@
-import { bbtag } from '@blargbot/bbtag';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType, GuildCommand  } from '@blargbot/cluster';
+import { CommandType, GuildCommand } from '@blargbot/cluster';
 
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import { templates } from '../../text.js';
@@ -100,7 +99,7 @@ export class IntervalCommand extends GuildCommand {
             case 'MISSING_CHANNEL': return cmd.debug.channelMissing;
             case 'TOO_LONG': return cmd.debug.timedOut({ max: context.cluster.intervals.timeLimit });
             default:
-                await context.send(context.author, bbtag.createDebugOutput(result));
+                await context.send(context.author, result);
                 return cmd.debug.success;
         }
     }

@@ -1,10 +1,9 @@
-import type { BBTagContext, BBTagRuntimeError } from '@blargbot/bbtag';
+import type { BBTagRuntimeError } from '@blargbot/bbtag';
 import { ChannelNotFoundError } from '@blargbot/bbtag';
 import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
-import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
+import { createMockSubtag, type SubtagTestCase, type SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetChannelPropTestCases(options: GetChannelPropTestData): SubtagTestCase[] {
     return [...createGetChannelPropTestCasesIter(options)];
@@ -31,7 +30,7 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
     }
 
     const notFound = options.notFound ?? (c => new ChannelNotFoundError(c));
-    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+    const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
 
     yield {
         title: 'Channel not found',
@@ -42,10 +41,8 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
             { error: notFound('123456789987654329') }
         ],
         setup(ctx) {
-            ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-        },
-        postSetup(bbctx) {
-            channelIdSubtag.setup((m, $) => m.query(bbctx, '123456789987654329', $(options.quiet === false ? undefined : { noLookup: false }))).resolves(undefined);
+            ctx.adoptMock(channelIdSubtag);
+            channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '123456789987654329', $(options.quiet === false ? undefined : { noLookup: false }))).resolves(undefined);
         }
     };
     if (options.quiet !== false) {
@@ -58,10 +55,8 @@ function* createGetChannelPropTestCasesIter(options: GetChannelPropTestData): Ge
                 { error: notFound('123456789987654329').withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-            },
-            postSetup(bbctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '123456789987654329', $({ noLookup: true }))).resolves(undefined);
+                ctx.adoptMock(channelIdSubtag);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '123456789987654329', $({ noLookup: true }))).resolves(undefined);
             }
         };
     }
@@ -84,13 +79,12 @@ export interface GetChannelPropTestCase {
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, quietStr?: string]) => string;
     setup?: (channelId: string, context: SubtagTestContext) => void;
-    postSetup?: (channelId: string, context: BBTagContext, test: SubtagTestContext) => void;
-    assert?: (result: string, channelId: string, context: BBTagContext, test: SubtagTestContext) => void;
+    assert?: (result: string, channelId: string, context: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetChannelPropTestData, testCase: GetChannelPropTestCase, args: Parameters<GetChannelPropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
-    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+    const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
     const [channelQuery, quietStr = ''] = args;
     const channelId = testCase.channelId ?? `channelId<${createSnowflake()}>`;
     return {
@@ -104,16 +98,12 @@ function createTestCase(data: GetChannelPropTestData, testCase: GetChannelPropTe
             if (channelQuery === undefined)
                 ctx.channelId = channelId;
             testCase.setup?.(channelId, ctx);
-            ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-
-        },
-        postSetup(bbctx, ctx) {
+            ctx.adoptMock(channelIdSubtag);
             if (channelQuery !== undefined)
-                channelIdSubtag.setup((m, $) => m.query(bbctx, channelQuery, $(data.quiet === false ? undefined : { noLookup: quietStr !== '' }))).resolves(channelId);
-            testCase.postSetup?.(channelId, bbctx, ctx);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, channelQuery, $(data.quiet === false ? undefined : { noLookup: quietStr !== '' }))).resolves(channelId);
         },
-        assert(bbctx, result, ctx) {
-            testCase.assert?.(result, channelId, bbctx, ctx);
+        assert(ctx, result) {
+            testCase.assert?.(result, channelId, ctx);
         }
     };
 }

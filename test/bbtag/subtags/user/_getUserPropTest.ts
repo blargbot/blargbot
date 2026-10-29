@@ -1,10 +1,9 @@
-import type { BBTagContext, BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
+import type { BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
 import { UserNotFoundError } from '@blargbot/bbtag';
 import { UserIdSubtag } from '@blargbot/bbtag/subtags';
-import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
+import { createMockSubtag, type SubtagTestCase, type SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetUserPropTestCases(options: GetUserPropTestData): SubtagTestCase[] {
     return [...createGetUserPropTestCasesIter(options)];
@@ -31,7 +30,7 @@ function* createGetUserPropTestCasesIter(options: GetUserPropTestData): Generato
     }
 
     const notFound = options.notFound ?? (c => new UserNotFoundError(c));
-    const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+    const userIdSubtag = createMockSubtag(UserIdSubtag);
 
     yield {
         title: 'User not found',
@@ -43,11 +42,9 @@ function* createGetUserPropTestCasesIter(options: GetUserPropTestData): Generato
         ],
         setup(ctx) {
             options.setup?.(ctx, false);
-            ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
-        },
-        postSetup(bbctx) {
+            ctx.adoptMock(userIdSubtag);
             const queryOptions = options.queryOptions(false);
-            userIdSubtag.setup((m, $) => m.query(bbctx, '123456789987654329', $(queryOptions))).resolves(undefined);
+            userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '123456789987654329', $(queryOptions))).resolves(undefined);
         }
     };
     if (options.quiet !== false) {
@@ -61,11 +58,9 @@ function* createGetUserPropTestCasesIter(options: GetUserPropTestData): Generato
             ],
             setup(ctx) {
                 options.setup?.(ctx, true);
-                ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
-            },
-            postSetup(bbctx) {
+                ctx.adoptMock(userIdSubtag);
                 const queryOptions = options.queryOptions(true);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '123456789987654329', $(queryOptions))).resolves(undefined);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '123456789987654329', $(queryOptions))).resolves(undefined);
             }
         };
     }
@@ -88,14 +83,13 @@ export interface GetUserPropTestCase {
     retries?: number;
     queryString?: string;
     generateCode?: (...args: [userStr?: string, quietStr?: string]) => string;
-    setup?: (userId: string, context: SubtagTestContext) => void;
-    postSetup?: (userId: string, context: BBTagContext, test: SubtagTestContext, quiet: boolean) => void;
-    assert?: (result: string, userId: string, context: BBTagContext, test: SubtagTestContext) => void;
+    setup?: (userId: string, context: SubtagTestContext, quiet: boolean) => void;
+    assert?: (result: string, userId: string, context: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase, args: Parameters<GetUserPropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
-    const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+    const userIdSubtag = createMockSubtag(UserIdSubtag);
     const [userQuery, quietStr = ''] = args;
     const userId = `userId<${createSnowflake()}>`;
     return {
@@ -106,20 +100,16 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
         subtags: [userIdSubtag.instance],
         errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
+            ctx.adoptMock(userIdSubtag);
             data.setup?.(ctx, quietStr !== '');
-            testCase.setup?.(userId, ctx);
-            ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
-
-        },
-        postSetup(bbctx, ctx) {
+            testCase.setup?.(userId, ctx, quietStr !== '');
             if (userQuery !== undefined) {
                 const queryOptions = data.queryOptions(quietStr !== '');
-                userIdSubtag.setup((m, $) => m.query(bbctx, userQuery, $(queryOptions))).resolves(userId);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userQuery, $(queryOptions))).resolves(userId);
             }
-            testCase.postSetup?.(userId, bbctx, ctx, quietStr !== '');
         },
-        assert(bbctx, result, ctx) {
-            testCase.assert?.(result, userId, bbctx, ctx);
+        assert(ctx, result) {
+            testCase.assert?.(result, userId, ctx);
         }
     };
 }

@@ -56,7 +56,7 @@ export class ForSubtag extends CompiledSubtag {
         const variables = this.#features.variables.forContext(context);
         try {
             for (let i = initial; bbtag.operate(operator as OrdinalOperator, i.toString(), limit.toString()); i += increment) {
-                await context.root.limit.check(context, 'for:loops');
+                await context.hooks.loop?.(this);
                 await variables.set(varName, i);
                 yield await code.execute();
 

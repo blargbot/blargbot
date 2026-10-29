@@ -1,11 +1,11 @@
-import type { ExecutionResult } from '@blargbot/bbtag';
-import { limits } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
 import { FormattableMessageContent, guard } from '@blargbot/core';
 import type { GuildRolemeEntry } from '@blargbot/domain';
 import type eris from 'eris';
 
+import { CustomCommandLimit } from '../bbtagLimits/CustomCommandLimit.js';
 import { templates } from '../text.js';
+import type { ExecutionResult } from './BBTagManager.js';
 
 export class RolemeManager {
     readonly #cluster: Cluster;
@@ -62,7 +62,7 @@ export class RolemeManager {
             silent: false,
             isCC: true,
             tagVars: false,
-            limit: new limits.CustomCommandLimit(trigger.channel.guild.memberCount),
+            limit: new CustomCommandLimit(trigger.channel.guild.memberCount),
             author: tag.author ?? undefined,
             authorizer: tag.authorizer ?? tag.author ?? trigger.channel.guild.ownerID,
             cooldown: 0,

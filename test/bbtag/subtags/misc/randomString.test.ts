@@ -13,7 +13,7 @@ await runSubtagTests({
         {
             code: '{randstr;123abc456xyz;b}',
             expected: /^([abcxyz1-6])(?!\1{6})[abcxyz1-6]{6}$/,
-            postSetup(ctx) { ctx.root.fallback = '7'; },
+            setup(ctx) { ctx.bbtag.root.fallback = '7'; },
             retries: 5
         },
         {
@@ -37,7 +37,7 @@ await runSubtagTests({
         {
             code: '{randstr;{eval}123abc456xyz;{eval}a}',
             expected: 'b',
-            postSetup(ctx) { ctx.root.fallback = 'b'; },
+            setup(ctx) { ctx.bbtag.root.fallback = 'b'; },
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 28, end: 34, error: new MarkerError('eval', 28) },

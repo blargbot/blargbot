@@ -1,4 +1,3 @@
-import { limits } from '@blargbot/bbtag';
 import type { Cluster, CommandContext, CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster';
 import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster';
 import { metrics } from '@blargbot/core';
@@ -7,6 +6,7 @@ import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
 import * as eris from 'eris';
 
+import { CustomCommandLimit } from '../../bbtagLimits/CustomCommandLimit.js';
 import { templates } from '../../text.js';
 import { CommandManager } from './CommandManager.js';
 
@@ -131,7 +131,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             silent: false,
             isCC: true,
             tagVars: details.tagVars,
-            limit: new limits.CustomCommandLimit(context.channel.guild.memberCount),
+            limit: new CustomCommandLimit(context.channel.guild.memberCount),
             author: details.author ?? undefined,
             authorizer: details.authorizer ?? details.author ?? message.channel.guild.ownerID,
             prefix: context.prefix,

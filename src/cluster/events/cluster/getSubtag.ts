@@ -10,7 +10,7 @@ export class ClusterGetSubtagHandler extends ClusterEventService<'getSubtag'> {
     }
 
     protected async getSubtag(name: string): Promise<SubtagDetails | undefined> {
-        const subtag = this.cluster.bbtag.getSubtag(name);
+        const subtag = this.cluster.bbtag.subtags.find(name);
         if (subtag === undefined)
             return undefined;
 

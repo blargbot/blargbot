@@ -1,21 +1,19 @@
 import { inspect } from 'node:util';
 
-import { BBTagEngine, createTagVariableScopeFactory, subtags, templates, VariablesProvider } from '@blargbot/bbtag';
 import type { ClusterOptions } from '@blargbot/cluster';
 import type { Configuration } from '@blargbot/config';
 import type { ImageChannel } from '@blargbot/contracts';
 import { getImageChannel } from '@blargbot/contracts';
 import type { EvalResult } from '@blargbot/core';
-import { BaseClient, BaseService, metrics, ModuleLoader, snowflake } from '@blargbot/core';
-import { TagVariableType } from '@blargbot/domain';
+import { BaseClient, BaseService, ModuleLoader } from '@blargbot/core';
 import type { Logger } from '@blargbot/logger';
-import { memoize, ResetValue, sleep } from '@blargbot/util';
+import { ResetValue } from '@blargbot/util';
 import { GatewayIntentBits } from 'discord-api-types/v9';
 import moment from 'moment-timezone';
 
-import { ClusterBBTagUtilities, ClusterSubtagConstructorArgs } from './ClusterBBTagUtilities.js';
 import { ClusterUtilities } from './ClusterUtilities.js';
 import type { ClusterWorker } from './ClusterWorker.js';
+import { BBTagManager } from './managers/BBTagManager.js';
 import { CommandDocumentationManager } from './managers/documentation/CommandDocumentationManager.js';
 import { AggregateCommandManager, AnnouncementManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, GuildManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers/index.js';
 
@@ -30,7 +28,7 @@ export class Cluster extends BaseClient {
     public readonly timeouts: TimeoutManager;
     public readonly autoresponses: AutoresponseManager;
     public readonly contributors: ContributorManager;
-    public readonly bbtag: BBTagEngine;
+    public readonly bbtag: BBTagManager;
     public readonly events: ModuleLoader<BaseService>;
     public readonly botStaff: BotStaffManager;
     public readonly moderation: ModerationManager;
@@ -46,7 +44,6 @@ export class Cluster extends BaseClient {
     public readonly version: VersionStateManager;
     public readonly guilds: GuildManager;
     public readonly announcements: AnnouncementManager;
-    public readonly bbtagVariables: VariablesProvider;
 
     public get images(): ImageChannel {
         return this.#images.value;
@@ -114,103 +111,7 @@ export class Cluster extends BaseClient {
         this.botStaff = new BotStaffManager(this);
         this.moderation = new ModerationManager(this);
         this.greetings = new GreetingManager(this);
-        this.bbtagVariables = new VariablesProvider(
-            createTagVariableScopeFactory(
-                {
-                    get: (scope, name) => this.database.tagVariables.get(name, scope),
-                    upsert: (scope, entries) => this.database.tagVariables.upsert(entries, scope)
-                },
-                [
-                    {
-                        name: templates.subtag.variables.server.name,
-                        prefix: '_',
-                        description: templates.subtag.variables.server.description,
-                        bind: ctx => ({
-                            type: ctx.root.tagVars ? TagVariableType.GUILD_TAG : TagVariableType.GUILD_CC,
-                            guildId: ctx.root.guildId
-                        })
-                    },
-                    {
-                        name: templates.subtag.variables.author.name,
-                        prefix: '@',
-                        description: templates.subtag.variables.author.description,
-                        bind: ctx => ctx.root.authorId === undefined
-                            ? { type: TagVariableType.TEMP, id: snowflake.create().toString() }
-                            : { type: TagVariableType.AUTHOR, authorId: ctx.root.authorId }
-                    },
-                    {
-                        name: templates.subtag.variables.global.name,
-                        prefix: '*',
-                        description: templates.subtag.variables.global.description,
-                        bind: () => ({ type: TagVariableType.GLOBAL })
-                    },
-                    {
-                        name: templates.subtag.variables.temporary.name,
-                        prefix: '~',
-                        description: templates.subtag.variables.temporary.description,
-                        bind: () => ({ type: TagVariableType.TEMP, id: snowflake.create().toString() })
-                    },
-                    {
-                        name: templates.subtag.variables.local.name,
-                        prefix: '',
-                        description: templates.subtag.variables.local.description,
-                        bind: ctx => !ctx.root.tagVars
-                            ? { type: TagVariableType.LOCAL_CC, guildId: ctx.root.guildId, name: ctx.root.tagName }
-                            : { type: TagVariableType.LOCAL_TAG, name: ctx.root.tagName }
-                    }
-                ]
-            ),
-            {
-                commitStarted: (context) => {
-                    const execRunning = context.execTimer.running;
-                    if (execRunning)
-                        context.execTimer.end();
-                    context.dbTimer.resume();
-                    return {
-                        [Symbol.dispose]: memoize(() => {
-                            context.dbTimer.end();
-                            if (execRunning)
-                                context.execTimer.resume();
-                        })
-                    };
-                },
-                commitBatch: (_, size, scope) => {
-                    this.logger.bbtag('Committing', size, 'objects to the', scope.prefix, 'pool.');
-                    const start = performance.now();
-                    return {
-                        [Symbol.dispose]: memoize(() => {
-                            const elapsed = performance.now() - start;
-                            this.logger[elapsed > 3000 ? 'info' : 'bbtag']('Commited', size, 'objects to the', scope.prefix, 'pool in', elapsed, 'ms.');
-                        })
-                    };
-                },
-                getFailed: (_, error, varName, scope) => {
-                    this.logger.error(error, { varName, scope: scope.scope });
-                }
-            }
-        );
-        const subtagArgs = new ClusterSubtagConstructorArgs(this);
-        this.bbtag = new BBTagEngine({
-            botId: this.discord.user.id,
-            logger: this.logger,
-            util: new ClusterBBTagUtilities(this),
-            subtags: Object.values(subtags).map(subtag => new subtag(subtagArgs)),
-            variables: this.bbtagVariables,
-            sleep,
-            hooks: {
-                subtagExecuting(context, subtag) {
-                    const start = performance.now();
-                    return {
-                        [Symbol.dispose]: memoize(() => {
-                            const elapsed = performance.now() - start;
-                            metrics.subtagLatency.labels(subtag.name).observe(elapsed);
-                            metrics.subtagCounter.labels(subtag.name).inc();
-                            context.subtagInvocations.getOrInsert(subtag.name, []).push(elapsed);
-                        })
-                    };
-                }
-            }
-        });
+        this.bbtag = new BBTagManager(this);
         this.intervals = new IntervalManager(this, moment.duration(10, 's'));
         this.rolemes = new RolemeManager(this);
         this.help = new CommandDocumentationManager(this);

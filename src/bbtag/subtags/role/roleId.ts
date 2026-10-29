@@ -46,7 +46,7 @@ export class RoleIdSubtag extends CompiledSubtag {
     }
 
     public static async query(context: BBTagContext, searchText: string, options?: QueryEntityOptions): Promise<string | undefined> {
-        return await context.engine.getSubtag(RoleIdSubtag).query(context, searchText, options);
+        return await context.subtags.get(RoleIdSubtag).query(context, searchText, options);
     }
 
     public async query(context: BBTagContext, searchText: string, options?: QueryEntityOptions): Promise<string | undefined> {

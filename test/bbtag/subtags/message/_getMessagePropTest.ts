@@ -1,11 +1,10 @@
-import type { BBTagContext, BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
+import type { BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
 import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
 import type { Mockable, SetupMock } from '@blargbot/test-util';
-import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
+import { createMockSubtag, type SubtagTestCase, type SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetMessagePropTestCases<Result>(options: GetMessagePropTestData<Result>): SubtagTestCase[] {
     return [...createGetMessagePropTestCasesIter(options)];
@@ -38,7 +37,7 @@ function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestD
         yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, [c.queryString ?? 'general', '123456789123456789', 'q']));
     }
 
-    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+    const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
 
     yield {
         title: 'Message not found',
@@ -49,14 +48,12 @@ function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestD
             { error: new MessageNotFoundError('98765434567889121', '123456789987654329') }
         ],
         setup(ctx) {
-            ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+            ctx.adoptMock(channelIdSubtag);
             ctx.channelId = ctx.channelId = '98765434567889121';
-        },
-        postSetup(bbctx, ctx) {
             const queryOpt = options.queryOptions(false);
-            channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
+            channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $(queryOpt)))
                 .resolves(ctx.channelId);
-            channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
+            channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '98765434567889121', $(queryOpt)))
                 .resolves('98765434567889121');
             options.getProp('98765434567889121', '123456789987654329').returns(options.notExists);
         }
@@ -70,14 +67,12 @@ function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestD
             { error: new ChannelNotFoundError('98765434567889121') }
         ],
         setup(ctx) {
-            ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+            ctx.adoptMock(channelIdSubtag);
             ctx.channelId = ctx.channelId = '0987654321123456789';
-        },
-        postSetup(bbctx, ctx) {
             const queryOpt = options.queryOptions(false);
-            channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
+            channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $(queryOpt)))
                 .resolves(ctx.channelId);
-            channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
+            channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '98765434567889121', $(queryOpt)))
                 .resolves(undefined);
         }
     };
@@ -91,14 +86,12 @@ function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestD
                 { error: new MessageNotFoundError('98765434567889121', '123456789987654329').withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+                ctx.adoptMock(channelIdSubtag);
                 ctx.channelId = ctx.channelId = '98765434567889121';
-            },
-            postSetup(bbctx, ctx) {
                 const queryOpt = options.queryOptions(true);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $(queryOpt)))
                     .resolves(ctx.channelId);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '98765434567889121', $(queryOpt)))
                     .resolves('98765434567889121');
                 options.getProp('98765434567889121', '123456789987654329').returns(options.notExists);
             }
@@ -112,14 +105,12 @@ function* createGetMessagePropTestCasesIter<Result>(options: GetMessagePropTestD
                 { error: new ChannelNotFoundError('98765434567889121').withDisplay(options.quiet) }
             ],
             setup(ctx) {
-                ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+                ctx.adoptMock(channelIdSubtag);
                 ctx.channelId = ctx.channelId = '0987654321123456789';
-            },
-            postSetup(bbctx, ctx) {
                 const queryOpt = options.queryOptions(true);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $(queryOpt)))
                     .resolves(ctx.channelId);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '98765434567889121', $(queryOpt)))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '98765434567889121', $(queryOpt)))
                     .resolves(undefined);
             }
         };
@@ -145,14 +136,11 @@ export interface GetMessagePropTestCase<Result> {
     queryString?: string;
     generateCode?: (...args: [channelStr?: string, messageId?: string, quietStr?: string]) => string;
     setup?: (prop: SetupMock<Mockable, Result>, channelId: string, messageId: string, context: SubtagTestContext) => void;
-    postSetup?: (context: BBTagContext, channelId: string, messageId: string, test: SubtagTestContext) => void;
-    assert?: (context: BBTagContext, channelId: string, messageId: string, test: SubtagTestContext) => void;
 }
 
 function createTestCase<Result>(data: GetMessagePropTestData<Result>, testCase: GetMessagePropTestCase<Result>, args: Parameters<GetMessagePropTestData<Result>['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
-    const apiMessageMap = new WeakMap<SubtagTestContext, string>();
-    const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+    const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
     const channelId = `channelId<${createSnowflake()}>`;
     return {
         title: testCase.title,
@@ -164,24 +152,16 @@ function createTestCase<Result>(data: GetMessagePropTestData<Result>, testCase: 
         setup(ctx) {
             if (args[0] === undefined || args[0] === '')
                 ctx.channelId = channelId;
-            ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+            ctx.adoptMock(channelIdSubtag);
             const messageId = (args[1] ?? '') !== '' ? args[1]! : ctx.messageId;
             testCase.setup?.(data.getProp(channelId, messageId), channelId, messageId, ctx);
-            apiMessageMap.set(ctx, messageId);
-        },
-        postSetup(bbctx, ctx) {
-            const messageId = apiMessageMap.get(ctx);
-            if (messageId === undefined)
-                throw new Error('Cannot find the message under test');
             const channelQuery = args[0] ?? channelId;
             const quietStr = args[2] ?? '';
             const queryOpt = data.queryOptions(quietStr !== '');
-            channelIdSubtag.setup((m, $) => m.query(bbctx, '', $(queryOpt)))
+            channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '', $(queryOpt)))
                 .resolves(ctx.channelId);
-            channelIdSubtag.setup((m, $) => m.query(bbctx, channelQuery, $(queryOpt)))
+            channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, channelQuery, $(queryOpt)))
                 .resolves(channelId);
-
-            testCase.postSetup?.(bbctx, channelId, messageId, ctx);
         }
     };
 }

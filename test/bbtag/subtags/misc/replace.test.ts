@@ -13,7 +13,7 @@ await runSubtagTests({
             code: '{replace;abc;123}',
             expected: '',
             async assert(ctx) {
-                const result = await ctx.root.output.replace?.('|abc,abc,def|');
+                const result = await ctx.bbtag.root.output.replace?.('|abc,abc,def|');
                 assert.equal(result, '|123,abc,def|');
             }
         },

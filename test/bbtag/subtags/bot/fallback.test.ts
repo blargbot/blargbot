@@ -17,7 +17,7 @@ await runSubtagTests({
                 { start: 10, end: 15, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                assert.equal(ctx.local.fallback, undefined);
+                assert.equal(ctx.bbtag.local.fallback, undefined);
             }
         },
         {
@@ -27,7 +27,7 @@ await runSubtagTests({
                 { start: 14, end: 19, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                assert.equal(ctx.local.fallback, 'abc');
+                assert.equal(ctx.bbtag.local.fallback, 'abc');
             }
         },
         {
@@ -38,7 +38,7 @@ await runSubtagTests({
                 { start: 44, end: 49, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                assert.equal(ctx.local.fallback, undefined);
+                assert.equal(ctx.bbtag.local.fallback, undefined);
             }
         }
     ]

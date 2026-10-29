@@ -1,9 +1,8 @@
 import type { IFormattable } from '@blargbot/formatting';
 
-import type { BBTagContext } from '../BBTagContext.js';
-import type { SerializedRuntimeLimit } from '../types.js';
+import type { ClusterBBTagContextMetadata } from '../managers/BBTagManager.js';
 import { disabledRule } from './rules/index.js';
-import type { RuntimeLimit } from './RuntimeLimit.js';
+import type { RuntimeLimit, SerializedRuntimeLimit } from './RuntimeLimit.js';
 import type { RuntimeLimitRule } from './RuntimeLimitRule.js';
 
 const clsToId = new Map<unknown, string>();
@@ -28,6 +27,10 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
 
     public get type(): string {
         return this.#type;
+    }
+
+    public static get registered(): MapIterator<[string, new () => BaseRuntimeLimit]> {
+        return idToCls.entries();
     }
 
     protected constructor() {
@@ -57,7 +60,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         return this;
     }
 
-    public async check(context: BBTagContext, rulekey: string): Promise<void> {
+    public async check(context: ClusterBBTagContextMetadata, rulekey: string): Promise<void> {
         const [rootKey, subKey] = this.#getKeys(rulekey);
         const set = this.#rules[rootKey] ?? {};
         const collection = set[subKey];

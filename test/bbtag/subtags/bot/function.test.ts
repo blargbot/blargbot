@@ -10,12 +10,15 @@ await runSubtagTests({
     subtag: new FunctionSubtag(),
     argCountBounds: { min: { count: 2, noEval: [1] }, max: { count: 2, noEval: [1] } },
     names: ['function', 'func'],
+    setup(ctx) {
+        ctx.root.setup(m => m.functions).returns(new Map());
+    },
     cases: [
         {
             code: '{function;test;{fail}}',
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.root.functions.get('test'), {
+                assert.deepEqual(ctx.bbtag.root.functions.get('test'), {
                     values: [
                         {
                             name: {
@@ -40,7 +43,7 @@ await runSubtagTests({
             code: '{function;func.test;{fail}}',
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.root.functions.get('test'), {
+                assert.deepEqual(ctx.bbtag.root.functions.get('test'), {
                     values: [
                         {
                             name: {
@@ -68,7 +71,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Must provide a name') }
             ],
             assert(ctx) {
-                assert.equal(ctx.root.functions.get(''), undefined);
+                assert.equal(ctx.bbtag.root.functions.get(''), undefined);
             }
         }
     ]

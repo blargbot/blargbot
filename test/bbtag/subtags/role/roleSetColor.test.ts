@@ -1,15 +1,15 @@
 import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
-import type { GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature, SetRoleColorFeature } from '@blargbot/bbtag/subtags';
+import type { EditRoleFeature, GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag/subtags';
 import { ReasonSubtag, RoleIdSubtag, RoleSetColorSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
-const features = new Mock<SetRoleColorFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature>({ id: 'features' });
-const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const features = new Mock<EditRoleFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature>({ id: 'features' });
+const roleIdSubtag = createMockSubtag(RoleIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 
 await runSubtagTests({
     subtag: new RoleSetColorSubtag(features.instance),
@@ -18,11 +18,9 @@ await runSubtagTests({
     otherSubtags: [reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
+        ctx.adoptMock(roleIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         ...createGetRolePropTestCases({
@@ -48,7 +46,7 @@ await runSubtagTests({
                 {
                     expected: '',
                     setup(roleId, ctx) {
-                        features.setup((m, $) => m.setRoleColor($({
+                        features.setup((m, $) => m.editRole($({
                             guildId: ctx.guildId,
                             roleId,
                             color: 0,
@@ -86,7 +84,7 @@ await runSubtagTests({
                 {
                     expected: '',
                     setup(roleId, ctx) {
-                        features.setup((m, $) => m.setRoleColor($({
+                        features.setup((m, $) => m.editRole($({
                             guildId: ctx.guildId,
                             roleId,
                             color,
@@ -121,7 +119,7 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Role above author') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
                 const adminId = createSnowflake();
@@ -132,7 +130,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, ...roleIds]).mustHappen(1);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, '3298746326924', $({ noLookup: false })))
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
                     .resolves('3298746326924')
                     .mustHappen(1);
             }
@@ -144,7 +142,7 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Failed to edit role: no perms', 'Test REST error') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
                 const adminId = createSnowflake();
@@ -155,10 +153,10 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, '3298746326924', $({ noLookup: false })))
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
                     .resolves('3298746326924')
                     .mustHappen(1);
-                features.setup((m, $) => m.setRoleColor($({
+                features.setup((m, $) => m.editRole($({
                     guildId: ctx.guildId,
                     roleId: roleIds[0],
                     color: 0,
@@ -173,7 +171,7 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Failed to edit role: no perms', 'Some other error message') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
                 const adminId = createSnowflake();
@@ -184,10 +182,10 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, '3298746326924', $({ noLookup: false })))
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
                     .resolves('3298746326924')
                     .mustHappen(1);
-                features.setup((m, $) => m.setRoleColor($({
+                features.setup((m, $) => m.editRole($({
                     guildId: ctx.guildId,
                     roleId: roleIds[0],
                     color: 0,

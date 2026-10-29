@@ -13,21 +13,21 @@ await runSubtagTests({
             code: '{everyonemention}',
             expected: '@everyone',
             assert(ctx) {
-                assert.equal(ctx.root.allowedMentions.everybody, true);
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, true);
             }
         },
         {
             code: '{everyonemention;true}',
             expected: '@everyone',
             assert(ctx) {
-                assert.equal(ctx.root.allowedMentions.everybody, true);
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, true);
             }
         },
         {
             code: '{everyonemention;false}',
             expected: '@everyone',
             assert(ctx) {
-                assert.equal(ctx.root.allowedMentions.everybody, false);
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, false);
             }
         }
     ]

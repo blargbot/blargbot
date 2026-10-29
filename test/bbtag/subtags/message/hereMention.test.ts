@@ -13,21 +13,21 @@ await runSubtagTests({
             code: '{heremention}',
             expected: '@here',
             assert(ctx) {
-                assert.equal(ctx.root.allowedMentions.everybody, true);
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, true);
             }
         },
         {
             code: '{heremention;true}',
             expected: '@here',
             assert(ctx) {
-                assert.equal(ctx.root.allowedMentions.everybody, true);
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, true);
             }
         },
         {
             code: '{heremention;false}',
             expected: '@here',
             assert(ctx) {
-                assert.equal(ctx.root.allowedMentions.everybody, false);
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, false);
             }
         }
     ]

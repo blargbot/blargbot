@@ -1,4 +1,3 @@
-import { bbtag, limits } from '@blargbot/bbtag';
 import type { ModerationType } from '@blargbot/cluster';
 import { guard } from '@blargbot/cluster';
 import { FormattableMessageContent } from '@blargbot/core';
@@ -7,6 +6,7 @@ import { util } from '@blargbot/formatting';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
+import { CustomCommandLimit } from '../../bbtagLimits/CustomCommandLimit.js';
 import { templates } from '../../text.js';
 import type { ModerationManager } from '../ModerationManager.js';
 import { ModerationManagerBase } from './ModerationManagerBase.js';
@@ -80,7 +80,7 @@ export class CensorManager extends ModerationManagerBase {
                 flagDefinitions: [],
                 isCC: true,
                 tagVars: false,
-                limit: new limits.CustomCommandLimit(),
+                limit: new CustomCommandLimit(),
                 author: tag.author ?? undefined,
                 authorizer: tag.authorizer ?? tag.author ?? message.channel.guild.ownerID,
                 cooldown: 0,
@@ -88,7 +88,7 @@ export class CensorManager extends ModerationManagerBase {
             });
 
             if (debugCtx?.channelId === message.channel.id)
-                await this.cluster.util.send(message.author, new FormattableMessageContent(bbtag.createDebugOutput(result)));
+                await this.cluster.util.send(message.author, new FormattableMessageContent(result));
         }));
 
         return true;

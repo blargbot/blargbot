@@ -4,10 +4,10 @@ import { GuildSetIconSubtag, ReasonSubtag, SemiSubtag } from '@blargbot/bbtag/su
 import { Mock } from '@blargbot/test-util';
 import { asUint8Array } from '@blargbot/util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<SetGuildIconFeature & HttpFetchFeature & GetMemberPermissionsFeature>({ id: 'features' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 
 await runSubtagTests({
     subtag: new GuildSetIconSubtag(features.instance),
@@ -16,10 +16,8 @@ await runSubtagTests({
     otherSubtags: [reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         {

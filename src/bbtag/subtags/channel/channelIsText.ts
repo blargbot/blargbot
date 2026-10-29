@@ -40,7 +40,7 @@ export class ChannelIsTextSubtag extends CompiledSubtag {
     }
 
     public static async check(context: BBTagContext, channelId: string): Promise<boolean> {
-        return await context.engine.getSubtag(ChannelIsTextSubtag).check(context, channelId);
+        return await context.subtags.get(ChannelIsTextSubtag).check(context, channelId);
     }
 
     public async check(context: BBTagContext, channelId: string): Promise<boolean> {

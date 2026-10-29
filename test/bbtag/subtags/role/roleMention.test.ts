@@ -23,7 +23,7 @@ await runSubtagTests({
                         this.expected = `<@&${roleId}>`;
                     },
                     assert(_, roleId, ctx) {
-                        assert.deepEqual(ctx.root.allowedMentions.roles, new Set([roleId]));
+                        assert.deepEqual(ctx.bbtag.root.allowedMentions.roles, new Set([roleId]));
                     }
                 }
             ]
@@ -41,7 +41,7 @@ await runSubtagTests({
                         this.expected = `<@&${roleId}>`;
                     },
                     assert(_, __, ctx) {
-                        assert.deepEqual(ctx.root.allowedMentions.roles, new Set([]));
+                        assert.deepEqual(ctx.bbtag.root.allowedMentions.roles, new Set([]));
                     }
                 }
             ]
@@ -59,7 +59,7 @@ await runSubtagTests({
                         this.expected = `<@&${roleId}>`;
                     },
                     assert(_, roleId, ctx) {
-                        assert.deepEqual(ctx.root.allowedMentions.roles, new Set([roleId]));
+                        assert.deepEqual(ctx.bbtag.root.allowedMentions.roles, new Set([roleId]));
                     }
                 }
             ]

@@ -5,15 +5,16 @@ import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<CheckMessageExistsFeature & GetMemberPermissionsFeature & ListMessageReactionsFeature & RemoveMessageReactionUserFeature>({ id: 'features' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
-const isStaffSubtag = new Mock<IsStaffSubtag>({ id: 'IsStaffSubtag' });
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+const isStaffSubtag = createMockSubtag(IsStaffSubtag);
 
+const sut = new ReactionRemoveSubtag(features.instance);
 await runSubtagTests({
-    subtag: new ReactionRemoveSubtag(features.instance),
+    subtag: sut,
     argCountBounds: { min: 1, max: Infinity },
     names: ['reactionRemove', 'reactRemove', 'removeReact'],
     otherSubtags: [
@@ -23,22 +24,22 @@ await runSubtagTests({
     ],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
-        ctx.adoptSubtagMock(isStaffSubtag, { type: IsStaffSubtag });
+        ctx.adoptMock(channelIdSubtag);
+        ctx.adoptMock(userIdSubtag);
+        ctx.adoptMock(isStaffSubtag);
     },
     cases: [
         {
             code: '{reactremove;2938453289453240}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = ctx.channelId;
                 const userId = ctx.userId;
                 const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
-                channelIdSubtag.setup((m, $) => m.query(bbctx, channelId, $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -47,7 +48,7 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
                 features.setup(m => m.listMessageReactions(channelId, '2938453289453240'))
@@ -57,20 +58,20 @@ await runSubtagTests({
                     features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
                         .resolves({ success: true })
                         .mustHappen(1);
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).mustHappen(2).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(2).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = ctx.userId;
                 const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -79,7 +80,7 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
                 features.setup(m => m.listMessageReactions(channelId, '2938453289453240'))
@@ -89,23 +90,23 @@ await runSubtagTests({
                     features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
                         .resolves({ success: true })
                         .mustHappen(1);
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).mustHappen(2).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(2).resolves(undefined);
             }
         },
         {
             code: '{reactremove;2938453289453240;other}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = ctx.channelId;
                 const userId = createSnowflake();
                 const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '2938453289453240', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '2938453289453240', $({ noErrors: true, noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, channelId, $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -114,7 +115,7 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
                 features.setup(m => m.listMessageReactions(channelId, '2938453289453240'))
@@ -124,20 +125,20 @@ await runSubtagTests({
                     features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
                         .resolves({ success: true })
                         .mustHappen(1);
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).mustHappen(2).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(2).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = createSnowflake();
                 const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -146,7 +147,7 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
                 features.setup(m => m.listMessageReactions(channelId, '2938453289453240'))
@@ -156,23 +157,23 @@ await runSubtagTests({
                     features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
                         .resolves({ success: true })
                         .mustHappen(1);
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).mustHappen(2).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(2).resolves(undefined);
             }
         },
         {
             code: '{reactremove;2938453289453240;other;🤔}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = ctx.channelId;
                 const userId = createSnowflake();
                 const emotes = [new Emote('🤔')];
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '2938453289453240', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '2938453289453240', $({ noErrors: true, noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, channelId, $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -181,30 +182,30 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
                 for (const emote of emotes)
                     features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
                         .resolves({ success: true })
                         .mustHappen(1);
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).mustHappen(1).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;🤔}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = ctx.userId;
                 const emotes = [new Emote('🤔')];
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '🤔', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '🤔', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -213,27 +214,27 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
                 for (const emote of emotes)
                     features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
                         .resolves({ success: true })
                         .mustHappen(1);
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).mustHappen(1).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;🤔}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = createSnowflake();
                 const emotes = [new Emote('🤔')];
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -242,14 +243,14 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
                 for (const emote of emotes)
                     features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
                         .resolves({ success: true })
                         .mustHappen(1);
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).mustHappen(1).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
@@ -258,13 +259,13 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = createSnowflake();
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -273,7 +274,7 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -284,11 +285,11 @@ await runSubtagTests({
             errors: [
                 { error: new ChannelNotFoundError('general') }
             ],
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -299,13 +300,13 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = createSnowflake();
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -319,13 +320,13 @@ await runSubtagTests({
             errors: [
                 { error: new MessageNotFoundError('2389476728423424378', '2938453289453240') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = '2389476728423424378';
                 const userId = createSnowflake();
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -342,13 +343,13 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Author must be staff to modify unrelated messages') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = createSnowflake();
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -357,7 +358,7 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(false)
                     .mustHappen(1);
             }
@@ -365,14 +366,14 @@ await runSubtagTests({
         {
             code: '{reactremove;general;2938453289453240;other;🤔}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = createSnowflake();
                 const emotes = [new Emote('🤔')];
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -381,30 +382,30 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
                 for (const emote of emotes)
                     features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
                         .resolves({ success: true })
                         .mustHappen(1);
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).mustHappen(1).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;🤔}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = ctx.userId;
                 const emotes = [new Emote('🤔')];
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -413,14 +414,14 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
                 for (const emote of emotes)
                     features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
                         .resolves({ success: true })
                         .mustHappen(1);
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).mustHappen(1).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
@@ -429,16 +430,16 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = ctx.userId;
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, userId, $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -447,7 +448,7 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
             }
@@ -458,14 +459,14 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = createSnowflake();
                 const emotes = [new Emote('fakeemote', 192612896213677963n)];
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
@@ -474,14 +475,14 @@ await runSubtagTests({
                 features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
                     .resolves(true)
                     .mustHappen(1);
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
                 for (const emote of emotes)
                     features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
                         .resolves({ success: false })
                         .mustHappen(1);
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).mustHappen(1).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
@@ -490,13 +491,13 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions') }
             ],
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const channelId = createSnowflake();
                 const userId = createSnowflake();
-                channelIdSubtag.setup((m, $) => m.query(bbctx, 'general', $({ noErrors: true, noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
                     .resolves(channelId)
                     .mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))

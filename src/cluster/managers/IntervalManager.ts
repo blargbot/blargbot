@@ -1,11 +1,12 @@
-import type { ExecutionResult } from '@blargbot/bbtag';
-import { limits } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/core';
 import type { GuildTriggerTag } from '@blargbot/domain';
 import { sleep } from '@blargbot/util';
 import type eris from 'eris';
 import type moment from 'moment-timezone';
+
+import { CustomCommandLimit } from '../bbtagLimits/CustomCommandLimit.js';
+import type { ExecutionResult } from './BBTagManager.js';
 
 export class IntervalManager {
     readonly #cluster: Cluster;
@@ -78,6 +79,7 @@ export class IntervalManager {
 
     async #invoke(member: eris.Member, channel: eris.KnownGuildTextableChannel, interval: GuildTriggerTag): Promise<ExecutionResult | 'FAILED'> {
         try {
+            const start = performance.now();
             const result = await this.#cluster.bbtag.execute(interval.content, {
                 messageId: snowflake.create().toString(),
                 channelId: channel.id,
@@ -89,13 +91,13 @@ export class IntervalManager {
                 silent: true,
                 isCC: true,
                 tagVars: false,
-                limit: new limits.CustomCommandLimit(channel.guild.memberCount),
+                limit: new CustomCommandLimit(channel.guild.memberCount),
                 author: interval.author ?? undefined,
                 authorizer: interval.authorizer ?? interval.author ?? channel.guild.ownerID,
                 cooldown: 0,
                 prefix: undefined
             });
-            this.#cluster.logger.log('Interval on guild', member.guild.id, 'executed in', result.duration.total);
+            this.#cluster.logger.log('Interval on guild', member.guild.id, 'executed in', performance.now() - start, 'ms');
             return result;
         } catch (err: unknown) {
             this.#cluster.logger.error('Issue with interval:', member.guild, err);

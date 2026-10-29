@@ -61,7 +61,7 @@ export class UserIdSubtag extends CompiledSubtag {
     }
 
     public static async query(context: BBTagContext, searchText: string, options?: QueryUserOptions): Promise<string | undefined> {
-        return await context.engine.getSubtag(UserIdSubtag).query(context, searchText, options);
+        return await context.subtags.get(UserIdSubtag).query(context, searchText, options);
     }
 
     public async query(context: BBTagContext, searchText: string, options?: QueryUserOptions): Promise<string | undefined> {

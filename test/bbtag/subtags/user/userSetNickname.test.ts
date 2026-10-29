@@ -4,11 +4,11 @@ import { ReasonSubtag, UserIdSubtag, UserSetNickSubtag } from '@blargbot/bbtag/s
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<SetMemberNicknameFeature>({ id: 'features' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 
 await runSubtagTests({
     subtag: new UserSetNickSubtag(features.instance),
@@ -17,19 +17,17 @@ await runSubtagTests({
     otherSubtags: [userIdSubtag.instance, reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
+        ctx.adoptMock(userIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         {
             code: '{usersetnick;abc}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberNickname($({
@@ -43,9 +41,9 @@ await runSubtagTests({
         {
             code: '{usersetnick;abc;other user}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberNickname($({
@@ -59,9 +57,9 @@ await runSubtagTests({
         {
             code: '{usersetnick;abc;blargbot}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'blargbot', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'blargbot', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.setMemberNickname($({
@@ -79,8 +77,8 @@ await runSubtagTests({
                 { start: 13, end: 19, error: new MarkerError('eval', 13) },
                 { error: new UserNotFoundError('unknown user') }
             ],
-            postSetup(bbctx) {
-                userIdSubtag.setup(m => m.query(bbctx, 'unknown user', undefined))
+            setup(ctx) {
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'unknown user', undefined))
                     .resolves(undefined)
                     .mustHappen(1);
             }

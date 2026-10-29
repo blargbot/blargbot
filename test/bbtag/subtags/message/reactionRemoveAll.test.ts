@@ -3,12 +3,12 @@ import type { CheckMessageExistsFeature, GetMemberPermissionsFeature, RemoveMess
 import { ChannelIdSubtag, IsStaffSubtag, ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 const features = new Mock<CheckMessageExistsFeature & GetMemberPermissionsFeature & RemoveMessageReactionsFeature>({ id: 'features' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
-const isStaffSubtag = new Mock<IsStaffSubtag>({ id: 'IsStaffSubtag' });
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
+const isStaffSubtag = createMockSubtag(IsStaffSubtag);
 
 await runSubtagTests({
     subtag: new ReactionRemoveAllSubtag(features.instance),
@@ -20,8 +20,8 @@ await runSubtagTests({
     ],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-        ctx.adoptSubtagMock(isStaffSubtag, { type: IsStaffSubtag });
+        ctx.adoptMock(channelIdSubtag);
+        ctx.adoptMock(isStaffSubtag);
     },
     cases: [
         ...createGetMessagePropTestCases({
@@ -55,9 +55,7 @@ await runSubtagTests({
                             .resolves(DiscordPermissions.MANAGE_MESSAGES)
                             .mustHappen(1);
                         features.setup(m => m.removeMessageReactions(channelId, messageId)).resolves(undefined).mustHappen(1);
-                    },
-                    postSetup(bbctx) {
-                        isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(true).mustHappen(1);
+                        isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined)).resolves(true).mustHappen(1);
                     }
                 },
                 {
@@ -69,9 +67,7 @@ await runSubtagTests({
                             .resolves(DiscordPermissions.MANAGE_MESSAGES)
                             .mustHappen(1);
                         features.setup(m => m.removeMessageReactions(channelId, messageId)).resolves(undefined).mustHappen(1);
-                    },
-                    postSetup(bbctx, __, messageId) {
-                        bbctx.root.ownedMessageIds.add(messageId);
+                        ctx.bbtag.root.ownedMessageIds.add(messageId);
                     }
                 },
                 {
@@ -83,9 +79,7 @@ await runSubtagTests({
                         features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
                             .resolves(DiscordPermissions.MANAGE_MESSAGES)
                             .mustHappen(1);
-                    },
-                    postSetup(bbctx) {
-                        isStaffSubtag.setup(m => m.isStaff(bbctx, undefined)).resolves(false).mustHappen(1);
+                        isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined)).resolves(false).mustHappen(1);
                     }
                 }
             ]

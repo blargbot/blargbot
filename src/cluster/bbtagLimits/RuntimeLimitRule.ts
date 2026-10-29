@@ -1,9 +1,9 @@
 import type { IFormattable } from '@blargbot/formatting';
 
-import type { BBTagContext } from '../BBTagContext.js';
+import type { ClusterBBTagContextMetadata } from '../managers/BBTagManager.js';
 
 export interface RuntimeLimitRule {
-    check(context: BBTagContext, subtagName: string): Awaitable<void>;
+    check(metadata: ClusterBBTagContextMetadata, subtagName: string): Awaitable<void>;
     displayText(subtagName: string): IFormattable<string>;
     state(): JToken;
     load(state: JToken): void;

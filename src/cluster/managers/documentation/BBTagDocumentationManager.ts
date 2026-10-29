@@ -1,9 +1,10 @@
 import type { Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType } from '@blargbot/bbtag';
-import { bbtag, limits, tagTypeDetails } from '@blargbot/bbtag';
+import { bbtag, tagTypeDetails } from '@blargbot/bbtag';
 import type { SendContent } from '@blargbot/core';
 import { guard } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';
 
+import { BaseRuntimeLimit } from '../../bbtagLimits/BaseRuntimeLimit.js';
 import type { Cluster } from '../../Cluster.js';
 import { templates } from '../../text.js';
 import type { Documentation, DocumentationPage, DocumentationPaged } from './DocumentationManager.js';
@@ -23,7 +24,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
     }
 
     #loadTree(): Documentation {
-        const subtagGroups = this.#cluster.bbtag.subtags
+        const subtagGroups = Iterator.from(this.#cluster.bbtag.subtags)
             .reduce((res, sub) => {
                 let subtags = res.get(sub.category);
                 if (subtags === undefined)
@@ -85,11 +86,11 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                     type: 'paged',
                     tags: ['variables'],
                     embed: {
-                        description: doc.variables.description({ scopeCount: this.#cluster.bbtagVariables.kinds.length })
+                        description: doc.variables.description({ scopeCount: this.#cluster.bbtag.variables.kinds.length })
                     },
                     selectText: doc.variables.prompt,
                     pages: [
-                        ...this.#cluster.bbtagVariables.kinds.map(scope => {
+                        ...this.#cluster.bbtag.variables.kinds.map(scope => {
                             return {
                                 name: doc.variables.pages.variableType.name({ name: scope.name, prefix: scope.prefix }),
                                 value: scope.description
@@ -252,16 +253,11 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                         name: doc.subtag.pages.signature.exampleOut.name,
                         value: doc.subtag.pages.signature.exampleOut.value({ text: signature.exampleOut })
                     },
-                    ...([
-                        ['customCommandLimit', limits.CustomCommandLimit],
-                        ['everythingAutoResponseLimit', limits.EverythingAutoResponseLimit],
-                        ['generalAutoResponseLimit', limits.GeneralAutoResponseLimit],
-                        ['tagLimit', limits.TagLimit]
-                    ] as const).flatMap(([name, type]) => {
+                    ...BaseRuntimeLimit.registered.flatMap(([name, type]) => {
                         const limit = new type();
                         const rules = limit.rulesFor(subtag.name);
                         return rules.length === 0 ? [] : [{
-                            name: doc.subtag.pages.signature.limit.name[name],
+                            name: Reflect.get(doc.subtag.pages.signature.limit.name, name) as IFormattable<string>,
                             value: doc.subtag.pages.signature.limit.value({ rules })
                         }];
                     })

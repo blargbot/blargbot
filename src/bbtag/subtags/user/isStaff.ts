@@ -43,7 +43,7 @@ export class IsStaffSubtag extends CompiledSubtag {
     }
 
     public static async isStaff(context: BBTagContext, userId?: string): Promise<boolean> {
-        return await context.engine.getSubtag(IsStaffSubtag).isStaff(context, userId);
+        return await context.subtags.get(IsStaffSubtag).isStaff(context, userId);
     }
 
     public async isStaff(context: BBTagContext, userId?: string): Promise<boolean> {

@@ -4,11 +4,11 @@ import { ChannelIdSubtag, ReactionListSubtag } from '@blargbot/bbtag/subtags';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 const features = new Mock<ListMessageReactionsFeature & ListMessageReactionUsersFeature>({ id: 'features' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
 
 await runSubtagTests({
     subtag: new ReactionListSubtag(features.instance),
@@ -17,7 +17,7 @@ await runSubtagTests({
     otherSubtags: [channelIdSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+        ctx.adoptMock(channelIdSubtag);
     },
     cases: [
         {
@@ -228,8 +228,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
                 features.setup(m => m.listMessageReactions(ctx.channelId, '92384982642323432343'))
@@ -243,8 +243,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
             ],
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
                 features.setup(m => m.listMessageReactions(ctx.channelId, '92384982642323432343'))

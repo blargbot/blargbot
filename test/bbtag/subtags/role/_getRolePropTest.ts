@@ -1,10 +1,9 @@
-import type { BBTagContext, BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
+import type { BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
 import { RoleNotFoundError } from '@blargbot/bbtag';
 import { RoleIdSubtag } from '@blargbot/bbtag/subtags';
-import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import type { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite.js';
+import { createMockSubtag, type SubtagTestCase, type SubtagTestContext } from '../SubtagTestSuite.js';
 
 export function createGetRolePropTestCases(options: GetRolePropTestData): SubtagTestCase[] {
     return [...createGetRolePropTestCasesIter(options)];
@@ -31,7 +30,7 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
     }
 
     const notFound = options.notFound ?? (c => new RoleNotFoundError(c));
-    const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
+    const roleIdSubtag = createMockSubtag(RoleIdSubtag);
 
     yield {
         title: 'Role not found',
@@ -43,11 +42,9 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
         ],
         setup(ctx) {
             options.setup?.(ctx, false);
-            ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
-        },
-        postSetup(bbctx) {
+            ctx.adoptMock(roleIdSubtag);
             const queryOptions = options.queryOptions(false);
-            roleIdSubtag.setup((m, $) => m.query(bbctx, '123456789987654329', $(queryOptions))).resolves(undefined);
+            roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '123456789987654329', $(queryOptions))).resolves(undefined);
         }
     };
     if (options.quiet !== false) {
@@ -61,11 +58,9 @@ function* createGetRolePropTestCasesIter(options: GetRolePropTestData): Generato
             ],
             setup(ctx) {
                 options.setup?.(ctx, true);
-                ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
-            },
-            postSetup(bbctx) {
+                ctx.adoptMock(roleIdSubtag);
                 const queryOptions = options.queryOptions(true);
-                roleIdSubtag.setup((m, $) => m.query(bbctx, '123456789987654329', $(queryOptions))).resolves(undefined);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '123456789987654329', $(queryOptions))).resolves(undefined);
             }
         };
     }
@@ -88,14 +83,13 @@ export interface GetRolePropTestCase {
     retries?: number;
     queryString?: string;
     generateCode?: (...args: [roleStr?: string, quietStr?: string]) => string;
-    setup?: (roleId: string, context: SubtagTestContext) => void;
-    postSetup?: (roleId: string, context: BBTagContext, test: SubtagTestContext, quiet: boolean) => void;
-    assert?: (result: string, roleId: string, context: BBTagContext, test: SubtagTestContext) => void;
+    setup?: (roleId: string, context: SubtagTestContext, quiet: boolean) => void;
+    assert?: (result: string, roleId: string, context: SubtagTestContext) => void;
 }
 
 function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase, args: Parameters<GetRolePropTestData['generateCode']>): SubtagTestCase {
     const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
-    const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
+    const roleIdSubtag = createMockSubtag(RoleIdSubtag);
     const [roleQuery, quietStr = ''] = args;
     const roleId = `roleId${createSnowflake()}`;
     return {
@@ -107,19 +101,16 @@ function createTestCase(data: GetRolePropTestData, testCase: GetRolePropTestCase
         errors: testCase.error === undefined ? [] : [{ error: testCase.error }],
         setup(ctx) {
             data.setup?.(ctx, quietStr !== '');
-            testCase.setup?.(roleId, ctx);
-            ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
+            testCase.setup?.(roleId, ctx, quietStr !== '');
+            ctx.adoptMock(roleIdSubtag);
 
-        },
-        postSetup(bbctx, ctx) {
             if (roleQuery !== undefined) {
                 const queryOptions = data.queryOptions(quietStr !== '');
-                roleIdSubtag.setup((m, $) => m.query(bbctx, roleQuery, $(queryOptions))).resolves(roleId);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, roleQuery, $(queryOptions))).resolves(roleId);
             }
-            testCase.postSetup?.(roleId, bbctx, ctx, quietStr !== '');
         },
-        assert(bbctx, result, ctx) {
-            testCase.assert?.(result, roleId, bbctx, ctx);
+        assert(ctx, result) {
+            testCase.assert?.(result, roleId, ctx);
         }
     };
 }

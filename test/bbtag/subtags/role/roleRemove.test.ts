@@ -4,11 +4,11 @@ import { ReasonSubtag, RoleRemoveSubtag, UserIdSubtag } from '@blargbot/bbtag/su
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<RemoveMemberRolesFeature & ListMemberRolesFeature & ListGuildRolesFeature & GetMemberPermissionsFeature>({ id: 'features' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 
 await runSubtagTests({
     subtag: new RoleRemoveSubtag(features.instance),
@@ -17,11 +17,9 @@ await runSubtagTests({
     otherSubtags: [userIdSubtag.instance, reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
+        ctx.adoptMock(userIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         {
@@ -47,9 +45,7 @@ await runSubtagTests({
                     roleIds: roleIds,
                     auditReason: '@command.user'
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, ctx.userId, $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
                     .resolves(ctx.userId)
                     .mustHappen(1);
             }
@@ -71,9 +67,7 @@ await runSubtagTests({
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, userId)).resolves([guildId]).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, ctx.userId, $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
                     .resolves(ctx.userId)
                     .mustHappen(1);
             }
@@ -100,9 +94,7 @@ await runSubtagTests({
                     roleIds: roleIds,
                     auditReason: '@command.user'
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, ctx.userId, $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
                     .resolves(ctx.userId)
                     .mustHappen(1);
             }
@@ -129,9 +121,7 @@ await runSubtagTests({
                     roleIds: roleIds,
                     auditReason: '@command.user'
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, ctx.userId, $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
                     .resolves(ctx.userId)
                     .mustHappen(1);
             }
@@ -171,9 +161,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, ...roleIds]).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, ctx.userId, $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
                     .resolves(ctx.userId)
                     .mustHappen(1);
             }
@@ -194,9 +182,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, ctx.userId, $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
                     .resolves(ctx.userId)
                     .mustHappen(1);
             }
@@ -204,7 +190,7 @@ await runSubtagTests({
         {
             code: '{roleremove;3298746326924;other user}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const guildId = ctx.guildId;
                 const roleIds = ['3298746326924'];
                 const adminId = createSnowflake();
@@ -223,7 +209,7 @@ await runSubtagTests({
                     roleIds: roleIds,
                     auditReason: '@command.user'
                 }))).resolves({ success: true }).mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);
             }
@@ -245,9 +231,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-            },
-            postSetup(bbctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -269,10 +253,8 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-            },
-            postSetup(bbctx) {
-                bbctx.root.quiet = true;
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                ctx.bbtag.root.quiet = true;
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -294,9 +276,7 @@ await runSubtagTests({
                 features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
                 features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
                 features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
-            },
-            postSetup(bbctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
             }

@@ -18,13 +18,13 @@ await runSubtagTests({
                 assert.equal(ctx.root.recursion.depth, 123);
                 return 'Success!';
             })],
-            postSetup(ctx) {
-                ctx.root.functions.set('test', bbtag.parse('{assert}'));
-                ctx.root.recursion.depth = 122;
+            setup(ctx) {
+                ctx.bbtag.root.functions.set('test', bbtag.parse('{assert}'));
+                ctx.bbtag.root.recursion.depth = 122;
             },
             assert(ctx) {
-                assert.equal(ctx.local.paramsarray, undefined);
-                assert.equal(ctx.root.recursion.depth, 122);
+                assert.equal(ctx.bbtag.local.paramsarray, undefined);
+                assert.equal(ctx.bbtag.root.recursion.depth, 122);
             }
         },
         {
@@ -35,13 +35,13 @@ await runSubtagTests({
                 assert.equal(ctx.root.recursion.depth, 123);
                 return 'Success!';
             })],
-            postSetup(ctx) {
-                ctx.root.functions.set('test', bbtag.parse('{assert}'));
-                ctx.root.recursion.depth = 122;
+            setup(ctx) {
+                ctx.bbtag.root.functions.set('test', bbtag.parse('{assert}'));
+                ctx.bbtag.root.recursion.depth = 122;
             },
             assert(ctx) {
-                assert.equal(ctx.local.paramsarray, undefined);
-                assert.equal(ctx.root.recursion.depth, 122);
+                assert.equal(ctx.bbtag.local.paramsarray, undefined);
+                assert.equal(ctx.bbtag.root.recursion.depth, 122);
             }
         },
         {
@@ -57,13 +57,13 @@ await runSubtagTests({
             errors: [
                 { error: new SubtagStackOverflowError(200) }
             ],
-            postSetup(ctx) {
-                ctx.root.recursion.depth = 200;
-                ctx.root.functions.set('test', bbtag.parse('{assert}'));
+            setup(ctx) {
+                ctx.bbtag.root.recursion.depth = 200;
+                ctx.bbtag.root.functions.set('test', bbtag.parse('{assert}'));
             },
             assert(ctx) {
-                assert.equal(ctx.root.recursion.depth, 200);
-                assert.equal(ctx.state, BBTagRuntimeState.ABORT);
+                assert.equal(ctx.bbtag.root.recursion.depth, 200);
+                assert.equal(ctx.bbtag.state, BBTagRuntimeState.ABORT);
             }
         }
     ]

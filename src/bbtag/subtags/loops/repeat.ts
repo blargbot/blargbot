@@ -39,7 +39,7 @@ export class RepeatSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Can\'t be negative');
 
         for (let i = 0; i < amount; i++) {
-            await context.root.limit.check(context, 'repeat:loops');
+            await context.hooks.loop?.(this);;
             yield await code.execute();
             if (context.state !== BBTagRuntimeState.RUNNING)
                 break;

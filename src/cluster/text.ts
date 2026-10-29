@@ -1,4 +1,3 @@
-import type { AnalysisResult } from '@blargbot/bbtag';
 import type { FlagDefinition } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { FormatString } from '@blargbot/formatting';
@@ -6,6 +5,7 @@ import type * as eris from 'eris';
 import type moment from 'moment-timezone';
 
 import type { Command } from './command/Command.js';
+import type { AnalysisResult } from './managers/BBTagManager.js';
 
 interface UserTag {
     readonly username?: string;

@@ -17,8 +17,8 @@ await runSubtagTests({
                 return 'Inject successful';
             })],
             expected: 'Inject successful',
-            postSetup(ctx) {
-                ctx.root.recursion.depth = 122;
+            setup(ctx) {
+                ctx.bbtag.root.recursion.depth = 122;
             }
         },
         {

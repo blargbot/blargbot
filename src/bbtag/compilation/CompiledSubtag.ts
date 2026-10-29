@@ -1,7 +1,5 @@
 import type { IFormattable } from '@blargbot/formatting';
 
-import type { BBTagContext } from '../BBTagContext.js';
-import type { SubtagCall } from '../language/index.js';
 import { Subtag } from '../Subtag.js';
 import type { SubtagOptions, SubtagSignature } from '../types.js';
 import type { SubtagType } from '../utils/index.js';
@@ -24,6 +22,7 @@ export abstract class CompiledSubtag extends Subtag {
     public readonly hidden: boolean;
     public readonly signatures: ReadonlyArray<SubtagSignature<IFormattable<string>>>;
     readonly #handler: CompositeSubtagHandler;
+    public readonly execute: Subtag['execute'];
 
     public constructor(options: DefinedSubtagOptions) {
         super();
@@ -42,9 +41,7 @@ export abstract class CompiledSubtag extends Subtag {
         ];
 
         this.#handler = compileSignatures(signatures.map(s => s.implementation).filter(x => x !== undefined));
-    }
-
-    protected override executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
-        return this.#handler.execute(context, subtagName, subtag);
+        this.execute = this.#handler.execute.bind(this.#handler);
+        Object.defineProperty(this, 'execute', { configurable: false, enumerable: false });
     }
 }

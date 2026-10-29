@@ -20,7 +20,7 @@ export class InjectSubtag extends CompiledSubtag {
                     execute: async (context, [code]) => {
                         using _stack = context.enterRecursion();
                         const ast = bbtag.parse(code.value, { throw: true });
-                        const result = await context.engine.eval(ast, context);
+                        const result = await context.eval(ast);
                         if (context.state === BBTagRuntimeState.RETURN)
                             context.state = BBTagRuntimeState.RUNNING;
                         return result;

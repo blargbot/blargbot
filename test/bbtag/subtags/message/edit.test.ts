@@ -3,11 +3,11 @@ import type { EditMessageFeature, GetMessageAuthorFeature } from '@blargbot/bbta
 import { ChannelIdSubtag, EditSubtag, EscapeBBTagSubtag, IsStaffSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<EditMessageFeature & GetMessageAuthorFeature>({ id: 'features' });
-const isStaffSubtag = new Mock<IsStaffSubtag>({ id: 'IsStaffSubtag' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+const isStaffSubtag = createMockSubtag(IsStaffSubtag);
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
 
 await runSubtagTests({
     subtag: new EditSubtag(features.instance),
@@ -16,8 +16,8 @@ await runSubtagTests({
     names: ['edit'],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(isStaffSubtag, { type: IsStaffSubtag });
-        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+        ctx.adoptMock(isStaffSubtag);
+        ctx.adoptMock(channelIdSubtag);
     },
     cases: [
         {
@@ -32,12 +32,10 @@ await runSubtagTests({
                 features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
                     .resolves(undefined)
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
             }
@@ -54,12 +52,10 @@ await runSubtagTests({
                 features.setup(m => m.getMessageAuthor(ctx.channelId, '12345678901234567'))
                     .resolves('812768723681368213')
                     .mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
             }
@@ -82,12 +78,10 @@ await runSubtagTests({
                     content: '',
                     embeds: undefined
                 }))).resolves({ success: false, cause: 'messageEmpty' }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
             }
@@ -106,12 +100,10 @@ await runSubtagTests({
                     content: 'New message text',
                     embeds: undefined
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
             }
@@ -131,12 +123,10 @@ await runSubtagTests({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }]
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
             }
@@ -156,12 +146,10 @@ await runSubtagTests({
                     content: '{"title":false}',
                     embeds: undefined
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
             }
@@ -180,12 +168,10 @@ await runSubtagTests({
                     content: '',
                     embeds: undefined
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
             }
@@ -205,15 +191,13 @@ await runSubtagTests({
                     content: 'New message text',
                     embeds: [{ title: 'New embed!' }]
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '12345678901234567', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '12345678901234567', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
             }
@@ -233,15 +217,13 @@ await runSubtagTests({
                     content: '{"title":"New embed!"}',
                     embeds: [{ fields: [{ name: 'Malformed JSON', value: '"New message text"' }], malformed: true }]
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '12345678901234567', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '12345678901234567', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
             }
@@ -264,15 +246,13 @@ await runSubtagTests({
                     content: '',
                     embeds: []
                 }))).resolves({ success: false, cause: 'messageEmpty' }).mustHappen(1);
-            },
-            postSetup(bbctx, ctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '12345678901234567', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '12345678901234567', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
             }
@@ -290,12 +270,10 @@ await runSubtagTests({
                     content: 'New message text',
                     embeds: undefined
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '9876543212345678', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '9876543212345678', $({ noLookup: true })))
                     .resolves('9876543212345678')
                     .mustHappen(1);
             }
@@ -314,12 +292,10 @@ await runSubtagTests({
                     content: undefined,
                     embeds: [{ title: 'New embed!' }]
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '9876543212345678', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '9876543212345678', $({ noLookup: true })))
                     .resolves('9876543212345678')
                     .mustHappen(1);
             }
@@ -338,12 +314,10 @@ await runSubtagTests({
                     content: '{"title":false}',
                     embeds: undefined
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '9876543212345678', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '9876543212345678', $({ noLookup: true })))
                     .resolves('9876543212345678')
                     .mustHappen(1);
             }
@@ -361,12 +335,10 @@ await runSubtagTests({
                     content: '',
                     embeds: undefined
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '9876543212345678', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '9876543212345678', $({ noLookup: true })))
                     .resolves('9876543212345678')
                     .mustHappen(1);
             }
@@ -385,12 +357,10 @@ await runSubtagTests({
                     content: 'New message text',
                     embeds: [{ title: 'New embed!' }]
                 }))).resolves({ success: true }).mustHappen(1);
-            },
-            postSetup(bbctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '9876543212345678', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '9876543212345678', $({ noLookup: true })))
                     .resolves('9876543212345678')
                     .mustHappen(1);
             }
@@ -403,11 +373,11 @@ await runSubtagTests({
             errors: [
                 { error: new ChannelNotFoundError('9876543212345678') }
             ],
-            postSetup(bbctx) {
-                isStaffSubtag.setup(m => m.isStaff(bbctx, undefined))
+            setup(ctx) {
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
                     .resolves(true)
                     .mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '9876543212345678', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '9876543212345678', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
             }

@@ -7,17 +7,14 @@ await runSubtagTests({
     argCountBounds: { min: 1, max: 1 },
     names: ['flag'],
     setup(ctx) {
-        ctx.flagDefinitions = [
-            {
-                flag: 'e',
-                word: 'extra'
-            },
-            {
-                flag: 'E',
-                word: 'else'
-            }
-        ];
-        ctx.input = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
+        ctx.input.flags = {
+            _: 'This is some text some more text',
+            a: 'flag a content',
+            b: '',
+            c: 'flag c content',
+            e: 'flag extra content',
+            E: 'flag else content'
+        };
     },
     cases: [
         { code: '{flag;1}', expected: '' },

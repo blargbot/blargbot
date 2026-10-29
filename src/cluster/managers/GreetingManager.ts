@@ -1,9 +1,10 @@
-import type { ExecutionResult } from '@blargbot/bbtag';
-import { limits } from '@blargbot/bbtag';
 import type { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/core';
 import type { GuildTriggerTag } from '@blargbot/domain';
 import type eris from 'eris';
+
+import { CustomCommandLimit } from '../bbtagLimits/CustomCommandLimit.js';
+import type { ExecutionResult } from './BBTagManager.js';
 
 export class GreetingManager {
     public constructor(protected readonly cluster: Cluster) {
@@ -47,7 +48,7 @@ export class GreetingManager {
             silent: false,
             isCC: true,
             tagVars: false,
-            limit: new limits.CustomCommandLimit(channel.guild.memberCount),
+            limit: new CustomCommandLimit(channel.guild.memberCount),
             author: command.author ?? undefined,
             authorizer: command.authorizer ?? command.author ?? channel.guild.ownerID,
             cooldown: 0,

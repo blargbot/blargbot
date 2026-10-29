@@ -6,7 +6,7 @@ import { SubtagType } from '../../utils/index.js';
 const tag = templates.subtags.guildSize;
 
 export interface GetGuildMemberCountFeature {
-    getGuildMemberCount(guildId: string): Promise<number>;
+    getGuildMemberCount(guildId: string): Promise<number | undefined>;
 }
 
 type Features = GetGuildMemberCountFeature
@@ -32,6 +32,6 @@ export class GuildSizeSubtag extends CompiledSubtag {
     }
 
     public async getMemberCount(context: BBTagContext): Promise<number> {
-        return await this.#features.getGuildMemberCount(context.root.guildId);
+        return await this.#features.getGuildMemberCount(context.root.guildId) ?? 0;
     }
 }

@@ -3,11 +3,11 @@ import type { DeleteChannelFeature, GetMemberPermissionsFeature } from '@blargbo
 import { ChannelDeleteSubtag, ReasonSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
 const features = new Mock<DeleteChannelFeature & GetMemberPermissionsFeature>({ id: 'features' });
-const reasonSubtag = new Mock<ReasonSubtag>({ id: 'ReasonSubtag' });
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 
 await runSubtagTests({
     subtag: new ChannelDeleteSubtag(features.instance),
@@ -16,10 +16,8 @@ await runSubtagTests({
     otherSubtags: [reasonSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(reasonSubtag, { type: ReasonSubtag });
-    },
-    postSetup(bbctx) {
-        reasonSubtag.setup(m => m.get(bbctx)).resolves('@command.user');
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         ...createGetChannelPropTestCases({
@@ -34,7 +32,7 @@ await runSubtagTests({
                     title: 'Authorizer is admin',
                     expected: '',
                     setup(channelId, ctx) {
-                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.NONE.not()).mustHappen(1);
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.NONE.inverse()).mustHappen(1);
                         features.setup((m, $) => m.deleteChannel($({
                             guildId: ctx.guildId,
                             channelId,
@@ -67,7 +65,7 @@ await runSubtagTests({
                     expected: '`Failed to edit channel: no perms`',
                     error: new BBTagRuntimeError('Failed to edit channel: no perms', 'Test REST error'),
                     setup(channelId, ctx) {
-                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.NONE.not()).mustHappen(1);
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId, channelId)).resolves(DiscordPermissions.NONE.inverse()).mustHappen(1);
                         features.setup((m, $) => m.deleteChannel($({
                             guildId: ctx.guildId,
                             channelId,

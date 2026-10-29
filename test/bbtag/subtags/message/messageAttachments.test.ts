@@ -2,11 +2,11 @@ import type { GetMessageAttachmentUrlsFeature } from '@blargbot/bbtag/subtags';
 import { ChannelIdSubtag, MessageAttachmentsSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 const features = new Mock<GetMessageAttachmentUrlsFeature>({ id: 'features' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
 
 await runSubtagTests({
     subtag: new MessageAttachmentsSubtag(features.instance),
@@ -15,7 +15,7 @@ await runSubtagTests({
     otherSubtags: [channelIdSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+        ctx.adoptMock(channelIdSubtag);
     },
     cases: [
         ...createGetMessagePropTestCases({

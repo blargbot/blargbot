@@ -29,7 +29,7 @@ await runSubtagTests({
             },
             async assert(ctx) {
                 regex.setup(m => m.replace('a1b2c3', 'oooh')).resolves('success!').mustHappen(1);
-                const result = await ctx.root.output.replace?.('a1b2c3');
+                const result = await ctx.bbtag.root.output.replace?.('a1b2c3');
                 assert.equal(result, 'success!');
             }
         },
@@ -49,7 +49,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Invalid Regex') }
             ],
             assert(ctx) {
-                assert.equal(ctx.root.output.replace, undefined);
+                assert.equal(ctx.bbtag.root.output.replace, undefined);
             }
         },
         {
@@ -65,7 +65,7 @@ await runSubtagTests({
                     .mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.output.replace, undefined);
+                assert.equal(ctx.bbtag.root.output.replace, undefined);
             }
         },
         {
@@ -81,7 +81,7 @@ await runSubtagTests({
             },
             async assert(ctx) {
                 regex.setup(m => m.replace('a1b2c3', 'oooh')).resolves('success!').mustHappen(1);
-                const result = await ctx.root.output.replace?.('a1b2c3');
+                const result = await ctx.bbtag.root.output.replace?.('a1b2c3');
                 assert.equal(result, 'success!');
             }
         },
@@ -98,7 +98,7 @@ await runSubtagTests({
                     .mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.output.replace, undefined);
+                assert.equal(ctx.bbtag.root.output.replace, undefined);
             }
         },
         {
@@ -113,7 +113,7 @@ await runSubtagTests({
                     .mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.output.replace, undefined);
+                assert.equal(ctx.bbtag.root.output.replace, undefined);
             }
         },
         {
@@ -125,7 +125,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Invalid Regex') }
             ],
             assert(ctx) {
-                assert.equal(ctx.root.output.replace, undefined);
+                assert.equal(ctx.bbtag.root.output.replace, undefined);
             }
         },
         {
@@ -137,7 +137,7 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Invalid Regex') }
             ],
             assert(ctx) {
-                assert.equal(ctx.root.output.replace, undefined);
+                assert.equal(ctx.bbtag.root.output.replace, undefined);
             }
         },
         {
@@ -154,7 +154,7 @@ await runSubtagTests({
                     .mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.output.replace, undefined);
+                assert.equal(ctx.bbtag.root.output.replace, undefined);
             }
         },
         {
@@ -172,7 +172,7 @@ await runSubtagTests({
                     .mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.output.replace, undefined);
+                assert.equal(ctx.bbtag.root.output.replace, undefined);
             }
         },
         {
@@ -189,7 +189,7 @@ await runSubtagTests({
                     .mustHappen(1);
             },
             assert(ctx) {
-                assert.equal(ctx.root.output.replace, undefined);
+                assert.equal(ctx.bbtag.root.output.replace, undefined);
             }
         }
     ]

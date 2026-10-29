@@ -1,7 +1,7 @@
 export const smartSplit = Object.assign(function smartSplit(source: string, limit = 0): string[] {
     return [...smartSplitIterLimit(source, limit)];
 }, {
-    inverse(source: string[]) {
+    inverse(source: readonly string[]) {
         const results = [];
         for (const item of source) {
             const escaped = item.replace(/["\\]/g, m => `\\${m}`);

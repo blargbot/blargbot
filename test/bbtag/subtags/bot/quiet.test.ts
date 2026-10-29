@@ -1,5 +1,3 @@
-import assert from 'node:assert/strict';
-
 import { QuietSubtag } from '@blargbot/bbtag/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
@@ -12,36 +10,36 @@ await runSubtagTests({
         {
             code: '{quiet}',
             expected: '',
-            assert(ctx) {
-                assert.equal(ctx.local.quiet, true);
+            setup(ctx) {
+                ctx.root.setupSet(m => m.quiet = true).mustHappen(1);
             }
         },
         {
             code: '{quiet;}',
             expected: '',
-            assert(ctx) {
-                assert.equal(ctx.local.quiet, true);
+            setup(ctx) {
+                ctx.root.setupSet(m => m.quiet = true).mustHappen(1);
             }
         },
         {
             code: '{quiet;true}',
             expected: '',
-            assert(ctx) {
-                assert.equal(ctx.local.quiet, true);
+            setup(ctx) {
+                ctx.root.setupSet(m => m.quiet = true).mustHappen(1);
             }
         },
         {
             code: '{quiet;false}',
             expected: '',
-            assert(ctx) {
-                assert.equal(ctx.local.quiet, false);
+            setup(ctx) {
+                ctx.root.setupSet(m => m.quiet = false).mustHappen(1);
             }
         },
         {
             code: '{quiet;abc}',
             expected: '',
-            assert(ctx) {
-                assert.equal(ctx.local.quiet, undefined);
+            setup(ctx) {
+                ctx.root.setupSet(m => m.quiet = undefined).mustHappen(1);
             }
         }
     ]

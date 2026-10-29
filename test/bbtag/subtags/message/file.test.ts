@@ -13,7 +13,7 @@ await runSubtagTests({
             code: '{file;abcdef;def}',
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.root.output.files, [{
+                assert.deepEqual(ctx.bbtag.root.output.files, [{
                     file: Buffer.from('abcdef'),
                     name: 'def'
                 }]);
@@ -23,7 +23,7 @@ await runSubtagTests({
             code: '{file;buffer:abcdef;def}',
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.root.output.files, [{
+                assert.deepEqual(ctx.bbtag.root.output.files, [{
                     file: Buffer.from('abcdef', 'base64'),
                     name: 'def'
                 }]);
@@ -33,7 +33,7 @@ await runSubtagTests({
             code: '{file;Buffer:abcdef;def}',
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.root.output.files, [{
+                assert.deepEqual(ctx.bbtag.root.output.files, [{
                     file: Buffer.from('Buffer:abcdef'),
                     name: 'def'
                 }]);

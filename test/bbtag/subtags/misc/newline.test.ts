@@ -16,7 +16,7 @@ await runSubtagTests({
         {
             code: '{newline;a}',
             expected: '\n\n\n',
-            postSetup(ctx) { ctx.root.fallback = '3'; }
+            setup(ctx) { ctx.bbtag.root.fallback = '3'; }
         },
         {
             code: '{newline;a}',

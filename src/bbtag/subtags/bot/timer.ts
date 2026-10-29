@@ -2,14 +2,13 @@ import type { BBTagContext } from '../../BBTagContext.js';
 import { CompiledSubtag } from '../../compilation/index.js';
 import { BBTagRuntimeError } from '../../errors/index.js';
 import { templates } from '../../text.js';
-import type { SerializedBBTagContext } from '../../types.js';
 import { convertToDuration } from '../../utils/converters.js';
 import { SubtagType } from '../../utils/index.js';
 
 const tag = templates.subtags.timer;
 
 export interface ScheduleFeature {
-    scheduleBBTag(context: SerializedBBTagContext, code: string, timestamp: Temporal.Instant): Promise<void>;
+    scheduleBBTag(context: BBTagContext, code: string, timestamp: Temporal.Instant): Promise<void>;
 }
 
 type Features = ScheduleFeature;
@@ -40,6 +39,6 @@ export class TimerSubtag extends CompiledSubtag {
             throw new BBTagRuntimeError('Invalid duration');
 
         const dueTime = Temporal.Now.instant().add(duration);
-        await this.#features.scheduleBBTag(context.engine.serialize(context), code, dueTime);
+        await this.#features.scheduleBBTag(context, code, dueTime);
     }
 }

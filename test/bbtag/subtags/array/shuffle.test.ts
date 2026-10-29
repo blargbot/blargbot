@@ -20,9 +20,7 @@ await runSubtagTests({
     setup(ctx) {
         ctx.adoptMock(variablesProvider);
         ctx.adoptMock(variables);
-    },
-    postSetup(bbctx) {
-        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
     },
     cases: [
         {
@@ -30,13 +28,13 @@ await runSubtagTests({
             expected: '',
             retries: 1,
             setup(ctx) {
-                ctx.input = 'arg1 arg2 arg3 arg4';
+                ctx.input.array = ['arg1', 'arg2', 'arg3', 'arg4'];
             },
-            assert(bbctx) {
-                assert.notDeepEqual(bbctx.local.input.array, ['arg1', 'arg2', 'arg3', 'arg4']);
-                assert.equal(bbctx.local.input.array.length, 4);
+            assert(ctx) {
+                assert.notDeepEqual(ctx.bbtag.local.input.array, ['arg1', 'arg2', 'arg3', 'arg4']);
+                assert.equal(ctx.bbtag.local.input.array.length, 4);
                 for (const value of ['arg1', 'arg2', 'arg3', 'arg4'])
-                    assert(bbctx.local.input.array.includes(value), `[${bbctx.local.input.array.join(',')}] is missing ${value}`);
+                    assert(ctx.bbtag.local.input.array.includes(value), `[${ctx.bbtag.local.input.array.join(',')}] is missing ${value}`);
             }
         },
         {

@@ -4,10 +4,10 @@ import { PardonSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<PardonFeature>({ id: 'features' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
 
 await runSubtagTests({
     subtag: new PardonSubtag(features.instance),
@@ -16,15 +16,15 @@ await runSubtagTests({
     otherSubtags: [userIdSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptMock(userIdSubtag);
     },
     cases: [
         {
             code: '{pardon}',
             expected: '0',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Pardon' })))
@@ -35,9 +35,9 @@ await runSubtagTests({
         {
             code: '{pardon}',
             expected: '5',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Pardon' })))
@@ -48,9 +48,9 @@ await runSubtagTests({
         {
             code: '{pardon;}',
             expected: '3',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Pardon' })))
@@ -61,9 +61,9 @@ await runSubtagTests({
         {
             code: '{pardon;other user}',
             expected: '7',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'Tag Pardon' })))
@@ -74,9 +74,9 @@ await runSubtagTests({
         {
             code: '{pardon;;6}',
             expected: '26',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 6, reason: 'Tag Pardon' })))
@@ -87,9 +87,9 @@ await runSubtagTests({
         {
             code: '{pardon;other user;9}',
             expected: '0',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 9, reason: 'Tag Pardon' })))
@@ -100,9 +100,9 @@ await runSubtagTests({
         {
             code: '{pardon;;;My custom reason}',
             expected: '16',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, '', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, '', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 1, reason: 'My custom reason' })))
@@ -113,9 +113,9 @@ await runSubtagTests({
         {
             code: '{pardon;other user;6;My custom reason}',
             expected: '6',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup((m, $) => m.pardonUser($({ guildId: ctx.guildId, targetId: userId, moderatorId: ctx.userId, count: 6, reason: 'My custom reason' })))
@@ -129,8 +129,8 @@ await runSubtagTests({
             errors: [
                 { error: new UserNotFoundError('unknown user') }
             ],
-            postSetup(bbctx) {
-                userIdSubtag.setup(m => m.query(bbctx, 'unknown user', undefined))
+            setup(ctx) {
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'unknown user', undefined))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -141,9 +141,9 @@ await runSubtagTests({
             errors: [
                 { error: new NotANumberError('abc') }
             ],
-            postSetup(bbctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
             }

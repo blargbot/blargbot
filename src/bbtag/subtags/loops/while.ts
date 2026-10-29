@@ -58,12 +58,12 @@ export class WhileSubtag extends CompiledSubtag {
 
             if (!bbtag.isComparisonOperator(operator)) {
                 //TODO invalid operator stuff here
-                await context.root.limit.check(context, 'while:loops');
+                await context.hooks.loop?.(this);
                 yield await codeRaw.execute();
             } else if (!bbtag.operate(operator, right, left))
                 break;
             else {
-                await context.root.limit.check(context, 'while:loops');
+                await context.hooks.loop?.(this);
                 yield await codeRaw.execute();
             }
         }

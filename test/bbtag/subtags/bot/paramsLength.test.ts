@@ -11,17 +11,17 @@ await runSubtagTests({
         {
             code: '{paramslength}',
             expected: '0',
-            postSetup(ctx) { ctx.root.paramsarray = []; }
+            setup(ctx) { ctx.bbtag.root.paramsarray = []; }
         },
         {
             code: '{paramslength}',
             expected: '4',
-            postSetup(ctx) { ctx.root.paramsarray = ['this', 'is', 'a', 'test']; }
+            setup(ctx) { ctx.bbtag.root.paramsarray = ['this', 'is', 'a', 'test']; }
         },
         {
             code: '{paramslength}',
             expected: '3',
-            postSetup(ctx) { ctx.root.paramsarray = ['this', 'is a', 'test']; }
+            setup(ctx) { ctx.bbtag.root.paramsarray = ['this', 'is a', 'test']; }
         },
         {
             code: '{paramslength}',
@@ -29,8 +29,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('{paramslength} can only be used inside {function}') }
             ],
-            postSetup(ctx) {
-                ctx.root.paramsarray = undefined;
+            setup(ctx) {
+                ctx.bbtag.root.paramsarray = undefined;
             }
         }
     ]

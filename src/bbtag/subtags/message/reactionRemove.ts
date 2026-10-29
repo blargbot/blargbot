@@ -72,7 +72,7 @@ export class ReactionRemoveSubtag extends CompiledSubtag {
 
         const errored = [];
         for (const reaction of reactions) {
-            await context.root.limit.check(context, 'reactremove:requests');
+            await context.hooks.loop?.(this);
             const result = await this.#features.removeMessageReactionUser(channelId, messageId, reaction, userId);
             if (!result.success)
                 errored.push(reaction);

@@ -38,7 +38,7 @@ export class ForEachSubtag extends CompiledSubtag {
         const array = await bbtag.tagArray.deserializeOrGetIterable(variables, source) ?? [];
         try {
             for (const item of array) {
-                await context.root.limit.check(context, 'foreach:loops');
+                await context.hooks.loop?.(this);
                 await variables.set(varName, item);
                 yield await code.execute();
 

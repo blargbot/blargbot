@@ -1,6 +1,5 @@
-import { bbtag } from '@blargbot/bbtag';
 import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
-import { CommandType, guard, GuildCommand  } from '@blargbot/cluster';
+import { CommandType, guard, GuildCommand } from '@blargbot/cluster';
 import type { GuildRolemeEntry } from '@blargbot/domain';
 import type { IFormattable } from '@blargbot/formatting';
 import { util } from '@blargbot/formatting';
@@ -284,7 +283,7 @@ export class RolemeCommand extends GuildCommand {
             return cmd.errors.noMessage({ id });
 
         const result = await context.cluster.rolemes.invokeMessage(context.message, roleme);
-        await context.send(context.author, bbtag.createDebugOutput(result));
+        await context.send(context.author, result);
         return cmd.debugMessage.success;
     }
 

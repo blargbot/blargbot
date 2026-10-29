@@ -3,10 +3,10 @@ import { EmojisSubtag, RoleIdSubtag } from '@blargbot/bbtag/subtags';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<ListEmojisFeature>({ id: 'features' });
-const roleIdSubtag = new Mock<RoleIdSubtag>({ id: 'RoleIdSubtag' });
+const roleIdSubtag = createMockSubtag(RoleIdSubtag);
 
 await runSubtagTests({
     subtag: new EmojisSubtag(features.instance),
@@ -15,7 +15,7 @@ await runSubtagTests({
     otherSubtags: [roleIdSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(roleIdSubtag, { type: RoleIdSubtag });
+        ctx.adoptMock(roleIdSubtag);
     },
     cases: [
         {
@@ -33,8 +33,8 @@ await runSubtagTests({
         {
             code: '{emojis;329476274682462386432}',
             expected: '["<:rolerestricted:923846723894624242>"]',
-            postSetup(bbctx, ctx) {
-                roleIdSubtag.setup((m, $) => m.query(bbctx, '329476274682462386432', $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '329476274682462386432', $({ noErrors: true, noLookup: true })))
                     .resolves('329476274682462386432')
                     .mustHappen(1);
                 features.setup(m => m.listEmojis(ctx.guildId, '329476274682462386432'))
@@ -46,8 +46,8 @@ await runSubtagTests({
         {
             code: '{emojis;other}',
             expected: '["<:rolerestricted:923846723894624242>"]',
-            postSetup(bbctx, ctx) {
-                roleIdSubtag.setup((m, $) => m.query(bbctx, 'other', $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true })))
                     .resolves('329476274682462386432')
                     .mustHappen(1);
                 features.setup(m => m.listEmojis(ctx.guildId, '329476274682462386432'))

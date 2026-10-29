@@ -8,7 +8,7 @@ import { RoleIdSubtag } from './roleId.js';
 const tag = templates.subtags.roleSize;
 
 export interface GetRoleMemberCountFeature {
-    getRoleMemberCount(guildId: string, roleId: string): Promise<number>;
+    getRoleMemberCount(guildId: string, roleId: string): Promise<number | undefined>;
 }
 
 type Features = GetRoleMemberCountFeature
@@ -41,6 +41,6 @@ export class RoleSizeSubtag extends CompiledSubtag {
         const roleId = await RoleIdSubtag.query(context, roleStr, { noLookup: true, noErrors: true })
             ?? new RoleNotFoundError(roleStr).throw();
 
-        return await this.#features.getRoleMemberCount(context.root.guildId, roleId);
+        return await this.#features.getRoleMemberCount(context.root.guildId, roleId) ?? 0;
     }
 }

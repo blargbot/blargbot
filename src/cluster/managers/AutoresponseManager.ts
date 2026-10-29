@@ -1,4 +1,3 @@
-import { bbtag, limits } from '@blargbot/bbtag';
 import type { Cluster, WhitelistResponse } from '@blargbot/cluster';
 import { guard, humanize } from '@blargbot/cluster';
 import { FormattableMessageContent, zodStringToJson } from '@blargbot/core';
@@ -6,6 +5,8 @@ import type { GuildTriggerTag } from '@blargbot/domain';
 import type eris from 'eris';
 import z from 'zod';
 
+import { EverythingAutoResponseLimit } from '../bbtagLimits/EverythingAutoResponseLimit.js';
+import { GeneralAutoResponseLimit } from '../bbtagLimits/GeneralAutoResponseLimit.js';
 import { templates } from '../text.js';
 
 export class AutoresponseManager {
@@ -120,8 +121,8 @@ export class AutoresponseManager {
             isCC: true,
             tagVars: false,
             limit: isEverything
-                ? new limits.EverythingAutoResponseLimit()
-                : new limits.GeneralAutoResponseLimit(),
+                ? new EverythingAutoResponseLimit()
+                : new GeneralAutoResponseLimit(),
             author: tag.author ?? undefined,
             authorizer: tag.authorizer ?? tag.author ?? msg.channel.guild.ownerID,
             cooldown: 0,
@@ -134,7 +135,7 @@ export class AutoresponseManager {
             return;
 
         delete this.#debugOutput[key];
-        await this.#cluster.util.send(msg.author, new FormattableMessageContent(bbtag.createDebugOutput(result)));
+        await this.#cluster.util.send(msg.author, new FormattableMessageContent(result));
     }
 
     public async handleWhitelistApproval(message: eris.KnownMessage, emoji: eris.PartialEmoji, user: eris.User): Promise<void> {

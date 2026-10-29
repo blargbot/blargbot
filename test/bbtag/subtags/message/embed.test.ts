@@ -14,7 +14,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.root.output.embeds, [
+                assert.deepEqual(ctx.bbtag.root.output.embeds, [
                     { title: 'Hello!' }
                 ]);
             }
@@ -24,7 +24,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.root.output.embeds, [
+                assert.deepEqual(ctx.bbtag.root.output.embeds, [
                     { title: 'Hello!' },
                     { author: { name: 'abc' } }
                 ]);
@@ -35,7 +35,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.root.output.embeds, [
+                assert.deepEqual(ctx.bbtag.root.output.embeds, [
                     { title: 'Hello!' },
                     { fields: [{ name: 'Malformed JSON', value: '{"title":false}' }], malformed: true }
                 ]);
@@ -46,7 +46,7 @@ await runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                assert.deepEqual(ctx.root.output.embeds, [
+                assert.deepEqual(ctx.bbtag.root.output.embeds, [
                     { title: 'Hello!' },
                     { author: { name: 'abc' } },
                     { title: 'embed array 1' },

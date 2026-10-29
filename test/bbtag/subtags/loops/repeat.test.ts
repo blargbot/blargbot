@@ -9,34 +9,31 @@ const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' 
 variablesProvider.setup(m => m.kinds).returns([]);
 const variables = new Mock<Variables>({ id: 'variables' });
 
+const sut = new RepeatSubtag();
 await runSubtagTests({
-    subtag: new RepeatSubtag(),
+    subtag: sut,
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 2, noEval: [0] } },
     names: ['repeat', 'loop'],
     setup(ctx) {
         ctx.adoptMock(variablesProvider);
         ctx.adoptMock(variables);
-    },
-    postSetup(bbctx) {
-        variablesProvider.setup(m => m.forContext(bbctx)).returns(variables.instance);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
     },
     cases: [
         {
             code: '{repeat;abc;10}',
             expected: 'abcabcabcabcabcabcabcabcabcabc',
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).mustHappen(10).resolves(undefined);
+            setup(ctx) {
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             }
         },
         {
             code: '{repeat;{increment;index},;8}',
             expected: '1,2,3,4,5,6,7,8,',
             subtags: [new IncrementSubtag({ variables: variablesProvider.instance })],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 8, [1, 2, 3, 4, 5, 6, 7, 8]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).mustHappen(8).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(8).resolves(undefined);
             },
             assert() {
                 Mock.verifySequence(...[1, 2, 3, 4, 5, 6, 7, 8]
@@ -61,11 +58,9 @@ await runSubtagTests({
             code: '{repeat;{increment;index}{if;{get;index};==;6;{return}},;10}',
             expected: '1,2,3,4,5,6',
             subtags: [new GetSubtag({ variables: variablesProvider.instance }), new IfSubtag(), new ReturnSubtag(), new IncrementSubtag({ variables: variablesProvider.instance })],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 12, [1, 2, 3, 4, 5, 6]);
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).mustHappen(6).resolves(undefined);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(6).resolves(undefined);
             },
             assert() {
                 Mock.verifySequence(...[1, 2, 3, 4, 5, 6]
@@ -79,12 +74,10 @@ await runSubtagTests({
                 { error: new BBTagRuntimeError('Too many loops') }
             ],
             subtags: [new IncrementSubtag({ variables: variablesProvider.instance })],
-            setup() {
+            setup(ctx) {
                 setupVariable('index', '0', 4, [1, 2, 3, 4]);
-            },
-            postSetup(bbctx, ctx) {
                 let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).mustHappen(5).invokesAsync(() => {
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(5).invokesAsync(() => {
                     if (i++ >= 4)
                         throw new BBTagRuntimeError('Too many loops');
                     return undefined;

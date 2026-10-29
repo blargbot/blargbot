@@ -7,9 +7,9 @@ export interface VariableReference {
 }
 
 export interface VariableCacheHooks {
-    readonly commitStarted?: (context: BBTagContext) => Disposable;
-    readonly commitBatch?: (context: BBTagContext, size: number, scope: TagVariableScopeEntry) => Disposable;
-    readonly getFailed?: (context: BBTagContext, error: unknown, varName: string, scope: TagVariableScopeEntry) => void;
+    readonly commitStarted?: () => Disposable;
+    readonly commitBatch?: (size: number, scope: TagVariableScopeEntry) => Disposable;
+    readonly getFailed?: (error: unknown, varName: string, scope: TagVariableScopeEntry) => void;
 }
 
 interface ValueSource {
@@ -20,7 +20,7 @@ interface ValueSource {
 export class VariablesProvider {
     readonly #registry = new WeakMap<BBTagContext, Variables>();
     readonly #scopes: TagVariableScopeFactory;
-    readonly #hooks: VariableCacheHooks;
+    readonly #hooks: (context: BBTagContext) => VariableCacheHooks;
 
     public get kinds(): readonly TagVariableScopeKind[] {
         return this.#scopes.kinds;
@@ -28,13 +28,18 @@ export class VariablesProvider {
 
     public constructor(
         scopes: TagVariableScopeFactory,
-        hooks: VariableCacheHooks
+        hooks: (context: BBTagContext) => VariableCacheHooks
     ) {
         this.#scopes = scopes;
         this.#hooks = hooks;
     }
 
-    readonly #createCache = (context: BBTagContext): Variables => new Variables(this.#scopes.createScopeProvider(context), this.#hooks, context);
+    readonly #createCache = (context: BBTagContext): Variables => {
+        return new Variables(
+            this.#scopes.createScopeProvider(context),
+            this.#hooks(context)
+        );
+    };
     public forContext(context: BBTagContext): Variables {
         return this.#registry.getOrInsertComputed(context, this.#createCache);
     }
@@ -45,7 +50,6 @@ export class Variables {
     readonly #cache = new Map<string, CacheEntry>();
     readonly #scopes: TagVariableScopeProvider;
     readonly #hooks: VariableCacheHooks;
-    readonly #context: BBTagContext;
 
     public get scopes(): readonly TagVariableScopeDetails[] {
         return this.#scopes.entries.map(({ description, name, scope, prefix }) => ({ description, name, scope, prefix }));
@@ -60,12 +64,10 @@ export class Variables {
 
     public constructor(
         scopes: TagVariableScopeProvider,
-        hooks: VariableCacheHooks,
-        context: BBTagContext
+        hooks: VariableCacheHooks
     ) {
         this.#scopes = scopes;
         this.#hooks = hooks;
-        this.#context = context;
     }
 
     #getCached(variables?: string[]): Iterable<CacheEntry> {
@@ -91,7 +93,7 @@ export class Variables {
         try {
             entry = new CacheEntry(scope, varName, await scope.get(varName));
         } catch (err: unknown) {
-            this.#hooks.getFailed?.(this.#context, err, varName, scope);
+            this.#hooks.getFailed?.(err, varName, scope);
             throw err;
         }
         this.#cache.set(variable, entry);
@@ -120,7 +122,7 @@ export class Variables {
     }
 
     public async persist(variables?: string[]): Promise<void> {
-        using _ = this.#hooks.commitStarted?.(this.#context);
+        using _ = this.#hooks.commitStarted?.();
         const pools = new Map<TagVariableScopeEntry, Record<string, JToken | undefined>>();
         for (const entry of this.#getCached(variables)) {
             if (!entry.changed)
@@ -136,7 +138,7 @@ export class Variables {
 
         for (const [scope, pool] of pools) {
             const objectCount = Object.keys(pool).length;
-            using _hook = this.#hooks.commitBatch?.(this.#context, objectCount, scope);
+            using _hook = this.#hooks.commitBatch?.(objectCount, scope);
             await scope.upsert(pool);
         }
     }

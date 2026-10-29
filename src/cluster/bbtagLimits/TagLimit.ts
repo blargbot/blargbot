@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, TooManyLoopsError } from '../errors/index.js';
-import { templates } from '../text.js';
+import { BBTagRuntimeError, templates, TooManyLoopsError } from '@blargbot/bbtag';
+
 import { registerRuntimeLimit } from './BaseRuntimeLimit.js';
 import { GlobalLimit } from './GlobalLimit.js';
 import { disabledRule, UseCountRule } from './rules/index.js';

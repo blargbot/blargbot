@@ -5,7 +5,7 @@ import { templates } from '../../text.js';
 import { convertToColor } from '../../utils/converters.js';
 import { getEditRoleDetails, SubtagType } from '../../utils/index.js';
 import { ReasonSubtag } from '../bot/reason.js';
-import type { ApiResult, GetMemberPermissionsFeature } from '../types.js';
+import type { EditRoleFeature, GetMemberPermissionsFeature } from '../types.js';
 import { RoleIdSubtag } from './roleId.js';
 import type { ListGuildRolesFeature, ListMemberRolesFeature } from './roles.js';
 
@@ -18,11 +18,7 @@ export interface SetRoleColorOptions {
     readonly auditReason: string;
 }
 
-export interface SetRoleColorFeature {
-    setRoleColor(options: SetRoleColorOptions): Promise<ApiResult>;
-}
-
-type Features = SetRoleColorFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature;
+type Features = EditRoleFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature;
 export class RoleSetColorSubtag extends CompiledSubtag {
     readonly #features: Features;
     public constructor(features: Features) {
@@ -71,7 +67,7 @@ export class RoleSetColorSubtag extends CompiledSubtag {
         if ((roleIndexMap.get(roleId) ?? 0) >= topRoleIndex)
             throw new BBTagRuntimeError('Role above author');
 
-        const result = await this.#features.setRoleColor({
+        const result = await this.#features.editRole({
             guildId,
             roleId,
             color,

@@ -6,11 +6,11 @@ import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
 import type { SubtagTestContext } from '../SubtagTestSuite.js';
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<StreamMessagesFeature>({ id: 'features' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
+const userIdSubtag = createMockSubtag(UserIdSubtag);
 
 await runSubtagTests({
     subtag: new WaitMessageSubtag(features.instance),
@@ -22,8 +22,8 @@ await runSubtagTests({
     ],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptMock(channelIdSubtag);
+        ctx.adoptMock(userIdSubtag);
     },
     cases: [
         {
@@ -54,14 +54,12 @@ await runSubtagTests({
             expected: '["9834653278429843564","3982746234283749322"]',
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId);
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true })))
                     .resolves('21938762934928374')
                     .mustHappen(1);
             }
@@ -71,14 +69,12 @@ await runSubtagTests({
             expected: '["9834653278429843564","3982746234283749322"]',
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId);
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true })))
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true })))
                     .resolves('21938762934928374')
                     .mustHappen(1);
             }
@@ -88,16 +84,14 @@ await runSubtagTests({
             expected: '["987234657348965","3982746234283749322"]',
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', '987234657348965');
                 const rejectedMessage = createRejectedMessage(ctx, '23897464293623984274432');
                 features.setup((m, $) => m.streamMessages($(['21938762934928374', '987234657348965', '39457643897564358']), 60000))
                     .yieldsAsync([rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '987234657348965', $({ noLookup: true }))).resolves('987234657348965').mustHappen(1);
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '39457643897564358', $({ noLookup: true }))).resolves('39457643897564358').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '987234657348965', $({ noLookup: true }))).resolves('987234657348965').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '39457643897564358', $({ noLookup: true }))).resolves('39457643897564358').mustHappen(1);
             }
         },
         {
@@ -105,15 +99,13 @@ await runSubtagTests({
             expected: '["9834653278429843564","3982746234283749322"]',
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
             }
         },
         {
@@ -121,15 +113,13 @@ await runSubtagTests({
             expected: '["9834653278429843564","3982746234283749322"]',
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
             }
         },
         {
@@ -137,17 +127,15 @@ await runSubtagTests({
             expected: '["9834653278429843564","3982746234283749322"]',
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId, '328762389764234374');
                 const rejectedMessage = createRejectedMessage(ctx);
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 60000))
                     .yieldsAsync([rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '328762389764234374', $({ noLookup: true, global: true }))).resolves('328762389764234374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '23894767278934620893', $({ noLookup: true, global: true }))).resolves('23894767278934620893').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '328762389764234374', $({ noLookup: true, global: true }))).resolves('328762389764234374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23894767278934620893', $({ noLookup: true, global: true }))).resolves('23894767278934620893').mustHappen(1);
             }
         },
         {
@@ -160,16 +148,14 @@ await runSubtagTests({
             subtags: [new OperatorSubtag(), new MessageIdSubtag()],
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId, '289374634729826479828');
                 const filterableMessage = createFilterableMessage(ctx, '5847658249242834983', ctx.channelId, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 60000))
                     .yieldsAsync([filterableMessage, rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
             }
         },
         {
@@ -182,16 +168,14 @@ await runSubtagTests({
             subtags: [new OperatorSubtag(), new MessageIdSubtag()],
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId, '289374634729826479828');
                 const filterableMessage = createFilterableMessage(ctx, '5847658249242834983', ctx.channelId, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 10000))
                     .yieldsAsync([filterableMessage, rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
             }
         },
         {
@@ -204,16 +188,14 @@ await runSubtagTests({
             subtags: [new OperatorSubtag(), new MessageIdSubtag()],
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId, '289374634729826479828');
                 const filterableMessage = createFilterableMessage(ctx, '5847658249242834983', ctx.channelId, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 0))
                     .yieldsAsync([filterableMessage, rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
             }
         },
         {
@@ -226,16 +208,14 @@ await runSubtagTests({
             subtags: [new OperatorSubtag(), new MessageIdSubtag()],
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId, '289374634729826479828');
                 const filterableMessage = createFilterableMessage(ctx, '5847658249242834983', ctx.channelId, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 300000))
                     .yieldsAsync([filterableMessage, rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
             }
         },
         {
@@ -248,16 +228,14 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const acceptedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId, '289374634729826479828');
                 const filterableMessage = createFilterableMessage(ctx, '5847658249242834983', ctx.channelId, '289374634729826479828');
                 const rejectedMessage = createRejectedMessage(ctx);
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 300000))
                     .yieldsAsync([filterableMessage, rejectedMessage, acceptedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
             }
         },
         {
@@ -269,14 +247,12 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx, ctx) {
                 const rejectedMessage = createFilterableMessage(ctx, '3982746234283749322', ctx.channelId, '289374634729826479828');
                 features.setup((m, $) => m.streamMessages($(['21938762934928374']), 300000))
                     .yieldsAsync([rejectedMessage]);
 
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
             }
         },
         {
@@ -287,10 +263,8 @@ await runSubtagTests({
             ],
             setup(ctx) {
                 ctx.channelId = '9834653278429843564';
-            },
-            postSetup(bbctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
-                userIdSubtag.setup((m, $) => m.query(bbctx, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '21938762934928374', $({ noLookup: true }))).resolves('21938762934928374').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '289374634729826479828', $({ noLookup: true, global: true }))).resolves('289374634729826479828').mustHappen(1);
             }
         }
     ]

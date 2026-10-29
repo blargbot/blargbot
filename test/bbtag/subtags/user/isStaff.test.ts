@@ -4,10 +4,10 @@ import { IsStaffSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<IsUserStaffFeature>({ id: 'features' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
 
 await runSubtagTests({
     subtag: new IsStaffSubtag(features.instance),
@@ -16,7 +16,7 @@ await runSubtagTests({
     otherSubtags: [userIdSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptMock(userIdSubtag);
     },
     cases: [
         {
@@ -49,9 +49,9 @@ await runSubtagTests({
         {
             code: '{isstaff;other user}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.isUserStaff(ctx.guildId, userId))
@@ -62,9 +62,9 @@ await runSubtagTests({
         {
             code: '{isstaff;other user},{isstaff;other user},{isstaff;other user}',
             expected: 'true,true,true',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(3);
                 features.setup(m => m.isUserStaff(ctx.guildId, userId))
@@ -75,9 +75,9 @@ await runSubtagTests({
         {
             code: '{isstaff;other user}',
             expected: 'false',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.isUserStaff(ctx.guildId, userId))
@@ -91,8 +91,8 @@ await runSubtagTests({
             errors: [
                 { error: new UserNotFoundError('other user') }
             ],
-            postSetup(bbctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+            setup(ctx) {
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -103,8 +103,8 @@ await runSubtagTests({
             errors: [
                 { error: new UserNotFoundError('other user') }
             ],
-            postSetup(bbctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: false })))
+            setup(ctx) {
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -115,8 +115,8 @@ await runSubtagTests({
             errors: [
                 { error: new UserNotFoundError('other user').withDisplay('') }
             ],
-            postSetup(bbctx) {
-                userIdSubtag.setup((m, $) => m.query(bbctx, 'other user', $({ noLookup: true })))
+            setup(ctx) {
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
                     .resolves(undefined)
                     .mustHappen(1);
             }

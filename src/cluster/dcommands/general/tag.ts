@@ -1,4 +1,3 @@
-import { bbtag, limits } from '@blargbot/bbtag';
 import type { Cluster, ClusterUtilities, CommandContext, CommandResult, GuildCommandContext } from '@blargbot/cluster';
 import { CommandType, discord, GuildCommand, parse } from '@blargbot/cluster';
 import type { SendContent } from '@blargbot/core';
@@ -8,6 +7,7 @@ import { util } from '@blargbot/formatting';
 import type * as eris from 'eris';
 import moment from 'moment-timezone';
 
+import { TagLimit } from '../../bbtagLimits/TagLimit.js';
 import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
 import { BBTagDocumentationManager } from '../../managers/documentation/BBTagDocumentationManager.js';
 import { templates } from '../../text.js';
@@ -200,7 +200,7 @@ export class TagCommand extends GuildCommand {
             silent: false,
             isCC: false,
             tagVars: true,
-            limit: new limits.TagLimit(context.message.channel.guild.memberCount),
+            limit: new TagLimit(context.message.channel.guild.memberCount),
             author: match.author,
             authorizer: match.author,
             prefix: context.prefix
@@ -209,7 +209,7 @@ export class TagCommand extends GuildCommand {
         if (!debug)
             return undefined;
 
-        await context.send(context.author, bbtag.createDebugOutput(result));
+        await context.send(context.author, result);
         return cmd.common.debugInDm;
     }
 
@@ -231,7 +231,7 @@ export class TagCommand extends GuildCommand {
             silent: false,
             isCC: false,
             tagVars: true,
-            limit: new limits.TagLimit(context.message.channel.guild.memberCount),
+            limit: new TagLimit(context.message.channel.guild.memberCount),
             author: context.author.id,
             authorizer: context.author.id,
             prefix: context.prefix,
@@ -241,7 +241,7 @@ export class TagCommand extends GuildCommand {
         if (!debug)
             return undefined;
 
-        await context.send(context.author, bbtag.createDebugOutput(result));
+        await context.send(context.author, result);
         return cmd.common.debugInDm;
     }
 

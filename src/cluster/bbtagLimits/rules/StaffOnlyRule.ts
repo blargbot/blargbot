@@ -1,10 +1,10 @@
-import { StaffOnlyError } from '../../errors/index.js';
-import { IsStaffSubtag } from '../../subtags/index.js';
-import { templates } from '../../text.js';
+import { StaffOnlyError, templates } from '@blargbot/bbtag';
+import { IsStaffSubtag } from '@blargbot/bbtag/subtags';
+
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 
 export const staffOnlyRule: RuntimeLimitRule = Object.seal({
-    async check(context) {
+    async check({ context }) {
         if (!await IsStaffSubtag.isStaff(context))
             throw new StaffOnlyError(context.root.authorizerId);
     },

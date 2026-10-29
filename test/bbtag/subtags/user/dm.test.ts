@@ -4,10 +4,10 @@ import { DMSubtag, EscapeBBTagSubtag, UserIdSubtag } from '@blargbot/bbtag/subta
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const features = new Mock<SendFeature & GetDmChannelIdFeature & GetGuildNameFeature & GetUserNameFeature>({ id: 'features' });
-const userIdSubtag = new Mock<UserIdSubtag>({ id: 'UserIdSubtag' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
 
 await runSubtagTests({
     subtag: new DMSubtag(features.instance),
@@ -16,7 +16,7 @@ await runSubtagTests({
     otherSubtags: [userIdSubtag.instance],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(userIdSubtag, { type: UserIdSubtag });
+        ctx.adoptMock(userIdSubtag);
     },
     cases: [
         {
@@ -26,8 +26,8 @@ await runSubtagTests({
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { error: new UserNotFoundError('aaaa') }
             ],
-            postSetup(bbctx) {
-                userIdSubtag.setup(m => m.query(bbctx, 'aaaa', undefined))
+            setup(ctx) {
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'aaaa', undefined))
                     .resolves(undefined)
                     .mustHappen(1);
             }
@@ -35,10 +35,10 @@ await runSubtagTests({
         {
             code: '{dm;other user;Hello!}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
                 const channelId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getDmChannelId(userId))
@@ -58,10 +58,10 @@ await runSubtagTests({
             code: '{dm;other user;{escapebbtag;{ "title": "Hi!" }}}',
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
                 const channelId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getDmChannelId(userId))
@@ -81,10 +81,10 @@ await runSubtagTests({
             code: '{dm;other user;Hello there!;{escapebbtag;{ "title": "General Kenobi!" }}}',
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
                 const channelId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getDmChannelId(userId))
@@ -104,10 +104,10 @@ await runSubtagTests({
             code: '{dm;other user;{escapebbtag;{ "title": "this isnt actually an embed" }};{escapebbtag;{ "title": "General Kenobi!" }}}',
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
                 const channelId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(1);
                 features.setup(m => m.getDmChannelId(userId))
@@ -126,10 +126,10 @@ await runSubtagTests({
         {
             code: '{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
                 const channelId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(5);
                 features.setup(m => m.getDmChannelId(userId))
@@ -148,10 +148,10 @@ await runSubtagTests({
         {
             code: '{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}',
             expected: '',
-            postSetup(bbctx, ctx) {
+            setup(ctx) {
                 const userId = createSnowflake();
                 const channelId = createSnowflake();
-                userIdSubtag.setup(m => m.query(bbctx, 'other user', undefined))
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
                     .resolves(userId)
                     .mustHappen(6);
                 features.setup(m => m.getDmChannelId(userId))

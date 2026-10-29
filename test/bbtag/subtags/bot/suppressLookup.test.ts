@@ -1,5 +1,3 @@
-import assert from 'node:assert/strict';
-
 import { NotABooleanError } from '@blargbot/bbtag';
 import { SuppressLookupSubtag } from '@blargbot/bbtag/subtags';
 
@@ -13,22 +11,22 @@ await runSubtagTests({
         {
             code: '{suppresslookup}',
             expected: '',
-            assert(bbctx) {
-                assert.equal(bbctx.root.noLookupErrors, true);
+            setup(ctx) {
+                ctx.root.setupSet(m => m.noLookupErrors = true).returns(true).mustHappen(1);
             }
         },
         {
             code: '{suppresslookup;true}',
             expected: '',
-            assert(bbctx) {
-                assert.equal(bbctx.root.noLookupErrors, true);
+            setup(ctx) {
+                ctx.root.setupSet(m => m.noLookupErrors = true).returns(true).mustHappen(1);
             }
         },
         {
             code: '{suppresslookup;false}',
             expected: '',
-            assert(bbctx) {
-                assert.equal(bbctx.root.noLookupErrors, false);
+            setup(ctx) {
+                ctx.root.setupSet(m => m.noLookupErrors = false).returns(true).mustHappen(1);
             }
         },
         {
@@ -36,10 +34,7 @@ await runSubtagTests({
             expected: '`Not a boolean`',
             errors: [
                 { error: new NotABooleanError('abc') }
-            ],
-            assert(bbctx) {
-                assert.equal(bbctx.root.noLookupErrors, undefined);
-            }
+            ]
         }
     ]
 });

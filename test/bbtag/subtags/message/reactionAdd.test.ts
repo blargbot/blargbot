@@ -6,13 +6,13 @@ import { ChannelIdSubtag, ReactionAddSubtag } from '@blargbot/bbtag/subtags';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 const unicodeEmote = Emote.parse('🤔');
 const guildEmote = Emote.parse('<:notlikecat:280110565161041921>');
 const features = new Mock<AddReactionsFeature & CheckMessageExistsFeature & GetMemberPermissionsFeature>({ id: 'features' });
-const channelIdSubtag = new Mock<ChannelIdSubtag>({ id: 'ChannelIdSubtag' });
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
 
 await runSubtagTests({
     subtag: new ReactionAddSubtag(features.instance),
@@ -20,23 +20,23 @@ await runSubtagTests({
     names: ['reactionAdd', 'addReact', 'reactAdd'],
     setup(ctx) {
         ctx.adoptMock(features);
-        ctx.adoptSubtagMock(channelIdSubtag, { type: ChannelIdSubtag });
+        ctx.adoptMock(channelIdSubtag);
     },
     cases: [
         {
             code: '{reactadd;🤔}',
             expected: '',
             subtags: [channelIdSubtag.instance],
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
                     .resolves(DiscordPermissions.ADD_REACTIONS)
                     .mustHappen(1);
             },
-            assert(bbctx) {
-                assert.deepEqual(bbctx.root.output.reactions, ['🤔']);
+            assert(ctx) {
+                assert.deepEqual(ctx.bbtag.root.output.reactions, ['🤔']);
             }
         },
         ...createGetMessagePropTestCases({
@@ -78,16 +78,16 @@ await runSubtagTests({
             code: '{reactadd;🤔<:notlikecat:280110565161041921>}',
             expected: '',
             subtags: [channelIdSubtag.instance],
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
                     .resolves(DiscordPermissions.ADD_REACTIONS)
                     .mustHappen(1);
             },
-            assert(bbctx) {
-                assert.deepEqual(bbctx.root.output.reactions, ['🤔', guildEmote.toString()]);
+            assert(ctx) {
+                assert.deepEqual(ctx.bbtag.root.output.reactions, ['🤔', guildEmote.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
@@ -119,16 +119,16 @@ await runSubtagTests({
             code: '{reactadd;🤔;<:notlikecat:280110565161041921>}',
             expected: '',
             subtags: [channelIdSubtag.instance],
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
                     .resolves(DiscordPermissions.ADD_REACTIONS)
                     .mustHappen(1);
             },
-            assert(bbctx) {
-                assert.deepEqual(bbctx.root.output.reactions, ['🤔', guildEmote.toString()]);
+            assert(ctx) {
+                assert.deepEqual(ctx.bbtag.root.output.reactions, ['🤔', guildEmote.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
@@ -163,8 +163,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
@@ -176,11 +176,11 @@ await runSubtagTests({
             code: '{reactadd;abc;🤔;ghi}',
             expected: '',
             subtags: [channelIdSubtag.instance],
-            assert(bbctx) {
-                assert.deepEqual(bbctx.root.output.reactions, ['🤔']);
+            assert(ctx) {
+                assert.deepEqual(ctx.bbtag.root.output.reactions, ['🤔']);
             },
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
                 features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
@@ -195,8 +195,8 @@ await runSubtagTests({
             errors: [
                 { error: new BBTagRuntimeError('I cannot add \'🤔\' as reactions') }
             ],
-            postSetup(bbctx, ctx) {
-                channelIdSubtag.setup((m, $) => m.query(bbctx, ctx.channelId, $({ noErrors: true, noLookup: true })))
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
                     .resolves(ctx.channelId)
                     .mustHappen(1);
                 features.setup(m => m.checkMessageExists(ctx.channelId, '2938456469267324234'))
