@@ -1,11 +1,12 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { avatarColours, CommandType, randChoose } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster';
+import { avatarColours, CommandType, GlobalCommand  } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
-import Eris from 'eris';
+import { random } from '@blargbot/util';
+import * as eris from 'eris';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.stats;
 
@@ -37,7 +38,7 @@ export class StatsCommand extends GlobalCommand {
         return {
             embeds: [
                 {
-                    color: randChoose(avatarColours),
+                    color: random.pick(avatarColours),
                     timestamp: moment().toDate(),
                     title: cmd.default.embed.title,
                     footer: {
@@ -86,7 +87,7 @@ export class StatsCommand extends GlobalCommand {
                     },
                     {
                         name: cmd.default.embed.field.eris.name,
-                        value: util.literal(Eris.VERSION),
+                        value: util.literal(eris.VERSION),
                         inline: true
                     },
                     {

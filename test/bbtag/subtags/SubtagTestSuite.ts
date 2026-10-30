@@ -1,41 +1,20 @@
-import { BBTagContext, BBTagContextOptions, BBTagEngine, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, Subtag, SubtagCall } from '@blargbot/bbtag';
-import { BBTagUtilities, InjectionContext } from '@blargbot/bbtag/BBTagUtilities';
-import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/bbtag/errors';
-import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit';
-import { bbtag, SubtagType } from '@blargbot/bbtag/utils';
-import { Timer } from '@blargbot/core/Timer';
-import { pluralise as p, repeat, snowflake } from '@blargbot/core/utils';
-import { Database } from '@blargbot/database';
-import { GuildCommandTag, StoredTag, TagVariableScope } from '@blargbot/domain/models';
-import { GuildStore, TagStore, TagVariableStore, UserStore } from '@blargbot/domain/stores';
-import { Logger } from '@blargbot/logger';
-import { argument, Mock } from '@blargbot/test-util/mock';
-import { expect } from 'chai';
-import * as chai from 'chai';
-import chaiBytes from 'chai-bytes';
-import chaiDateTime from 'chai-datetime';
-import chaiExclude from 'chai-exclude';
-import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIThreadChannel, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel, Snowflake } from 'discord-api-types/v9';
-import { BaseData, Channel, Client as Discord, ClientOptions as DiscordOptions, Collection, Constants, DiscordHTTPError, DiscordRESTError, ExtendedUser, Guild, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
-import * as fs from 'fs';
-import { ClientRequest, IncomingMessage } from 'http';
-import * as inspector from 'inspector';
-import { Context, describe, it } from 'mocha';
-import moment, { Moment } from 'moment-timezone';
-import path from 'path';
-import { anything } from 'ts-mockito';
-import { inspect } from 'util';
+import assert from 'node:assert/strict';
+import * as fs from 'node:fs';
+import * as inspector from 'node:inspector';
+import path from 'node:path';
+import type { TestContext } from 'node:test';
+import { describe, it } from 'node:test';
 
-chai.use(chaiExclude);
-chai.use(chaiBytes);
-chai.use(chaiDateTime);
+import type { BBTagExpression, BBTagHooks, BBTagInput, BBTagRuntimeRootScope, FlagDefinition, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag-engine';
+import { bbtag, BBTagContext, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagProvider, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag-engine';
+import type { Mockable, MockCtorArgs } from '@blargbot/test-util';
+import { Mock } from '@blargbot/test-util';
+import moment from 'moment-timezone';
 
-type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${number}` | `${number}:${number}` | `${number}`;
-type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[keyof T];
-type RequireIds<T, OtherProps extends keyof T = never> = RequiredProps<Partial<T>, IdPropertiesOf<T> | OtherProps>;
+import { createSnowflake } from '../snowflake.js';
 
-type RuntimeSubtagTestCase<T> = Readonly<T> & {
-    readonly timestamp: Moment;
+type AnyConstructor<T> = (abstract new (...args: never) => T) & {
+    readonly prototype: T;
 }
 
 export interface SubtagTestCase {
@@ -43,27 +22,24 @@ export interface SubtagTestCase {
     readonly code: string;
     readonly subtagName?: string;
     readonly expected?: string | RegExp | (() => string | RegExp);
-    readonly setup?: (this: RuntimeSubtagTestCase<this>, context: SubtagTestContext) => Awaitable<void>;
-    readonly postSetup?: (this: RuntimeSubtagTestCase<this>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>;
-    readonly assert?: (this: RuntimeSubtagTestCase<this>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>;
-    readonly teardown?: (this: RuntimeSubtagTestCase<this>, context: SubtagTestContext) => Awaitable<void>;
+    readonly setup?: (context: SubtagTestContext, bbtag: BBTagExpression, nodeTest: TestContext) => Awaitable<void>;
+    readonly assert?: (context: SubtagTestContext, result: string) => Awaitable<void>;
+    readonly teardown?: (context: SubtagTestContext) => Awaitable<void>;
     readonly expectError?: {
         required?: boolean;
         handle: (error: unknown) => Awaitable<void>;
     };
-    readonly errors?: ReadonlyArray<{ start?: SourceMarkerResolvable; end?: SourceMarkerResolvable; error: BBTagRuntimeError; }> | ((errors: LocatedRuntimeError[]) => void);
+    readonly errors?: ReadonlyArray<{ start?: number | SourceMarker; end?: number | SourceMarker; error: BBTagRuntimeError; }> | ((errors: LocatedRuntimeError[]) => void);
     readonly subtags?: readonly Subtag[];
     readonly skip?: boolean | (() => Awaitable<boolean>);
     readonly retries?: number;
     readonly timeout?: number;
-    readonly setupSaveVariables?: boolean;
 }
 
-interface TestSuiteConfig<T extends SubtagTestCase> {
-    readonly setup: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
-    readonly assert: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>>;
-    readonly teardown: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
-    readonly postSetup: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>>;
+interface TestSuiteConfig {
+    readonly setup: Array<(context: SubtagTestContext, bbtag: BBTagExpression, nodeTest: TestContext) => Awaitable<void>>;
+    readonly assert: Array<(context: SubtagTestContext, result: string) => Awaitable<void>>;
+    readonly teardown: Array<(context: SubtagTestContext) => Awaitable<void>>;
 }
 
 export class MarkerError extends BBTagRuntimeError {
@@ -73,159 +49,99 @@ export class MarkerError extends BBTagRuntimeError {
     }
 }
 
-export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends Pick<TestCase, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
-    readonly cases: TestCase[];
+export interface SubtagTestSuiteData<T extends Subtag = Subtag> extends Pick<SubtagTestCase, 'setup' | 'assert' | 'teardown'> {
+    readonly names: Iterable<string>;
+    readonly cases: SubtagTestCase[];
     readonly subtag: T;
-    readonly runOtherTests?: (subtag: T) => void;
+    readonly otherSubtags?: Subtag[];
+    readonly runOtherTests?: (subtag: T) => Promise<void>;
     readonly argCountBounds: { min: ArgCountBound; max: ArgCountBound; };
+}
+
+function makeId(name: string): string {
+    return `${name}<${createSnowflake()}>`;
 }
 
 type ArgCountBound = number | { count: number; noEval: number[]; };
 
-/* eslint-disable @typescript-eslint/naming-convention */
 export class SubtagTestContext {
-    readonly #allMocks: Array<Mock<unknown>> = [];
-    #isCreated = false;
-    public readonly timer = new Timer();
-    public readonly dependencies = this.createMock<InjectionContext>();
-    public readonly util = this.createMock<BBTagUtilities>();
-    public readonly shard = this.createMock(Shard);
-    public readonly shards = this.createMock(ShardManager);
-    public readonly discord = this.createMock(Discord);
-    public readonly logger = this.createMock<Logger>(undefined, false);
-    public readonly database = this.createMock(Database);
-    public readonly tagVariablesTable = this.createMock<TagVariableStore>();
-    public readonly tagsTable = this.createMock<TagStore>();
-    public readonly guildTable = this.createMock<GuildStore>();
-    public readonly userTable = this.createMock<UserStore>();
-    public readonly limit = this.createMock(BaseRuntimeLimit);
-    public readonly discordOptions: DiscordOptions;
-    public isStaff = false;
-    public readonly ownedMessages: string[] = [];
+    readonly #allMocks: Mock[] = [];
+    public readonly bbtag: BBTagContext;
+    public readonly hooks = this.createMock<BBTagHooks>({ id: 'hooks' });
+    public readonly root = this.createMock<BBTagRuntimeRootScope>({ id: 'root' });
 
-    public readonly ccommands: Record<string, GuildCommandTag>;
-    public readonly tags: Record<string, StoredTag>;
-    public readonly tagVariables: MapByValue<{ scope: TagVariableScope; name: string; }, JToken>;
-    public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false, isTag: true };
-
-    public readonly options: Mutable<Partial<BBTagContextOptions>>;
-
-    public readonly roles = {
-        everyone: SubtagTestContext.createApiRole({ id: snowflake.create().toString() }),
-        top: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 5, name: 'Top Role' }),
-        command: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 3, name: 'Command User' }),
-        authorizer: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 4, name: 'Command Authorizer' }),
-        other: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 2, name: 'Other User' }),
-        bot: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 1, name: 'Bot' })
-    };
-
-    public readonly users = {
-        owner: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Guild owner' }),
-        command: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Command User' }),
-        authorizer: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Command Authorizer' }),
-        other: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Other user' }),
-        bot: SubtagTestContext.createApiUser({
-            id: '134133271750639616',
-            username: 'blargbot',
-            discriminator: '0128'
-        })
-    };
-
-    public readonly members = {
-        owner: SubtagTestContext.createApiGuildMember({ roles: [] }, this.users.owner),
-        command: SubtagTestContext.createApiGuildMember({ roles: [this.roles.command.id] }, this.users.command),
-        authorizer: SubtagTestContext.createApiGuildMember({ roles: [this.roles.authorizer.id] }, this.users.authorizer),
-        other: SubtagTestContext.createApiGuildMember({ roles: [this.roles.other.id] }, this.users.other),
-        bot: SubtagTestContext.createApiGuildMember({ roles: [this.roles.bot.id] }, this.users.bot)
-    };
-
-    public readonly channels = {
-        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }) as APITextChannel | APIThreadChannel,
-        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' }) as APITextChannel | APIThreadChannel
-    } as {
-        command: Extract<APIChannel, { guild_id?: Snowflake; }>;
-        general: Extract<APIChannel, { guild_id?: Snowflake; }>;
-        [name: string]: Extract<APIChannel, { guild_id?: Snowflake; }>;
-    };
-
-    public readonly guild = SubtagTestContext.createApiGuild(
-        {
-            id: this.roles.everyone.id,
-            owner_id: this.users.owner.id,
-            roles: Object.values(this.roles)
-        }
-    );
-
-    public readonly message: APIMessage = SubtagTestContext.createApiMessage({
-        id: snowflake.create().toString(),
-        author: this.users.command,
-        channel_id: this.channels.command.id
-    }, this.users.command);
+    public guildId = makeId('guild');
+    public messageId = makeId('commandMessage');
+    public channelId = makeId('commandChannel');
+    public userId = makeId('commandUser');
+    public authorId: string | undefined = makeId('author');
+    public authorizerId = makeId('authorizer');
+    public botId = makeId('bot');
+    public tagName = makeId('tagName');
+    public isCC = false;
+    public flagDefinitions: FlagDefinition[] = [];
+    public prefix: string | undefined = undefined;
+    public readonly input: Mutable<BBTagInput> = { array: [], flags: { _: '' } };
+    public readonly ownedMessages = new Set<string>();
 
     public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<Subtag>) {
-        this.discordOptions = { intents: [] };
-        this.tagVariables = new MapByValue();
-        this.tags = {};
-        this.ccommands = {};
-        this.options = { tagName: `testTag_${snowflake.create()}` };
+        this.bbtag = new BBTagContext(
+            new SubtagProvider(subtags),
+            this.hooks.instance,
+            this.root.instance
+        );
+        this.hooks.setup((m, $) => m.internalServerError!($.anything)).invokes(i => {
+            throw i.arguments[0];
+        }, { isFallback: true });
+        this.hooks.setup(m => m.step!()).returns(undefined, { isFallback: true });
+        this.hooks.setup((m, $) => m.subtagExecuting!($.anything, $.anything)).returns(undefined, { isFallback: true });
+        this.hooks.setup((m, $) => m.loop!($.anything)).returns(undefined, { isFallback: true });
 
-        const args = new Array(100).fill(argument.any().value) as unknown[];
-        for (let i = 0; i < args.length; i++) {
-            this.logger.setup(m => m.error(...args.slice(0, i)), false).thenCall((...args: unknown[]) => {
-                throw args.find(x => x instanceof Error) ?? new Error(`Unexpected logger error: ${inspect(args)}`);
-            });
-        }
+        this.root.setup(m => m.guildId).invokes(() => this.guildId, { isFallback: true });
+        this.root.setup(m => m.messageId).invokes(() => this.messageId, { isFallback: true });
+        this.root.setup(m => m.channelId).invokes(() => this.channelId, { isFallback: true });
+        this.root.setup(m => m.userId).invokes(() => this.userId, { isFallback: true });
+        this.root.setup(m => m.authorId).invokes(() => this.authorId, { isFallback: true });
+        this.root.setup(m => m.authorizerId).invokes(() => this.authorizerId, { isFallback: true });
+        this.root.setup(m => m.botId).invokes(() => this.botId, { isFallback: true });
+        this.root.setup(m => m.tagName).invokes(() => this.tagName, { isFallback: true });
+        this.root.setup(m => m.isCC).invokes(() => this.isCC, { isFallback: true });
+        this.root.setup(m => m.input).returns(this.input, { isFallback: true });
+        this.root.setup(m => m.prefix).invokes(() => this.prefix, { isFallback: true });
+        this.root.setup(m => m.ownedMessageIds).returns(this.ownedMessages, { isFallback: true });
+        this.root.setup(m => m.recursion).returns({ depth: 0 }, { isFallback: true });
+        this.root.setup(m => m.functions).returns(new Map(), { isFallback: true });
+        this.root.setup(m => m.ccCache).returns(new Map(), { isFallback: true });
+        this.root.setup(m => m.tagCache).returns(new Map(), { isFallback: true });
+        this.root.setup(m => m.output).returns({ reactions: [] }, { isFallback: true });
+        this.root.setup(m => m.queryCache).returns({
+            channel: new Map(),
+            role: new Map(),
+            user: new Map(),
+            failedQueries: 0
+        }, { isFallback: true });
+        this.root.setup(m => m.allowedMentions).returns({
+            roles: new Set(),
+            users: new Set(),
+            everybody: false
+        }, { isFallback: true });
 
-        this.dependencies.setup(m => m.discord, false).thenReturn(this.discord.instance);
-        this.dependencies.setup(m => m.database, false).thenReturn(this.database.instance);
-        this.dependencies.setup(m => m.logger, false).thenReturn(this.logger.instance);
-        this.dependencies.setup(m => m.util, false).thenReturn(this.util.instance);
-
-        this.discord.setup(m => m.emit('warn', anything()), false).thenReturn(false);
-
-        this.database.setup(m => m.tagVariables, false).thenReturn(this.tagVariablesTable.instance);
-        this.database.setup(m => m.guilds, false).thenReturn(this.guildTable.instance);
-        this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
-        this.database.setup(m => m.tags, false).thenReturn(this.tagsTable.instance);
-
-        this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, anything() as never), false)
-            .thenCall((...[name, scope]: Parameters<TagVariableStore['get']>) => this.tagVariables.get({ scope, name }));
-        if (this.testCase.setupSaveVariables !== false) {
-            this.tagVariablesTable.setup(m => m.upsert(anything() as never, anything() as never), false)
-                .thenCall((...[values, scope]: Parameters<TagVariableStore['upsert']>) => {
-                    for (const [name, value] of Object.entries(values)) {
-                        if (value !== undefined)
-                            this.tagVariables.set({ scope, name }, value);
-                        else
-                            this.tagVariables.delete({ scope, name });
-                    }
-                });
-        }
-
-        this.tagsTable.setup(m => m.get(argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<TagStore['get']>) => this.tags[args[0]]);
-        this.guildTable.setup(m => m.getCommand(this.guild.id, argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<GuildStore['getCommand']>) => this.ccommands[args[1]]);
-
-        this.discord.setup(m => m.shards, false).thenReturn(this.shards.instance);
-        this.discord.setup(m => m.guildShardMap, false).thenReturn({});
-        this.discord.setup(m => m.channelGuildMap, false).thenReturn({});
-        this.discord.setup(m => m.options, false).thenReturn(this.discordOptions);
-        this.discord.setup(m => m._formatImage(anything() as never), false).thenCall((str: never) => Discord.prototype._formatImage.call(this.discord.instance, str));
-        this.discord.setup(m => m._formatAllowedMentions(anything() as never), false).thenCall((str: never) => Discord.prototype._formatImage.call(this.discord.instance, str));
-
-        this.shards.setup(m => m.get(0), false).thenReturn(this.shard.instance);
-        this.shard.setup(m => m.client, false).thenReturn(this.discord.instance);
-
-        this.discord.setup(m => m.guilds, false).thenReturn(new Collection(Guild));
-        this.discord.setup(m => m.users, false).thenReturn(new Collection(User));
-
-        this.dependencies.setup(c => c.subtags, false).thenReturn(subtags);
+        this.root.setupProperty('fallback', undefined);
+        this.root.setupProperty('paramsarray', undefined);
+        this.root.setupProperty('reactUser', undefined);
+        this.root.setupProperty('reaction', undefined);
+        this.root.setupProperty('quiet', undefined);
+        this.root.setupProperty('noLookupErrors', undefined);
+        this.root.setupProperty('silent', false);
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    public createMock<T>(clazz?: (new (...args: never[]) => T) | (Function & { prototype: T; }), strict = true): Mock<T> {
-        const mock = new Mock<T>(clazz, strict);
+    public adoptMock(mock: Mock): void {
+        this.#allMocks.push(mock);
+        mock.reset();
+    }
+
+    public createMock<T extends Mockable>(...args: MockCtorArgs<T>): Mock<T> {
+        const mock = new Mock<T>(...args);
         this.#allMocks.push(mock);
         return mock;
     }
@@ -245,221 +161,29 @@ export class SubtagTestContext {
             default: throw new AggregateError(errors, errors.join('\n'));
         }
     }
-
-    public createContext(): BBTagContext {
-        if (this.#isCreated)
-            throw new Error('Cannot create multiple contexts from 1 mock');
-        this.#isCreated = true;
-
-        const engine = new BBTagEngine(this.dependencies.instance);
-
-        const bot = new ExtendedUser(<BaseData><unknown>this.users.bot, this.discord.instance);
-        this.discord.setup(m => m.user, false).thenReturn(bot);
-
-        const guild = this.createGuild(this.guild, Object.values(this.channels), Object.values(this.members));
-        this.discord.instance.guilds.add(guild);
-
-        const authorizerId = this.options.authorizerId ?? this.options.authorId ?? this.users.authorizer.id;
-        this.util.setup(m => m.isUserStaff(argument.isInstanceof(Member).and(m => m.id === authorizerId && m.guild === guild).value), false).thenResolve(this.isStaff);
-
-        for (const channel of guild.channels.values())
-            this.discord.setup(m => m.getChannel(channel.id), false).thenReturn(channel);
-
-        const textableChannelTypes = new Set([ChannelType.GuildText, ChannelType.DM, ChannelType.GroupDM, ChannelType.GuildAnnouncement, ChannelType.AnnouncementThread, ChannelType.PrivateThread, ChannelType.PublicThread]);
-        const channel = guild.channels.find(c => textableChannelTypes.has(c.type));
-        if (channel === undefined)
-            throw new Error('No text channels were added');
-
-        const message = this.createMessage<KnownGuildTextableChannel>(this.message);
-        this.util.setup(m => m.getMessage(channel, message.id), false).thenResolve(message);
-
-        const context = new BBTagContext(engine, {
-            authorId: message.author.id,
-            authorizerId: authorizerId,
-            inputRaw: '',
-            isCC: false,
-            limit: this.limit.instance,
-            message: message,
-            ...this.options
-        });
-
-        context.data.ownedMsgs.push(...this.ownedMessages);
-        Object.assign(context.scopes.root, this.rootScope);
-
-        return context;
-    }
-
-    public createRESTError(code: number, message = 'Test REST error'): DiscordRESTError {
-        const request = this.createMock(ClientRequest);
-        const apiMessage = this.createMock(IncomingMessage);
-
-        const x = { stack: '' };
-        Error.captureStackTrace(x);
-        return new DiscordRESTError(request.instance, apiMessage.instance, { code, message }, x.stack);
-    }
-
-    public createHTTPError(code: number, message: string, method: string, path: string): DiscordHTTPError {
-        const request = this.createMock(ClientRequest);
-        const apiMessage = this.createMock(IncomingMessage);
-
-        apiMessage.setup(m => m.statusCode).thenReturn(code);
-        apiMessage.setup(m => m.statusMessage).thenReturn(message);
-        request.setup(m => m.method).thenReturn(method);
-        request.setup(m => m.path).thenReturn(path);
-
-        const x = { stack: '' };
-        Error.captureStackTrace(x);
-        return new DiscordHTTPError(request.instance, apiMessage.instance, { code, message }, x.stack);
-    }
-
-    public createMessage<TChannel extends KnownTextableChannel>(settings: APIMessage): Message<TChannel>
-    public createMessage<TChannel extends KnownTextableChannel>(settings: RequireIds<APIMessage>, author: APIUser): Message<TChannel>
-    public createMessage<TChannel extends KnownTextableChannel>(...args: [APIMessage] | [RequireIds<APIMessage>, APIUser]): Message<TChannel> {
-        const data = args.length === 1 ? args[0] : SubtagTestContext.createApiMessage(...args);
-        return new Message<TChannel>(<BaseData><unknown>data, this.discord.instance);
-    }
-
-    public static createApiMessage(settings: RequireIds<APIMessage>, author: APIUser): APIMessage {
-        return {
-            author: author,
-            attachments: [],
-            content: '',
-            edited_timestamp: '1970-01-01T00:00:00Z',
-            embeds: [],
-            mention_everyone: false,
-            mention_roles: [],
-            mentions: [],
-            pinned: false,
-            timestamp: '1970-01-01T00:00:00Z',
-            tts: false,
-            type: Constants.MessageTypes.DEFAULT,
-            ...settings
-        };
-    }
-
-    public createUser(settings: RequireIds<APIUser>): User {
-        const data = SubtagTestContext.createApiUser(settings);
-        return new User(<BaseData><unknown>data, this.discord.instance);
-    }
-
-    public static createApiUser(settings: RequireIds<APIUser>): APIUser {
-        return {
-            avatar: null,
-            discriminator: '0000',
-            username: 'Test User',
-            ...settings
-        };
-    }
-
-    public createGuildMember(guild: Guild | undefined, settings: RequireIds<APIGuildMember>, user: APIUser): Member {
-        const data = SubtagTestContext.createApiGuildMember(settings, user);
-        return new Member(<BaseData><unknown>data, guild, this.discord.instance);
-    }
-
-    public static createApiGuildMember(settings: RequireIds<APIGuildMember>, user: APIUser): RequiredProps<APIGuildMember, 'user'> {
-        return {
-            deaf: false,
-            joined_at: '1970-01-01T00:00:00Z',
-            mute: false,
-            roles: ['0'],
-            user: user,
-            ...settings
-        };
-    }
-
-    public createRole(guild: Guild, settings: RequireIds<APIRole>): Role {
-        const data = SubtagTestContext.createApiRole(settings);
-        return new Role(<BaseData><unknown>data, guild);
-    }
-
-    public static createApiRole(settings: RequireIds<APIRole>): APIRole {
-        return {
-            color: 0,
-            hoist: false,
-            managed: false,
-            mentionable: false,
-            name: '@everyone',
-            permissions: '0',
-            position: 0,
-            ...settings
-        };
-    }
-
-    public createGuild(settings: APIGuild | RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): Guild {
-        const data = 'hub_type' in settings ? settings : SubtagTestContext.createApiGuild(settings);
-        const guild = new Guild(<BaseData><unknown>{ ...data, members: members, channels: channels }, this.discord.instance);
-        return guild;
-    }
-
-    public static createApiGuild(settings: RequireIds<APIGuild>): RequiredProps<APIGuild, 'roles'> {
-        return {
-            afk_channel_id: null,
-            afk_timeout: 60,
-            application_id: null,
-            banner: null,
-            default_message_notifications: GuildDefaultMessageNotifications.AllMessages,
-            description: null,
-            discovery_splash: null,
-            emojis: [],
-            explicit_content_filter: GuildExplicitContentFilter.Disabled,
-            features: [],
-            icon: null,
-            mfa_level: GuildMFALevel.None,
-            name: 'Test Guild',
-            nsfw_level: GuildNSFWLevel.Default,
-            preferred_locale: 'en-US',
-            premium_progress_bar_enabled: false,
-            premium_tier: GuildPremiumTier.None,
-            roles: [
-                this.createApiRole({ id: settings.id })
-            ],
-            public_updates_channel_id: null,
-            rules_channel_id: null,
-            splash: null,
-            stickers: [],
-            system_channel_flags: 0,
-            system_channel_id: null,
-            vanity_url_code: null,
-            verification_level: GuildVerificationLevel.None,
-            region: '',
-            hub_type: null,
-            ...settings
-        };
-    }
-
-    public createChannel<T extends keyof KnownChannelMap>(settings: RequireIds<APIChannel> & { type: T; }): KnownChannelMap[T]
-    public createChannel(settings: RequireIds<APITextChannel>): KnownTextableChannel
-    public createChannel(settings: RequireIds<APIChannel>): KnownChannel
-    public createChannel(settings: RequireIds<APIChannel>): KnownChannel {
-        const data = SubtagTestContext.createApiChannel(settings);
-        return Channel.from(<BaseData><unknown>data, this.discord.instance);
-    }
-
-    public static createApiChannel<T extends ChannelType>(settings: RequireIds<Extract<APIChannel, { type: T; }>> & { type: T; }): Extract<APIChannel, { type: T; }>;
-    public static createApiChannel(settings: RequireIds<APITextChannel>): APITextChannel;
-    public static createApiChannel<T extends APIChannel>(settings: RequireIds<T>): T;
-    public static createApiChannel<T extends APIChannel>(settings: RequireIds<T>): T {
-        return {
-            name: 'Test Channel',
-            type: ChannelType.GuildText,
-            position: 0,
-            permission_overwrites: [],
-            nsfw: false,
-            topic: 'Test channel!',
-            ...settings
-        } as unknown as T;
-    }
 }
-/* eslint-enable @typescript-eslint/naming-convention */
 
-export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): void
-export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): void
-export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase>(data: SubtagTestSuiteData<T, TestCase>): void {
-    const suite = new SubtagTestSuite(data.subtag);
+export function createMockSubtag<T extends Subtag>(type: AnyConstructor<T>): Mock<T> {
+    const mock = new Mock<T>(...[{ id: type.name }] as MockCtorArgs<T>);
+    const clearInterceptors = mock.clearInterceptors.bind(mock);
+    mock.clearInterceptors = () => {
+        clearInterceptors();
+        mock.setup(m => m.name).returns(`test-subtag-${createSnowflake()}`);
+        mock.setup(m => m.aliases).returns([]);
+        mock.setup(Reflect.getPrototypeOf).returns(type.prototype);
+        mock.setup(m => m.constructor).returns(type);
+    };
+    mock.clearInterceptors();
+    return mock;
+}
+
+export async function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): Promise<void> {
+    const error = { stack: '' };
+    Error.captureStackTrace(error, runSubtagTests);
+    const stack = `Via SubtagTestSuite\n${error.stack.split('\n').slice(1).join('\n')}`;
+    const suite = new SubtagTestSuite([data.subtag, ...data.otherSubtags ?? []], data.names);
     if (data.setup !== undefined)
         suite.setup(data.setup);
-    if (data.postSetup !== undefined)
-        suite.postSetup(data.postSetup);
     if (data.assert !== undefined)
         suite.assert(data.assert);
     if (data.teardown !== undefined)
@@ -473,7 +197,8 @@ export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase
     if (max.count < Infinity)
         suite.addTestCases(tooManyArgumentsTestCases(data.subtag.name, max.count, max.noEval));
 
-    suite.run(() => data.runOtherTests?.(data.subtag));
+    const runOtherTests = data.runOtherTests;
+    await suite.run(stack, runOtherTests === undefined ? undefined : () => runOtherTests(data.subtag));
 
     // Output a bbtag file that can be run on the live blargbot instance to find any errors
     if (inspector.url() !== undefined) {
@@ -488,37 +213,38 @@ Actual:
 |${c.code}|}`).join('\n')}}
 ---------------
 Finished!`;
-        fs.writeFileSync(path.join(__dirname, '../../../test.bbtag'), blargTestSuite);
+        fs.writeFileSync(path.join(import.meta.dirname, '../../../test.bbtag'), blargTestSuite);
     }
 }
 
-export function sourceMarker(location: SourceMarkerResolvable): SourceMarker
-export function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined
-export function sourceMarker(location: SourceMarkerResolvable | undefined): SourceMarker | undefined {
-    if (typeof location === 'number')
-        return { index: location, line: 0, column: location };
+export function sourceMarker(location: number | SourceMarker, source: string): SourceMarker | undefined {
     if (typeof location === 'object')
         return location;
-    if (typeof location === 'undefined')
-        return undefined;
 
-    const segments = location.split(':');
-    const index = segments[0];
-    const line = segments[1] ?? '0';
-    const column = segments[2] ?? index;
-
-    return { index: parseInt(index), line: parseInt(line), column: parseInt(column) };
+    const slice = source.slice(0, location);
+    const lineStart = slice.lastIndexOf('\n');
+    const lastLine = lineStart === -1 ? slice : slice.slice(lineStart + 1);
+    const lineCount = slice.split('\n').length - 1;
+    return { index: location, line: lineCount, column: lastLine.length };
 }
-export class TestDataSubtag extends Subtag {
+
+abstract class TestSubtagBase extends Subtag {
+    public category = SubtagType.SIMPLE;
+    public hidden = true;
+    public signatures = [];
+    public aliases = [];
+    public description = undefined;
+    public deprecated = false;
+    public staff = false;
+}
+
+export class TestDataSubtag extends TestSubtagBase {
+    public name = 'testdata';
     public constructor(public readonly values: Record<string, string | undefined>) {
-        super({
-            name: 'testdata',
-            category: SubtagType.SIMPLE,
-            signatures: []
-        });
+        super();
     }
 
-    protected async * executeCore(_: unknown, __: unknown, subtag: SubtagCall): AsyncIterable<string> {
+    public async * execute(_: unknown, __: unknown, subtag: SubtagCall): AsyncIterable<string> {
         if (subtag.args.length !== 1)
             throw new RangeError(`Subtag ${this.name} must be given 1 argument!`);
         const key = subtag.args[0].source;
@@ -531,70 +257,47 @@ export class TestDataSubtag extends Subtag {
     }
 }
 
-export class EvalSubtag extends Subtag {
-    public constructor() {
-        super({
-            name: 'eval',
-            category: SubtagType.SIMPLE,
-            hidden: true,
-            signatures: []
-        });
-    }
+export class EvalSubtag extends TestSubtagBase {
+    public name = 'eval';
 
-    protected executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
+    public execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new MarkerError('eval', subtag.start.index);
     }
 }
 
-export class AssertSubtag extends Subtag {
+export class AssertSubtag extends TestSubtagBase {
     readonly #assertion: (context: BBTagContext, subtagName: string, subtag: SubtagCall) => Awaitable<string>;
+    public name = 'assert';
 
-    public constructor(assertion: (...args: Parameters<Subtag['executeCore']>) => Awaitable<string>) {
-        super({
-            name: 'assert',
-            category: SubtagType.SIMPLE,
-            hidden: true,
-            signatures: []
-        });
-
+    public constructor(assertion: (...args: Parameters<Subtag['execute']>) => Awaitable<string>) {
+        super();
         this.#assertion = assertion;
     }
 
-    protected async * executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string> {
+    public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string> {
         yield await this.#assertion(context, subtagName, subtag);
     }
 }
 
-export class FailTestSubtag extends Subtag {
-    public constructor() {
-        super({
-            name: 'fail',
-            category: SubtagType.SIMPLE,
-            signatures: [],
-            hidden: true
-        });
-    }
+export class FailTestSubtag extends TestSubtagBase {
+    public name = 'fail';
 
-    public executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
+    public execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new RangeError(`Subtag ${subtag.source} was evaluated when it wasnt supposed to!`);
     }
 }
 
-export class LimitedTestSubtag extends Subtag {
+export class LimitedTestSubtag extends TestSubtagBase {
     readonly #counts = new WeakMap<BBTagContext, number>();
     readonly #limit: number;
+    public name = 'limit';
 
     public constructor(limit = 1) {
-        super({
-            name: 'limit',
-            category: SubtagType.SIMPLE,
-            hidden: true,
-            signatures: []
-        });
+        super();
         this.#limit = limit;
     }
 
-    protected executeCore(context: BBTagContext): never {
+    public execute(context: BBTagContext): never {
         const count = this.#counts.get(context) ?? 0;
         this.#counts.set(context, count + 1);
 
@@ -604,17 +307,9 @@ export class LimitedTestSubtag extends Subtag {
     }
 }
 
-export class EchoArgsSubtag extends Subtag {
-    public constructor() {
-        super({
-            name: 'echoargs',
-            category: SubtagType.SIMPLE,
-            hidden: true,
-            signatures: []
-        });
-    }
-
-    protected async * executeCore(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
+export class EchoArgsSubtag extends TestSubtagBase {
+    public name = 'echoargs';
+    public async * execute(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
         await Promise.resolve();
         yield '[';
         yield JSON.stringify(subtag.name.source);
@@ -626,61 +321,86 @@ export class EchoArgsSubtag extends Subtag {
     }
 }
 
-export class SubtagTestSuite<TestCase extends SubtagTestCase> {
-    readonly #config: TestSuiteConfig<TestCase> = { setup: [], assert: [], teardown: [], postSetup: [] };
-    readonly #testCases: TestCase[] = [];
-    readonly #subtag: Subtag;
+export class SubtagTestSuite {
+    readonly #config: TestSuiteConfig = { setup: [], assert: [], teardown: [] };
+    readonly #testCases: SubtagTestCase[] = [];
+    readonly #subtags: Subtag[];
+    readonly #names: Iterable<string>;
 
-    public constructor(subtag: Subtag) {
-        this.#subtag = subtag;
+    public constructor(subtags: Subtag[], names: Iterable<string>) {
+        this.#subtags = subtags;
+        this.#names = names;
     }
 
-    public setup(setup: TestSuiteConfig<TestCase>['setup'][number]): this {
+    public setup(setup: TestSuiteConfig['setup'][number]): this {
         this.#config.setup.push(setup);
         return this;
     }
 
-    public postSetup(setup: TestSuiteConfig<TestCase>['postSetup'][number]): this {
-        this.#config.postSetup.push(setup);
-        return this;
-    }
-
-    public assert(assert: TestSuiteConfig<TestCase>['assert'][number]): this {
+    public assert(assert: TestSuiteConfig['assert'][number]): this {
         this.#config.assert.push(assert);
         return this;
 
     }
 
-    public teardown(teardown: TestSuiteConfig<TestCase>['teardown'][number]): this {
+    public teardown(teardown: TestSuiteConfig['teardown'][number]): this {
         this.#config.teardown.push(teardown);
         return this;
     }
 
-    public addTestCase(...testCases: TestCase[]): this {
+    public addTestCase(...testCases: SubtagTestCase[]): this {
         return this.addTestCases(testCases);
     }
 
-    public addTestCases(testCases: Iterable<TestCase>): this {
+    public addTestCases(testCases: Iterable<SubtagTestCase>): this {
         for (const testCase of testCases)
             this.#testCases.push(testCase);
         return this;
     }
 
-    public run(otherTests?: () => void): void {
-        describe(`{${this.#subtag.name}}`, () => {
-            const subtag = this.#subtag;
+    public async run(stack: string, otherTests?: () => Promise<void>): Promise<void> {
+        const subtag = this.#subtags[0];
+        await describe(`{${subtag.name}}`, async () => {
             const config = this.#config;
+            await it(`Should have [${Iterator.from(this.#names).map(x => JSON.stringify(x)).toArray().join(',')}] as names`, () => {
+                try {
+                    const expectedNames = new Set(this.#names);
+                    assert(expectedNames.size > 0);
+                    const subtagNames = new Set(subtag.aliases);
+                    subtagNames.add(subtag.name);
+                    assert.deepEqual(subtagNames, expectedNames);
+                } catch (error) {
+                    if (error instanceof Error)
+                        error.stack += `\n${stack}`;
+                    throw error;
+                }
+            });
+
             for (const testCase of this.#testCases) {
-                const test = it(getTestName(testCase), function () {
-                    return runTestCase(this, subtag, testCase, config);
+                const retries = Math.max(testCase.retries ?? 0, 0);
+                const timeout = testCase.timeout === undefined ? undefined : (retries + 1) * testCase.timeout;
+                await it(getTestName(testCase), { skip: await shouldSkip(testCase), timeout }, async t => {
+                    for (let attempt = 0; attempt < retries; attempt++) {
+                        try {
+                            await runTestCase(this.#subtags, testCase, config, t);
+                            return;
+                        } catch {
+                            t.mock.reset();
+                            /* NO-OP */
+                        }
+                    }
+                    try {
+                        await runTestCase(this.#subtags, testCase, config, t);
+                    } catch (error) {
+                        if (error instanceof Error)
+                            error.stack += `\n${stack}`;
+                        throw error;
+                    }
                 });
-                if (testCase.retries !== undefined)
-                    test.retries(testCase.retries);
-                if (testCase.timeout !== undefined)
-                    test.timeout(testCase.timeout);
             }
 
-            otherTests?.();
+            if (otherTests !== undefined)
+                await otherTests();
         });
     }
 }
@@ -701,8 +421,8 @@ function getTestName(testCase: SubtagTestCase): string {
     if (typeof testCase.errors === 'object') {
         const [errorCount, markerCount] = testCase.errors.reduce((p, c) => c.error instanceof MarkerError ? [p[0], p[1] + 1] : [p[0] + 1, p[1]], [0, 0]);
         if (errorCount > 0 || markerCount > 0) {
-            const errorStr = errorCount === 0 ? undefined : `${errorCount} ${p(errorCount, 'error')}`;
-            const markerStr = markerCount === 0 ? undefined : `${markerCount} ${p(markerCount, 'marker')}`;
+            const errorStr = errorCount === 0 ? undefined : `${errorCount} ${errorCount === 1 ? 'error' : 'errors'}`;
+            const markerStr = markerCount === 0 ? undefined : `${markerCount} ${markerCount === 1 ? 'marker' : 'markers'}`;
             result += ` with ${[markerStr, errorStr].filter(x => x !== undefined).join(' and ')}`;
         }
     }
@@ -713,33 +433,28 @@ function getTestName(testCase: SubtagTestCase): string {
     return result;
 }
 
-async function runTestCase<TestCase extends SubtagTestCase>(context: Context, subtag: Subtag, testCase: TestCase, config: TestSuiteConfig<TestCase>): Promise<void> {
-    if (typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false)
-        context.skip();
+async function shouldSkip(testCase: SubtagTestCase): Promise<boolean> {
+    return typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false;
+}
 
-    const subtags = [subtag, new EvalSubtag(), new FailTestSubtag(), ...testCase.subtags ?? []];
+async function runTestCase<TestCase extends SubtagTestCase>(subtags: Subtag[], testCase: TestCase, config: TestSuiteConfig, testCtx: TestContext): Promise<void> {
+    subtags = [...subtags, new EvalSubtag(), new FailTestSubtag(), ...testCase.subtags ?? []];
     const test = new SubtagTestContext(testCase, subtags);
     const actualTestCase = Object.create(testCase, { 'timestamp': { value: moment() } });
 
     try {
         // arrange
-        for (const s of subtags)
-            test.limit.setup(m => m.check(argument.isInstanceof(BBTagContext).value, s.name), s === subtag).thenResolve(undefined);
-        for (const setup of config.setup)
-            await setup.call(actualTestCase, test);
-        await actualTestCase.setup?.(test);
         const code = bbtag.parse(testCase.code);
-        const context = test.createContext();
-        for (const postSetup of config.postSetup)
-            await postSetup.call(actualTestCase, context, test);
-        await actualTestCase.postSetup?.(context, test);
+        for (const setup of config.setup)
+            await setup(test, code, testCtx);
+        await actualTestCase.setup?.(test, code, testCtx);
+
+        test.ownedMessages.add(test.messageId);
 
         const expected = getExpectation(testCase);
 
         // act
-        test.timer.start(true);
-        const result = await runSafe(() => context.eval(code));
-        test.timer.end();
+        const result = await runSafe(() => test.bbtag.eval(code));
         if (!result.success) {
             if (actualTestCase.expectError === undefined)
                 throw result.error;
@@ -749,30 +464,34 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
             throw new Error('Expected an error to be thrown!');
         }
 
-        if (actualTestCase.setupSaveVariables !== false)
-            await context.variables.persist();
-
         // assert
         switch (typeof expected) {
             case 'string':
-                expect(result.value).to.equal(expected);
+                assert.equal(result.value, expected);
                 break;
             case 'object':
-                expect(result.value).to.match(expected);
+                assert.match(result.value, expected);
                 break;
         }
 
-        await actualTestCase.assert?.(context, result.value, test);
+        await actualTestCase.assert?.(test, result.value);
         for (const assert of config.assert)
-            await assert.call(actualTestCase, context, result.value, test);
+            await assert.call(actualTestCase, test, result.value);
 
         if (typeof testCase.errors === 'function') {
-            testCase.errors(context.errors);
+            testCase.errors(test.bbtag.errors);
         } else {
-            expect(context.errors.map(err => ({ error: err.error, start: err.subtag?.start, end: err.subtag?.end })))
-                .excludingEvery('stack')
-                .to.deep.equal(testCase.errors?.map(err => ({ error: err.error, start: sourceMarker(err.start), end: sourceMarker(err.end) })) ?? [],
-                    'Error details didnt match the expectation');
+            const errors = test.bbtag.errors.map(err => ({
+                error: noStack(err.error),
+                start: err.subtag?.start,
+                end: err.subtag?.end
+            }));
+            const expected = testCase.errors?.map(err => ({
+                error: noStack(err.error),
+                start: sourceMarker(err.start ?? 0, testCase.code),
+                end: sourceMarker(err.end ?? testCase.code.length, testCase.code)
+            })) ?? [];
+            assert.deepEqual(errors, expected);
         }
         test.verifyAll();
     } finally {
@@ -789,7 +508,30 @@ async function runSafe<T>(action: () => Awaitable<T>): Promise<{ success: true; 
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+function noStack(error: unknown): unknown {
+    if (!(error instanceof Error))
+        return error;
+
+    const result = Object.create(Reflect.getPrototypeOf(error)) as Error;
+    for (const property of Reflect.ownKeys(error)) {
+        const descriptor = Reflect.getOwnPropertyDescriptor(error, property);
+        if (descriptor === undefined)
+            continue;
+        if (property === 'stack')
+            descriptor.value = error.stack?.replaceAll(/(?<=\n)(?: {4}at [^\n]+(?:\n|$))+/gs, '<stack ignored>');
+        else if (property === 'cause')
+            descriptor.value = noStack(descriptor.value);
+        if ('get' in descriptor && 'value' in descriptor) {
+            descriptor.writable = 'set' in descriptor;
+            delete descriptor.get;
+            delete descriptor.set;
+        }
+        Reflect.defineProperty(result, property, descriptor);
+    }
+    return result;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 function getExpectation(testCase: SubtagTestCase): Exclude<SubtagTestCase['expected'], Function> {
     if (typeof testCase.expected === 'function')
         return testCase.expected();
@@ -799,7 +541,7 @@ function getExpectation(testCase: SubtagTestCase): Exclude<SubtagTestCase['expec
 export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: number, noEval: number[]): Generator<SubtagTestCase> {
     const noEvalLookup = new Set(noEval);
     for (let i = 0; i < minArgCount; i++) {
-        const codeParts = repeat(i, j => {
+        const codeParts = Array.from({ length: i }, (_, j) => {
             const start = 2 + subtagName.length + 7 * j;
             return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
         });
@@ -808,11 +550,11 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
             expected: '`Not enough arguments`',
             errors: [
                 ...codeParts.filter(p => !p[0]).map(p => p[1]),
-                { start: 0, end: 2 + subtagName.length + 7 * i, error: new NotEnoughArgumentsError(minArgCount, i) }
+                { error: new NotEnoughArgumentsError(minArgCount, i) }
             ]
         };
     }
-    const codeParts = repeat(minArgCount, j => {
+    const codeParts = Array.from({ length: minArgCount }, (_, j) => {
         const start = 2 + subtagName.length + 7 * j;
         return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
     });
@@ -821,7 +563,9 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
         code: `{${[subtagName, ...codeParts.map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
         expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
-            expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
+            const errorTypes = new Set(err.map(x => x.error.constructor));
+            assert(!errorTypes.has(NotEnoughArgumentsError));
+            assert(!errorTypes.has(TooManyArgumentsError));
         },
         expectError: {
             handle() { /* NOOP */ }
@@ -831,7 +575,7 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
 
 export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: number, noEval: number[]): Generator<SubtagTestCase> {
     const noEvalLookup = new Set(noEval);
-    const codeParts = repeat(maxArgCount + 1, j => {
+    const codeParts = Array.from({ length: maxArgCount + 1 }, (_, j) => {
         const start = 2 + subtagName.length + 7 * j;
         return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
     });
@@ -840,7 +584,9 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
         code: `{${[subtagName, ...codeParts.slice(0, maxArgCount).map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
         expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
-            expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
+            const errorTypes = new Set(err.map(x => x.error.constructor));
+            assert(!errorTypes.has(NotEnoughArgumentsError));
+            assert(!errorTypes.has(TooManyArgumentsError));
         },
         expectError: {
             handle() { /* NOOP */ }
@@ -851,78 +597,7 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
         expected: '`Too many arguments`',
         errors: [
             ...codeParts.filter(p => !p[0]).map(p => p[1]),
-            { start: 0, end: 9 + subtagName.length + 7 * maxArgCount, error: new TooManyArgumentsError(maxArgCount, maxArgCount + 1) }
+            { error: new TooManyArgumentsError(maxArgCount, maxArgCount + 1) }
         ]
     };
-}
-
-class MapByValue<Key, Value> implements Map<Key, Value> {
-    #inner: Map<unknown, Value>;
-
-    public readonly [Symbol.toStringTag] = '';
-    public get size(): number {
-        return this.#inner.size;
-    }
-
-    public constructor(args?: Iterable<[Key, Value]>) {
-        this.#inner = new Map();
-        if (args !== undefined)
-            for (const entry of args)
-                this.set(...entry);
-    }
-
-    #fromKey(key: Key): unknown {
-        switch (typeof key) {
-            case 'object': return key === null
-                ? null
-                : JSON.stringify(Object.entries(key).sort((a, b) => a[0] < b[0] ? 1 : -1).map(x => [x[0], this.#fromKey(x[1])]));
-            case 'string':
-                return JSON.stringify(key);
-            default:
-                return key;
-        }
-    }
-
-    #toKey(key: unknown): Key {
-        return typeof key === 'string'
-            ? JSON.parse(key) as Key
-            : key as Key;
-    }
-
-    public clear(): void {
-        this.#inner.clear();
-    }
-    public delete(key: Key): boolean {
-        return this.#inner.delete(this.#fromKey(key));
-    }
-    public forEach(callbackfn: (value: Value, key: Key, map: Map<Key, Value>) => void, thisArg?: unknown): void {
-        for (const entry of this)
-            callbackfn.call(thisArg, entry[1], entry[0], this);
-    }
-    public get(key: Key): Value | undefined {
-        return this.#inner.get(this.#fromKey(key));
-    }
-    public has(key: Key): boolean {
-        return this.#inner.has(this.#fromKey(key));
-    }
-    public set(key: Key, value: Value): this {
-        this.#inner.set(this.#fromKey(key), value);
-        return this;
-    }
-    public * entries(): IterableIterator<[Key, Value]> {
-        for (const entry of this.#inner)
-            yield [this.#toKey(entry[0]), entry[1]];
-    }
-    public * keys(): IterableIterator<Key> {
-        for (const key of this.#inner.keys())
-            yield this.#toKey(key);
-    }
-    public * values(): IterableIterator<Value> {
-        for (const value of this.#inner.values())
-            yield value;
-    }
-    public [Symbol.iterator](): IterableIterator<[Key, Value]> {
-        return this.entries();
-    }
-
 }

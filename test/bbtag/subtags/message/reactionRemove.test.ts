@@ -1,584 +1,508 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { ReactionRemoveSubtag } from '@blargbot/bbtag/subtags/message/reactionRemove';
-import { ApiError, Constants } from 'eris';
+import { BBTagRuntimeError, ChannelNotFoundError, DiscordPermissions, MessageNotFoundError } from '@blargbot/bbtag-engine';
+import type { CheckMessageExistsFeature, GetMemberPermissionsFeature, ListMessageReactionsFeature, RemoveMessageReactionUserFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, IsStaffSubtag, ReactionRemoveSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
+import Emote from '@blargbot/discord-emote';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { createSnowflake } from '../../snowflake.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new ReactionRemoveSubtag(),
+const features = new Mock<CheckMessageExistsFeature & GetMemberPermissionsFeature & ListMessageReactionsFeature & RemoveMessageReactionUserFeature>({ id: 'features' });
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+const isStaffSubtag = createMockSubtag(IsStaffSubtag);
+
+const sut = new ReactionRemoveSubtag(features.instance);
+await runSubtagTests({
+    subtag: sut,
     argCountBounds: { min: 1, max: Infinity },
+    names: ['reactionRemove', 'reactRemove', 'removeReact'],
+    otherSubtags: [
+        isStaffSubtag.instance,
+        channelIdSubtag.instance,
+        userIdSubtag.instance
+    ],
     setup(ctx) {
-        ctx.roles.bot.permissions = Constants.Permissions.manageMessages.toString();
-        ctx.isStaff = true;
+        ctx.adoptMock(features);
+        ctx.adoptMock(channelIdSubtag);
+        ctx.adoptMock(userIdSubtag);
+        ctx.adoptMock(isStaffSubtag);
     },
     cases: [
         {
             code: '{reactremove;2938453289453240}',
             expected: '',
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: bbctx.channel.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(message.channel.id, message.id, '🤔', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
-                ctx.discord.setup(m => m.removeMessageReaction(message.channel.id, message.id, 'notlikecat:280110565161041921', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
+            setup(ctx) {
+                const channelId = ctx.channelId;
+                const userId = ctx.userId;
+                const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
+                features.setup(m => m.listMessageReactions(channelId, '2938453289453240'))
+                    .resolves(emotes)
+                    .mustHappen(1);
+                for (const emote of emotes)
+                    features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
+                        .resolves({ success: true })
+                        .mustHappen(1);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(2).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240}',
             expected: '',
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: general.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, 'notlikecat:280110565161041921', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
+            setup(ctx) {
+                const channelId = createSnowflake();
+                const userId = ctx.userId;
+                const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
+                features.setup(m => m.listMessageReactions(channelId, '2938453289453240'))
+                    .resolves(emotes)
+                    .mustHappen(1);
+                for (const emote of emotes)
+                    features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
+                        .resolves({ success: true })
+                        .mustHappen(1);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(2).resolves(undefined);
             }
         },
         {
             code: '{reactremove;2938453289453240;other}',
             expected: '',
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: bbctx.channel.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '2938453289453240')).thenResolve([]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(bbctx.channel.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
-                ctx.discord.setup(m => m.removeMessageReaction(bbctx.channel.id, message.id, 'notlikecat:280110565161041921', otherUser.id)).verifiable(1).thenResolve(undefined);
+            setup(ctx) {
+                const channelId = ctx.channelId;
+                const userId = createSnowflake();
+                const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '2938453289453240', $({ noErrors: true, noLookup: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
+                features.setup(m => m.listMessageReactions(channelId, '2938453289453240'))
+                    .resolves(emotes)
+                    .mustHappen(1);
+                for (const emote of emotes)
+                    features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
+                        .resolves({ success: true })
+                        .mustHappen(1);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(2).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other}',
             expected: '',
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: general.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, 'notlikecat:280110565161041921', otherUser.id)).verifiable(1).thenResolve(undefined);
+            setup(ctx) {
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
+                const emotes = [new Emote('🤔'), new Emote('notlikecat', 280110565161041921n)];
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
+                features.setup(m => m.listMessageReactions(channelId, '2938453289453240'))
+                    .resolves(emotes)
+                    .mustHappen(1);
+                for (const emote of emotes)
+                    features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
+                        .resolves({ success: true })
+                        .mustHappen(1);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(2).resolves(undefined);
             }
         },
         {
             code: '{reactremove;2938453289453240;other;🤔}',
             expected: '',
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: bbctx.channel.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, '2938453289453240')).thenResolve([]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(bbctx.channel.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
+            setup(ctx) {
+                const channelId = ctx.channelId;
+                const userId = createSnowflake();
+                const emotes = [new Emote('🤔')];
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, '2938453289453240', $({ noErrors: true, noLookup: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
+                for (const emote of emotes)
+                    features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
+                        .resolves({ success: true })
+                        .mustHappen(1);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;🤔}',
             expected: '',
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: general.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('🤔')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '🤔')).thenResolve([]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', ctx.users.command.id)).verifiable(1).thenResolve(undefined);
+            setup(ctx) {
+                const channelId = createSnowflake();
+                const userId = ctx.userId;
+                const emotes = [new Emote('🤔')];
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '🤔', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
+                for (const emote of emotes)
+                    features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
+                        .resolves({ success: true })
+                        .mustHappen(1);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;🤔}',
             expected: '',
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: general.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
+            setup(ctx) {
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
+                const emotes = [new Emote('🤔')];
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
+                for (const emote of emotes)
+                    features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
+                        .resolves({ success: true })
+                        .mustHappen(1);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;abc}',
             expected: '`Invalid Emojis`',
             errors: [
-                { start: 0, end: 48, error: new BBTagRuntimeError('Invalid Emojis') }
+                { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
-            postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: general.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
+            setup(ctx) {
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;abc}',
             expected: '`No channel found`',
             errors: [
-                { start: 0, end: 48, error: new ChannelNotFoundError('027346489624927346') }
+                { error: new ChannelNotFoundError('general') }
             ],
             setup(ctx) {
-                ctx.channels.general.id = '027346489624927346';
-            },
-            postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;abc}',
             expected: '`I need to be able to Manage Messages to remove reactions`',
             errors: [
-                { start: 0, end: 48, error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions') }
+                { error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions') }
             ],
             setup(ctx) {
-                ctx.roles.bot.permissions = '0';
-            },
-            postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.NONE)
+                    .mustHappen(1);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;abc}',
             expected: '`No message found`',
             errors: [
-                { start: 0, end: 48, error: new MessageNotFoundError('2389476728423424378', '2938453289453240') }
+                { error: new MessageNotFoundError('2389476728423424378', '2938453289453240') }
             ],
             setup(ctx) {
-                ctx.channels.general.id = '2389476728423424378';
-            },
-            postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, '2938453289453240', true)).thenResolve(undefined);
+                const channelId = '2389476728423424378';
+                const userId = createSnowflake();
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(false)
+                    .mustHappen(1);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;abc}',
             expected: '`Author must be staff to modify unrelated messages`',
             errors: [
-                { start: 0, end: 48, error: new BBTagRuntimeError('Author must be staff to modify unrelated messages') }
+                { error: new BBTagRuntimeError('Author must be staff to modify unrelated messages') }
             ],
             setup(ctx) {
-                ctx.isStaff = false;
-            },
-            postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: general.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(false)
+                    .mustHappen(1);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;🤔}',
             expected: '',
             setup(ctx) {
-                ctx.isStaff = false;
-            },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                bbctx.data.ownedMsgs.push('2938453289453240');
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: general.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1).thenResolve(undefined);
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
+                const emotes = [new Emote('🤔')];
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
+                for (const emote of emotes)
+                    features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
+                        .resolves({ success: true })
+                        .mustHappen(1);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
+            }
+        },
+        {
+            code: '{reactremove;general;2938453289453240;other;🤔}',
+            expected: '',
+            setup(ctx) {
+                const channelId = createSnowflake();
+                const userId = ctx.userId;
+                const emotes = [new Emote('🤔')];
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
+                for (const emote of emotes)
+                    features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
+                        .resolves({ success: true })
+                        .mustHappen(1);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;abc}',
-            expected: '`No user found`',
+            expected: '`Invalid Emojis`',
             errors: [
-                { start: 0, end: 48, error: new UserNotFoundError('3298746234246796432') }
+                { error: new BBTagRuntimeError('Invalid Emojis') }
             ],
             setup(ctx) {
-                ctx.users.other.id = '3298746234246796432';
-            },
-            postSetup(bbctx, ctx) {
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: general.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
+                const channelId = createSnowflake();
+                const userId = ctx.userId;
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, userId, $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;<:fakeemote:192612896213677963>}',
             expected: '`Unknown Emoji: <:fakeemote:192612896213677963>`',
             errors: [
-                { start: 0, end: 76, error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
+                { error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: general.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, 'fakeemote:192612896213677963', otherUser.id)).verifiable(1)
-                    .thenReject(ctx.createRESTError(ApiError.UNKNOWN_EMOJI));
-
+            setup(ctx) {
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
+                const emotes = [new Emote('fakeemote', 192612896213677963n)];
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.MANAGE_MESSAGES)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(channelId, '2938453289453240'))
+                    .resolves(true)
+                    .mustHappen(1);
+                isStaffSubtag.setup(m => m.isStaff(ctx.bbtag, undefined))
+                    .resolves(true)
+                    .mustHappen(1);
+                for (const emote of emotes)
+                    features.setup((m, $) => m.removeMessageReactionUser(channelId, '2938453289453240', $(emote), userId))
+                        .resolves({ success: false })
+                        .mustHappen(1);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(1).resolves(undefined);
             }
         },
         {
             code: '{reactremove;general;2938453289453240;other;🤔}',
             expected: '`I need to be able to Manage Messages to remove reactions`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions') }
+                { error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                const general = bbctx.guild.channels.get(ctx.channels.general.id);
-                if (general === undefined)
-                    throw new Error('General channel is missing');
-                const otherUser = bbctx.guild.members.get(ctx.users.other.id);
-                if (otherUser === undefined)
-                    throw new Error('Other user is missing');
-
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938453289453240',
-                    channel_id: general.id,
-                    reactions: [
-                        {
-                            emoji: { id: null, name: '🤔' },
-                            count: 1,
-                            me: false
-                        },
-                        {
-                            emoji: { id: '280110565161041921', name: 'notlikecat' },
-                            count: 1,
-                            me: false
-                        }
-                    ]
-                }, ctx.users.other));
-
-                ctx.util.setup(m => m.findChannels(bbctx.guild, 'general')).thenResolve([general]);
-                ctx.util.setup(m => m.findChannels(bbctx.guild, general.id)).thenResolve([general]);
-                ctx.util.setup(m => m.getUser('other')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other')).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getUser(otherUser.id)).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, otherUser.id)).thenResolve([otherUser]);
-                ctx.util.setup(m => m.getMessage(general, message.id, true)).thenResolve(message);
-                ctx.discord.setup(m => m.removeMessageReaction(general.id, message.id, '🤔', otherUser.id)).verifiable(1)
-                    .thenReject(ctx.createRESTError(ApiError.MISSING_PERMISSIONS));
-
+            setup(ctx) {
+                const channelId = createSnowflake();
+                const userId = createSnowflake();
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'general', $({ noErrors: true, noLookup: true })))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                    .resolves(DiscordPermissions.NONE)
+                    .mustHappen(1);
             }
         }
     ]

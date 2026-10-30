@@ -1,10 +1,11 @@
-import { MinSubtag } from '@blargbot/bbtag/subtags/math/min';
+import { MinSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new MinSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['min'],
     cases: [
         { code: '{min;1;2;3;4;5}', expected: '1' },
         { code: '{min;5;4;3;2;1}', expected: '1' },

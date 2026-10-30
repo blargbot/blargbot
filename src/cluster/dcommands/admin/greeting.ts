@@ -1,11 +1,9 @@
-import { bbtag } from '@blargbot/bbtag';
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { CommandType, guard } from '@blargbot/cluster/utils';
-import { KnownChannel } from 'eris';
+import type { CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, guard, GuildCommand } from '@blargbot/cluster';
+import type * as eris from 'eris';
 
-import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult';
-import templates from '../../text';
+import { RawBBTagCommandResult } from '../../command/RawBBTagCommandResult.js';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.greeting;
 
@@ -104,7 +102,7 @@ export class GreetingCommand extends GuildCommand {
         return cmd.setAuthorizer.success;
     }
 
-    public async setChannel(context: GuildCommandContext, channel: KnownChannel): Promise<CommandResult> {
+    public async setChannel(context: GuildCommandContext, channel: eris.KnownChannel): Promise<CommandResult> {
         if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
             return cmd.setChannel.notOnGuild;
         if (!guard.isTextableChannel(channel))
@@ -120,7 +118,7 @@ export class GreetingCommand extends GuildCommand {
             case 'CHANNEL_MISSING': return cmd.debug.channelMissing;
             case 'CODE_MISSING': return cmd.errors.notSet;
             default:
-                await context.send(context.author, bbtag.createDebugOutput(result));
+                await context.send(context.author, result);
                 return cmd.debug.success;
         }
     }

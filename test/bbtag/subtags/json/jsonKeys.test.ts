@@ -1,12 +1,25 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
-import { JsonKeysSubtag } from '@blargbot/bbtag/subtags/json/jsonKeys';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { JsonKeysSubtag, JsonSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new JsonKeysSubtag(),
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
+await runSubtagTests({
+    subtag: new JsonKeysSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 1, max: 2 },
+    names: ['jsonKeys', 'jKeys'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{jsonkeys;{j;{"abc":1,"def":2,"ghi":3}}}',
@@ -42,7 +55,7 @@ runSubtagTests({
             expected: '`Cannot read property to of undefined`',
             subtags: [new JsonSubtag()],
             errors: [
-                { start: 0, end: 39, error: new BBTagRuntimeError('Cannot read property to of undefined') }
+                { error: new BBTagRuntimeError('Cannot read property to of undefined') }
             ]
         }
     ]

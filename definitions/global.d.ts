@@ -4,7 +4,7 @@ declare global {
     type Primitive = string | number | bigint | boolean | object | ((...args: never) => unknown) | symbol | undefined;
     type JToken = JObject | JArray | JValue | null;
     type JValue = string | number | boolean;
-    type JObject = { [P in string]: JToken; };
+    type JObject = { [P in string]?: JToken; };
     type JArray = JToken[];
     type JTokenType = keyof JTokenTypeMap;
     type JTokenTypeMap = {
@@ -54,13 +54,13 @@ declare global {
         : Result;
 
     interface ObjectConstructor {
-        keys<TKey extends string>(value: { [P in TKey]: unknown }): TKey[];
+        keys<TKey extends string | number>(value: { [P in TKey]: unknown }): `${TKey}`[];
         keys<TString extends string>(value: TString): Array<`${number}`>;
         keys<TArray extends unknown[]>(value: TArray): Array<`${number}`>;
         keys(value: number | boolean | bigint): [];
-        values<T>(value: Exclude<T, undefined | null>): T extends Array<infer R> ? R[] : T extends number | boolean | bigint ? [] : T extends string ? SplitString<T, ''> : Array<T[keyof T]>;
-        entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]: TValue; }): Array<[TKey & string, TValue]>;
-        entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]?: TValue; }): Array<[TKey & string, TValue | undefined]>;
+        values<T>(value: NonNullable<T>): T extends Array<infer R> ? R[] : T extends number | boolean | bigint ? [] : T extends string ? SplitString<T, ''> : Array<T[keyof T]>;
+        entries<TKey extends string | number, TValue>(value: { [P in TKey]: TValue; }): Array<[`${TKey}`, TValue]>;
+        entries<TKey extends string | number, TValue>(value: { [P in TKey]?: TValue; }): Array<[`${TKey}`, TValue | undefined]>;
         entries(value: object): Array<[string, unknown]>;
         create<T, U>(o: T, properties: { [P in keyof U]: TypedPropertyDescriptor<U[P]> }): T & U;
         create<T extends object>(value: T): T;
@@ -68,6 +68,8 @@ declare global {
 
         defineProperties<T, U>(o: T, properties: { [P in keyof U]: TypedPropertyDescriptor<U[P]> }): T & U;
         defineProperty<T, Key extends PropertyKey, U>(o: T, key: Key, attributes: TypedPropertyDescriptor<U>): T & { [P in Key]: U; };
+
+        hasOwn<Target extends object, const Key extends PropertyKey>(target: Target, key: Key): key is keyof Target;
     }
 
     interface Boolean {
@@ -88,14 +90,17 @@ declare global {
     }
 
     interface Set<T> {
-        has<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
+        has<R>(value: [R] extends [T] ? never : R): value is T & R;
+        has(value: unknown): boolean;
     }
 
     interface ReadonlySet<T> {
-        has<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
+        has<R>(value: [R] extends [T] ? never : R): value is T & R;
+        has(value: unknown): boolean;
     }
 
     type Awaitable<T> = T | PromiseLike<T>;
+    type AwaitableIterable<Yield, Return = unknown, Next = unknown> = Iterable<Yield, Return, Next> | AsyncIterable<Yield, Return, Next>;
     type ExcludeExact<T, U> = T extends U ? U extends T ? never : T : T;
 
     namespace NodeJS {
@@ -122,4 +127,7 @@ declare global {
     }
 
     function setTimeout<TArgs extends unknown[]>(callback: (...args: TArgs) => void, ms: number, ...args: TArgs): NodeJS.Timeout;
+    interface Buffer<T = ArrayBufferLike> {
+        readonly buffer: T
+    }
 }

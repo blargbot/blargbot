@@ -1,16 +1,19 @@
-import { ExecutionResult } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
-import { guard, sleep, snowflake } from '@blargbot/cluster/utils';
-import { GuildTriggerTag } from '@blargbot/domain/models';
-import { Guild, KnownGuildTextableChannel, Member } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import type { Cluster } from '@blargbot/cluster';
+import { guard, snowflake } from '@blargbot/core';
+import type { GuildTriggerTag } from '@blargbot/domain';
+import { sleep } from '@blargbot/util';
+import type eris from 'eris';
+import type moment from 'moment-timezone';
+
+import { CustomCommandLimit } from '../bbtagLimits/CustomCommandLimit.js';
+import type { ExecutionResult } from './BBTagManager.js';
 
 export class IntervalManager {
     readonly #cluster: Cluster;
 
     public constructor(
         cluster: Cluster,
-        public readonly timeLimit: Duration
+        public readonly timeLimit: moment.Duration
     ) {
         this.#cluster = cluster;
     }
@@ -20,7 +23,7 @@ export class IntervalManager {
 
         const intervals = (await this.#cluster.database.guilds.getIntervals())
             .map(i => ({ guild: this.#cluster.discord.guilds.get(i.guildId), interval: i.interval }))
-            .filter((i): i is { guild: Guild; interval: GuildTriggerTag; } => i.guild !== undefined);
+            .filter((i): i is { guild: eris.Guild; interval: GuildTriggerTag; } => i.guild !== undefined);
 
         this.#cluster.logger.info(`[${nonce}] Running intervals on ${intervals.length} guilds`);
 
@@ -53,9 +56,9 @@ export class IntervalManager {
         }
     }
 
-    public async invoke(guild: Guild): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
-    public async invoke(guild: Guild, interval: GuildTriggerTag): Promise<ExecutionResult | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
-    public async invoke(guild: Guild, interval?: GuildTriggerTag): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'> {
+    public async invoke(guild: eris.Guild): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
+    public async invoke(guild: eris.Guild, interval: GuildTriggerTag): Promise<ExecutionResult | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'>
+    public async invoke(guild: eris.Guild, interval?: GuildTriggerTag): Promise<ExecutionResult | 'NO_INTERVAL' | 'TOO_LONG' | 'FAILED' | 'MISSING_AUTHORIZER' | 'MISSING_CHANNEL'> {
         interval ??= await this.#cluster.database.guilds.getInterval(guild.id);
         if (interval === undefined)
             return 'NO_INTERVAL';
@@ -74,28 +77,27 @@ export class IntervalManager {
         ]);
     }
 
-    async #invoke(member: Member, channel: KnownGuildTextableChannel, interval: GuildTriggerTag): Promise<ExecutionResult | 'FAILED'> {
+    async #invoke(member: eris.Member, channel: eris.KnownGuildTextableChannel, interval: GuildTriggerTag): Promise<ExecutionResult | 'FAILED'> {
         try {
+            const start = performance.now();
             const result = await this.#cluster.bbtag.execute(interval.content, {
-                message: {
-                    channel: channel,
-                    author: member.user,
-                    member: member,
-                    createdAt: moment.now(),
-                    attachments: [],
-                    embeds: [],
-                    content: '',
-                    id: snowflake.create().toString()
-                },
-                limit: 'customCommandLimit',
-                inputRaw: '',
+                messageId: snowflake.create().toString(),
+                channelId: channel.id,
+                guildId: channel.guild.id,
+                userId: member.id,
+                tagName: '_interval',
+                input: '',
+                flagDefinitions: [],
+                silent: true,
                 isCC: true,
-                rootTagName: '_interval',
-                authorId: interval.author ?? undefined,
-                authorizerId: interval.authorizer ?? undefined,
-                silent: true
+                tagVars: false,
+                limit: new CustomCommandLimit(channel.guild.memberCount),
+                author: interval.author ?? undefined,
+                authorizer: interval.authorizer ?? interval.author ?? channel.guild.ownerID,
+                cooldown: 0,
+                prefix: undefined
             });
-            this.#cluster.logger.log('Interval on guild', member.guild.id, 'executed in', result.duration.total);
+            this.#cluster.logger.log('Interval on guild', member.guild.id, 'executed in', performance.now() - start, 'ms');
             return result;
         } catch (err: unknown) {
             this.#cluster.logger.error('Issue with interval:', member.guild, err);

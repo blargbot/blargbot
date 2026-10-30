@@ -1,12 +1,20 @@
-import { ChannelIsThreadSubtag } from '@blargbot/bbtag/subtags/channel/channelIsThread';
-import { Constants } from 'eris';
+import { ChannelType } from '@blargbot/bbtag-engine';
+import type { GetChannelTypeFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIsThreadSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-runSubtagTests({
-    subtag: new ChannelIsThreadSubtag(),
+const features = new Mock<GetChannelTypeFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new ChannelIsThreadSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
+    names: ['channelIsThread', 'isThread'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetChannelPropTestCases({
             quiet: '',
@@ -16,22 +24,25 @@ runSubtagTests({
             },
             cases: Object.entries({
                 ['GUILD_TEXT']: false,
+                ['DM']: false,
                 ['GUILD_VOICE']: false,
+                ['GROUP_DM']: false,
                 ['GUILD_CATEGORY']: false,
-                ['GUILD_NEWS']: false,
-                ['GUILD_STORE']: false,
-                ['GUILD_NEWS_THREAD']: true,
-                ['GUILD_PUBLIC_THREAD']: true,
-                ['GUILD_PRIVATE_THREAD']: true,
-                ['GUILD_STAGE_VOICE']: false
-            }).map(([key, success]) => ({
-                title: `Channel is a ${key} (${Constants.ChannelTypes[key]})`,
+                ['GUILD_ANNOUNCEMENT']: false,
+                ['ANNOUNCEMENT_THREAD']: true,
+                ['PRIVATE_THREAD']: true,
+                ['PUBLIC_THREAD']: true,
+                ['GUILD_STAGE_VOICE']: false,
+                ['GUILD_DIRECTORY']: false,
+                ['GUILD_FORUM']: false,
+                ['GUILD_MEDIA']: false
+            } satisfies Record<keyof typeof ChannelType, boolean>).map(([key, success]) => ({
+                title: `Channel is a ${key} (${ChannelType[key]})`,
                 expected: success.toString(),
-                setup(channel) {
-                    channel.type = Constants.ChannelTypes[key];
+                setup(channelId, ctx) {
+                    features.setup(m => m.getChannelType(ctx.guildId, channelId)).resolves(ChannelType[key]);
                 }
             }))
-
         })
     ]
 });

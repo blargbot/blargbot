@@ -1,11 +1,12 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { RoundUpSubtag } from '@blargbot/bbtag/subtags/math/roundUp';
+import { NotANumberError } from '@blargbot/bbtag-engine';
+import { RoundUpSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RoundUpSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['roundUp', 'ceil'],
     cases: [
         { code: '{roundup;5}', expected: '5' },
         { code: '{roundup;9.2}', expected: '10' },
@@ -16,7 +17,7 @@ runSubtagTests({
             code: '{roundup;abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 13, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         }
     ]

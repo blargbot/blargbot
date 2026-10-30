@@ -1,18 +1,19 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { RandomStringSubtag } from '@blargbot/bbtag/subtags/misc/randomString';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag-engine';
+import { RandomStringSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RandomStringSubtag(),
     argCountBounds: { min: 2, max: 2 },
+    names: ['randomString', 'randStr', 'randString'],
     cases: [
         { code: '{randstr;abcdefg;5}', expected: /^([a-g])(?!\1{4})[a-g]{4}$/, retries: 5 },
         { code: '{randstr;123abc456xyz;7}', expected: /^([abcxyz1-6])(?!\1{6})[abcxyz1-6]{6}$/, retries: 5 },
         {
             code: '{randstr;123abc456xyz;b}',
             expected: /^([abcxyz1-6])(?!\1{6})[abcxyz1-6]{6}$/,
-            setup(ctx) { ctx.rootScope.fallback = '7'; },
+            setup(ctx) { ctx.bbtag.root.fallback = '7'; },
             retries: 5
         },
         {
@@ -21,7 +22,7 @@ runSubtagTests({
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 16, end: 22, error: new MarkerError('eval', 16) },
-                { start: 0, end: 24, error: new NotANumberError('a') }
+                { error: new NotANumberError('a') }
             ]
         },
         {
@@ -30,17 +31,17 @@ runSubtagTests({
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 16, end: 22, error: new MarkerError('eval', 16) },
-                { start: 0, end: 24, error: new BBTagRuntimeError('Not enough characters') }
+                { error: new BBTagRuntimeError('Not enough characters') }
             ]
         },
         {
             code: '{randstr;{eval}123abc456xyz;{eval}a}',
             expected: 'b',
-            setup(ctx) { ctx.rootScope.fallback = 'b'; },
+            setup(ctx) { ctx.bbtag.root.fallback = 'b'; },
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 28, end: 34, error: new MarkerError('eval', 28) },
-                { start: 0, end: 36, error: new NotANumberError('a') }
+                { error: new NotANumberError('a') }
             ]
         }
     ]

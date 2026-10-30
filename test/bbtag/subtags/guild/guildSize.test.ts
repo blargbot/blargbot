@@ -1,24 +1,25 @@
-import { GuildSizeSubtag } from '@blargbot/bbtag/subtags/guild/guildSize';
-import { snowflake } from '@blargbot/core/utils';
-import { Member } from 'eris';
+import type { GetGuildMemberCountFeature } from '@blargbot/bbtag-engine/subtags';
+import { GuildSizeSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new GuildSizeSubtag(),
+const features = new Mock<GetGuildMemberCountFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new GuildSizeSubtag(features.instance),
     argCountBounds: { min: 0, max: 0 },
+    names: ['guildSize', 'inGuild'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         {
             code: '{guildsize}',
             expected: '123',
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.ensureMemberCache(bbctx.guild))
-                    .thenCall(() => {
-                        for (let i = bbctx.guild.members.size; i < 123; i++)
-                            bbctx.guild.members.add(new Member({ id: snowflake.create().toString() }));
-                    })
-                    .thenResolve(undefined);
-
+            setup(ctx) {
+                features.setup(m => m.getGuildMemberCount(ctx.guildId))
+                    .resolves(123);
             }
         }
     ]

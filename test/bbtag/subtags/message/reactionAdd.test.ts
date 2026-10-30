@@ -1,73 +1,116 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ReactionAddSubtag } from '@blargbot/bbtag/subtags/message/reactionAdd';
-import { Emote } from '@blargbot/core/Emote';
-import { argument } from '@blargbot/test-util/mock';
-import { expect } from 'chai';
-import { Constants } from 'eris';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag-engine';
+import type { AddReactionsFeature, CheckMessageExistsFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, ReactionAddSubtag } from '@blargbot/bbtag-engine/subtags';
+import Emote from '@blargbot/discord-emote';
+import { Mock } from '@blargbot/test-util';
+
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
 const unicodeEmote = Emote.parse('🤔');
 const guildEmote = Emote.parse('<:notlikecat:280110565161041921>');
+const features = new Mock<AddReactionsFeature & CheckMessageExistsFeature & GetMemberPermissionsFeature>({ id: 'features' });
+const channelIdSubtag = createMockSubtag(ChannelIdSubtag);
 
-runSubtagTests({
-    subtag: new ReactionAddSubtag(),
+await runSubtagTests({
+    subtag: new ReactionAddSubtag(features.instance),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['reactionAdd', 'addReact', 'reactAdd'],
     setup(ctx) {
-        ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
+        ctx.adoptMock(features);
+        ctx.adoptMock(channelIdSubtag);
     },
     cases: [
         {
             code: '{reactadd;🤔}',
             expected: '',
-            assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal(['🤔']);
+            subtags: [channelIdSubtag.instance],
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
+                    .resolves(DiscordPermissions.ADD_REACTIONS)
+                    .mustHappen(1);
+            },
+            assert(ctx) {
+                assert.deepEqual(ctx.bbtag.root.output.reactions, ['🤔']);
             }
         },
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getProp: (c, i) => features.setup(m => m.checkMessageExists(c, i)),
+            notExists: Promise.resolve(false),
+            emptyIsCurrentMessage: false,
+            queryOptions: () => ({ noLookup: true, noErrors: true }),
             generateCode(...args) {
                 return `{${['reactadd', ...args, '🤔'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '',
-                    postSetup(_, message, __, ctx) {
-                        ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote]))).thenResolve({ success: [unicodeEmote], failed: [] });
+                    setup(getProp, channelId, messageId, ctx) {
+                        getProp.resolves(true).mustHappen(1);
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                            .resolves(DiscordPermissions.ADD_REACTIONS)
+                            .mustHappen(1);
+                        features.setup((m, $) => m.addMessageReactions(channelId, messageId, $([unicodeEmote])))
+                            .resolves({ success: [unicodeEmote], failed: [] })
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: '`I dont have permission to Add Reactions`',
-                    setup(_, __, ctx) {
-                        ctx.roles.bot.permissions = '0';
-                    },
-                    error: new BBTagRuntimeError('I dont have permission to Add Reactions')
+                    error: new BBTagRuntimeError('I dont have permission to Add Reactions'),
+                    setup(getProp, channelId, _, ctx) {
+                        getProp.resolves(true).mustHappen(1);
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                            .resolves(DiscordPermissions.NONE)
+                            .mustHappen(1);
+                    }
                 }
             ]
         }),
         {
             code: '{reactadd;🤔<:notlikecat:280110565161041921>}',
             expected: '',
+            subtags: [channelIdSubtag.instance],
             setup(ctx) {
-                ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
+                    .resolves(DiscordPermissions.ADD_REACTIONS)
+                    .mustHappen(1);
             },
-            assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
+            assert(ctx) {
+                assert.deepEqual(ctx.bbtag.root.output.reactions, ['🤔', guildEmote.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getProp: (c, i) => features.setup(m => m.checkMessageExists(c, i)),
+            notExists: Promise.resolve(false),
+            emptyIsCurrentMessage: false,
+            queryOptions: () => ({ noLookup: true, noErrors: true }),
             generateCode(...args) {
                 return `{${['reactadd', ...args, '🤔<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '',
-                    postSetup(_, message, __, ctx) {
-                        ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote, guildEmote]))).thenResolve({ success: [unicodeEmote, guildEmote], failed: [] });
+                    setup(getProp, channelId, messageId, ctx) {
+                        getProp.resolves(true).mustHappen(1);
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                            .resolves(DiscordPermissions.ADD_REACTIONS)
+                            .mustHappen(1);
+                        features.setup((m, $) => m.addMessageReactions(channelId, messageId, $([unicodeEmote, guildEmote])))
+                            .resolves({ success: [unicodeEmote, guildEmote], failed: [] })
+                            .mustHappen(1);
                     }
                 }
             ]
@@ -75,24 +118,40 @@ runSubtagTests({
         {
             code: '{reactadd;🤔;<:notlikecat:280110565161041921>}',
             expected: '',
+            subtags: [channelIdSubtag.instance],
             setup(ctx) {
-                ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
+                    .resolves(DiscordPermissions.ADD_REACTIONS)
+                    .mustHappen(1);
             },
-            assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
+            assert(ctx) {
+                assert.deepEqual(ctx.bbtag.root.output.reactions, ['🤔', guildEmote.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
             includeNoArgs: false,
             quiet: false,
+            getProp: (c, i) => features.setup(m => m.checkMessageExists(c, i)),
+            notExists: Promise.resolve(false),
+            emptyIsCurrentMessage: false,
+            queryOptions: () => ({ noLookup: true, noErrors: true }),
             generateCode(...args) {
                 return `{${['reactadd', ...args, '🤔', '<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '',
-                    postSetup(_, message, __, ctx) {
-                        ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote, guildEmote]))).thenResolve({ success: [unicodeEmote, guildEmote], failed: [] });
+                    setup(getProp, channelId, messageId, ctx) {
+                        getProp.resolves(true).mustHappen(1);
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, channelId))
+                            .resolves(DiscordPermissions.ADD_REACTIONS)
+                            .mustHappen(1);
+                        features.setup((m, $) => m.addMessageReactions(channelId, messageId, $([unicodeEmote, guildEmote])))
+                            .resolves({ success: [unicodeEmote, guildEmote], failed: [] })
+                            .mustHappen(1);
                     }
                 }
             ]
@@ -100,32 +159,56 @@ runSubtagTests({
         {
             code: '{reactadd;abc;def;ghi}',
             expected: '`Invalid Emojis`',
+            subtags: [channelIdSubtag.instance],
             errors: [
-                { start: 0, end: 22, error: new BBTagRuntimeError('Invalid Emojis') }
-            ]
+                { error: new BBTagRuntimeError('Invalid Emojis') }
+            ],
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
+                    .resolves(DiscordPermissions.ADD_REACTIONS)
+                    .mustHappen(1);
+            }
         },
         {
             code: '{reactadd;abc;🤔;ghi}',
             expected: '',
-            assert(bbctx) {
-                expect(bbctx.data.reactions).to.deep.equal(['🤔']);
+            subtags: [channelIdSubtag.instance],
+            assert(ctx) {
+                assert.deepEqual(ctx.bbtag.root.output.reactions, ['🤔']);
+            },
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
+                    .resolves(DiscordPermissions.ADD_REACTIONS)
+                    .mustHappen(1);
             }
         },
         {
             code: '{reactadd;2938456469267324234;🤔}',
             expected: '`I cannot add \'🤔\' as reactions`',
-            postSetup(bbctx, ctx) {
-                const message = ctx.createMessage(SubtagTestContext.createApiMessage({
-                    id: '2938456469267324234',
-                    channel_id: bbctx.channel.id
-                }, ctx.users.command));
-
-                ctx.util.setup(m => m.getMessage(bbctx.channel, message.id, false)).thenResolve(message);
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([unicodeEmote]))).thenResolve({ success: [], failed: [unicodeEmote] });
-            },
+            subtags: [channelIdSubtag.instance],
             errors: [
-                { start: 0, end: 33, error: new BBTagRuntimeError('I cannot add \'🤔\' as reactions') }
-            ]
+                { error: new BBTagRuntimeError('I cannot add \'🤔\' as reactions') }
+            ],
+            setup(ctx) {
+                channelIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.channelId, $({ noErrors: true, noLookup: true })))
+                    .resolves(ctx.channelId)
+                    .mustHappen(1);
+                features.setup(m => m.checkMessageExists(ctx.channelId, '2938456469267324234'))
+                    .resolves(true)
+                    .mustHappen(1);
+                features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.botId, ctx.channelId))
+                    .resolves(DiscordPermissions.ADD_REACTIONS)
+                    .mustHappen(1);
+                features.setup((m, $) => m.addMessageReactions(ctx.channelId, '2938456469267324234', $([unicodeEmote])))
+                    .resolves({ success: [], failed: [unicodeEmote] })
+                    .mustHappen(1);
+            }
         }
     ]
 });

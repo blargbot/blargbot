@@ -1,20 +1,21 @@
-import { TagAuthorizerSubtag } from '@blargbot/bbtag/subtags/simple/tagAuthorizer';
+import { TagAuthorizerSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new TagAuthorizerSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['tagAuthorizer', 'ccAuthorizer', 'customCommandAuthorizer'],
     cases: [
         {
             code: '{tagauthorizer}',
             expected: '1234567',
-            setup(ctx) { ctx.options.authorId = '1234567'; }
+            setup(ctx) { ctx.authorizerId = '1234567'; }
         },
         {
             code: '{ccauthorizer}',
             expected: 'abcdefg',
-            setup(ctx) { ctx.options.authorId = 'abcdefg'; }
+            setup(ctx) { ctx.authorizerId = 'abcdefg'; }
         }
     ]
 });

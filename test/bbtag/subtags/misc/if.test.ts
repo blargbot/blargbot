@@ -1,15 +1,17 @@
-import { InvalidOperatorError, NotABooleanError } from '@blargbot/bbtag/errors';
-import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
+import { InvalidOperatorError, NotABooleanError } from '@blargbot/bbtag-engine';
+import { IfSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const isEqualTo = { '!=': false, '<': false, '<=': true, '==': true, '>': false, '>=': true } as const;
 const isGreaterThan = { '!=': true, '<': false, '<=': false, '==': false, '>': true, '>=': true } as const;
 const isLessThan = { '!=': true, '<': true, '<=': true, '==': false, '>': false, '>=': false } as const;
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new IfSubtag(),
     argCountBounds: { min: 2, max: { count: 5, noEval: [3, 4] } },
+    names: ['if'],
     cases: [
         /* {if;<bool>;<then>} */
         {
@@ -17,7 +19,7 @@ runSubtagTests({
             expected: '`Not a boolean`',
             errors: [
                 // <then> is not executed
-                { start: 0, end: 16, error: new NotABooleanError('aaaa') }
+                { error: new NotABooleanError('aaaa') }
             ]
         },
         {
@@ -39,7 +41,7 @@ runSubtagTests({
             errors: [
                 // <then> is not executed
                 // [else] is not executed
-                { start: 0, end: 23, error: new NotABooleanError('aaaa') }
+                { error: new NotABooleanError('aaaa') }
             ]
         },
         {
@@ -78,7 +80,7 @@ runSubtagTests({
                 { start: 11, end: 17, error: new MarkerError('eval', 11) }, // <operator> is executed
                 { start: 20, end: 26, error: new MarkerError('eval', 20) }, // <right> is executed
                 //                                                   <then> is not executed
-                { start: 0, end: 34, error: new InvalidOperatorError('op') }
+                { error: new InvalidOperatorError('op') }
             ]
         },
         /* {if;<left>;<operator>;<right>;<then>;[else]} */
@@ -118,7 +120,7 @@ runSubtagTests({
                 { start: 20, end: 26, error: new MarkerError('eval', 20) }, // <right> is executed
                 //                                                   <then> is not executed
                 //                                                   [else] is not executed
-                { start: 0, end: 41, error: new InvalidOperatorError('op') }
+                { error: new InvalidOperatorError('op') }
             ]
         }
     ]

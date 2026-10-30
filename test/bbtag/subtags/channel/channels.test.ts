@@ -1,12 +1,19 @@
-import { ChannelsSubtag } from '@blargbot/bbtag/subtags/channel/channels';
-import { ChannelType } from 'discord-api-types/v9';
+import type { ListChannelsFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelsSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-runSubtagTests({
-    subtag: new ChannelsSubtag(),
+const features = new Mock<ListChannelsFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new ChannelsSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
+    names: ['channels'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetChannelPropTestCases({
             quiet: '',
@@ -16,20 +23,15 @@ runSubtagTests({
             },
             cases: [
                 {
+                    expected: '[]',
+                    setup(channelId, ctx) {
+                        features.setup(m => m.listChannels(ctx.guildId, channelId)).resolves([]).mustHappen(1);
+                    }
+                },
+                {
                     expected: '["2398462398472","23098475928447"]',
-                    setup(channel, ctx) {
-                        channel.type = ChannelType.GuildCategory;
-
-                        ctx.channels.abc = SubtagTestContext.createApiChannel({
-                            id: '2398462398472',
-                            type: ChannelType.GuildText,
-                            parent_id: channel.id
-                        });
-                        ctx.channels.def = SubtagTestContext.createApiChannel({
-                            id: '23098475928447',
-                            type: ChannelType.GuildText,
-                            parent_id: channel.id
-                        });
+                    setup(channelId, ctx) {
+                        features.setup(m => m.listChannels(ctx.guildId, channelId)).resolves(['2398462398472', '23098475928447']).mustHappen(1);
                     }
                 }
             ]
@@ -38,9 +40,7 @@ runSubtagTests({
             code: '{channels}',
             expected: '["23489762384769837","342789565384956435"]',
             setup(ctx) {
-                ctx.channels.command.id = '23489762384769837';
-                ctx.channels.general.id = '342789565384956435';
-                ctx.message.channel_id = ctx.channels.command.id;
+                features.setup(m => m.listChannels(ctx.guildId)).resolves(['23489762384769837', '342789565384956435']).mustHappen(1);
             }
         }
     ]

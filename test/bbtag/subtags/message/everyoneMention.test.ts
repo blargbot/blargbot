@@ -1,31 +1,33 @@
-import { EveryoneMentionSubtag } from '@blargbot/bbtag/subtags/message/everyoneMention';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { EveryoneMentionSubtag } from '@blargbot/bbtag-engine/subtags';
 
-runSubtagTests({
+import { runSubtagTests } from '../SubtagTestSuite.js';
+
+await runSubtagTests({
     subtag: new EveryoneMentionSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['everyone', 'everyoneMention'],
     cases: [
         {
             code: '{everyonemention}',
             expected: '@everyone',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.true;
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, true);
             }
         },
         {
             code: '{everyonemention;true}',
             expected: '@everyone',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.true;
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, true);
             }
         },
         {
             code: '{everyonemention;false}',
             expected: '@everyone',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.false;
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, false);
             }
         }
     ]

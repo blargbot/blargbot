@@ -1,4 +1,4 @@
-import { EventEmitter } from 'eventemitter3';
+import EventEmitter from 'eventemitter3';
 
 interface MultiKeyMapEvents<TKey, TValue> {
     remove: [value: TValue];

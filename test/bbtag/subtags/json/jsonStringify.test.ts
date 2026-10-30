@@ -1,13 +1,25 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
-import { JsonStringifySubtag } from '@blargbot/bbtag/subtags/json/jsonStringify';
-import { TagVariableType } from '@blargbot/domain/models';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { NotANumberError } from '@blargbot/bbtag-engine';
+import { JsonStringifySubtag, JsonSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new JsonStringifySubtag(),
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
+await runSubtagTests({
+    subtag: new JsonStringifySubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 1, max: 2 },
+    names: ['jsonStringify', 'jStringify'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{jsonstringify;{j;{}}}',
@@ -44,19 +56,31 @@ runSubtagTests({
         },
         {
             code: '{jsonstringify;"abc"}',
-            expected: '{}'
+            expected: '{}',
+            setup() {
+                variables.setup(m => m.get('"abc"')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{jsonstringify;def}',
-            expected: '{}'
+            expected: '{}',
+            setup() {
+                variables.setup(m => m.get('def')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{jsonstringify;123}',
-            expected: '{}'
+            expected: '{}',
+            setup() {
+                variables.setup(m => m.get('123')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{jsonstringify;false}',
-            expected: '{}'
+            expected: '{}',
+            setup() {
+                variables.setup(m => m.get('false')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{jsonstringify;["a","b",1,2]}',
@@ -79,16 +103,15 @@ runSubtagTests({
         ]
     }
 }`,
-            setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'myVar' }, { abc: 123, def: { ghi: [1, 2, 3] } });
+            setup() {
+                variables.setup(m => m.get('myVar')).resolves({ key: 'foo', value: { abc: 123, def: { ghi: [1, 2, 3] } } }).mustHappen(1);
             }
         },
         {
             code: '{jsonstringify;true;abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 24, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         }
     ]

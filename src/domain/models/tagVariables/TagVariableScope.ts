@@ -1,4 +1,4 @@
-import { TagVariableType } from './TagVariableType';
+import type { TagVariableType } from './TagVariableType.js';
 
 export type TagVariableScope =
     | GuildCCVariableScope
@@ -7,6 +7,7 @@ export type TagVariableScope =
     | GlobalVariableScope
     | LocalCCVariableScope
     | LocalTagVariableScope
+    | TemporaryTagVariableScope
 
 export type TagVariableScopeFilter = {
     [T in TagVariableScope as T['type']]: ToTagVariableScopeFilter<T>;
@@ -44,4 +45,9 @@ export interface LocalCCVariableScope {
     readonly type: TagVariableType.LOCAL_CC;
     readonly guildId: string;
     readonly name: string;
+}
+
+export interface TemporaryTagVariableScope {
+    readonly type: TagVariableType.TEMP;
+    readonly id: string;
 }

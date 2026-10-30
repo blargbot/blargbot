@@ -1,13 +1,14 @@
-import { NotANumberError, NotEnoughArgumentsError } from '@blargbot/bbtag/errors';
-import { ArgsSubtag } from '@blargbot/bbtag/subtags/bot/args';
+import { NotANumberError, NotEnoughArgumentsError } from '@blargbot/bbtag-engine';
+import { ArgsSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ArgsSubtag(),
     argCountBounds: { min: 0, max: 2 },
+    names: ['args'],
     setup(ctx) {
-        ctx.options.inputRaw = 'arg1 arg2 "arg3 arg3" arg4 "arg5"';
+        ctx.input.array = ['arg1', 'arg2', 'arg3 arg3', 'arg4', 'arg5'];
     },
     cases: [
         {
@@ -18,14 +19,14 @@ runSubtagTests({
             code: '{args}',
             expected: '',
             setup(ctx) {
-                ctx.options.inputRaw = '';
+                ctx.input.array = [];
             }
         },
         {
             code: '{args}',
             expected: '{json;{\n "key": "value"\n}}',
             setup(ctx) {
-                ctx.options.inputRaw = '{json;{\n  "key": "value"\n}}';
+                ctx.input.array = ['{json;{\n', '"key":', '"value"\n}}'];
             }
         },
         {
@@ -40,21 +41,21 @@ runSubtagTests({
             code: '{args;7}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 8, error: new NotEnoughArgumentsError(8, 5) }
+                { error: new NotEnoughArgumentsError(8, 5) }
             ]
         },
         {
             code: '{args;-1}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 9, error: new NotEnoughArgumentsError(0, 5) }
+                { error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
             code: '{args;abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 10, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
@@ -93,42 +94,42 @@ runSubtagTests({
             code: '{args;6;7}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 10, error: new NotEnoughArgumentsError(7, 5) }
+                { error: new NotEnoughArgumentsError(7, 5) }
             ]
         },
         {
             code: '{args;7;6}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 10, error: new NotEnoughArgumentsError(7, 5) }
+                { error: new NotEnoughArgumentsError(7, 5) }
             ]
         },
         {
             code: '{args;-1;2}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(0, 5) }
+                { error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
             code: '{args;2;-1}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(0, 5) }
+                { error: new NotEnoughArgumentsError(0, 5) }
             ]
         },
         {
             code: '{args;abc;4}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 12, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{args;2;def}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 12, error: new NotANumberError('def') }
+                { error: new NotANumberError('def') }
             ]
         }
     ]

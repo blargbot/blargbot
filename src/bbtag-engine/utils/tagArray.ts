@@ -1,0 +1,92 @@
+import { Iterable } from '@blargbot/util';
+import z from 'zod';
+
+import type { BBTagArray } from '../types.js';
+import type { Variables } from '../Variables.js';
+import { convertToInteger } from './converters.js';
+import { zodStringToJson } from './zodStringToJson.js';
+
+export const tagArray = Object.freeze({
+    serialize(array: JArray | BBTagArray, varName?: string): string {
+        if (Array.isArray(array)) {
+            if (varName === undefined || varName.length === 0)
+                return JSON.stringify(array);
+            return JSON.stringify({ n: varName, v: array });
+        }
+
+        if (varName === undefined || varName.length === 0)
+            return JSON.stringify(array);
+        return JSON.stringify({
+            v: 'v' in array ? array.v : undefined,
+            n: varName
+        });
+    },
+    deserialize(value: string): BBTagArray | undefined {
+        let result = mapBBTagArrayOrJson.safeParse(value);
+        if (!result.success) {
+            value = value.replace(
+                /([[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
+                (_, ...[before, from, to, after]: string[]) => {
+                    const start = convertToInteger(from) ?? NaN;
+                    const end = convertToInteger(to) ?? NaN;
+                    return before + Iterable.range(start, end - start).take(200).toArray().join(',') + after;
+                }
+            );
+            result = mapBBTagArrayOrJson.safeParse(value);
+        }
+
+        if (!result.success)
+            return undefined;
+        if (Array.isArray(result.data))
+            return { v: result.data };
+        return result.data;
+    },
+    flattenArray(array: JArray): JArray {
+        const result = [];
+        for (const arg of array) {
+            const arr = typeof arg === 'string' ? this.deserialize(arg) : undefined;
+            if (arr !== undefined)
+                result.push(...arr.v);
+            else if (Array.isArray(arg))
+                result.push(...arg);
+            else
+                result.push(arg);
+        }
+        return result;
+    },
+    async deserializeOrGetArray(variables: Variables, value: string): Promise<BBTagArray | undefined> {
+        const obj = this.deserialize(value);
+        if (obj !== undefined)
+            return obj;
+
+        const arr = await variables.get(value);
+        if (Array.isArray(arr.value))
+            return { v: arr.value, n: value };
+
+        return undefined;
+    },
+    async deserializeOrGetIterable(variables: Variables, value: string): Promise<Iterable<JToken> | undefined> {
+        const obj = this.deserialize(value);
+        if (obj !== undefined)
+            return obj.v;
+
+        const arr = await variables.get(value);
+        if (Array.isArray(arr.value) || typeof arr.value === 'string')
+            return arr.value;
+
+        return undefined;
+    },
+    isTagArray(value: unknown): value is BBTagArray {
+        return mapBBTagArrayCore.safeParse(value).success;
+    }
+});
+
+const mapBBTagArrayCore = z.strictObject({
+    n: z.string().optional(),
+    v: z.json().array()
+});
+
+const mapBBTagArrayOrJson = zodStringToJson.pipe(z.union([
+    z.json().array(),
+    mapBBTagArrayCore
+]));

@@ -1,177 +1,168 @@
-import { UserActivityTypeSubtag } from '@blargbot/bbtag/subtags/user/userActivityType';
+import type { GetMemberActivityTypeFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserActivityTypeSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 import { ActivityType } from 'discord-api-types/v9';
-import moment from 'moment-timezone';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
-    subtag: new UserActivityTypeSubtag(),
+const features = new Mock<GetMemberActivityTypeFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new UserActivityTypeSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
+    names: ['userActivityType', 'userGameType'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetUserPropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['useractivitytype', ...args].join(';')}}`;
             },
             cases: [
                 {
                     expected: 'playing',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'My test game',
-                                type: ActivityType.Playing
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Playing)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'listening',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: ActivityType.Listening
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Listening)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'competing',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: ActivityType.Competing
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Competing)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'custom',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: ActivityType.Custom
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Custom)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'streaming',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: ActivityType.Streaming
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Streaming)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'watching',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: ActivityType.Watching
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Watching)
+                            .mustHappen(1);
                     }
                 },
                 {
-                    expected: ''
+                    title: 'Type is null',
+                    expected: '',
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(null)
+                            .mustHappen(1);
+                    }
+                },
+                {
+                    title: 'Type is undefined',
+                    expected: '',
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(undefined)
+                            .mustHappen(1);
+                    }
                 }
             ]
         }),
         ...createGetUserPropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['usergametype', ...args].join(';')}}`;
             },
             cases: [
                 {
                     expected: 'playing',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'My test game',
-                                type: ActivityType.Playing
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Playing)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'listening',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: ActivityType.Listening
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Listening)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'competing',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: ActivityType.Competing
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Competing)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'custom',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: ActivityType.Custom
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Custom)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'streaming',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: ActivityType.Streaming
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Streaming)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'watching',
-                    postSetup(member) {
-                        member.update({
-                            activities: [{
-                                created_at: moment().unix(),
-                                name: 'Some cool music',
-                                type: ActivityType.Watching
-                            }]
-                        });
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(ActivityType.Watching)
+                            .mustHappen(1);
                     }
                 },
                 {
-                    expected: ''
+                    title: 'Type is null',
+                    expected: '',
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(null)
+                            .mustHappen(1);
+                    }
+                },
+                {
+                    title: 'Type is undefined',
+                    expected: '',
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberActivityType(ctx.guildId, userId))
+                            .resolves(undefined)
+                            .mustHappen(1);
+                    }
                 }
             ]
         })

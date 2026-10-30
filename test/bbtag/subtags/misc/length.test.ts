@@ -1,12 +1,12 @@
-import { UnknownSubtagError } from '@blargbot/bbtag/errors';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { LengthSubtag } from '@blargbot/bbtag/subtags/misc/length';
+import { UnknownSubtagError } from '@blargbot/bbtag-engine';
+import { EscapeBBTagSubtag, LengthSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new LengthSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['length'],
     cases: [
         { code: '{length;}', expected: '0' },
         { code: '{length;abc}', expected: '3' },

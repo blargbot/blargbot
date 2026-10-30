@@ -1,4 +1,4 @@
-import { IFormattable } from '@blargbot/formatting';
+import type { IFormattable } from '@blargbot/formatting';
 
 export interface StoredGuildSettings {
     readonly actonlimitsonly?: boolean;

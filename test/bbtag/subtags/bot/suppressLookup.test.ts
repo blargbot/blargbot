@@ -1,43 +1,40 @@
-import { NotABooleanError } from '@blargbot/bbtag/errors';
-import { SuppressLookupSubtag } from '@blargbot/bbtag/subtags/bot/suppressLookup';
-import { expect } from 'chai';
+import { NotABooleanError } from '@blargbot/bbtag-engine';
+import { SuppressLookupSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SuppressLookupSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['suppressLookup'],
     cases: [
         {
             code: '{suppresslookup}',
             expected: '',
-            assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.true;
+            setup(ctx) {
+                ctx.root.setupSet(m => m.noLookupErrors = true).returns(true).mustHappen(1);
             }
         },
         {
             code: '{suppresslookup;true}',
             expected: '',
-            assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.true;
+            setup(ctx) {
+                ctx.root.setupSet(m => m.noLookupErrors = true).returns(true).mustHappen(1);
             }
         },
         {
             code: '{suppresslookup;false}',
             expected: '',
-            assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.false;
+            setup(ctx) {
+                ctx.root.setupSet(m => m.noLookupErrors = false).returns(true).mustHappen(1);
             }
         },
         {
             code: '{suppresslookup;abc}',
             expected: '`Not a boolean`',
             errors: [
-                { start: 0, end: 20, error: new NotABooleanError('abc') }
-            ],
-            assert(bbctx) {
-                expect(bbctx.scopes.root.noLookupErrors).to.be.undefined;
-            }
+                { error: new NotABooleanError('abc') }
+            ]
         }
     ]
 });

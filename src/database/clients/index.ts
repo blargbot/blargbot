@@ -1,2 +1,2 @@
-export * from './RethinkDb';
-export * from './PostgresDb';
+export * from './RethinkDb.js';
+export * from './PostgresDb.js';

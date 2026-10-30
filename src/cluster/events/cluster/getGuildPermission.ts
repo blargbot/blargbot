@@ -1,6 +1,5 @@
-import { Cluster } from '@blargbot/cluster';
-import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
-import { GuildPermissionDetails } from '@blargbot/cluster/types';
+import type { Cluster, GuildPermissionDetails } from '@blargbot/cluster';
+import { ClusterEventService } from '@blargbot/cluster';
 
 export class ClusterGetGuildPermssionHandler extends ClusterEventService<'getGuildPermission'> {
     public constructor(

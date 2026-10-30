@@ -1,13 +1,20 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ChannelCategorySubtag } from '@blargbot/bbtag/subtags/channel/channelCategory';
-import { APITextChannel } from 'discord-api-types/v9';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { GetChannelCategoryFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelCategorySubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-runSubtagTests({
-    subtag: new ChannelCategorySubtag(),
+const features = new Mock<GetChannelCategoryFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new ChannelCategorySubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
+    names: ['channelCategory', 'category'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetChannelPropTestCases({
             quiet: '',
@@ -18,18 +25,18 @@ runSubtagTests({
             cases: [
                 {
                     expected: '8237642839674943',
-                    setup(channel) {
-                        (channel as APITextChannel).parent_id = '8237642839674943';
+                    setup(channelId, ctx) {
+                        features.setup(m => m.getChannelCategory(ctx.guildId, channelId)).resolves('8237642839674943').mustHappen(1);
+                    }
+                },
+                {
+                    expected: '',
+                    error: new BBTagRuntimeError('Channel has no parent').withDisplay(''),
+                    setup(channelId, ctx) {
+                        features.setup(m => m.getChannelCategory(ctx.guildId, channelId)).resolves(undefined).mustHappen(1);
                     }
                 }
             ]
-        }),
-        {
-            code: '{channelcategory}',
-            expected: '',
-            errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Channel has no parent').withDisplay('') }
-            ]
-        }
+        })
     ]
 });

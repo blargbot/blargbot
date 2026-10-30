@@ -1,39 +1,41 @@
-import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { BBTagRuntimeState } from '@blargbot/bbtag-engine';
+import { ReturnSubtag } from '@blargbot/bbtag-engine/subtags';
 
-runSubtagTests({
+import { runSubtagTests } from '../SubtagTestSuite.js';
+
+await runSubtagTests({
     subtag: new ReturnSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['return'],
     cases: [
         {
             code: 'abc{return}def',
             expected: 'abc',
             assert(ctx) {
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                assert.equal(ctx.bbtag.state, BBTagRuntimeState.ABORT);
             }
         },
         {
             code: '{return;true}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                assert.equal(ctx.bbtag.state, BBTagRuntimeState.ABORT);
             }
         },
         {
             code: 'abc{return;false}def',
             expected: 'abc',
             assert(ctx) {
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.RETURN);
+                assert.equal(ctx.bbtag.state, BBTagRuntimeState.RETURN);
             }
         },
         {
             code: '{return;abc}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                assert.equal(ctx.bbtag.state, BBTagRuntimeState.ABORT);
             }
         }
     ]

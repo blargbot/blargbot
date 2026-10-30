@@ -1,8 +1,7 @@
-import { BaseApiImageGenerator } from '@blargbot/image/BaseApiImageGenerator';
-import { ImageWorker } from '@blargbot/image/ImageWorker';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
 
-export class PcCheckGenerator extends BaseApiImageGenerator<'pccheck'> {
-    public constructor(worker: ImageWorker) {
-        super('pccheck', worker);
-    }
+import type { GeneratorContext } from '../GeneratorContext.js';
+
+export async function pccheck(request: ImageRequestData<'pccheck'>, context: GeneratorContext): Promise<ImageResponse> {
+    return await context.renderApi('pccheck', { text: request.text });
 }

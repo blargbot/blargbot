@@ -1,29 +1,23 @@
-import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
-import { ImageWorker } from '@blargbot/image/ImageWorker';
-import { ClippyOptions, ImageResult } from '@blargbot/image/types';
+import type { ImageRequestData, ImageResponse } from '@blargbot/contracts';
+import { asBuffer } from '@blargbot/util';
 import sharp from 'sharp';
 
-export class ClippyGenerator extends BaseImageGenerator<'clippy'> {
-    public constructor(worker: ImageWorker) {
-        super('clippy', worker);
-    }
+import type { GeneratorContext } from '../GeneratorContext.js';
 
-    public async execute({ text }: ClippyOptions): Promise<ImageResult> {
-        const result = sharp(this.getLocalPath('clippy.png'))
-            .composite([{
-                input: await this.renderText(text, {
-                    font: 'arial.ttf',
-                    width: 290,
-                    height: 130,
-                    gravity: 'North'
-                }),
-                left: 28,
-                top: 36
-            }]);
+export async function clippy(request: ImageRequestData<'clippy'>, context: GeneratorContext): Promise<ImageResponse> {
+    const { data } = await sharp(context.getLocal('clippy.png').path)
+        .composite([{
+            input: asBuffer(await context.renderText(request.text, {
+                font: 'arial.ttf',
+                width: 290,
+                height: 130,
+                gravity: 'North'
+            })),
+            left: 28,
+            top: 36
+        }])
+        .png()
+        .toUint8Array();
 
-        return {
-            data: await result.png().toBuffer(),
-            fileName: 'clippy.png'
-        };
-    }
+    return { data, fileName: 'clippy.png' };
 }

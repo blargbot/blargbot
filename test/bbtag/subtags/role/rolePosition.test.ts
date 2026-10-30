@@ -1,28 +1,33 @@
-import { RolePositionSubtag } from '@blargbot/bbtag/subtags/role/rolePosition';
+import type { GetRolePositionFeature } from '@blargbot/bbtag-engine/subtags';
+import { RolePositionSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
-runSubtagTests({
-    subtag: new RolePositionSubtag(),
+const features = new Mock<GetRolePositionFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new RolePositionSubtag(features.instance),
     argCountBounds: { min: 1, max: 2 },
+    names: ['rolePosition', 'rolePos'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetRolePropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['rolepos', ...args].join(';')}}`;
             },
             cases: [
                 {
                     expected: '2837643',
-                    setup(role) {
-                        role.position = 2837643;
-                    }
-                },
-                {
-                    expected: '0',
-                    setup(role) {
-                        role.position = 0;
+                    setup(roleId, ctx) {
+                        features.setup(m => m.getRolePosition(ctx.guildId, roleId))
+                            .resolves(2837643)
+                            .mustHappen(1);
                     }
                 }
             ]

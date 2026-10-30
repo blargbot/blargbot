@@ -1,89 +1,124 @@
-import { UserNotFoundError } from '@blargbot/bbtag/errors';
-import { IsStaffSubtag } from '@blargbot/bbtag/subtags/user/isStaff';
-import { Member } from 'eris';
+import { UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { IsUserStaffFeature } from '@blargbot/bbtag-engine/subtags';
+import { IsStaffSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { createSnowflake } from '../../snowflake.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new IsStaffSubtag(),
+const features = new Mock<IsUserStaffFeature>({ id: 'features' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+
+await runSubtagTests({
+    subtag: new IsStaffSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
+    names: ['isMod', 'isStaff'],
+    otherSubtags: [userIdSubtag.instance],
+    setup(ctx) {
+        ctx.adoptMock(features);
+        ctx.adoptMock(userIdSubtag);
+    },
     cases: [
         {
             code: '{isstaff}',
             expected: 'true',
             setup(ctx) {
-                ctx.isStaff = true;
+                features.setup(m => m.isUserStaff(ctx.guildId, ctx.authorizerId))
+                    .resolves(true)
+                    .mustHappen(1);
+            }
+        },
+        {
+            code: '{isstaff},{isstaff},{isstaff}',
+            expected: 'true,true,true',
+            setup(ctx) {
+                features.setup(m => m.isUserStaff(ctx.guildId, ctx.authorizerId))
+                    .resolves(true)
+                    .mustHappen(1);
             }
         },
         {
             code: '{isstaff}',
             expected: 'false',
             setup(ctx) {
-                ctx.isStaff = false;
+                features.setup(m => m.isUserStaff(ctx.guildId, ctx.authorizerId))
+                    .resolves(false)
+                    .mustHappen(1);
             }
         },
         {
             code: '{isstaff;other user}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.isUserStaff(member.instance))
-                    .verifiable(1)
-                    .thenResolve(true);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.isUserStaff(ctx.guildId, userId))
+                    .resolves(true)
+                    .mustHappen(1);
+            }
+        },
+        {
+            code: '{isstaff;other user},{isstaff;other user},{isstaff;other user}',
+            expected: 'true,true,true',
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
+                    .resolves(userId)
+                    .mustHappen(3);
+                features.setup(m => m.isUserStaff(ctx.guildId, userId))
+                    .resolves(true)
+                    .mustHappen(1);
             }
         },
         {
             code: '{isstaff;other user}',
             expected: 'false',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.isUserStaff(member.instance))
-                    .verifiable(1)
-                    .thenResolve(false);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.isUserStaff(ctx.guildId, userId))
+                    .resolves(false)
+                    .mustHappen(1);
             }
         },
         {
             code: '{isstaff;other user}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 20, error: new UserNotFoundError('other user') }
-
+                { error: new UserNotFoundError('other user') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+            setup(ctx) {
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         },
         {
             code: '{isstaff;other user;}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 21, error: new UserNotFoundError('other user') }
-
+                { error: new UserNotFoundError('other user') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+            setup(ctx) {
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         },
         {
             code: '{isstaff;other user;q}',
             expected: '',
             errors: [
-                { start: 0, end: 22, error: new UserNotFoundError('other user').withDisplay('') }
+                { error: new UserNotFoundError('other user').withDisplay('') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([]);
+            setup(ctx) {
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         }
     ]

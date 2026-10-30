@@ -1,0 +1,87 @@
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { NotANumberError, NotEnoughArgumentsError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import { convertToInteger } from '../../utils/converters.js';
+import { SubtagType } from '../../utils/index.js';
+
+const tag = templates.subtags.args;
+
+export class ArgsSubtag extends CompiledSubtag {
+    public constructor() {
+        super({
+            name: 'args',
+            category: SubtagType.BOT,
+            definition: [
+                {
+                    parameters: [],
+                    description: tag.all.description,
+                    exampleCode: tag.all.exampleCode,
+                    exampleIn: tag.all.exampleIn,
+                    exampleOut: tag.all.exampleOut,
+                    returns: 'string',
+                    execute: (ctx) => this.getAllArgs(ctx)
+                },
+                {
+                    parameters: ['index'],
+                    description: tag.indexed.description,
+                    exampleCode: tag.indexed.exampleCode,
+                    exampleIn: tag.indexed.exampleIn,
+                    exampleOut: tag.indexed.exampleOut,
+                    returns: 'string',
+                    execute: (ctx, [index]) => this.getArg(ctx, index.value)
+                },
+                {
+                    parameters: ['start', 'end'],
+                    description: tag.range.description,
+                    exampleCode: tag.range.exampleCode,
+                    exampleIn: tag.range.exampleIn,
+                    exampleOut: tag.range.exampleOut,
+                    returns: 'string',
+                    execute: (ctx, [start, end]) => this.getArgs(ctx, start.value, end.value)
+                }
+            ]
+        });
+    }
+
+    public getAllArgs(context: BBTagContext): string {
+        return context.local.input.array.join(' ');
+    }
+
+    public getArg(context: BBTagContext, index: string): string {
+        const i = convertToInteger(index);
+        if (i === undefined)
+            throw new NotANumberError(index);
+
+        if (context.local.input.array.length <= i || i < 0)
+            throw new NotEnoughArgumentsError(i + 1, context.local.input.array.length);
+
+        return context.local.input.array[i];
+    }
+
+    public getArgs(
+        context: BBTagContext,
+        start: string,
+        end: string
+    ): string {
+        let from = convertToInteger(start);
+        if (from === undefined)
+            throw new NotANumberError(start);
+
+        let to = end.toLowerCase() === 'n'
+            ? context.local.input.array.length
+            : convertToInteger(end);
+
+        if (to === undefined)
+            throw new NotANumberError(end);
+
+        // TODO This behaviour should be documented
+        if (from > to)
+            from = [to, to = from][0];
+
+        if (context.local.input.array.length <= from || from < 0)
+            throw new NotEnoughArgumentsError(from + 1, context.local.input.array.length);
+
+        return context.local.input.array.slice(from, to).join(' ');
+    }
+}

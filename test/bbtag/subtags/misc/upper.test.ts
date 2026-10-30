@@ -1,10 +1,11 @@
-import { UpperSubtag } from '@blargbot/bbtag/subtags/misc/upper';
+import { UpperSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UpperSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['upper'],
     cases: [
         { code: '{upper;}', expected: '' },
         { code: '{upper;AbC}', expected: 'ABC' },

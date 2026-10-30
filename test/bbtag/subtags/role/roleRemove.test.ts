@@ -1,134 +1,284 @@
-import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { RoleRemoveSubtag } from '@blargbot/bbtag/subtags/role/roleRemove';
-import { argument } from '@blargbot/test-util/mock';
-import { Constants } from 'eris';
+import { BBTagRuntimeError, DiscordPermissions, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature, RemoveMemberRolesFeature } from '@blargbot/bbtag-engine/subtags';
+import { ReasonSubtag, RoleRemoveSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { createSnowflake } from '../../snowflake.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new RoleRemoveSubtag(),
+const features = new Mock<RemoveMemberRolesFeature & ListMemberRolesFeature & ListGuildRolesFeature & GetMemberPermissionsFeature>({ id: 'features' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
+
+await runSubtagTests({
+    subtag: new RoleRemoveSubtag(features.instance),
     argCountBounds: { min: 1, max: 3 },
+    names: ['roleRemove', 'removeRole'],
+    otherSubtags: [userIdSubtag.instance, reasonSubtag.instance],
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
+        ctx.adoptMock(features);
+        ctx.adoptMock(userIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         {
+            title: 'User has the role',
             code: '{roleremove;3298746326924}',
             expected: 'true',
             setup(ctx) {
-                ctx.roles.other.id = '3298746326924';
-                ctx.members.command.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.bot.id] }), 'Command User#0000'))
-                    .thenResolve();
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const userId = ctx.userId;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, userId)).resolves([guildId, ...roleIds]).mustHappen(1);
+                features.setup((m, $) => m.removeMemberRoles($({
+                    guildId,
+                    targetId: userId,
+                    roleIds: roleIds,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true }).mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
+                    .resolves(ctx.userId)
+                    .mustHappen(1);
             }
         },
         {
+            title: 'User is missing the role',
             code: '{roleremove;3298746326924}',
             expected: 'false',
             setup(ctx) {
-                ctx.roles.other.id = '3298746326924';
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const userId = ctx.userId;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, userId)).resolves([guildId]).mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
+                    .resolves(ctx.userId)
+                    .mustHappen(1);
             }
         },
         {
             code: '{roleremove;["3298746326924","9238476938485"]}',
             expected: 'true',
             setup(ctx) {
-                ctx.roles.other.id = '3298746326924';
-                ctx.roles.bot.id = '9238476938485';
-                ctx.members.command.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id] }), 'Command User#0000'))
-                    .thenResolve();
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924', '9238476938485'];
+                const adminId = createSnowflake();
+                const userId = ctx.userId;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, userId)).resolves([guildId, ...roleIds]).mustHappen(1);
+                features.setup((m, $) => m.removeMemberRoles($({
+                    guildId,
+                    targetId: userId,
+                    roleIds: roleIds,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true }).mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
+                    .resolves(ctx.userId)
+                    .mustHappen(1);
             }
         },
         {
             code: '{roleremove;["3298746326924",null]}',
             expected: 'true',
             setup(ctx) {
-                ctx.roles.other.id = '3298746326924';
-                ctx.roles.bot.id = '9238476938485';
-                ctx.members.command.roles.push(ctx.roles.other.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ roles: [ctx.roles.command.id, ctx.roles.bot.id] }), 'Command User#0000'))
-                    .thenResolve();
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const userId = ctx.userId;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, userId)).resolves([guildId, ...roleIds]).mustHappen(1);
+                features.setup((m, $) => m.removeMemberRoles($({
+                    guildId,
+                    targetId: userId,
+                    roleIds: roleIds,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true }).mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
+                    .resolves(ctx.userId)
+                    .mustHappen(1);
             }
         },
         {
             code: '{roleremove;3298746326924}',
             expected: '`Author cannot remove roles`',
             errors: [
-                { start: 0, end: 26, error: new BBTagRuntimeError('Author cannot remove roles') }
+                { error: new BBTagRuntimeError('Author cannot remove roles') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = '0';
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924', '9238476938485'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.NONE).mustHappen(1);
             }
         },
         {
             code: '{roleremove;3298746326924}',
             expected: '`Role above author`',
             errors: [
-                { start: 0, end: 26, error: new BBTagRuntimeError('Role above author') }
+                { error: new BBTagRuntimeError('Role above author') }
             ],
             setup(ctx) {
-                ctx.roles.top.id = '3298746326924';
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, ...roleIds]).mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
+                    .resolves(ctx.userId)
+                    .mustHappen(1);
             }
         },
         {
             code: '{roleremove;3298746326924}',
             expected: '`No role found`',
             errors: [
-                { start: 0, end: 26, error: new RoleNotFoundError('3298746326924') }
-            ]
+                { error: new RoleNotFoundError('3298746326924') }
+            ],
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, ctx.userId, $({ noLookup: false })))
+                    .resolves(ctx.userId)
+                    .mustHappen(1);
+            }
         },
         {
             code: '{roleremove;3298746326924;other user}',
             expected: 'true',
             setup(ctx) {
-                ctx.roles.bot.id = '3298746326924';
-                ctx.members.other.roles.push(ctx.roles.authorizer.id, ctx.roles.bot.id);
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.other.id, argument.isDeepEqual({ roles: [ctx.roles.other.id, ctx.roles.authorizer.id] }), 'Command User#0000'))
-                    .thenResolve();
-            },
-            postSetup(bbctx, ctx) {
-                const member = bbctx.guild.members.get(ctx.users.other.id);
-                if (member === undefined)
-                    throw new Error('Unable to find member under test');
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([member]);
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const userId = `otherUser<${createSnowflake()}>`;
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, userId)).resolves([guildId, ...roleIds]).mustHappen(1);
+                features.setup((m, $) => m.removeMemberRoles($({
+                    guildId,
+                    targetId: userId,
+                    roleIds: roleIds,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true }).mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
+                    .resolves(userId)
+                    .mustHappen(1);
             }
         },
         {
             code: '{roleremove;3298746326924;other user}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 37, error: new UserNotFoundError('other user') }
+                { error: new UserNotFoundError('other user') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([]);
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: false })))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         },
         {
             code: '{roleremove;3298746326924;other user}',
             expected: 'false',
             errors: [
-                { start: 0, end: 37, error: new UserNotFoundError('other user').withDisplay('false') }
+                { error: new UserNotFoundError('other user').withDisplay('false') }
             ],
             setup(ctx) {
-                ctx.rootScope.quiet = true;
-            },
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([]);
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                ctx.bbtag.root.quiet = true;
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         },
         {
             code: '{roleremove;3298746326924;other user;q}',
             expected: 'false',
             errors: [
-                { start: 0, end: 39, error: new UserNotFoundError('other user').withDisplay('false') }
+                { error: new UserNotFoundError('other user').withDisplay('false') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .thenResolve([]);
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         }
     ]

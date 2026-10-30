@@ -1,363 +1,376 @@
-import { BBTagRuntimeError, SubtagStackOverflowError } from '@blargbot/bbtag/errors';
-import { ExecTagSubtag } from '@blargbot/bbtag/subtags/bot/execTag';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { BBTagRuntimeError, BBTagRuntimeState, SubtagStackOverflowError } from '@blargbot/bbtag-engine';
+import type { GetTagFeature, ParseInputFeature, TagCooldownFeature } from '@blargbot/bbtag-engine/subtags';
+import { ExecTagSubtag, JsonSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-runSubtagTests({
-    subtag: new ExecTagSubtag(),
+import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
+
+const features = new Mock<GetTagFeature & TagCooldownFeature & ParseInputFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new ExecTagSubtag(features.instance),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['execTag', 'exec'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         {
             code: '{exec;otherSubtag}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('');
-                expect(ctx.input).to.deep.equal([]);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(101);
-                ctx.data.embeds = [{ title: 'abc' }];
+                assert.equal(ctx.local.tagName, 'otherSubtag');
+                assert.equal(ctx.root.tagName, 'test tag');
+                assert.deepEqual(ctx.local.input.array, []);
+                assert.notEqual(ctx.local, ctx.root);
+                assert.equal(ctx.root.recursion.depth, 101);
+                ctx.root.output.embeds = [{ title: 'abc' }];
                 return 'Success!';
             })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.options.cooldown = 4;
-                ctx.options.tagName = 'test tag';
-                ctx.options.rootTagName = 'test tag';
-                ctx.options.inputRaw = 'This is some input text';
-                ctx.options.data = { stackSize: 100 };
-                ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
+                ctx.tagName = 'test tag';
+                ctx.bbtag.root.recursion.depth = 100;
+                ctx.input.array = ['This', 'is', 'some', 'input', 'text'];
+                const otherSubtag = {
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
+                features.setup(m => m.getTag('otherSubtag')).resolves(otherSubtag).mustHappen(1);
+                features.setup((m, $) => m.assertTagCooldown($({
+                    guildId: ctx.guildId,
+                    userId: ctx.userId,
+                    tagName: 'otherSubtag',
+                    cooldownMs: 7,
+                    isCC: ctx.isCC
+                }))).resolves().mustHappen(1);
+                features.setup(m => m.parseInput(ctx.bbtag, '')).returns({
+                    array: [],
+                    flags: { _: '' }
+                }).mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(100);
-                expect(ctx.data.embeds).to.deep.equal([{ title: 'abc' }]);
+                assert.equal(ctx.bbtag.local.tagName, 'test tag');
+                assert.equal(ctx.bbtag.root.tagName, 'test tag');
+                assert.deepEqual(ctx.bbtag.local.input.array, ['This', 'is', 'some', 'input', 'text']);
+                assert.equal(ctx.bbtag.local, ctx.bbtag.root);
+                assert.equal(ctx.bbtag.root.recursion.depth, 100);
             }
         },
         {
             code: '{exec;otherSubtag;}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(0);
-                expect(ctx.inputRaw).to.equal('');
-                expect(ctx.input).to.deep.equal([]);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(101);
+                assert.equal(ctx.local.tagName, 'otherSubtag');
+                assert.equal(ctx.root.tagName, 'test tag');
+                assert.deepEqual(ctx.local.input.array, []);
+                assert.equal(ctx.root.recursion.depth, 101);
+                assert.notEqual(ctx.local, ctx.root);
                 return 'Success!';
             })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.options.cooldown = 4;
-                ctx.options.tagName = 'test tag';
-                ctx.options.rootTagName = 'test tag';
-                ctx.options.inputRaw = 'This is some input text';
-                ctx.options.data = { stackSize: 100 };
-                ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
-                    content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0
+                ctx.tagName = 'test tag';
+                ctx.bbtag.root.recursion.depth = 100;
+                ctx.input.array = ['This', 'is', 'some', 'input', 'text'];
+                const otherSubtag = {
+                    content: '{assert}{eval}'
                 };
+                features.setup(m => m.getTag('otherSubtag')).resolves(otherSubtag).mustHappen(1);
+                features.setup((m, $) => m.assertTagCooldown($({
+                    guildId: ctx.guildId,
+                    userId: ctx.userId,
+                    tagName: 'otherSubtag',
+                    cooldownMs: 0,
+                    isCC: ctx.isCC
+                }))).resolves().mustHappen(1);
+                features.setup(m => m.parseInput(ctx.bbtag, '')).returns({
+                    array: [],
+                    flags: { _: '' }
+                }).mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(100);
+                assert.equal(ctx.bbtag.local.tagName, 'test tag');
+                assert.equal(ctx.bbtag.root.tagName, 'test tag');
+                assert.deepEqual(ctx.bbtag.local.input.array, ['This', 'is', 'some', 'input', 'text']);
+                assert.equal(ctx.bbtag.root.recursion.depth, 100);
+                assert.equal(ctx.bbtag.local, ctx.bbtag.root);
             }
         },
         {
             code: '{exec;otherSubtag;abc;\\"def\\";ghi}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('abc \\\\\\"def\\\\\\" ghi');
-                expect(ctx.input).to.deep.equal(['abc', '\\"def\\"', 'ghi']);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(101);
+                assert.equal(ctx.local.tagName, 'otherSubtag');
+                assert.equal(ctx.root.tagName, 'test tag');
+                assert.deepEqual(ctx.local.input.array, ['abc', '\\"def\\"', 'ghi']);
+                assert.equal(ctx.root.recursion.depth, 101);
+                assert.notEqual(ctx.local, ctx.root);
                 return 'Success!';
             })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.options.cooldown = 4;
-                ctx.options.tagName = 'test tag';
-                ctx.options.rootTagName = 'test tag';
-                ctx.options.inputRaw = 'This is some input text';
-                ctx.options.data = { stackSize: 100 };
-                ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
+                ctx.tagName = 'test tag';
+                ctx.bbtag.root.recursion.depth = 100;
+                ctx.input.array = ['This', 'is', 'some', 'input', 'text'];
+                const otherSubtag = {
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
+                features.setup(m => m.getTag('otherSubtag')).resolves(otherSubtag).mustHappen(1);
+                features.setup((m, $) => m.assertTagCooldown($({
+                    guildId: ctx.guildId,
+                    userId: ctx.userId,
+                    tagName: 'otherSubtag',
+                    cooldownMs: 7,
+                    isCC: ctx.isCC
+                }))).resolves().mustHappen(1);
+                features.setup((m, $) => m.parseInput(ctx.bbtag, $(['abc', '\\"def\\"', 'ghi']))).returns({
+                    array: ['abc', '\\"def\\"', 'ghi'],
+                    flags: { _: '' }
+                }).mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(100);
+                assert.equal(ctx.bbtag.local.tagName, 'test tag');
+                assert.equal(ctx.bbtag.root.tagName, 'test tag');
+                assert.deepEqual(ctx.bbtag.local.input.array, ['This', 'is', 'some', 'input', 'text']);
+                assert.equal(ctx.bbtag.root.recursion.depth, 100);
+                assert.equal(ctx.bbtag.local, ctx.bbtag.root);
             }
         },
         {
             code: '{exec;otherSubtag;abc;{j;{"def":123}}}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('abc {\\"def\\":123}');
-                expect(ctx.input).to.deep.equal(['abc', '{"def":123}']);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(101);
+                assert.equal(ctx.local.tagName, 'otherSubtag');
+                assert.equal(ctx.root.tagName, 'test tag');
+                assert.deepEqual(ctx.local.input.array, ['abc', '{"def":123}']);
+                assert.notEqual(ctx.local, ctx.root);
+                assert.equal(ctx.root.recursion.depth, 101);
                 return 'Success!';
             }), new JsonSubtag()],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.options.cooldown = 4;
-                ctx.options.tagName = 'test tag';
-                ctx.options.rootTagName = 'test tag';
-                ctx.options.inputRaw = 'This is some input text';
-                ctx.options.data = { stackSize: 100 };
-                ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
+                ctx.tagName = 'test tag';
+                ctx.bbtag.root.recursion.depth = 100;
+                ctx.input.array = ['This', 'is', 'some', 'input', 'text'];
+                const otherSubtag = {
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
+                features.setup(m => m.getTag('otherSubtag')).resolves(otherSubtag).mustHappen(1);
+                features.setup((m, $) => m.assertTagCooldown($({
+                    guildId: ctx.guildId,
+                    userId: ctx.userId,
+                    tagName: 'otherSubtag',
+                    cooldownMs: 7,
+                    isCC: ctx.isCC
+                }))).resolves().mustHappen(1);
+                features.setup((m, $) => m.parseInput(ctx.bbtag, $(['abc', '{"def":123}']))).returns({
+                    array: ['abc', '{"def":123}'],
+                    flags: { _: '' }
+                }).mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
-                expect(ctx.data.stackSize).to.equal(100);
+                assert.equal(ctx.bbtag.local.tagName, 'test tag');
+                assert.equal(ctx.bbtag.root.tagName, 'test tag');
+                assert.deepEqual(ctx.bbtag.local.input.array, ['This', 'is', 'some', 'input', 'text']);
+                assert.equal(ctx.bbtag.root.recursion.depth, 100);
+                assert.equal(ctx.bbtag.local, ctx.bbtag.root);
             }
         },
         {
             code: '{exec;abc}',
             expected: '`Tag not found: abc`',
             errors: [
-                { start: 0, end: 10, error: new BBTagRuntimeError('Tag not found: abc') }
-            ]
+                { error: new BBTagRuntimeError('Tag not found: abc') }
+            ],
+            setup() {
+                features.setup(m => m.getTag('abc')).resolves(undefined).mustHappen(1);
+            }
         },
         {
             code: '{exec;otherSubtag}',
             expected: '`Terminated recursive tag after 200 execs.`',
             errors: [
-                { start: 0, end: 18, error: new SubtagStackOverflowError(200) }
+                { error: new SubtagStackOverflowError(200) }
             ],
             setup(ctx) {
-                ctx.options.data = { stackSize: 200 };
-                ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
+                ctx.bbtag.root.recursion.depth = 200;
+                const otherSubtag = {
                     content: '{fail}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
+                features.setup(m => m.getTag('otherSubtag')).resolves(otherSubtag).mustHappen(1);
+                features.setup((m, $) => m.assertTagCooldown($({
+                    guildId: ctx.guildId,
+                    userId: ctx.userId,
+                    tagName: 'otherSubtag',
+                    cooldownMs: 7,
+                    isCC: ctx.isCC
+                }))).resolves().mustHappen(1);
+                features.setup(m => m.parseInput(ctx.bbtag, '')).returns({
+                    array: [],
+                    flags: { _: '' }
+                }).mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.data.stackSize).to.equal(200);
-                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+                assert.equal(ctx.bbtag.root.recursion.depth, 200);
+                assert.equal(ctx.bbtag.state, BBTagRuntimeState.ABORT);
             }
         },
         {
             code: '{exec;otherSubtag;arg1;arg2;-f flag value}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('arg1 arg2 "-f flag value"');
-                expect(ctx.input).to.deep.equal(['arg1', 'arg2', '-f flag value']);
-                expect(ctx.flaggedInput.f?.merge().raw).to.equal('flag value');
-                expect(ctx.flaggedInput._.merge().raw).to.equal('arg1 arg2');
-                expect(ctx.data.stackSize).to.equal(101);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
+                assert.equal(ctx.local.tagName, 'otherSubtag');
+                assert.equal(ctx.root.tagName, 'test tag');
+                assert.deepEqual(ctx.local.input.array, ['arg1', 'arg2', '-f flag value']);
+                assert.equal(ctx.local.input.flags.f, 'flag value');
+                assert.equal(ctx.local.input.flags._, 'arg1 arg2');
+                assert.equal(ctx.root.recursion.depth, 101);
+                assert.notEqual(ctx.local, ctx.root);
                 return 'Success!';
             })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.options.cooldown = 4;
-                ctx.options.tagName = 'test tag';
-                ctx.options.rootTagName = 'test tag';
-                ctx.options.inputRaw = 'This is some input text';
-                ctx.options.data = { stackSize: 100 };
-                ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
+                ctx.tagName = 'test tag';
+                ctx.bbtag.root.recursion.depth = 100;
+                ctx.input.array = ['This', 'is', 'some', 'input', 'text'];
+                ctx.input.flags = { _: 'This is some input text' };
+                const otherSubtag = {
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
+                features.setup(m => m.getTag('otherSubtag')).resolves(otherSubtag).mustHappen(1);
+                features.setup((m, $) => m.assertTagCooldown($({
+                    guildId: ctx.guildId,
+                    userId: ctx.userId,
+                    tagName: 'otherSubtag',
+                    cooldownMs: 7,
+                    isCC: ctx.isCC
+                }))).resolves().mustHappen(1);
+                features.setup((m, $) => m.parseInput(ctx.bbtag, $(['arg1', 'arg2', '-f flag value']))).returns({
+                    array: ['arg1', 'arg2', '-f flag value'],
+                    flags: { _: 'arg1 arg2', f: 'flag value' }
+                }).mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.flaggedInput.f?.merge().raw).to.be.undefined;
-                expect(ctx.flaggedInput._.merge().raw).to.equal('This is some input text');
-                expect(ctx.data.stackSize).to.equal(100);
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
+                assert.equal(ctx.bbtag.local.tagName, 'test tag');
+                assert.equal(ctx.bbtag.root.tagName, 'test tag');
+                assert.deepEqual(ctx.bbtag.local.input.array, ['This', 'is', 'some', 'input', 'text']);
+                assert.equal(ctx.bbtag.local.input.flags.f, undefined);
+                assert.equal(ctx.bbtag.local.input.flags._, 'This is some input text');
+                assert.equal(ctx.bbtag.root.recursion.depth, 100);
+                assert.equal(ctx.bbtag.local, ctx.bbtag.root);
             }
         },
         {
             code: '{exec;otherSubtag;arg1 arg2 -f flag value}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('arg1 arg2 -f flag value');
-                expect(ctx.input).to.deep.equal(['arg1', 'arg2', '-f', 'flag', 'value']);
-                expect(ctx.flaggedInput.f?.merge().raw).to.equal('flag value');
-                expect(ctx.flaggedInput._.merge().raw).to.equal('arg1 arg2');
-                expect(ctx.data.stackSize).to.equal(101);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
+                assert.equal(ctx.local.tagName, 'otherSubtag');
+                assert.equal(ctx.root.tagName, 'test tag');
+                assert.deepEqual(ctx.local.input.array, ['arg1', 'arg2', '-f', 'flag', 'value']);
+                assert.equal(ctx.local.input.flags.f, 'flag value');
+                assert.equal(ctx.local.input.flags._, 'arg1 arg2');
+                assert.equal(ctx.root.recursion.depth, 101);
+                assert.notEqual(ctx.local, ctx.root);
                 return 'Success!';
             })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.options.cooldown = 4;
-                ctx.options.tagName = 'test tag';
-                ctx.options.rootTagName = 'test tag';
-                ctx.options.inputRaw = 'This is some input text';
-                ctx.options.data = { stackSize: 100 };
-                ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
+                ctx.tagName = 'test tag';
+                ctx.bbtag.root.recursion.depth = 100;
+                ctx.input.array = ['This', 'is', 'some', 'input', 'text'];
+                ctx.input.flags = { _: 'This is some input text' };
+                const otherSubtag = {
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
+                features.setup(m => m.getTag('otherSubtag')).resolves(otherSubtag).mustHappen(1);
+                features.setup((m, $) => m.assertTagCooldown($({
+                    guildId: ctx.guildId,
+                    userId: ctx.userId,
+                    tagName: 'otherSubtag',
+                    cooldownMs: 7,
+                    isCC: ctx.isCC
+                }))).resolves().mustHappen(1);
+                features.setup(m => m.parseInput(ctx.bbtag, 'arg1 arg2 -f flag value')).returns({
+                    array: ['arg1', 'arg2', '-f', 'flag', 'value'],
+                    flags: { _: 'arg1 arg2', f: 'flag value' }
+                }).mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.flaggedInput.f?.merge().raw).to.be.undefined;
-                expect(ctx.flaggedInput._.merge().raw).to.equal('This is some input text');
-                expect(ctx.data.stackSize).to.equal(100);
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
+                assert.equal(ctx.bbtag.local.tagName, 'test tag');
+                assert.equal(ctx.bbtag.root.tagName, 'test tag');
+                assert.deepEqual(ctx.bbtag.local.input.array, ['This', 'is', 'some', 'input', 'text']);
+                assert.equal(ctx.bbtag.local.input.flags.f, undefined);
+                assert.equal(ctx.bbtag.local.input.flags._, 'This is some input text');
+                assert.equal(ctx.bbtag.root.recursion.depth, 100);
+                assert.equal(ctx.bbtag.local, ctx.bbtag.root);
             }
         },
         {
             code: '{exec;otherSubtag;arg1 arg2 \\-f flag value}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
-                expect(ctx.parent).to.not.be.undefined;
-                expect(ctx.tagName).to.equal('otherSubtag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('arg1 arg2 \\-f flag value');
-                expect(ctx.input).to.deep.equal(['arg1', 'arg2', '-f', 'flag', 'value']);
-                expect(ctx.flaggedInput.f?.merge().raw).to.be.undefined;
-                expect(ctx.flaggedInput._.merge().raw).to.equal('arg1 arg2 \\-f flag value');
-                expect(ctx.data.stackSize).to.equal(101);
-                expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
+                assert.equal(ctx.local.tagName, 'otherSubtag');
+                assert.equal(ctx.root.tagName, 'test tag');
+                assert.deepEqual(ctx.local.input.array, ['arg1', 'arg2', '-f', 'flag', 'value']);
+                assert.equal(ctx.local.input.flags.f, undefined);
+                assert.equal(ctx.local.input.flags._, 'arg1 arg2 -f flag value');
+                assert.equal(ctx.root.recursion.depth, 101);
+                assert.notEqual(ctx.local, ctx.root);
                 return 'Success!';
             })],
             errors: [
                 { start: 8, end: 14, error: new MarkerError('eval', 8) }
             ],
             setup(ctx) {
-                ctx.options.cooldown = 4;
-                ctx.options.tagName = 'test tag';
-                ctx.options.rootTagName = 'test tag';
-                ctx.options.inputRaw = 'This is some input text';
-                ctx.options.data = { stackSize: 100 };
-                ctx.tags['otherSubtag'] = {
-                    author: '212097368371683623',
+                ctx.tagName = 'test tag';
+                ctx.bbtag.root.recursion.depth = 100;
+                ctx.input.array = ['This', 'is', 'some', 'input', 'text'];
+                ctx.input.flags = { _: 'This is some input text' };
+                const otherSubtag = {
                     content: '{assert}{eval}',
-                    name: 'otherSubtag',
-                    lastmodified: new Date(),
-                    uses: 0,
                     cooldown: 7
                 };
+                features.setup(m => m.getTag('otherSubtag')).resolves(otherSubtag).mustHappen(1);
+                features.setup((m, $) => m.assertTagCooldown($({
+                    guildId: ctx.guildId,
+                    userId: ctx.userId,
+                    tagName: 'otherSubtag',
+                    cooldownMs: 7,
+                    isCC: ctx.isCC
+                }))).resolves().mustHappen(1);
+                features.setup(m => m.parseInput(ctx.bbtag, 'arg1 arg2 \\-f flag value')).returns({
+                    array: ['arg1', 'arg2', '-f', 'flag', 'value'],
+                    flags: { _: 'arg1 arg2 -f flag value' }
+                }).mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.parent).to.be.undefined;
-                expect(ctx.tagName).to.equal('test tag');
-                expect(ctx.rootTagName).to.equal('test tag');
-                expect(ctx.cooldown).to.equal(4);
-                expect(ctx.inputRaw).to.equal('This is some input text');
-                expect(ctx.flaggedInput.f?.merge().raw).to.be.undefined;
-                expect(ctx.flaggedInput._.merge().raw).to.equal('This is some input text');
-                expect(ctx.data.stackSize).to.equal(100);
-                expect(ctx.scopes.local).to.equal(ctx.scopes.root);
-                expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
+                assert.equal(ctx.bbtag.local.tagName, 'test tag');
+                assert.equal(ctx.bbtag.root.tagName, 'test tag');
+                assert.deepEqual(ctx.bbtag.local.input.array, ['This', 'is', 'some', 'input', 'text']);
+                assert.equal(ctx.bbtag.local.input.flags.f, undefined);
+                assert.equal(ctx.bbtag.local.input.flags._, 'This is some input text');
+                assert.equal(ctx.bbtag.root.recursion.depth, 100);
+                assert.equal(ctx.bbtag.local, ctx.bbtag.root);
             }
         }
     ]

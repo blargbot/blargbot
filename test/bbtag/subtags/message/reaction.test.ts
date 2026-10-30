@@ -1,24 +1,25 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ReactionSubtag } from '@blargbot/bbtag/subtags/message/reaction';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { ReactionSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ReactionSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['reaction'],
     cases: [
         {
             code: '{reaction}',
             expected: '`{reaction} can only be used inside {waitreaction}`',
             errors: [
-                { start: 0, end: 10, error: new BBTagRuntimeError('{reaction} can only be used inside {waitreaction}') }
+                { error: new BBTagRuntimeError('{reaction} can only be used inside {waitreaction}') }
             ]
         },
         {
             code: '{reaction}',
             expected: '🤔',
-            postSetup(bbctx) {
-                bbctx.scopes.local.reaction = '🤔';
+            setup(ctx) {
+                ctx.bbtag.local.reaction = '🤔';
             }
         }
     ]

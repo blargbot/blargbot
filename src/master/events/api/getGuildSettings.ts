@@ -1,7 +1,7 @@
-import { ApiConnection } from '@blargbot/api';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
-import { GuildSettingDocs } from '@blargbot/domain/models';
-import { Master } from '@blargbot/master';
+import type { ApiConnection } from '@blargbot/api';
+import { WorkerPoolEventService } from '@blargbot/core';
+import type { GuildSettingDocs } from '@blargbot/domain';
+import type { Master } from '@blargbot/master';
 
 export class ApiGetGuildSettingsHandler extends WorkerPoolEventService<ApiConnection, 'getGuildSettings'> {
     #nextCluster: number;

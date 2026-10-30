@@ -1,12 +1,13 @@
-import { Api } from '@blargbot/api/Api';
-import { Lazy } from '@blargbot/core/Lazy';
-import { TypeMapping } from '@blargbot/mapping';
-import { IRoute } from 'express-serve-static-core';
-import { IncomingMessage } from 'http';
-import { WebSocketServer } from 'ws';
+import type { IncomingMessage } from 'node:http';
 
-import Security from './Security';
-import { ApiResponse, AsyncRequestContext, AsyncRequestHandler, AsyncRequestMiddleware, AsyncWebsocketHandler, RequestHandlers, RequestMethods } from './types';
+import { Lazy } from '@blargbot/util';
+import type { IRoute } from 'express-serve-static-core';
+import { WebSocketServer } from 'ws';
+import type z from 'zod';
+
+import type { Api } from './Api.js';
+import Security from './Security.js';
+import type { ApiResponse, AsyncRequestContext, AsyncRequestHandler, AsyncRequestMiddleware, AsyncWebsocketHandler, RequestHandlers, RequestMethods } from './types.js';
 
 type JoinRoutes<BaseRoutes extends Array<`/${string}`>, Route extends `/${string}`>
     = BaseRoutes[number] extends `${infer R}/` ? `${R}${Route}` : `${BaseRoutes[number]}${Route}`;
@@ -31,12 +32,12 @@ export class BaseRoute<BaseRoutes extends Array<`/${string}`>> {
             step(api, path);
     }
 
-    protected mapRequestValue<T>(value: unknown, mapping: TypeMapping<T>): T {
-        const result = mapping(value);
-        if (!result.valid)
+    protected async mapRequestValue<In, Out>(value: In, schema: z.ZodType<Out, In>): Promise<Out> {
+        const result = await schema.safeDecodeAsync(value);
+        if (!result.success)
             throw new ApiRequestError(this.badRequest());
 
-        return result.value;
+        return result.data;
     }
 
     #bindWebsocket(api: Api, path: string, handler: AsyncWebsocketHandler<this>): void {

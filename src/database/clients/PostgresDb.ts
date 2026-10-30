@@ -1,6 +1,7 @@
-import { PostgresConfiguration } from '@blargbot/config';
-import { Logger } from '@blargbot/logger';
-import { Model, ModelAttributes, ModelStatic, QueryInterface, Sequelize, Transaction } from 'sequelize';
+import type { PostgresConfiguration } from '@blargbot/config';
+import type { Logger } from '@blargbot/logger';
+import type { Model, ModelAttributes, ModelStatic, QueryInterface, Transaction } from 'sequelize';
+import { Sequelize } from 'sequelize';
 
 export class PostgresDb {
     readonly #sequelize: Sequelize;

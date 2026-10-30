@@ -1,0 +1,53 @@
+import { BBTagRuntimeError, templates } from '@blargbot/bbtag-engine';
+import type { IFormattable } from '@blargbot/formatting';
+import z from 'zod';
+
+import type { ClusterBBTagContextMetadata } from '../../managers/BBTagManager.js';
+import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
+
+export class UseCountRule implements RuntimeLimitRule {
+    readonly #errorMessage: IFormattable<string>;
+    readonly #makeError: (subtagName: string) => BBTagRuntimeError;
+    #initial: number;
+    #remaining: number;
+
+    public constructor(
+        count: number,
+        errorMessage: IFormattable<string> | ((value: { count: number; }) => IFormattable<string>) = templates.limits.rules.useCount.default,
+        error: string | ((subtagName: string) => BBTagRuntimeError) = 'Usage'
+    ) {
+        this.#initial = count;
+        this.#remaining = count;
+        this.#errorMessage = typeof errorMessage === 'function' ? errorMessage({ count }) : errorMessage;
+        this.#makeError = typeof error === 'string'
+            ? (subtagName) => new BBTagRuntimeError(`${error} limit reached for ${subtagName}`)
+            : error;
+    }
+
+    public check(_context: ClusterBBTagContextMetadata, subtagName: string): void {
+        if (this.#remaining-- <= 0)
+            throw this.#makeError(subtagName);
+    }
+
+    public displayText(): IFormattable<string> {
+        return this.#errorMessage;
+    }
+
+    public state(): [number, number] {
+        return [this.#remaining, this.#initial];
+    }
+
+    public load(state: JToken): void {
+        const mapped = mapState.safeParse(state);
+        if (!mapped.success)
+            throw new Error(`Invalid state ${JSON.stringify(state)}`);
+
+        this.#remaining = mapped.data[0];
+        this.#initial = mapped.data[1];
+    }
+}
+
+const mapState = z.tuple([
+    z.number(),
+    z.number()
+]);

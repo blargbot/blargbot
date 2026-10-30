@@ -1,222 +1,201 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return';
-import { SetSubtag } from '@blargbot/bbtag/subtags/bot/set';
-import { WhileSubtag } from '@blargbot/bbtag/subtags/loops/while';
-import { DecrementSubtag } from '@blargbot/bbtag/subtags/math/decrement';
-import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment';
-import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { TagVariableType } from '@blargbot/domain/models';
-import { expect } from 'chai';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { DecrementSubtag, GetSubtag, IfSubtag, IncrementSubtag, OperatorSubtag, ReturnSubtag, SetSubtag, WhileSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new WhileSubtag(),
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
+const sut = new WhileSubtag();
+await runSubtagTests({
+    subtag: sut,
     argCountBounds: { min: { count: 2, noEval: [0, 1] }, max: { count: 4, noEval: [0, 1, 2, 3] } },
+    names: ['while'],
+    otherSubtags: [
+        new GetSubtag({ variables: variablesProvider.instance }),
+        new SetSubtag({ variables: variablesProvider.instance }),
+        new IncrementSubtag({ variables: variablesProvider.instance }),
+        new DecrementSubtag({ variables: variablesProvider.instance })
+    ],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{while;{<;{get;index};10};{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            subtags: [new GetSubtag(), new IncrementSubtag(), new OperatorSubtag()],
+            subtags: [new OperatorSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 21, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{while;{get;index};<;10;{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 21, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{while;<;{get;index};10;{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 21, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{while;{get;index};10;<;{increment;index},}',
             expected: '1,2,3,4,5,6,7,8,9,10,',
-            subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 21, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{while;{get;index};<;10;{increment;index;2},}',
             expected: '2,4,6,8,10,',
-            subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 11, [2, 4, 6, 8, 10]);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(5).resolves(undefined);
             },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(5).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(10);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(10);
+            assert() {
+                Mock.verifySequence(...[2, 4, 6, 8, 10]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{while;{get;index};>;0;{decrement;index},}',
             expected: '9,8,7,6,5,4,3,2,1,0,',
-            subtags: [new GetSubtag(), new DecrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '10');
+                setupVariable('index', '10', 21, [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(0);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(0);
+            assert() {
+                Mock.verifySequence(...[9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{while;{get;index};<;513;{get;index},{set;index;{*;{get;index};2}}}',
             expected: '1,2,4,8,16,32,64,128,256,512,',
-            subtags: [new GetSubtag(), new SetSubtag(), new OperatorSubtag()],
+            subtags: [new OperatorSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '1');
+                setupVariable('index', '1', 31, ['2', '4', '8', '16', '32', '64', '128', '256', '512', '1024']);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(10).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal('1024');
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal('1024');
+            assert() {
+                Mock.verifySequence(...['2', '4', '8', '16', '32', '64', '128', '256', '512', '1024']
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{while;{get;index};<;10;{increment;index},}',
             expected: '1,2,3,4,`Too many loops`',
             errors: [
-                { start: 0, end: 43, error: new BBTagRuntimeError('Too many loops') }
+                { error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 9, [1, 2, 3, 4]);
+                ctx.hooks.setup(m => m.loop!(sut))
+                    .resolves()
+                    .resolves()
+                    .resolves()
+                    .resolves()
+                    .rejects(new BBTagRuntimeError('Too many loops'));
             },
-            postSetup(bbctx, ctx) {
-                let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(5).thenCall(() => {
-                    if (i++ >= 4)
-                        throw new BBTagRuntimeError('Too many loops');
-                    return undefined;
-                });
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{while;abc;def;ghi;{increment;index},}',
             expected: '1,2,3,4,`Too many loops`',
             errors: [
-                { start: 0, end: 38, error: new BBTagRuntimeError('Too many loops') }
+                { error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 4, [1, 2, 3, 4]);
+                ctx.hooks.setup(m => m.loop!(sut))
+                    .resolves()
+                    .resolves()
+                    .resolves()
+                    .resolves()
+                    .rejects(new BBTagRuntimeError('Too many loops'));
             },
-            postSetup(bbctx, ctx) {
-                let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(5).thenCall(() => {
-                    if (i++ >= 4)
-                        throw new BBTagRuntimeError('Too many loops');
-                    return undefined;
-                });
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{while;true;{increment;index},}',
             expected: '1,2,3,4,`Too many loops`',
             errors: [
-                { start: 0, end: 31, error: new BBTagRuntimeError('Too many loops') }
+                { error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [new GetSubtag(), new IncrementSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 4, [1, 2, 3, 4]);
+                ctx.hooks.setup(m => m.loop!(sut))
+                    .resolves()
+                    .resolves()
+                    .resolves()
+                    .resolves()
+                    .rejects(new BBTagRuntimeError('Too many loops'));
             },
-            postSetup(bbctx, ctx) {
-                let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(5).thenCall(() => {
-                    if (i++ >= 4)
-                        throw new BBTagRuntimeError('Too many loops');
-                    return undefined;
-                });
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{while;{get;index};<;10;{increment;index}{if;{get;index};==;6;{return}},}',
             expected: '1,2,3,4,5,6',
-            subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag(), new IncrementSubtag()],
+            subtags: [new IfSubtag(), new ReturnSubtag()],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 18, [1, 2, 3, 4, 5, 6]);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(6).resolves(undefined);
             },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'while:loops')).verifiable(6).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(6);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(6);
-                expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4, 5, 6]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         }
     ]
 });
+
+function setupVariable(name: string, initial: JToken | undefined, readCount: number, setTo: Iterable<JToken | undefined>): void {
+    let current = initial;
+    variables.setup(m => m.get(name)).resolves({
+        key: 'foo',
+        get value() {
+            return current;
+        }
+    }).mustHappen(readCount);
+    for (const value of setTo)
+        variables.setup(m => m.set(name, value)).invokesAsync(() => void (current = value)).mustHappen(1);
+}

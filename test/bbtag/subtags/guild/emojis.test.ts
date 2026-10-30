@@ -1,57 +1,59 @@
-import { EmojisSubtag } from '@blargbot/bbtag/subtags/guild/emojis';
+import type { ListEmojisFeature } from '@blargbot/bbtag-engine/subtags';
+import { EmojisSubtag, RoleIdSubtag } from '@blargbot/bbtag-engine/subtags';
+import Emote from '@blargbot/discord-emote';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new EmojisSubtag(),
+const features = new Mock<ListEmojisFeature>({ id: 'features' });
+const roleIdSubtag = createMockSubtag(RoleIdSubtag);
+
+await runSubtagTests({
+    subtag: new EmojisSubtag(features.instance),
     argCountBounds: { min: 0, max: 1 },
+    names: ['emojis'],
+    otherSubtags: [roleIdSubtag.instance],
     setup(ctx) {
-        ctx.roles.other.id = '329476274682462386432';
-        ctx.guild.emojis.push(
-            {
-                id: '237986482473',
-                name: 'abc',
-                animated: true
-            },
-            {
-                id: '280110565161041921',
-                name: 'notlikecat'
-            },
-            {
-                id: '923846723894624242',
-                name: 'rolerestricted',
-                animated: false,
-                roles: [
-                    '329476274682462386432'
-                ]
-            }
-        );
+        ctx.adoptMock(features);
+        ctx.adoptMock(roleIdSubtag);
     },
     cases: [
         {
             code: '{emojis}',
-            expected: '["<a:abc:237986482473>","<:notlikecat:280110565161041921>","<:rolerestricted:923846723894624242>"]'
+            expected: '["<a:abc:2379864824733908429>","<:notlikecat:280110565161041921>","<:rolerestricted:923846723894624242>"]',
+            setup(ctx) {
+                features.setup(m => m.listEmojis(ctx.guildId))
+                    .resolves([
+                        new Emote('abc', 2379864824733908429n, true),
+                        new Emote('notlikecat', 280110565161041921n, false),
+                        new Emote('rolerestricted', 923846723894624242n, false)
+                    ]).mustHappen(1);
+            }
         },
         {
             code: '{emojis;329476274682462386432}',
             expected: '["<:rolerestricted:923846723894624242>"]',
-            postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('329476274682462386432');
-                if (role === undefined)
-                    throw new Error('Failes to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '329476274682462386432')).thenResolve([role]);
+            setup(ctx) {
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '329476274682462386432', $({ noErrors: true, noLookup: true })))
+                    .resolves('329476274682462386432')
+                    .mustHappen(1);
+                features.setup(m => m.listEmojis(ctx.guildId, '329476274682462386432'))
+                    .resolves([
+                        new Emote('rolerestricted', 923846723894624242n, false)
+                    ]).mustHappen(1);
             }
         },
         {
             code: '{emojis;other}',
             expected: '["<:rolerestricted:923846723894624242>"]',
-            postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('329476274682462386432');
-                if (role === undefined)
-                    throw new Error('Failes to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, 'other')).thenResolve([role]);
+            setup(ctx) {
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other', $({ noErrors: true, noLookup: true })))
+                    .resolves('329476274682462386432')
+                    .mustHappen(1);
+                features.setup(m => m.listEmojis(ctx.guildId, '329476274682462386432'))
+                    .resolves([
+                        new Emote('rolerestricted', 923846723894624242n, false)
+                    ]).mustHappen(1);
             }
         }
     ]

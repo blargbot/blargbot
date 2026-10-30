@@ -1,29 +1,40 @@
-import { MessageTextSubtag } from '@blargbot/bbtag/subtags/message/messageText';
+import type { GetMessageContentFeature } from '@blargbot/bbtag-engine/subtags';
+import { MessageTextSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetMessagePropTestCases } from './_getMessagePropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetMessagePropTestCases } from './_getMessagePropTest.js';
 
-runSubtagTests({
-    subtag: new MessageTextSubtag(),
+const features = new Mock<GetMessageContentFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new MessageTextSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
+    names: ['messageText', 'text'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: '',
             includeNoArgs: true,
+            getProp: (c, i) => features.setup(m => m.getMessageContent(c, i)),
+            notExists: Promise.resolve(undefined),
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['messagetext', ...args].filter(a => a !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: 'This is some message content',
-                    setup(_, message) {
-                        message.content = 'This is some message content';
+                    setup(getProp) {
+                        getProp.resolves('This is some message content').mustHappen(1);
                     }
                 },
                 {
                     expected: 'abcxyz',
-                    setup(_, message) {
-                        message.content = 'abcxyz';
+                    setup(getProp) {
+                        getProp.resolves('abcxyz').mustHappen(1);
                     }
                 }
             ]

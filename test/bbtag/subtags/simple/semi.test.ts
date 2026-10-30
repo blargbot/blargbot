@@ -1,10 +1,11 @@
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi';
+import { SemiSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SemiSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['semi'],
     cases: [
         { code: '{semi}', expected: ';' }
     ]

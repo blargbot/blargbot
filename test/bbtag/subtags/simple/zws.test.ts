@@ -1,10 +1,11 @@
-import { ZwsSubtag } from '@blargbot/bbtag/subtags/simple/zws';
+import { ZwsSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ZwsSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['zws'],
     cases: [
         {
             code: '{zws}',

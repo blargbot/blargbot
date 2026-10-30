@@ -1,14 +1,14 @@
-import { Cluster } from '@blargbot/cluster';
-import { CommandContext } from '@blargbot/cluster/command';
-import { CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster/types';
-import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster/utils';
-import { metrics } from '@blargbot/core/Metrics';
-import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
-import { IFormattable, util } from '@blargbot/formatting';
-import { Guild, KnownTextableChannel, User } from 'eris';
+import type { Cluster, CommandContext, CommandGetCoreResult, CommandProperties, ICommand } from '@blargbot/cluster';
+import { CommandType, commandTypeDetails, guard } from '@blargbot/cluster';
+import { metrics } from '@blargbot/core';
+import type { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
+import * as eris from 'eris';
 
-import templates from '../../text';
-import { CommandManager } from './CommandManager';
+import { CustomCommandLimit } from '../../bbtagLimits/CustomCommandLimit.js';
+import { templates } from '../../text.js';
+import { CommandManager } from './CommandManager.js';
 
 export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
     public readonly size: number = 0;
@@ -17,11 +17,11 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
         super(cluster);
     }
 
-    protected async getCore(name: string, location?: Guild | KnownTextableChannel): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
+    protected async getCore(name: string, location?: eris.Guild | eris.KnownTextableChannel): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
         if (location === undefined)
             return { state: 'NOT_FOUND' };
 
-        const guild = location instanceof Guild ? location
+        const guild = location instanceof eris.Guild ? location
             : guard.isGuildChannel(location) ? location.guild
                 : undefined;
 
@@ -43,18 +43,18 @@ export class CustomCommandManager extends CommandManager<NamedGuildCommandTag> {
         return Promise.resolve();
     }
 
-    protected async allCommandNames(location?: Guild | KnownTextableChannel): Promise<Iterable<string>> {
+    protected async allCommandNames(location?: eris.Guild | eris.KnownTextableChannel): Promise<Iterable<string>> {
         if (location === undefined)
             return [];
 
-        const guild = location instanceof Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
+        const guild = location instanceof eris.Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
         if (guild === undefined)
             return [];
 
         return await this.cluster.database.guilds.getCustomCommandNames(guild.id);
     }
 
-    public async configure(_user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
+    public async configure(_user: eris.User, names: string[], guild: eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         if (names.length === 0)
             return [];
 
@@ -118,19 +118,24 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             return;
         }
 
-        const { content, ...options } = details;
-
         metrics.commandCounter.labels('custom', 'custom').inc();
-        await context.cluster.bbtag.execute(content, {
-            ...options,
-            authorId: options.author,
-            authorizerId: options.authorizer,
-            rootTagName: context.commandName,
-            message: context.message,
-            inputRaw: context.argsString,
+        const message = context.message;
+        await context.cluster.bbtag.execute(details.content, {
+            messageId: message.id,
+            channelId: message.channel.id,
+            guildId: message.channel.guild.id,
+            userId: message.author.id,
+            tagName: context.commandName,
+            input: context.argsString,
+            flagDefinitions: details.flags ?? [],
+            silent: false,
             isCC: true,
-            limit: 'customCommandLimit',
-            prefix: context.prefix
+            tagVars: details.tagVars,
+            limit: new CustomCommandLimit(context.channel.guild.memberCount),
+            author: details.author ?? undefined,
+            authorizer: details.authorizer ?? details.author ?? message.channel.guild.ownerID,
+            prefix: context.prefix,
+            cooldown: details.cooldown ?? 0
         });
         return undefined;
     }

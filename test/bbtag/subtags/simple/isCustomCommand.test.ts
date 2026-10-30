@@ -1,20 +1,21 @@
-import { IsCustomCommandSubtag } from '@blargbot/bbtag/subtags/simple/isCustomCommand';
+import { IsCustomCommandSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new IsCustomCommandSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['isCustomCommand', 'isCC'],
     cases: [
         {
             code: '{iscc}',
             expected: 'true',
-            setup(ctx) { ctx.options.isCC = true; }
+            setup(ctx) { ctx.isCC = true; }
         },
         {
             code: '{iscc}',
             expected: 'false',
-            setup(ctx) { ctx.options.isCC = false; }
+            setup(ctx) { ctx.isCC = false; }
         }
     ]
 });

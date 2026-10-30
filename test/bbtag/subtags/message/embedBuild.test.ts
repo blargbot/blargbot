@@ -1,30 +1,36 @@
-import { InvalidEmbedError } from '@blargbot/bbtag/errors';
-import { EmbedBuildSubtag } from '@blargbot/bbtag/subtags/message/embedBuild';
-import { repeat } from '@blargbot/core/utils';
+import { InvalidEmbedError } from '@blargbot/bbtag-engine';
+import { EmbedBuildSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Iterable } from '@blargbot/util';
 import moment from 'moment-timezone';
 
-import { runSubtagTests, TestDataSubtag } from '../SubtagTestSuite';
+import { runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
 
 const testData = {
-    '256': repeat(256, 'a').join(''),
-    '257': repeat(257, 'a').join(''),
-    '1024': repeat(1024, 'a').join(''),
-    '1025': repeat(1025, 'a').join(''),
-    '2048': repeat(2048, 'a').join(''),
-    '2049': repeat(2049, 'a').join(''),
-    '4096': repeat(4096, 'a').join(''),
-    '4097': repeat(4097, 'a').join('')
+    '256': 'a'.repeat(256),
+    '257': 'a'.repeat(257),
+    '1024': 'a'.repeat(1024),
+    '1025': 'a'.repeat(1025),
+    '2048': 'a'.repeat(2048),
+    '2049': 'a'.repeat(2049),
+    '4096': 'a'.repeat(4096),
+    '4097': 'a'.repeat(4097)
 };
 
-runSubtagTests({
+const now = Temporal.Instant.from('2026-09-22T22:20:00Z');
+
+await runSubtagTests({
     subtag: new EmbedBuildSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['embedBuild', 'buildEmbed'],
+    setup(_, __, test) {
+        test.mock.method(Temporal.Now, 'zonedDateTimeISO', (v: string) => now.toZonedDateTimeISO(v));
+    },
     cases: [
         {
             code: '{buildembed;title}',
             expected: '`Invalid embed: Missing \':\'`',
             errors: [
-                { start: 0, end: 18, error: new InvalidEmbedError('Missing \':\'', 'title') }
+                { error: new InvalidEmbedError('Missing \':\'', 'title') }
             ]
         },
         {
@@ -41,7 +47,7 @@ runSubtagTests({
             subtags: [new TestDataSubtag(testData)],
             expected: '`Invalid embed: Title too long`',
             errors: [
-                { start: 0, end: 33, error: new InvalidEmbedError('Title too long', testData[257]) }
+                { error: new InvalidEmbedError('Title too long', testData[257]) }
             ]
         },
         {
@@ -58,7 +64,7 @@ runSubtagTests({
             subtags: [new TestDataSubtag(testData)],
             expected: '`Invalid embed: Description too long`',
             errors: [
-                { start: 0, end: 40, error: new InvalidEmbedError('Description too long', testData[4097]) }
+                { error: new InvalidEmbedError('Description too long', testData[4097]) }
             ]
         },
         {
@@ -75,7 +81,7 @@ runSubtagTests({
             subtags: [new TestDataSubtag(testData)],
             expected: '`Invalid embed: Footer text too long`',
             errors: [
-                { start: 0, end: 40, error: new InvalidEmbedError('Footer text too long', testData[2049]) }
+                { error: new InvalidEmbedError('Footer text too long', testData[2049]) }
             ]
         },
         {
@@ -92,7 +98,7 @@ runSubtagTests({
             subtags: [new TestDataSubtag(testData)],
             expected: '`Invalid embed: Author name too long`',
             errors: [
-                { start: 0, end: 39, error: new InvalidEmbedError('Author name too long', testData[257]) }
+                { error: new InvalidEmbedError('Author name too long', testData[257]) }
             ]
         },
         {
@@ -105,14 +111,14 @@ runSubtagTests({
             expected: /^{"fields":\[{"name":"a{256}","value":"def"}]}$/
         },
         {
-            code: `{buildembed;${repeat(25, 'fields.name: abc;fields.value: def').join(';')}}`,
+            code: `{buildembed;${Iterable.forever('fields.name: abc;fields.value: def').take(25).toArray().join(';')}}`,
             expected: /^{"fields":\[(?:{"name":"abc","value":"def"},?){25}]}$/
         },
         {
-            code: `{buildembed;${repeat(25, 'fields.name: abc;fields.value: def').join(';')};fields.name: abc}`,
+            code: `{buildembed;${Iterable.forever('fields.name: abc;fields.value: def').take(25).toArray().join(';')};fields.name: abc}`,
             expected: '`Invalid embed: Too many fields`',
             errors: [
-                { start: 0, end: 904, error: new InvalidEmbedError('Too many fields') }
+                { error: new InvalidEmbedError('Too many fields') }
             ]
         },
         {
@@ -120,21 +126,21 @@ runSubtagTests({
             subtags: [new TestDataSubtag(testData)],
             expected: '`Invalid embed: Field name too long`',
             errors: [
-                { start: 0, end: 57, error: new InvalidEmbedError('Field name too long', testData[257]) }
+                { error: new InvalidEmbedError('Field name too long', testData[257]) }
             ]
         },
         {
             code: '{buildembed;fields.name:abc}',
             expected: '`Invalid embed: Field missing value`',
             errors: [
-                { start: 0, end: 28, error: new InvalidEmbedError('Field missing value', 'Field at index 0') }
+                { error: new InvalidEmbedError('Field missing value', 'Field at index 0') }
             ]
         },
         {
             code: '{buildembed;fields.name: ;fields.value:def}',
             expected: '`Invalid embed: Field missing name`',
             errors: [
-                { start: 0, end: 43, error: new InvalidEmbedError('Field missing name', 'Field at index 0') }
+                { error: new InvalidEmbedError('Field missing name', 'Field at index 0') }
             ]
         },
         {
@@ -147,14 +153,14 @@ runSubtagTests({
             subtags: [new TestDataSubtag(testData)],
             expected: '`Invalid embed: Field value too long`',
             errors: [
-                { start: 0, end: 58, error: new InvalidEmbedError('Field value too long', testData[1025]) }
+                { error: new InvalidEmbedError('Field value too long', testData[1025]) }
             ]
         },
         {
             code: '{buildembed;fields.value:abc}',
             expected: '`Invalid embed: Field name not specified`',
             errors: [
-                { start: 0, end: 29, error: new InvalidEmbedError('Field name not specified') }
+                { error: new InvalidEmbedError('Field name not specified') }
             ]
         },
         {
@@ -169,14 +175,14 @@ runSubtagTests({
             code: '{buildembed;fields.name: abc;fields.value: def;fields.inline:xyz}',
             expected: '`Invalid embed: Inline must be a boolean`',
             errors: [
-                { start: 0, end: 65, error: new InvalidEmbedError('Inline must be a boolean', 'xyz') }
+                { error: new InvalidEmbedError('Inline must be a boolean', 'xyz') }
             ]
         },
         {
             code: '{buildembed;fields.inline:xyz}',
             expected: '`Invalid embed: Field name not specified`',
             errors: [
-                { start: 0, end: 30, error: new InvalidEmbedError('Field name not specified') }
+                { error: new InvalidEmbedError('Field name not specified') }
             ]
         },
         {
@@ -187,7 +193,7 @@ runSubtagTests({
             code: '{buildembed;url:abc}',
             expected: '`Invalid embed: Invalid url`',
             errors: [
-                { start: 0, end: 20, error: new InvalidEmbedError('Invalid url', 'abc') }
+                { error: new InvalidEmbedError('Invalid url', 'abc') }
             ]
         },
         {
@@ -206,7 +212,7 @@ runSubtagTests({
             code: '{buildembed;footer.icon_url:abc}',
             expected: '`Invalid embed: Invalid footer.icon_url`',
             errors: [
-                { start: 0, end: 32, error: new InvalidEmbedError('Invalid footer.icon_url', 'abc') }
+                { error: new InvalidEmbedError('Invalid footer.icon_url', 'abc') }
             ]
         },
         {
@@ -217,7 +223,7 @@ runSubtagTests({
             code: '{buildembed;thumbnail.url:abc}',
             expected: '`Invalid embed: Invalid thumbnail.url`',
             errors: [
-                { start: 0, end: 30, error: new InvalidEmbedError('Invalid thumbnail.url', 'abc') }
+                { error: new InvalidEmbedError('Invalid thumbnail.url', 'abc') }
             ]
         },
         {
@@ -228,7 +234,7 @@ runSubtagTests({
             code: '{buildembed;image.url:abc}',
             expected: '`Invalid embed: Invalid image.url`',
             errors: [
-                { start: 0, end: 26, error: new InvalidEmbedError('Invalid image.url', 'abc') }
+                { error: new InvalidEmbedError('Invalid image.url', 'abc') }
             ]
         },
         {
@@ -247,7 +253,7 @@ runSubtagTests({
             code: '{buildembed;author.url:abc}',
             expected: '`Invalid embed: Invalid author.url`',
             errors: [
-                { start: 0, end: 27, error: new InvalidEmbedError('Invalid author.url', 'abc') }
+                { error: new InvalidEmbedError('Invalid author.url', 'abc') }
             ]
         },
         {
@@ -266,7 +272,7 @@ runSubtagTests({
             code: '{buildembed;author.icon_url:abc}',
             expected: '`Invalid embed: Invalid author.icon_url`',
             errors: [
-                { start: 0, end: 32, error: new InvalidEmbedError('Invalid author.icon_url', 'abc') }
+                { error: new InvalidEmbedError('Invalid author.icon_url', 'abc') }
             ]
         },
         {
@@ -285,17 +291,16 @@ runSubtagTests({
             code: '{buildembed;color:qwertyuiop}',
             expected: '`Invalid embed: Invalid color`',
             errors: [
-                { start: 0, end: 29, error: new InvalidEmbedError('Invalid color', 'qwertyuiop') }
+                { error: new InvalidEmbedError('Invalid color', 'qwertyuiop') }
             ]
         },
         {
             code: '{buildembed;timestamp:2022-01-01}',
-            expected: '{"timestamp":"2022-01-01T00:00:00.000Z"}'
+            expected: '{"timestamp":"2022-01-01T00:00:00Z"}'
         },
         {
             code: '{buildembed;timestamp:now}',
-            expected: () => `{"timestamp":"${moment.tz('Etc/UTC').toDate().toISOString()}"}`,
-            retries: 5
+            expected: '{"timestamp":"2026-09-22T22:20:00Z"}'
         },
         {
             code: '{buildembed;timestamp:abc}',
@@ -304,7 +309,7 @@ runSubtagTests({
                 moment.suppressDeprecationWarnings = true;
             },
             errors: [
-                { start: 0, end: 26, error: new InvalidEmbedError('Invalid timestamp', 'abc') }
+                { error: new InvalidEmbedError('Invalid timestamp', 'abc') }
             ],
             teardown() {
                 moment.suppressDeprecationWarnings = false;
@@ -315,7 +320,7 @@ runSubtagTests({
             subtags: [new TestDataSubtag(testData)],
             expected: '`Invalid embed: Embed too long`',
             errors: [
-                { start: 0, end: 89, error: new InvalidEmbedError('Embed too long', `{"title":"${testData[256]}","description":"${testData[4096]}","footer":{"text":"${testData[2048]}"}}`) }
+                { error: new InvalidEmbedError('Embed too long', `{"title":"${testData[256]}","description":"${testData[4096]}","footer":{"text":"${testData[2048]}"}}`) }
             ]
         },
         {
@@ -326,7 +331,7 @@ runSubtagTests({
             code: '{buildembed;qwerty:123}',
             expected: '`Invalid embed: Unknown key \'qwerty\'`',
             errors: [
-                { start: 0, end: 23, error: new InvalidEmbedError('Unknown key \'qwerty\'') }
+                { error: new InvalidEmbedError('Unknown key \'qwerty\'') }
             ]
         }
     ]

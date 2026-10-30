@@ -1,6 +1,6 @@
-import { DiscordChannelTag } from './DiscordChannelTag';
-import { DiscordRoleTag } from './DiscordRoleTag';
-import { DiscordUserTag } from './DiscordUserTag';
+import type { DiscordChannelTag } from './DiscordChannelTag.js';
+import type { DiscordRoleTag } from './DiscordRoleTag.js';
+import type { DiscordUserTag } from './DiscordUserTag.js';
 
 export interface DiscordTagSet {
     readonly parsedUsers: Record<string, DiscordUserTag>;

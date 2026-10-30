@@ -2,21 +2,18 @@
     "name": "@blargbot/cluster-tests",
     "version": "1.0.0",
     "private": true,
+    "type": "module",
     "dependencies": {
-        "@blargbot/bbtag": "workspace:^",
+        "@blargbot/bbtag-engine": "workspace:^",
         "@blargbot/cluster": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",
         "@blargbot/formatting": "workspace:^",
         "@blargbot/test-util": "workspace:^",
-        "chai": "^4.3.7",
         "eris": "^0.17.1",
-        "mocha": "^10.1.0",
-        "moment-timezone": "^0.5.39"
+        "moment-timezone": "^0.6.4"
     },
     "devDependencies": {
-        "@types/chai": "^4.3.4",
-        "@types/eris": "workspace:^",
-        "@types/mocha": "^10.0.0"
+        "@types/eris": "workspace:^"
     }
 }

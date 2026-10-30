@@ -1,70 +1,73 @@
-import { UserAvatarSubtag } from '@blargbot/bbtag/subtags/user/userAvatar';
+import type { GetUserAvatarUrlFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserAvatarSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
-    subtag: new UserAvatarSubtag(),
+const features = new Mock<GetUserAvatarUrlFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new UserAvatarSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
+    names: ['userAvatar'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetUserPropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup, global: true }),
             generateCode(...args) {
                 return `{${['useravatar', ...args].join(';')}}`;
             },
             cases: [
                 {
                     expected: 'https://cdn.discordapp.com/avatars/12345678912345678/a1b2c3.png?size=512',
-                    setup(member, ctx) {
-                        member.user.id = '12345678912345678';
-                        member.user.avatar = 'a1b2c3';
-                        ctx.discordOptions.defaultImageFormat = 'png';
-                        ctx.discordOptions.defaultImageSize = 512;
+                    setup(userId) {
+                        features.setup(m => m.getUserAvatarUrl(userId))
+                            .resolves(new URL('https://cdn.discordapp.com/avatars/12345678912345678/a1b2c3.png?size=512'))
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'https://cdn.discordapp.com/avatars/12345678912345678/a_a1b2c3.gif?size=512',
-                    setup(member, ctx) {
-                        member.user.id = '12345678912345678';
-                        member.user.avatar = 'a_a1b2c3';
-                        ctx.discordOptions.defaultImageSize = 512;
+                    setup(userId) {
+                        features.setup(m => m.getUserAvatarUrl(userId))
+                            .resolves(new URL('https://cdn.discordapp.com/avatars/12345678912345678/a_a1b2c3.gif?size=512'))
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'https://cdn.discordapp.com/guilds/87654321987654321/users/12345678912345678/avatars/a1b2c3.png?size=512',
-                    setup(member, ctx) {
-                        ctx.guild.id = '87654321987654321';
-                        ctx.roles.everyone.id = ctx.guild.id;
-                        ctx.channels.command.guild_id = ctx.guild.id;
-                        member.user.id = '12345678912345678';
-                        member.avatar = 'a1b2c3';
-                        ctx.discordOptions.defaultImageFormat = 'png';
-                        ctx.discordOptions.defaultImageSize = 512;
+                    setup(userId) {
+                        features.setup(m => m.getUserAvatarUrl(userId))
+                            .resolves(new URL('https://cdn.discordapp.com/guilds/87654321987654321/users/12345678912345678/avatars/a1b2c3.png?size=512'))
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'https://cdn.discordapp.com/guilds/87654321987654321/users/12345678912345678/avatars/a_a1b2c3.gif?size=512',
-                    setup(member, ctx) {
-                        ctx.guild.id = '87654321987654321';
-                        ctx.roles.everyone.id = ctx.guild.id;
-                        ctx.channels.command.guild_id = ctx.guild.id;
-                        member.user.id = '12345678912345678';
-                        member.avatar = 'a_a1b2c3';
-                        ctx.discordOptions.defaultImageSize = 512;
+                    setup(userId) {
+                        features.setup(m => m.getUserAvatarUrl(userId))
+                            .resolves(new URL('https://cdn.discordapp.com/guilds/87654321987654321/users/12345678912345678/avatars/a_a1b2c3.gif?size=512'))
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'https://cdn.discordapp.com/embed/avatars/4.png',
-                    setup(member, ctx) {
-                        member.user.discriminator = '1234';
-                        ctx.discordOptions.defaultImageFormat = 'png';
+                    setup(userId) {
+                        features.setup(m => m.getUserAvatarUrl(userId))
+                            .resolves(new URL('https://cdn.discordapp.com/embed/avatars/4.png'))
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: 'https://cdn.discordapp.com/embed/avatars/2.png',
-                    setup(member, ctx) {
-                        member.user.discriminator = '1237';
-                        ctx.discordOptions.defaultImageFormat = 'png';
+                    setup(userId) {
+                        features.setup(m => m.getUserAvatarUrl(userId))
+                            .resolves(new URL('https://cdn.discordapp.com/embed/avatars/2.png'))
+                            .mustHappen(1);
                     }
                 }
             ]

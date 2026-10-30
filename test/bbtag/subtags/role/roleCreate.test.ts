@@ -1,250 +1,409 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleCreateSubtag } from '@blargbot/bbtag/subtags/role/roleCreate';
-import { argument } from '@blargbot/test-util/mock';
-import { ApiError, Constants } from 'eris';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag-engine';
+import type { CreateRoleFeature, GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag-engine/subtags';
+import { ReasonSubtag, RoleCreateSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { createSnowflake } from '../../snowflake.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new RoleCreateSubtag(),
+const features = new Mock<CreateRoleFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature>({ id: 'features' });
+const reasonSubtag = createMockSubtag(ReasonSubtag);
+const manyPerms = new DiscordPermissions(
+    'BAN_MEMBERS',
+    'VIEW_AUDIT_LOG',
+    'SEND_MESSAGES',
+    'MANAGE_MESSAGES',
+    'ATTACH_FILES',
+    'READ_MESSAGE_HISTORY',
+    'MENTION_EVERYONE'
+);
+const morePerms = new DiscordPermissions(
+    'KICK_MEMBERS',
+    'BAN_MEMBERS',
+    'ADMINISTRATOR',
+    'MANAGE_CHANNELS',
+    'MANAGE_GUILD',
+    'STREAM',
+    'SEND_TTS_MESSAGES',
+    'EMBED_LINKS',
+    'MENTION_EVERYONE',
+    'CONNECT',
+    'SPEAK'
+);
+
+await runSubtagTests({
+    subtag: new RoleCreateSubtag(features.instance),
     argCountBounds: { min: 1, max: 5 },
+    names: ['roleCreate'],
+    otherSubtags: [reasonSubtag.instance],
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.all.toString();
+        ctx.adoptMock(features);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         {
             code: '{rolecreate;My role name}',
             expected: '982374624329846',
-            postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
-
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0,
-                    permissions: 0n,
+                    permissions: DiscordPermissions.NONE,
                     mentionable: false,
-                    hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                    hoist: false,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true, roleId: '982374624329846' });
             }
         },
         {
             code: '{rolecreate;My role name;red}',
             expected: '982374624329846',
-            postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
-
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0xff0000,
-                    permissions: 0n,
+                    permissions: DiscordPermissions.NONE,
                     mentionable: false,
-                    hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                    hoist: false,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true, roleId: '982374624329846' });
             }
         },
         {
-            code: '{rolecreate;My role name;;238764}',
+            code: `{rolecreate;My role name;;${manyPerms.raw}}`,
             expected: '982374624329846',
-            postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
-
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0,
-                    permissions: 238764n,
+                    permissions: manyPerms,
                     mentionable: false,
-                    hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                    hoist: false,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true, roleId: '982374624329846' });
             }
         },
         {
-            code: '{rolecreate;My role name;blue;238764}',
+            title: 'User has admin',
+            code: `{rolecreate;My role name;blue;${manyPerms.raw}}`,
             expected: '982374624329846',
-            postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
-
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0x0000ff,
-                    permissions: 238764n,
+                    permissions: manyPerms,
                     mentionable: false,
-                    hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                    hoist: false,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true, roleId: '982374624329846' });
             }
         },
         {
-            code: '{rolecreate;My role name;blue;238764}',
+            title: 'User has individual permissions',
+            code: `{rolecreate;My role name;blue;${manyPerms.raw}}`,
             expected: '982374624329846',
-            postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
-
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.ADMINISTRATOR.inverse()).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0x0000ff,
-                    permissions: 238764n,
+                    permissions: manyPerms,
                     mentionable: false,
-                    hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                    hoist: false,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true, roleId: '982374624329846' });
             }
         },
         {
             code: '{rolecreate;My role name;;;true}',
             expected: '982374624329846',
-            postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
-
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0,
-                    permissions: 0n,
+                    permissions: DiscordPermissions.NONE,
                     mentionable: true,
-                    hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                    hoist: false,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true, roleId: '982374624329846' });
             }
         },
         {
             code: '{rolecreate;My role name;;;false}',
             expected: '982374624329846',
-            postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
-
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0,
-                    permissions: 0n,
+                    permissions: DiscordPermissions.NONE,
                     mentionable: false,
-                    hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                    hoist: false,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true, roleId: '982374624329846' });
             }
         },
         {
             code: '{rolecreate;My role name;;;;true}',
             expected: '982374624329846',
-            postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
-
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0,
-                    permissions: 0n,
+                    permissions: DiscordPermissions.NONE,
                     mentionable: false,
-                    hoist: true
-                }), 'Command User#0000')).thenResolve(expected);
+                    hoist: true,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true, roleId: '982374624329846' });
             }
         },
         {
             code: '{rolecreate;My role name;;;;false}',
             expected: '982374624329846',
-            postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
-
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0,
-                    permissions: 0n,
+                    permissions: DiscordPermissions.NONE,
                     mentionable: false,
-                    hoist: false
-                }), 'Command User#0000')).thenResolve(expected);
+                    hoist: false,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true, roleId: '982374624329846' });
             }
         },
         {
-            code: '{rolecreate;My role name;red;3297864;true;true}',
+            code: `{rolecreate;My role name;red;${morePerms.raw};true;true}`,
             expected: '982374624329846',
-            postSetup(bbctx, ctx) {
-                const expected = ctx.createRole(bbctx.guild, SubtagTestContext.createApiRole({
-                    id: '982374624329846'
-                }));
-
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0xff0000,
-                    permissions: 3297864n,
+                    permissions: morePerms,
                     mentionable: true,
-                    hoist: true
-                }), 'Command User#0000')).thenResolve(expected);
+                    hoist: true,
+                    auditReason: '@command.user'
+                }))).resolves({ success: true, roleId: '982374624329846' });
             }
         },
         {
-            code: '{rolecreate;My role name;red;3297864;true;true}',
+            code: `{rolecreate;My role name;red;${morePerms.raw};true;true}`,
             expected: '`Author cannot create roles`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Author cannot create roles') }
+                { error: new BBTagRuntimeError('Author cannot create roles') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = (
-                    Constants.Permissions.all
-                    & ~Constants.Permissions.administrator
-                    & ~Constants.Permissions.manageRoles
-                ).toString();
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.NONE).mustHappen(1);
             }
         },
         {
             code: '{rolecreate;My role name;red;abc;true;true}',
             expected: '`Permission not a number`',
             errors: [
-                { start: 0, end: 43, error: new BBTagRuntimeError('Permission not a number', '"abc" is not a number') }
-            ]
+                { error: new BBTagRuntimeError('Permission not a number', '"abc" is not a number') }
+            ],
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+            }
         },
         {
-            code: '{rolecreate;My role name;red;3297864;true;true}',
+            code: `{rolecreate;My role name;red;${morePerms.raw};true;true}`,
             expected: '`Author missing requested permissions`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Author missing requested permissions') }
+                { error: new BBTagRuntimeError('Author missing requested permissions') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR.inverse()).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.SPEAK.inverse()).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
             }
         },
         {
-            code: '{rolecreate;My role name;red;3297864;true;true}',
+            code: `{rolecreate;My role name;red;${morePerms.raw};true;true}`,
             expected: '`Failed to create role: no perms`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Test REST error') }
+                { error: new BBTagRuntimeError('Failed to create role: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0xff0000,
-                    permissions: 3297864n,
+                    permissions: morePerms,
                     mentionable: true,
-                    hoist: true
-                }), 'Command User#0000')).thenReject(err);
+                    hoist: true,
+                    auditReason: '@command.user'
+                }))).resolves({ success: false, reason: 'Test REST error' });
             }
         },
         {
-            code: '{rolecreate;My role name;red;3297864;true;true}',
+            code: `{rolecreate;My role name;red;${morePerms.raw};true;true}`,
             expected: '`Failed to create role: no perms`',
             errors: [
-                { start: 0, end: 47, error: new BBTagRuntimeError('Failed to create role: no perms', 'Some other error message') }
+                { error: new BBTagRuntimeError('Failed to create role: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
-                ctx.discord.setup(m => m.createRole(ctx.guild.id, argument.isDeepEqual({
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup((m, $) => m.createRole($({
+                    guildId,
                     name: 'My role name',
                     color: 0xff0000,
-                    permissions: 3297864n,
+                    permissions: morePerms,
                     mentionable: true,
-                    hoist: true
-                }), 'Command User#0000')).thenReject(err);
+                    hoist: true,
+                    auditReason: '@command.user'
+                }))).resolves({ success: false, reason: 'Some other error message' });
             }
         }
     ]

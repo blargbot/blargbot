@@ -1,19 +1,26 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { GuildBansSubtag } from '@blargbot/bbtag/subtags/guild/guildBans';
-import { ApiError } from 'eris';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { GetBannedUsersFeature } from '@blargbot/bbtag-engine/subtags';
+import { GuildBansSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new GuildBansSubtag(),
+const features = new Mock<GetBannedUsersFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new GuildBansSubtag(features.instance),
     argCountBounds: { min: 0, max: 0 },
+    names: ['guildBans'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         {
             code: '{guildbans}',
             expected: '["23946327849364832","32967423897649864"]',
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.getBannedUsers(bbctx.guild))
-                    .thenResolve([
+            setup(ctx) {
+                features.setup(m => m.getBannedUsers(ctx.guildId))
+                    .resolves([
                         '23946327849364832',
                         '32967423897649864'
                     ]);
@@ -23,12 +30,11 @@ runSubtagTests({
             code: '{guildbans}',
             expected: '`Missing required permissions`',
             errors: [
-                { start: 0, end: 11, error: new BBTagRuntimeError('Missing required permissions', 'Test REST error') }
+                { error: new BBTagRuntimeError('Missing required permissions') }
             ],
-            postSetup(bbctx, ctx) {
-                const error = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                ctx.util.setup(m => m.getBannedUsers(bbctx.guild))
-                    .thenReject(error);
+            setup(ctx) {
+                features.setup(m => m.getBannedUsers(ctx.guildId))
+                    .resolves(undefined);
             }
         }
     ]

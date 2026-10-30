@@ -1,17 +1,18 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ApplySubtag } from '@blargbot/bbtag/subtags/bot/apply';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { ApplySubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { EchoArgsSubtag, MarkerError, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite';
+import { EchoArgsSubtag, MarkerError, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ApplySubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['apply'],
     cases: [
         {
             code: '{apply;eval}',
             expected: '',
             errors: [
-                { start: 0, end: 12, error: new MarkerError('eval', 0) }
+                { error: new MarkerError('eval', 0) }
             ]
         },
         {
@@ -38,7 +39,7 @@ runSubtagTests({
             code: '{apply;unknownsubtag}',
             expected: '`No subtag found`',
             errors: [
-                { start: 0, end: 21, error: new BBTagRuntimeError('No subtag found') }
+                { error: new BBTagRuntimeError('No subtag found') }
             ]
         }
     ]

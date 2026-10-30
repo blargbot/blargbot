@@ -1,9 +1,9 @@
-import { Configuration } from '@blargbot/config/Configuration';
-import { BaseWorker } from '@blargbot/core/worker';
-import { Logger } from '@blargbot/logger';
-import { MasterIPCContract, MasterOptions } from '@blargbot/master/types';
+import type { Configuration } from '@blargbot/config';
+import { BaseWorker } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
 
-import { Master } from './Master';
+import { Master } from './Master.js';
+import type { MasterIPCContract, MasterOptions } from './types.js';
 
 export class MasterWorker extends BaseWorker<MasterIPCContract> {
     public readonly master: Master;
@@ -11,6 +11,7 @@ export class MasterWorker extends BaseWorker<MasterIPCContract> {
     public constructor(
         logger: Logger,
         config: Configuration,
+        fetch: typeof globalThis.fetch,
         options: Omit<MasterOptions, 'worker'>
     ) {
         super(logger);
@@ -22,11 +23,11 @@ MAIN PROCESS INITIALIZED
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@`);
 
-        this.master = new Master(logger, config, { ...options, worker: this });
+        this.master = new Master(logger, config, fetch, { ...options, worker: this });
     }
 
     public async start(): Promise<void> {
         await this.master.start();
-        super.start();
+        await super.start();
     }
 }

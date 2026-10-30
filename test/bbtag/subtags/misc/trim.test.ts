@@ -1,11 +1,11 @@
-import { SpaceSubtag } from '@blargbot/bbtag/subtags/misc/space';
-import { TrimSubtag } from '@blargbot/bbtag/subtags/misc/trim';
+import { SpaceSubtag, TrimSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new TrimSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['trim'],
     cases: [
         { code: '{trim;abc}', expected: 'abc' },
         { code: '{trim;   def   }', expected: 'def' },

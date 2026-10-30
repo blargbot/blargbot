@@ -1,10 +1,11 @@
-import { RbSubtag } from '@blargbot/bbtag/subtags/simple/rb';
+import { RbSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RbSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['rb'],
     cases: [
         { code: '{rb}', expected: '}' }
     ]

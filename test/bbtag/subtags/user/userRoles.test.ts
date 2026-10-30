@@ -1,34 +1,49 @@
-import { UserRolesSubtag } from '@blargbot/bbtag/subtags/user/userRoles';
+import type { ListMemberRolesFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserRolesSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
-    subtag: new UserRolesSubtag(),
+const features = new Mock<ListMemberRolesFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new UserRolesSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
+    names: ['userRoles'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetUserPropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['userroles', ...args].join(';')}}`;
             },
             cases: [
                 {
                     expected: '[]',
-                    setup(member) {
-                        member.roles = [];
+                    setup(userId, ctx) {
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
+                            .resolves([])
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: '["098765434512212678"]',
-                    setup(member) {
-                        member.roles = ['098765434512212678'];
+                    setup(userId, ctx) {
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
+                            .resolves(['098765434512212678'])
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: '["098765434512212678","1234567890987654"]',
-                    setup(member) {
-                        member.roles = ['098765434512212678', '1234567890987654'];
+                    setup(userId, ctx) {
+                        features.setup(m => m.listMemberRoles(ctx.guildId, userId))
+                            .resolves(['098765434512212678', '1234567890987654'])
+                            .mustHappen(1);
                     }
                 }
             ]

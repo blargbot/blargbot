@@ -1,100 +1,177 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleSetPermissionsSubtag } from '@blargbot/bbtag/subtags/role/roleSetPermissions';
-import { argument } from '@blargbot/test-util/mock';
-import { ApiError, Constants } from 'eris';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag-engine';
+import type { EditRoleFeature, GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag-engine/subtags';
+import { ReasonSubtag, RoleIdSubtag, RoleSetPermissionsSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { createSnowflake } from '../../snowflake.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
-runSubtagTests({
-    subtag: new RoleSetPermissionsSubtag(),
+const features = new Mock<EditRoleFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature>({ id: 'features' });
+const roleIdSubtag = createMockSubtag(RoleIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
+const manyPerms = new DiscordPermissions(
+    'BAN_MEMBERS',
+    'VIEW_AUDIT_LOG',
+    'SEND_MESSAGES',
+    'MANAGE_MESSAGES',
+    'ATTACH_FILES',
+    'READ_MESSAGE_HISTORY',
+    'MENTION_EVERYONE'
+);
+
+await runSubtagTests({
+    subtag: new RoleSetPermissionsSubtag(features.instance),
     argCountBounds: { min: 1, max: 3 },
+    names: ['roleSetPermissions', 'roleSetPerms'],
+    otherSubtags: [reasonSubtag.instance],
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
-        ctx.members.authorizer.roles.push(ctx.roles.top.id);
+        ctx.adoptMock(features);
+        ctx.adoptMock(roleIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         ...createGetRolePropTestCases({
             quiet: false,
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(role, ...args) {
                 return `{${['rolesetperms', role, ...args].join(';')}}`;
             },
             notFound: () => new BBTagRuntimeError('Role not found'),
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+            },
             cases: [
                 {
                     expected: '',
-                    postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 0n }), 'Command User#0000'))
-                            .thenResolve(role);
+                    setup(roleId, ctx) {
+                        features.setup((m, $) => m.editRole($({
+                            guildId: ctx.guildId,
+                            roleId,
+                            permissions: DiscordPermissions.NONE,
+                            auditReason: '@command.user'
+                        }))).resolves({ success: true }).mustHappen(1);
                     }
                 }
             ]
         }),
         ...createGetRolePropTestCases({
             quiet: false,
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(role, ...args) {
                 return `{${['rolesetperms', role, '', ...args].join(';')}}`;
             },
             notFound: () => new BBTagRuntimeError('Role not found'),
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+            },
             cases: [
                 {
                     expected: '',
-                    postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 0n }), 'Command User#0000'))
-                            .thenResolve(role);
+                    setup(roleId, ctx) {
+                        features.setup((m, $) => m.editRole($({
+                            guildId: ctx.guildId,
+                            roleId,
+                            permissions: DiscordPermissions.NONE,
+                            auditReason: '@command.user'
+                        }))).resolves({ success: true }).mustHappen(1);
                     }
                 }
             ]
         }),
         ...createGetRolePropTestCases({
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(role, ...args) {
-                return `{${['rolesetperms', role, '239748', ...args].join(';')}}`;
+                return `{${['rolesetperms', role, manyPerms.raw, ...args].join(';')}}`;
             },
             notFound: () => new BBTagRuntimeError('Role not found'),
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.ADMINISTRATOR).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES, { isFallback: true }).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+            },
             cases: [
                 {
                     title: 'Author is missing permissions',
                     expected: '',
-                    postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 0n }), 'Command User#0000'))
-                            .thenResolve(role);
+                    setup(roleId, ctx) {
+                        features.setup((m, $) => m.editRole($({
+                            guildId: ctx.guildId,
+                            roleId,
+                            permissions: DiscordPermissions.NONE,
+                            auditReason: '@command.user'
+                        }))).resolves({ success: true }).mustHappen(1);
                     }
                 },
                 {
                     title: 'Author is admin',
                     expected: '',
-                    setup(_, ctx) {
-                        ctx.roles.authorizer.permissions = Constants.Permissions.administrator.toString();
-                    },
-                    postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 239748n }), 'Command User#0000'))
-                            .thenResolve(role);
+                    setup(roleId, ctx) {
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId))
+                            .resolves(DiscordPermissions.ADMINISTRATOR)
+                            .mustHappen(1);
+                        features.setup((m, $) => m.editRole($({
+                            guildId: ctx.guildId,
+                            roleId,
+                            permissions: manyPerms,
+                            auditReason: '@command.user'
+                        }))).resolves({ success: true }).mustHappen(1);
                     }
                 },
                 {
                     title: 'Author has permissions',
                     expected: '',
-                    setup(_, ctx) {
-                        ctx.roles.authorizer.permissions = (Constants.Permissions.all & ~Constants.Permissions.administrator).toString();
-                    },
-                    postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 239748n }), 'Command User#0000'))
-                            .thenResolve(role);
+                    setup(roleId, ctx) {
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId))
+                            .resolves(DiscordPermissions.ADMINISTRATOR.inverse())
+                            .mustHappen(1);
+                        features.setup((m, $) => m.editRole($({
+                            guildId: ctx.guildId,
+                            roleId,
+                            permissions: manyPerms,
+                            auditReason: '@command.user'
+                        }))).resolves({ success: true }).mustHappen(1);
                     }
                 },
                 {
                     title: 'Author has partial permissions',
                     expected: '',
-                    setup(_, ctx) {
-                        ctx.roles.authorizer.permissions = (
-                            Constants.Permissions.manageRoles
-                            | Constants.Permissions.viewAuditLog
-                            | Constants.Permissions.readMessageHistory
-                        ).toString();
-                    },
-                    postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 65664n }), 'Command User#0000'))
-                            .thenResolve(role);
+                    setup(roleId, ctx) {
+                        features.setup(m => m.getMemberPermissions(ctx.guildId, ctx.authorizerId))
+                            .resolves(new DiscordPermissions('MANAGE_ROLES', 'VIEW_AUDIT_LOG', 'READ_MESSAGE_HISTORY'))
+                            .mustHappen(1);
+                        features.setup((m, $) => m.editRole($({
+                            guildId: ctx.guildId,
+                            roleId,
+                            permissions: new DiscordPermissions('VIEW_AUDIT_LOG', 'READ_MESSAGE_HISTORY'),
+                            auditReason: '@command.user'
+                        }))).resolves({ success: true }).mustHappen(1);
                     }
                 }
             ]
@@ -103,70 +180,99 @@ runSubtagTests({
             code: '{rolesetperms;3298746326924}',
             expected: '`Author cannot edit roles`',
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Author cannot edit roles') }
+                { error: new BBTagRuntimeError('Author cannot edit roles') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = '0';
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.NONE).mustHappen(1);
             }
         },
         {
             code: '{rolesetperms;3298746326924}',
+            subtags: [roleIdSubtag.instance],
             expected: '`Role above author`',
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Role above author') }
+                { error: new BBTagRuntimeError('Role above author') }
             ],
             setup(ctx) {
-                ctx.roles.top.id = '3298746326924';
-            },
-            postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, ...roleIds]).mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
+                    .resolves('3298746326924')
+                    .mustHappen(1);
             }
         },
         {
             code: '{rolesetperms;3298746326924}',
             expected: '`Failed to edit role: no perms`',
+            subtags: [roleIdSubtag.instance],
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Test REST error') }
+                { error: new BBTagRuntimeError('Failed to edit role: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                ctx.roles.bot.id = '3298746326924';
-            },
-            postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 0n }), 'Command User#0000'))
-                    .thenReject(err);
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
+                    .resolves('3298746326924')
+                    .mustHappen(1);
+                features.setup((m, $) => m.editRole($({
+                    guildId: ctx.guildId,
+                    roleId: roleIds[0],
+                    permissions: DiscordPermissions.NONE,
+                    auditReason: '@command.user'
+                }))).resolves({ success: false, reason: 'Test REST error' }).mustHappen(1);
             }
         },
         {
             code: '{rolesetperms;3298746326924}',
             expected: '`Failed to edit role: no perms`',
+            subtags: [roleIdSubtag.instance],
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Some other error message') }
+                { error: new BBTagRuntimeError('Failed to edit role: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                ctx.roles.bot.id = '3298746326924';
-            },
-            postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ permissions: 0n }), 'Command User#0000'))
-                    .thenReject(err);
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
+                    .resolves('3298746326924')
+                    .mustHappen(1);
+                features.setup((m, $) => m.editRole($({
+                    guildId: ctx.guildId,
+                    roleId: roleIds[0],
+                    permissions: DiscordPermissions.NONE,
+                    auditReason: '@command.user'
+                }))).resolves({ success: false, reason: 'Some other error message' }).mustHappen(1);
             }
         }
     ]

@@ -1,11 +1,12 @@
-import { CommandContext, GlobalCommand, SendTypingMiddleware } from '@blargbot/cluster/command';
-import { CommandType, guard } from '@blargbot/cluster/utils';
-import { FlagResult } from '@blargbot/domain/models';
-import { IFormattable, util } from '@blargbot/formatting';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand, guard, SendTypingMiddleware  } from '@blargbot/cluster';
+import type { FlagResult } from '@blargbot/domain';
+import type { IFormattable } from '@blargbot/formatting';
+import { util } from '@blargbot/formatting';
 import moment from 'moment-timezone';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
 
 const cmd = templates.commands.feedback;
 
@@ -92,7 +93,7 @@ export class FeedbackCommand extends GlobalCommand {
         description = res.description;
 
         await context.database.suggestions.update(caseNumber, {
-            /* eslint-disable @typescript-eslint/naming-convention */
+
             Type: subTypes,
             Title: title,
             Description: description,
@@ -100,7 +101,7 @@ export class FeedbackCommand extends GlobalCommand {
             Channel: context.channel.id,
             Edits: (suggestion.Edits ?? 0) + 1,
             'Last Edited': moment().valueOf()
-            /* eslint-enable @typescript-eslint/naming-convention */
+
         });
 
         return cmd.edit.success;
@@ -152,7 +153,7 @@ export class FeedbackCommand extends GlobalCommand {
             return cmd.general.unexpectedError;
 
         const record = await context.database.suggestions.create({
-            /* eslint-disable @typescript-eslint/naming-convention */
+
             AA: true,
             Bug: isBug,
             Title: title,
@@ -161,7 +162,7 @@ export class FeedbackCommand extends GlobalCommand {
             Author: [suggester],
             Channel: context.channel.id,
             Message: context.message.id
-            /* eslint-enable @typescript-eslint/naming-convention */
+
         });
         if (record === undefined)
             return cmd.general.unexpectedError;

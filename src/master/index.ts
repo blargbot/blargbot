@@ -1,2 +1,2 @@
-export * from './Master';
-export * from './MasterWorker';
+export * from './Master.js';
+export * from './MasterWorker.js';

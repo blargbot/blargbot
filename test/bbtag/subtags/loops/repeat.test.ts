@@ -1,96 +1,104 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return';
-import { RepeatSubtag } from '@blargbot/bbtag/subtags/loops/repeat';
-import { IncrementSubtag } from '@blargbot/bbtag/subtags/math/increment';
-import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
-import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { TagVariableType } from '@blargbot/domain/models';
-import { expect } from 'chai';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag-engine';
+import { GetSubtag, IfSubtag, IncrementSubtag, RepeatSubtag, ReturnSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new RepeatSubtag(),
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
+const sut = new RepeatSubtag();
+await runSubtagTests({
+    subtag: sut,
     argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 2, noEval: [0] } },
+    names: ['repeat', 'loop'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{repeat;abc;10}',
             expected: 'abcabcabcabcabcabcabcabcabcabc',
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(10).thenResolve(undefined);
+            setup(ctx) {
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(10).resolves(undefined);
             }
         },
         {
             code: '{repeat;{increment;index},;8}',
             expected: '1,2,3,4,5,6,7,8,',
-            subtags: [new IncrementSubtag()],
+            subtags: [new IncrementSubtag({ variables: variablesProvider.instance })],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 8, [1, 2, 3, 4, 5, 6, 7, 8]);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(8).resolves(undefined);
             },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(8).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(8);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(8);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4, 5, 6, 7, 8]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{repeat;{fail};abc}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 19, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{repeat;{fail};-1}',
             expected: '`Can\'t be negative`',
             errors: [
-                { start: 0, end: 18, error: new BBTagRuntimeError('Can\'t be negative') }
+                { error: new BBTagRuntimeError('Can\'t be negative') }
             ]
         },
         {
             code: '{repeat;{increment;index}{if;{get;index};==;6;{return}},;10}',
             expected: '1,2,3,4,5,6',
-            subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag(), new IncrementSubtag()],
+            subtags: [new GetSubtag({ variables: variablesProvider.instance }), new IfSubtag(), new ReturnSubtag(), new IncrementSubtag({ variables: variablesProvider.instance })],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
+                setupVariable('index', '0', 12, [1, 2, 3, 4, 5, 6]);
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(6).resolves(undefined);
             },
-            postSetup(bbctx, ctx) {
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(6).thenResolve(undefined);
-            },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(6);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(6);
-                expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4, 5, 6]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         },
         {
             code: '{repeat;{increment;index},;10}',
             expected: '1,2,3,4,`Too many loops`',
             errors: [
-                { start: 0, end: 30, error: new BBTagRuntimeError('Too many loops') }
+                { error: new BBTagRuntimeError('Too many loops') }
             ],
-            subtags: [new IncrementSubtag()],
+            subtags: [new IncrementSubtag({ variables: variablesProvider.instance })],
             setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' }, '0');
-            },
-            postSetup(bbctx, ctx) {
+                setupVariable('index', '0', 4, [1, 2, 3, 4]);
                 let i = 0;
-                ctx.limit.setup(m => m.check(bbctx, 'repeat:loops')).verifiable(5).thenCall(() => {
+                ctx.hooks.setup(m => m.loop!(sut)).mustHappen(5).invokesAsync(() => {
                     if (i++ >= 4)
                         throw new BBTagRuntimeError('Too many loops');
                     return undefined;
                 });
             },
-            async assert(bbctx, _, ctx) {
-                expect((await bbctx.variables.get('index')).value).to.equal(4);
-                expect(ctx.tagVariables.get({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'index' })).to.equal(4);
+            assert() {
+                Mock.verifySequence(...[1, 2, 3, 4]
+                    .map(value => variables.expression(m => m.set('index', value))));
             }
         }
     ]
 });
+
+function setupVariable(name: string, initial: JToken | undefined, readCount: number, setTo: Iterable<JToken | undefined>): void {
+    let current = initial;
+    variables.setup(m => m.get(name)).resolves({
+        key: 'foo',
+        get value() {
+            return current;
+        }
+    }).mustHappen(readCount);
+    for (const value of setTo)
+        variables.setup(m => m.set(name, value)).invokesAsync(() => void (current = value)).mustHappen(1);
+}

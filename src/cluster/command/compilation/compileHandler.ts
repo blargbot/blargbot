@@ -1,13 +1,13 @@
-import { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types';
-import { parse } from '@blargbot/cluster/utils';
-import { Binder } from '@blargbot/core/Binder';
-import { Binding } from '@blargbot/core/types';
+import type { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandResult, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster';
+import { parse } from '@blargbot/cluster';
+import type { Binding } from '@blargbot/core';
+import { Binder } from '@blargbot/core';
 
-import templates from '../../text';
-import { CommandContext } from '../CommandContext';
-import { ScopedCommand } from '../ScopedCommand';
-import * as bindings from './binding';
-import { getLookupCache } from './lookupCache';
+import { templates } from '../../text.js';
+import type { CommandContext } from '../CommandContext.js';
+import type { ScopedCommand } from '../ScopedCommand.js';
+import * as bindings from './binding/index.js';
+import { getLookupCache } from './lookupCache.js';
 
 export function compileHandler<TContext extends CommandContext>(
     signatures: ReadonlyArray<CommandSignatureHandler<TContext>>,
@@ -285,7 +285,7 @@ function mapKeys<TKey extends string, TValue, TResult>(
     return Object.entries(source)
         .reduce<{ [P in TKey]?: TResult }>((r, [key, value]) => {
             if (value !== undefined)
-                r[key] = map(value, key);
+                r[key as TKey] = map(value, key as TKey);
             return r;
         }, {});
 }

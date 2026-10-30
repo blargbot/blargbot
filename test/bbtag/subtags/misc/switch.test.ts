@@ -1,10 +1,11 @@
-import { SwitchSubtag } from '@blargbot/bbtag/subtags/misc/switch';
+import { SwitchSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SwitchSubtag(),
     argCountBounds: { min: 3, max: Infinity },
+    names: ['switch'],
     cases: [
         { code: '{switch;abc;abc;aaaa;def;{fail};ghi;{fail}}', expected: 'aaaa' },
         { code: '{switch;def;abc;{fail};def;bbbb;ghi;{fail}}', expected: 'bbbb' },

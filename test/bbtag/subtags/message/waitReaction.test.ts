@@ -1,332 +1,235 @@
-import { BBTagUtilities } from '@blargbot/bbtag/BBTagUtilities';
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId';
-import { ReactionSubtag } from '@blargbot/bbtag/subtags/message/reaction';
-import { ReactionUserSubtag } from '@blargbot/bbtag/subtags/message/reactionUser';
-import { WaitReactionSubtag } from '@blargbot/bbtag/subtags/message/waitReaction';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
-import { AwaitReactionsResponse } from '@blargbot/bbtag/types';
-import { Emote } from '@blargbot/core/Emote';
-import { argument } from '@blargbot/test-util/mock';
-import { expect } from 'chai';
-import { Guild, KnownMessage, Member, Message, TextChannel, User } from 'eris';
+import type { ReactionEvent } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { StreamReactionsFeature } from '@blargbot/bbtag-engine/subtags';
+import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, UserIdSubtag, WaitReactionSubtag } from '@blargbot/bbtag-engine/subtags';
+import Emote from '@blargbot/discord-emote';
+import { Mock } from '@blargbot/test-util';
 
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { createSnowflake } from '../../snowflake.js';
+import type { SubtagTestContext } from '../SubtagTestSuite.js';
+import { createMockSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-type AwaitCondition = Exclude<Parameters<BBTagUtilities['awaitReaction']>[1], undefined>;
-const anyCondition = argument.is((v): v is AwaitCondition => typeof v === 'function');
+const features = new Mock<StreamReactionsFeature>({ id: 'features' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
 
-runSubtagTests({
-    subtag: new WaitReactionSubtag(),
+await runSubtagTests({
+    subtag: new WaitReactionSubtag(features.instance),
     argCountBounds: { min: 1, max: { count: 5, noEval: [3] } },
+    names: ['waitReaction', 'waitReact'],
+    otherSubtags: [userIdSubtag.instance],
+    setup(ctx) {
+        ctx.adoptMock(features);
+        ctx.adoptMock(userIdSubtag);
+
+    },
     cases: [
         {
             code: '{waitreaction;328974628744623874}',
             expected: '`Wait timed out after 60000`',
             errors: [
-                { start: 0, end: 33, error: new BBTagRuntimeError('Wait timed out after 60000') }
+                { error: new BBTagRuntimeError('Wait timed out after 60000') }
             ],
             setup(ctx) {
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '23642834762378964232');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(undefined, [rejectedReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction]);
             }
         },
         {
             code: '{waitreaction;328974628744623874}',
             expected: '["2384792374232398472","328974628744623874","23642834762378964232","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-                ctx.users.command.id = '23642834762378964232';
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
+                ctx.channelId = '2384792374232398472';
+                ctx.userId = '23642834762378964232';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
             }
         },
         {
             code: '{waitreaction;["328974628744623874"]}',
             expected: '["2384792374232398472","328974628744623874","23642834762378964232","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-                ctx.users.command.id = '23642834762378964232';
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
+                ctx.channelId = '2384792374232398472';
+                ctx.userId = '23642834762378964232';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
             }
         },
         {
             code: '{waitreaction;["328974628744623874","34897465835684954375","9328479238794834798487"]}',
             expected: '["2384792374232398472","34897465835684954375","23642834762378964232","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-                ctx.users.command.id = '23642834762378964232';
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '34897465835684954375', '2384792374232398472', '23642834762378964232');
+                ctx.channelId = '2384792374232398472';
+                ctx.userId = '23642834762378964232';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '34897465835684954375', '2384792374232398472', '23642834762378964232');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874', '34897465835684954375', '9328479238794834798487']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874', '34897465835684954375', '9328479238794834798487']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
             }
         },
         {
             code: '{waitreaction;328974628744623874;23897462384627348293436}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
             }
         },
         {
             code: '{waitreaction;328974628744623874;["23897462384627348293436"]}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
             code: '{waitreaction;328974628744623874;["23897462384627348293436","9234874534905735485","39857623874642873"]}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '❌', '34798538573498574398');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member1 = ctx.createMock(Member);
-                const user1 = ctx.createMock(User);
-                member1.setup(m => m.user).thenReturn(user1.instance);
-                user1.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member1.instance]);
-
-                const member2 = ctx.createMock(Member);
-                const user2 = ctx.createMock(User);
-                member2.setup(m => m.user).thenReturn(user2.instance);
-                user2.setup(m => m.id).thenReturn('9234874534905735485');
-                ctx.util.setup(m => m.getUser('9234874534905735485')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '9234874534905735485')).thenResolve([member2.instance]);
-
-                const member3 = ctx.createMock(Member);
-                const user3 = ctx.createMock(User);
-                member3.setup(m => m.user).thenReturn(user3.instance);
-                user3.setup(m => m.id).thenReturn('39857623874642873');
-                ctx.util.setup(m => m.getUser('39857623874642873')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '39857623874642873')).thenResolve([member3.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '9234874534905735485', $({ noLookup: true, global: true }))).resolves('9234874534905735485').mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '39857623874642873', $({ noLookup: true, global: true }))).resolves('39857623874642873').mustHappen(1);
             }
         },
         {
             code: '{waitreaction;328974628744623874;23897462384627348293436;🤔}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '❌', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
             code: '{waitreaction;328974628744623874;23897462384627348293436;🤔❌}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
             code: '{waitreaction;328974628744623874;23897462384627348293436;🤔❌}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","❌"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
             code: '{waitreaction;328974628744623874;23897462384627348293436;["🤔❌"]}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
             code: '{waitreaction;328974628744623874;23897462384627348293436;["🤔❌"]}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","❌"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
             code: '{waitreaction;328974628744623874;23897462384627348293436;["🤔","❌"]}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
             code: '{waitreaction;328974628744623874;23897462384627348293436;["🤔","❌"]}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","❌"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction1 = createRejectedReaction(ctx, '✅', '23897462384627348293436');
                 const rejectedReaction2 = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction1, rejectedReaction2]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction1, rejectedReaction2, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
             code: '{waitreaction;328974628744623874;23897462384627348293436;}',
             expected: '["2384792374232398472","328974628744623874","23897462384627348293436","🤔"]',
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -338,22 +241,15 @@ runSubtagTests({
             ],
             subtags: [new OperatorSubtag(), new MessageIdSubtag()],
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '238746283794634234', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, '🤔', '238746283794634234', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -365,22 +261,15 @@ runSubtagTests({
             ],
             subtags: [new OperatorSubtag(), new ReactionSubtag()],
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -391,21 +280,14 @@ runSubtagTests({
             ],
             subtags: [new OperatorSubtag(), new ReactionUserSubtag()],
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -414,25 +296,18 @@ runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 70, error: new BBTagRuntimeError('Wait timed out after 60000') }
+                { error: new BBTagRuntimeError('Wait timed out after 60000') }
             ],
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -440,23 +315,16 @@ runSubtagTests({
             expected: '`Condition must return \'true\' or \'false\'`',
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 69, error: new BBTagRuntimeError('Condition must return \'true\' or \'false\'', 'Actually returned " abc"') }
+                { error: new BBTagRuntimeError('Condition must return \'true\' or \'false\'', 'Actually returned " abc"') }
             ],
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const rejectedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 60000))
-                    .thenCall(createFakeAwaiterFactory(undefined, [rejectedReaction]));
+                ctx.channelId = '2384792374232398472';
+                const rejectedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 60000))
+                    .yieldsAsync([rejectedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -465,25 +333,18 @@ runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 73, error: new BBTagRuntimeError('Wait timed out after 10000') }
+                { error: new BBTagRuntimeError('Wait timed out after 10000') }
             ],
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 10000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 10000))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -492,25 +353,18 @@ runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 73, error: new BBTagRuntimeError('Wait timed out after 0') }
+                { error: new BBTagRuntimeError('Wait timed out after 0') }
             ],
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 0))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 0))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         },
         {
@@ -519,62 +373,36 @@ runSubtagTests({
             errors: [
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
                 { start: 58, end: 64, error: new MarkerError('eval', 58) },
-                { start: 0, end: 74, error: new BBTagRuntimeError('Wait timed out after 300000') }
+                { error: new BBTagRuntimeError('Wait timed out after 300000') }
             ],
             setup(ctx) {
-                ctx.channels.command.id = '2384792374232398472';
-                ctx.message.channel_id = ctx.channels.command.id;
-            },
-            postSetup(bbctx, ctx) {
-                const acceptedReaction = createFilterableReaction(ctx, bbctx.guild, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
-                const filteredReaction = createFilterableReaction(ctx, bbctx.guild, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                ctx.channelId = '2384792374232398472';
+                const acceptedReaction = createFilterableReaction(ctx, '🤔', '328974628744623874', '2384792374232398472', '23897462384627348293436');
+                const filteredReaction = createFilterableReaction(ctx, '❌', '328974628744623874', '2384792374232398472', '23897462384627348293436');
                 const rejectedReaction = createRejectedReaction(ctx, '🤔', '32409764893267492832423');
-                ctx.util.setup(m => m.awaitReaction(argument.isDeepEqual(['328974628744623874']), anyCondition.value, 300000))
-                    .thenCall(createFakeAwaiterFactory(acceptedReaction, [rejectedReaction, filteredReaction]));
+                features.setup((m, $) => m.streamReactions($(['328974628744623874']), 300000))
+                    .yieldsAsync([rejectedReaction, filteredReaction, acceptedReaction]);
 
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                user.setup(m => m.id).thenReturn('23897462384627348293436');
-                ctx.util.setup(m => m.getUser('23897462384627348293436')).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '23897462384627348293436')).thenResolve([member.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '23897462384627348293436', $({ noLookup: true, global: true }))).resolves('23897462384627348293436').mustHappen(1);
+
             }
         }
     ]
 });
 
-function createFakeAwaiterFactory(result: AwaitReactionsResponse | undefined, expectedFails: AwaitReactionsResponse[] = []): BBTagUtilities['awaitReaction'] {
-    return async (_: unknown, condition: AwaitCondition) => {
-        for (const value of expectedFails)
-            expect(await condition(value)).to.be.false;
-        if (result === undefined)
-            return undefined;
-        if (await condition(result))
-            return result;
-        return undefined;
-    };
-}
-
 function createFilterableReaction(
     ctx: SubtagTestContext,
-    guild: Guild,
     emote: string,
     messageId: string,
-    channelId = ctx.channels.command.id,
-    userId = ctx.users.command.id
-): AwaitReactionsResponse {
-    const message = ctx.createMock<KnownMessage>(Message);
-    const channel = ctx.createMock(TextChannel);
-    const reactor = ctx.createMock(User);
-    message.setup(m => m.channel).thenReturn(channel.instance);
-    message.setup(m => m.id, false).thenReturn(messageId);
-    channel.setup(m => m.guild).thenReturn(guild);
-    channel.setup(m => m.id, false).thenReturn(channelId);
-    reactor.setup(m => m.id).thenReturn(userId);
-
+    channelId = ctx.channelId,
+    userId = ctx.userId
+): ReactionEvent {
     return {
-        message: message.instance,
-        user: reactor.instance,
+        guildId: ctx.guildId,
+        messageId,
+        channelId,
+        authorId: createSnowflake(),
+        reactorId: userId,
         reaction: Emote.parse(emote)
     };
 }
@@ -582,15 +410,14 @@ function createFilterableReaction(
 function createRejectedReaction(
     ctx: SubtagTestContext,
     emote: string,
-    userId = ctx.users.command.id
-): AwaitReactionsResponse {
-    const message = ctx.createMock<KnownMessage>(Message);
-    const reactor = ctx.createMock(User);
-    reactor.setup(m => m.id).thenReturn(userId);
-
+    userId = ctx.userId
+): ReactionEvent {
     return {
-        message: message.instance,
-        reaction: Emote.parse(emote),
-        user: reactor.instance
+        guildId: ctx.guildId,
+        messageId: createSnowflake(),
+        channelId: ctx.channelId,
+        authorId: createSnowflake(),
+        reactorId: userId,
+        reaction: Emote.parse(emote)
     };
 }

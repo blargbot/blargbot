@@ -1,12 +1,14 @@
-import { bbtag, limits, Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType, tagTypeDetails, tagVariableScopeProviders } from '@blargbot/bbtag';
-import { SendContent } from '@blargbot/core/types';
-import { guard } from '@blargbot/core/utils';
-import { IFormattable } from '@blargbot/formatting';
+import type { Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType } from '@blargbot/bbtag-engine';
+import { bbtag, tagTypeDetails } from '@blargbot/bbtag-engine';
+import type { SendContent } from '@blargbot/core';
+import { guard } from '@blargbot/core';
+import type { IFormattable } from '@blargbot/formatting';
 
-import { Cluster } from '../../Cluster';
-import templates from '../../text';
-import { Documentation, DocumentationPage, DocumentationPaged } from './DocumentationManager';
-import { DocumentationTreeManager } from './DocumentationTreeManager';
+import { BaseRuntimeLimit } from '../../bbtagLimits/BaseRuntimeLimit.js';
+import type { Cluster } from '../../Cluster.js';
+import { templates } from '../../text.js';
+import type { Documentation, DocumentationPage, DocumentationPaged } from './DocumentationManager.js';
+import { DocumentationTreeManager } from './DocumentationTreeManager.js';
 
 const doc = templates.documentation.bbtag;
 
@@ -22,8 +24,7 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
     }
 
     #loadTree(): Documentation {
-        const subtags = [...this.#cluster.bbtag.subtags.values()];
-        const subtagGroups = subtags
+        const subtagGroups = Iterator.from(this.#cluster.bbtag.subtags)
             .reduce((res, sub) => {
                 let subtags = res.get(sub.category);
                 if (subtags === undefined)
@@ -85,11 +86,11 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                     type: 'paged',
                     tags: ['variables'],
                     embed: {
-                        description: doc.variables.description({ scopeCount: tagVariableScopeProviders.length })
+                        description: doc.variables.description({ scopeCount: this.#cluster.bbtag.variables.kinds.length })
                     },
                     selectText: doc.variables.prompt,
                     pages: [
-                        ...tagVariableScopeProviders.map(scope => {
+                        ...this.#cluster.bbtag.variables.kinds.map(scope => {
                             return {
                                 name: doc.variables.pages.variableType.name({ name: scope.name, prefix: scope.prefix }),
                                 value: scope.description
@@ -252,15 +253,14 @@ export class BBTagDocumentationManager extends DocumentationTreeManager {
                         name: doc.subtag.pages.signature.exampleOut.name,
                         value: doc.subtag.pages.signature.exampleOut.value({ text: signature.exampleOut })
                     },
-                    ...Object.values(limits)
-                        .flatMap(l => {
-                            const limit = new l();
-                            const rules = limit.rulesFor(subtag.name);
-                            return rules.length === 0 ? [] : [{
-                                name: doc.subtag.pages.signature.limit.name[limit.id],
-                                value: doc.subtag.pages.signature.limit.value({ rules })
-                            }];
-                        })
+                    ...BaseRuntimeLimit.registered.flatMap(([name, type]) => {
+                        const limit = new type();
+                        const rules = limit.rulesFor(subtag.name);
+                        return rules.length === 0 ? [] : [{
+                            name: Reflect.get(doc.subtag.pages.signature.limit.name, name) as IFormattable<string>,
+                            value: doc.subtag.pages.signature.limit.value({ rules })
+                        }];
+                    })
                 ]
             }
         };

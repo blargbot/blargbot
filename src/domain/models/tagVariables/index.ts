@@ -1,3 +1,3 @@
-export * from './BBTagVariable';
-export * from './TagVariableType';
-export * from './TagVariableScope';
+export * from './BBTagVariable.js';
+export * from './TagVariableType.js';
+export * from './TagVariableScope.js';

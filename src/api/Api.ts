@@ -1,30 +1,32 @@
-import { Configuration } from '@blargbot/config';
-import { BaseClient } from '@blargbot/core/BaseClient';
-import { ModuleLoader } from '@blargbot/core/modules';
-import { Logger } from '@blargbot/logger';
-import express, { Express, Router } from 'express';
-import asyncRouter from 'express-promise-router';
-import { createServer, Server } from 'http';
-import { performance } from 'perf_hooks';
+import http from 'node:http';
+import { performance } from 'node:perf_hooks';
 
-import { ApiWorker } from './ApiWorker';
-import { BaseRoute } from './BaseRoute';
-import { ApiOptions } from './types';
+import type { Configuration } from '@blargbot/config';
+import { BaseClient, ModuleLoader } from '@blargbot/core';
+import type { Logger } from '@blargbot/logger';
+import express from 'express';
+import asyncRouter from 'express-promise-router';
+
+import type { ApiWorker } from './ApiWorker.js';
+import { BaseRoute } from './BaseRoute.js';
+import type { ApiOptions } from './types.js';
 
 export class Api extends BaseClient {
     public readonly worker: ApiWorker;
-    public readonly app: Express;
-    public readonly router: Router;
-    public readonly server: Server;
+    public readonly app: express.Express;
+    public readonly router: express.Router;
+    public readonly server: http.Server;
 
     public constructor(
         logger: Logger,
         config: Configuration,
+        fetch: typeof globalThis.fetch,
         options: ApiOptions
     ) {
         super({
             logger,
             config,
+            fetch,
             discordConfig: {
                 restMode: true,
                 intents: []
@@ -43,11 +45,11 @@ export class Api extends BaseClient {
         });
 
         this.app.use(this.router);
-        this.server = createServer(this.app);
+        this.server = http.createServer(this.app);
     }
 
     public async start(): Promise<void> {
-        const routes = new ModuleLoader<Pick<BaseRoute<['/']>, 'install'>>(`${__dirname}/routes`, BaseRoute, [this], this.logger);
+        const routes = new ModuleLoader<Pick<BaseRoute<['/']>, 'install'>>(`${import.meta.dirname}/routes`, BaseRoute, [this], this.logger);
         routes.on('link', module => module.install(this));
         await routes.init();
 

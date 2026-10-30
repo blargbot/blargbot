@@ -1,11 +1,12 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { RandomIntSubtag } from '@blargbot/bbtag/subtags/math/randomInt';
+import { NotANumberError } from '@blargbot/bbtag-engine';
+import { RandomIntSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new RandomIntSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['randomInt', 'randInt'],
     cases: [
         { code: '{randint;9}', expected: /^[0-9]$/ },
         { code: '{randint;4}', expected: /^[0-4]$/ },
@@ -17,14 +18,14 @@ runSubtagTests({
             code: '{randint;abc;1030}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 18, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{randint;6;def}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 15, error: new NotANumberError('def') }
+                { error: new NotANumberError('def') }
             ]
         }
     ]

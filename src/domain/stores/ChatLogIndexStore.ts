@@ -1,4 +1,4 @@
-import { ChatLogIndex } from '../models';
+import type { ChatLogIndex } from '../models/index.js';
 
 export interface ChatLogIndexStore {
     add(index: ChatLogIndex): Promise<boolean>;

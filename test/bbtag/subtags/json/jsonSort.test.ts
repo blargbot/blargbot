@@ -1,14 +1,25 @@
-import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag/errors';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
-import { JsonSortSubtag } from '@blargbot/bbtag/subtags/json/jsonSort';
-import { TagVariableType } from '@blargbot/domain/models';
-import { expect } from 'chai';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag-engine';
+import { JsonSortSubtag, JsonSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new JsonSortSubtag(),
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
+await runSubtagTests({
+    subtag: new JsonSortSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 2, max: 3 },
+    names: ['jsonSort', 'jSort'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{jsonsort;{j;[{"points": 10, "name": "Blargbot"},{"points": 3, "name": "UNO"},{"points": 6, "name": "Stupid cat"},{"points": 12, "name": "Winner"}]};points}',
@@ -23,91 +34,92 @@ runSubtagTests({
         {
             code: '{jsonsort;arrayVar;points}',
             expected: '',
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
-                    { points: 10, name: 'Blargbot' },
+            setup() {
+                variables.setup(m => m.get('arrayVar')).resolves({
+                    key: 'foo',
+                    value: [
+                        { points: 10, name: 'Blargbot' },
+                        { points: 3, name: 'UNO' },
+                        { points: 6, name: 'Stupid cat' },
+                        { points: 12, name: 'Winner' }
+                    ]
+                });
+                variables.setup((m, $) => m.set('arrayVar', $([
                     { points: 3, name: 'UNO' },
                     { points: 6, name: 'Stupid cat' },
-                    { points: 12, name: 'Winner' }
-                ]);
-            },
-            async assert(bbctx) {
-                expect((await bbctx.variables.get('arrayVar')).value).to.deep.equal([
-                    { points: 3, name: 'UNO' },
-                    { points: 6, name: 'Stupid cat' },
                     { points: 10, name: 'Blargbot' },
                     { points: 12, name: 'Winner' }
-                ]);
+                ]))).resolves().mustHappen(1);
             }
         },
         {
             code: '{jsonsort;arrayVar;points;a}',
             expected: '',
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
-                    { points: 10, name: 'Blargbot' },
-                    { points: 3, name: 'UNO' },
-                    { points: 6, name: 'Stupid cat' },
-                    { points: 12, name: 'Winner' }
-                ]);
-            },
-            async assert(bbctx) {
-                expect((await bbctx.variables.get('arrayVar')).value).to.deep.equal([
+            setup() {
+                variables.setup(m => m.get('arrayVar')).resolves({
+                    key: 'foo',
+                    value: [
+                        { points: 10, name: 'Blargbot' },
+                        { points: 3, name: 'UNO' },
+                        { points: 6, name: 'Stupid cat' },
+                        { points: 12, name: 'Winner' }
+                    ]
+                });
+                variables.setup((m, $) => m.set('arrayVar', $([
                     { points: 12, name: 'Winner' },
                     { points: 10, name: 'Blargbot' },
                     { points: 6, name: 'Stupid cat' },
                     { points: 3, name: 'UNO' }
-                ]);
+                ]))).resolves().mustHappen(1);
             }
         },
         {
             code: '{jsonsort;arrayVar;points;a}',
             expected: '`Cannot read property points at index 1, 1 total failures`',
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Cannot read property points at index 1, 1 total failures') }
+                { error: new BBTagRuntimeError('Cannot read property points at index 1, 1 total failures') }
             ],
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
-                    { points: 10, name: 'Blargbot' },
-                    { test: 3, name: 'UNO' },
-                    { points: 6, name: 'Stupid cat' },
-                    { points: 12, name: 'Winner' }
-                ]);
+            setup() {
+                variables.setup(m => m.get('arrayVar')).resolves({
+                    key: 'foo',
+                    value: [
+                        { points: 10, name: 'Blargbot' },
+                        { test: 3, name: 'UNO' },
+                        { points: 6, name: 'Stupid cat' },
+                        { points: 12, name: 'Winner' }
+                    ]
+                });
             }
         },
         {
             code: '{jsonsort;arrayVar;abc;a}',
             expected: '`Cannot read property abc at index 0, 4 total failures`',
             errors: [
-                { start: 0, end: 25, error: new BBTagRuntimeError('Cannot read property abc at index 0, 4 total failures') }
+                { error: new BBTagRuntimeError('Cannot read property abc at index 0, 4 total failures') }
             ],
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'arrayVar' }, [
-                    { points: 10, name: 'Blargbot' },
-                    { points: 3, name: 'UNO' },
-                    { points: 6, name: 'Stupid cat' },
-                    { points: 12, name: 'Winner' }
-                ]);
+            setup() {
+                variables.setup(m => m.get('arrayVar')).resolves({
+                    key: 'foo',
+                    value: [
+                        { points: 10, name: 'Blargbot' },
+                        { points: 3, name: 'UNO' },
+                        { points: 6, name: 'Stupid cat' },
+                        { points: 12, name: 'Winner' }
+                    ]
+                });
             }
         },
         {
             code: '{jsonsort;testVar;abc;a}',
             expected: '`Not an array`',
             errors: [
-                { start: 0, end: 24, error: new NotAnArrayError('testVar') }
+                { error: new NotAnArrayError('testVar') }
             ],
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'testVar' }, 'xyz');
+            setup() {
+                variables.setup(m => m.get('testVar')).resolves({
+                    key: 'foo',
+                    value: 'xyz'
+                });
             }
         }
     ]

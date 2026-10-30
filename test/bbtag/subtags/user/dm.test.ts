@@ -1,49 +1,57 @@
-import { UserNotFoundError } from '@blargbot/bbtag/errors';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { DMSubtag } from '@blargbot/bbtag/subtags/user/dm';
-import { argument } from '@blargbot/test-util/mock';
-import { Guild, Member, PrivateChannel, User } from 'eris';
+import { UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { GetDmChannelIdFeature, GetGuildNameFeature, GetUserNameFeature, SendFeature } from '@blargbot/bbtag-engine/subtags';
+import { DMSubtag, EscapeBBTagSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { createSnowflake } from '../../snowflake.js';
+import { createMockSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new DMSubtag(),
+const features = new Mock<SendFeature & GetDmChannelIdFeature & GetGuildNameFeature & GetUserNameFeature>({ id: 'features' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+
+await runSubtagTests({
+    subtag: new DMSubtag(features.instance),
     argCountBounds: { min: 2, max: 3 },
+    names: ['dm'],
+    otherSubtags: [userIdSubtag.instance],
+    setup(ctx) {
+        ctx.adoptMock(features);
+        ctx.adoptMock(userIdSubtag);
+    },
     cases: [
         {
             code: '{dm;aaaa;{eval}}',
             expected: '`No user found`',
             errors: [
                 { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 0, end: 16, error: new UserNotFoundError('aaaa') }
+                { error: new UserNotFoundError('aaaa') }
             ],
             setup(ctx) {
-                ctx.options.rootTagName = 'mySuperCoolTestingTag';
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'aaaa'))
-                    .verifiable(1)
-                    .thenResolve([]);
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'aaaa', undefined))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         },
         {
             code: '{dm;other user;Hello!}',
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
-
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(1)
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hello!' })))
-                    .verifiable(1)
-                    .thenResolve();
+                const userId = createSnowflake();
+                const channelId = createSnowflake();
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getDmChannelId(userId))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(1);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(1);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
+                    .mustHappen(1)
+                    .resolves({ success: true, id: 'unused' });
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: 'Hello!', embeds: undefined })))
+                    .mustHappen(1)
+                    .resolves({ success: true, id: 'unused' });
             }
         },
         {
@@ -51,22 +59,22 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
-
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(1)
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ embeds: [{ title: 'Hi!' }] })))
-                    .verifiable(1)
-                    .thenResolve();
+                const userId = createSnowflake();
+                const channelId = createSnowflake();
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getDmChannelId(userId))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(1);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(1);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
+                    .mustHappen(1)
+                    .resolves({ success: true, id: 'unused' });
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: undefined, embeds: [{ title: 'Hi!' }] })))
+                    .mustHappen(1)
+                    .resolves({ success: true, id: 'unused' });
             }
         },
         {
@@ -74,22 +82,22 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
-
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(1)
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] })))
-                    .verifiable(1)
-                    .thenResolve();
+                const userId = createSnowflake();
+                const channelId = createSnowflake();
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getDmChannelId(userId))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(1);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(1);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
+                    .mustHappen(1)
+                    .resolves({ success: true, id: 'unused' });
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] })))
+                    .mustHappen(1)
+                    .resolves({ success: true, id: 'unused' });
             }
         },
         {
@@ -97,66 +105,66 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
-
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(1)
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] })))
-                    .verifiable(1)
-                    .thenResolve();
+                const userId = createSnowflake();
+                const channelId = createSnowflake();
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(1);
+                features.setup(m => m.getDmChannelId(userId))
+                    .resolves(channelId)
+                    .mustHappen(1);
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(1);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(1);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
+                    .mustHappen(1)
+                    .resolves({ success: true, id: 'unused' });
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] })))
+                    .mustHappen(1)
+                    .resolves({ success: true, id: 'unused' });
             }
         },
         {
             code: '{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}',
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
-
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(x => x.times(5))
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(x => x.times(1))
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hi!' })))
-                    .verifiable(x => x.times(5))
-                    .thenResolve();
+                const userId = createSnowflake();
+                const channelId = createSnowflake();
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(5);
+                features.setup(m => m.getDmChannelId(userId))
+                    .resolves(channelId)
+                    .mustHappen(5);
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(1);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(1);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
+                    .mustHappen(1)
+                    .resolves({ success: true, id: 'unused' });
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: 'Hi!', embeds: undefined })))
+                    .mustHappen(5)
+                    .resolves({ success: true, id: 'unused' });
             }
         },
         {
             code: '{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}',
             expected: '',
             setup(ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                const channel = ctx.createMock(PrivateChannel);
-                member.setup(x => x.id).thenReturn(ctx.users.other.id);
-                member.setup(x => x.user).thenReturn(user.instance);
-                user.setup(m => m.getDMChannel()).thenResolve(channel.instance);
-
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
-                    .verifiable(x => x.times(6))
-                    .thenResolve([member.instance]);
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` })))
-                    .verifiable(x => x.times(2))
-                    .thenResolve();
-                ctx.util.setup(m => m.send(channel.instance, argument.isDeepEqual({ content: 'Hi!' })))
-                    .verifiable(x => x.times(6))
-                    .thenResolve();
+                const userId = createSnowflake();
+                const channelId = createSnowflake();
+                userIdSubtag.setup(m => m.query(ctx.bbtag, 'other user', undefined))
+                    .resolves(userId)
+                    .mustHappen(6);
+                features.setup(m => m.getDmChannelId(userId))
+                    .resolves(channelId)
+                    .mustHappen(6);
+                features.setup(m => m.getGuildName(ctx.guildId)).resolves('Test Guild').mustHappen(2);
+                features.setup(m => m.getUserName(ctx.userId)).resolves('command.user').mustHappen(2);
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: `The following message was sent from **__Test Guild__** (${ctx.guildId}), and was sent by **__@command.user__** (${ctx.userId}):` })))
+                    .mustHappen(2)
+                    .resolves({ success: true, id: 'unused' });
+                features.setup((m, $) => m.sendMessage(channelId, $({ content: 'Hi!', embeds: undefined })))
+                    .mustHappen(6)
+                    .resolves({ success: true, id: 'unused' });
             }
         }
     ]

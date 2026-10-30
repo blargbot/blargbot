@@ -1,11 +1,12 @@
-import { guard } from '@blargbot/core/utils';
-import { BBTagVariable, TagVariableScope, TagVariableScopeFilter, TagVariableType } from '@blargbot/domain/models';
-import { TagVariableStore } from '@blargbot/domain/stores';
-import { Logger } from '@blargbot/logger';
-import { ENUM, FindOptions, Op, STRING, TEXT, WhereAttributeHashValue } from 'sequelize';
+import { guard } from '@blargbot/core';
+import type { BBTagVariable, TagVariableScope, TagVariableScopeFilter, TagVariableStore } from '@blargbot/domain';
+import { TagVariableType } from '@blargbot/domain';
+import type { Logger } from '@blargbot/logger';
+import type { FindOptions, WhereAttributeHashValue } from 'sequelize';
+import { ENUM, Op, STRING, TEXT } from 'sequelize';
 
-import { PostgresDb } from '../clients';
-import { PostgresDbTable } from '../tables/PostgresDbTable';
+import type { PostgresDb } from '../clients/index.js';
+import { PostgresDbTable } from '../tables/PostgresDbTable.js';
 
 export class PostgresDbTagVariableStore implements TagVariableStore {
     readonly #table: PostgresDbTable<BBTagVariable>;
@@ -38,6 +39,8 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
     }
 
     public async getScope(scope: TagVariableScopeFilter): Promise<Array<{ scope: TagVariableScope; name: string; value: JToken; }>> {
+        if (scope.type === TagVariableType.TEMP)
+            return [];
         const values = await this.#table.getAll(this.#buildScopeQuery(scope));
         return values.map(v => ({
             scope: idToVariableScope(v.scope, v.type),
@@ -60,11 +63,14 @@ export class PostgresDbTagVariableStore implements TagVariableStore {
     }
 
     public async upsert(values: Record<string, JToken | undefined>, scope: TagVariableScope): Promise<void> {
+        const scopeId = variableScopeToId(scope);
+        if (scopeId === undefined)
+            return;
         const trans = await this.postgres.transaction();
         for (const [key, value] of Object.entries(values)) {
             const query = {
                 name: key.substring(0, 255),
-                scope: variableScopeToId(scope),
+                scope: scopeId,
                 type: scope.type
             };
             try {
@@ -102,7 +108,7 @@ function deserialize(value: string): JToken {
     }
 }
 
-function variableScopeToId(scope: TagVariableScope): string {
+function variableScopeToId(scope: TagVariableScope): string | undefined {
     switch (scope.type) {
         case TagVariableType.AUTHOR: return scope.authorId;
         case TagVariableType.GLOBAL: return '';
@@ -110,6 +116,7 @@ function variableScopeToId(scope: TagVariableScope): string {
         case TagVariableType.GUILD_TAG: return scope.guildId;
         case TagVariableType.LOCAL_CC: return `${scope.guildId}_${scope.name}`;
         case TagVariableType.LOCAL_TAG: return scope.name;
+        case TagVariableType.TEMP: return undefined;
     }
 }
 
@@ -126,11 +133,13 @@ function idToVariableScope(id: string, type: TagVariableScope['type']): TagVaria
             return { type, guildId: id.slice(0, splitAt), name: id.slice(splitAt + 1) };
         }
         case TagVariableType.LOCAL_TAG: return { type, name: id };
+        case TagVariableType.TEMP: return { type, id };
     }
 }
 
 function variableScopeToFilter(scope: TagVariableScopeFilter): WhereAttributeHashValue<string> | undefined {
     switch (scope.type) {
+        case TagVariableType.TEMP: return undefined;
         case TagVariableType.AUTHOR: return scope.authorId;
         case TagVariableType.GLOBAL: return scope.type;
         case TagVariableType.GUILD_TAG: return scope.guildId;

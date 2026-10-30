@@ -1,11 +1,12 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { JsonSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new JsonSubtag(),
     argCountBounds: { min: 0, max: { count: 1, noEval: [0] } },
+    names: ['json', 'j'],
     cases: [
         {
             code: '{json;{"a": 5, "b": "test", "c": false, "d": null, "e": [1,"2",true,null, {}], "f":{"g":{"h":"abc"}}}}',
@@ -19,7 +20,7 @@ runSubtagTests({
             code: '{json;{fail}}',
             expected: '`Invalid JSON provided`',
             errors: [
-                { start: 0, end: 13, error: new BBTagRuntimeError('Invalid JSON provided') }
+                { error: new BBTagRuntimeError('Invalid JSON provided') }
             ]
         }
     ]

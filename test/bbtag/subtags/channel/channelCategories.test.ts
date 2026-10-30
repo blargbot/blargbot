@@ -1,29 +1,31 @@
-import { ChannelCategoriesSubtag } from '@blargbot/bbtag/subtags/channel/channelCategories';
-import { ChannelType } from 'discord-api-types/v9';
+import type { GetCategoryChannelsFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelCategoriesSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new ChannelCategoriesSubtag(),
+const features = new Mock<GetCategoryChannelsFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new ChannelCategoriesSubtag(features.instance),
     argCountBounds: { min: 0, max: 0 },
+    names: ['channelCategories', 'categories'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         {
             code: '{channelcategories}',
-            expected: '[]'
+            expected: '[]',
+            setup(ctx) {
+                features.setup(m => m.getCategoryChannels(ctx.guildId)).resolves([]);
+            }
         },
-
         {
             code: '{channelcategories}',
             expected: '["29346782894762","2938476297493274"]',
             setup(ctx) {
-                ctx.channels.abc = SubtagTestContext.createApiChannel({
-                    id: '29346782894762',
-                    type: ChannelType.GuildCategory
-                });
-                ctx.channels.def = SubtagTestContext.createApiChannel({
-                    id: '2938476297493274',
-                    type: ChannelType.GuildCategory
-                });
+                features.setup(m => m.getCategoryChannels(ctx.guildId)).resolves(['29346782894762', '2938476297493274']);
             }
         }
     ]

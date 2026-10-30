@@ -1,8 +1,9 @@
-import { InvalidOperatorError } from '@blargbot/bbtag/errors';
-import { BoolSubtag } from '@blargbot/bbtag/subtags/misc/bool';
-import { bbtag, OrdinalOperator, StringOperator } from '@blargbot/bbtag/utils';
+import type { OrdinalOperator, StringOperator } from '@blargbot/bbtag-engine';
+import { bbtag, InvalidOperatorError } from '@blargbot/bbtag-engine';
+import { BoolSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const isEqualTo = { '!=': false, '<': false, '<=': true, '==': true, '>': false, '>=': true, 'startswith': true, 'endswith': true, 'includes': true, 'contains': true } as const;
 const isGreaterThan = { '!=': true, '<': false, '<=': false, '==': false, '>': true, '>=': true } as const;
@@ -12,9 +13,10 @@ const startsWith = { 'startswith': true, 'endswith': false, 'includes': true, 'c
 const endsWith = { 'startswith': false, 'endswith': true, 'includes': true, 'contains': true } as const;
 const doesntContain = { 'startswith': false, 'endswith': false, 'includes': false, 'contains': false } as const;
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new BoolSubtag(),
     argCountBounds: { min: 3, max: 3 },
+    names: ['bool'],
     cases: [
         ...generateOrdinalTestCases('123', isEqualTo, '123'),
         ...generateOrdinalTestCases('123', isGreaterThan, '122'),
@@ -44,7 +46,7 @@ runSubtagTests({
                 { start: 6, end: 12, error: new MarkerError('eval', 6) },
                 { start: 13, end: 19, error: new MarkerError('eval', 13) },
                 { start: 22, end: 28, error: new MarkerError('eval', 22) },
-                { start: 0, end: 29, error: new InvalidOperatorError('op') }
+                { error: new InvalidOperatorError('op') }
             ]
         }
     ]

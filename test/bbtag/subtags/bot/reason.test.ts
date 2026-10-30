@@ -1,31 +1,38 @@
-import { ReasonSubtag } from '@blargbot/bbtag/subtags/bot/reason';
-import { expect } from 'chai';
+import type { GetUserNameFeature } from '@blargbot/bbtag-engine/subtags';
+import { ReasonSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new ReasonSubtag(),
+const features = new Mock<GetUserNameFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new ReasonSubtag(features.instance),
     argCountBounds: { min: 0, max: 1 },
+    names: ['reason'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         {
             code: '{reason}',
             expected: '',
-            assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal('');
+            setup(ctx) {
+                ctx.root.setupSet(m => m.reason = '').returns(true).mustHappen(1);
             }
         },
         {
             code: '{reason;}',
             expected: '',
-            assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal('');
+            setup(ctx) {
+                ctx.root.setupSet(m => m.reason = '').returns(true).mustHappen(1);
             }
         },
         {
             code: '{reason;Because i can}',
             expected: '',
-            assert(ctx) {
-                expect(ctx.scopes.local.reason).to.equal('Because i can');
+            setup(ctx) {
+                ctx.root.setupSet(m => m.reason = 'Because i can').returns(true).mustHappen(1);
             }
         }
     ]

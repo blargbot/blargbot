@@ -1,11 +1,11 @@
-import { Cluster } from '@blargbot/cluster';
-import { GuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
-import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
-import { format, FormatString, IFormattable, ITranslationSource } from '@blargbot/formatting';
-import { Guild } from 'eris';
+import type { Cluster, CommandResult, GuildCommandContext } from '@blargbot/cluster';
+import { CommandType, defaultStaff, guard, GuildCommand, guildSettings, parse } from '@blargbot/cluster';
+import { codeBlock } from '@blargbot/core';
+import type { IFormattable, ITranslationSource } from '@blargbot/formatting';
+import { format, FormatString } from '@blargbot/formatting';
+import type * as eris from 'eris';
 
-import templates from '../../text';
+import { templates } from '../../text.js';
 
 const cmd = templates.commands.settings;
 
@@ -149,7 +149,7 @@ export class SettingsCommand extends GuildCommand {
     }
 }
 
-function resolveChannel(guild: Guild, channelId: string | undefined): IFormattable<string> | undefined {
+function resolveChannel(guild: eris.Guild, channelId: string | undefined): IFormattable<string> | undefined {
     // TODO channelId can be channel name, id or tag
     if (channelId === undefined)
         return undefined;
@@ -160,7 +160,7 @@ function resolveChannel(guild: Guild, channelId: string | undefined): IFormattab
         : cmd.list.channelValue.default({ channel });
 }
 
-function resolveRole(guild: Guild, roleId: string | undefined): IFormattable<string> | undefined {
+function resolveRole(guild: eris.Guild, roleId: string | undefined): IFormattable<string> | undefined {
     // TODO roleId can be role name, id or tag
     if (roleId === undefined)
         return undefined;
@@ -171,7 +171,7 @@ function resolveRole(guild: Guild, roleId: string | undefined): IFormattable<str
         : cmd.list.roleValue.default({ role });
 }
 
-function settingGroup(values: Array<[key: string & keyof typeof guildSettings, value: string | IFormattable<string> | undefined | boolean | number]>): IFormattable<string> {
+function settingGroup(values: Array<[key: Extract<keyof typeof guildSettings, string>, value: string | IFormattable<string> | undefined | boolean | number]>): IFormattable<string> {
     return {
         [format](formatter) {
             const mapped = values.map(([key, value = cmd.list.notSet]) => {
@@ -192,7 +192,7 @@ function resolveLanguage(language: string | undefined, translator: ITranslationS
         return undefined;
 
     const details = translator.languages.get(language)
-        ?? translator.languages.get(language = 'en');
+        ?? translator.languages.get('en');
     if (details === undefined)
         return cmd.list.localeValue({ name: 'English', completion: 1 });
 

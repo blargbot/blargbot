@@ -1,37 +1,42 @@
-import { FileSubtag } from '@blargbot/bbtag/subtags/message/file';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { FileSubtag } from '@blargbot/bbtag-engine/subtags';
 
-runSubtagTests({
+import { runSubtagTests } from '../SubtagTestSuite.js';
+
+await runSubtagTests({
     subtag: new FileSubtag(),
     argCountBounds: { min: 2, max: 2 },
+    names: ['file'],
     cases: [
         {
             code: '{file;abcdef;def}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.file).to.not.be.undefined.and.not.be.null;
-                expect(ctx.data.file?.file).to.equal('abcdef');
-                expect(ctx.data.file?.name).to.equal('def');
+                assert.deepEqual(ctx.bbtag.root.output.files, [{
+                    file: Buffer.from('abcdef'),
+                    name: 'def'
+                }]);
             }
         },
         {
             code: '{file;buffer:abcdef;def}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.file).to.not.be.undefined.and.not.be.null;
-                expect(ctx.data.file?.file).to.be.instanceOf(Buffer).and.to.equalBytes([0x69, 0xb7, 0x1d, 0x79]);
-                expect(ctx.data.file?.name).to.equal('def');
+                assert.deepEqual(ctx.bbtag.root.output.files, [{
+                    file: Buffer.from('abcdef', 'base64'),
+                    name: 'def'
+                }]);
             }
         },
         {
             code: '{file;Buffer:abcdef;def}',
             expected: '',
             assert(ctx) {
-                expect(ctx.data.file).to.not.be.undefined.and.not.be.null;
-                expect(ctx.data.file?.file).to.equal('Buffer:abcdef');
-                expect(ctx.data.file?.name).to.equal('def');
+                assert.deepEqual(ctx.bbtag.root.output.files, [{
+                    file: Buffer.from('Buffer:abcdef'),
+                    name: 'def'
+                }]);
             }
         }
     ]

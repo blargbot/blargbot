@@ -1,11 +1,11 @@
-import { ExecutionResult } from '@blargbot/bbtag';
-import { Cluster } from '@blargbot/cluster';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { guard } from '@blargbot/core/utils';
-import { GuildRolemeEntry } from '@blargbot/domain/models';
-import { KnownGuildTextableChannel, KnownMessage, Message } from 'eris';
+import type { Cluster } from '@blargbot/cluster';
+import { FormattableMessageContent, guard } from '@blargbot/core';
+import type { GuildRolemeEntry } from '@blargbot/domain';
+import type eris from 'eris';
 
-import templates from '../text';
+import { CustomCommandLimit } from '../bbtagLimits/CustomCommandLimit.js';
+import { templates } from '../text.js';
+import type { ExecutionResult } from './BBTagManager.js';
 
 export class RolemeManager {
     readonly #cluster: Cluster;
@@ -16,7 +16,7 @@ export class RolemeManager {
         this.#cluster = cluster;
     }
 
-    public async execute(message: KnownMessage): Promise<void> {
+    public async execute(message: eris.KnownMessage): Promise<void> {
         if (!guard.isGuildMessage(message) || !guard.hasValue(message.member))
             return;
 
@@ -39,26 +39,34 @@ export class RolemeManager {
                 message.member.roles = newRoleList;
                 await this.invokeMessage(message, roleme);
 
-            } catch (err: unknown) {
+            } catch {
                 await this.#cluster.util.reply(message, new FormattableMessageContent({ content: templates.roleme.failed }));
             }
         }
     }
 
-    public async invokeMessage(trigger: Message<KnownGuildTextableChannel>, roleme: GuildRolemeEntry): Promise<ExecutionResult> {
+    public async invokeMessage(trigger: eris.Message<eris.KnownGuildTextableChannel>, roleme: GuildRolemeEntry): Promise<ExecutionResult> {
         const tag = roleme.output ?? {
             content: 'Your roles have been edited!',
             author: ''
         };
 
         return await this.#cluster.bbtag.execute(tag.content, {
-            message: trigger,
-            rootTagName: 'roleme',
-            limit: 'customCommandLimit',
-            inputRaw: '',
+            messageId: trigger.id,
+            channelId: trigger.channel.id,
+            guildId: trigger.channel.guild.id,
+            userId: trigger.author.id,
+            tagName: 'roleme',
+            input: '',
+            flagDefinitions: [],
+            silent: false,
             isCC: true,
-            authorId: tag.author ?? undefined,
-            authorizerId: tag.authorizer ?? undefined
+            tagVars: false,
+            limit: new CustomCommandLimit(trigger.channel.guild.memberCount),
+            author: tag.author ?? undefined,
+            authorizer: tag.authorizer ?? tag.author ?? trigger.channel.guild.ownerID,
+            cooldown: 0,
+            prefix: undefined
         });
     }
 }

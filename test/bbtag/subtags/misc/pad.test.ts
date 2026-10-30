@@ -1,13 +1,15 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { PadSubtag } from '@blargbot/bbtag/subtags/misc/pad';
-import { expect } from 'chai';
-import { it } from 'mocha';
+import assert from 'node:assert/strict';
+import { it } from 'node:test';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { PadSubtag } from '@blargbot/bbtag-engine/subtags';
 
-runSubtagTests({
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
+
+await runSubtagTests({
     subtag: new PadSubtag(),
     argCountBounds: { min: 3, max: 3 },
+    names: ['pad'],
     cases: [
         { code: '{pad;left;;}', expected: '' },
         { code: '{pad;right;;}', expected: '' },
@@ -48,13 +50,13 @@ runSubtagTests({
                 { start: 5, end: 11, error: new MarkerError('eval', 5) },
                 { start: 15, end: 21, error: new MarkerError('eval', 15) },
                 { start: 22, end: 28, error: new MarkerError('eval', 22) },
-                { start: 0, end: 29, error: new BBTagRuntimeError('Invalid direction') }
+                { error: new BBTagRuntimeError('Invalid direction') }
             ]
         }
     ],
-    runOtherTests(s) {
-        it('Should be deprecated', () => {
-            expect(s.deprecated).to.equal('realpad');
+    async runOtherTests(s) {
+        await it('Should be deprecated', () => {
+            assert.equal(s.deprecated, 'realpad');
         });
     }
 });

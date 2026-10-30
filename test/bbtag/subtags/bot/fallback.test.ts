@@ -1,12 +1,14 @@
-import { UnknownSubtagError } from '@blargbot/bbtag/errors';
-import { FallbackSubtag } from '@blargbot/bbtag/subtags/bot/fallback';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { UnknownSubtagError } from '@blargbot/bbtag-engine';
+import { FallbackSubtag } from '@blargbot/bbtag-engine/subtags';
 
-runSubtagTests({
+import { runSubtagTests } from '../SubtagTestSuite.js';
+
+await runSubtagTests({
     subtag: new FallbackSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['fallback'],
     cases: [
         {
             code: '{fallback}{xyz}',
@@ -15,7 +17,7 @@ runSubtagTests({
                 { start: 10, end: 15, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.be.undefined;
+                assert.equal(ctx.bbtag.local.fallback, undefined);
             }
         },
         {
@@ -25,7 +27,7 @@ runSubtagTests({
                 { start: 14, end: 19, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.equal('abc');
+                assert.equal(ctx.bbtag.local.fallback, 'abc');
             }
         },
         {
@@ -36,7 +38,7 @@ runSubtagTests({
                 { start: 44, end: 49, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.be.undefined;
+                assert.equal(ctx.bbtag.local.fallback, undefined);
             }
         }
     ]

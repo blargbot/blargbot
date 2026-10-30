@@ -1,380 +1,420 @@
-import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { BanSubtag } from '@blargbot/bbtag/subtags/user/ban';
-import { argument } from '@blargbot/test-util/mock';
-import { Member, User } from 'eris';
-import moment, { Duration } from 'moment-timezone';
+import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { BanUserFeature } from '@blargbot/bbtag-engine/subtags';
+import { BanSubtag, ReasonSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { createSnowflake } from '../../snowflake.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
-function isDuration(ms: number): Duration {
-    return argument.is(moment.isDuration).and(x =>
-        x.asMilliseconds() === ms).value;
-}
+const features = new Mock<BanUserFeature>({ id: 'features' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
 
-runSubtagTests({
-    subtag: new BanSubtag(),
+const now = Temporal.Instant.from('2026-09-22T22:20:00Z');
+await runSubtagTests({
+    subtag: new BanSubtag(features.instance),
     argCountBounds: { min: 1, max: 5 },
+    names: ['ban'],
+    otherSubtags: [userIdSubtag.instance, reasonSubtag.instance],
+    setup(ctx, _, test) {
+        ctx.adoptMock(features);
+        ctx.adoptMock(userIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        test.mock.method(Temporal.Now, 'instant', () => now);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
+    },
     cases: [
         {
             code: '{ban;abc}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 9, error: new UserNotFoundError('abc') }
+                { error: new UserNotFoundError('abc') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.getUser('abc'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'abc'))
-                    .verifiable(1)
-                    .thenResolve([]);
+            setup(ctx) {
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'abc', $({ noLookup: true, global: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         },
         {
             code: '{ban;other user}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('alreadyBanned');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions') }
+                { error: new BBTagRuntimeError('Bot has no permissions') }
             ],
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('memberTooHigh');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: false, cause: 'bot' });
             }
         },
         {
             code: '{ban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
+                { error: new BBTagRuntimeError('User has no permissions') }
             ],
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('moderatorNoPerms');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: false, cause: 'authorizer' });
             }
         },
         {
             code: '{ban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
+                { error: new BBTagRuntimeError('User has no permissions') }
             ],
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('moderatorTooLow');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: false, cause: 'authorizer' });
             }
         },
         {
             code: '{ban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions') }
+                { error: new BBTagRuntimeError('Bot has no permissions') }
             ],
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('noPerms');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: false, cause: 'bot' });
             }
         },
         {
             code: '{ban;other user;5}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 5, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 5,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user;-1}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, -1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: -1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user;abc}',
             expected: 'false',
             errors: [
-                { start: 0, end: 20, error: new NotANumberError('abc').withDisplay('false') }
+                { error: new NotANumberError('abc').withDisplay('false') }
             ],
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
-
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
             }
         },
         {
             code: '{ban;other user;;My custom reason}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'My custom reason', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 1,
+                    auditReason: 'My custom reason',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user;7;My custom reason}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 7, 'My custom reason', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 7,
+                    auditReason: 'My custom reason',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user;;;5 days}',
             expected: '432000000',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 1, 'Tag Ban', isDuration(432000000)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: Temporal.Duration.from({ days: 5 })
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user;7;My custom reason;2 hours}',
             expected: '7200000',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 7, 'My custom reason', isDuration(7200000)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    daysToDelete: 7,
+                    auditReason: 'My custom reason',
+                    unbanAfter: Temporal.Duration.from({ hours: 2 })
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user;;;;x}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const authorizerId = ctx.authorizerId;
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, authorizer, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId,
+                    daysToDelete: 1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user;;;;false}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const authorizerId = ctx.authorizerId;
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, authorizer, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId,
+                    daysToDelete: 1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user;;;;true}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const authorizerId = ctx.authorizerId;
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, authorizer, 1, 'Tag Ban', isDuration(Infinity)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId,
+                    daysToDelete: 1,
+                    auditReason: 'Tag Ban',
+                    unbanAfter: undefined
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{ban;other user;4;My custom reason;2 hours 30s;abc}',
             expected: '7230000',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const authorizerId = ctx.authorizerId;
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, authorizer, 4, 'My custom reason', isDuration(7230000)))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.banUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId,
+                    daysToDelete: 4,
+                    auditReason: 'My custom reason',
+                    unbanAfter: Temporal.Duration.from({ hours: 2, seconds: 30 })
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         }
     ]

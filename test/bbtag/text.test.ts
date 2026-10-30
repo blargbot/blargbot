@@ -1,24 +1,27 @@
-import { Subtag, SubtagType } from '@blargbot/bbtag';
-import templates from '@blargbot/bbtag/text';
-import * as coreTransformers from '@blargbot/core/formatting';
+import { describe } from 'node:test';
+
+import { Subtag, SubtagType, templates } from '@blargbot/bbtag-engine';
+import { transformers as coreTransformers } from '@blargbot/core';
 import { transformers, util } from '@blargbot/formatting';
-import { quickMock } from '@blargbot/test-util/quickMock';
-import { runFormatTreeTests } from '@blargbot/test-util/runFormatTreeTests';
-import { describe } from 'mocha';
+import { quickMock, runFormatTreeTests } from '@blargbot/test-util';
 
 class TestSubtag extends Subtag {
-    protected executeCore: Subtag['executeCore'] = () => {
+    public name = '';
+    public aliases = [];
+    public category = SubtagType.MISC;
+    public description = undefined;
+    public deprecated = false;
+    public staff = false;
+    public hidden = false;
+    public signatures = [];
+    public execute: Subtag['execute'] = () => {
         throw new Error('Method not implemented');
     };
 }
-const subtag = (): Subtag => new TestSubtag({
-    category: SubtagType.MISC,
-    name: '',
-    signatures: []
-});
+const subtag = (): Subtag => new TestSubtag();
 
-describe('BBTag format strings', () => {
-    runFormatTreeTests(templates, {
+await describe('BBTag format strings', async () => {
+    await runFormatTreeTests(templates, {
         transformers: {
             ...transformers,
             ...coreTransformers

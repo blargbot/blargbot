@@ -1,25 +1,26 @@
-import { ArgsLengthSubtag } from '@blargbot/bbtag/subtags/simple/argsLength';
+import { ArgsLengthSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ArgsLengthSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['argsLength'],
     cases: [
         {
             code: '{argslength}',
             expected: '0',
-            setup(ctx) { ctx.options.inputRaw = ''; }
+            setup(ctx) { ctx.input.array = []; }
         },
         {
             code: '{argslength}',
             expected: '4',
-            setup(ctx) { ctx.options.inputRaw = 'this is a test'; }
+            setup(ctx) { ctx.input.array = ['this', 'is', 'a', 'test']; }
         },
         {
             code: '{argslength}',
             expected: '3',
-            setup(ctx) { ctx.options.inputRaw = 'this "is a" test'; }
+            setup(ctx) { ctx.input.array = ['this', 'is a', 'test']; }
         }
     ]
 });

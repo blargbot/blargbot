@@ -1,12 +1,12 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { IndexOfSubtag } from '@blargbot/bbtag/subtags/misc/indexOf';
+import { NotANumberError } from '@blargbot/bbtag-engine';
+import { EscapeBBTagSubtag, IndexOfSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new IndexOfSubtag(),
     argCountBounds: { min: 2, max: 3 },
+    names: ['indexOf'],
     cases: [
         { code: '{indexof;This is some text;s}', expected: '3' },
         { code: '{indexof;This is some text;s;3}', expected: '3' },
@@ -20,21 +20,21 @@ runSubtagTests({
         {
             code: '{indexof;This is some text;s;a}',
             expected: '6',
-            setup(ctx) { ctx.rootScope.fallback = '4'; }
+            setup(ctx) { ctx.bbtag.root.fallback = '4'; }
         },
         {
             code: '{indexof;This is some text;s;a}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 31, error: new NotANumberError('a') }
+                { error: new NotANumberError('a') }
             ]
         },
         {
             code: '{indexof;This is some text;s;a}',
             expected: 'b',
-            setup(ctx) { ctx.rootScope.fallback = 'b'; },
+            setup(ctx) { ctx.bbtag.root.fallback = 'b'; },
             errors: [
-                { start: 0, end: 31, error: new NotANumberError('a') }
+                { error: new NotANumberError('a') }
             ]
         },
 

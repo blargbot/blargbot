@@ -1,59 +1,60 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { OutputSubtag } from '@blargbot/bbtag/subtags/message/output';
-import { Emote } from '@blargbot/core/Emote';
-import { argument } from '@blargbot/test-util/mock';
-import { expect } from 'chai';
-import { KnownGuildTextableChannel } from 'eris';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { AddReactionsFeature, CanPingEveryoneFeature, SendFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIsNsfwSubtag, OutputSubtag } from '@blargbot/bbtag-engine/subtags';
+import Emote from '@blargbot/discord-emote';
+import { Mock } from '@blargbot/test-util';
+
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
 const emotes = [Emote.parse('<a:test:120272372032032937>'), Emote.parse('<:alsoatest:23094632472398746234>'), Emote.parse('🤔')];
+const features = new Mock<AddReactionsFeature & CanPingEveryoneFeature & SendFeature>({ id: 'features' });
+const channelIsNsfwSubtag = createMockSubtag(ChannelIsNsfwSubtag);
 
-runSubtagTests({
-    subtag: new OutputSubtag(),
+await runSubtagTests({
+    subtag: new OutputSubtag(features.instance),
     argCountBounds: { min: 0, max: 1 },
+    names: ['output'],
+    otherSubtags: [channelIsNsfwSubtag.instance],
+    setup(ctx) {
+        ctx.adoptMock(features);
+        ctx.adoptMock(channelIsNsfwSubtag);
+    },
     cases: [
         {
             title: 'Custom command',
             code: '{output}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
-            },
-            postSetup(bbctx, ctx) {
+                ctx.isCC = true;
+                features.setup(m => m.canPingEveryone(ctx.guildId)).resolves(true).mustHappen(1);
                 const embeds = [{ title: 'abc' }];
-                const files = [{ file: 'test content', name: 'test.txt' }];
+                const files = [{ file: Buffer.from('test content'), name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
-                    id: '0987654331234567',
-                    channel_id: bbctx.channel.id
-                }, ctx.users.command));
 
-                bbctx.data.embeds = embeds;
-                bbctx.data.file = files[0];
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
-                bbctx.data.reactions = emotes.map(m => m.toString());
-                bbctx.data.nsfw = 'This is the nsfw message';
+                ctx.bbtag.root.output.embeds = embeds;
+                ctx.bbtag.root.output.files = files;
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.output.reactions.push(...emotes.map(m => m.toString()));
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
+                features.setup((m, $) => m.addMessageReactions(ctx.channelId, '0987654331234567', $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(ctx.channelId, $({
                     content: '',
                     embeds: embeds,
-                    file: files,
-                    nsfw: 'This is the nsfw message',
+                    files: files,
                     allowedMentions: {
                         everyone: true,
-                        roles: roleMentions,
-                        users: userMentions
+                        roles: new Set(roleMentions),
+                        users: new Set(userMentions)
                     }
-                }))).thenResolve(message);
+                }))).resolves({ success: true, id: '0987654331234567' });
             },
-            assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.output.messageId, '0987654331234567');
             }
         },
         {
@@ -61,39 +62,33 @@ runSubtagTests({
             code: '{output}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.isCC = false;
-            },
-            postSetup(bbctx, ctx) {
+                ctx.isCC = false;
                 const embeds = [{ title: 'abc' }];
-                const files = [{ file: 'test content', name: 'test.txt' }];
+                const files = [{ file: Buffer.from('test content'), name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
-                    id: '0987654331234567',
-                    channel_id: bbctx.channel.id
-                }, ctx.users.command));
 
-                bbctx.data.embeds = embeds;
-                bbctx.data.file = files[0];
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
-                bbctx.data.reactions = emotes.map(m => m.toString());
-                bbctx.data.nsfw = 'This is the nsfw message';
+                ctx.bbtag.root.output.embeds = embeds;
+                ctx.bbtag.root.output.files = files;
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.output.reactions.push(...emotes.map(m => m.toString()));
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
+                features.setup((m, $) => m.addMessageReactions(ctx.channelId, '0987654331234567', $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(ctx.channelId, $({
                     content: '',
                     embeds: embeds,
-                    file: files,
-                    nsfw: 'This is the nsfw message',
+                    files: files,
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: new Set(),
+                        users: new Set()
                     }
-                }))).thenResolve(message);
+                }))).resolves({ success: true, id: '0987654331234567' });
             },
-            assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.output.messageId, '0987654331234567');
             }
         },
         {
@@ -101,42 +96,34 @@ runSubtagTests({
             code: '{output;This is my message content}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.isCC = true;
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'disableeveryone')).thenResolve(false);
-            },
-            postSetup(bbctx, ctx) {
+                ctx.isCC = true;
+                features.setup(m => m.canPingEveryone(ctx.guildId)).resolves(true).mustHappen(1);
                 const embeds = [{ title: 'abc' }];
-                const files = [{ file: 'test content', name: 'test.txt' }];
+                const files = [{ file: Buffer.from('test content'), name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
-                    id: '0987654331234567',
-                    channel_id: bbctx.channel.id
-                }, ctx.users.command));
 
-                bbctx.data.embeds = embeds;
-                bbctx.data.file = files[0];
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
-                bbctx.data.reactions = emotes.map(m => m.toString());
-                bbctx.data.nsfw = 'This is the nsfw message';
+                ctx.bbtag.root.output.embeds = embeds;
+                ctx.bbtag.root.output.files = files;
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.output.reactions.push(...emotes.map(m => m.toString()));
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
+                features.setup((m, $) => m.addMessageReactions(ctx.channelId, '0987654331234567', $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(ctx.channelId, $({
                     content: 'This is my message content',
                     embeds: embeds,
-                    file: files,
-                    nsfw: 'This is the nsfw message',
+                    files: files,
                     allowedMentions: {
                         everyone: true,
-                        roles: roleMentions,
-                        users: userMentions
+                        roles: new Set(roleMentions),
+                        users: new Set(userMentions)
                     }
-                }))).thenResolve(message);
+                }))).resolves({ success: true, id: '0987654331234567' });
             },
-            assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.output.messageId, '0987654331234567');
             }
         },
         {
@@ -144,39 +131,33 @@ runSubtagTests({
             code: '{output;This is my message content}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.isCC = false;
-            },
-            postSetup(bbctx, ctx) {
+                ctx.isCC = false;
                 const embeds = [{ title: 'abc' }];
-                const files = [{ file: 'test content', name: 'test.txt' }];
+                const files = [{ file: Buffer.from('test content'), name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
-                    id: '0987654331234567',
-                    channel_id: bbctx.channel.id
-                }, ctx.users.command));
 
-                bbctx.data.embeds = embeds;
-                bbctx.data.file = files[0];
-                bbctx.data.allowedMentions.everybody = true;
-                bbctx.data.allowedMentions.roles = roleMentions;
-                bbctx.data.allowedMentions.users = userMentions;
-                bbctx.data.reactions = emotes.map(m => m.toString());
-                bbctx.data.nsfw = 'This is the nsfw message';
+                ctx.bbtag.root.output.embeds = embeds;
+                ctx.bbtag.root.output.files = files;
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.output.reactions.push(...emotes.map(m => m.toString()));
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
+                features.setup((m, $) => m.addMessageReactions(ctx.channelId, '0987654331234567', $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(ctx.channelId, $({
                     content: 'This is my message content',
                     embeds: embeds,
-                    file: files,
-                    nsfw: 'This is the nsfw message',
+                    files: files,
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: new Set(),
+                        users: new Set()
                     }
-                }))).thenResolve(message);
+                }))).resolves({ success: true, id: '0987654331234567' });
             },
-            assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.output.messageId, '0987654331234567');
             }
         },
         {
@@ -184,35 +165,26 @@ runSubtagTests({
             code: '{output;This is my message content}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.isCC = false;
-            },
-            postSetup(bbctx, ctx) {
-                const message = ctx.createMessage<KnownGuildTextableChannel>(SubtagTestContext.createApiMessage({
-                    id: '0987654331234567',
-                    channel_id: bbctx.channel.id
-                }, ctx.users.command));
+                ctx.isCC = false;
+                ctx.bbtag.root.output.embeds = undefined;
+                ctx.bbtag.root.output.files = undefined;
+                ctx.bbtag.root.allowedMentions.everybody = false;
+                ctx.bbtag.root.output.nsfw = undefined;
 
-                bbctx.data.embeds = [];
-                bbctx.data.file = undefined;
-                bbctx.data.allowedMentions.everybody = false;
-                bbctx.data.allowedMentions.roles = [];
-                bbctx.data.allowedMentions.users = [];
-                bbctx.data.reactions = [];
-                bbctx.data.nsfw = undefined;
-
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual([]))).thenResolve({ success: [], failed: [] });
-                ctx.util.setup(m => m.send(bbctx.message.channel, argument.isDeepEqual({
+                features.setup((m, $) => m.addMessageReactions(ctx.channelId, '0987654331234567', $([]))).resolves({ success: [], failed: [] });
+                features.setup((m, $) => m.sendMessage(ctx.channelId, $({
                     content: 'This is my message content',
-                    embeds: [],
-                    file: undefined,
-                    nsfw: undefined,
+                    embeds: undefined,
+                    files: undefined,
                     allowedMentions: {
-                        everyone: false
+                        everyone: false,
+                        roles: new Set(),
+                        users: new Set()
                     }
-                }))).thenResolve(message);
+                }))).resolves({ success: true, id: '0987654331234567' });
             },
-            assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.output.messageId, '0987654331234567');
             }
         },
         {
@@ -220,12 +192,11 @@ runSubtagTests({
             code: '{output}',
             expected: '0987654331234567',
             setup(ctx) {
-                ctx.options.data ??= {};
-                ctx.options.data.outputMessage = '0987654331234567';
-                ctx.options.isCC = false;
+                ctx.isCC = false;
+                ctx.bbtag.root.output.messageId = '0987654331234567';
             },
-            assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.output.messageId, '0987654331234567');
             }
         },
         {
@@ -233,15 +204,86 @@ runSubtagTests({
             code: '{output;This is my message content}',
             expected: '`Cannot send multiple outputs`',
             setup(ctx) {
-                ctx.options.data ??= {};
-                ctx.options.data.outputMessage = '0987654331234567';
-                ctx.options.isCC = false;
+                ctx.isCC = false;
+                ctx.bbtag.root.output.messageId = '0987654331234567';
             },
             errors: [
-                { start: 0, end: 35, error: new BBTagRuntimeError('Cannot send multiple outputs') }
+                { error: new BBTagRuntimeError('Cannot send multiple outputs') }
             ],
-            assert(bbctx) {
-                expect(bbctx.data.outputMessage).to.equal('0987654331234567');
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.output.messageId, '0987654331234567');
+            }
+        },
+        {
+            title: 'NSFW & channel not nsfw',
+            code: '{output;This is my message content}',
+            expected: '0987654331234567',
+            setup(ctx) {
+                ctx.isCC = false;
+                const embeds = [{ title: 'abc' }];
+                const files = [{ file: Buffer.from('test content'), name: 'test.txt' }];
+                const roleMentions = ['56789043764325674', '345678238285862342'];
+                const userMentions = ['23946265743358573', '234926342423437987'];
+
+                ctx.bbtag.root.output.embeds = embeds;
+                ctx.bbtag.root.output.files = files;
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.output.reactions.push(...emotes.map(m => m.toString()));
+                ctx.bbtag.root.output.nsfw = 'This is the nsfw message.';
+
+                channelIsNsfwSubtag.setup(m => m.check(ctx.bbtag, ctx.channelId)).resolves(false).mustHappen(1);
+                features.setup((m, $) => m.addMessageReactions(ctx.channelId, '0987654331234567', $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(ctx.channelId, $({
+                    content: 'This is the nsfw message.',
+                    embeds: undefined,
+                    files: undefined,
+                    allowedMentions: {
+                        everyone: false,
+                        roles: new Set(roleMentions),
+                        users: new Set(userMentions)
+                    }
+                }))).resolves({ success: true, id: '0987654331234567' });
+            },
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.output.messageId, '0987654331234567');
+            }
+        },
+        {
+            title: 'NSFW & channel is nsfw',
+            code: '{output;This is my message content}',
+            expected: '0987654331234567',
+            setup(ctx) {
+                ctx.isCC = false;
+                const embeds = [{ title: 'abc' }];
+                const files = [{ file: Buffer.from(Buffer.from('test content')), name: 'test.txt' }];
+                const roleMentions = ['56789043764325674', '345678238285862342'];
+                const userMentions = ['23946265743358573', '234926342423437987'];
+
+                ctx.bbtag.root.output.embeds = embeds;
+                ctx.bbtag.root.output.files = files;
+                ctx.bbtag.root.allowedMentions.everybody = true;
+                roleMentions.forEach(v => ctx.bbtag.root.allowedMentions.roles.add(v));
+                userMentions.forEach(v => ctx.bbtag.root.allowedMentions.users.add(v));
+                ctx.bbtag.root.output.reactions.push(...emotes.map(m => m.toString()));
+                ctx.bbtag.root.output.nsfw = 'This is the nsfw message.';
+
+                channelIsNsfwSubtag.setup(m => m.check(ctx.bbtag, ctx.channelId)).resolves(true).mustHappen(1);
+                features.setup((m, $) => m.addMessageReactions(ctx.channelId, '0987654331234567', $(emotes))).resolves({ success: emotes, failed: [] });
+                features.setup((m, $) => m.sendMessage(ctx.channelId, $({
+                    content: 'This is my message content',
+                    embeds: embeds,
+                    files: files,
+                    allowedMentions: {
+                        everyone: false,
+                        roles: new Set(),
+                        users: new Set()
+                    }
+                }))).resolves({ success: true, id: '0987654331234567' });
+            },
+            assert(ctx) {
+                assert.equal(ctx.bbtag.root.output.messageId, '0987654331234567');
             }
         }
     ]

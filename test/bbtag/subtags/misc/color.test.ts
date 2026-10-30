@@ -1,59 +1,79 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ColorFormat, ColorSubtag } from '@blargbot/bbtag/subtags/misc/color';
-import { TagVariableType } from '@blargbot/domain/models/index';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { ColorFormat } from '@blargbot/bbtag-engine/subtags';
+import { ColorSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new ColorSubtag(),
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
+await runSubtagTests({
+    subtag: new ColorSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 1, max: 3 },
+    names: ['color'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{color;}',
             expected: '`Invalid color`',
             errors: [
-                { start: 0, end: 8, error: new BBTagRuntimeError('Invalid color', 'value was empty') }
+                { error: new BBTagRuntimeError('Invalid color', 'value was empty') }
             ]
         },
         {
             code: '{color;_myVariable}',
             expected: '`Invalid color`',
             errors: [
-                { start: 0, end: 19, error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
-            ]
+                { error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
+            ],
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{color;_myVariable}',
             expected: '`Invalid color`',
-            setup(ctx) { ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, 'abc'); },
             errors: [
-                { start: 0, end: 19, error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
-            ]
+                { error: new BBTagRuntimeError('Invalid color', '"_myVariable" is not a valid color') }
+            ],
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: 'abc' }).mustHappen(1);
+            }
         },
         {
             code: '{color;_myVariable}',
             expected: '204080',
-            setup(ctx) {
-                ctx.tagVariables.set({ scope: { type: TagVariableType.GUILD_TAG, guildId: ctx.guild.id }, name: 'myVariable' }, [32, 64, 128]);
+            setup() {
+                variables.setup(m => m.get('_myVariable')).resolves({ key: 'foo', value: [32, 64, 128] }).mustHappen(1);
             }
         },
-        ...generateTestCases('FFFFFF', '', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('FFFFFF', 'hex', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('97', 'ansi16', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('231', 'ansi256', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('65535,65535,65535', 'apple', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('0,0,0,0', 'cmyk', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('100', 'gray', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('0,0,100', 'hcg', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('0,0,100', 'hsl', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('0,0,100', 'hsv', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('0,100,0', 'hwb', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('white', 'keyword', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('100,0.01,-0.01', 'lab', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,315]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('100,0.01,296.81', 'lch', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65534.71]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[60,0,100]', hsl: '[60,100,100]', hsv: '[60,0,100]', hwb: '[60,100,0]', keyword: 'white', lab: '[100,0,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('255,255,255', '', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('255,255,255', 'rgb', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
-        ...generateTestCases('95.047,100,108.83', 'xyz', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65514.09]', cmyk: '[0,0,0.03,0]', gray: '100', hcg: '[60,0.03,100]', hsl: '[60,100,99.98]', hsv: '[60,0.03,100]', hwb: '[60,99.97,0]', keyword: 'white', lab: '[100,0,0.03]', lch: '[100,0.03,90]', rgb: '[255,255,254.92]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('FFFFFF', '', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('FFFFFF', 'hex', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('97', 'ansi16', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('231', 'ansi256', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('65535,65535,65535', 'apple', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('0,0,0,0', 'cmyk', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('100', 'gray', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('0,0,100', 'hcg', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('0,0,100', 'hsl', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('0,0,100', 'hsv', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('0,100,0', 'hwb', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('white', 'keyword', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('100,0,0', 'lab', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[305.21000000000004,0,100]', hsl: '[305.21000000000004,100,100]', hsv: '[305.21000000000004,0,100]', hwb: '[305.21000000000004,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,0]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('100,0,0', 'lch', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[305.21000000000004,0,100]', hsl: '[305.21000000000004,100,100]', hsv: '[305.21000000000004,0,100]', hwb: '[305.21000000000004,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,0]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('255,255,255', '', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('255,255,255', 'rgb', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0,0]', lch: '[100,0,158.2]', rgb: '[255,255,255]', xyz: '[95.047,100,108.83]' }),
+        ...generateTestCases('95.047,100,108.83', 'xyz', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65534.36,65518.86]', cmyk: '[0,0,0.02,0]', gray: '100', hcg: '[57.639999999999986,0.02,100]', hsl: '[57.639999999999986,100,99.99]', hsv: '[57.639999999999986,0.02,100]', hwb: '[57.639999999999986,99.98,0]', keyword: 'white', lab: '[100,0,0.03]', lch: '[100,0.03,90]', rgb: '[255,255,254.94]', xyz: '[95.047,100,108.83]' }),
         {
             code: '{color;{eval}0;{eval};{eval}cba}',
             expected: '`Invalid input method`',
@@ -61,8 +81,11 @@ runSubtagTests({
                 { start: 7, end: 13, error: new MarkerError('eval', 7) },
                 { start: 15, end: 21, error: new MarkerError('eval', 15) },
                 { start: 22, end: 28, error: new MarkerError('eval', 22) },
-                { start: 0, end: 32, error: new BBTagRuntimeError('Invalid input method', '"cba" is not valid') }
-            ]
+                { error: new BBTagRuntimeError('Invalid input method', '"cba" is not valid') }
+            ],
+            setup() {
+                variables.setup(m => m.get('0')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         {
             code: '{color;{eval}0;{eval}abc;{eval}}',
@@ -71,8 +94,11 @@ runSubtagTests({
                 { start: 7, end: 13, error: new MarkerError('eval', 7) },
                 { start: 15, end: 21, error: new MarkerError('eval', 15) },
                 { start: 25, end: 31, error: new MarkerError('eval', 25) },
-                { start: 0, end: 32, error: new BBTagRuntimeError('Invalid output method', '"abc" is not valid') }
-            ]
+                { error: new BBTagRuntimeError('Invalid output method', '"abc" is not valid') }
+            ],
+            setup() {
+                variables.setup(m => m.get('0')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+            }
         },
         { code: '{color;[0,0,0,0];;cmyk}', expected: 'FFFFFF' }
     ]
@@ -82,5 +108,10 @@ function generateTestCases(input: string, format: string, results: Record<ColorF
     const cases = Object.entries(results).map(([output, expected]) => ({ code: `{color;${input};${output};${format}}`, expected }));
     if (format === '')
         cases.push(...Object.entries(results).map(([output, expected]) => ({ code: `{color;${input};${output}}`, expected })));
-    return cases;
+    return cases.map(x => ({
+        ...x,
+        setup() {
+            variables.setup(m => m.get(input)).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+        }
+    }));
 }

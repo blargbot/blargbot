@@ -1,19 +1,20 @@
-import { EmbedSubtag } from '@blargbot/bbtag/subtags/message/embed';
-import { EscapeBBTagSubtag } from '@blargbot/bbtag/subtags/misc/escapeBBTag';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { EmbedSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag-engine/subtags';
 
-runSubtagTests({
+import { runSubtagTests } from '../SubtagTestSuite.js';
+
+await runSubtagTests({
     subtag: new EmbedSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['embed'],
     cases: [
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}}}',
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                assert.deepEqual(ctx.bbtag.root.output.embeds, [
                     { title: 'Hello!' }
                 ]);
             }
@@ -23,7 +24,7 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                assert.deepEqual(ctx.bbtag.root.output.embeds, [
                     { title: 'Hello!' },
                     { author: { name: 'abc' } }
                 ]);
@@ -34,7 +35,7 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                assert.deepEqual(ctx.bbtag.root.output.embeds, [
                     { title: 'Hello!' },
                     { fields: [{ name: 'Malformed JSON', value: '{"title":false}' }], malformed: true }
                 ]);
@@ -45,7 +46,7 @@ runSubtagTests({
             subtags: [new EscapeBBTagSubtag()],
             expected: '',
             assert(ctx) {
-                expect(ctx.data.embeds).to.deep.equal([
+                assert.deepEqual(ctx.bbtag.root.output.embeds, [
                     { title: 'Hello!' },
                     { author: { name: 'abc' } },
                     { title: 'embed array 1' },

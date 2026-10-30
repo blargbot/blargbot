@@ -1,38 +1,46 @@
-import { PrefixSubtag } from '@blargbot/bbtag/subtags/bot/prefix';
+import type { GetPrefixFeature } from '@blargbot/bbtag-engine/subtags';
+import { PrefixSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new PrefixSubtag(),
+const features = new Mock<GetPrefixFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new PrefixSubtag(features.instance),
     argCountBounds: { min: 0, max: 0 },
+    names: ['prefix'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         {
             code: '{prefix}',
             expected: 'b!',
             setup(ctx) {
-                ctx.util.setup(m => m.defaultPrefix, false).thenReturn('b!');
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'prefix')).thenResolve(undefined);
+                features.setup(m => m.getPrefix(ctx.guildId)).resolves(undefined).mustHappen(1);
+                features.setup(m => m.defaultPrefix).returns('b!').mustHappen(1);
             }
         },
         {
             code: '{prefix}',
             expected: 'abc',
             setup(ctx) {
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'prefix')).thenResolve('abc' as unknown as string[]);
+                features.setup(m => m.getPrefix(ctx.guildId)).resolves('abc');
             }
         },
         {
             code: '{prefix}',
             expected: 'def',
             setup(ctx) {
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'prefix')).thenResolve(['def', 'ghi']);
+                features.setup(m => m.getPrefix(ctx.guildId)).resolves(['def', 'ghi']);
             }
         },
         {
             code: '{prefix}',
             expected: 'ghi',
             setup(ctx) {
-                ctx.options.prefix = 'ghi';
+                ctx.prefix = 'ghi';
             }
         }
     ]

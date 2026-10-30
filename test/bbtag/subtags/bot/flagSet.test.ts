@@ -1,24 +1,20 @@
-import { FlagSetSubtag } from '@blargbot/bbtag/subtags/bot/flagSet';
+import { FlagSetSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new FlagSetSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['flagSet'],
     setup(ctx) {
-        ctx.options.inputRaw = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
-        ctx.options.flags = [
-            {
-                description: '',
-                flag: 'e',
-                word: 'extra'
-            },
-            {
-                description: '',
-                flag: 'E',
-                word: 'else'
-            }
-        ];
+        ctx.input.flags = {
+            _: 'This is some text some more text',
+            a: 'flag a content',
+            b: '',
+            c: 'flag c content',
+            e: 'flag extra content',
+            E: 'flag else content'
+        };
     },
     cases: [
         { code: '{flagset;1}', expected: 'false' },

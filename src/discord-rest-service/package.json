@@ -1,0 +1,19 @@
+{
+    "name": "@blargbot/discord-rest-service",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "dependencies": {
+        "@blargbot/config": "workspace:^",
+        "@blargbot/contracts": "workspace:^",
+        "@blargbot/logger": "workspace:^",
+        "@blargbot/util": "workspace:^",
+        "@discordeno/rest": "^22.0.0-beta.2",
+        "@discordeno/types": "^22.0.0-beta.2",
+        "amqplib": "^2.0.1",
+        "zod": "^4.5.4"
+    }
+}

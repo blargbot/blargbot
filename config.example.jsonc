@@ -4,6 +4,9 @@
 // All configs that already have values are designed to work with the container layout that results from using vscode dev containers. If youre developing by a different means then they will likely have to be different.
 {
     "version": "4.5.1",
+    "amqp": {
+        "url": "amqp://blargbot:BlargPass123@rabbitmq"
+    },
     "cassandra": {
         "contactPoints": [
             "cassandra"

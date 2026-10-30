@@ -1,16 +1,17 @@
-import { MessageIdSubtag } from '@blargbot/bbtag/subtags/message/messageId';
+import { MessageIdSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new MessageIdSubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['messageId'],
     cases: [
         {
             code: '{messageid}',
             expected: '098765432212345678',
             setup(ctx) {
-                ctx.message.id = '098765432212345678';
+                ctx.messageId = '098765432212345678';
             }
         }
     ]

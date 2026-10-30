@@ -1,10 +1,11 @@
-import { NumberFormatSubtag } from '@blargbot/bbtag/subtags/math/numberFormat';
+import { NumberFormatSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new NumberFormatSubtag(),
     argCountBounds: { min: 2, max: 4 },
+    names: ['numberFormat', 'numFormat'],
     cases: [
         { code: '{numformat;123456.789;2}', expected: '123456.79' },
         { code: '{numformat;123456.789;-3}', expected: '123000' },

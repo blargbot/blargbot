@@ -1,6 +1,5 @@
-import { Cluster } from '@blargbot/cluster';
-import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
-import { SubtagDetails } from '@blargbot/cluster/types';
+import type { Cluster, SubtagDetails } from '@blargbot/cluster';
+import { ClusterEventService } from '@blargbot/cluster';
 import { format } from '@blargbot/formatting';
 
 export class ClusterGetSubtagHandler extends ClusterEventService<'getSubtag'> {
@@ -11,7 +10,7 @@ export class ClusterGetSubtagHandler extends ClusterEventService<'getSubtag'> {
     }
 
     protected async getSubtag(name: string): Promise<SubtagDetails | undefined> {
-        const subtag = this.cluster.bbtag.subtags.get(name);
+        const subtag = this.cluster.bbtag.subtags.find(name);
         if (subtag === undefined)
             return undefined;
 

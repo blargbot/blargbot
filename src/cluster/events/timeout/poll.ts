@@ -1,6 +1,6 @@
-import { Cluster } from '@blargbot/cluster';
-import { TimeoutEventService } from '@blargbot/cluster/serviceTypes';
-import { StoredEvent } from '@blargbot/domain/models';
+import type { Cluster } from '@blargbot/cluster';
+import { TimeoutEventService } from '@blargbot/cluster';
+import type { StoredEvent } from '@blargbot/domain';
 
 export class TimeoutPollEventService extends TimeoutEventService<'poll'> {
     public constructor(protected readonly cluster: Cluster) {

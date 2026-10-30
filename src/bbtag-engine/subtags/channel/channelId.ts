@@ -1,0 +1,108 @@
+import type { BBTagContext } from '../../BBTagContext.js';
+import { CompiledSubtag } from '../../compilation/index.js';
+import { ChannelNotFoundError } from '../../errors/index.js';
+import { templates } from '../../text.js';
+import type { QueryEntityOptions } from '../../types.js';
+import { SubtagType } from '../../utils/index.js';
+import { isSnowflake } from '../../utils/snowflake.js';
+import type { QueryEntityRequest, QueryEntityResponse } from '../types.js';
+
+const tag = templates.subtags.channelId;
+
+export interface CheckChannelExistsFeature {
+    checkChannelExists(guildId: string, channelId: string): Promise<boolean>;
+}
+export interface FindChannelFeature {
+    findChannel(guildId: string, searchText: string): Promise<string | undefined>;
+}
+export interface QueryChannelFeature {
+    queryChannel(request: QueryEntityRequest): Promise<QueryEntityResponse>;
+}
+
+type Features = CheckChannelExistsFeature & FindChannelFeature & QueryChannelFeature;
+export class ChannelIdSubtag extends CompiledSubtag {
+    readonly #features: Features;
+    public constructor(features: Features) {
+        super({
+            name: 'channelId',
+            aliases: ['categoryId'],
+            category: SubtagType.CHANNEL,
+            definition: [
+                {
+                    parameters: [],
+                    description: tag.current.description,
+                    exampleCode: tag.current.exampleCode,
+                    exampleOut: tag.current.exampleOut,
+                    returns: 'id',
+                    execute: (ctx) => this.currentChannel(ctx)
+                },
+                {
+                    parameters: ['channel', 'quiet?'],
+                    description: tag.channel.description,
+                    exampleCode: tag.channel.exampleCode,
+                    exampleOut: tag.channel.exampleOut,
+                    returns: 'id',
+                    execute: (ctx, [channel, quiet]) => this.queryChannel(ctx, channel.value, quiet.value !== '')
+                }
+            ]
+        });
+        this.#features = features;
+    }
+
+    public currentChannel(context: BBTagContext): string {
+        return context.local.channelId;
+    }
+
+    public async queryChannel(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string> {
+        return await this.query(context, channelStr, { noLookup: quiet })
+            ?? new ChannelNotFoundError(channelStr).withDisplay(quiet ? '' : undefined).throw();
+    }
+
+    public static async query(context: BBTagContext, searchText: string, options?: QueryEntityOptions): Promise<string | undefined> {
+        return await context.subtags.get(ChannelIdSubtag).query(context, searchText, options);
+    }
+
+    public async query(context: BBTagContext, searchText: string, options?: QueryEntityOptions): Promise<string | undefined> {
+        if (searchText === '' || searchText === context.local.channelId)
+            return context.local.channelId;
+
+        const cached = context.root.queryCache.channel.get(searchText.toLowerCase());
+        if (cached !== undefined)
+            return cached;
+
+        if (isSnowflake(searchText) && await this.#features.checkChannelExists(context.root.guildId, searchText))
+            return searchText;
+
+        if (options?.noLookup === true || context.local.quiet === true || context.root.queryCache.failedQueries >= 5) {
+            const result = await this.#features.findChannel(context.root.guildId, searchText);
+            if (result !== undefined)
+                context.root.queryCache.channel.set(searchText.toLowerCase(), result);
+            return result;
+        }
+
+        const result = await this.#features.queryChannel({
+            guildId: context.root.guildId,
+            channelId: context.root.channelId,
+            userId: context.root.userId,
+            searchText: searchText,
+            source: options?.noErrors !== true && context.local.noLookupErrors !== true
+                ? `${context.root.isCC ? 'custom command' : 'tag'} \`${context.root.tagName}\``
+                : undefined
+        });
+        if (result.success) {
+            context.root.queryCache.channel.set(searchText.toLowerCase(), result.id);
+            return result.id;
+        }
+
+        switch (result.cause) {
+            case 'aborted':
+                context.root.queryCache.failedQueries = Infinity;
+                break;
+            case 'notFound':
+                context.root.queryCache.failedQueries++;
+                break;
+        }
+
+        return undefined;
+    }
+}

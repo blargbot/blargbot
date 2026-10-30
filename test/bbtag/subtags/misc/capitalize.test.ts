@@ -1,10 +1,11 @@
-import { CapitalizeSubtag } from '@blargbot/bbtag/subtags/misc/capitalize';
+import { CapitalizeSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new CapitalizeSubtag(),
     argCountBounds: { min: 1, max: 2 },
+    names: ['capitalize'],
     cases: [
         {
             code: '{capitalize;this is a test}',

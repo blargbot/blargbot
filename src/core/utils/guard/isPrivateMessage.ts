@@ -1,7 +1,7 @@
-import { KnownPrivateChannel, Message } from 'eris';
+import type * as eris from 'eris';
 
-import { isPrivateChannel } from './isPrivateChannel';
+import { isPrivateChannel } from './isPrivateChannel.js';
 
-export function isPrivateMessage(message: Message): message is Message<KnownPrivateChannel> {
+export function isPrivateMessage(message: eris.Message): message is eris.Message<eris.KnownPrivateChannel> {
     return isPrivateChannel(message.channel);
 }

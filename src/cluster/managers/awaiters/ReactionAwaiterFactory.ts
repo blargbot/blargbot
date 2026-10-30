@@ -1,14 +1,14 @@
-import { AwaitReactionsResponse } from '@blargbot/bbtag';
-import { Logger } from '@blargbot/logger';
+import type { ReactionEvent } from '@blargbot/bbtag-engine';
+import type { Logger } from '@blargbot/logger';
 
-import { AwaiterFactoryBase } from './AwaiterFactoryBase';
+import { AwaiterFactoryBase } from './AwaiterFactoryBase.js';
 
-export class ReactionAwaiterFactory extends AwaiterFactoryBase<AwaitReactionsResponse> {
+export class ReactionAwaiterFactory extends AwaiterFactoryBase<ReactionEvent> {
     public constructor(logger: Logger) {
         super(logger);
     }
 
-    protected getPoolId(response: AwaitReactionsResponse): string {
-        return response.message.id;
+    protected getPoolId(response: ReactionEvent): string {
+        return response.messageId;
     }
 }

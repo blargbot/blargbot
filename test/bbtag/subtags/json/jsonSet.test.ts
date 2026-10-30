@@ -1,14 +1,25 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { JsonSubtag } from '@blargbot/bbtag/subtags/json/json';
-import { JsonSetSubtag } from '@blargbot/bbtag/subtags/json/jsonSet';
-import { TagVariableType } from '@blargbot/domain/models';
-import { expect } from 'chai';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { JsonSetSubtag, JsonSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new JsonSetSubtag(),
+const variablesProvider = new Mock<VariablesProvider>({ id: 'variablesProvider' });
+variablesProvider.setup(m => m.kinds).returns([]);
+const variables = new Mock<Variables>({ id: 'variables' });
+
+await runSubtagTests({
+    subtag: new JsonSetSubtag({
+        variables: variablesProvider.instance
+    }),
     argCountBounds: { min: 2, max: 4 },
+    names: ['jsonSet', 'jSet'],
+    setup(ctx) {
+        ctx.adoptMock(variablesProvider);
+        ctx.adoptMock(variables);
+        variablesProvider.setup(m => m.forContext(ctx.bbtag)).returns(variables.instance);
+    },
     cases: [
         {
             code: '{jsonset;{j;{"test": 123, "other": 456}};test}',
@@ -23,29 +34,33 @@ runSubtagTests({
         {
             code: '{jsonset;null;myProp;123}',
             expected: '',
-            async assert(bbctx) {
-                expect((await bbctx.variables.get('null')).value).to.deep.equal({ myProp: '123' });
+            setup() {
+                variables.setup(m => m.get('null')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+                variables.setup((m, $) => m.set('null', $({ myProp: '123' }))).resolves().mustHappen(1);
             }
         },
         {
             code: '{jsonset;"abc";myProp;123}',
             expected: '',
-            async assert(bbctx) {
-                expect((await bbctx.variables.get('"abc"')).value).to.deep.equal({ myProp: '123' });
+            setup() {
+                variables.setup(m => m.get('"abc"')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+                variables.setup((m, $) => m.set('"abc"', $({ myProp: '123' }))).resolves().mustHappen(1);
             }
         },
         {
             code: '{jsonset;true;myProp;123}',
             expected: '',
-            async assert(bbctx) {
-                expect((await bbctx.variables.get('true')).value).to.deep.equal({ myProp: '123' });
+            setup() {
+                variables.setup(m => m.get('true')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+                variables.setup((m, $) => m.set('true', $({ myProp: '123' }))).resolves().mustHappen(1);
             }
         },
         {
             code: '{jsonset;123;myProp;123}',
             expected: '',
-            async assert(bbctx) {
-                expect((await bbctx.variables.get('123')).value).to.deep.equal({ myProp: '123' });
+            setup() {
+                variables.setup(m => m.get('123')).resolves({ key: 'foo', value: undefined }).mustHappen(1);
+                variables.setup((m, $) => m.set('123', $({ myProp: '123' }))).resolves().mustHappen(1);
             }
         },
         {
@@ -56,7 +71,7 @@ runSubtagTests({
             code: '{jsonset;[123,456];length}',
             expected: '`Invalid array length`',
             errors: [
-                { start: 0, end: 26, error: new BBTagRuntimeError('Invalid array length') }
+                { error: new BBTagRuntimeError('Invalid array length') }
             ]
         },
         {
@@ -64,7 +79,7 @@ runSubtagTests({
             expected: '`Cannot set property myProp on "{\\"myProp\\":123}"`',
             subtags: [new JsonSubtag()],
             errors: [
-                { start: 0, end: 72, error: new BBTagRuntimeError('Cannot set property myProp on "{\\"myProp\\":123}"') }
+                { error: new BBTagRuntimeError('Cannot set property myProp on "{\\"myProp\\":123}"') }
             ]
         },
         {
@@ -75,13 +90,9 @@ runSubtagTests({
         {
             code: '{jsonset;jsonVar;other.myProp;10;true}',
             expected: '',
-            setupSaveVariables: false,
-            setup(ctx) {
-                ctx.options.tagName = 'testTag';
-                ctx.tagVariables.set({ scope: { type: TagVariableType.LOCAL_TAG, name: 'testTag' }, name: 'jsonVar' }, { test: 123, other: JSON.stringify({ myProp: 123 }) });
-            },
-            async assert(bbctx) {
-                expect((await bbctx.variables.get('jsonVar')).value).to.deep.equal({ test: 123, other: { myProp: '10' } });
+            setup() {
+                variables.setup(m => m.get('jsonVar')).resolves({ key: 'foo', value: { test: 123, other: JSON.stringify({ myProp: 123 }) } }).mustHappen(1);
+                variables.setup((m, $) => m.set('jsonVar', $({ test: 123, other: { myProp: '10' } }))).resolves().mustHappen(1);
             }
         }
     ]

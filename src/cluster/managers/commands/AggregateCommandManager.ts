@@ -1,13 +1,9 @@
-import { Cluster } from '@blargbot/cluster';
-import { Command } from '@blargbot/cluster/command';
-import { CommandGetResult, CommandManagers, ICommandManager } from '@blargbot/cluster/types';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { MessageIdQueue } from '@blargbot/core/MessageIdQueue';
-import { guard } from '@blargbot/core/utils';
-import { CommandPermissions, NamedGuildCommandTag } from '@blargbot/domain/models';
-import { Client as Discord, Guild, KnownTextableChannel, PossiblyUncachedMessage, User } from 'eris';
+import type { Cluster, Command, CommandGetResult, CommandManagers, ICommandManager } from '@blargbot/cluster';
+import { FormattableMessageContent, guard, MessageIdQueue  } from '@blargbot/core';
+import type { CommandPermissions, NamedGuildCommandTag } from '@blargbot/domain';
+import * as eris from 'eris';
 
-import templates from '../../text';
+import { templates } from '../../text.js';
 
 export class AggregateCommandManager implements ICommandManager, CommandManagers {
     public readonly messages: MessageIdQueue;
@@ -25,12 +21,12 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         this.#cluster = cluster;
         cluster.discord.deleteMessage = (...args) => {
             this.messages.remove(args[0], args[1]);
-            return Discord.prototype.deleteMessage.call(cluster.discord, ...args);
+            return eris.Client.prototype.deleteMessage.call(cluster.discord, ...args);
         };
         cluster.discord.deleteMessages = (...args) => {
             for (const messageId of args[1])
                 this.messages.remove(args[0], messageId);
-            return Discord.prototype.deleteMessages.call(cluster.discord, ...args);
+            return eris.Client.prototype.deleteMessages.call(cluster.discord, ...args);
         };
 
         this.messages = new MessageIdQueue(100);
@@ -44,7 +40,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         await Promise.all(this.#managersArr.map(m => m.load(commands)));
     }
 
-    public async get(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetResult> {
+    public async get(name: string, location?: eris.Guild | eris.KnownTextableChannel, user?: eris.User): Promise<CommandGetResult> {
         let result: CommandGetResult;
         for (const manager of this.#managersArr) {
             result = await manager.get(name, location, user);
@@ -54,7 +50,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         return { state: 'NOT_FOUND' };
     }
 
-    public async *list(location?: Guild | KnownTextableChannel, user?: User): AsyncGenerator<CommandGetResult> {
+    public async *list(location?: eris.Guild | eris.KnownTextableChannel, user?: eris.User): AsyncGenerator<CommandGetResult> {
         const results = new Map<string, CommandGetResult[]>();
 
         for (const manager of this.#managersArr) {
@@ -88,7 +84,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         }
     }
 
-    public async configure(user: User, names: readonly string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
+    public async configure(user: eris.User, names: readonly string[], guild: eris.Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         let remaining = [...names];
         const result = [];
         for (const manager of this.#managersArr) {
@@ -99,7 +95,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         return result;
     }
 
-    public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
+    public async messageDeleted(message: eris.PossiblyUncachedMessage): Promise<void> {
         if (!guard.isGuildMessage(message))
             return;
         if (!this.messages.has(message.channel.guild.id, message.id)

@@ -1,168 +1,183 @@
-import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag/errors';
-import { UnbanSubtag } from '@blargbot/bbtag/subtags/user/unban';
-import { Member, User } from 'eris';
+import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { UnbanUserFeature } from '@blargbot/bbtag-engine/subtags';
+import { ReasonSubtag, UnbanSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { createSnowflake } from '../../snowflake.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new UnbanSubtag(),
+const features = new Mock<UnbanUserFeature>({ id: 'features' });
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
+
+await runSubtagTests({
+    subtag: new UnbanSubtag(features.instance),
     argCountBounds: { min: 1, max: 3 },
+    names: ['unban'],
+    otherSubtags: [userIdSubtag.instance, reasonSubtag.instance],
+    setup(ctx) {
+        ctx.adoptMock(features);
+        ctx.adoptMock(userIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
+    },
     cases: [
         {
             code: '{unban;abc}',
             expected: '`No user found`',
             errors: [
-                { start: 0, end: 11, error: new UserNotFoundError('abc') }
+                { error: new UserNotFoundError('abc') }
             ],
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.getUser('abc'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'abc'))
-                    .verifiable(1)
-                    .thenResolve([]);
+            setup(ctx) {
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'abc', $({ noLookup: true, global: true })))
+                    .resolves(undefined)
+                    .mustHappen(1);
             }
         },
         {
             code: '{unban;other user}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 'Tag Unban'))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.unbanUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Unban'
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{unban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
-                { start: 0, end: 18, error: new BBTagRuntimeError('Bot has no permissions') }
+                { error: new BBTagRuntimeError('Bot has no permissions') }
             ],
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 'Tag Unban'))
-                    .verifiable(1)
-                    .thenResolve('noPerms');
+                features.setup((m, $) => m.unbanUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Unban'
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: false, cause: 'bot' });
             }
         },
         {
             code: '{unban;other user}',
             expected: 'false',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 'Tag Unban'))
-                    .verifiable(1)
-                    .thenResolve('notBanned');
+                features.setup((m, $) => m.unbanUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Unban'
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: false, cause: 'notBanned' });
             }
         },
         {
             code: '{unban;other user}',
             expected: '`User has no permissions`',
             errors: [
-                { start: 0, end: 18, error: new BBTagRuntimeError('User has no permissions') }
+                { error: new BBTagRuntimeError('User has no permissions') }
             ],
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 'Tag Unban'))
-                    .verifiable(1)
-                    .thenResolve('moderatorNoPerms');
+                features.setup((m, $) => m.unbanUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'Tag Unban'
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: false, cause: 'authorizer' });
             }
         },
         {
             code: '{unban;other user;My reason here}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 'My reason here'))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.unbanUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'My reason here'
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{unban;other user;My reason here;x}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                const authorizer = bbctx.guild.members.get(ctx.users.authorizer.id)?.user;
-                if (authorizer === undefined)
-                    throw new Error('Authorizer missing');
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, authorizer, 'My reason here'))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.unbanUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.authorizerId,
+                    auditReason: 'My reason here'
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         },
         {
             code: '{unban;other user;My reason here;}',
             expected: 'true',
-            postSetup(bbctx, ctx) {
-                const member = ctx.createMock(Member);
-                const user = ctx.createMock(User);
-                member.setup(m => m.user).thenReturn(user.instance);
-                ctx.util.setup(m => m.getUser('other user'))
-                    .verifiable(1)
-                    .thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
-                    .verifiable(1)
-                    .thenResolve([member.instance]);
+            setup(ctx) {
+                const userId = createSnowflake();
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, 'other user', $({ noLookup: true, global: true })))
+                    .resolves(userId)
+                    .mustHappen(1);
 
-                ctx.util.setup(x => x.unban(bbctx.guild, user.instance, bbctx.user, bbctx.user, 'My reason here'))
-                    .verifiable(1)
-                    .thenResolve('success');
+                features.setup((m, $) => m.unbanUser($({
+                    guildId: ctx.guildId,
+                    targetId: userId,
+                    moderatorId: ctx.userId,
+                    authorizerId: ctx.userId,
+                    auditReason: 'My reason here'
+                })))
+                    .mustHappen(1)
+                    .resolves({ success: true });
             }
         }
     ]

@@ -1,80 +1,68 @@
-import { RoleMentionSubtag } from '@blargbot/bbtag/subtags/role/roleMention';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { RoleMentionSubtag } from '@blargbot/bbtag-engine/subtags';
 
-runSubtagTests({
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
+
+await runSubtagTests({
     subtag: new RoleMentionSubtag(),
     argCountBounds: { min: 1, max: 3 },
+    names: ['roleMention'],
     cases: [
         ...createGetRolePropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['rolemention', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: '<@&89176598273912362713>',
-                    setup(role) {
-                        role.id = '89176598273912362713';
+                    expected: '<dynamic mention>',
+                    setup(roleId) {
+                        this.expected = `<@&${roleId}>`;
                     },
-                    assert(_, __, ctx) {
-                        expect(ctx.data.allowedMentions.roles).to.include('89176598273912362713');
+                    assert(_, roleId, ctx) {
+                        assert.deepEqual(ctx.bbtag.root.allowedMentions.roles, new Set([roleId]));
                     }
                 }
             ]
         }),
-        {
-            code: '{rolemention;other role;;}',
-            expected: '<@&347865137576334534>',
-            setup(ctx) {
-                ctx.roles.other.id = '347865137576334534';
+        ...createGetRolePropTestCases({
+            quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
+            generateCode(roleStr, quiet) {
+                return `{${['rolemention', roleStr, quiet, 'true'].join(';')}}`;
             },
-            postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(ctx.roles.other.id);
-                if (role === undefined)
-                    throw new Error('Cannot find the role under test');
-                ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .thenResolve([role]);
+            cases: [
+                {
+                    expected: '<dynamic mention>',
+                    setup(roleId) {
+                        this.expected = `<@&${roleId}>`;
+                    },
+                    assert(_, __, ctx) {
+                        assert.deepEqual(ctx.bbtag.root.allowedMentions.roles, new Set([]));
+                    }
+                }
+            ]
+        }),
+        ...createGetRolePropTestCases({
+            quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
+            generateCode(roleStr, quiet) {
+                return `{${['rolemention', roleStr, quiet, 'false'].join(';')}}`;
             },
-            assert(bbctx) {
-                expect(bbctx.data.allowedMentions.roles).to.deep.equal(['347865137576334534']);
-            }
-        },
-        {
-            code: '{rolemention;other role;;true}',
-            expected: '<@&347865137576334534>',
-            setup(ctx) {
-                ctx.roles.other.id = '347865137576334534';
-            },
-            postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(ctx.roles.other.id);
-                if (role === undefined)
-                    throw new Error('Cannot find the role under test');
-                ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .thenResolve([role]);
-            },
-            assert(bbctx) {
-                expect(bbctx.data.allowedMentions.roles).to.deep.equal([]);
-            }
-        },
-        {
-            code: '{rolemention;other role;;false}',
-            expected: '<@&347865137576334534>',
-            setup(ctx) {
-                ctx.roles.other.id = '347865137576334534';
-            },
-            postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get(ctx.roles.other.id);
-                if (role === undefined)
-                    throw new Error('Cannot find the role under test');
-                ctx.util.setup(m => m.findRoles(role.guild, 'other role'))
-                    .thenResolve([role]);
-            },
-            assert(bbctx) {
-                expect(bbctx.data.allowedMentions.roles).to.deep.equal(['347865137576334534']);
-            }
-        }
+            cases: [
+                {
+                    expected: '<dynamic mention>',
+                    setup(roleId) {
+                        this.expected = `<@&${roleId}>`;
+                    },
+                    assert(_, roleId, ctx) {
+                        assert.deepEqual(ctx.bbtag.root.allowedMentions.roles, new Set([roleId]));
+                    }
+                }
+            ]
+        })
     ]
 });

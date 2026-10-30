@@ -1,9 +1,8 @@
-import { ClusterConnection } from '@blargbot/cluster';
-import { FormattableMessageContent } from '@blargbot/core/FormattableMessageContent';
-import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
-import { Timer } from '@blargbot/core/Timer';
+import type { ClusterConnection } from '@blargbot/cluster';
+import { FormattableMessageContent, WorkerPoolEventService } from '@blargbot/core';
 import { util } from '@blargbot/formatting';
-import { Master } from '@blargbot/master';
+import type { Master } from '@blargbot/master';
+import { Timer } from '@blargbot/util';
 
 export class ClusterRespawnHandler extends WorkerPoolEventService<ClusterConnection, 'respawn'> {
     public constructor(

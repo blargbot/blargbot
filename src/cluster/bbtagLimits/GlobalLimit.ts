@@ -1,0 +1,40 @@
+import { BaseRuntimeLimit } from './BaseRuntimeLimit.js';
+import { DisabledInRule } from './rules/index.js';
+
+export abstract class GlobalLimit extends BaseRuntimeLimit {
+    public constructor() {
+        super();
+        this.addRules(
+            [
+                // API subtags
+                'dm',
+                'send',
+                'edit',
+                'delete',
+                'kick',
+                'timeout',
+                'ban',
+                'reactadd',
+                'reactremove',
+                'roleadd',
+                'rolecreate',
+                'roledelete',
+                'roleremove',
+                'rolesetmentionable',
+                'webhook',
+
+                // Moderation subtags
+                'warn',
+                'modlog',
+                'pardon',
+
+                // Misc subtags
+                'embed',
+                'waitmessage',
+                'waitreact',
+                'sleep'
+            ],
+            new DisabledInRule('filter', 'waitmessage', 'waitreaction')
+        );
+    }
+}

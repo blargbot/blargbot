@@ -1,19 +1,29 @@
-import { RandomUserSubtag } from '@blargbot/bbtag/subtags/user/randomUser';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import type { ListGuildMembersFeature } from '@blargbot/bbtag-engine/subtags';
+import { RandomUserSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-runSubtagTests({
-    subtag: new RandomUserSubtag(),
+import { runSubtagTests } from '../SubtagTestSuite.js';
+
+const features = new Mock<ListGuildMembersFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new RandomUserSubtag(features.instance),
     argCountBounds: { min: 0, max: 0 },
+    names: ['randUser', 'randomUser'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         {
             code: '{randuser}',
-            assert(_, result, ctx) {
-                expect(result).to.be.oneOf(Object.values(ctx.users).map(u => u.id));
+            assert(_, result) {
+                assert(['384975638795634547536', '329467864239864324', '378962875436678423', '237846384639462874', '23746392746789426394'].includes(result));
             },
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.ensureMemberCache(bbctx.guild)).thenResolve(undefined);
+            setup(ctx) {
+                features.setup(m => m.listGuildMembers(ctx.guildId))
+                    .resolves(['384975638795634547536', '329467864239864324', '378962875436678423', '237846384639462874', '23746392746789426394']);
             }
         }
     ]

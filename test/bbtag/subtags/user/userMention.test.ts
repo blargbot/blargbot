@@ -1,45 +1,34 @@
-import { UserMentionSubtag } from '@blargbot/bbtag/subtags/user/userMention';
-import { expect } from 'chai';
-import { Member, User } from 'eris';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { UserIdSubtag, UserMentionSubtag } from '@blargbot/bbtag-engine/subtags';
 
-runSubtagTests({
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
+
+const userIdSubtag = createMockSubtag(UserIdSubtag);
+
+await runSubtagTests({
     subtag: new UserMentionSubtag(),
     argCountBounds: { min: 0, max: 3 },
+    names: ['userMention'],
+    setup(ctx) {
+        ctx.adoptMock(userIdSubtag);
+    },
     cases: [
         ...createGetUserPropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup, global: true }),
             generateCode(...args) {
                 return `{${['usermention', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: '<@12345678900987236>',
-                    setup(member) {
-                        member.user.id = '12345678900987236';
+                    expected: '<dynamic mention>',
+                    setup(userId) {
+                        this.expected = `<@${userId}>`;
                     },
-                    assert(_, __, ctx) {
-                        expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
-                    }
-                },
-                {
-                    expected: '<@098765434512212678>',
-                    setup(member) {
-                        member.user.id = '098765434512212678';
-                    },
-                    assert(_, __, ctx) {
-                        expect(ctx.data.allowedMentions.users).to.deep.equal(['098765434512212678']);
-                    }
-                },
-                {
-                    expected: '<@876543456782978367654>',
-                    setup(member) {
-                        member.user.id = '876543456782978367654';
-                    },
-                    assert(_, __, ctx) {
-                        expect(ctx.data.allowedMentions.users).to.deep.equal(['876543456782978367654']);
+                    assert(_, userId, ctx) {
+                        assert.deepEqual(ctx.bbtag.root.allowedMentions.users, new Set([userId]));
                     }
                 }
             ]
@@ -47,52 +36,56 @@ runSubtagTests({
         {
             code: '{usermention;12345678900987236;;false}',
             expected: '<@12345678900987236>',
+            subtags: [userIdSubtag.instance],
             setup(ctx) {
-                ctx.users.command.id = '12345678900987236';
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '12345678900987236', $({ noLookup: false, global: true })))
+                    .resolves('12345678900987236')
+                    .mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
+                assert.deepEqual(ctx.bbtag.root.allowedMentions.users, new Set(['12345678900987236']));
             }
         },
         {
             code: '{usermention;12345678900987236;;true}',
             expected: '<@12345678900987236>',
+            subtags: [userIdSubtag.instance],
             setup(ctx) {
-                ctx.users.command.id = '12345678900987236';
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '12345678900987236', $({ noLookup: false, global: true })))
+                    .resolves('12345678900987236')
+                    .mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.data.allowedMentions.users).to.deep.equal([]);
+                assert.deepEqual(ctx.bbtag.root.allowedMentions.users, new Set([]));
             }
         },
         {
             code: '{usermention;12345678900987236}{usermention;12345678900987236}',
             expected: '<@12345678900987236><@12345678900987236>',
+            subtags: [userIdSubtag.instance],
             setup(ctx) {
-                ctx.users.command.id = '12345678900987236';
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '12345678900987236', $({ noLookup: false, global: true })))
+                    .resolves('12345678900987236')
+                    .mustHappen(2);
             },
             assert(ctx) {
-                expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
+                assert.deepEqual(ctx.bbtag.root.allowedMentions.users, new Set(['12345678900987236']));
             }
         },
         {
             code: '{usermention;12345678900987236}{usermention;098765434512212678}',
             expected: '<@12345678900987236><@098765434512212678>',
+            subtags: [userIdSubtag.instance],
             setup(ctx) {
-                ctx.users.command.id = '12345678900987236';
-                ctx.users.other.id = '098765434512212678';
-            },
-            postSetup(bbctx, ctx) {
-                const otherMember = ctx.createMock(Member);
-                const otherUser = ctx.createMock(User);
-                otherMember.setup(m => m.user, false).thenReturn(otherUser.instance);
-                otherUser.setup(m => m.id).thenReturn('098765434512212678');
-                otherUser.setup(m => m.mention).thenReturn('<@098765434512212678>');
-
-                ctx.util.setup(m => m.getUser('098765434512212678')).verifiable(1).thenResolve(undefined);
-                ctx.util.setup(m => m.findMembers(bbctx.guild, '098765434512212678')).verifiable(1).thenResolve([otherMember.instance]);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '12345678900987236', $({ noLookup: false, global: true })))
+                    .resolves('12345678900987236')
+                    .mustHappen(1);
+                userIdSubtag.setup((m, $) => m.query(ctx.bbtag, '098765434512212678', $({ noLookup: false, global: true })))
+                    .resolves('098765434512212678')
+                    .mustHappen(1);
             },
             assert(ctx) {
-                expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236', '098765434512212678']);
+                assert.deepEqual(ctx.bbtag.root.allowedMentions.users, new Set(['12345678900987236', '098765434512212678']));
             }
         }
     ]

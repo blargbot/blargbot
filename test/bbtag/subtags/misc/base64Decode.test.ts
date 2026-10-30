@@ -1,10 +1,11 @@
-import { Base64DecodeSubtag } from '@blargbot/bbtag/subtags/misc/base64Decode';
+import { Base64DecodeSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new Base64DecodeSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['base64Decode', 'aToB'],
     cases: [
         {
             code: '{base64decode;U3VjY2VzcyE}',

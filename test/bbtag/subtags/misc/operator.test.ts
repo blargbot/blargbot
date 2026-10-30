@@ -1,8 +1,9 @@
-import { InvalidOperatorError } from '@blargbot/bbtag/errors';
-import { OperatorSubtag } from '@blargbot/bbtag/subtags/misc/operator';
-import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '@blargbot/bbtag/utils';
+import type { LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '@blargbot/bbtag-engine';
+import { bbtag, InvalidOperatorError } from '@blargbot/bbtag-engine';
+import { OperatorSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import type { SubtagTestCase } from '../SubtagTestSuite.js';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
 const exp = Math.pow;
 const isEqualTo = { '!=': false, '<': false, '<=': true, '==': true, '>': false, '>=': true, 'startswith': true, 'endswith': true, 'includes': true, 'contains': true } as const;
@@ -14,16 +15,17 @@ const endsWith = { 'startswith': false, 'endswith': true, 'includes': true, 'con
 const doesntContain = { 'startswith': false, 'endswith': false, 'includes': false, 'contains': false } as const;
 const isFalse = { '!=': false, '<': false, '<=': false, '==': false, '>': false, '>=': false } as const;
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new OperatorSubtag(),
     argCountBounds: { min: 1, max: Infinity },
+    names: ['operator', '!', '!=', '%', '&&', '*', '+', '-', '/', '<', '<=', '==', '>', '>=', '??', '^', 'xor', '||', 'contains', 'endswith', 'includes', 'startswith'],
     cases: [
         {
             code: '{operator;{eval}}',
             expected: '`Invalid operator`',
             errors: [
                 { start: 10, end: 16, error: new MarkerError('eval', 10) },
-                { start: 0, end: 17, error: new InvalidOperatorError('operator') }
+                { error: new InvalidOperatorError('operator') }
             ]
         },
         ...createNumericTestCases([0], { '%': 0, '*': 0, '+': 0, '-': 0, '/': 0, '^': 0 }),

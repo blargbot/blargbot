@@ -1,84 +1,146 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { UserTimeoutSubtag } from '@blargbot/bbtag/subtags/user/userTimeout';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { GetMemberTimeoutFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserTimeoutSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
-    subtag: new UserTimeoutSubtag(),
+const features = new Mock<GetMemberTimeoutFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new UserTimeoutSubtag(features.instance),
     argCountBounds: { min: 0, max: 3 },
+    names: ['userTimeout', 'memberTimedoutUntil', 'memberTimeout', 'timedoutUntil', 'userTimedoutUntil'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
-        {
-            code: '{usertimeout}',
-            expected: '2021-01-01T00:00:00+00:00',
-            setup(ctx) {
-                ctx.members.command.communication_disabled_until = '2021-01-01T00:00:00+0000';
-            }
-        },
         ...createGetUserPropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
-                return `{${['usertimeout', '', ...args].join(';')}}`;
+                return `{${['usertimeout', '', ...args].filter(v => v !== undefined).join(';')}}`;
             },
             cases: [
                 {
                     expected: '2021-01-01T00:00:00+00:00',
-                    setup(member) {
-                        member.communication_disabled_until = '2021-01-01T00:00:00+0000';
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(Temporal.Instant.from('2021-01-01T00:00:00+0000'))
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: '2021-12-20T15:12:37+00:00',
-                    setup(member) {
-                        member.communication_disabled_until = '2021-12-20T15:12:37+00:00';
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(Temporal.Instant.from('2021-12-20T15:12:37+00:00'))
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
-                    setup(member) {
-                        member.communication_disabled_until = null;
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(null)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
-                    setup(member) {
-                        member.communication_disabled_until = undefined;
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(undefined)
+                            .mustHappen(1);
                     }
                 }
             ]
         }),
         ...createGetUserPropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
+            generateCode(...args) {
+                return `{${['usertimeout', '', ...args].join(';')}}`;
+            },
+            cases: [
+                {
+                    expected: '2021-01-01T00:00:00+00:00',
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(Temporal.Instant.from('2021-01-01T00:00:00+0000'))
+                            .mustHappen(1);
+                    }
+                },
+                {
+                    expected: '2021-12-20T15:12:37+00:00',
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(Temporal.Instant.from('2021-12-20T15:12:37+00:00'))
+                            .mustHappen(1);
+                    }
+                },
+                {
+                    expected: '`User not timed out`',
+                    error: new BBTagRuntimeError('User not timed out'),
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(null)
+                            .mustHappen(1);
+                    }
+                },
+                {
+                    expected: '`User not timed out`',
+                    error: new BBTagRuntimeError('User not timed out'),
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(undefined)
+                            .mustHappen(1);
+                    }
+                }
+            ]
+        }),
+        ...createGetUserPropTestCases({
+            quiet: '',
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['usertimeout', 'DD/MM/YYYY', ...args].join(';')}}`;
             },
             cases: [
                 {
                     expected: '01/01/2021',
-                    setup(member) {
-                        member.communication_disabled_until = '2021-01-01T00:00:00+0000';
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(Temporal.Instant.from('2021-01-01T00:00:00+0000'))
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: '20/12/2021',
-                    setup(member) {
-                        member.communication_disabled_until = '2021-12-20T15:12:37+00:00';
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(Temporal.Instant.from('2021-12-20T15:12:37+00:00'))
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
-                    setup(member) {
-                        member.communication_disabled_until = null;
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(null)
+                            .mustHappen(1);
                     }
                 },
                 {
                     expected: '`User not timed out`',
                     error: new BBTagRuntimeError('User not timed out'),
-                    setup(member) {
-                        member.communication_disabled_until = undefined;
+                    setup(userId, ctx) {
+                        features.setup(m => m.getMemberTimeout(ctx.guildId, userId))
+                            .resolves(undefined)
+                            .mustHappen(1);
                     }
                 }
             ]

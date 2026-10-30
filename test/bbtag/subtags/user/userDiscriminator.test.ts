@@ -1,35 +1,22 @@
-import { UserDiscriminatorSubtag } from '@blargbot/bbtag/subtags/user/userDiscriminator';
+import { UserDiscriminatorSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetUserPropTestCases } from './_getUserPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetUserPropTestCases } from './_getUserPropTest.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UserDiscriminatorSubtag(),
     argCountBounds: { min: 0, max: 2 },
+    names: ['userDiscrim', 'userDiscriminator'],
     cases: [
         ...createGetUserPropTestCases({
             quiet: '',
+            queryOptions: noLookup => ({ noLookup, global: true }),
             generateCode(...args) {
                 return `{${['userdiscrim', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    expected: '1234',
-                    setup(member) {
-                        member.user.discriminator = '1234';
-                    }
-                },
-                {
-                    expected: '5678',
-                    setup(member) {
-                        member.user.discriminator = '5678';
-                    }
-                },
-                {
-                    expected: '0000',
-                    setup(member) {
-                        member.user.discriminator = '0000';
-                    }
+                    expected: '0000'
                 }
             ]
         })

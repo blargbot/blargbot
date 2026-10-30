@@ -1,10 +1,11 @@
-import { ParseFloatSubtag } from '@blargbot/bbtag/subtags/math/parseFloat';
+import { ParseFloatSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ParseFloatSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['parseFloat'],
     cases: [
         { code: '{parsefloat;123}', expected: '123' },
         { code: '{parsefloat;123.456}', expected: '123.456' },

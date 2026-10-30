@@ -1,7 +1,6 @@
-import { ApiConnection } from '@blargbot/api';
-import { ClusterConnection } from '@blargbot/cluster';
-import { ClusterStats } from '@blargbot/cluster/types';
-import { WorkerPool } from '@blargbot/core/worker';
+import type { ApiConnection } from '@blargbot/api';
+import type { ClusterConnection, ClusterStats } from '@blargbot/cluster';
+import type { WorkerPool } from '@blargbot/core';
 
 export class ClusterStatsManager {
     readonly #statsMap: WeakMap<ClusterConnection, ClusterStats>;

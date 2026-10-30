@@ -1,2 +1,2 @@
-export * from './BaseModuleLoader';
-export * from './ModuleLoader';
+export * from './BaseModuleLoader.js';
+export * from './ModuleLoader.js';

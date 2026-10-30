@@ -1,11 +1,12 @@
-import { NotANumberError } from '@blargbot/bbtag/errors';
-import { SpaceSubtag } from '@blargbot/bbtag/subtags/misc/space';
+import { NotANumberError } from '@blargbot/bbtag-engine';
+import { SpaceSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new SpaceSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['space', 's'],
     cases: [
         { code: '{space}', expected: ' ' },
         { code: '{space;}', expected: ' ' },
@@ -18,7 +19,7 @@ runSubtagTests({
             expected: '`Not a number`',
             errors: [
                 { start: 7, end: 13, error: new MarkerError('eval', 7) },
-                { start: 0, end: 17, error: new NotANumberError('aaa') }
+                { error: new NotANumberError('aaa') }
             ]
         }
     ]

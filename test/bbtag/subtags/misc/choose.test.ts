@@ -1,31 +1,32 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag/errors';
-import { ChooseSubtag } from '@blargbot/bbtag/subtags/misc/choose';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag-engine';
+import { ChooseSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ChooseSubtag(),
     argCountBounds: { min: 2, max: Infinity },
+    names: ['choose'],
     cases: [
         {
             code: '{choose;abc;{fail}}',
             expected: '`Not a number`',
             errors: [
-                { start: 0, end: 19, error: new NotANumberError('abc') }
+                { error: new NotANumberError('abc') }
             ]
         },
         {
             code: '{choose;-1;{fail}}',
             expected: '`Choice cannot be negative`',
             errors: [
-                { start: 0, end: 18, error: new BBTagRuntimeError('Choice cannot be negative') }
+                { error: new BBTagRuntimeError('Choice cannot be negative') }
             ]
         },
         {
             code: '{choose;1;{fail}}',
             expected: '`Index out of range`',
             errors: [
-                { start: 0, end: 17, error: new BBTagRuntimeError('Index out of range') }
+                { error: new BBTagRuntimeError('Index out of range') }
             ]
         },
         { code: '{choose;0;abc}', expected: 'abc' },

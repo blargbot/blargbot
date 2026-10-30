@@ -1,12 +1,19 @@
-import { ChannelIsNsfwSubtag } from '@blargbot/bbtag/subtags/channel/channelIsNsfw';
-import { APITextChannel } from 'discord-api-types/v9';
+import type { IsChannelNsfwFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIsNsfwSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetChannelPropTestCases } from './_getChannelPropTest';
+import { runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetChannelPropTestCases } from './_getChannelPropTest.js';
 
-runSubtagTests({
-    subtag: new ChannelIsNsfwSubtag(),
+const features = new Mock<IsChannelNsfwFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new ChannelIsNsfwSubtag(features.instance),
     argCountBounds: { min: 0, max: 2 },
+    names: ['channelIsNsfw', 'isNsfw'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         ...createGetChannelPropTestCases({
             quiet: '',
@@ -17,14 +24,20 @@ runSubtagTests({
             cases: [
                 {
                     expected: 'true',
-                    setup(channel) {
-                        (channel as APITextChannel).nsfw = true;
+                    setup(channelId, ctx) {
+                        features.setup(m => m.isChannelNsfw(ctx.guildId, channelId)).resolves(true).mustHappen(1);
                     }
                 },
                 {
                     expected: 'false',
-                    setup(channel) {
-                        (channel as APITextChannel).nsfw = false;
+                    setup(channelId, ctx) {
+                        features.setup(m => m.isChannelNsfw(ctx.guildId, channelId)).resolves(false).mustHappen(1);
+                    }
+                },
+                {
+                    expected: 'false',
+                    setup(channelId, ctx) {
+                        features.setup(m => m.isChannelNsfw(ctx.guildId, channelId)).resolves(undefined).mustHappen(1);
                     }
                 }
             ]

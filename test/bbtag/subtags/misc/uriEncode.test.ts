@@ -1,11 +1,11 @@
-import { UriEncodeSubtag } from '@blargbot/bbtag/subtags/misc/uriEncode';
-import { SemiSubtag } from '@blargbot/bbtag/subtags/simple/semi';
+import { SemiSubtag, UriEncodeSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new UriEncodeSubtag(),
     argCountBounds: { min: 1, max: 1 },
+    names: ['uriEncode'],
     cases: [
         { code: '{uriencode;{semi},/?:@&=+$-_.!~*\'()#ABC abc 123}', expected: '%3B%2C%2F%3F%3A%40%26%3D%2B%24-_.!~*\'()%23ABC%20abc%20123', subtags: [new SemiSubtag()] }
     ]

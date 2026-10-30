@@ -1,5 +1,5 @@
-import { FlagDefinition } from '../flags';
-import { GuildCommandTagBase } from './GuildCommandTagBase';
+import type { FlagDefinition } from '../flags/index.js';
+import type { GuildCommandTagBase } from './GuildCommandTagBase.js';
 
 export interface GuildSourceCommandTag extends GuildCommandTagBase {
     readonly flags?: ReadonlyArray<FlagDefinition<string>>;

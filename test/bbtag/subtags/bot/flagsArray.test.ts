@@ -1,10 +1,11 @@
-import { FlagsArraySubtag } from '@blargbot/bbtag/subtags/bot/flagsArray';
+import { FlagsArraySubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new FlagsArraySubtag(),
     argCountBounds: { min: 0, max: 0 },
+    names: ['flagsArray'],
     cases: [
         {
             code: '{flagsarray}',
@@ -14,19 +15,14 @@ runSubtagTests({
             code: '{flagsarray}',
             expected: '["_","a","b","c","e","E"]',
             setup(ctx) {
-                ctx.options.inputRaw = 'This is some text -a flag a content -bc flag c content -- some more text --extra flag extra content --else flag else content';
-                ctx.options.flags = [
-                    {
-                        description: '',
-                        flag: 'e',
-                        word: 'extra'
-                    },
-                    {
-                        description: '',
-                        flag: 'E',
-                        word: 'else'
-                    }
-                ];
+                ctx.input.flags = {
+                    _: 'This is some text some more text',
+                    a: 'flag a content',
+                    b: '',
+                    c: 'flag c content',
+                    e: 'flag extra content',
+                    E: 'flag else content'
+                };
             }
         }
     ]

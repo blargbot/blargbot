@@ -1,45 +1,45 @@
-import { QuietSubtag } from '@blargbot/bbtag/subtags/bot/quiet';
-import { expect } from 'chai';
+import { QuietSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new QuietSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['quiet'],
     cases: [
         {
             code: '{quiet}',
             expected: '',
-            assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.true;
+            setup(ctx) {
+                ctx.root.setupSet(m => m.quiet = true).mustHappen(1);
             }
         },
         {
             code: '{quiet;}',
             expected: '',
-            assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.true;
+            setup(ctx) {
+                ctx.root.setupSet(m => m.quiet = true).mustHappen(1);
             }
         },
         {
             code: '{quiet;true}',
             expected: '',
-            assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.true;
+            setup(ctx) {
+                ctx.root.setupSet(m => m.quiet = true).mustHappen(1);
             }
         },
         {
             code: '{quiet;false}',
             expected: '',
-            assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.false;
+            setup(ctx) {
+                ctx.root.setupSet(m => m.quiet = false).mustHappen(1);
             }
         },
         {
             code: '{quiet;abc}',
             expected: '',
-            assert(ctx) {
-                expect(ctx.scopes.local.quiet).to.be.undefined;
+            setup(ctx) {
+                ctx.root.setupSet(m => m.quiet = undefined).mustHappen(1);
             }
         }
     ]

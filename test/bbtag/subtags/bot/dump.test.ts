@@ -1,18 +1,26 @@
-import { DumpSubtag } from '@blargbot/bbtag/subtags/bot/dump';
-import { argument } from '@blargbot/test-util/mock';
+import type { GenerateDumpLinkFeature } from '@blargbot/bbtag-engine/subtags';
+import { DumpSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new DumpSubtag(),
+const features = new Mock<GenerateDumpLinkFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new DumpSubtag(features.instance),
     argCountBounds: { min: 1, max: 1 },
+    names: ['dump'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         {
             code: '{dump;abc123}',
             expected: 'https://blargbot.xyz/dumps/1271927912712712',
-            postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.generateDumpPage(argument.isDeepEqual({ content: 'abc123' }), bbctx.channel)).thenResolve('1271927912712712');
-                ctx.util.setup(m => m.websiteLink('dumps/1271927912712712')).thenReturn('https://blargbot.xyz/dumps/1271927912712712');
+            setup(ctx) {
+                features.setup((m, $) => m.generateDumpLink($({ content: 'abc123', channelId: ctx.channelId })))
+                    .resolves(new URL('https://blargbot.xyz/dumps/1271927912712712'))
+                    .mustHappen(1);
             }
         }
     ]

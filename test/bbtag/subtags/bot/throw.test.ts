@@ -1,24 +1,25 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { ThrowSubtag } from '@blargbot/bbtag/subtags/bot/throw';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { ThrowSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new ThrowSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['throw'],
     cases: [
         {
             code: '{throw}',
             expected: '`A custom error occurred`',
             errors: [
-                { start: 0, end: 7, error: new BBTagRuntimeError('A custom error occurred', 'A user defined error') }
+                { error: new BBTagRuntimeError('A custom error occurred', 'A user defined error') }
             ]
         },
         {
             code: '{throw;abc}',
             expected: '`abc`',
             errors: [
-                { start: 0, end: 11, error: new BBTagRuntimeError('abc', 'A user defined error') }
+                { error: new BBTagRuntimeError('abc', 'A user defined error') }
             ]
         }
     ]

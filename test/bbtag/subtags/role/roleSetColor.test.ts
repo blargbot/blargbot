@@ -1,52 +1,95 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
-import { RoleSetColorSubtag } from '@blargbot/bbtag/subtags/role/roleSetColor';
-import { argument } from '@blargbot/test-util/mock';
-import { ApiError, Constants } from 'eris';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag-engine';
+import type { EditRoleFeature, GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag-engine/subtags';
+import { ReasonSubtag, RoleIdSubtag, RoleSetColorSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
-import { createGetRolePropTestCases } from './_getRolePropTest';
+import { createSnowflake } from '../../snowflake.js';
+import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
+import { createGetRolePropTestCases } from './_getRolePropTest.js';
 
-runSubtagTests({
-    subtag: new RoleSetColorSubtag(),
+const features = new Mock<EditRoleFeature & GetMemberPermissionsFeature & ListGuildRolesFeature & ListMemberRolesFeature>({ id: 'features' });
+const roleIdSubtag = createMockSubtag(RoleIdSubtag);
+const reasonSubtag = createMockSubtag(ReasonSubtag);
+
+await runSubtagTests({
+    subtag: new RoleSetColorSubtag(features.instance),
     argCountBounds: { min: 1, max: 3 },
+    names: ['roleSetColor'],
+    otherSubtags: [reasonSubtag.instance],
     setup(ctx) {
-        ctx.roles.authorizer.permissions = Constants.Permissions.manageRoles.toString();
-        ctx.members.authorizer.roles.push(ctx.roles.top.id);
+        ctx.adoptMock(features);
+        ctx.adoptMock(roleIdSubtag);
+        ctx.adoptMock(reasonSubtag);
+        reasonSubtag.setup(m => m.get(ctx.bbtag)).resolves('@command.user');
     },
     cases: [
         ...createGetRolePropTestCases({
             quiet: false,
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(...args) {
                 return `{${['rolesetcolor', ...args].join(';')}}`;
             },
             notFound: () => new BBTagRuntimeError('Role not found'),
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+            },
             cases: [
                 {
                     expected: '',
-                    postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ color: 0 }), 'Command User#0000'))
-                            .thenResolve(role);
+                    setup(roleId, ctx) {
+                        features.setup((m, $) => m.editRole($({
+                            guildId: ctx.guildId,
+                            roleId,
+                            color: 0,
+                            auditReason: '@command.user'
+                        }))).resolves({ success: true }).mustHappen(1);
                     }
                 }
             ]
         }),
         ...[
             { text: '', color: 0x000000 },
-            { text: 'this isnt a valid color', color: undefined },
+            { text: 'this isnt a valid color', color: 0 },
             { text: 'red', color: 0xff0000 },
             { text: 'green', color: 0x008001 },
             { text: 'blue', color: 0x0000ff }
         ].flatMap(({ text, color }) => createGetRolePropTestCases({
+            queryOptions: noLookup => ({ noLookup }),
             generateCode(role, ...args) {
                 return `{${['rolesetcolor', role, text, ...args].join(';')}}`;
             },
             notFound: () => new BBTagRuntimeError('Role not found'),
+            setup(ctx) {
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+            },
             cases: [
                 {
                     expected: '',
-                    postSetup(role, _, ctx) {
-                        ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ color: color }), 'Command User#0000'))
-                            .thenResolve(role);
+                    setup(roleId, ctx) {
+                        features.setup((m, $) => m.editRole($({
+                            guildId: ctx.guildId,
+                            roleId,
+                            color,
+                            auditReason: '@command.user'
+                        }))).resolves({ success: true }).mustHappen(1);
                     }
                 }
             ]
@@ -55,70 +98,99 @@ runSubtagTests({
             code: '{rolesetcolor;3298746326924}',
             expected: '`Author cannot edit roles`',
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Author cannot edit roles') }
+                { error: new BBTagRuntimeError('Author cannot edit roles') }
             ],
             setup(ctx) {
-                ctx.roles.authorizer.permissions = '0';
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.NONE).mustHappen(1);
             }
         },
         {
             code: '{rolesetcolor;3298746326924}',
             expected: '`Role above author`',
+            subtags: [roleIdSubtag.instance],
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Role above author') }
+                { error: new BBTagRuntimeError('Role above author') }
             ],
             setup(ctx) {
-                ctx.roles.top.id = '3298746326924';
-            },
-            postSetup(bbctx, ctx) {
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, ...roleIds]).mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
+                    .resolves('3298746326924')
+                    .mustHappen(1);
             }
         },
         {
             code: '{rolesetcolor;3298746326924}',
             expected: '`Failed to edit role: no perms`',
+            subtags: [roleIdSubtag.instance],
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Test REST error') }
+                { error: new BBTagRuntimeError('Failed to edit role: no perms', 'Test REST error') }
             ],
             setup(ctx) {
-                ctx.roles.other.id = '3298746326924';
-            },
-            postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.MISSING_PERMISSIONS);
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ color: 0 }), 'Command User#0000'))
-                    .thenReject(err);
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
+                    .resolves('3298746326924')
+                    .mustHappen(1);
+                features.setup((m, $) => m.editRole($({
+                    guildId: ctx.guildId,
+                    roleId: roleIds[0],
+                    color: 0,
+                    auditReason: '@command.user'
+                }))).resolves({ success: false, reason: 'Test REST error' }).mustHappen(1);
             }
         },
         {
             code: '{rolesetcolor;3298746326924}',
             expected: '`Failed to edit role: no perms`',
+            subtags: [roleIdSubtag.instance],
             errors: [
-                { start: 0, end: 28, error: new BBTagRuntimeError('Failed to edit role: no perms', 'Some other error message') }
+                { error: new BBTagRuntimeError('Failed to edit role: no perms', 'Some other error message') }
             ],
             setup(ctx) {
-                ctx.roles.other.id = '3298746326924';
-            },
-            postSetup(bbctx, ctx) {
-                const err = ctx.createRESTError(ApiError.NOT_AUTHORIZED, 'Some other error message');
-                const role = bbctx.guild.roles.get('3298746326924');
-                if (role === undefined)
-                    throw new Error('Unable to locate role under test');
-
-                ctx.util.setup(m => m.findRoles(bbctx.guild, '3298746326924'))
-                    .thenResolve([role]);
-                ctx.discord.setup(m => m.editRole(ctx.guild.id, role.id, argument.isDeepEqual({ color: 0 }), 'Command User#0000'))
-                    .thenReject(err);
+                const guildId = ctx.guildId;
+                const roleIds = ['3298746326924'];
+                const adminId = createSnowflake();
+                const botId = ctx.botId;
+                const modId = ctx.authorizerId;
+                features.setup(m => m.listGuildRoles(guildId)).resolves([guildId, ...roleIds, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, botId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, botId)).resolves([guildId, adminId]).mustHappen(1);
+                features.setup(m => m.getMemberPermissions(guildId, modId)).resolves(DiscordPermissions.MANAGE_ROLES).mustHappen(1);
+                features.setup(m => m.listMemberRoles(guildId, modId)).resolves([guildId, adminId]).mustHappen(1);
+                roleIdSubtag.setup((m, $) => m.query(ctx.bbtag, '3298746326924', $({ noLookup: false })))
+                    .resolves('3298746326924')
+                    .mustHappen(1);
+                features.setup((m, $) => m.editRole($({
+                    guildId: ctx.guildId,
+                    roleId: roleIds[0],
+                    color: 0,
+                    auditReason: '@command.user'
+                }))).resolves({ success: false, reason: 'Some other error message' }).mustHappen(1);
             }
         }
     ]

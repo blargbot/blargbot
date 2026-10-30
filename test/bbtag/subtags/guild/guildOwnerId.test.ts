@@ -1,16 +1,26 @@
-import { GuildOwnerIdSubtag } from '@blargbot/bbtag/subtags/guild/guildOwnerId';
+import type { GetGuildOwnerIdFeature } from '@blargbot/bbtag-engine/subtags';
+import { GuildOwnerIdSubtag } from '@blargbot/bbtag-engine/subtags';
+import { Mock } from '@blargbot/test-util';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
-    subtag: new GuildOwnerIdSubtag(),
+const features = new Mock<GetGuildOwnerIdFeature>({ id: 'features' });
+
+await runSubtagTests({
+    subtag: new GuildOwnerIdSubtag(features.instance),
     argCountBounds: { min: 0, max: 0 },
+    names: ['guildOwnerId'],
+    setup(ctx) {
+        ctx.adoptMock(features);
+    },
     cases: [
         {
             code: '{guildownerid}',
             expected: '2389476284936446234',
             setup(ctx) {
-                ctx.guild.owner_id = '2389476284936446234';
+                features.setup(m => m.getGuildOwnerId(ctx.guildId))
+                    .resolves('2389476284936446234')
+                    .mustHappen(1);
             }
         }
     ]

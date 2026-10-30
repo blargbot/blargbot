@@ -1,31 +1,33 @@
-import { HereMentionSubtag } from '@blargbot/bbtag/subtags/message/hereMention';
-import { expect } from 'chai';
+import assert from 'node:assert/strict';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { HereMentionSubtag } from '@blargbot/bbtag-engine/subtags';
 
-runSubtagTests({
+import { runSubtagTests } from '../SubtagTestSuite.js';
+
+await runSubtagTests({
     subtag: new HereMentionSubtag(),
     argCountBounds: { min: 0, max: 1 },
+    names: ['here', 'hereMention'],
     cases: [
         {
             code: '{heremention}',
             expected: '@here',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.true;
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, true);
             }
         },
         {
             code: '{heremention;true}',
             expected: '@here',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.true;
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, true);
             }
         },
         {
             code: '{heremention;false}',
             expected: '@here',
             assert(ctx) {
-                expect(ctx.data.allowedMentions.everybody).to.be.false;
+                assert.equal(ctx.bbtag.root.allowedMentions.everybody, false);
             }
         }
     ]

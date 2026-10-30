@@ -1,10 +1,11 @@
-import { VoidSubtag } from '@blargbot/bbtag/subtags/misc/void';
+import { VoidSubtag } from '@blargbot/bbtag-engine/subtags';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 
-runSubtagTests({
+await runSubtagTests({
     subtag: new VoidSubtag(),
     argCountBounds: { min: 0, max: Infinity },
+    names: ['void', 'null'],
     cases: [
         { code: '{void}', expected: '' },
         { code: '{void;}', expected: '' },

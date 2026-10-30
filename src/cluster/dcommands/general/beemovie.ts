@@ -1,10 +1,14 @@
-import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, randChoose } from '@blargbot/cluster/utils';
+import type { CommandContext } from '@blargbot/cluster';
+import { CommandType, GlobalCommand  } from '@blargbot/cluster';
 import { util } from '@blargbot/formatting';
-import script from '@blargbot/res/beemovie.json';
+import { beemovie } from '@blargbot/res';
+import { random } from '@blargbot/util';
 
-import templates from '../../text';
-import { CommandResult } from '../../types';
+import { templates } from '../../text.js';
+import type { CommandResult } from '../../types.js';
+
+await beemovie.ensureLoaded();
+const script = beemovie.data;
 
 const cmd = templates.commands.beeMovie;
 
@@ -37,7 +41,7 @@ export class BeemovieCommand extends GlobalCommand {
 
     public getQuote(context: CommandContext, showName: boolean, charactersOnly: boolean): CommandResult {
         const lines = scriptMap[charactersOnly ? 'characterLines' : 'allLines'];
-        const line = randChoose(lines);
+        const line = random.pick(lines);
 
         if (showName && line.actor !== undefined)
             return util.literal(`${context.config.discord.emotes.beemovie} **${line.actor}**\n${line.content}`);
