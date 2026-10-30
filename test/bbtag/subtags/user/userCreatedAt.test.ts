@@ -1,5 +1,5 @@
-import type { GetUserCreatedTimestampFeature } from '@blargbot/bbtag/subtags';
-import { UserCreatedAtSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import type { GetUserCreatedTimestampFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserCreatedAtSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

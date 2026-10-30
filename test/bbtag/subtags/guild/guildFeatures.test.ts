@@ -1,5 +1,5 @@
-import type { ListGuildFeaturesFeature } from '@blargbot/bbtag/subtags';
-import { GuildFeaturesSubtag } from '@blargbot/bbtag/subtags';
+import type { ListGuildFeaturesFeature } from '@blargbot/bbtag-engine/subtags';
+import { GuildFeaturesSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

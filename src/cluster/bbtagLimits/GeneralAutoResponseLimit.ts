@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, templates, TooManyLoopsError } from '@blargbot/bbtag';
+import { BBTagRuntimeError, templates, TooManyLoopsError } from '@blargbot/bbtag-engine';
 
 import { registerRuntimeLimit } from './BaseRuntimeLimit.js';
 import { GlobalLimit } from './GlobalLimit.js';

@@ -1,6 +1,6 @@
-import type { BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
-import { UserNotFoundError } from '@blargbot/bbtag';
-import { UserIdSubtag } from '@blargbot/bbtag/subtags';
+import type { BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag-engine';
+import { UserNotFoundError } from '@blargbot/bbtag-engine';
+import { UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { createSnowflake } from '../../snowflake.js';
 import { createMockSubtag, type SubtagTestCase, type SubtagTestContext } from '../SubtagTestSuite.js';

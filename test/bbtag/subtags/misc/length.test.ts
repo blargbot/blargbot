@@ -1,5 +1,5 @@
-import { UnknownSubtagError } from '@blargbot/bbtag';
-import { EscapeBBTagSubtag, LengthSubtag } from '@blargbot/bbtag/subtags';
+import { UnknownSubtagError } from '@blargbot/bbtag-engine';
+import { EscapeBBTagSubtag, LengthSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

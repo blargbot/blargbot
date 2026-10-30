@@ -1,7 +1,7 @@
-import type { Variables, VariablesProvider } from '@blargbot/bbtag';
-import { BBTagRuntimeError, DiscordPermissions, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag';
-import type { GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature, VariablesFeature } from '@blargbot/bbtag/subtags';
-import { ReasonSubtag, RoleIdSubtag, UserIdSubtag, UserSetRolesSubtag } from '@blargbot/bbtag/subtags';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, DiscordPermissions, NotAnArrayError, RoleNotFoundError } from '@blargbot/bbtag-engine';
+import type { GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature, VariablesFeature } from '@blargbot/bbtag-engine/subtags';
+import { ReasonSubtag, RoleIdSubtag, UserIdSubtag, UserSetRolesSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import type { SetMemberRolesFeature } from '../../../../src/bbtag/subtags/user/userSetRoles.js';

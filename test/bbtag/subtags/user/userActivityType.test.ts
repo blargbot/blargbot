@@ -1,5 +1,5 @@
-import type { GetMemberActivityTypeFeature } from '@blargbot/bbtag/subtags';
-import { UserActivityTypeSubtag } from '@blargbot/bbtag/subtags';
+import type { GetMemberActivityTypeFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserActivityTypeSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 import { ActivityType } from 'discord-api-types/v9';
 

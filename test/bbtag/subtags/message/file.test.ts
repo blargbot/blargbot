@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { FileSubtag } from '@blargbot/bbtag/subtags';
+import { FileSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, DiscordPermissions, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag';
-import type { GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature, RemoveMemberRolesFeature } from '@blargbot/bbtag/subtags';
-import { ReasonSubtag, RoleRemoveSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, DiscordPermissions, RoleNotFoundError, UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature, RemoveMemberRolesFeature } from '@blargbot/bbtag-engine/subtags';
+import { ReasonSubtag, RoleRemoveSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

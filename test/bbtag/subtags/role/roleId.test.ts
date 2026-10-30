@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { RoleNotFoundError } from '@blargbot/bbtag';
-import type { CheckRoleExistsFeature, FindRoleFeature, QueryRoleFeature } from '@blargbot/bbtag/subtags';
-import { RoleIdSubtag } from '@blargbot/bbtag/subtags';
+import { RoleNotFoundError } from '@blargbot/bbtag-engine';
+import type { CheckRoleExistsFeature, FindRoleFeature, QueryRoleFeature } from '@blargbot/bbtag-engine/subtags';
+import { RoleIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

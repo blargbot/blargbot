@@ -1,5 +1,5 @@
-import type { GetGuildIconFeature } from '@blargbot/bbtag/subtags';
-import { GuildIconSubtag } from '@blargbot/bbtag/subtags';
+import type { GetGuildIconFeature } from '@blargbot/bbtag-engine/subtags';
+import { GuildIconSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,5 +1,5 @@
-import type { GetMessageEditTimestampFeature } from '@blargbot/bbtag/subtags';
-import { MessageEditTimeSubtag } from '@blargbot/bbtag/subtags';
+import type { GetMessageEditTimestampFeature } from '@blargbot/bbtag-engine/subtags';
+import { MessageEditTimeSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

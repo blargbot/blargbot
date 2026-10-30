@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError, BBTagRuntimeState, SubtagStackOverflowError } from '@blargbot/bbtag';
-import type { GetTagFeature, ParseInputFeature, TagCooldownFeature } from '@blargbot/bbtag/subtags';
-import { ExecTagSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, BBTagRuntimeState, SubtagStackOverflowError } from '@blargbot/bbtag-engine';
+import type { GetTagFeature, ParseInputFeature, TagCooldownFeature } from '@blargbot/bbtag-engine/subtags';
+import { ExecTagSubtag, JsonSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

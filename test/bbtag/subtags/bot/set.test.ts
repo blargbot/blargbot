@@ -1,5 +1,5 @@
-import type { Variables, VariablesProvider } from '@blargbot/bbtag';
-import { SetSubtag } from '@blargbot/bbtag/subtags';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { SetSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';

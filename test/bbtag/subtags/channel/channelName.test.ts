@@ -1,5 +1,5 @@
-import type { GetChannelNameFeature } from '@blargbot/bbtag/subtags';
-import { ChannelNameSubtag } from '@blargbot/bbtag/subtags';
+import type { GetChannelNameFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelNameSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

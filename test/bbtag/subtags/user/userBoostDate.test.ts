@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { GetMemberBoostTimestampFeature } from '@blargbot/bbtag/subtags';
-import { UserBoostDateSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { GetMemberBoostTimestampFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserBoostDateSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

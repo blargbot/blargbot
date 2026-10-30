@@ -1,5 +1,5 @@
-import type { GetGuildCreatedTimestampFeature } from '@blargbot/bbtag/subtags';
-import { GuildCreatedAtSubtag } from '@blargbot/bbtag/subtags';
+import type { GetGuildCreatedTimestampFeature } from '@blargbot/bbtag-engine/subtags';
+import { GuildCreatedAtSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

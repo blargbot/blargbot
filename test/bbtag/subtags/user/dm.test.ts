@@ -1,6 +1,6 @@
-import { UserNotFoundError } from '@blargbot/bbtag';
-import type { GetDmChannelIdFeature, GetGuildNameFeature, GetUserNameFeature, SendFeature } from '@blargbot/bbtag/subtags';
-import { DMSubtag, EscapeBBTagSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { GetDmChannelIdFeature, GetGuildNameFeature, GetUserNameFeature, SendFeature } from '@blargbot/bbtag-engine/subtags';
+import { DMSubtag, EscapeBBTagSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

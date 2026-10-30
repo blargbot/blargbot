@@ -1,6 +1,6 @@
-import type { OrdinalOperator, StringOperator } from '@blargbot/bbtag';
-import { bbtag, InvalidOperatorError } from '@blargbot/bbtag';
-import { BoolSubtag } from '@blargbot/bbtag/subtags';
+import type { OrdinalOperator, StringOperator } from '@blargbot/bbtag-engine';
+import { bbtag, InvalidOperatorError } from '@blargbot/bbtag-engine';
+import { BoolSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

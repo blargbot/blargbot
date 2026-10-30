@@ -1,4 +1,4 @@
-import { QuietSubtag } from '@blargbot/bbtag/subtags';
+import { QuietSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

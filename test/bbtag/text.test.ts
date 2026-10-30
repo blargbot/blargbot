@@ -1,6 +1,6 @@
 import { describe } from 'node:test';
 
-import { Subtag, SubtagType, templates } from '@blargbot/bbtag';
+import { Subtag, SubtagType, templates } from '@blargbot/bbtag-engine';
 import { transformers as coreTransformers } from '@blargbot/core';
 import { transformers, util } from '@blargbot/formatting';
 import { quickMock, runFormatTreeTests } from '@blargbot/test-util';

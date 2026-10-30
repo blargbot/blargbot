@@ -1,6 +1,6 @@
-import type { Variables, VariablesProvider } from '@blargbot/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag';
-import { GetSubtag, IfSubtag, IncrementSubtag, RepeatSubtag, ReturnSubtag } from '@blargbot/bbtag/subtags';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag-engine';
+import { GetSubtag, IfSubtag, IncrementSubtag, RepeatSubtag, ReturnSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

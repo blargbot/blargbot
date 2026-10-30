@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import { BrainfuckSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { BrainfuckSubtag } from '@blargbot/bbtag-engine/subtags';
 import { default as Brainfuck } from 'brainfuck-node';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

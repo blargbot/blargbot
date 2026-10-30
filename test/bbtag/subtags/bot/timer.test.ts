@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { ScheduleFeature } from '@blargbot/bbtag/subtags';
-import { TimerSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { ScheduleFeature } from '@blargbot/bbtag-engine/subtags';
+import { TimerSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

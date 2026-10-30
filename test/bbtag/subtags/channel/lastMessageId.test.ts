@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { GetLastMessageIdFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIsTextSubtag, LastMessageIdSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { GetLastMessageIdFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIsTextSubtag, LastMessageIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';

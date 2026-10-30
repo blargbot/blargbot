@@ -1,6 +1,6 @@
-import type { Variables, VariablesProvider } from '@blargbot/bbtag';
-import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag';
-import { JsonSortSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/bbtag-engine';
+import { JsonSortSubtag, JsonSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,4 +1,4 @@
-import { ArgsLengthSubtag } from '@blargbot/bbtag/subtags';
+import { ArgsLengthSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

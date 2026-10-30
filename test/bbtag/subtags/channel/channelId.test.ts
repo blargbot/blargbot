@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { ChannelNotFoundError } from '@blargbot/bbtag';
-import type { CheckChannelExistsFeature, FindChannelFeature, QueryChannelFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
+import { ChannelNotFoundError } from '@blargbot/bbtag-engine';
+import type { CheckChannelExistsFeature, FindChannelFeature, QueryChannelFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

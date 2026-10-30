@@ -1,6 +1,6 @@
-import type { BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
-import { RoleNotFoundError } from '@blargbot/bbtag';
-import { RoleIdSubtag } from '@blargbot/bbtag/subtags';
+import type { BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag-engine';
+import { RoleNotFoundError } from '@blargbot/bbtag-engine';
+import { RoleIdSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { createSnowflake } from '../../snowflake.js';
 import { createMockSubtag, type SubtagTestCase, type SubtagTestContext } from '../SubtagTestSuite.js';

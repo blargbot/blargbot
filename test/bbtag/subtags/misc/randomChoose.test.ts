@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
-import type { Variables, VariablesProvider } from '@blargbot/bbtag';
-import { RandomChooseSubtag } from '@blargbot/bbtag/subtags';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { RandomChooseSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

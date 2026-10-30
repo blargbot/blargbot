@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import type { BBTagExpression } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import { FunctionSubtag } from '@blargbot/bbtag/subtags';
+import type { BBTagExpression } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { FunctionSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

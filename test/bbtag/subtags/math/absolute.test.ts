@@ -1,5 +1,5 @@
-import { NotANumberError } from '@blargbot/bbtag';
-import { AbsoluteSubtag } from '@blargbot/bbtag/subtags';
+import { NotANumberError } from '@blargbot/bbtag-engine';
+import { AbsoluteSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

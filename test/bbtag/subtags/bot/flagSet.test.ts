@@ -1,4 +1,4 @@
-import { FlagSetSubtag } from '@blargbot/bbtag/subtags';
+import { FlagSetSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

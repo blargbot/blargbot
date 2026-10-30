@@ -1,6 +1,6 @@
-import { MessageType } from '@blargbot/bbtag';
-import type { GetMessageTypeFeature } from '@blargbot/bbtag/subtags';
-import { MessageTypeSubtag } from '@blargbot/bbtag/subtags';
+import { MessageType } from '@blargbot/bbtag-engine';
+import type { GetMessageTypeFeature } from '@blargbot/bbtag-engine/subtags';
+import { MessageTypeSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

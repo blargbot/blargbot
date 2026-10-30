@@ -43,8 +43,8 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:src/api"\
     },\
     {\
-      "name": "@blargbot/bbtag",\
-      "reference": "workspace:src/bbtag"\
+      "name": "@blargbot/bbtag-engine",\
+      "reference": "workspace:src/bbtag-engine"\
     },\
     {\
       "name": "@blargbot/cluster",\
@@ -148,7 +148,7 @@ const RAW_RUNTIME_STATE =
   "pnpZipBackend": "libzip",\
   "fallbackExclusionList": [\
     ["@blargbot/api", ["workspace:src/api"]],\
-    ["@blargbot/bbtag", ["workspace:src/bbtag"]],\
+    ["@blargbot/bbtag-engine", ["workspace:src/bbtag-engine"]],\
     ["@blargbot/bbtag-tests", ["workspace:test/bbtag"]],\
     ["@blargbot/cluster", ["workspace:src/cluster"]],\
     ["@blargbot/cluster-tests", ["workspace:test/cluster"]],\
@@ -222,7 +222,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./src/api/",\
         "packageDependencies": [\
           ["@blargbot/api", "workspace:src/api"],\
-          ["@blargbot/bbtag", "workspace:src/bbtag"],\
+          ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"],\
           ["@blargbot/cluster", "workspace:src/cluster"],\
           ["@blargbot/config", "workspace:src/config"],\
           ["@blargbot/core", "workspace:src/core"],\
@@ -245,11 +245,11 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
-    ["@blargbot/bbtag", [\
-      ["workspace:src/bbtag", {\
-        "packageLocation": "./src/bbtag/",\
+    ["@blargbot/bbtag-engine", [\
+      ["workspace:src/bbtag-engine", {\
+        "packageLocation": "./src/bbtag-engine/",\
         "packageDependencies": [\
-          ["@blargbot/bbtag", "workspace:src/bbtag"],\
+          ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"],\
           ["@blargbot/colors", "workspace:src/colors"],\
           ["@blargbot/discord-emote", "workspace:src/discord-emote"],\
           ["@blargbot/domain", "workspace:src/domain"],\
@@ -274,7 +274,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:test/bbtag", {\
         "packageLocation": "./test/bbtag/",\
         "packageDependencies": [\
-          ["@blargbot/bbtag", "workspace:src/bbtag"],\
+          ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"],\
           ["@blargbot/bbtag-tests", "workspace:test/bbtag"],\
           ["@blargbot/config", "workspace:src/config"],\
           ["@blargbot/core", "workspace:src/core"],\
@@ -297,7 +297,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:src/cluster", {\
         "packageLocation": "./src/cluster/",\
         "packageDependencies": [\
-          ["@blargbot/bbtag", "workspace:src/bbtag"],\
+          ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"],\
           ["@blargbot/cluster", "workspace:src/cluster"],\
           ["@blargbot/config", "workspace:src/config"],\
           ["@blargbot/contracts", "workspace:src/contracts"],\
@@ -335,7 +335,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:test/cluster", {\
         "packageLocation": "./test/cluster/",\
         "packageDependencies": [\
-          ["@blargbot/bbtag", "workspace:src/bbtag"],\
+          ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"],\
           ["@blargbot/cluster", "workspace:src/cluster"],\
           ["@blargbot/cluster-tests", "workspace:test/cluster"],\
           ["@blargbot/core", "workspace:src/core"],\
@@ -385,7 +385,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:src/core", {\
         "packageLocation": "./src/core/",\
         "packageDependencies": [\
-          ["@blargbot/bbtag", "workspace:src/bbtag"],\
+          ["@blargbot/bbtag-engine", "workspace:src/bbtag-engine"],\
           ["@blargbot/config", "workspace:src/config"],\
           ["@blargbot/contracts", "workspace:src/contracts"],\
           ["@blargbot/core", "workspace:src/core"],\

@@ -1,4 +1,4 @@
-import { TagAuthorizerSubtag } from '@blargbot/bbtag/subtags';
+import { TagAuthorizerSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import { InjectSubtag, LbSubtag, RbSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { InjectSubtag, LbSubtag, RbSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { ExecuteWebhookFeature } from '@blargbot/bbtag/subtags';
-import { EscapeBBTagSubtag, WebhookSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { ExecuteWebhookFeature } from '@blargbot/bbtag-engine/subtags';
+import { EscapeBBTagSubtag, WebhookSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

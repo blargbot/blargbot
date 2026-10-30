@@ -1,4 +1,4 @@
-import { MessageIdSubtag } from '@blargbot/bbtag/subtags';
+import { MessageIdSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

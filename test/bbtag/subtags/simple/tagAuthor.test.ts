@@ -1,4 +1,4 @@
-import { TagAuthorSubtag } from '@blargbot/bbtag/subtags';
+import { TagAuthorSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

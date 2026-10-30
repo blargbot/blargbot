@@ -1,5 +1,5 @@
-import type { GetMemberJoinTimestampFeature } from '@blargbot/bbtag/subtags';
-import { UserJoinedAtSubtag } from '@blargbot/bbtag/subtags';
+import type { GetMemberJoinTimestampFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserJoinedAtSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

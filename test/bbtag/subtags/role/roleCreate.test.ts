@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
-import type { CreateRoleFeature, GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag/subtags';
-import { ReasonSubtag, RoleCreateSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag-engine';
+import type { CreateRoleFeature, GetMemberPermissionsFeature, ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag-engine/subtags';
+import { ReasonSubtag, RoleCreateSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

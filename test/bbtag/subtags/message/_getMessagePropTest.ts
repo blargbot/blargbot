@@ -1,6 +1,6 @@
-import type { BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag';
-import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
-import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
+import type { BBTagRuntimeError, QueryEntityOptions } from '@blargbot/bbtag-engine';
+import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag-engine';
+import { ChannelIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import type { Mockable, SetupMock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

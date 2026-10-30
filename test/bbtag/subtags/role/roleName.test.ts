@@ -1,5 +1,5 @@
-import type { GetRoleNameFeature } from '@blargbot/bbtag/subtags';
-import { RoleNameSubtag } from '@blargbot/bbtag/subtags';
+import type { GetRoleNameFeature } from '@blargbot/bbtag-engine/subtags';
+import { RoleNameSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

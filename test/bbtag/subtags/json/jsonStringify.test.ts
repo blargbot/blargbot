@@ -1,6 +1,6 @@
-import type { Variables, VariablesProvider } from '@blargbot/bbtag';
-import { NotANumberError } from '@blargbot/bbtag';
-import { JsonStringifySubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { NotANumberError } from '@blargbot/bbtag-engine';
+import { JsonStringifySubtag, JsonSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

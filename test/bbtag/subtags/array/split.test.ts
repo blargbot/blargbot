@@ -1,4 +1,4 @@
-import { SplitSubtag } from '@blargbot/bbtag/subtags';
+import { SplitSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

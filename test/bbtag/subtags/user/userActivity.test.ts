@@ -1,5 +1,5 @@
-import type { GetMemberActivityNameFeature } from '@blargbot/bbtag/subtags';
-import { UserActivitySubtag } from '@blargbot/bbtag/subtags';
+import type { GetMemberActivityNameFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserActivitySubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

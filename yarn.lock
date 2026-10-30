@@ -18,7 +18,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/api@workspace:src/api"
   dependencies:
-    "@blargbot/bbtag": "workspace:^"
+    "@blargbot/bbtag-engine": "workspace:^"
     "@blargbot/cluster": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
@@ -40,30 +40,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/bbtag-tests@workspace:test/bbtag":
+"@blargbot/bbtag-engine@workspace:^, @blargbot/bbtag-engine@workspace:src/bbtag-engine":
   version: 0.0.0-use.local
-  resolution: "@blargbot/bbtag-tests@workspace:test/bbtag"
-  dependencies:
-    "@blargbot/bbtag": "workspace:^"
-    "@blargbot/config": "workspace:^"
-    "@blargbot/core": "workspace:^"
-    "@blargbot/discord-emote": "workspace:^"
-    "@blargbot/domain": "workspace:^"
-    "@blargbot/formatting": "workspace:^"
-    "@blargbot/logger": "workspace:^"
-    "@blargbot/test-util": "workspace:^"
-    "@blargbot/util": "workspace:^"
-    "@types/eris": "workspace:^"
-    brainfuck-node: "npm:^1.0.2"
-    discord-api-types: "npm:^0.37.20"
-    eris: "npm:^0.17.1"
-    moment-timezone: "npm:^0.5.39"
-  languageName: unknown
-  linkType: soft
-
-"@blargbot/bbtag@workspace:^, @blargbot/bbtag@workspace:src/bbtag":
-  version: 0.0.0-use.local
-  resolution: "@blargbot/bbtag@workspace:src/bbtag"
+  resolution: "@blargbot/bbtag-engine@workspace:src/bbtag-engine"
   dependencies:
     "@blargbot/colors": "workspace:^"
     "@blargbot/discord-emote": "workspace:^"
@@ -84,11 +63,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/bbtag-tests@workspace:test/bbtag":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/bbtag-tests@workspace:test/bbtag"
+  dependencies:
+    "@blargbot/bbtag-engine": "workspace:^"
+    "@blargbot/config": "workspace:^"
+    "@blargbot/core": "workspace:^"
+    "@blargbot/discord-emote": "workspace:^"
+    "@blargbot/domain": "workspace:^"
+    "@blargbot/formatting": "workspace:^"
+    "@blargbot/logger": "workspace:^"
+    "@blargbot/test-util": "workspace:^"
+    "@blargbot/util": "workspace:^"
+    "@types/eris": "workspace:^"
+    brainfuck-node: "npm:^1.0.2"
+    discord-api-types: "npm:^0.37.20"
+    eris: "npm:^0.17.1"
+    moment-timezone: "npm:^0.5.39"
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/cluster-tests@workspace:test/cluster":
   version: 0.0.0-use.local
   resolution: "@blargbot/cluster-tests@workspace:test/cluster"
   dependencies:
-    "@blargbot/bbtag": "workspace:^"
+    "@blargbot/bbtag-engine": "workspace:^"
     "@blargbot/cluster": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/domain": "workspace:^"
@@ -104,7 +104,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/cluster@workspace:src/cluster"
   dependencies:
-    "@blargbot/bbtag": "workspace:^"
+    "@blargbot/bbtag-engine": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/contracts": "workspace:^"
     "@blargbot/core": "workspace:^"
@@ -177,7 +177,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/core@workspace:src/core"
   dependencies:
-    "@blargbot/bbtag": "workspace:^"
+    "@blargbot/bbtag-engine": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/contracts": "workspace:^"
     "@blargbot/crowdin": "workspace:^"

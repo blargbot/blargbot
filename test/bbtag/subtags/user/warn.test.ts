@@ -1,6 +1,6 @@
-import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
-import type { WarnFeature } from '@blargbot/bbtag/subtags';
-import { UserIdSubtag, WarnSubtag } from '@blargbot/bbtag/subtags';
+import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { WarnFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserIdSubtag, WarnSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

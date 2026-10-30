@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { AddReactionsFeature, CanPingEveryoneFeature, SendFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIsNsfwSubtag, OutputSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { AddReactionsFeature, CanPingEveryoneFeature, SendFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIsNsfwSubtag, OutputSubtag } from '@blargbot/bbtag-engine/subtags';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 

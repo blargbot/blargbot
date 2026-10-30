@@ -1,5 +1,5 @@
-import type { CheckUserIsBotFeature } from '@blargbot/bbtag/subtags';
-import { UserIsBotSubtag } from '@blargbot/bbtag/subtags';
+import type { CheckUserIsBotFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserIsBotSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

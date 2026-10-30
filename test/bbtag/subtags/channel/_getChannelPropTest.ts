@@ -1,6 +1,6 @@
-import type { BBTagRuntimeError } from '@blargbot/bbtag';
-import { ChannelNotFoundError } from '@blargbot/bbtag';
-import { ChannelIdSubtag } from '@blargbot/bbtag/subtags';
+import type { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { ChannelNotFoundError } from '@blargbot/bbtag-engine';
+import { ChannelIdSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { createSnowflake } from '../../snowflake.js';
 import { createMockSubtag, type SubtagTestCase, type SubtagTestContext } from '../SubtagTestSuite.js';

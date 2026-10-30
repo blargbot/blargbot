@@ -1,4 +1,4 @@
-import { ParseIntSubtag } from '@blargbot/bbtag/subtags';
+import { ParseIntSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

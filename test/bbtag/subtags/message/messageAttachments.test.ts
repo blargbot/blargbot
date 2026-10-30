@@ -1,5 +1,5 @@
-import type { GetMessageAttachmentUrlsFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, MessageAttachmentsSubtag } from '@blargbot/bbtag/subtags';
+import type { GetMessageAttachmentUrlsFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, MessageAttachmentsSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';

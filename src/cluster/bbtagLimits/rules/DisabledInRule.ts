@@ -1,5 +1,5 @@
-import type { SubtagCall } from '@blargbot/bbtag';
-import { BBTagRuntimeError, templates } from '@blargbot/bbtag';
+import type { SubtagCall } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, templates } from '@blargbot/bbtag-engine';
 import type { IFormattable } from '@blargbot/formatting';
 
 import type { ClusterBBTagContextMetadata } from '../../managers/BBTagManager.js';

@@ -1,6 +1,6 @@
-import { ChannelType } from '@blargbot/bbtag';
-import type { GetChannelTypeFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIsThreadSubtag } from '@blargbot/bbtag/subtags';
+import { ChannelType } from '@blargbot/bbtag-engine';
+import type { GetChannelTypeFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIsThreadSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

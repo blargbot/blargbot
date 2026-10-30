@@ -1,4 +1,4 @@
-import { MinSubtag } from '@blargbot/bbtag/subtags';
+import { MinSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

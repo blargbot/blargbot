@@ -1,5 +1,5 @@
-import type { GetPrefixFeature } from '@blargbot/bbtag/subtags';
-import { PrefixSubtag } from '@blargbot/bbtag/subtags';
+import type { GetPrefixFeature } from '@blargbot/bbtag-engine/subtags';
+import { PrefixSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

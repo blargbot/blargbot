@@ -1,5 +1,5 @@
-import type { GetMessageReplyTargetFeature } from '@blargbot/bbtag/subtags';
-import { MessageReplySubtag } from '@blargbot/bbtag/subtags';
+import type { GetMessageReplyTargetFeature } from '@blargbot/bbtag-engine/subtags';
+import { MessageReplySubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -7,7 +7,7 @@
         ".": "./index.js"
     },
     "dependencies": {
-        "@blargbot/bbtag": "workspace:^",
+        "@blargbot/bbtag-engine": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/contracts": "workspace:^",
         "@blargbot/crowdin": "workspace:^",

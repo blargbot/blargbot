@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { EditChannelFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, ReasonSubtag, SlowModeSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { EditChannelFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, ReasonSubtag, SlowModeSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

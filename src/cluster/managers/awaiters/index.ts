@@ -1,4 +1,4 @@
-import type { ReactionEvent } from '@blargbot/bbtag';
+import type { ReactionEvent } from '@blargbot/bbtag-engine';
 import type { Logger } from '@blargbot/logger';
 import type { PartitionedPushIterable } from '@blargbot/util';
 import { createPartitionedPushIterable } from '@blargbot/util';

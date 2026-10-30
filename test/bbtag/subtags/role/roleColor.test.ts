@@ -1,5 +1,5 @@
-import type { GetRoleColorFeature } from '@blargbot/bbtag/subtags';
-import { RoleColorSubtag } from '@blargbot/bbtag/subtags';
+import type { GetRoleColorFeature } from '@blargbot/bbtag-engine/subtags';
+import { RoleColorSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,4 +1,4 @@
-import { tagTypeDetails } from '@blargbot/bbtag';
+import { tagTypeDetails } from '@blargbot/bbtag-engine';
 import type { SubtagListResult } from '@blargbot/cluster';
 import { format } from '@blargbot/formatting';
 

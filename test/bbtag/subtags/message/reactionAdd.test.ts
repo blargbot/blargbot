@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
-import type { AddReactionsFeature, CheckMessageExistsFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, ReactionAddSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag-engine';
+import type { AddReactionsFeature, CheckMessageExistsFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, ReactionAddSubtag } from '@blargbot/bbtag-engine/subtags';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 

@@ -5,8 +5,8 @@ import path from 'node:path';
 import type { TestContext } from 'node:test';
 import { describe, it } from 'node:test';
 
-import type { BBTagExpression, BBTagHooks, BBTagInput, BBTagRuntimeRootScope, FlagDefinition, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag';
-import { bbtag, BBTagContext, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagProvider, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag';
+import type { BBTagExpression, BBTagHooks, BBTagInput, BBTagRuntimeRootScope, FlagDefinition, LocatedRuntimeError, SourceMarker, SubtagCall } from '@blargbot/bbtag-engine';
+import { bbtag, BBTagContext, BBTagRuntimeError, NotEnoughArgumentsError, Subtag, SubtagProvider, SubtagType, TooManyArgumentsError } from '@blargbot/bbtag-engine';
 import type { Mockable, MockCtorArgs } from '@blargbot/test-util';
 import { Mock } from '@blargbot/test-util';
 import moment from 'moment-timezone';

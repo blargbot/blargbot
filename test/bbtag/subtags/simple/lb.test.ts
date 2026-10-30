@@ -1,4 +1,4 @@
-import { LbSubtag } from '@blargbot/bbtag/subtags';
+import { LbSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

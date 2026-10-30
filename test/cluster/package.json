@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "dependencies": {
-        "@blargbot/bbtag": "workspace:^",
+        "@blargbot/bbtag-engine": "workspace:^",
         "@blargbot/cluster": "workspace:^",
         "@blargbot/core": "workspace:^",
         "@blargbot/domain": "workspace:^",

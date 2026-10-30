@@ -1,5 +1,5 @@
-import type { GetMemberNicknameFeature, GetUserNameFeature, GetUserNicknameFeature } from '@blargbot/bbtag/subtags';
-import { UserNicknameSubtag } from '@blargbot/bbtag/subtags';
+import type { GetMemberNicknameFeature, GetUserNameFeature, GetUserNicknameFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserNicknameSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

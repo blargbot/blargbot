@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
-import type { ListGuildMembersFeature } from '@blargbot/bbtag/subtags';
-import { RandomUserSubtag } from '@blargbot/bbtag/subtags';
+import type { ListGuildMembersFeature } from '@blargbot/bbtag-engine/subtags';
+import { RandomUserSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

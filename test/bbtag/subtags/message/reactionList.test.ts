@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag';
-import type { ListMessageReactionsFeature, ListMessageReactionUsersFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, ReactionListSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/bbtag-engine';
+import type { ListMessageReactionsFeature, ListMessageReactionUsersFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, ReactionListSubtag } from '@blargbot/bbtag-engine/subtags';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 

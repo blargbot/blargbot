@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, DiscordPermissions, NotANumberError } from '@blargbot/bbtag';
-import type { EditChannelFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, ChannelSetPositionSubtag, ReasonSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, DiscordPermissions, NotANumberError } from '@blargbot/bbtag-engine';
+import type { EditChannelFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, ChannelSetPositionSubtag, ReasonSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

@@ -1,4 +1,4 @@
-import { CommentSubtag } from '@blargbot/bbtag/subtags';
+import { CommentSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,6 +1,6 @@
-import { RoleNotFoundError } from '@blargbot/bbtag';
-import type { ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag/subtags';
-import { UserHasRoleSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { RoleNotFoundError } from '@blargbot/bbtag-engine';
+import type { ListGuildRolesFeature, ListMemberRolesFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserHasRoleSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';

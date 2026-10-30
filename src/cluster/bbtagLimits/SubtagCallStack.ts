@@ -1,4 +1,4 @@
-import type { SubtagCall } from '@blargbot/bbtag';
+import type { SubtagCall } from '@blargbot/bbtag-engine';
 import { memoize } from '@blargbot/util';
 
 export class SubtagCallStack {

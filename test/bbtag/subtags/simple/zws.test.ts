@@ -1,4 +1,4 @@
-import { ZwsSubtag } from '@blargbot/bbtag/subtags';
+import { ZwsSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

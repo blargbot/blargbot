@@ -1,5 +1,5 @@
-import type { GetGuildOwnerIdFeature } from '@blargbot/bbtag/subtags';
-import { GuildOwnerIdSubtag } from '@blargbot/bbtag/subtags';
+import type { GetGuildOwnerIdFeature } from '@blargbot/bbtag-engine/subtags';
+import { GuildOwnerIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

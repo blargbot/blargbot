@@ -1,4 +1,4 @@
-import { UserDiscriminatorSubtag } from '@blargbot/bbtag/subtags';
+import { UserDiscriminatorSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';

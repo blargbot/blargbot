@@ -1,5 +1,5 @@
-import { InvalidEmbedError } from '@blargbot/bbtag';
-import { EmbedBuildSubtag } from '@blargbot/bbtag/subtags';
+import { InvalidEmbedError } from '@blargbot/bbtag-engine';
+import { EmbedBuildSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Iterable } from '@blargbot/util';
 import moment from 'moment-timezone';
 

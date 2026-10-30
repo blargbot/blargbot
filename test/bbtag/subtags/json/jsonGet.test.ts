@@ -1,6 +1,6 @@
-import type { Variables, VariablesProvider } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import { JsonGetSubtag, JsonSubtag } from '@blargbot/bbtag/subtags';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { JsonGetSubtag, JsonSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';

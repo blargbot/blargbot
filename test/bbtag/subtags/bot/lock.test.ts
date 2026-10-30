@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import type { getLock as defaultGetLock, RwLock, TagVariableScopeDetails, Variables, VariablesProvider } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import { LockSubtag } from '@blargbot/bbtag/subtags';
+import type { getLock as defaultGetLock, RwLock, TagVariableScopeDetails, Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { LockSubtag } from '@blargbot/bbtag-engine/subtags';
 import type { TagVariableScope } from '@blargbot/domain';
 import { TagVariableType } from '@blargbot/domain';
 import { FormatString } from '@blargbot/formatting';

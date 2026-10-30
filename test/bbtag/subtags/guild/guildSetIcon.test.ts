@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
-import type { GetMemberPermissionsFeature, HttpFetchFeature, SetGuildIconFeature } from '@blargbot/bbtag/subtags';
-import { GuildSetIconSubtag, ReasonSubtag, SemiSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag-engine';
+import type { GetMemberPermissionsFeature, HttpFetchFeature, SetGuildIconFeature } from '@blargbot/bbtag-engine/subtags';
+import { GuildSetIconSubtag, ReasonSubtag, SemiSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 import { asUint8Array } from '@blargbot/util';
 

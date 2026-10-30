@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import { SleepSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import { SleepSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 import type { sleep as defaultSleep } from '@blargbot/util';
 

@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, DiscordPermissions, NotANumberError } from '@blargbot/bbtag';
-import type { GetMemberPermissionsFeature, GetRolePositionFeature, ListGuildRolesFeature, ListMemberRolesFeature, SetRolePositionFeature } from '@blargbot/bbtag/subtags';
-import { ReasonSubtag, RoleIdSubtag, RoleSetPositionSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, DiscordPermissions, NotANumberError } from '@blargbot/bbtag-engine';
+import type { GetMemberPermissionsFeature, GetRolePositionFeature, ListGuildRolesFeature, ListMemberRolesFeature, SetRolePositionFeature } from '@blargbot/bbtag-engine/subtags';
+import { ReasonSubtag, RoleIdSubtag, RoleSetPositionSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

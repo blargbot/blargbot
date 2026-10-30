@@ -1,4 +1,4 @@
-import { CapitalizeSubtag } from '@blargbot/bbtag/subtags';
+import { CapitalizeSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

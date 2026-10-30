@@ -1,5 +1,5 @@
-import type { GetUserTimezoneFeature } from '@blargbot/bbtag/subtags';
-import { UserTimezoneSubtag } from '@blargbot/bbtag/subtags';
+import type { GetUserTimezoneFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserTimezoneSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

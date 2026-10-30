@@ -1,5 +1,5 @@
-import type { GenerateDumpLinkFeature } from '@blargbot/bbtag/subtags';
-import { DumpSubtag } from '@blargbot/bbtag/subtags';
+import type { GenerateDumpLinkFeature } from '@blargbot/bbtag-engine/subtags';
+import { DumpSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

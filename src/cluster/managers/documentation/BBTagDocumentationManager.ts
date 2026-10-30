@@ -1,5 +1,5 @@
-import type { Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType } from '@blargbot/bbtag';
-import { bbtag, tagTypeDetails } from '@blargbot/bbtag';
+import type { Subtag, SubtagSignature, SubtagSignatureValueParameter, SubtagType } from '@blargbot/bbtag-engine';
+import { bbtag, tagTypeDetails } from '@blargbot/bbtag-engine';
 import type { SendContent } from '@blargbot/core';
 import { guard } from '@blargbot/core';
 import type { IFormattable } from '@blargbot/formatting';

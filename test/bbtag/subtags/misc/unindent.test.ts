@@ -1,4 +1,4 @@
-import { UnindentSubtag } from '@blargbot/bbtag/subtags';
+import { UnindentSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

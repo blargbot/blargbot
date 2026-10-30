@@ -1,4 +1,4 @@
-import { NumberFormatSubtag } from '@blargbot/bbtag/subtags';
+import { NumberFormatSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

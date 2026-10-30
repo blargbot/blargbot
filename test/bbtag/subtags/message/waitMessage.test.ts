@@ -1,7 +1,7 @@
-import type { MessageEvent } from '@blargbot/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag';
-import type { StreamMessagesFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, MessageIdSubtag, OperatorSubtag, UserIdSubtag, WaitMessageSubtag } from '@blargbot/bbtag/subtags';
+import type { MessageEvent } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag-engine';
+import type { StreamMessagesFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, MessageIdSubtag, OperatorSubtag, UserIdSubtag, WaitMessageSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

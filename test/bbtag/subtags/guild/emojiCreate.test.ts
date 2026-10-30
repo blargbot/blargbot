@@ -1,6 +1,6 @@
-import type { Variables, VariablesProvider } from '@blargbot/bbtag';
-import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
-import { EmojiCreateSubtag, type GetMemberPermissionsFeature, type HttpFetchFeature, ReasonSubtag, RoleIdSubtag, SemiSubtag, type VariablesFeature } from '@blargbot/bbtag/subtags';
+import type { Variables, VariablesProvider } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag-engine';
+import { EmojiCreateSubtag, type GetMemberPermissionsFeature, type HttpFetchFeature, ReasonSubtag, RoleIdSubtag, SemiSubtag, type VariablesFeature } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 import { asUint8Array } from '@blargbot/util';
 

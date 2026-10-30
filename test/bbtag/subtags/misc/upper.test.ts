@@ -1,4 +1,4 @@
-import { UpperSubtag } from '@blargbot/bbtag/subtags';
+import { UpperSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

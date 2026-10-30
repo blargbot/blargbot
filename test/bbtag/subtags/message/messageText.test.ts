@@ -1,5 +1,5 @@
-import type { GetMessageContentFeature } from '@blargbot/bbtag/subtags';
-import { MessageTextSubtag } from '@blargbot/bbtag/subtags';
+import type { GetMessageContentFeature } from '@blargbot/bbtag-engine/subtags';
+import { MessageTextSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

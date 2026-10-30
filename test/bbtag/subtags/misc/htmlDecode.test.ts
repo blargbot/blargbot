@@ -1,4 +1,4 @@
-import { EscapeBBTagSubtag, HtmlDecodeSubtag } from '@blargbot/bbtag/subtags';
+import { EscapeBBTagSubtag, HtmlDecodeSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

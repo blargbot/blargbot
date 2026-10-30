@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { EmbedSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag/subtags';
+import { EmbedSubtag, EscapeBBTagSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { CanRequestDomainFeature, HttpFetchFeature } from '@blargbot/bbtag/subtags';
-import { EscapeBBTagSubtag, RequestSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { CanRequestDomainFeature, HttpFetchFeature } from '@blargbot/bbtag-engine/subtags';
+import { EscapeBBTagSubtag, RequestSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

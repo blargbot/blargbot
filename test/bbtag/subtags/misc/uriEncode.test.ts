@@ -1,4 +1,4 @@
-import { SemiSubtag, UriEncodeSubtag } from '@blargbot/bbtag/subtags';
+import { SemiSubtag, UriEncodeSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,5 +1,5 @@
-import type { GetGuildMemberCountFeature } from '@blargbot/bbtag/subtags';
-import { GuildSizeSubtag } from '@blargbot/bbtag/subtags';
+import type { GetGuildMemberCountFeature } from '@blargbot/bbtag-engine/subtags';
+import { GuildSizeSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

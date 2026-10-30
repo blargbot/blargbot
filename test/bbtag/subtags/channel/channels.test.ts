@@ -1,5 +1,5 @@
-import type { ListChannelsFeature } from '@blargbot/bbtag/subtags';
-import { ChannelsSubtag } from '@blargbot/bbtag/subtags';
+import type { ListChannelsFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelsSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

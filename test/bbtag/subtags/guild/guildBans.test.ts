@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { GetBannedUsersFeature } from '@blargbot/bbtag/subtags';
-import { GuildBansSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { GetBannedUsersFeature } from '@blargbot/bbtag-engine/subtags';
+import { GuildBansSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

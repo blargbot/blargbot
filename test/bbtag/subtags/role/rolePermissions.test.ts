@@ -1,6 +1,6 @@
-import { DiscordPermissions } from '@blargbot/bbtag';
-import type { GetRolePermissionsFeature } from '@blargbot/bbtag/subtags';
-import { RolePermissionsSubtag } from '@blargbot/bbtag/subtags';
+import { DiscordPermissions } from '@blargbot/bbtag-engine';
+import type { GetRolePermissionsFeature } from '@blargbot/bbtag-engine/subtags';
+import { RolePermissionsSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

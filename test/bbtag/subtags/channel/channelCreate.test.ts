@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, ChannelType, DiscordPermissions } from '@blargbot/bbtag';
-import type { CreateChannelFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag/subtags';
-import { ChannelCreateSubtag, EscapeBBTagSubtag, ReasonSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, ChannelType, DiscordPermissions } from '@blargbot/bbtag-engine';
+import type { CreateChannelFeature, GetMemberPermissionsFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelCreateSubtag, EscapeBBTagSubtag, ReasonSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 import { OverwriteType } from 'discord-api-types/v9';
 

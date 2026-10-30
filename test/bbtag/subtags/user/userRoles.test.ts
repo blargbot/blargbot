@@ -1,5 +1,5 @@
-import type { ListMemberRolesFeature } from '@blargbot/bbtag/subtags';
-import { UserRolesSubtag } from '@blargbot/bbtag/subtags';
+import type { ListMemberRolesFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserRolesSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

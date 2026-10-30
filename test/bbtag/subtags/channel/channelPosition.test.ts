@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag';
-import type { GetChannelPositionFeature } from '@blargbot/bbtag/subtags';
-import { ChannelPositionSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag-engine';
+import type { GetChannelPositionFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelPositionSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

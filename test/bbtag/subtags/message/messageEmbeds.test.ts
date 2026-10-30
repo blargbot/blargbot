@@ -1,5 +1,5 @@
-import type { GetMessageEmbedsFeature } from '@blargbot/bbtag/subtags';
-import { MessageEmbedsSubtag } from '@blargbot/bbtag/subtags';
+import type { GetMessageEmbedsFeature } from '@blargbot/bbtag-engine/subtags';
+import { MessageEmbedsSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

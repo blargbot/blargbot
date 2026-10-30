@@ -1,7 +1,7 @@
-import type { ReactionEvent } from '@blargbot/bbtag';
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { StreamReactionsFeature } from '@blargbot/bbtag/subtags';
-import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, UserIdSubtag, WaitReactionSubtag } from '@blargbot/bbtag/subtags';
+import type { ReactionEvent } from '@blargbot/bbtag-engine';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { StreamReactionsFeature } from '@blargbot/bbtag-engine/subtags';
+import { MessageIdSubtag, OperatorSubtag, ReactionSubtag, ReactionUserSubtag, UserIdSubtag, WaitReactionSubtag } from '@blargbot/bbtag-engine/subtags';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 

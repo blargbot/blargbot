@@ -1,4 +1,4 @@
-import { FunctionSubtag, IfSubtag, SubtagExistsSubtag } from '@blargbot/bbtag/subtags';
+import { FunctionSubtag, IfSubtag, SubtagExistsSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

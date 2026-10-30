@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag';
-import type { KickMemberFeature } from '@blargbot/bbtag/subtags';
-import { KickSubtag, ReasonSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { KickMemberFeature } from '@blargbot/bbtag-engine/subtags';
+import { KickSubtag, ReasonSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

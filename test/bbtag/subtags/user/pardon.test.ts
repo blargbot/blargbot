@@ -1,6 +1,6 @@
-import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
-import type { PardonFeature } from '@blargbot/bbtag/subtags';
-import { PardonSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { NotANumberError, UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { PardonFeature } from '@blargbot/bbtag-engine/subtags';
+import { PardonSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

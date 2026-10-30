@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag';
-import type { EditMessageFeature, GetMessageAuthorFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, EditSubtag, EscapeBBTagSubtag, IsStaffSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag-engine';
+import type { EditMessageFeature, GetMessageAuthorFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, EditSubtag, EscapeBBTagSubtag, IsStaffSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';

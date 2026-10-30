@@ -1,4 +1,4 @@
-import { MaxSubtag } from '@blargbot/bbtag/subtags';
+import { MaxSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

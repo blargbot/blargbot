@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, templates } from '@blargbot/bbtag';
+import { BBTagRuntimeError, templates } from '@blargbot/bbtag-engine';
 import type { IFormattable } from '@blargbot/formatting';
 import z from 'zod';
 

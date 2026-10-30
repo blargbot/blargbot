@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, ChannelNotFoundError, DiscordPermissions, MessageNotFoundError } from '@blargbot/bbtag';
-import type { CheckMessageExistsFeature, GetMemberPermissionsFeature, ListMessageReactionsFeature, RemoveMessageReactionUserFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, IsStaffSubtag, ReactionRemoveSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, ChannelNotFoundError, DiscordPermissions, MessageNotFoundError } from '@blargbot/bbtag-engine';
+import type { CheckMessageExistsFeature, GetMemberPermissionsFeature, ListMessageReactionsFeature, RemoveMessageReactionUserFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, IsStaffSubtag, ReactionRemoveSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 

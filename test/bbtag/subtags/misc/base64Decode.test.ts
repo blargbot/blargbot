@@ -1,4 +1,4 @@
-import { Base64DecodeSubtag } from '@blargbot/bbtag/subtags';
+import { Base64DecodeSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

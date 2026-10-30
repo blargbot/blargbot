@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag';
-import { RandomStringSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/bbtag-engine';
+import { RandomStringSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

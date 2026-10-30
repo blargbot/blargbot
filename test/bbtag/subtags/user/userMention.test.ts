@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { UserIdSubtag, UserMentionSubtag } from '@blargbot/bbtag/subtags';
+import { UserIdSubtag, UserMentionSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';
 import { createGetUserPropTestCases } from './_getUserPropTest.js';

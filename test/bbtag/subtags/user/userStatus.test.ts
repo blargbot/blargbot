@@ -1,5 +1,5 @@
-import type { GetMemberStatusFeature } from '@blargbot/bbtag/subtags';
-import { UserStatusSubtag } from '@blargbot/bbtag/subtags';
+import type { GetMemberStatusFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserStatusSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

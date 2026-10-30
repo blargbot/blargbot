@@ -1,5 +1,5 @@
-import { StaffOnlyError, templates } from '@blargbot/bbtag';
-import { IsStaffSubtag } from '@blargbot/bbtag/subtags';
+import { StaffOnlyError, templates } from '@blargbot/bbtag-engine';
+import { IsStaffSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 

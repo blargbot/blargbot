@@ -1,5 +1,5 @@
-import type { GetUserAvatarUrlFeature } from '@blargbot/bbtag/subtags';
-import { UserAvatarSubtag } from '@blargbot/bbtag/subtags';
+import type { GetUserAvatarUrlFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserAvatarSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,4 +1,4 @@
-import { VoidSubtag } from '@blargbot/bbtag/subtags';
+import { VoidSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';
 

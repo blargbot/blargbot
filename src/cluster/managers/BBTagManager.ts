@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 
-import type { BBTagExpression, BBTagInput, Embed, SourceMarker, SubtagCall } from '@blargbot/bbtag';
-import { bbtag, BBTagContext, BBTagRuntimeError, ChannelType, createTagVariableScopeFactory, DiscordPermissions, getLock, SubtagProvider, subtags, templates, VariablesProvider } from '@blargbot/bbtag';
-import * as Subtags from '@blargbot/bbtag/subtags';
+import type { BBTagExpression, BBTagInput, Embed, SourceMarker, SubtagCall } from '@blargbot/bbtag-engine';
+import { bbtag, BBTagContext, BBTagRuntimeError, ChannelType, createTagVariableScopeFactory, DiscordPermissions, getLock, SubtagProvider, subtags, templates, VariablesProvider } from '@blargbot/bbtag-engine';
+import * as Subtags from '@blargbot/bbtag-engine/subtags';
 import type { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core';
 import { createSafeRegExp, guard, humanize, metrics, parse, snowflake } from '@blargbot/core';
 import Emote from '@blargbot/discord-emote';

@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { GetMemberTimeoutFeature } from '@blargbot/bbtag/subtags';
-import { UserTimeoutSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { GetMemberTimeoutFeature } from '@blargbot/bbtag-engine/subtags';
+import { UserTimeoutSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

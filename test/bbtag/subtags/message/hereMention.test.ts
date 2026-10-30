@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { HereMentionSubtag } from '@blargbot/bbtag/subtags';
+import { HereMentionSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

@@ -1,4 +1,4 @@
-import { IsCustomCommandSubtag } from '@blargbot/bbtag/subtags';
+import { IsCustomCommandSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 

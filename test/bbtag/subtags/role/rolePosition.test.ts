@@ -1,5 +1,5 @@
-import type { GetRolePositionFeature } from '@blargbot/bbtag/subtags';
-import { RolePositionSubtag } from '@blargbot/bbtag/subtags';
+import type { GetRolePositionFeature } from '@blargbot/bbtag-engine/subtags';
+import { RolePositionSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

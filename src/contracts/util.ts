@@ -50,7 +50,7 @@ export function amqpJsonCodec<Type>(definition: z.ZodType<Type>): z.ZodType<Type
                 return {
                     content: jsonToBuffer(value, undefined, (_, value) => {
                         if (typeof value === 'bigint')
-                            return { $kind: 'bigint', value: value.toString() };
+                            return bigintObj.encode(value);
                         return value;
                     }),
                     properties: {
@@ -61,15 +61,8 @@ export function amqpJsonCodec<Type>(definition: z.ZodType<Type>): z.ZodType<Type
             },
             decode(value) {
                 return definition.parse(bufferToJson(value.content, value.properties.contentEncoding, (_, value) => {
-                    if (typeof value === 'object'
-                        && value !== null
-                        && '$kind' in value
-                        && value.$kind === 'bigint'
-                        && 'value' in value
-                        && typeof value.value === 'string'
-                    )
-                        return BigInt(value.value);
-                    return value;
+                    const parsed = bigintObj.safeParse(value);
+                    return parsed.success ? parsed.data : value;
                 }));
             }
         }
@@ -79,3 +72,19 @@ export function amqpJsonCodec<Type>(definition: z.ZodType<Type>): z.ZodType<Type
 export function inferReturnType<Fn extends (this: never, ...args: never) => unknown>(impl: Fn): Fn {
     return impl;
 }
+
+const bigintObj = z.codec(
+    z.strictObject({
+        $type: z.literal('bigint'),
+        $value: z.string().regex(/^[+-]?\d+$/)
+    }),
+    z.bigint(),
+    {
+        encode(value) {
+            return { $type: 'bigint', $value: value.toString() } as const;
+        },
+        decode(value) {
+            return BigInt(value.$value);
+        }
+    }
+)

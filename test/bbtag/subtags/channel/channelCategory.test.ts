@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { GetChannelCategoryFeature } from '@blargbot/bbtag/subtags';
-import { ChannelCategorySubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { GetChannelCategoryFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelCategorySubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';

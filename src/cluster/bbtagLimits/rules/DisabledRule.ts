@@ -1,4 +1,4 @@
-import { SubtagDisabledError, templates } from '@blargbot/bbtag';
+import { SubtagDisabledError, templates } from '@blargbot/bbtag-engine';
 
 import type { RuntimeLimitRule } from '../RuntimeLimitRule.js';
 

@@ -1,6 +1,6 @@
-import { UserNotFoundError } from '@blargbot/bbtag';
-import type { IsUserStaffFeature } from '@blargbot/bbtag/subtags';
-import { IsStaffSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { IsUserStaffFeature } from '@blargbot/bbtag-engine/subtags';
+import { IsStaffSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

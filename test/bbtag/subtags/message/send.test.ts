@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 
-import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag';
-import type { CanPingEveryoneFeature, SendFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, ChannelIsNsfwSubtag, ChannelIsTextSubtag, EscapeBBTagSubtag, SendSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/bbtag-engine';
+import type { CanPingEveryoneFeature, SendFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, ChannelIsNsfwSubtag, ChannelIsTextSubtag, EscapeBBTagSubtag, SendSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

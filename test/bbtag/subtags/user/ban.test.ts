@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag';
-import type { BanUserFeature } from '@blargbot/bbtag/subtags';
-import { BanSubtag, ReasonSubtag, UserIdSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/bbtag-engine';
+import type { BanUserFeature } from '@blargbot/bbtag-engine/subtags';
+import { BanSubtag, ReasonSubtag, UserIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createSnowflake } from '../../snowflake.js';

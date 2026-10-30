@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, DiscordPermissions, PermissionOverwriteType } from '@blargbot/bbtag';
-import type { GetMemberPermissionsFeature, SetPermissionOverrideFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, ChannelIsThreadSubtag, ChannelSetPermissionsSubtag, ReasonSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, DiscordPermissions, PermissionOverwriteType } from '@blargbot/bbtag-engine';
+import type { GetMemberPermissionsFeature, SetPermissionOverrideFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, ChannelIsThreadSubtag, ChannelSetPermissionsSubtag, ReasonSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import type { SubtagTestCase } from '../SubtagTestSuite.js';

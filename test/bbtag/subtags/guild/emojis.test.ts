@@ -1,5 +1,5 @@
-import type { ListEmojisFeature } from '@blargbot/bbtag/subtags';
-import { EmojisSubtag, RoleIdSubtag } from '@blargbot/bbtag/subtags';
+import type { ListEmojisFeature } from '@blargbot/bbtag-engine/subtags';
+import { EmojisSubtag, RoleIdSubtag } from '@blargbot/bbtag-engine/subtags';
 import Emote from '@blargbot/discord-emote';
 import { Mock } from '@blargbot/test-util';
 

@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag';
-import type { CheckMessageExistsFeature, GetMemberPermissionsFeature, RemoveMessageReactionsFeature } from '@blargbot/bbtag/subtags';
-import { ChannelIdSubtag, IsStaffSubtag, ReactionRemoveAllSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError, DiscordPermissions } from '@blargbot/bbtag-engine';
+import type { CheckMessageExistsFeature, GetMemberPermissionsFeature, RemoveMessageReactionsFeature } from '@blargbot/bbtag-engine/subtags';
+import { ChannelIdSubtag, IsStaffSubtag, ReactionRemoveAllSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { createMockSubtag, runSubtagTests } from '../SubtagTestSuite.js';

@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@blargbot/bbtag';
-import type { AsyncRegex, CompileRegexFeature } from '@blargbot/bbtag/subtags';
-import { RegexMatchSubtag } from '@blargbot/bbtag/subtags';
+import { BBTagRuntimeError } from '@blargbot/bbtag-engine';
+import type { AsyncRegex, CompileRegexFeature } from '@blargbot/bbtag-engine/subtags';
+import { RegexMatchSubtag } from '@blargbot/bbtag-engine/subtags';
 import { Mock } from '@blargbot/test-util';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite.js';

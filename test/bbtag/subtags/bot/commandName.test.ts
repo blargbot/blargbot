@@ -1,4 +1,4 @@
-import { CommandNameSubtag } from '@blargbot/bbtag/subtags';
+import { CommandNameSubtag } from '@blargbot/bbtag-engine/subtags';
 
 import { runSubtagTests } from '../SubtagTestSuite.js';
 
